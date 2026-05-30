@@ -10,8 +10,8 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.world.AddFeaturesBiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import za.co.neroland.nerospace.Nerospace;

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_nerosium_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:nerosium_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:nerosium_ingot_from_nerosium_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_nerosium_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:nerosium_ingot_from_nerosium_block"
+    ]
+  }
+}

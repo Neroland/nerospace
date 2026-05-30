@@ -12,6 +12,7 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import za.co.neroland.nerospace.registry.ModBlocks;
@@ -31,33 +32,33 @@ public class ModRecipeProvider extends RecipeProvider {
     protected void buildRecipes() {
         // --- Smelting & blasting: raw nerosium -> ingot ---------------------
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModItems.RAW_NEROSIUM),
-                        RecipeCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 200)
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 200)
                 .unlockedBy("has_raw_nerosium", this.has(ModItems.RAW_NEROSIUM))
                 .save(this.output, "nerosium_ingot_from_smelting_raw_nerosium");
 
         SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModItems.RAW_NEROSIUM),
-                        RecipeCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 100)
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 100)
                 .unlockedBy("has_raw_nerosium", this.has(ModItems.RAW_NEROSIUM))
                 .save(this.output, "nerosium_ingot_from_blasting_raw_nerosium");
 
         // --- Smelting & blasting: ores -> ingot -----------------------------
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModBlocks.NEROSIUM_ORE.get()),
-                        RecipeCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 200)
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 200)
                 .unlockedBy("has_nerosium_ore", this.has(ModBlocks.NEROSIUM_ORE.get()))
                 .save(this.output, "nerosium_ingot_from_smelting_nerosium_ore");
 
         SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModBlocks.NEROSIUM_ORE.get()),
-                        RecipeCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 100)
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 100)
                 .unlockedBy("has_nerosium_ore", this.has(ModBlocks.NEROSIUM_ORE.get()))
                 .save(this.output, "nerosium_ingot_from_blasting_nerosium_ore");
 
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get()),
-                        RecipeCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 200)
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 200)
                 .unlockedBy("has_deepslate_nerosium_ore", this.has(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get()))
                 .save(this.output, "nerosium_ingot_from_smelting_deepslate_nerosium_ore");
 
         SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get()),
-                        RecipeCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 100)
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 100)
                 .unlockedBy("has_deepslate_nerosium_ore", this.has(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get()))
                 .save(this.output, "nerosium_ingot_from_blasting_deepslate_nerosium_ore");
 
@@ -114,6 +115,11 @@ public class ModRecipeProvider extends RecipeProvider {
         @Override
         protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
             return new ModRecipeProvider(registries, output);
+        }
+
+        @Override
+        public String getName() {
+            return "Nerospace recipes";
         }
     }
 }

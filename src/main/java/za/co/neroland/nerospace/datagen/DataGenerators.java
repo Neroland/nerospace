@@ -21,7 +21,7 @@ import za.co.neroland.nerospace.world.ModPlacedFeatures;
  * Single entry point for Nerospace data generation. Runs via the {@code data} (clientData) run
  * configuration declared in build.gradle: {@code ./gradlew runData}.
  */
-@EventBusSubscriber(modid = Nerospace.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Nerospace.MODID)
 public final class DataGenerators {
 
     /** Datapack registry entries (worldgen + biome modifiers). */
