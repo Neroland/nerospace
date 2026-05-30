@@ -12,4 +12,9 @@
   hard dependencies on them yet. Prefer tags + NeoForge capabilities.
 - Conventions: one DeferredRegister setup per content type; generate
   JSON (models/recipes/loot/tags/lang) via datagen, not by hand.
+- ALWAYS VERIFY THE BUILD before marking any task complete: run
+  `./gradlew runData` (when datagen changed) then `./gradlew build`
+  and confirm BUILD SUCCESSFUL. Never mark a task done on an
+  uncompiled change. If the build can't be run in your environment,
+  say so explicitly and leave the task open pending verification.
 - DO NOT: Commit and Push automatically
