@@ -12,3 +12,4 @@
   hard dependencies on them yet. Prefer tags + NeoForge capabilities.
 - Conventions: one DeferredRegister setup per content type; generate
   JSON (models/recipes/loot/tags/lang) via datagen, not by hand.
+- DO NOT: Commit and Push automatically
