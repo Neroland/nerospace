@@ -2,7 +2,7 @@
 
 - Target: Minecraft 26.1.2, NeoForge loader, Java 25, ModDevGradle.
 - Mod id: nerospace  (must match @Mod annotation and registry namespace)
-- Package root: com.neroland.nerospace
+- Package root: za.co.neroland.nerospace
 - Build:        ./gradlew build
 - Dev client:   ./gradlew runClient
 - Dev server:   ./gradlew runServer
