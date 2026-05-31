@@ -101,7 +101,7 @@ jobs:
           # --- Release metadata ---
           name: Nerospace ${{ needs.detect.outputs.version }}
           version: ${{ needs.detect.outputs.version }}
-          version-type: release
+          version-type: beta
           files: build/libs/nerospace-!(*-sources|*-dev|*-shadow|*-javadoc).jar
           loaders: neoforge
           game-versions: ${{ env.minecraft_version }}
