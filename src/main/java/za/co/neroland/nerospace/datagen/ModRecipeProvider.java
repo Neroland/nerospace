@@ -103,6 +103,29 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('|', Items.STICK)
                 .unlockedBy("has_nerosium_ingot", this.has(ModItems.NEROSIUM_INGOT))
                 .save(this.output);
+
+        // --- Machines -------------------------------------------------------
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.NEROSIUM_GRINDER.get())
+                .pattern("III")
+                .pattern("IFI")
+                .pattern("CCC")
+                .define('I', ModItems.NEROSIUM_INGOT)
+                .define('F', Items.FURNACE)
+                .define('C', Items.COBBLESTONE)
+                .unlockedBy("has_nerosium_ingot", this.has(ModItems.NEROSIUM_INGOT))
+                .save(this.output);
+
+        // Dust smelts/blasts back into an ingot (closes the processing loop).
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModItems.NEROSIUM_DUST),
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 200)
+                .unlockedBy("has_nerosium_dust", this.has(ModItems.NEROSIUM_DUST))
+                .save(this.output, "nerosium_ingot_from_smelting_nerosium_dust");
+
+        SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModItems.NEROSIUM_DUST),
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 100)
+                .unlockedBy("has_nerosium_dust", this.has(ModItems.NEROSIUM_DUST))
+                .save(this.output, "nerosium_ingot_from_blasting_nerosium_dust");
     }
 
     /** Runner registered with the data generator; constructs the provider per the lookup future. */

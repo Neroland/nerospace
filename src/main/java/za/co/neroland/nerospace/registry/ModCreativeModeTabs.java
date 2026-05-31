@@ -30,11 +30,13 @@ public final class ModCreativeModeTabs {
                     .displayItems((params, output) -> {
                         output.accept(ModItems.RAW_NEROSIUM.get());
                         output.accept(ModItems.NEROSIUM_INGOT.get());
+                        output.accept(ModItems.NEROSIUM_DUST.get());
                         output.accept(ModItems.NEROSIUM_PICKAXE.get());
                         output.accept(ModBlocks.NEROSIUM_ORE.get());
                         output.accept(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get());
                         output.accept(ModBlocks.NEROSIUM_BLOCK.get());
                         output.accept(ModBlocks.RAW_NEROSIUM_BLOCK.get());
+                        output.accept(ModBlocks.NEROSIUM_GRINDER.get());
                     })
                     .build());
 

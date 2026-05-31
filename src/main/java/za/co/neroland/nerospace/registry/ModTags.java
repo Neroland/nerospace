@@ -44,6 +44,7 @@ public final class ModTags {
 
         public static final TagKey<Item> ORES_NEROSIUM = itemTag("c", "ores/nerosium");
         public static final TagKey<Item> INGOTS_NEROSIUM = itemTag("c", "ingots/nerosium");
+        public static final TagKey<Item> DUSTS_NEROSIUM = itemTag("c", "dusts/nerosium");
         public static final TagKey<Item> RAW_MATERIALS_NEROSIUM = itemTag("c", "raw_materials/nerosium");
         public static final TagKey<Item> STORAGE_BLOCKS_NEROSIUM = itemTag("c", "storage_blocks/nerosium");
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_NEROSIUM = itemTag("c", "storage_blocks/raw_nerosium");

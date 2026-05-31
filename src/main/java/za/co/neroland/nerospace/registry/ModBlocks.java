@@ -8,6 +8,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 
 /**
  * Central block registry for Nerospace (Phase 1 — materials slice).
@@ -53,6 +54,17 @@ public final class ModBlocks {
             props -> props
                     .mapColor(MapColor.COLOR_LIGHT_BLUE)
                     .strength(5.0F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    // --- Machines (Phase 2) -------------------------------------------------
+
+    public static final DeferredBlock<NerosiumGrinderBlock> NEROSIUM_GRINDER = BLOCKS.registerBlock(
+            "nerosium_grinder",
+            NerosiumGrinderBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL));
 

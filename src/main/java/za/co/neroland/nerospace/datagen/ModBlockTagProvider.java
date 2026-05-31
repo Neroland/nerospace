@@ -28,7 +28,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.NEROSIUM_ORE.get(),
                         ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),
                         ModBlocks.NEROSIUM_BLOCK.get(),
-                        ModBlocks.RAW_NEROSIUM_BLOCK.get());
+                        ModBlocks.RAW_NEROSIUM_BLOCK.get(),
+                        ModBlocks.NEROSIUM_GRINDER.get());
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.NEROSIUM_ORE.get(),

@@ -1,0 +1,32 @@
+package za.co.neroland.nerospace.registry;
+
+import java.util.function.Supplier;
+
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.machine.NerosiumGrinderMenu;
+
+/**
+ * Menu types (Phase 2). The {@code MenuSupplier} is the client-side constructor.
+ */
+public final class ModMenuTypes {
+
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES =
+            DeferredRegister.create(Registries.MENU, Nerospace.MODID);
+
+    public static final Supplier<MenuType<NerosiumGrinderMenu>> NEROSIUM_GRINDER = MENU_TYPES.register(
+            "nerosium_grinder",
+            () -> new MenuType<>(NerosiumGrinderMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
+    private ModMenuTypes() {
+    }
+
+    public static void register(IEventBus modEventBus) {
+        MENU_TYPES.register(modEventBus);
+    }
+}

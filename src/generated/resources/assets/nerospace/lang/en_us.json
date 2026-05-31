@@ -1,8 +1,11 @@
 {
   "block.nerospace.deepslate_nerosium_ore": "Deepslate Nerosium Ore",
   "block.nerospace.nerosium_block": "Block of Nerosium",
+  "block.nerospace.nerosium_grinder": "Nerosium Grinder",
   "block.nerospace.nerosium_ore": "Nerosium Ore",
   "block.nerospace.raw_nerosium_block": "Block of Raw Nerosium",
+  "container.nerospace.nerosium_grinder": "Nerosium Grinder",
+  "item.nerospace.nerosium_dust": "Nerosium Dust",
   "item.nerospace.nerosium_ingot": "Nerosium Ingot",
   "item.nerospace.nerosium_pickaxe": "Nerosium Pickaxe",
   "item.nerospace.raw_nerosium": "Raw Nerosium",

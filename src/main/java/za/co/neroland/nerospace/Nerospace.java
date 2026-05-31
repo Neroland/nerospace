@@ -10,9 +10,11 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
+import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModCreativeModeTabs;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /**
  * Nerospace — a space-exploration / tech-progression mod for Minecraft (Java Edition),
@@ -33,6 +35,8 @@ public final class Nerospace {
         // Order matters: blocks classload before items (block items reference block holders).
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
         ModCreativeModeTabs.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);

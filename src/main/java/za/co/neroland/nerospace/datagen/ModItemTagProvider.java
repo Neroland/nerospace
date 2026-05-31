@@ -29,6 +29,9 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(Tags.Items.INGOTS).add(ModItems.NEROSIUM_INGOT.get());
         this.tag(ModTags.Items.INGOTS_NEROSIUM).add(ModItems.NEROSIUM_INGOT.get());
 
+        this.tag(Tags.Items.DUSTS).add(ModItems.NEROSIUM_DUST.get());
+        this.tag(ModTags.Items.DUSTS_NEROSIUM).add(ModItems.NEROSIUM_DUST.get());
+
         this.tag(Tags.Items.RAW_MATERIALS).add(ModItems.RAW_NEROSIUM.get());
         this.tag(ModTags.Items.RAW_MATERIALS_NEROSIUM).add(ModItems.RAW_NEROSIUM.get());
 

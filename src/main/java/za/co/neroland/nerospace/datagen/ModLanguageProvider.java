@@ -28,10 +28,15 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(), "Deepslate Nerosium Ore");
         add(ModBlocks.NEROSIUM_BLOCK.get(), "Block of Nerosium");
         add(ModBlocks.RAW_NEROSIUM_BLOCK.get(), "Block of Raw Nerosium");
+        add(ModBlocks.NEROSIUM_GRINDER.get(), "Nerosium Grinder");
 
         // Items.
         add(ModItems.RAW_NEROSIUM.get(), "Raw Nerosium");
         add(ModItems.NEROSIUM_INGOT.get(), "Nerosium Ingot");
+        add(ModItems.NEROSIUM_DUST.get(), "Nerosium Dust");
         add(ModItems.NEROSIUM_PICKAXE.get(), "Nerosium Pickaxe");
+
+        // Containers / GUI.
+        add("container.nerospace.nerosium_grinder", "Nerosium Grinder");
     }
 }

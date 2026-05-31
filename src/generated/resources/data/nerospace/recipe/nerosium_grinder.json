@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "minecraft:cobblestone",
+    "F": "minecraft:furnace",
+    "I": "nerospace:nerosium_ingot"
+  },
+  "pattern": [
+    "III",
+    "IFI",
+    "CCC"
+  ],
+  "result": {
+    "id": "nerospace:nerosium_grinder"
+  }
+}

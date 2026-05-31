@@ -1,0 +1,254 @@
+package za.co.neroland.nerospace.machine;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
+
+import za.co.neroland.nerospace.registry.ModBlockEntities;
+
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Block entity for the Nerosium Grinder. Holds a two-slot inventory (input + output), an internal
+ * energy buffer exposed via the NeoForge energy capability, and grinding progress. Ticks
+ * server-side: charges its internal buffer, and converts grindable inputs into dust over time.
+ */
+public class NerosiumGrinderBlockEntity extends BlockEntity implements Container, MenuProvider {
+
+    public static final int INPUT_SLOT = 0;
+    public static final int OUTPUT_SLOT = 1;
+    public static final int SIZE = 2;
+
+    public static final int MAX_PROGRESS = 100;
+    public static final int ENERGY_CAPACITY = 10_000;
+    public static final int ENERGY_MAX_INSERT = 500;
+    public static final int ENERGY_PER_TICK = 30;
+    public static final int GENERATE_PER_TICK = 15;
+
+    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final GrinderEnergy energy = new GrinderEnergy();
+    private int progress;
+
+    /** Synced to the open menu: [0]=progress, [1]=maxProgress, [2]=energy, [3]=capacity. */
+    private final ContainerData dataAccess = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> progress;
+                case 1 -> MAX_PROGRESS;
+                case 2 -> energy.getAmountAsInt();
+                case 3 -> energy.getCapacityAsInt();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index == 0) {
+                progress = value;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
+    };
+
+    public NerosiumGrinderBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.NEROSIUM_GRINDER.get(), pos, state);
+    }
+
+    /** Exposed to {@code RegisterCapabilitiesEvent} for {@code Capabilities.Energy.BLOCK}. */
+    public EnergyHandler getEnergyHandler() {
+        return this.energy;
+    }
+
+    // --- Ticking ------------------------------------------------------------
+
+    public void tick(Level level, BlockPos pos, BlockState state) {
+        if (level.isClientSide()) {
+            return;
+        }
+
+        boolean changed = false;
+
+        // Internal "RTG" charge (placeholder power source until a real generator exists).
+        this.energy.generate(GENERATE_PER_TICK);
+
+        ItemStack input = this.items.get(INPUT_SLOT);
+        ItemStack result = GrinderRecipes.getResult(input);
+        boolean canWork = !result.isEmpty()
+                && canInsertOutput(result)
+                && this.energy.getAmountAsInt() >= ENERGY_PER_TICK;
+
+        if (canWork) {
+            this.progress++;
+            this.energy.consume(ENERGY_PER_TICK);
+            if (this.progress >= MAX_PROGRESS) {
+                craft(result);
+                this.progress = 0;
+            }
+            changed = true;
+        } else if (this.progress != 0) {
+            this.progress = 0;
+            changed = true;
+        }
+
+        if (changed) {
+            setChanged();
+        }
+    }
+
+    private void craft(ItemStack result) {
+        this.items.get(INPUT_SLOT).shrink(1);
+        ItemStack output = this.items.get(OUTPUT_SLOT);
+        if (output.isEmpty()) {
+            this.items.set(OUTPUT_SLOT, result.copy());
+        } else {
+            output.grow(result.getCount());
+        }
+    }
+
+    private boolean canInsertOutput(ItemStack result) {
+        ItemStack output = this.items.get(OUTPUT_SLOT);
+        if (output.isEmpty()) {
+            return true;
+        }
+        return ItemStack.isSameItemSameComponents(output, result)
+                && output.getCount() + result.getCount() <= output.getMaxStackSize();
+    }
+
+    // --- Persistence (Value I/O) -------------------------------------------
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.store("Input", ItemStack.OPTIONAL_CODEC, this.items.get(INPUT_SLOT));
+        output.store("Output", ItemStack.OPTIONAL_CODEC, this.items.get(OUTPUT_SLOT));
+        output.putInt("Progress", this.progress);
+        this.energy.serialize(output.child("Energy"));
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.items.set(INPUT_SLOT, input.read("Input", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(OUTPUT_SLOT, input.read("Output", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.progress = input.getIntOr("Progress", 0);
+        this.energy.deserialize(input.childOrEmpty("Energy"));
+    }
+
+    // --- MenuProvider -------------------------------------------------------
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("container.nerospace.nerosium_grinder");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new NerosiumGrinderMenu(containerId, playerInventory, this, this.dataAccess);
+    }
+
+    // --- Container ----------------------------------------------------------
+
+    @Override
+    public int getContainerSize() {
+        return SIZE;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.items.stream().allMatch(ItemStack::isEmpty);
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return this.items.get(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        ItemStack stack = ContainerHelper.removeItem(this.items, slot, amount);
+        if (!stack.isEmpty()) {
+            setChanged();
+        }
+        return stack;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        ItemStack stack = ContainerHelper.takeItem(this.items, slot);
+        setChanged();
+        return stack;
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        stack.limitSize(Math.min(this.getMaxStackSize(), stack.getMaxStackSize()));
+        this.items.set(slot, stack);
+        setChanged();
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        if (this.level == null || this.level.getBlockEntity(this.worldPosition) != this) {
+            return false;
+        }
+        return player.distanceToSqr(
+                this.worldPosition.getX() + 0.5,
+                this.worldPosition.getY() + 0.5,
+                this.worldPosition.getZ() + 0.5) <= 64.0;
+    }
+
+    @Override
+    public void clearContent() {
+        this.items.clear();
+        setChanged();
+    }
+
+    /**
+     * Internal energy buffer. Receives power (so external mods can push energy in once they port to
+     * 26.1) but does not allow extraction. {@link #generate}/{@link #consume} are transaction-free
+     * helpers for the machine's own logic; {@code onEnergyChanged} keeps the chunk saved.
+     */
+    private final class GrinderEnergy extends SimpleEnergyHandler {
+        private GrinderEnergy() {
+            super(ENERGY_CAPACITY, ENERGY_MAX_INSERT, 0);
+        }
+
+        @Override
+        protected void onEnergyChanged(int previousAmount) {
+            NerosiumGrinderBlockEntity.this.setChanged();
+        }
+
+        void generate(int amount) {
+            int current = getAmountAsInt();
+            int next = Math.min(getCapacityAsInt(), current + amount);
+            if (next != current) {
+                set(next);
+            }
+        }
+
+        void consume(int amount) {
+            set(Math.max(0, getAmountAsInt() - amount));
+        }
+    }
+}

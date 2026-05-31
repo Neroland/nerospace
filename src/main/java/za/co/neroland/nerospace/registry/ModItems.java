@@ -38,6 +38,8 @@ public final class ModItems {
 
     public static final DeferredItem<Item> RAW_NEROSIUM = ITEMS.registerSimpleItem("raw_nerosium");
     public static final DeferredItem<Item> NEROSIUM_INGOT = ITEMS.registerSimpleItem("nerosium_ingot");
+    // Phase 2: grinder output.
+    public static final DeferredItem<Item> NEROSIUM_DUST = ITEMS.registerSimpleItem("nerosium_dust");
 
     // --- Tools --------------------------------------------------------------
 
@@ -55,6 +57,8 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.NEROSIUM_BLOCK);
     public static final DeferredItem<BlockItem> RAW_NEROSIUM_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.RAW_NEROSIUM_BLOCK);
+    public static final DeferredItem<BlockItem> NEROSIUM_GRINDER_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.NEROSIUM_GRINDER);
 
     private ModItems() {
     }

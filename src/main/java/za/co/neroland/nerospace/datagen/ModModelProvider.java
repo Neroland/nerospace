@@ -31,10 +31,14 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get());
         blockModels.createTrivialCube(ModBlocks.NEROSIUM_BLOCK.get());
         blockModels.createTrivialCube(ModBlocks.RAW_NEROSIUM_BLOCK.get());
+        // Grinder uses a trivial cube for now (single variant applies to all facings); a directional
+        // oriented model can be layered on later without changing the block.
+        blockModels.createTrivialCube(ModBlocks.NEROSIUM_GRINDER.get());
 
         // Flat (item/generated) item models.
         itemModels.generateFlatItem(ModItems.RAW_NEROSIUM.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.NEROSIUM_INGOT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.NEROSIUM_DUST.get(), ModelTemplates.FLAT_ITEM);
 
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);

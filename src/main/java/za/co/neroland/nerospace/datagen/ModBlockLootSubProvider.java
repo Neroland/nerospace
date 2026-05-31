@@ -24,6 +24,7 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
     protected void generate() {
         dropSelf(ModBlocks.NEROSIUM_BLOCK.get());
         dropSelf(ModBlocks.RAW_NEROSIUM_BLOCK.get());
+        dropSelf(ModBlocks.NEROSIUM_GRINDER.get());
 
         add(ModBlocks.NEROSIUM_ORE.get(),
                 block -> createOreDrop(block, ModItems.RAW_NEROSIUM.get()));
