@@ -105,11 +105,11 @@
         }
       },
       "type": "cube",
-      "uuid": "318e3470-61dc-403a-b2bd-7b8a551d4a27"
+      "uuid": "df7405f3-7b31-4e97-8e40-af2e9ec1d0c1"
     }
   ],
   "outliner": [
-    "318e3470-61dc-403a-b2bd-7b8a551d4a27"
+    "df7405f3-7b31-4e97-8e40-af2e9ec1d0c1"
   ],
   "textures": [
     {
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "05d92011-b5d2-4d2b-8ed1-d307e76c8d74",
+      "uuid": "0d21da31-0ecb-445d-b23a-c8b5a3dc01df",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/deepslate_nerosium_ore.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB00lEQVR4nF2SMWsUQRTHf1kivFnSzFbONl6jKGliqU3kLA5WKzuJYJEPYGPhB7C4UiHYpbYzlREsJF2szIGIIHicKXZDip1udwrxLI733HNgYN/sm3n//++9jcmkWnpfkFKi7zu8LwAsTinhfYGI0DQ1wFqcpZQs2bmcpqmJsQXAuRyAvu9omhoRAbD/IkKmr6WUiLG1bxGxWHP0EmBqMn0thJLtRWWSNcG53M6GO4SSlBIZg1Xf/szJ63eICNuLylSohaap+fp+vmYjU2B7Z2OO8i34eAHAt9GxAVMFIZRcv18SY2uwMxFBRPiQWn4tfsBsapbUu/cFry7rNU4KdWMyqZbqVSUP6Wv1GFtCKA2gwswUSt93/L+0G7qL0x27nFLCuXw1B+q1aWqcyw3csL3eF7R3ZlY5hHJlYXd3vBQRnMtNhdpRBcPJ1AI2SCo3xhZV0/cd0/P52tmQ/POLJzYzmfcFzuUmSQFeG93g5MEbjvIt9s7GhFDy9sUB+98rHu7f5efNT4RQsqlStZLKffznN3x5yfR8zsHoEiLce/YIGQkcQrq6ys+UqrZPORSnO6SUeHrlHwMd38Nbx8Zoc9iuYa/bMKOPncXKIYTSWtn3HX8BR58up5VZPNwAAAAASUVORK5CYII="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB2klEQVR4nG2Tv2sUQRTHP7ds4O1hMxsJ7gpRrGyEYKU2AZsQsZBgEeEgpY2FRYr7A1IEsbCwCYggCMEqnYiFWJlObWxShEvQ28Ni5yCw88DiLI437MINDLOzM/O+8/0xvfX1+zMAEUFVsW/ncryvsWZrRVF2/iXO5YgIWdZnUVNVsqyPczlFUeJ9HYsBpCE0AHhfR1Qb7aAdUFWcywGoqjHA/AbWva/ZnQzIj9f4/W1KCE2Hloh0aDmXk9ik/HGHoih5+GGLX9c/cvm2xI3e17HbDWxMVBVVZVNyDpMUPk/4enU1iup9TVGUPBs95uBiGouKzAES72tCaHh55T1noxOefN/jbHRClvURkaj6reU3XHv0lv3z08hfROhtbw9mVTXGuRwT1A6rKiKCrb/6O2a4eiNSUVVSVY0oJlIITSxmfEWE5ysloWVjCM2cgnWzyjaYULZmvC0PAGlRlKhqxzJDtCy07bPAGYWkqsaxcht1//yUT8srnc2WFXMHIGnH07iH0LCzJLA25Kh/Kap+OHzN7mTA0b09sqyP9zW9jY0HM5sYeggNBxdTdpaEd/90Lt4ChwDSRTEVEV782UJufuGpCFmLRghNJ86JKW+VjXN992fnhbZdMkCA/+DeIyO6eEoTAAAAAElFTkSuQmCC"
     }
   ]
 }

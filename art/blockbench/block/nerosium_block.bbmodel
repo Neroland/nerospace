@@ -105,11 +105,11 @@
         }
       },
       "type": "cube",
-      "uuid": "900f2fd5-4e49-4338-9829-e2cf46109ea1"
+      "uuid": "8867421a-c215-4037-aeb5-6477a7fe05e3"
     }
   ],
   "outliner": [
-    "900f2fd5-4e49-4338-9829-e2cf46109ea1"
+    "8867421a-c215-4037-aeb5-6477a7fe05e3"
   ],
   "textures": [
     {
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "e4d56500-9915-42aa-8a3a-997f56927682",
+      "uuid": "4f5da4e7-f828-496c-baaa-f4e9378648b1",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/nerosium_block.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACMElEQVR4nKWSMWzaUBCGv0SNxGIpMhmqLMkUhthKZw/QlcZdvCUsiDDFCyOqxIQURVYGFm/YYkHZWDBFytRQxXMjPCAmOiTKABYSCxLD6wB+STq2t9x79+7e3X//vyWckeA/7ENyCLwQPd3kdAjX+2VuF2PalSKBF2JeGBQaLa4OB/K9v4y5jztsAxQaLcwLg+GszImSpb+MaVeKFBot+suYQqNFu1LEebIA6C9jXNtcdxbOSEwMQ3QzvhDOSJzvV4VwRuJYMcTlwY3oZnwxMQxxrBhCOCOZd6ysY1vCGQnbDSQm1zYpNFrs7uwxX025OhwwnJUBJCzbDcinVKrPzTWE+Woqi7V6iXalCCAxV5+bElbghbi2ye1i/LrE3Z09XNsk8EJyqoVWL9HTwXmyiL5GAPyedLBduI874EG7UkSrD9YTJJ37y5h8SqWnw+lwA+fHR/hUxXmyyKdUcqqFnm4SeCEAW8IZCa1eIqda3Mcdejp8m2Rpf35B646Jfn6Huxf4dY3WHcvPE9sGiGo+89VUjn2mHGE/aEQ1n8KXawDsB42eDsNZmZxqcaJkX2l8S10348v75cGNEOfFtd/kJfQm+VIHf/PczfjvdPA2nnipg8AL6S9jSWXghdwuxpwpR+jpplTgfDXdbL/EiZLlcbFhIdG1a5vYboB5YfC4GKCnmwxnZear6bviqOZzphy9LjGfUolqPoEXkk+pFBotoprPcFaWgklEBMgm72j8V/sDiPRnKTEvP6oAAAAASUVORK5CYII="
     }

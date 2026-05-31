@@ -4,7 +4,7 @@
     "model_format": "java_block",
     "box_uv": false
   },
-  "name": "nerosium_pickaxe",
+  "name": "nerosteel_ore",
   "model_identifier": "",
   "visible_box": [
     1,
@@ -21,7 +21,7 @@
   },
   "elements": [
     {
-      "name": "nerosium_pickaxe",
+      "name": "nerosteel_ore",
       "box_uv": false,
       "rescale": false,
       "locked": false,
@@ -30,12 +30,12 @@
       "from": [
         0,
         0,
-        7.5
+        0
       ],
       "to": [
         16,
         16,
-        8.5
+        16
       ],
       "autouv": 0,
       "color": 0,
@@ -58,64 +58,64 @@
           ],
           "texture": 0
         },
-        "south": {
-          "uv": [
-            16,
-            0,
-            0,
-            16
-          ],
-          "texture": 0
-        },
         "east": {
           "uv": [
             0,
             0,
-            0,
+            16,
             16
           ],
-          "texture": null
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
         },
         "west": {
           "uv": [
             0,
             0,
-            0,
+            16,
             16
           ],
-          "texture": null
+          "texture": 0
         },
         "up": {
           "uv": [
             0,
             0,
             16,
-            0
+            16
           ],
-          "texture": null
+          "texture": 0
         },
         "down": {
           "uv": [
             0,
             0,
             16,
-            0
+            16
           ],
-          "texture": null
+          "texture": 0
         }
       },
       "type": "cube",
-      "uuid": "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+      "uuid": "253a7358-c351-4dea-a9e6-c52f841ea952"
     }
   ],
   "outliner": [
-    "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+    "253a7358-c351-4dea-a9e6-c52f841ea952"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "name": "nerosium_pickaxe.png",
-      "folder": "item",
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/nerosteel_ore.png",
+      "name": "nerosteel_ore.png",
+      "folder": "block",
       "namespace": "nerospace",
       "id": "0",
       "particle": true,
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "672ad055-5ecc-4b53-89e0-b0fb0944bed2",
-      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAj0lEQVR4nGNgGHTgf9eN//+7bvwnVpwRmaPNa/V/qy6Cr3DsGCMDAwPDAysruEbvywwMVz8fY8RqALJBHVIpKGIVz+agaCQKZMn3/M+S78FwNkkgxk7tv5+JAk5DmAgZcOvZBwY+LjYGXIYQNODUnVeM+AwhaAAhQ4gyAJ8hRBsAM4QU9ViBmYoYZdE6+AAAs/9DhB05fkMAAAAASUVORK5CYII="
+      "uuid": "b294568d-a5a9-468c-8812-a536677f37a8",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/nerosteel_ore.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABt0lEQVR4nGWTMYsUQRCFP4cJimYDGQq5gw4MDDYwEDFaNjQSMTDwB+yPuOTSTf0LFxoYGIgYGS5GspHBIhfI0igcTXPBUnSmwVjtjFYydE+/qvdev76z3W5/mRkAwzDgVUoBwMyIMZJSQlUBEBFSSgB0IkIIgRDCDOjrEAKlFGKM5JwBSCkRYySEQDedlFLC2UzLzKi1zhg5rneAmRFC4IfdcJsO3GXRGqhqm+4y/ds7faf8INzn0eWKw+t9mzJtVGvFzNrAzhdep400L6b/VJXr/J33nz62YQC9GyUilFJYXMFus2fxh5WItMNnF0uudwbfRoyZ0ccYqbXOrmlxVWfTbzlxdrFkff4Y1iBHyDmjqvROFf5uOivXicFut0ePoMDbD+948fQZZkY3DY+HxGlPmzz5fI+v6QDAq+cvMTOGYRgZxBibce68Nw4htCt8GJezEJVS6IDmgQOGYaCUgohw2ghfVje4V34+5zwymN6pB8ol1FpZn6/QI/955JnoVBVVnYXJGwHsfu7bnksVEXLOiMgYJDfOH5bLERH0zfh4nP6/1TtVd1VEml4HqWrLhctVVUop/AYltRPrwVNpTAAAAABJRU5ErkJggg=="
     }
   ]
 }

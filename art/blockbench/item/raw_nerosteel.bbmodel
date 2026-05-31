@@ -4,7 +4,7 @@
     "model_format": "java_block",
     "box_uv": false
   },
-  "name": "nerosium_pickaxe",
+  "name": "raw_nerosteel",
   "model_identifier": "",
   "visible_box": [
     1,
@@ -21,7 +21,7 @@
   },
   "elements": [
     {
-      "name": "nerosium_pickaxe",
+      "name": "raw_nerosteel",
       "box_uv": false,
       "rescale": false,
       "locked": false,
@@ -105,16 +105,16 @@
         }
       },
       "type": "cube",
-      "uuid": "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+      "uuid": "0308796a-f833-41f8-9f7f-0500b4f89fae"
     }
   ],
   "outliner": [
-    "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+    "0308796a-f833-41f8-9f7f-0500b4f89fae"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "name": "nerosium_pickaxe.png",
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/raw_nerosteel.png",
+      "name": "raw_nerosteel.png",
       "folder": "item",
       "namespace": "nerospace",
       "id": "0",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "672ad055-5ecc-4b53-89e0-b0fb0944bed2",
-      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAj0lEQVR4nGNgGHTgf9eN//+7bvwnVpwRmaPNa/V/qy6Cr3DsGCMDAwPDAysruEbvywwMVz8fY8RqALJBHVIpKGIVz+agaCQKZMn3/M+S78FwNkkgxk7tv5+JAk5DmAgZcOvZBwY+LjYGXIYQNODUnVeM+AwhaAAhQ4gyAJ8hRBsAM4QU9ViBmYoYZdE6+AAAs/9DhB05fkMAAAAASUVORK5CYII="
+      "uuid": "9b37be8c-5d98-44de-8f62-dfdd1d919692",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/raw_nerosteel.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsklEQVR4nGNgGAU4QUJByv8t//f9F9CQ+Y9PHRM2QZtVUf/vWH1D4RMyCA6mrZoGt9lmVRQcC2jI/E8oSMEwhAVd4NSxcwwMDAwMahJyDFfqDhG0kBFdQEBD5n+AhwfDHatvDCrHuBiuXbjGoGWgxbBhxw4GBgYGhg83nmDoweoNAQ0ZuLMFNGT+mzlYER8OMM0wv8PY2NRijQWYM1WOcTHoNNkxMDAwMBwJW0bY6SMUAABr1k6hsg8f0gAAAABJRU5ErkJggg=="
     }
   ]
 }

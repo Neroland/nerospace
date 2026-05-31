@@ -4,7 +4,7 @@
     "model_format": "java_block",
     "box_uv": false
   },
-  "name": "nerosium_pickaxe",
+  "name": "xertz_quartz_ore",
   "model_identifier": "",
   "visible_box": [
     1,
@@ -21,7 +21,7 @@
   },
   "elements": [
     {
-      "name": "nerosium_pickaxe",
+      "name": "xertz_quartz_ore",
       "box_uv": false,
       "rescale": false,
       "locked": false,
@@ -30,12 +30,12 @@
       "from": [
         0,
         0,
-        7.5
+        0
       ],
       "to": [
         16,
         16,
-        8.5
+        16
       ],
       "autouv": 0,
       "color": 0,
@@ -58,64 +58,64 @@
           ],
           "texture": 0
         },
-        "south": {
-          "uv": [
-            16,
-            0,
-            0,
-            16
-          ],
-          "texture": 0
-        },
         "east": {
           "uv": [
             0,
             0,
-            0,
+            16,
             16
           ],
-          "texture": null
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
         },
         "west": {
           "uv": [
             0,
             0,
-            0,
+            16,
             16
           ],
-          "texture": null
+          "texture": 0
         },
         "up": {
           "uv": [
             0,
             0,
             16,
-            0
+            16
           ],
-          "texture": null
+          "texture": 0
         },
         "down": {
           "uv": [
             0,
             0,
             16,
-            0
+            16
           ],
-          "texture": null
+          "texture": 0
         }
       },
       "type": "cube",
-      "uuid": "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+      "uuid": "7405e4ca-5dee-4fda-a670-17d7129898c5"
     }
   ],
   "outliner": [
-    "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+    "7405e4ca-5dee-4fda-a670-17d7129898c5"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "name": "nerosium_pickaxe.png",
-      "folder": "item",
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/xertz_quartz_ore.png",
+      "name": "xertz_quartz_ore.png",
+      "folder": "block",
       "namespace": "nerospace",
       "id": "0",
       "particle": true,
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "672ad055-5ecc-4b53-89e0-b0fb0944bed2",
-      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAj0lEQVR4nGNgGHTgf9eN//+7bvwnVpwRmaPNa/V/qy6Cr3DsGCMDAwPDAysruEbvywwMVz8fY8RqALJBHVIpKGIVz+agaCQKZMn3/M+S78FwNkkgxk7tv5+JAk5DmAgZcOvZBwY+LjYGXIYQNODUnVeM+AwhaAAhQ4gyAJ8hRBsAM4QU9ViBmYoYZdE6+AAAs/9DhB05fkMAAAAASUVORK5CYII="
+      "uuid": "40746378-efca-47a5-b953-e2d8adc92e26",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/xertz_quartz_ore.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsUlEQVR4nFWTrW5cQQyFv1ytopFRZA2qBgf0GfIEBVFhVfUJAqqCgIKiauE+QRUcBVYLCqp9joIqcEDBaFRkWasqKdjY2ZjMvZ45/jk+PtlsNo/uzhgDgNYaYXNOAMws/fG21grA4u4AiAitNdyd8IXVWnF3eu+UUhCRDLyYWTrnnJRSGGPg7pgZqkopJZP03hGRvFsCOMZAVbmXPwCUUmitMefMzFFNJOy9s5RSMDMAHi6ELx8+ZYmRTUR4uBCuPl9RSsmEAMuck1orIsJ+90yau1NrxcwQEf5uexI72z4xSwBUFYC7b3dJXlQW9mvcIyJoP837k/V6/RgPZ9sf+v/9L0GttWwlQPEtIgcO4kf7KW2evQC7e7IeieIcY7CKmccDVU2me+8ZKFrsved0gIMOgumwAF9/vebVu/MMNOdMvajqoQURyZFEEHfnzce3AOx3MzOqKmeXLbkyM1ZRwRgjxeHnK+zmJz/se+5AaOH960tu2eJPI1+pKsc81FphQtGCqr6cwNa4ZZt6AQ46GGPkxkU70UprLQOoKvvd877A0zbWWnPjjmUcZ7QZEj7e1v8l2yac8ECxVwAAAABJRU5ErkJggg=="
     }
   ]
 }

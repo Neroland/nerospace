@@ -105,11 +105,11 @@
         }
       },
       "type": "cube",
-      "uuid": "61aa4ae2-0173-44f3-a779-44b9bbf25494"
+      "uuid": "6e00ec3f-6e28-4582-a732-974fa2ecae8f"
     }
   ],
   "outliner": [
-    "61aa4ae2-0173-44f3-a779-44b9bbf25494"
+    "6e00ec3f-6e28-4582-a732-974fa2ecae8f"
   ],
   "textures": [
     {
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "f8a95133-e882-4c9f-999c-63e6ed2c0647",
+      "uuid": "0b2b57cc-b10f-4d20-ae51-14ee88cc6691",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_ingot.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAaklEQVR4nGNgGAUUA0Z0gf8XPvzHq8FAAEUPC4rmrhv/t4SvY2BgYGDQFZ7DcPltCgZbm9fq/9XPx+CGMGGzBZdmXeE5GGoxDMCnGcbGawApmhkYsAVi143/Os1JWBUzMDAwIPt/FFAJAACfEjImVdCm4wAAAABJRU5ErkJggg=="
     }

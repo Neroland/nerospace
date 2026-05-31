@@ -1,1 +1,136 @@
-{"meta":{"format_version":"5.0","model_format":"java_block","box_uv":false},"name":"nerosium_ore","parent":"","java_block_version":"1.21.11","ambientocclusion":true,"front_gui_light":false,"visible_box":[1,1,0],"variable_placeholders":"","multi_file_ruleset":"","variable_placeholder_buttons":[],"unhandled_root_fields":{},"resolution":{"width":16,"height":16},"elements":[{"name":"nerosium_ore","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[0,0,0],"to":[16,16,16],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,0,16,16],"texture":0},"east":{"uv":[0,0,16,16],"texture":0},"south":{"uv":[0,0,16,16],"texture":0},"west":{"uv":[0,0,16,16],"texture":0},"up":{"uv":[0,0,16,16],"texture":0},"down":{"uv":[0,0,16,16],"texture":0}},"type":"cube","uuid":"73cce7d1-dc8a-4058-9c92-ba55b1aa216e"}],"groups":[],"outliner":["73cce7d1-dc8a-4058-9c92-ba55b1aa216e"],"textures":[{"name":"nerosium_ore.png","relative_path":"../../../src/main/resources/assets/nerospace/textures/block/nerosium_ore.png","folder":"block","namespace":"nerospace","id":"0","group":"","scope":0,"width":16,"height":16,"uv_width":16,"uv_height":16,"particle":true,"use_as_default":false,"layers_enabled":false,"sync_to_project":"","file_format":"png","render_mode":"default","render_sides":"auto","wrap_mode":"limited","pbr_channel":"color","fps":7,"frame_time":1,"frame_order_type":"loop","frame_order":"","frame_interpolate":false,"visible":true,"internal":true,"saved":true,"uuid":"3890ec7a-a9b7-45f8-8f6f-bdc05f576ce4","source":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACCklEQVR4AUyTPUhbYRSGX76hXDJeMtmAUkq7lU6Bdi0dGjK0VgRBF8VJhYAQJVkjOEQU1MmfSTeNCkFBHJwUHERBBEVEIQSRcHEKFwc1z4EvKB7O33ve8/PduFwu91oqlUzK5bJpYoVCwWxiXnwcH5s6l0qlxF8QBKrVamo0GiL2Y/Ozipc3Gn/JklYURUomk20bTLPZlIvjWL44kUgIIXY+UJfycxpZrAo/DEMrpggMhNiOjmQIeoEQmTlY1qcxWQMwFKARbCZyOLDRAbJidlQ9lYqtQ2fyaNZ7Wg/ba7RXAAAbIBi1/6C1TIaw3QNyiH/tfVP+Y8WmYToANHVW1PLqS4H6d3c146qmWYcugJ63Ujr+f6POv6s23e18q6D1T1MHGyQdw7E2urv1dSnUXDqtnflDuzwg7sCr3G8PGubDv1qrXDah3YARISJ6NRzZnr+H0qI767H/ZH3ZVsMGh2ZCI8Ag4BMQMhU+gt03kbH9WQ2fODX2HXAoSLx+D2ACpkOzDgQ0AI84EgQpZmRAHJSi2ccn5U5O5I8GlmJeBBxiKzAOwkjoP0Go8dML6fukOru+CJ8mU715u0926KcgA+tIwEqA0bE55P3dtXQ2LfReHIHVVHXBCqsrR/bJg7VPmUIQjM1e2DxpsavDno1nJEcTcvxOKMZuf0gUsgJ7eQ0An/sg3MhPDB55AwAA//9KoU+1AAAABklEQVQDAMbrXjKsHMSvAAAAAElFTkSuQmCC"}]}
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "nerosium_ore",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "nerosium_ore",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "e4f05f86-192d-4a92-80db-0acc7dcf2d58"
+    }
+  ],
+  "outliner": [
+    "e4f05f86-192d-4a92-80db-0acc7dcf2d58"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/nerosium_ore.png",
+      "name": "nerosium_ore.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "fc5ddc57-a17c-4e41-a97d-546499946daf",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/nerosium_ore.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB8ElEQVR4nH2TMWjUMRTGfz0OeWQMmUrgDikniDi43ezk4SD1xhZErIOT4ODg4vB3cBAXcREdRHDpHQ7lCk7dhG7iVHGw8BCHGJzCw8E6HElPBAOBf/J/+d73ffmy1nXdSUqJEAKlFACcc6SUiDGSc6aUgnMO59xfNSJCHyCEANAKRYQQAqpK/S8irabOEAL9ilhRAXLOrWPtmlJqa+89OWdEhB6A955SCt77VvT28aIdrt3qWlUppZBzXkrIORNjZDqfM3i+4PjOBO5Pmg/e+yanjhgjwJIBgJkxGI7g/Xd2NzcREZxzmFnz4e7hIc45YoyoKqpKv5oG8OTSBWCvdVnVurVYMLj2Cn6+boClFHoigqpiZqgq5174hl5pmxmfftzi+N3NZrKI4L1nreu6k9WbWP2uOlW1dawZqWb3q/tmRimlhafurdKts8pT1dMceO8bXeccOWfGsw2OdvI/gTIzzIwQwvIWnHOoajNTRLh9cMDRTmY6nzfnU0oNrIarF2Ns2syMaupgOOLe76sMhqPG7umNh1zev8iDM1PGsw2AZZBWH1A159H5AL922fr6mTxcX+7tPSNdSfAS9i1zNkb61TzvPSGEBlJKYTzb4M32hJJSMy/GyIfrX1h3DtV0yqDSr4/FzPi4/Y2UEv8bfwD1nS0O+KGtkQAAAABJRU5ErkJggg=="
+    }
+  ]
+}

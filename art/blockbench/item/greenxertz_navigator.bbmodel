@@ -4,7 +4,7 @@
     "model_format": "java_block",
     "box_uv": false
   },
-  "name": "nerosium_pickaxe",
+  "name": "greenxertz_navigator",
   "model_identifier": "",
   "visible_box": [
     1,
@@ -21,7 +21,7 @@
   },
   "elements": [
     {
-      "name": "nerosium_pickaxe",
+      "name": "greenxertz_navigator",
       "box_uv": false,
       "rescale": false,
       "locked": false,
@@ -105,16 +105,16 @@
         }
       },
       "type": "cube",
-      "uuid": "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+      "uuid": "c5498096-36cd-44e8-8ab1-2bd3b148e251"
     }
   ],
   "outliner": [
-    "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+    "c5498096-36cd-44e8-8ab1-2bd3b148e251"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "name": "nerosium_pickaxe.png",
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/greenxertz_navigator.png",
+      "name": "greenxertz_navigator.png",
       "folder": "item",
       "namespace": "nerospace",
       "id": "0",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "672ad055-5ecc-4b53-89e0-b0fb0944bed2",
-      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAj0lEQVR4nGNgGHTgf9eN//+7bvwnVpwRmaPNa/V/qy6Cr3DsGCMDAwPDAysruEbvywwMVz8fY8RqALJBHVIpKGIVz+agaCQKZMn3/M+S78FwNkkgxk7tv5+JAk5DmAgZcOvZBwY+LjYGXIYQNODUnVeM+AwhaAAhQ4gyAJ8hRBsAM4QU9ViBmYoYZdE6+AAAs/9DhB05fkMAAAAASUVORK5CYII="
+      "uuid": "c5b36f8d-1c27-4f66-a296-702b7ea1fe93",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/greenxertz_navigator.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA0klEQVR4nGNgGGjAiE1QSU7rPzbxe4+uYahHEYBpDAuIYWBgYGBYsG0Gg0qbDYPNER0GBgYGhlUblmAYhGFAWEAMw4JtMzBsTziUx8DQ8Yth1YYlKAYwEaN5zu0FDDaSRgwLts1gCAuIQfEiE4ZqHCBFNQGrONwpSnJa/7+xfcFqO7pmrl88cG+guEClzQbDAIPPagz41KAYAAttZPDHI4wBnxq8YXBCTIbB4tUTfEoQBtx7dI1x1YYlDAleGTgVJ3hlYEQjdRMSukHoAFtSHngAAI//VaH3ru00AAAAAElFTkSuQmCC"
     }
   ]
 }

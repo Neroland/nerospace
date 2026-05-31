@@ -4,7 +4,7 @@
     "model_format": "java_block",
     "box_uv": false
   },
-  "name": "nerosium_pickaxe",
+  "name": "xertz_quartz",
   "model_identifier": "",
   "visible_box": [
     1,
@@ -21,7 +21,7 @@
   },
   "elements": [
     {
-      "name": "nerosium_pickaxe",
+      "name": "xertz_quartz",
       "box_uv": false,
       "rescale": false,
       "locked": false,
@@ -105,16 +105,16 @@
         }
       },
       "type": "cube",
-      "uuid": "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+      "uuid": "ff94605a-c2f1-4fa9-8539-88dcc20027bf"
     }
   ],
   "outliner": [
-    "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+    "ff94605a-c2f1-4fa9-8539-88dcc20027bf"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "name": "nerosium_pickaxe.png",
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/xertz_quartz.png",
+      "name": "xertz_quartz.png",
       "folder": "item",
       "namespace": "nerospace",
       "id": "0",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "672ad055-5ecc-4b53-89e0-b0fb0944bed2",
-      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAj0lEQVR4nGNgGHTgf9eN//+7bvwnVpwRmaPNa/V/qy6Cr3DsGCMDAwPDAysruEbvywwMVz8fY8RqALJBHVIpKGIVz+agaCQKZMn3/M+S78FwNkkgxk7tv5+JAk5DmAgZcOvZBwY+LjYGXIYQNODUnVeM+AwhaAAhQ4gyAJ8hRBsAM4QU9ViBmYoYZdE6+AAAs/9DhB05fkMAAAAASUVORK5CYII="
+      "uuid": "15b82f70-22fe-45f6-ab4c-a12332477b3f",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/xertz_quartz.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAbUlEQVR4nGNgGN7gyacn/598evIfnxomXBK77h34f+3NHQYGBgaGrhPTcBqC1YBd9w5gaMBlCIYB2DTjMwSnF4gF1DfATcmBEZfiMossDDmsLkA35N65e1g1EwS77h34nzGtBG86wAso0jx0AAAIUysgslgJYAAAAABJRU5ErkJggg=="
     }
   ]
 }

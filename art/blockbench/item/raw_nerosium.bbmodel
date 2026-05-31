@@ -105,11 +105,11 @@
         }
       },
       "type": "cube",
-      "uuid": "f3119dbe-2fb2-43be-9c67-0887b29dcb81"
+      "uuid": "04452011-5952-4ba8-8a03-78178f3ac555"
     }
   ],
   "outliner": [
-    "f3119dbe-2fb2-43be-9c67-0887b29dcb81"
+    "04452011-5952-4ba8-8a03-78178f3ac555"
   ],
   "textures": [
     {
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "05b84325-a3fe-4629-b82a-5b316f68c3ae",
+      "uuid": "8fee7676-089e-47fd-829c-f98995207d2c",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/raw_nerosium.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxElEQVR4nGNgGAU4wWb1ef8fWFn9f2Bl9R+fOiZsgv+7bvz3SbZi8L4M4T+wsvqfJd+D1SAMA7R5rf4zXOhgyJ66hWGrLgOD92UGhstvUxgOvlvHgM0QFnSBK7XzGBgYGBg8zx5juPw2hcFe6B1DxbM5OL2AYQDDhQ4GBgYGBl3hWxD+2xSGMl2IK7AZxIjNVG1eRMBt1YXQ3pcZGDqkUhh8byah6MFqwGb1ef+x2Xb18zEM9VhjwfdmEqO9UBBBzaMAAgCLUEF1FnXP9gAAAABJRU5ErkJggg=="
     }

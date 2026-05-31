@@ -4,7 +4,7 @@
     "model_format": "java_block",
     "box_uv": false
   },
-  "name": "nerosium_pickaxe",
+  "name": "nerosteel_ingot",
   "model_identifier": "",
   "visible_box": [
     1,
@@ -21,7 +21,7 @@
   },
   "elements": [
     {
-      "name": "nerosium_pickaxe",
+      "name": "nerosteel_ingot",
       "box_uv": false,
       "rescale": false,
       "locked": false,
@@ -105,16 +105,16 @@
         }
       },
       "type": "cube",
-      "uuid": "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+      "uuid": "bce8ebbc-980e-4da5-9e05-b34fe18544cb"
     }
   ],
   "outliner": [
-    "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+    "bce8ebbc-980e-4da5-9e05-b34fe18544cb"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "name": "nerosium_pickaxe.png",
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosteel_ingot.png",
+      "name": "nerosteel_ingot.png",
       "folder": "item",
       "namespace": "nerospace",
       "id": "0",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "672ad055-5ecc-4b53-89e0-b0fb0944bed2",
-      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAj0lEQVR4nGNgGHTgf9eN//+7bvwnVpwRmaPNa/V/qy6Cr3DsGCMDAwPDAysruEbvywwMVz8fY8RqALJBHVIpKGIVz+agaCQKZMn3/M+S78FwNkkgxk7tv5+JAk5DmAgZcOvZBwY+LjYGXIYQNODUnVeM+AwhaAAhQ4gyAJ8hRBsAM4QU9ViBmYoYZdE6+AAAs/9DhB05fkMAAAAASUVORK5CYII="
+      "uuid": "b379be03-5859-405e-a9fe-04ec39635408",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosteel_ingot.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAaUlEQVR4nGNgGAUUA0Z0gS3/9/3Hp8GH0QlFDwsyZ9qqaf/XFC5jYGBgYLhj9Y1B5RgXXA7GF9CQ+f/hxhO4IUzYbMGlGRvAMIAUzVgNwKf5jtU3DAMwAnHaqmn/q+racNqI7P9RQCUAAEJPK6XfnJSiAAAAAElFTkSuQmCC"
     }
   ]
 }
