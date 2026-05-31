@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "nerospace:nerosium_block",
+    "N": "nerospace:nerosteel_ingot"
+  },
+  "pattern": [
+    "NNN",
+    "NBN",
+    "NNN"
+  ],
+  "result": {
+    "id": "nerospace:rocket_launch_pad"
+  }
+}

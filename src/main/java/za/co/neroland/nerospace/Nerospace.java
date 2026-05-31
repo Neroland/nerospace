@@ -13,6 +13,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModCreativeModeTabs;
+import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
@@ -36,6 +37,7 @@ public final class Nerospace {
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlockEntities.register(modEventBus);
+        ModEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
         ModCreativeModeTabs.register(modEventBus);
 

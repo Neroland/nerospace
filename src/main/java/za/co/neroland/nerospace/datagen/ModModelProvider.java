@@ -40,6 +40,9 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.XERTZ_QUARTZ_ORE.get());
         blockModels.createTrivialCube(ModBlocks.NEROSTEEL_BLOCK.get());
 
+        // Phase 4 — launch pad (trivial cube for now; a proper pad model can be layered later).
+        blockModels.createTrivialCube(ModBlocks.ROCKET_LAUNCH_PAD.get());
+
         // Flat (item/generated) item models.
         itemModels.generateFlatItem(ModItems.RAW_NEROSIUM.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.NEROSIUM_INGOT.get(), ModelTemplates.FLAT_ITEM);
@@ -49,6 +52,12 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.NEROSTEEL_INGOT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.XERTZ_QUARTZ.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GREENXERTZ_NAVIGATOR.get(), ModelTemplates.FLAT_ITEM);
+
+        // Phase 4 — rocket items + fuel canister.
+        itemModels.generateFlatItem(ModItems.ROCKET_FUEL_CANISTER.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ROCKET_TIER_1.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ROCKET_TIER_2.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ROCKET_TIER_3.get(), ModelTemplates.FLAT_ITEM);
 
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);

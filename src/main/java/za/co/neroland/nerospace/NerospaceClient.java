@@ -6,11 +6,15 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
+import za.co.neroland.nerospace.client.RocketRenderer;
+import za.co.neroland.nerospace.client.RocketScreen;
+import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
@@ -33,5 +37,11 @@ public class NerospaceClient {
     @SubscribeEvent
     static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
+        event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
+    }
+
+    @SubscribeEvent
+    static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
     }
 }

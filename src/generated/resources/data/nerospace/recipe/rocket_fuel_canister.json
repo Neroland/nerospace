@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:blaze_powder",
+    "minecraft:coal",
+    "nerospace:xertz_quartz",
+    "minecraft:iron_ingot"
+  ],
+  "result": {
+    "count": 2,
+    "id": "nerospace:rocket_fuel_canister"
+  }
+}

@@ -172,15 +172,68 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_xertz_quartz_ore", this.has(ModBlocks.XERTZ_QUARTZ_ORE.get()))
                 .save(this.output, "xertz_quartz_from_smelting_xertz_quartz_ore");
 
-        // Greenxertz Navigator — crafted from overworld materials so it is obtainable pre-flight.
+        // NOTE: the Greenxertz Navigator (Phase 3) is intentionally left WITHOUT a survival recipe in
+        // Phase 4 — it is now a creative-only legacy item, replaced by the rocket flow below.
+
+        // === Phase 4 — Rockets =============================================
+
+        // Launch pad: a nerosteel frame around a nerosium core.
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
-                        RecipeCategory.TOOLS, ModItems.GREENXERTZ_NAVIGATOR)
-                .pattern(" I ")
-                .pattern("IEI")
-                .pattern(" I ")
-                .define('I', ModItems.NEROSIUM_INGOT)
-                .define('E', Items.ENDER_PEARL)
-                .unlockedBy("has_nerosium_ingot", this.has(ModItems.NEROSIUM_INGOT))
+                        RecipeCategory.MISC, ModBlocks.ROCKET_LAUNCH_PAD.get())
+                .pattern("NNN")
+                .pattern("NBN")
+                .pattern("NNN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('B', ModBlocks.NEROSIUM_BLOCK.get())
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Rocket fuel canister: blaze powder + coal + xertz quartz in an iron shell (yields 2).
+        ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModItems.ROCKET_FUEL_CANISTER, 2)
+                .requires(Items.BLAZE_POWDER)
+                .requires(Items.COAL)
+                .requires(ModItems.XERTZ_QUARTZ)
+                .requires(Items.IRON_INGOT)
+                .unlockedBy("has_xertz_quartz", this.has(ModItems.XERTZ_QUARTZ))
+                .save(this.output);
+
+        // Tier 1 rocket: nerosteel hull + nerosium-grade core, a fuel canister, and a nerosteel engine.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.ROCKET_TIER_1)
+                .pattern(" N ")
+                .pattern("NCN")
+                .pattern("NBN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('C', ModItems.ROCKET_FUEL_CANISTER)
+                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Tier 2 rocket: upgrades a Tier 1 with a larger tank + engine.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.ROCKET_TIER_2)
+                .pattern("NTN")
+                .pattern("NCN")
+                .pattern("NBN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('T', ModItems.ROCKET_TIER_1)
+                .define('C', ModItems.ROCKET_FUEL_CANISTER)
+                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .unlockedBy("has_rocket_tier_1", this.has(ModItems.ROCKET_TIER_1))
+                .save(this.output);
+
+        // Tier 3 rocket: upgrades a Tier 2.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.ROCKET_TIER_3)
+                .pattern("NTN")
+                .pattern("NCN")
+                .pattern("NBN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('T', ModItems.ROCKET_TIER_2)
+                .define('C', ModItems.ROCKET_FUEL_CANISTER)
+                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .unlockedBy("has_rocket_tier_2", this.has(ModItems.ROCKET_TIER_2))
                 .save(this.output);
     }
 

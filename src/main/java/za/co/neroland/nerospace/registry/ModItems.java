@@ -10,6 +10,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
+import za.co.neroland.nerospace.rocket.RocketItem;
+import za.co.neroland.nerospace.rocket.RocketTier;
 
 /**
  * Central item registry for Nerospace (Phase 1 — materials slice).
@@ -65,6 +67,25 @@ public final class ModItems {
             "greenxertz_navigator",
             props -> new GreenxertzNavigatorItem(props.stacksTo(1)));
 
+    // --- Rockets (Phase 4) --------------------------------------------------
+
+    /**
+     * Rocket Fuel canister — a craftable, stackable refill worth {@code RocketEntity.CANISTER_MB}
+     * millibuckets. Right-click a deployed rocket with it to top up the tank. (A full NeoForge
+     * liquid-fuel {@code Fluid}/bucket is a deliberate follow-up so it can be validated in-client.)
+     */
+    public static final DeferredItem<Item> ROCKET_FUEL_CANISTER = ITEMS.registerSimpleItem("rocket_fuel_canister");
+
+    public static final DeferredItem<Item> ROCKET_TIER_1 = ITEMS.registerItem(
+            "rocket_tier_1",
+            props -> new RocketItem(props.stacksTo(1), RocketTier.TIER_1));
+    public static final DeferredItem<Item> ROCKET_TIER_2 = ITEMS.registerItem(
+            "rocket_tier_2",
+            props -> new RocketItem(props.stacksTo(1), RocketTier.TIER_2));
+    public static final DeferredItem<Item> ROCKET_TIER_3 = ITEMS.registerItem(
+            "rocket_tier_3",
+            props -> new RocketItem(props.stacksTo(1), RocketTier.TIER_3));
+
     // --- Block items --------------------------------------------------------
 
     public static final DeferredItem<BlockItem> NEROSIUM_ORE_ITEM =
@@ -85,6 +106,10 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.XERTZ_QUARTZ_ORE);
     public static final DeferredItem<BlockItem> NEROSTEEL_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.NEROSTEEL_BLOCK);
+
+    // Phase 4 block item.
+    public static final DeferredItem<BlockItem> ROCKET_LAUNCH_PAD_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.ROCKET_LAUNCH_PAD);
 
     private ModItems() {
     }

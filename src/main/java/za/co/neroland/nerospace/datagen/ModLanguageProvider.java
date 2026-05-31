@@ -35,6 +35,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.XERTZ_QUARTZ_ORE.get(), "Xertz Quartz Ore");
         add(ModBlocks.NEROSTEEL_BLOCK.get(), "Block of Nerosteel");
 
+        // Phase 4 blocks.
+        add(ModBlocks.ROCKET_LAUNCH_PAD.get(), "Rocket Launch Pad");
+
         // Items.
         add(ModItems.RAW_NEROSIUM.get(), "Raw Nerosium");
         add(ModItems.NEROSIUM_INGOT.get(), "Nerosium Ingot");
@@ -47,8 +50,27 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.XERTZ_QUARTZ.get(), "Xertz Quartz");
         add(ModItems.GREENXERTZ_NAVIGATOR.get(), "Greenxertz Navigator");
 
+        // Phase 4 items.
+        add(ModItems.ROCKET_FUEL_CANISTER.get(), "Rocket Fuel Canister");
+        add(ModItems.ROCKET_TIER_1.get(), "Tier 1 Rocket");
+        add(ModItems.ROCKET_TIER_2.get(), "Tier 2 Rocket");
+        add(ModItems.ROCKET_TIER_3.get(), "Tier 3 Rocket");
+
+        // Entities.
+        add("entity.nerospace.rocket", "Rocket");
+
         // Containers / GUI.
         add("container.nerospace.nerosium_grinder", "Nerosium Grinder");
+        add("container.nerospace.rocket", "Rocket");
+        add("gui.nerospace.rocket.launch", "Launch");
+        add("gui.nerospace.rocket.tier", "Tier %s Rocket");
+        add("gui.nerospace.rocket.fuel", "Fuel: %s / %s mB");
+        add("gui.nerospace.rocket.ready", "Ready for launch");
+        add("gui.nerospace.rocket.not_ready", "Not ready: fuel up & board");
+
+        // Rocket action feedback.
+        add("item.nerospace.rocket.deployed", "Rocket deployed on the launch pad");
+        add("entity.nerospace.rocket.arrived", "You have arrived on Greenxertz");
 
         // Greenxertz Navigator action feedback.
         add("item.nerospace.greenxertz_navigator.travel", "Transported to Greenxertz");

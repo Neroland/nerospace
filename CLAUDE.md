@@ -17,4 +17,28 @@
   and confirm BUILD SUCCESSFUL. Never mark a task done on an
   uncompiled change. If the build can't be run in your environment,
   say so explicitly and leave the task open pending verification.
+- BUILDING FROM AN AGENT (Cowork / Claude Code): a local **gradle MCP
+  server** (`tools/gradle-mcp/server.js`, registered as MCP server
+  `gradle`) runs gradlew on the developer's machine with JDK 25, so the full
+  decompile + build complete even when the agent sandbox cannot.
+  Verify with it instead of the sandbox: call `mcp__gradle__gradle_build`
+  (or `mcp__gradle__gradle_run_data`) → it returns a build_id; poll
+  `mcp__gradle__gradle_status` until `outcome` is SUCCESSFUL/FAILED, then
+  read `mcp__gradle__gradle_log` (grep `\.java:[0-9]+: error`) for
+  diagnostics. A compile failure returns in ~1s; a passing full build
+  takes longer.
+- RESOLVING EXACT 26.1 SIGNATURES: when an `@Override` fails with
+  "does not override", don't guess — a temporary `tasks.register` that
+  shells `javap` over `configurations.compileClasspath` and `println`s
+  matching lines is reliable. Run it with
+  `-Dorg.gradle.configuration-cache=false`, capture the classpath into a
+  local at configuration time, and DRAIN the process output (e.g.
+  `consumeProcessOutput`) BEFORE `waitFor` to avoid a pipe deadlock.
+  Remove the task afterward. (Found this way: in 26.1
+  `Entity#interact(Player, InteractionHand, Vec3)` — `interact`/`interactAt`
+  were merged.)
+- DELETING generated files from the agent sandbox: the repo mount blocks
+  `unlink`, so use the Cowork file-delete permission. Datagen does NOT
+  remove stale JSON, so when a provider stops emitting a file, delete the
+  orphan by hand (else e.g. a removed recipe stays active).
 - DO NOT: Commit and Push automatically

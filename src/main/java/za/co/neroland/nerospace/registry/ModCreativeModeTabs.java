@@ -45,6 +45,15 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.NEROSTEEL_ORE.get());
                         output.accept(ModBlocks.XERTZ_QUARTZ_ORE.get());
                         output.accept(ModBlocks.NEROSTEEL_BLOCK.get());
+
+                        // Phase 4 — Rockets.
+                        output.accept(ModBlocks.ROCKET_LAUNCH_PAD.get());
+                        output.accept(ModItems.ROCKET_FUEL_CANISTER.get());
+                        output.accept(ModItems.ROCKET_TIER_1.get());
+                        output.accept(ModItems.ROCKET_TIER_2.get());
+                        output.accept(ModItems.ROCKET_TIER_3.get());
+
+                        // Creative-only legacy travel device (replaced by rockets; no survival recipe).
                         output.accept(ModItems.GREENXERTZ_NAVIGATOR.get());
                     })
                     .build());

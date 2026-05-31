@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
+import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 
 /**
  * Central block registry for Nerospace (Phase 1 — materials slice).
@@ -97,6 +98,18 @@ public final class ModBlocks {
     public static final DeferredBlock<NerosiumGrinderBlock> NEROSIUM_GRINDER = BLOCKS.registerBlock(
             "nerosium_grinder",
             NerosiumGrinderBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    // --- Rockets (Phase 4) --------------------------------------------------
+
+    /** The launch mount: a short metal pad a rocket is deployed onto before launch. */
+    public static final DeferredBlock<RocketLaunchPadBlock> ROCKET_LAUNCH_PAD = BLOCKS.registerBlock(
+            "rocket_launch_pad",
+            RocketLaunchPadBlock::new,
             props -> props
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
