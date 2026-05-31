@@ -41,4 +41,33 @@
   `unlink`, so use the Cowork file-delete permission. Datagen does NOT
   remove stale JSON, so when a provider stops emitting a file, delete the
   orphan by hand (else e.g. a removed recipe stays active).
+- ASSETS (textures + models): every registered block/item needs BOTH
+  (a) a datagen entry in `datagen/ModModelProvider` — blocks via
+  `blockModels.createTrivialCube(...)`, flat items via
+  `itemModels.generateFlatItem(..., ModelTemplates.FLAT_ITEM)` (tools use
+  `FLAT_HANDHELD_ITEM`) — and (b) a 16x16 PNG at
+  `src/main/resources/assets/nerospace/textures/{block,item}/<id>.png`.
+  Do NOT hand-author model/blockstate JSON (datagen owns it) and do NOT
+  hand-paint textures pixel-by-pixel — generate them with the repo tools.
+  The generators are ADDITIVE-ONLY: they skip any asset that already
+  exists, so reruns only fill gaps and NEVER overwrite committed/edited
+  art (pass `--force` only to deliberately re-render). When you add
+  content:
+    1. add the datagen entry (above);
+    2. in `tools/gen_textures.py` add a `gen_<id>()` that writes the PNG,
+       and call it from `__main__`;
+    3. in `tools/gen_bbmodels.py` append `<id>` to BLOCKS or ITEMS;
+    4. run `python3 tools/gen_textures.py && python3 tools/gen_bbmodels.py`;
+    5. run `./gradlew runData` then `./gradlew build`; confirm every model
+       resolves (no "missing texture" placeholder).
+  Palettes (keep families visually distinct): nerosium = red/purple,
+  Greenxertz (nerosteel / xertz quartz) = green/steel, rockets = steel +
+  per-tier accent (T1 red, T2 nerosium-purple + boosters, T3 gold/green +
+  glow). Editable Blockbench sources live in `art/blockbench/{block,item}/`;
+  each `.bbmodel` embeds the texture and links back to its resource path,
+  so painting there + "Save All Textures" writes into the mod.
+- BRANDING: `tools/gen_logo.py` builds the CurseForge logo
+  (`art/logo/nerospace_logo*.png`). The in-game mods-list icon is
+  `src/main/resources/nerospace_logo.png`, referenced by `logoFile` in
+  `src/main/templates/META-INF/neoforge.mods.toml`.
 - DO NOT: Commit and Push automatically

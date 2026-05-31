@@ -10,6 +10,8 @@ Deterministic (seeded) so re-runs are stable.
 """
 import os
 import random
+import sys
+import hashlib
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -57,6 +59,18 @@ Q_GREEN  = (138, 200, 150, 255)
 Q_SHADOW = (104, 150, 116, 255)
 QUARTZ_RAMP = [Q_SHADOW, Q_GREEN, Q_PALE, Q_WHITE]
 
+# Rocket / Phase 4 palette
+FUEL     = (255, 150, 40, 255)
+FUEL_D   = (200, 92, 20, 255)
+FUEL_HI  = (255, 214, 120, 255)
+R_WHITE  = (232, 232, 244, 255)
+R_GRAY   = (150, 150, 168, 255)
+R_DARK   = (70, 70, 86, 255)
+R_WINDOW = (150, 220, 255, 255)
+GOLD     = (240, 200, 80, 255)
+HAZ_Y    = (250, 200, 50, 255)
+HAZ_K    = (28, 28, 34, 255)
+
 
 def new_img():
     return Image.new("RGBA", (S, S), CLEAR)
@@ -93,6 +107,10 @@ def bevel(img, light, dark):
 
 
 def save(img, path):
+    # ADDITIVE-ONLY: never clobber an existing asset (pass --force to override).
+    if os.path.exists(path) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+        return
     img.save(path)
     print("wrote", os.path.relpath(path, ROOT))
 
@@ -100,7 +118,7 @@ def save(img, path):
 # ---------------- PHASE 1/2: NEROSIUM ----------------
 
 def gen_ore(base_palette, name):
-    rng = random.Random(hash(name) & 0xffffffff)
+    rng = random.Random(int(hashlib.md5(name.encode()).hexdigest(), 16) & 0xffffffff)
     img = new_img()
     noise_fill(img, base_palette, rng)
     for (cx, cy, r) in [(4, 5, 3.2), (11, 6, 2.6), (7, 12, 3.0), (13, 12, 1.8)]:
@@ -387,6 +405,119 @@ def gen_greenxertz_navigator():
     save(img, os.path.join(ITEM_DIR, "greenxertz_navigator.png"))
 
 
+
+# ---------------- PHASE 4: ROCKETS ----------------
+
+def _draw_rocket(px, nose, fin, stripe, boosters=False, glow=None):
+    """Draw a 16x16 vertical rocket sprite onto an already-loaded px buffer."""
+    body_cols = (6, 7, 8, 9)
+    # nose cone
+    px[7, 1] = nose; px[8, 1] = nose
+    px[7, 2] = nose; px[8, 2] = nose
+    for c in (6, 7, 8, 9):
+        px[c, 3] = nose
+    # body (white) rows 4..10
+    for y in range(4, 11):
+        for c in body_cols:
+            px[c, y] = R_WHITE
+    # shading: left col light, right col dark
+    for y in range(4, 11):
+        px[6, y] = R_WHITE
+        px[9, y] = R_GRAY
+    # window
+    px[7, 5] = R_WINDOW; px[8, 5] = R_WINDOW
+    px[7, 6] = R_WINDOW; px[8, 6] = (90, 160, 210, 255)
+    # accent stripe
+    for c in body_cols:
+        px[c, 8] = stripe
+    # fins
+    for y in (10, 11, 12):
+        px[5, y] = fin
+        px[10, y] = fin
+    px[4, 12] = fin; px[11, 12] = fin
+    # nozzle
+    for c in (6, 7, 8, 9):
+        px[c, 11] = R_DARK
+    # boosters (higher tiers)
+    if boosters:
+        for y in range(6, 12):
+            px[4, y] = R_GRAY
+            px[11, y] = R_GRAY
+        px[4, 12] = fin; px[11, 12] = fin
+    # flame
+    px[7, 13] = FUEL_HI; px[8, 13] = FUEL_HI
+    px[6, 13] = FUEL; px[9, 13] = FUEL
+    px[7, 14] = FUEL; px[8, 14] = FUEL
+    px[7, 15] = FUEL_D; px[8, 15] = FUEL_D
+    if glow:
+        for c in body_cols:
+            px[c, 4] = glow
+
+
+def gen_rocket_tier(name, nose, fin, stripe, boosters=False, glow=None):
+    img = new_img()
+    _draw_rocket(img.load(), nose, fin, stripe, boosters, glow)
+    save(img, os.path.join(ITEM_DIR, name + ".png"))
+
+
+def gen_rocket_fuel_canister():
+    img = new_img()
+    px = img.load()
+    # cap + spout
+    for c in (6, 7, 8):
+        px[c, 2] = R_DARK
+    px[9, 3] = R_GRAY
+    # body
+    for y in range(4, 14):
+        for x in range(4, 12):
+            px[x, y] = R_GRAY
+    # bevel-ish shading
+    for y in range(4, 14):
+        px[4, y] = R_WHITE
+        px[11, y] = R_DARK
+    for x in range(4, 12):
+        px[x, 4] = R_WHITE if x < 11 else R_DARK
+        px[x, 13] = R_DARK
+    # fuel window glowing
+    for y in range(6, 12):
+        for x in range(6, 10):
+            px[x, y] = FUEL if (x + y) % 2 == 0 else FUEL_D
+    px[6, 6] = FUEL_HI; px[7, 6] = FUEL_HI
+    px[8, 10] = FUEL_HI
+    # hazard tick label
+    px[5, 5] = HAZ_Y; px[10, 5] = HAZ_Y
+    save(img, os.path.join(ITEM_DIR, "rocket_fuel_canister.png"))
+
+
+def gen_rocket_launch_pad():
+    rng = random.Random(701)
+    img = new_img()
+    noise_fill(img, METAL, rng)
+    px = img.load()
+    # hazard border (top + bottom rows)
+    for x in range(S):
+        c = HAZ_Y if (x // 2) % 2 == 0 else HAZ_K
+        px[x, 0] = c
+        px[x, 1] = HAZ_K if c == HAZ_Y else HAZ_Y
+        px[x, S - 1] = c
+        px[x, S - 2] = HAZ_K if c == HAZ_Y else HAZ_Y
+    # central landing ring
+    cx = cy = 8
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx + 0.5) ** 2 + (y - cy + 0.5) ** 2) ** 0.5
+            if 3.6 <= d <= 4.6:
+                px[x, y] = N_RED
+            elif d < 3.6:
+                px[x, y] = (24, 18, 30, 255)
+    # crosshair
+    for i in range(5, 11):
+        px[i, 8] = N_GLOW
+        px[8, i] = N_GLOW
+    px[8, 8] = N_BRIGHT
+    save(img, os.path.join(BLOCK_DIR, "rocket_launch_pad.png"))
+
+
 if __name__ == "__main__":
     gen_ore(STONE, "nerosium_ore")
     gen_ore(DEEP, "deepslate_nerosium_ore")
@@ -404,4 +535,10 @@ if __name__ == "__main__":
     gen_nerosteel_ingot()
     gen_xertz_quartz()
     gen_greenxertz_navigator()
+    # Phase 4 — rockets
+    gen_rocket_launch_pad()
+    gen_rocket_fuel_canister()
+    gen_rocket_tier("rocket_tier_1", N_RED, N_REDHI, N_MAG, boosters=False, glow=None)
+    gen_rocket_tier("rocket_tier_2", N_PURPLE, N_MAG, N_GLOW, boosters=True, glow=None)
+    gen_rocket_tier("rocket_tier_3", GOLD, G_GREEN_L, GOLD, boosters=True, glow=G_GLOW)
     print("done")

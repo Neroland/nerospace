@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "rocket_launch_pad",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "rocket_launch_pad",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "3c950db9-668a-444e-bc7e-d420019d570b"
+    }
+  ],
+  "outliner": [
+    "3c950db9-668a-444e-bc7e-d420019d570b"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/rocket_launch_pad.png",
+      "name": "rocket_launch_pad.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "0089c2f4-379f-496f-be03-090ab7d97a7a",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/rocket_launch_pad.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABoklEQVR4nK2TP4rbUBDGf17kJZYHJQEjKcaFES4MaUJIYVKm2HqLVDmAD7BVjpAqB9gDbJUidU7gI2whhIpFloRhEzF6MjHEKSQ98BYh/6b7eG9mvu+bmcH3zcsjQPT2KwDJpyf8CR7MZtHxbxJ7PHj96s0RwDQGfxIiIgDkRQZAGEzJi4wwmKKqaF0RBlOSNAbgzDQGGXsAiAhJGqOqyNjj5nzPx/uEMJgCoHWFjD1UFQB35OK4I9eCvMjwJyHXhxKA1e0dAJslALzjESJiC5jG4NCFjD20rrg+lDYRYPv+C88+XHSFZqxV2yK1i4w9HNMYqxWAw55fhYiQFxmmMacMkjTm8+Ozk+4PY3V7x2YJV0FkDXWi+YK8yIjmC7hPLG0bFyFbWtxL6ZmUuxyndxxgPfTZLE8/bnngwdBHwBrpaF0BUO7yjkX52x74k5DBi+eroztyrYl5kXFzvrea+84Al99+ANiFU9XWxH4SPa310O8S265XT1vT3FFl5Wo3TgfaJYJ203qaSRpz2b2ZNCaaL+y71hWmMZS7/3FM/3rOPwFeQ+1QkgquiwAAAABJRU5ErkJggg=="
+    }
+  ]
+}

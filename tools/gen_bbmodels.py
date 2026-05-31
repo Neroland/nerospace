@@ -8,10 +8,13 @@ Generate Blockbench .bbmodel source files for the Nerospace textures.
 Each texture is embedded as a base64 data URL (so the file opens self-contained)
 AND linked by relative_path back to the live mod resource, so painting in
 Blockbench and choosing "Save All Textures" writes straight into the mod.
+
+When you add a new block/item: append its id to BLOCKS or ITEMS and rerun.
 """
 import base64
 import json
 import os
+import sys
 import uuid
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,9 +26,11 @@ os.makedirs(OUT_ITEM, exist_ok=True)
 
 BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
           "raw_nerosium_block", "nerosium_grinder",
-          "nerosteel_ore", "xertz_quartz_ore", "nerosteel_block"]
+          "nerosteel_ore", "xertz_quartz_ore", "nerosteel_block",
+          "rocket_launch_pad"]
 ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
-         "raw_nerosteel", "nerosteel_ingot", "xertz_quartz", "greenxertz_navigator"]
+         "raw_nerosteel", "nerosteel_ingot", "xertz_quartz", "greenxertz_navigator",
+         "rocket_fuel_canister", "rocket_tier_1", "rocket_tier_2", "rocket_tier_3"]
 
 
 def data_url(png_path):
@@ -100,6 +105,10 @@ def make_bbmodel(name, folder, kind):
     }
     out_dir = OUT_BLOCK if kind == "block" else OUT_ITEM
     path = os.path.join(out_dir, name + ".bbmodel")
+    # ADDITIVE-ONLY: never clobber an existing .bbmodel (pass --force to override).
+    if os.path.exists(path) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+        return
     with open(path, "w") as fh:
         json.dump(doc, fh, indent=2)
     print("wrote", os.path.relpath(path, ROOT))
