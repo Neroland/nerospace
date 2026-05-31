@@ -25,11 +25,32 @@
   "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {
-    "ambient": [],
+    "ambient": [
+      {
+        "type": "nerospace:greenling",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 8
+      }
+    ],
     "axolotls": [],
-    "creature": [],
+    "creature": [
+      {
+        "type": "nerospace:quartz_crawler",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 10
+      }
+    ],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "type": "nerospace:xertz_stalker",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 12
+      }
+    ],
     "underground_water_creature": [],
     "water_ambient": [],
     "water_creature": []

@@ -9,12 +9,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.registry.ModEntities;
 
 /**
  * The Greenxertz surface biome (Phase 3). Datapack-registered via the {@code RegistrySetBuilder} in
@@ -51,12 +53,22 @@ public final class ModBiomes {
                 .foliageColorOverride(0x4FB85A)
                 .build();
 
+        // Phase 5 — life & danger: the planet's three native creatures.
+        MobSpawnSettings spawns = new MobSpawnSettings.Builder()
+                .addSpawn(MobCategory.MONSTER, 12,
+                        new MobSpawnSettings.SpawnerData(ModEntities.XERTZ_STALKER.get(), 1, 2))
+                .addSpawn(MobCategory.CREATURE, 10,
+                        new MobSpawnSettings.SpawnerData(ModEntities.QUARTZ_CRAWLER.get(), 1, 3))
+                .addSpawn(MobCategory.AMBIENT, 8,
+                        new MobSpawnSettings.SpawnerData(ModEntities.GREENLING.get(), 2, 4))
+                .build();
+
         Biome biome = new Biome.BiomeBuilder()
                 .hasPrecipitation(false)
                 .temperature(0.8F)
                 .downfall(0.0F)
                 .specialEffects(effects)
-                .mobSpawnSettings(MobSpawnSettings.EMPTY)
+                .mobSpawnSettings(spawns)
                 .generationSettings(generation.build())
                 .build();
 

@@ -66,6 +66,19 @@
   glow). Editable Blockbench sources live in `art/blockbench/{block,item}/`;
   each `.bbmodel` embeds the texture and links back to its resource path,
   so painting there + "Save All Textures" writes into the mod.
+- ENTITY MODELS (Blockbench <-> Java, bidirectional): `tools/model_sync.py` keeps each
+  `art/blockbench/entity/<name>.bbmodel` and its Java `EntityModel.createBodyLayer()` in sync
+  BOTH ways. The Java geometry lives in a normalised block between `// model_sync:begin` and
+  `// model_sync:end` (one bone per cube, absolute `addBox`, `PartPose.offset(0,0,0)`) — only that
+  block is ever rewritten. Java entity space is Y-down but Blockbench is Y-up, so the tool applies
+  `bb_y = 24 - java_y` both ways (models rest on the ground at java y=24). Direction is by file
+  mtime; force with `--to-java` / `--to-bbmodel`; `--check` reports drift. The `syncModels` Gradle
+  task runs it before `compileJava`, so editing either side and building converges them. Python is
+  auto-detected and pyenv-aware (uses `PYENV`/`PYENV_ROOT`, else `~/.pyenv/pyenv-win`); override with
+  `-PpythonCmd=<path>`. The three mob `.bbmodel`s share `GreenxertzCreatureModel` geometry: edit the
+  authoritative one (`xertz_stalker.bbmodel`) or the Java; the mirrors get geometry but keep their own
+  texture. LIMITATION: one cube per bone, no per-bone rotation (do richer modelling in Blockbench and
+  export via its own "Export Java Entity").
 - BRANDING: `tools/gen_logo.py` builds the CurseForge logo
   (`art/logo/nerospace_logo*.png`). The in-game mods-list icon is
   `src/main/resources/nerospace_logo.png`, referenced by `logoFile` in

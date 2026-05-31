@@ -17,10 +17,13 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCK_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/block")
 ITEM_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/item")
+ENTITY_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity")
 os.makedirs(BLOCK_DIR, exist_ok=True)
 os.makedirs(ITEM_DIR, exist_ok=True)
+os.makedirs(ENTITY_DIR, exist_ok=True)
 
 S = 16  # texture size
+ES = 64  # entity texture size (matches the GreenxertzCreatureModel LayerDefinition 64x64)
 
 # ---- Palette (RGBA) ----
 CLEAR = (0, 0, 0, 0)
@@ -518,6 +521,70 @@ def gen_rocket_launch_pad():
     save(img, os.path.join(BLOCK_DIR, "rocket_launch_pad.png"))
 
 
+# ---------------- PHASE 5: GREENXERTZ CREATURES (entities) ----------------
+#
+# These are 64x64 entity textures mapped to the shared GreenxertzCreatureModel
+# (body texOffs 0,0 / head 0,14 / legs 28,0). We fill the whole sheet opaquely so every
+# box face samples a sensible colour, then paint eyes onto the head's front-face UV region
+# (x 6..12, y 20..26) for a bit of character. Palettes keep the planet's green/steel family.
+
+def _entity_eyes(px, eye, socket):
+    # Head front face occupies x in [6,12), y in [20,26) for a 6x6x6 head at texOffs(0,14).
+    for (ex, ey) in [(6, 21), (7, 21), (10, 21), (11, 21)]:
+        px[ex, ey] = socket
+    px[6, 22] = eye; px[7, 22] = eye      # left eye
+    px[10, 22] = eye; px[11, 22] = eye    # right eye
+
+
+def gen_entity(name, palette, eye, accent, seed):
+    path = os.path.join(ENTITY_DIR, name + ".png")
+    if os.path.exists(path) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+        return
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (ES, ES), CLEAR)
+    px = img.load()
+    # Opaque fill of the model's used UV area (with a margin) so no face samples transparency.
+    for y in range(ES):
+        for x in range(ES):
+            c = rng.choice(palette)
+            # subtle vertical shading: darken toward the bottom of each ~14px band
+            if (y % 14) >= 11:
+                c = palette[0]
+            px[x, y] = c
+    # scattered accent flecks (crystal / glow) for texture
+    for _ in range(60):
+        x = rng.randint(0, 47)
+        y = rng.randint(0, 47)
+        px[x, y] = accent
+    _entity_eyes(px, eye, palette[0])
+    img.save(path)
+    print("wrote", os.path.relpath(path, ROOT))
+
+
+def gen_entity_rocket():
+    """64x64 entity texture for the rocket model (metallic body + red accent band)."""
+    path = os.path.join(ENTITY_DIR, "rocket.png")
+    if os.path.exists(path) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+        return
+    rng = random.Random(901)
+    img = Image.new("RGBA", (ES, ES), CLEAR)
+    px = img.load()
+    for y in range(ES):
+        for x in range(ES):
+            c = rng.choice([R_WHITE, R_WHITE, R_GRAY])
+            if 18 <= (y % 28) <= 21:
+                c = N_RED if (x % 2 == 0) else N_REDHI
+            if (y % 28) >= 26:
+                c = R_DARK
+            px[x, y] = c
+    for (wx, wy) in [(10, 8), (11, 8), (10, 9), (11, 9)]:
+        px[wx, wy] = R_WINDOW
+    img.save(path)
+    print("wrote", os.path.relpath(path, ROOT))
+
+
 if __name__ == "__main__":
     gen_ore(STONE, "nerosium_ore")
     gen_ore(DEEP, "deepslate_nerosium_ore")
@@ -541,4 +608,12 @@ if __name__ == "__main__":
     gen_rocket_tier("rocket_tier_1", N_RED, N_REDHI, N_MAG, boosters=False, glow=None)
     gen_rocket_tier("rocket_tier_2", N_PURPLE, N_MAG, N_GLOW, boosters=True, glow=None)
     gen_rocket_tier("rocket_tier_3", GOLD, G_GREEN_L, GOLD, boosters=True, glow=G_GLOW)
+    # Phase 5 — Greenxertz creatures (entity textures)
+    gen_entity("xertz_stalker",
+               [G_DARK, G_STEEL_D, (28, 56, 40, 255), G_GREEN], N_REDHI, Q_GREEN, 801)
+    gen_entity("quartz_crawler",
+               [Q_SHADOW, Q_GREEN, Q_PALE, (160, 210, 170, 255)], G_DARK, Q_WHITE, 802)
+    gen_entity("greenling",
+               [G_GREEN, G_GREEN_L, (90, 200, 120, 255)], (20, 40, 28, 255), G_GLOW, 803)
+    gen_entity_rocket()
     print("done")

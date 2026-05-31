@@ -8,6 +8,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.entity.Greenling;
+import za.co.neroland.nerospace.entity.QuartzCrawler;
+import za.co.neroland.nerospace.entity.XertzStalker;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 
 /**
@@ -28,6 +31,26 @@ public final class ModEntities {
                     .eyeHeight(1.6F)
                     .clientTrackingRange(10)
                     .updateInterval(3));
+
+    // --- Greenxertz creatures (Phase 5) -------------------------------------
+
+    public static final Supplier<EntityType<XertzStalker>> XERTZ_STALKER = ENTITY_TYPES.registerEntityType(
+            "xertz_stalker",
+            XertzStalker::new,
+            MobCategory.MONSTER,
+            builder -> builder.sized(0.7F, 1.9F).eyeHeight(1.6F).clientTrackingRange(8));
+
+    public static final Supplier<EntityType<QuartzCrawler>> QUARTZ_CRAWLER = ENTITY_TYPES.registerEntityType(
+            "quartz_crawler",
+            QuartzCrawler::new,
+            MobCategory.CREATURE,
+            builder -> builder.sized(0.9F, 0.8F).eyeHeight(0.6F).clientTrackingRange(8));
+
+    public static final Supplier<EntityType<Greenling>> GREENLING = ENTITY_TYPES.registerEntityType(
+            "greenling",
+            Greenling::new,
+            MobCategory.AMBIENT,
+            builder -> builder.sized(0.5F, 0.6F).eyeHeight(0.45F).clientTrackingRange(8));
 
     private ModEntities() {
     }

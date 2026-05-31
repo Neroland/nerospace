@@ -10,8 +10,11 @@
   "block.nerospace.xertz_quartz_ore": "Xertz Quartz Ore",
   "container.nerospace.nerosium_grinder": "Nerosium Grinder",
   "container.nerospace.rocket": "Rocket",
+  "entity.nerospace.greenling": "Greenling",
+  "entity.nerospace.quartz_crawler": "Quartz Crawler",
   "entity.nerospace.rocket": "Rocket",
   "entity.nerospace.rocket.arrived": "You have arrived on Greenxertz",
+  "entity.nerospace.xertz_stalker": "Xertz Stalker",
   "gui.nerospace.rocket.fuel": "Fuel: %s / %s mB",
   "gui.nerospace.rocket.launch": "Launch",
   "gui.nerospace.rocket.not_ready": "Not ready: fuel up & board",
@@ -32,5 +35,6 @@
   "item.nerospace.rocket_tier_2": "Tier 2 Rocket",
   "item.nerospace.rocket_tier_3": "Tier 3 Rocket",
   "item.nerospace.xertz_quartz": "Xertz Quartz",
-  "itemGroup.nerospace": "Nerospace"
+  "itemGroup.nerospace": "Nerospace",
+  "message.nerospace.greenxertz.no_air": "The thin Greenxertz air is suffocating you — get to a launch pad!"
 }

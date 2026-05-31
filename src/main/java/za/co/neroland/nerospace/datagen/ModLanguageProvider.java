@@ -58,6 +58,12 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Entities.
         add("entity.nerospace.rocket", "Rocket");
+        add("entity.nerospace.xertz_stalker", "Xertz Stalker");
+        add("entity.nerospace.quartz_crawler", "Quartz Crawler");
+        add("entity.nerospace.greenling", "Greenling");
+
+        // Greenxertz atmosphere.
+        add("message.nerospace.greenxertz.no_air", "The thin Greenxertz air is suffocating you — get to a launch pad!");
 
         // Containers / GUI.
         add("container.nerospace.nerosium_grinder", "Nerosium Grinder");

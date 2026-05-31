@@ -184,3 +184,59 @@ idea {
         downloadJavadoc = true
     }
 }
+
+// Bidirectional Blockbench <-> Java entity-model sync (tools/model_sync.py).
+// Runs before compilation so editing a .bbmodel (or the marked Java cube block) and building
+// keeps both sides converged. Direction is chosen by file mtime; override with
+// `-PmodelSyncArgs=--to-java` (or --to-bbmodel, --check). The Python command is auto-detected
+// (python3 / python / py); override with `-PpythonCmd=...`. Remove the compileJava dependency to opt out.
+tasks.register('syncModels') {
+    // Capture at configuration time so the doLast closure stays configuration-cache safe.
+    def projDir = projectDir
+    def syncArgs = providers.gradleProperty('modelSyncArgs').getOrElse('')
+    def pythonOverride = providers.gradleProperty('pythonCmd').getOrNull()
+    def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
+    def pyenvRoot = System.getenv('PYENV_ROOT') ?: System.getenv('PYENV')
+    if (!pyenvRoot && System.getenv('USERPROFILE')) {
+        pyenvRoot = System.getenv('USERPROFILE') + '\\.pyenv\\pyenv-win'
+    }
+    if (!pyenvRoot && System.getenv('HOME')) {
+        pyenvRoot = System.getenv('HOME') + '/.pyenv'
+    }
+    def extra = (providers.gradleProperty('modelSyncArgs').getOrElse('')).split(' ').findAll { it } as List
+    doLast {
+        // .bat shims (pyenv-win) must go through cmd; resolve via cmd on Windows generally.
+        def wrap = { c -> isWindows ? (['cmd', '/c'] + c) : c }
+        def candidates = []
+        if (pythonOverride) candidates << [pythonOverride]
+        candidates += [['python'], ['py'], ['python3']]
+        if (pyenvRoot) {
+            def r = pyenvRoot.replaceAll(/[\\\/]+$/, '')
+            candidates << [r + (isWindows ? '\\shims\\python.bat' : '/shims/python')]
+            candidates << [r + (isWindows ? '\\bin\\python.exe' : '/bin/python')]
+        }
+        def python = null
+        for (c in candidates) {
+            try {
+                def probe = wrap(c + ['--version']).execute(null, projDir)
+                def o = new StringBuilder(); def e = new StringBuilder()
+                probe.consumeProcessOutput(o, e); probe.waitFor()
+                if (probe.exitValue() == 0) { python = c; break }
+            } catch (ignored) {}
+        }
+        if (python == null) {
+            throw new GradleException(
+                "model_sync: no Python found (tried ${candidates}); set -PpythonCmd=<path>. " +
+                "Detected pyenv root: ${pyenvRoot}")
+        }
+        def proc = wrap(python + ['tools/model_sync.py'] + extra).execute(null, projDir)
+        def out = new StringBuilder(); def err = new StringBuilder()
+        proc.consumeProcessOutput(out, err)
+        proc.waitFor()
+        if (out.length() > 0) println out.toString().trim()
+        if (proc.exitValue() != 0) {
+            throw new GradleException("model_sync failed (exit ${proc.exitValue()}):\n${err}")
+        }
+    }
+}
+tasks.named('compileJava') { dependsOn 'syncModels' }
