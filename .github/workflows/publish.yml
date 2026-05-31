@@ -1,0 +1,111 @@
+name: Publish
+
+# Builds and publishes the mod whenever mod_version is bumped in gradle.properties
+# on the main branch. The detect job compares the current mod_version against the
+# previous commit and only proceeds when it actually changed, so ordinary commits
+# that touch gradle.properties for other reasons do not trigger a release.
+on:
+  push:
+    branches: [main]
+    paths:
+      - gradle.properties
+
+# Allow the workflow to create GitHub Releases.
+permissions:
+  contents: write
+
+jobs:
+  detect:
+    name: Detect version bump
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          # Need the previous commit to diff mod_version.
+          fetch-depth: 2
+
+      - name: Compare mod_version against previous commit
+        id: check
+        run: |
+          read_version() { grep -E '^mod_version=' "$1" | head -n1 | cut -d= -f2 | tr -d '[:space:]'; }
+
+          CURRENT="$(read_version gradle.properties)"
+          PREVIOUS="$(git show HEAD~1:gradle.properties 2>/dev/null | grep -E '^mod_version=' | head -n1 | cut -d= -f2 | tr -d '[:space:]' || true)"
+
+          echo "current=$CURRENT previous=$PREVIOUS"
+
+          if [ -z "$CURRENT" ]; then
+            echo "::error::Could not read mod_version from gradle.properties"
+            exit 1
+          fi
+
+          if [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "mod_version changed: ${PREVIOUS:-<none>} -> $CURRENT"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "mod_version unchanged ($CURRENT); skipping release."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Build & publish
+    needs: detect
+    if: needs.detect.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Publish to CurseForge and GitHub Release
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          # --- CurseForge ---
+          # Set CURSEFORGE_PROJECT_ID as a repository variable (Settings -> Secrets and
+          # variables -> Actions -> Variables) and CURSE_FORGE_API_TOKEN as a repository secret.
+          curseforge-id: ${{ vars.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
+
+          # --- GitHub Release ---
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-tag: v${{ needs.detect.outputs.version }}
+
+          # --- To expand to other sites later, just add the lines below ---
+          # modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
+          # modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          # --- Release metadata ---
+          name: Nerospace ${{ needs.detect.outputs.version }}
+          version: ${{ needs.detect.outputs.version }}
+          version-type: release
+          files: build/libs/nerospace-!(*-sources|*-dev|*-shadow|*-javadoc).jar
+          loaders: neoforge
+          game-versions: ${{ env.minecraft_version }}
+          java: 25
+        env:
+          # Surfaced so game-versions stays in sync with gradle.properties.
+          minecraft_version: 26.1.2
