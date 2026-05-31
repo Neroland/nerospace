@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -25,12 +26,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
+import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -58,6 +67,20 @@ public class RocketEntity extends Entity implements MenuProvider {
     public static final int CANISTER_MB = 1_000;
 
     private int launchTicks;
+
+    /**
+     * The authoritative fuel store: a real {@link FluidTank} of {@code rocket_fuel}, exposed to the
+     * NeoForge fluid capability (so pipes/tanks can fill it) and synced to the client via
+     * {@link #DATA_FUEL} for the GUI. Physical capacity is the largest tier's; {@link #addFuel} caps
+     * top-ups to the current tier's capacity.
+     */
+    private final FluidTank fuelTank = new FluidTank(RocketTier.TIER_3.fuelCapacity(),
+            stack -> stack.getFluid() == ModFluids.ROCKET_FUEL.get()) {
+        @Override
+        protected void onContentsChanged() {
+            syncFuel();
+        }
+    };
 
     /** Synced to the open rocket menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable(0/1). */
     private final ContainerData dataAccess = new ContainerData() {
@@ -109,8 +132,16 @@ public class RocketEntity extends Entity implements MenuProvider {
         return this.entityData.get(DATA_FUEL);
     }
 
-    public void setFuel(int fuel) {
-        this.entityData.set(DATA_FUEL, Mth.clamp(fuel, 0, getTier().fuelCapacity()));
+    /** Pushes the server-side tank amount into the synced data accessor (client GUI + canLaunch). */
+    private void syncFuel() {
+        if (!level().isClientSide()) {
+            this.entityData.set(DATA_FUEL, this.fuelTank.getFluidAmount());
+        }
+    }
+
+    /** The fuel tank, exposed to {@code Capabilities.FluidHandler.ENTITY}. */
+    public IFluidHandler getFuelTank() {
+        return this.fuelTank;
     }
 
     public RocketTier getTier() {
@@ -119,7 +150,6 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     public void setTier(RocketTier tier) {
         this.entityData.set(DATA_TIER, tier.ordinal());
-        setFuel(getFuel());
     }
 
     public boolean isLaunching() {
@@ -132,14 +162,13 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     // --- Fuel / launch logic ------------------------------------------------
 
-    /** @return millibuckets of fuel that could not be accepted (overflow). */
+    /** @return millibuckets of fuel that could not be accepted (overflow). Caps at the tier capacity. */
     public int addFuel(int amount) {
-        int capacity = getTier().fuelCapacity();
-        int accepted = Math.min(amount, capacity - getFuel());
-        if (accepted > 0) {
-            setFuel(getFuel() + accepted);
-        }
-        return amount - accepted;
+        int room = Math.max(0, getTier().fuelCapacity() - this.fuelTank.getFluidAmount());
+        int toFill = Math.min(amount, room);
+        int filled = this.fuelTank.fill(
+                new FluidStack(ModFluids.ROCKET_FUEL.get(), toFill), IFluidHandler.FluidAction.EXECUTE);
+        return amount - filled;
     }
 
     /** Whether a launch could be started right now (fuelled, has a rider, and has somewhere to go). */
@@ -202,7 +231,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             return;
         }
 
-        setFuel(getFuel() - tier.fuelPerLaunch());
+        this.fuelTank.drain(tier.fuelPerLaunch(), IFluidHandler.FluidAction.EXECUTE);
 
         Entity passenger = this.getFirstPassenger();
         if (passenger instanceof ServerPlayer player && level() instanceof ServerLevel current) {
@@ -216,15 +245,36 @@ public class RocketEntity extends Entity implements MenuProvider {
                 int blockX = Mth.floor(x);
                 int blockZ = Mth.floor(z);
                 destination.getChunk(blockX >> 4, blockZ >> 4);
-                int y = destination.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockX, blockZ);
 
-                player.teleportTo(destination, x, y + 1.0D, z, Set.of(), player.getYRot(), player.getXRot(), true);
-                player.sendSystemMessage(Component.translatable("entity.nerospace.rocket.arrived"));
+                double arrivalY;
+                if (target.key().equals(ModDimensions.STATION_LEVEL)) {
+                    // The station is an empty void; lay down a landing platform to stand on.
+                    int platformY = 64;
+                    buildStationPlatform(destination, blockX, platformY, blockZ);
+                    arrivalY = platformY + 1.0D;
+                } else {
+                    arrivalY = destination.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockX, blockZ) + 1.0D;
+                }
+
+                player.teleportTo(destination, x, arrivalY, z, Set.of(), player.getYRot(), player.getXRot(), true);
+                player.sendSystemMessage(Component.translatable(target.key().equals(ModDimensions.STATION_LEVEL)
+                        ? "entity.nerospace.rocket.docked"
+                        : "entity.nerospace.rocket.arrived"));
             }
         }
 
         // The rocket is expended on launch; a return trip needs a pad + rocket on the destination.
         this.discard();
+    }
+
+    /** Lay a 7x7 station-floor landing pad so a rider arriving in the void station has solid ground. */
+    private static void buildStationPlatform(ServerLevel level, int centerX, int y, int centerZ) {
+        BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                level.setBlockAndUpdate(new BlockPos(centerX + dx, y, centerZ + dz), floor);
+            }
+        }
     }
 
     /** Small holder so {@link #completeLaunch()} reads cleanly even though the destination may be null. */
@@ -244,6 +294,19 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
 
         ItemStack held = player.getItemInHand(hand);
+        if (held.is(ModItems.ROCKET_FUEL_BUCKET.get())) {
+            if (!level().isClientSide()) {
+                int overflow = addFuel(1_000);
+                if (overflow < 1_000) {
+                    if (!player.getAbilities().instabuild) {
+                        player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                    }
+                    level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                            SoundEvents.BUCKET_EMPTY, SoundSource.NEUTRAL, 0.8F, 1.0F);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (held.is(ModItems.ROCKET_FUEL_CANISTER.get())) {
             if (!level().isClientSide()) {
                 int overflow = addFuel(CANISTER_MB);
@@ -315,7 +378,8 @@ public class RocketEntity extends Entity implements MenuProvider {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         this.entityData.set(DATA_TIER, input.getIntOr("Tier", RocketTier.TIER_1.ordinal()));
-        this.entityData.set(DATA_FUEL, input.getIntOr("Fuel", 0));
+        this.fuelTank.deserialize(input.childOrEmpty("FuelTank"));
+        syncFuel();
         setLaunching(input.getBooleanOr("Launching", false));
         this.launchTicks = input.getIntOr("LaunchTicks", 0);
     }
@@ -323,7 +387,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
         output.putInt("Tier", getTier().ordinal());
-        output.putInt("Fuel", getFuel());
+        this.fuelTank.serialize(output.child("FuelTank"));
         output.putBoolean("Launching", isLaunching());
         output.putInt("LaunchTicks", this.launchTicks);
     }

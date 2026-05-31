@@ -26,6 +26,7 @@ public final class ModEntityEvents {
         event.put(ModEntities.XERTZ_STALKER.get(), XertzStalker.createAttributes().build());
         event.put(ModEntities.QUARTZ_CRAWLER.get(), QuartzCrawler.createAttributes().build());
         event.put(ModEntities.GREENLING.get(), Greenling.createAttributes().build());
+        event.put(ModEntities.CINDER_STALKER.get(), CinderStalker.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -43,6 +44,12 @@ public final class ModEntityEvents {
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(ModEntities.GREENLING.get(), SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) ->
+                        !level.getBlockState(pos.below()).isAir() && level.getBlockState(pos).isAir(),
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        event.register(ModEntities.CINDER_STALKER.get(), SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 (type, level, reason, pos, random) ->
                         !level.getBlockState(pos.below()).isAir() && level.getBlockState(pos).isAir(),

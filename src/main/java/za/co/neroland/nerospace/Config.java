@@ -28,6 +28,20 @@ public class Config {
             .comment("A list of items to log on common setup.")
             .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
 
+    // --- Nerospace: planet/station atmosphere (Phase 7) ---------------------
+
+    public static final ModConfigSpec.BooleanValue ATMOSPHERE_DAMAGE_ENABLED = BUILDER
+            .comment("Whether the thin atmosphere on Nerospace planets and the station hurts unprotected players.")
+            .define("atmosphereDamageEnabled", true);
+
+    public static final ModConfigSpec.IntValue ATMOSPHERE_DAMAGE = BUILDER
+            .comment("Half-hearts of suffocation damage applied each interval (every 2s) off a safe zone.")
+            .defineInRange("atmosphereDamage", 1, 0, 20);
+
+    public static final ModConfigSpec.IntValue ATMOSPHERE_SAFE_RADIUS = BUILDER
+            .comment("Blocks from a Rocket Launch Pad treated as a safe, pressurised zone.")
+            .defineInRange("atmosphereSafeRadius", 6, 0, 32);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {

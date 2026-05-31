@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_rocket_tier_2": {
+    "has_cindrite": {
       "conditions": {
         "items": [
           {
-            "items": "nerospace:rocket_tier_2"
+            "items": "nerospace:cindrite"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_rocket_tier_2"
+      "has_cindrite"
     ]
   ],
   "rewards": {

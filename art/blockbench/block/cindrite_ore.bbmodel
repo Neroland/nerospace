@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "cindrite_ore",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "cindrite_ore",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "2ecd5122-5e85-4efb-9a78-4d46f60301c4"
+    }
+  ],
+  "outliner": [
+    "2ecd5122-5e85-4efb-9a78-4d46f60301c4"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\cindrite_ore.png",
+      "name": "cindrite_ore.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "3bff737c-81f2-4c0d-8a9f-148c0c779fc1",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/cindrite_ore.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABuUlEQVR4nHWTMYhUMRCGPx9XhGmEMGWwFiu50sJKZCs55AoRK3lYCodgI8g2dntoLVuKWMhxWB2HlWwpV8rVS8oQ2GZIpRbLhPcEp8ljMsn87/snN1ar1Z+cMyKCiBBCACDnDEBKiWnUWgEwM1JKDJ7w5P+itUatdVbTWmPwLr7hnf/tWkohxthzfmYQEWqtXWpKidYaKSVUtV+oqtRaEZHeyMwYzKx39/XN80jOmVJKz5sZIkKMsfNSVYYYIymlDsfX9w9+8eTHGaqKqgIQQiDnTAgBMyOEwOASnerr32dwdc5us2Xz9OVMxavbl4gIOef+qzMGH5Zvub40Tq8fstaxF7oiDo94d+9nZxBC2LtgZuScOR5f8G3xjJxzB+n7u82W08/79ev6Y3fjwK2ZWjS1z6m7onUaOR5z5za01mYHfCqn7nj4Zc4hxsiBE/Vw4gDLcMHNu7fYbbasGXvdVO3gH1M3/D0s2wIOj1i2xUyZW91a278FM0NV+7B4gYjA1Tmq2g97nZlRStnbqKqUUkgpzWb+0cUnTr7f6dKdgap2hwZn4J1FhNYaIsKX+49JKRFj7DVTuCLCX2HUJ6048RsEAAAAAElFTkSuQmCC"
+    }
+  ]
+}

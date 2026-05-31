@@ -10,6 +10,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
+import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModCreativeModeTabs;
@@ -33,7 +34,9 @@ public final class Nerospace {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Nerospace(IEventBus modEventBus, ModContainer modContainer) {
-        // Order matters: blocks classload before items (block items reference block holders).
+        // Order matters: fluids before blocks/items (the liquid block + bucket resolve the fluid),
+        // and blocks before items (block items reference block holders).
+        ModFluids.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlockEntities.register(modEventBus);

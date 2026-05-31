@@ -240,3 +240,45 @@ tasks.register('syncModels') {
     }
 }
 tasks.named('compileJava') { dependsOn 'syncModels' }
+
+// Regenerate procedural textures + Blockbench .bbmodel sources (additive: skips existing assets).
+// Run on demand: `gradlew genAssets`. Python auto-detected (pyenv-aware), override with -PpythonCmd=.
+tasks.register('genAssets') {
+    def projDir = projectDir
+    def pythonOverride = providers.gradleProperty('pythonCmd').getOrNull()
+    def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
+    def pyenvRoot = System.getenv('PYENV_ROOT') ?: System.getenv('PYENV')
+    if (!pyenvRoot && System.getenv('USERPROFILE')) {
+        pyenvRoot = System.getenv('USERPROFILE') + '\\.pyenv\\pyenv-win'
+    }
+    doLast {
+        def wrap = { c -> isWindows ? (['cmd', '/c'] + c) : c }
+        def candidates = []
+        if (pythonOverride) candidates << [pythonOverride]
+        candidates += [['python'], ['py'], ['python3']]
+        if (pyenvRoot) {
+            def r = pyenvRoot.replaceAll(/[\\\/]+$/, '')
+            candidates << [r + (isWindows ? '\\shims\\python.bat' : '/shims/python')]
+        }
+        def python = null
+        for (c in candidates) {
+            try {
+                def probe = wrap(c + ['--version']).execute(null, projDir)
+                probe.consumeProcessOutput(new StringBuilder(), new StringBuilder()); probe.waitFor()
+                if (probe.exitValue() == 0) { python = c; break }
+            } catch (ignored) {}
+        }
+        if (python == null) {
+            throw new GradleException("genAssets: no Python found; set -PpythonCmd=<path>. pyenv root: ${pyenvRoot}")
+        }
+        ['tools/gen_textures.py', 'tools/gen_bbmodels.py'].each { script ->
+            def proc = wrap(python + [script]).execute(null, projDir)
+            def out = new StringBuilder(); def err = new StringBuilder()
+            proc.consumeProcessOutput(out, err); proc.waitFor()
+            if (out.length() > 0) println out.toString().trim()
+            if (proc.exitValue() != 0) {
+                throw new GradleException("${script} failed (exit ${proc.exitValue()}):\n${err}")
+            }
+        }
+    }
+}

@@ -21,10 +21,10 @@ public enum RocketTier {
 
     /** Tier 1 — reaches Greenxertz, the Phase 3 planet. The MVP-completing rocket. */
     TIER_1(1, 3_000, 1_000, ModDimensions.GREENXERTZ_LEVEL),
-    /** Tier 2 — larger tank, no destination yet (reserved for the next planet). */
-    TIER_2(2, 6_000, 2_000, null),
-    /** Tier 3 — deep-space frame, no destination yet. */
-    TIER_3(3, 12_000, 4_000, null);
+    /** Tier 2 — reaches Cindara, the volcanic moon (Phase 7). */
+    TIER_2(2, 6_000, 2_000, ModDimensions.CINDARA_LEVEL),
+    /** Tier 3 — deep-space frame; reaches the Orbital Station (Phase 7c). */
+    TIER_3(3, 12_000, 4_000, ModDimensions.STATION_LEVEL);
 
     private final int level;
     private final int fuelCapacity;

@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.registry;
 
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
 import net.neoforged.bus.api.IEventBus;
@@ -9,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
 import za.co.neroland.nerospace.rocket.RocketItem;
 import za.co.neroland.nerospace.rocket.RocketTier;
@@ -50,6 +52,10 @@ public final class ModItems {
     /** Xertz quartz gem — dropped directly when mining xertz quartz ore (nether-quartz analogue). */
     public static final DeferredItem<Item> XERTZ_QUARTZ = ITEMS.registerSimpleItem("xertz_quartz");
 
+    // Phase 7: Cindara (volcanic moon) materials.
+    /** Cindrite gem — dropped by cindrite ore on Cindara; gates the Tier-3 rocket. */
+    public static final DeferredItem<Item> CINDRITE = ITEMS.registerSimpleItem("cindrite");
+
     // --- Tools --------------------------------------------------------------
 
     public static final DeferredItem<Item> NEROSIUM_PICKAXE = ITEMS.registerItem(
@@ -75,6 +81,11 @@ public final class ModItems {
      * liquid-fuel {@code Fluid}/bucket is a deliberate follow-up so it can be validated in-client.)
      */
     public static final DeferredItem<Item> ROCKET_FUEL_CANISTER = ITEMS.registerSimpleItem("rocket_fuel_canister");
+
+    /** A real bucket of the {@code rocket_fuel} fluid; right-click a rocket to pour it into the tank. */
+    public static final DeferredItem<BucketItem> ROCKET_FUEL_BUCKET = ITEMS.registerItem(
+            "rocket_fuel_bucket",
+            props -> new BucketItem(ModFluids.ROCKET_FUEL.get(), props.stacksTo(1)));
 
     public static final DeferredItem<Item> ROCKET_TIER_1 = ITEMS.registerItem(
             "rocket_tier_1",
@@ -106,6 +117,18 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.XERTZ_QUARTZ_ORE);
     public static final DeferredItem<BlockItem> NEROSTEEL_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.NEROSTEEL_BLOCK);
+
+    // Phase 7 — Cindara block items.
+    public static final DeferredItem<BlockItem> CINDRITE_ORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.CINDRITE_ORE);
+    public static final DeferredItem<BlockItem> CINDRITE_BLOCK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.CINDRITE_BLOCK);
+
+    // Phase 7c — station block items.
+    public static final DeferredItem<BlockItem> STATION_FLOOR_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.STATION_FLOOR);
+    public static final DeferredItem<BlockItem> STATION_WALL_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.STATION_WALL);
 
     // Phase 4 block item.
     public static final DeferredItem<BlockItem> ROCKET_LAUNCH_PAD_ITEM =

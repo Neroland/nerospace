@@ -23,5 +23,10 @@ public final class ModCapabilities {
                 Capabilities.Energy.BLOCK,
                 ModBlockEntities.NEROSIUM_GRINDER.get(),
                 (blockEntity, side) -> blockEntity.getEnergyHandler());
+
+        // NOTE (Phase 7b): the rocket holds a real FluidTank of rocket_fuel, but 26.1's
+        // Capabilities.Fluid.ENTITY wants the new transfer-API ResourceHandler<FluidResource>
+        // (not the classic IFluidHandler). Bridging the tank to that handler is a follow-up; the
+        // tank already works for bucket filling, persistence and launch.
     }
 }

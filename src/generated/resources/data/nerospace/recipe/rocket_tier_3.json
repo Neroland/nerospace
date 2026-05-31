@@ -4,12 +4,13 @@
   "key": {
     "B": "nerospace:nerosteel_block",
     "C": "nerospace:rocket_fuel_canister",
+    "D": "nerospace:cindrite",
     "N": "nerospace:nerosteel_ingot",
     "T": "nerospace:rocket_tier_2"
   },
   "pattern": [
     "NTN",
-    "NCN",
+    "DCD",
     "NBN"
   ],
   "result": {

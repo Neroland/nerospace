@@ -41,6 +41,15 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         // Xertz quartz behaves like nether quartz: the gem drops directly (fortune-affected).
         add(ModBlocks.XERTZ_QUARTZ_ORE.get(),
                 block -> createOreDrop(block, ModItems.XERTZ_QUARTZ.get()));
+
+        // Phase 7 — Cindara.
+        dropSelf(ModBlocks.CINDRITE_BLOCK.get());
+        add(ModBlocks.CINDRITE_ORE.get(),
+                block -> createOreDrop(block, ModItems.CINDRITE.get()));
+
+        // Phase 7c — station blocks.
+        dropSelf(ModBlocks.STATION_FLOOR.get());
+        dropSelf(ModBlocks.STATION_WALL.get());
     }
 
     @Override

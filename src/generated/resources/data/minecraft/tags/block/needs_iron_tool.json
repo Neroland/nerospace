@@ -5,6 +5,10 @@
     "nerospace:nerosium_block",
     "nerospace:raw_nerosium_block",
     "nerospace:nerosteel_ore",
-    "nerospace:nerosteel_block"
+    "nerospace:nerosteel_block",
+    "nerospace:cindrite_ore",
+    "nerospace:cindrite_block",
+    "nerospace:station_floor",
+    "nerospace:station_wall"
   ]
 }

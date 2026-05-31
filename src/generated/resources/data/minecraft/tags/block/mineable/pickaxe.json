@@ -7,6 +7,10 @@
     "nerospace:nerosium_grinder",
     "nerospace:nerosteel_ore",
     "nerospace:xertz_quartz_ore",
-    "nerospace:nerosteel_block"
+    "nerospace:nerosteel_block",
+    "nerospace:cindrite_ore",
+    "nerospace:cindrite_block",
+    "nerospace:station_floor",
+    "nerospace:station_wall"
   ]
 }

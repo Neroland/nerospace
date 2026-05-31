@@ -2,6 +2,7 @@
   "values": [
     "nerospace:nerosium_block",
     "nerospace:raw_nerosium_block",
-    "nerospace:nerosteel_block"
+    "nerospace:nerosteel_block",
+    "nerospace:cindrite_block"
   ]
 }

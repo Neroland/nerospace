@@ -1,7 +1,10 @@
 package za.co.neroland.nerospace.world;
 
+import java.util.Set;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -9,6 +12,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
@@ -23,8 +27,10 @@ import za.co.neroland.nerospace.registry.ModDimensions;
 public final class GreenxertzAtmosphere {
 
     private static final int DAMAGE_INTERVAL_TICKS = 40; // every 2 seconds
-    private static final int SAFE_RADIUS = 6;
-    private static final float DAMAGE = 1.0F;
+
+    /** Every Nerospace planet (and the vacuum of the station) has a hostile atmosphere. */
+    private static final Set<ResourceKey<Level>> PLANETS = Set.of(
+            ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL, ModDimensions.STATION_LEVEL);
 
     private GreenxertzAtmosphere() {
     }
@@ -37,7 +43,10 @@ public final class GreenxertzAtmosphere {
         if (!(player.level() instanceof ServerLevel level)) {
             return;
         }
-        if (!level.dimension().equals(ModDimensions.GREENXERTZ_LEVEL)) {
+        if (!PLANETS.contains(level.dimension())) {
+            return;
+        }
+        if (!Config.ATMOSPHERE_DAMAGE_ENABLED.get()) {
             return;
         }
         if (player.getAbilities().instabuild || player.isSpectator()) {
@@ -50,17 +59,18 @@ public final class GreenxertzAtmosphere {
             return;
         }
 
-        player.hurtServer(level, level.damageSources().generic(), DAMAGE);
+        player.hurtServer(level, level.damageSources().generic(), Config.ATMOSPHERE_DAMAGE.get().floatValue());
         if (player.tickCount % (DAMAGE_INTERVAL_TICKS * 3) == 0) {
             player.sendSystemMessage(Component.translatable("message.nerospace.greenxertz.no_air"));
         }
     }
 
-    /** @return true if a launch pad sits within {@link #SAFE_RADIUS} blocks (a pressurised safe zone). */
+    /** @return true if a launch pad sits within the configured safe radius (a pressurised zone). */
     private static boolean isPressurised(Level level, BlockPos center) {
+        int radius = Config.ATMOSPHERE_SAFE_RADIUS.get();
         for (BlockPos pos : BlockPos.betweenClosed(
-                center.offset(-SAFE_RADIUS, -SAFE_RADIUS, -SAFE_RADIUS),
-                center.offset(SAFE_RADIUS, SAFE_RADIUS, SAFE_RADIUS))) {
+                center.offset(-radius, -radius, -radius),
+                center.offset(radius, radius, radius))) {
             if (level.getBlockState(pos).is(ModBlocks.ROCKET_LAUNCH_PAD.get())) {
                 return true;
             }

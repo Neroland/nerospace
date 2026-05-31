@@ -26,6 +26,8 @@ public final class ModConfiguredFeatures {
     // Phase 3 — Greenxertz dimension ores.
     public static final ResourceKey<ConfiguredFeature<?, ?>> NEROSTEEL_ORE = registerKey("nerosteel_ore");
     public static final ResourceKey<ConfiguredFeature<?, ?>> XERTZ_QUARTZ_ORE = registerKey("xertz_quartz_ore");
+    // Phase 7 — Cindara dimension ore.
+    public static final ResourceKey<ConfiguredFeature<?, ?>> CINDRITE_ORE = registerKey("cindrite_ore");
 
     private ModConfiguredFeatures() {
     }
@@ -51,6 +53,12 @@ public final class ModConfiguredFeatures {
                 OreConfiguration.target(stoneReplaceables, ModBlocks.XERTZ_QUARTZ_ORE.get().defaultBlockState()),
                 OreConfiguration.target(deepslateReplaceables, ModBlocks.XERTZ_QUARTZ_ORE.get().defaultBlockState()));
         context.register(XERTZ_QUARTZ_ORE, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(xertzQuartzTargets, 14)));
+
+        // Cindara: cindrite scattered through the volcanic column.
+        List<OreConfiguration.TargetBlockState> cindriteTargets = List.of(
+                OreConfiguration.target(stoneReplaceables, ModBlocks.CINDRITE_ORE.get().defaultBlockState()),
+                OreConfiguration.target(deepslateReplaceables, ModBlocks.CINDRITE_ORE.get().defaultBlockState()));
+        context.register(CINDRITE_ORE, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(cindriteTargets, 8)));
     }
 
     private static ResourceKey<ConfiguredFeature<?, ?>> registerKey(String name) {

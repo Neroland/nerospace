@@ -38,6 +38,12 @@ public class ModLanguageProvider extends LanguageProvider {
         // Phase 4 blocks.
         add(ModBlocks.ROCKET_LAUNCH_PAD.get(), "Rocket Launch Pad");
 
+        // Phase 7 blocks.
+        add(ModBlocks.CINDRITE_ORE.get(), "Cindrite Ore");
+        add(ModBlocks.CINDRITE_BLOCK.get(), "Block of Cindrite");
+        add(ModBlocks.STATION_FLOOR.get(), "Station Floor");
+        add(ModBlocks.STATION_WALL.get(), "Station Wall");
+
         // Items.
         add(ModItems.RAW_NEROSIUM.get(), "Raw Nerosium");
         add(ModItems.NEROSIUM_INGOT.get(), "Nerosium Ingot");
@@ -56,13 +62,22 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.ROCKET_TIER_2.get(), "Tier 2 Rocket");
         add(ModItems.ROCKET_TIER_3.get(), "Tier 3 Rocket");
 
+        // Phase 7 items.
+        add(ModItems.CINDRITE.get(), "Cindrite");
+        add(ModItems.ROCKET_FUEL_BUCKET.get(), "Rocket Fuel Bucket");
+
+        // Phase 7b fluid.
+        add(ModBlocks.ROCKET_FUEL_BLOCK.get(), "Rocket Fuel");
+        add("fluid_type.nerospace.rocket_fuel", "Rocket Fuel");
+
         // Entities.
         add("entity.nerospace.rocket", "Rocket");
         add("entity.nerospace.xertz_stalker", "Xertz Stalker");
         add("entity.nerospace.quartz_crawler", "Quartz Crawler");
         add("entity.nerospace.greenling", "Greenling");
+        add("entity.nerospace.cinder_stalker", "Cinder Stalker");
 
-        // Greenxertz atmosphere.
+        // Planet atmosphere.
         add("message.nerospace.greenxertz.no_air", "The thin Greenxertz air is suffocating you — get to a launch pad!");
 
         // Containers / GUI.
@@ -76,7 +91,8 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Rocket action feedback.
         add("item.nerospace.rocket.deployed", "Rocket deployed on the launch pad");
-        add("entity.nerospace.rocket.arrived", "You have arrived on Greenxertz");
+        add("entity.nerospace.rocket.arrived", "You have arrived on the planet");
+        add("entity.nerospace.rocket.docked", "Docked at the Orbital Station");
 
         // Greenxertz Navigator action feedback.
         add("item.nerospace.greenxertz_navigator.travel", "Transported to Greenxertz");

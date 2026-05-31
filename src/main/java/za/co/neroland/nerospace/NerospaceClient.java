@@ -53,6 +53,8 @@ public class NerospaceClient {
                 context -> new GreenxertzCreatureRenderer(context, entityTexture("quartz_crawler")));
         event.registerEntityRenderer(ModEntities.GREENLING.get(),
                 context -> new GreenxertzCreatureRenderer(context, entityTexture("greenling")));
+        event.registerEntityRenderer(ModEntities.CINDER_STALKER.get(),
+                context -> new GreenxertzCreatureRenderer(context, entityTexture("cinder_stalker")));
     }
 
     @SubscribeEvent

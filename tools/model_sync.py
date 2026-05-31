@@ -55,6 +55,7 @@ REGISTRY = [
         "mirrors": [
             "art/blockbench/entity/quartz_crawler.bbmodel",
             "art/blockbench/entity/greenling.bbmodel",
+            "art/blockbench/entity/cinder_stalker.bbmodel",
         ],
         "texture": "xertz_stalker",
     },

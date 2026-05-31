@@ -5,6 +5,7 @@ import java.util.Set;
 
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -49,6 +50,8 @@ public final class DataGenerators {
 
         // Server data.
         event.createProvider(ModRecipeProvider.Runner::new);
+        event.createProvider((output, registries) ->
+                new AdvancementProvider(output, registries, List.of(new ModAdvancements())));
         event.createProvider((output, registries) -> new LootTableProvider(
                 output,
                 Set.of(),

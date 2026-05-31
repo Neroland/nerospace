@@ -34,10 +34,13 @@ os.makedirs(OUT_ENTITY, exist_ok=True)
 BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
           "raw_nerosium_block", "nerosium_grinder",
           "nerosteel_ore", "xertz_quartz_ore", "nerosteel_block",
-          "rocket_launch_pad"]
+          "rocket_launch_pad",
+          "cindrite_ore", "cindrite_block",
+          "station_floor", "station_wall"]
 ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "raw_nerosteel", "nerosteel_ingot", "xertz_quartz", "greenxertz_navigator",
-         "rocket_fuel_canister", "rocket_tier_1", "rocket_tier_2", "rocket_tier_3"]
+         "rocket_fuel_canister", "rocket_tier_1", "rocket_tier_2", "rocket_tier_3",
+         "cindrite"]
 
 # Entity cube lists — keep in sync with the Java LayerDefinitions. Each cube is
 # (part_name, from[x,y,z], to[x,y,z], uv_offset[u,v]).  64x64 sheets.
@@ -62,6 +65,7 @@ ENTITIES = {
     "xertz_stalker": ("xertz_stalker", CREATURE_CUBES),
     "quartz_crawler": ("quartz_crawler", CREATURE_CUBES),
     "greenling": ("greenling", CREATURE_CUBES),
+    "cinder_stalker": ("cinder_stalker", CREATURE_CUBES),
     "rocket": ("rocket", ROCKET_CUBES),
 }
 

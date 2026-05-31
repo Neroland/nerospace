@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "station_floor",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "station_floor",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "bcd8537c-b502-485b-9526-dd30e09b1f3c"
+    }
+  ],
+  "outliner": [
+    "bcd8537c-b502-485b-9526-dd30e09b1f3c"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\station_floor.png",
+      "name": "station_floor.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "fae7a76a-d277-4453-861d-0b71e313270a",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/station_floor.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABA0lEQVR4nKVSMXICMQxcMlfqAXpOCuZqhoqCccHDKDwUV2WobyjyHD1APSmSFbLvCAWubEta7Uq7MfM73jgDANQ6QVUBAO4OEYGZQVVxuVQcjyXejLs7rtcvfBBpHD8bZFWFmTV/7h65vAdArVMUMEhWZgYRic61Tq2E3I1JuTuLCcS/YODuzQyok0lkkaXwPawVkQWl5LnkZs0MMjKplnIIuizuz8bM76WcFoHHcM/4Lz4AwHY7rnb4ZXHCbrcP6lna7Ta3EljEhN4HfR7wN4O8muy0fmVmttjQQEQOLpuIDLKNM2AwcHeUclg4cM0HItJYORjM83dT/Ex3b+WXa3x1fgDOX8Fl5QfTkwAAAABJRU5ErkJggg=="
+    }
+  ]
+}

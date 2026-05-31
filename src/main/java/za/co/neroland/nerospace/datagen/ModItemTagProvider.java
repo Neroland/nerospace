@@ -37,7 +37,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(Tags.Items.ORES)
                 .add(ModItems.NEROSIUM_ORE_ITEM.get(), ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get(),
-                        ModItems.NEROSTEEL_ORE_ITEM.get(), ModItems.XERTZ_QUARTZ_ORE_ITEM.get());
+                        ModItems.NEROSTEEL_ORE_ITEM.get(), ModItems.XERTZ_QUARTZ_ORE_ITEM.get(),
+                        ModItems.CINDRITE_ORE_ITEM.get());
         this.tag(ModTags.Items.ORES_NEROSIUM)
                 .add(ModItems.NEROSIUM_ORE_ITEM.get(), ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get());
         this.tag(ModTags.Items.ORES_NEROSTEEL)
@@ -47,7 +48,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(Tags.Items.STORAGE_BLOCKS)
                 .add(ModItems.NEROSIUM_BLOCK_ITEM.get(), ModItems.RAW_NEROSIUM_BLOCK_ITEM.get(),
-                        ModItems.NEROSTEEL_BLOCK_ITEM.get());
+                        ModItems.NEROSTEEL_BLOCK_ITEM.get(), ModItems.CINDRITE_BLOCK_ITEM.get());
         this.tag(ModTags.Items.STORAGE_BLOCKS_NEROSIUM)
                 .add(ModItems.NEROSIUM_BLOCK_ITEM.get());
         this.tag(ModTags.Items.STORAGE_BLOCKS_RAW_NEROSIUM)
@@ -64,5 +65,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
         // Xertz quartz is a gem-style drop.
         this.tag(Tags.Items.GEMS).add(ModItems.XERTZ_QUARTZ.get());
         this.tag(ModTags.Items.GEMS_XERTZ_QUARTZ).add(ModItems.XERTZ_QUARTZ.get());
+
+        // Cindrite is a gem-style drop.
+        this.tag(Tags.Items.GEMS).add(ModItems.CINDRITE.get());
     }
 }

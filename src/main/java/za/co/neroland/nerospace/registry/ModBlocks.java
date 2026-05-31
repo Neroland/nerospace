@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.registry;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
@@ -8,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 
@@ -93,6 +95,49 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL));
 
+    // --- Cindara dimension (Phase 7) ----------------------------------------
+
+    /**
+     * Cindrite ore — the volcanic moon Cindara's signature crystal. Drops the {@code cindrite} gem
+     * directly (fortune-affected), iron-tier. Hosted in stone/deepslate like the Greenxertz ores.
+     */
+    public static final DeferredBlock<Block> CINDRITE_ORE = BLOCKS.registerSimpleBlock(
+            "cindrite_ore",
+            props -> props
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(3.5F, 3.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE));
+
+    /** Storage block for cindrite gems. */
+    public static final DeferredBlock<Block> CINDRITE_BLOCK = BLOCKS.registerSimpleBlock(
+            "cindrite_block",
+            props -> props
+                    .mapColor(MapColor.COLOR_RED)
+                    .strength(5.0F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    // --- Orbital station building blocks (Phase 7c) -------------------------
+
+    /** Station floor plating — the landing platform is built from this; craft more to expand. */
+    public static final DeferredBlock<Block> STATION_FLOOR = BLOCKS.registerSimpleBlock(
+            "station_floor",
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(4.0F, 12.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    /** Station wall/hull panelling. */
+    public static final DeferredBlock<Block> STATION_WALL = BLOCKS.registerSimpleBlock(
+            "station_wall",
+            props -> props
+                    .mapColor(MapColor.COLOR_LIGHT_GRAY)
+                    .strength(4.0F, 12.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
     // --- Machines (Phase 2) -------------------------------------------------
 
     public static final DeferredBlock<NerosiumGrinderBlock> NEROSIUM_GRINDER = BLOCKS.registerBlock(
@@ -115,6 +160,19 @@ public final class ModBlocks {
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL));
+
+    // --- Rocket Fuel liquid block (Phase 7b) --------------------------------
+
+    /** The world block for the {@code rocket_fuel} fluid (placed by its bucket). */
+    public static final DeferredBlock<LiquidBlock> ROCKET_FUEL_BLOCK = BLOCKS.registerBlock(
+            "rocket_fuel",
+            props -> new LiquidBlock(ModFluids.ROCKET_FUEL.get(), props),
+            props -> props
+                    .mapColor(MapColor.COLOR_ORANGE)
+                    .replaceable()
+                    .noCollision()
+                    .strength(100.0F)
+                    .noLootTable());
 
     private ModBlocks() {
     }

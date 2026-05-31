@@ -29,10 +29,19 @@ public final class ModBiomes {
     public static final ResourceKey<Biome> GREENXERTZ = ResourceKey.create(
             Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "greenxertz"));
 
+    /** Cindara surface biome (Phase 7) — barren volcanic ash; dark palette. */
+    public static final ResourceKey<Biome> CINDARA = ResourceKey.create(
+            Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "cindara"));
+
     private ModBiomes() {
     }
 
     public static void bootstrap(BootstrapContext<Biome> context) {
+        greenxertz(context);
+        cindara(context);
+    }
+
+    private static void greenxertz(BootstrapContext<Biome> context) {
         HolderGetter<PlacedFeature> placedFeatures = context.lookup(Registries.PLACED_FEATURE);
         HolderGetter<ConfiguredWorldCarver<?>> carvers = context.lookup(Registries.CONFIGURED_CARVER);
 
@@ -73,5 +82,41 @@ public final class ModBiomes {
                 .build();
 
         context.register(GREENXERTZ, biome);
+    }
+
+    private static void cindara(BootstrapContext<Biome> context) {
+        HolderGetter<PlacedFeature> placedFeatures = context.lookup(Registries.PLACED_FEATURE);
+        HolderGetter<ConfiguredWorldCarver<?>> carvers = context.lookup(Registries.CONFIGURED_CARVER);
+
+        BiomeGenerationSettings.Builder generation = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
+        generation.addCarver(Carvers.CAVE);
+        generation.addCarver(Carvers.CAVE_EXTRA_UNDERGROUND);
+        generation.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES,
+                placedFeatures.getOrThrow(ModPlacedFeatures.CINDRITE_ORE_PLACED));
+
+        // Dark, ashen palette to contrast green Greenxertz. (Barren surface shows little foliage, but
+        // the dark water + muted grass/foliage tints read as a scorched world.)
+        BiomeSpecialEffects effects = new BiomeSpecialEffects.Builder()
+                .waterColor(0x70402A)
+                .grassColorOverride(0x4A3A33)
+                .foliageColorOverride(0x5A3A2A)
+                .build();
+
+        // A single hostile predator roams Cindara.
+        MobSpawnSettings spawns = new MobSpawnSettings.Builder()
+                .addSpawn(MobCategory.MONSTER, 14,
+                        new MobSpawnSettings.SpawnerData(ModEntities.CINDER_STALKER.get(), 1, 2))
+                .build();
+
+        Biome biome = new Biome.BiomeBuilder()
+                .hasPrecipitation(false)
+                .temperature(2.0F)
+                .downfall(0.0F)
+                .specialEffects(effects)
+                .mobSpawnSettings(spawns)
+                .generationSettings(generation.build())
+                .build();
+
+        context.register(CINDARA, biome);
     }
 }

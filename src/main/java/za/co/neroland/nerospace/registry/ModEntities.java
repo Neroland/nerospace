@@ -8,6 +8,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.entity.CinderStalker;
 import za.co.neroland.nerospace.entity.Greenling;
 import za.co.neroland.nerospace.entity.QuartzCrawler;
 import za.co.neroland.nerospace.entity.XertzStalker;
@@ -51,6 +52,14 @@ public final class ModEntities {
             Greenling::new,
             MobCategory.AMBIENT,
             builder -> builder.sized(0.5F, 0.6F).eyeHeight(0.45F).clientTrackingRange(8));
+
+    // --- Cindara creatures (Phase 7) ----------------------------------------
+
+    public static final Supplier<EntityType<CinderStalker>> CINDER_STALKER = ENTITY_TYPES.registerEntityType(
+            "cinder_stalker",
+            CinderStalker::new,
+            MobCategory.MONSTER,
+            builder -> builder.sized(0.8F, 2.0F).eyeHeight(1.7F).fireImmune().clientTrackingRange(8));
 
     private ModEntities() {
     }

@@ -223,17 +223,56 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_rocket_tier_1", this.has(ModItems.ROCKET_TIER_1))
                 .save(this.output);
 
-        // Tier 3 rocket: upgrades a Tier 2.
+        // Tier 3 rocket: upgrades a Tier 2, gated behind cindrite mined on Cindara.
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.TOOLS, ModItems.ROCKET_TIER_3)
                 .pattern("NTN")
-                .pattern("NCN")
+                .pattern("DCD")
                 .pattern("NBN")
                 .define('N', ModItems.NEROSTEEL_INGOT)
                 .define('T', ModItems.ROCKET_TIER_2)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
+                .define('D', ModItems.CINDRITE)
                 .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
-                .unlockedBy("has_rocket_tier_2", this.has(ModItems.ROCKET_TIER_2))
+                .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
+                .save(this.output);
+
+        // === Phase 7 — Cindara materials ===================================
+
+        // Cindrite storage block pack / unpack.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.BUILDING_BLOCKS, ModBlocks.CINDRITE_BLOCK.get())
+                .pattern("###")
+                .pattern("###")
+                .pattern("###")
+                .define('#', ModItems.CINDRITE)
+                .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
+                .save(this.output);
+
+        ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModItems.CINDRITE, 9)
+                .requires(ModBlocks.CINDRITE_BLOCK.get())
+                .unlockedBy("has_cindrite_block", this.has(ModBlocks.CINDRITE_BLOCK.get()))
+                .save(this.output, "cindrite_from_cindrite_block");
+
+        // === Phase 7c — station building blocks ============================
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.BUILDING_BLOCKS, ModBlocks.STATION_FLOOR.get(), 8)
+                .pattern("###")
+                .pattern("# #")
+                .pattern("###")
+                .define('#', ModItems.NEROSTEEL_INGOT)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.BUILDING_BLOCKS, ModBlocks.STATION_WALL.get(), 8)
+                .pattern("###")
+                .pattern("#I#")
+                .pattern("###")
+                .define('#', ModItems.NEROSTEEL_INGOT)
+                .define('I', Items.IRON_INGOT)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
     }
 

@@ -43,6 +43,18 @@ public class ModModelProvider extends ModelProvider {
         // Phase 4 — launch pad (trivial cube for now; a proper pad model can be layered later).
         blockModels.createTrivialCube(ModBlocks.ROCKET_LAUNCH_PAD.get());
 
+        // Phase 7 — Cindara ore + storage block.
+        blockModels.createTrivialCube(ModBlocks.CINDRITE_ORE.get());
+        blockModels.createTrivialCube(ModBlocks.CINDRITE_BLOCK.get());
+
+        // Phase 7c — station building blocks.
+        blockModels.createTrivialCube(ModBlocks.STATION_FLOOR.get());
+        blockModels.createTrivialCube(ModBlocks.STATION_WALL.get());
+
+        // Phase 7b — the rocket fuel liquid block: a particle-only blockstate (the fluid itself is
+        // drawn by the FluidType render, not a block model).
+        blockModels.createParticleOnlyBlock(ModBlocks.ROCKET_FUEL_BLOCK.get());
+
         // Flat (item/generated) item models.
         itemModels.generateFlatItem(ModItems.RAW_NEROSIUM.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.NEROSIUM_INGOT.get(), ModelTemplates.FLAT_ITEM);
@@ -58,6 +70,12 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.ROCKET_TIER_1.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ROCKET_TIER_2.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ROCKET_TIER_3.get(), ModelTemplates.FLAT_ITEM);
+
+        // Phase 7 — Cindara.
+        itemModels.generateFlatItem(ModItems.CINDRITE.get(), ModelTemplates.FLAT_ITEM);
+
+        // Phase 7b — rocket fuel bucket.
+        itemModels.generateFlatItem(ModItems.ROCKET_FUEL_BUCKET.get(), ModelTemplates.FLAT_ITEM);
 
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);

@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:nerosium_grinder",
+  "criteria": {
+    "has_rocket": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:rocket_tier_1"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Tier 1 Rocket",
+    "icon": {
+      "id": "nerospace:rocket_tier_1"
+    },
+    "title": "We Have Liftoff"
+  },
+  "requirements": [
+    [
+      "has_rocket"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

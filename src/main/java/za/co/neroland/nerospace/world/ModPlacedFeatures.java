@@ -28,6 +28,8 @@ public final class ModPlacedFeatures {
     // Phase 3 — Greenxertz dimension ores.
     public static final ResourceKey<PlacedFeature> NEROSTEEL_ORE_PLACED = registerKey("nerosteel_ore_placed");
     public static final ResourceKey<PlacedFeature> XERTZ_QUARTZ_ORE_PLACED = registerKey("xertz_quartz_ore_placed");
+    // Phase 7 — Cindara dimension ore.
+    public static final ResourceKey<PlacedFeature> CINDRITE_ORE_PLACED = registerKey("cindrite_ore_placed");
 
     private ModPlacedFeatures() {
     }
@@ -59,6 +61,15 @@ public final class ModPlacedFeatures {
                         CountPlacement.of(12),
                         InSquarePlacement.spread(),
                         HeightRangePlacement.uniform(VerticalAnchor.absolute(0), VerticalAnchor.absolute(110)),
+                        BiomeFilter.biome())));
+
+        // Cindrite: a rarer Cindara crystal, deep-to-mid.
+        context.register(CINDRITE_ORE_PLACED, new PlacedFeature(
+                configuredFeatures.getOrThrow(ModConfiguredFeatures.CINDRITE_ORE),
+                List.of(
+                        CountPlacement.of(7),
+                        InSquarePlacement.spread(),
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-48), VerticalAnchor.absolute(48)),
                         BiomeFilter.biome())));
     }
 

@@ -46,9 +46,19 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.XERTZ_QUARTZ_ORE.get());
                         output.accept(ModBlocks.NEROSTEEL_BLOCK.get());
 
+                        // Phase 7 — Cindara.
+                        output.accept(ModItems.CINDRITE.get());
+                        output.accept(ModBlocks.CINDRITE_ORE.get());
+                        output.accept(ModBlocks.CINDRITE_BLOCK.get());
+
+                        // Phase 7c — station.
+                        output.accept(ModBlocks.STATION_FLOOR.get());
+                        output.accept(ModBlocks.STATION_WALL.get());
+
                         // Phase 4 — Rockets.
                         output.accept(ModBlocks.ROCKET_LAUNCH_PAD.get());
                         output.accept(ModItems.ROCKET_FUEL_CANISTER.get());
+                        output.accept(ModItems.ROCKET_FUEL_BUCKET.get());
                         output.accept(ModItems.ROCKET_TIER_1.get());
                         output.accept(ModItems.ROCKET_TIER_2.get());
                         output.accept(ModItems.ROCKET_TIER_3.get());

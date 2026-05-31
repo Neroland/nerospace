@@ -1,5 +1,8 @@
 package za.co.neroland.nerospace.registry;
 
+import java.util.List;
+import java.util.Optional;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
@@ -8,12 +11,15 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.FixedBiomeSource;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.world.ModBiomes;
@@ -40,6 +46,20 @@ public final class ModDimensions {
     public static final ResourceKey<Level> GREENXERTZ_LEVEL = ResourceKey.create(
             Registries.DIMENSION, Identifier.fromNamespaceAndPath(Nerospace.MODID, "greenxertz"));
 
+    /** Cindara — the volcanic ash moon (Phase 7); the Tier-2 rocket's destination. */
+    public static final ResourceKey<LevelStem> CINDARA_STEM = ResourceKey.create(
+            Registries.LEVEL_STEM, Identifier.fromNamespaceAndPath(Nerospace.MODID, "cindara"));
+
+    public static final ResourceKey<Level> CINDARA_LEVEL = ResourceKey.create(
+            Registries.DIMENSION, Identifier.fromNamespaceAndPath(Nerospace.MODID, "cindara"));
+
+    /** Orbital Station — an empty void "in orbit" (Phase 7c); the Tier-3 rocket's destination. */
+    public static final ResourceKey<LevelStem> STATION_STEM = ResourceKey.create(
+            Registries.LEVEL_STEM, Identifier.fromNamespaceAndPath(Nerospace.MODID, "station"));
+
+    public static final ResourceKey<Level> STATION_LEVEL = ResourceKey.create(
+            Registries.DIMENSION, Identifier.fromNamespaceAndPath(Nerospace.MODID, "station"));
+
     private ModDimensions() {
     }
 
@@ -50,10 +70,23 @@ public final class ModDimensions {
 
         Holder<DimensionType> typeHolder = dimensionTypes.getOrThrow(BuiltinDimensionTypes.OVERWORLD);
 
-        NoiseBasedChunkGenerator generator = new NoiseBasedChunkGenerator(
+        NoiseBasedChunkGenerator greenxertzGen = new NoiseBasedChunkGenerator(
                 new FixedBiomeSource(biomes.getOrThrow(ModBiomes.GREENXERTZ)),
                 noiseSettings.getOrThrow(NoiseGeneratorSettings.OVERWORLD));
+        context.register(GREENXERTZ_STEM, new LevelStem(typeHolder, greenxertzGen));
 
-        context.register(GREENXERTZ_STEM, new LevelStem(typeHolder, generator));
+        NoiseBasedChunkGenerator cindaraGen = new NoiseBasedChunkGenerator(
+                new FixedBiomeSource(biomes.getOrThrow(ModBiomes.CINDARA)),
+                noiseSettings.getOrThrow(NoiseGeneratorSettings.OVERWORLD));
+        context.register(CINDARA_STEM, new LevelStem(typeHolder, cindaraGen));
+
+        // Orbital Station: a flat generator with NO layers = an empty void. The rocket places a
+        // landing platform on arrival so the player doesn't fall (see RocketEntity#completeLaunch).
+        Holder<Biome> voidBiome = biomes.getOrThrow(Biomes.THE_VOID);
+        FlatLevelGeneratorSettings stationFlat =
+                new FlatLevelGeneratorSettings(Optional.empty(), voidBiome, List.of())
+                        .withBiomeAndLayers(List.of(), Optional.empty(), voidBiome);
+        FlatLevelSource stationGen = new FlatLevelSource(stationFlat);
+        context.register(STATION_STEM, new LevelStem(typeHolder, stationGen));
     }
 }

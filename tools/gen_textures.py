@@ -12,7 +12,15 @@ import os
 import random
 import sys
 import hashlib
-from PIL import Image
+
+try:
+    from PIL import Image
+except ModuleNotFoundError:
+    # Pillow is optional: textures are committed art, so on a machine without it we just skip
+    # regeneration (e.g. so `gradlew genAssets` can still run gen_bbmodels.py). `pip install pillow`
+    # to enable procedural texture (re)generation.
+    print("gen_textures: Pillow not installed; skipping texture generation (pip install pillow).")
+    sys.exit(0)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCK_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/block")
@@ -73,6 +81,15 @@ R_WINDOW = (150, 220, 255, 255)
 GOLD     = (240, 200, 80, 255)
 HAZ_Y    = (250, 200, 50, 255)
 HAZ_K    = (28, 28, 34, 255)
+
+# Cindara / Phase 7 palette — charred volcanic ash + ember.
+C_DARK   = (28, 12, 10, 255)
+C_ASH    = (60, 50, 48, 255)
+C_RED    = (200, 50, 30, 255)
+C_ORANGE = (240, 120, 40, 255)
+C_EMBER  = (255, 180, 70, 255)
+C_GLOW   = (255, 230, 150, 255)
+EMBER_RAMP = [C_DARK, C_RED, C_ORANGE, C_EMBER, C_GLOW]
 
 
 def new_img():
@@ -521,6 +538,87 @@ def gen_rocket_launch_pad():
     save(img, os.path.join(BLOCK_DIR, "rocket_launch_pad.png"))
 
 
+# ---------------- PHASE 7: CINDARA ----------------
+
+def gen_cindrite_ore():
+    rng = random.Random(901)
+    img = new_img()
+    noise_fill(img, STONE, rng)
+    for (cx, cy, r) in [(5, 5, 3.0), (11, 7, 2.6), (8, 12, 2.8)]:
+        blob(img, cx, cy, r, EMBER_RAMP, rng, density=0.95)
+    px = img.load()
+    px[5, 4] = C_GLOW
+    px[11, 7] = C_GLOW
+    save(img, os.path.join(BLOCK_DIR, "cindrite_ore.png"))
+
+
+def gen_cindrite_block():
+    rng = random.Random(902)
+    img = new_img()
+    noise_fill(img, [C_DARK, C_ASH, (40, 20, 16, 255)], rng)
+    px = img.load()
+    for i in range(S):
+        px[i, 8] = C_ORANGE
+        px[8, i] = C_ORANGE
+    blob(img, 8, 8, 3.2, [C_RED, C_ORANGE, C_EMBER, C_GLOW], rng, density=1.0)
+    bevel(img, C_EMBER, C_DARK)
+    save(img, os.path.join(BLOCK_DIR, "cindrite_block.png"))
+
+
+def gen_cindrite():
+    img = new_img()
+    px = img.load()
+    shape = {
+        3: (7, 9), 4: (6, 10), 5: (5, 11), 6: (4, 12),
+        7: (4, 12), 8: (4, 12), 9: (5, 11), 10: (6, 10),
+        11: (7, 9), 12: (8, 8),
+    }
+    for y, (x0, x1) in shape.items():
+        mid = (x0 + x1) / 2
+        for x in range(x0, x1):
+            if abs(x - mid) < 1:
+                px[x, y] = C_GLOW
+            elif x < mid:
+                px[x, y] = C_ORANGE
+            else:
+                px[x, y] = C_RED
+    for x in range(7, 9):
+        px[x, 3] = C_EMBER
+    save(img, os.path.join(ITEM_DIR, "cindrite.png"))
+
+
+def gen_station_floor():
+    rng = random.Random(710)
+    img = new_img()
+    noise_fill(img, [R_GRAY, (138, 138, 156, 255), (162, 162, 180, 255)], rng)
+    px = img.load()
+    # panel seams + central cross
+    for i in range(S):
+        px[i, 0] = R_DARK
+        px[0, i] = R_DARK
+        px[i, 8] = R_DARK
+        px[8, i] = R_DARK
+    bevel(img, R_WHITE, R_DARK)
+    for (bx, by) in [(2, 2), (13, 2), (2, 13), (13, 13), (7, 7), (8, 8)]:
+        px[bx, by] = R_WHITE  # rivets
+    save(img, os.path.join(BLOCK_DIR, "station_floor.png"))
+
+
+def gen_station_wall():
+    rng = random.Random(711)
+    img = new_img()
+    noise_fill(img, [(176, 176, 192, 255), R_WHITE, (158, 158, 176, 255)], rng)
+    px = img.load()
+    for y in range(S):
+        if y % 4 == 0:
+            for x in range(S):
+                px[x, y] = R_GRAY
+    bevel(img, R_WHITE, R_DARK)
+    for (bx, by) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        px[bx, by] = R_DARK
+    save(img, os.path.join(BLOCK_DIR, "station_wall.png"))
+
+
 # ---------------- PHASE 5: GREENXERTZ CREATURES (entities) ----------------
 #
 # These are 64x64 entity textures mapped to the shared GreenxertzCreatureModel
@@ -616,4 +714,13 @@ if __name__ == "__main__":
     gen_entity("greenling",
                [G_GREEN, G_GREEN_L, (90, 200, 120, 255)], (20, 40, 28, 255), G_GLOW, 803)
     gen_entity_rocket()
+    # Phase 7 — Cindara
+    gen_cindrite_ore()
+    gen_cindrite_block()
+    gen_cindrite()
+    gen_entity("cinder_stalker",
+               [C_DARK, C_ASH, (50, 20, 16, 255), C_RED], C_GLOW, C_ORANGE, 905)
+    # Phase 7c — station
+    gen_station_floor()
+    gen_station_wall()
     print("done")
