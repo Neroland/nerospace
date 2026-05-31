@@ -12,7 +12,7 @@
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-26.1.2-62B47A">
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge-F16436">
   <img alt="Java" src="https://img.shields.io/badge/Java-25-007396">
-  <img alt="Version" src="https://img.shields.io/badge/version-0.0.1-blue">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.0.1%20beta-blue">
   <img alt="Status" src="https://img.shields.io/badge/status-in%20development-yellow">
 </p>
 
