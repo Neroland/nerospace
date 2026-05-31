@@ -57,6 +57,41 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL));
 
+    // --- Greenxertz dimension ores (Phase 3) --------------------------------
+
+    /**
+     * Nerosteel ore — the planet's primary metal source. Iron-tier like nerosium; drops raw
+     * nerosteel which smelts to an ingot. Spawns in the Greenxertz biome (stone + deepslate).
+     */
+    public static final DeferredBlock<Block> NEROSTEEL_ORE = BLOCKS.registerSimpleBlock(
+            "nerosteel_ore",
+            props -> props
+                    .mapColor(MapColor.STONE)
+                    .strength(3.0F, 3.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE));
+
+    /**
+     * Xertz quartz ore — behaves like nether quartz (drops the gem directly), but is its own
+     * material with room to grow. Any-tier pickaxe mines it.
+     */
+    public static final DeferredBlock<Block> XERTZ_QUARTZ_ORE = BLOCKS.registerSimpleBlock(
+            "xertz_quartz_ore",
+            props -> props
+                    .mapColor(MapColor.STONE)
+                    .strength(3.0F, 3.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.NETHER_ORE));
+
+    /** Storage block for nerosteel ingots. */
+    public static final DeferredBlock<Block> NEROSTEEL_BLOCK = BLOCKS.registerSimpleBlock(
+            "nerosteel_block",
+            props -> props
+                    .mapColor(MapColor.COLOR_GRAY)
+                    .strength(5.0F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
     // --- Machines (Phase 2) -------------------------------------------------
 
     public static final DeferredBlock<NerosiumGrinderBlock> NEROSIUM_GRINDER = BLOCKS.registerBlock(

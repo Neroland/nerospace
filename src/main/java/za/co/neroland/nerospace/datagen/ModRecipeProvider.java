@@ -126,6 +126,62 @@ public class ModRecipeProvider extends RecipeProvider {
                         RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 100)
                 .unlockedBy("has_nerosium_dust", this.has(ModItems.NEROSIUM_DUST))
                 .save(this.output, "nerosium_ingot_from_blasting_nerosium_dust");
+
+        // === Phase 3 — Greenxertz materials ================================
+
+        // Nerosteel: smelt/blast raw and ore into ingots.
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModItems.RAW_NEROSTEEL),
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSTEEL_INGOT, 0.8F, 200)
+                .unlockedBy("has_raw_nerosteel", this.has(ModItems.RAW_NEROSTEEL))
+                .save(this.output, "nerosteel_ingot_from_smelting_raw_nerosteel");
+
+        SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModItems.RAW_NEROSTEEL),
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSTEEL_INGOT, 0.8F, 100)
+                .unlockedBy("has_raw_nerosteel", this.has(ModItems.RAW_NEROSTEEL))
+                .save(this.output, "nerosteel_ingot_from_blasting_raw_nerosteel");
+
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModBlocks.NEROSTEEL_ORE.get()),
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSTEEL_INGOT, 0.8F, 200)
+                .unlockedBy("has_nerosteel_ore", this.has(ModBlocks.NEROSTEEL_ORE.get()))
+                .save(this.output, "nerosteel_ingot_from_smelting_nerosteel_ore");
+
+        SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModBlocks.NEROSTEEL_ORE.get()),
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSTEEL_INGOT, 0.8F, 100)
+                .unlockedBy("has_nerosteel_ore", this.has(ModBlocks.NEROSTEEL_ORE.get()))
+                .save(this.output, "nerosteel_ingot_from_blasting_nerosteel_ore");
+
+        // Nerosteel storage block pack / unpack.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.BUILDING_BLOCKS, ModBlocks.NEROSTEEL_BLOCK.get())
+                .pattern("###")
+                .pattern("###")
+                .pattern("###")
+                .define('#', ModItems.NEROSTEEL_INGOT)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModItems.NEROSTEEL_INGOT, 9)
+                .requires(ModBlocks.NEROSTEEL_BLOCK.get())
+                .unlockedBy("has_nerosteel_block", this.has(ModBlocks.NEROSTEEL_BLOCK.get()))
+                .save(this.output, "nerosteel_ingot_from_nerosteel_block");
+
+        // Xertz quartz drops directly, but the ore can also be smelted (nether-quartz parity).
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModBlocks.XERTZ_QUARTZ_ORE.get()),
+                        RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.XERTZ_QUARTZ, 0.2F, 200)
+                .unlockedBy("has_xertz_quartz_ore", this.has(ModBlocks.XERTZ_QUARTZ_ORE.get()))
+                .save(this.output, "xertz_quartz_from_smelting_xertz_quartz_ore");
+
+        // Greenxertz Navigator — crafted from overworld materials so it is obtainable pre-flight.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.GREENXERTZ_NAVIGATOR)
+                .pattern(" I ")
+                .pattern("IEI")
+                .pattern(" I ")
+                .define('I', ModItems.NEROSIUM_INGOT)
+                .define('E', Items.ENDER_PEARL)
+                .unlockedBy("has_nerosium_ingot", this.has(ModItems.NEROSIUM_INGOT))
+                .save(this.output);
     }
 
     /** Runner registered with the data generator; constructs the provider per the lookup future. */

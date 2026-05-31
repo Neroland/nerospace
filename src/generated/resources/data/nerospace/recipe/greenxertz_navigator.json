@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "I": "nerospace:nerosium_ingot"
+  },
+  "pattern": [
+    " I ",
+    "IEI",
+    " I "
+  ],
+  "result": {
+    "id": "nerospace:greenxertz_navigator"
+  }
+}

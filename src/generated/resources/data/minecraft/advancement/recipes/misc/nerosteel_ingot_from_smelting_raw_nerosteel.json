@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_raw_nerosteel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:raw_nerosteel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:nerosteel_ingot_from_smelting_raw_nerosteel"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_raw_nerosteel"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:nerosteel_ingot_from_smelting_raw_nerosteel"
+    ]
+  }
+}

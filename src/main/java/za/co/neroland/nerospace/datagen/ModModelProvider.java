@@ -35,10 +35,20 @@ public class ModModelProvider extends ModelProvider {
         // oriented model can be layered on later without changing the block.
         blockModels.createTrivialCube(ModBlocks.NEROSIUM_GRINDER.get());
 
+        // Phase 3 — Greenxertz ores + storage block.
+        blockModels.createTrivialCube(ModBlocks.NEROSTEEL_ORE.get());
+        blockModels.createTrivialCube(ModBlocks.XERTZ_QUARTZ_ORE.get());
+        blockModels.createTrivialCube(ModBlocks.NEROSTEEL_BLOCK.get());
+
         // Flat (item/generated) item models.
         itemModels.generateFlatItem(ModItems.RAW_NEROSIUM.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.NEROSIUM_INGOT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.NEROSIUM_DUST.get(), ModelTemplates.FLAT_ITEM);
+        // Phase 3 items.
+        itemModels.generateFlatItem(ModItems.RAW_NEROSTEEL.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.NEROSTEEL_INGOT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.XERTZ_QUARTZ.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.GREENXERTZ_NAVIGATOR.get(), ModelTemplates.FLAT_ITEM);
 
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);

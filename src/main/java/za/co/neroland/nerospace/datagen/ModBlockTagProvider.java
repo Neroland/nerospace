@@ -29,24 +29,38 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),
                         ModBlocks.NEROSIUM_BLOCK.get(),
                         ModBlocks.RAW_NEROSIUM_BLOCK.get(),
-                        ModBlocks.NEROSIUM_GRINDER.get());
+                        ModBlocks.NEROSIUM_GRINDER.get(),
+                        ModBlocks.NEROSTEEL_ORE.get(),
+                        ModBlocks.XERTZ_QUARTZ_ORE.get(),
+                        ModBlocks.NEROSTEEL_BLOCK.get());
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.NEROSIUM_ORE.get(),
                         ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),
                         ModBlocks.NEROSIUM_BLOCK.get(),
-                        ModBlocks.RAW_NEROSIUM_BLOCK.get());
+                        ModBlocks.RAW_NEROSIUM_BLOCK.get(),
+                        // Nerosteel is iron-tier; xertz quartz ore needs only any pickaxe (omitted here).
+                        ModBlocks.NEROSTEEL_ORE.get(),
+                        ModBlocks.NEROSTEEL_BLOCK.get());
 
         this.tag(Tags.Blocks.ORES)
-                .add(ModBlocks.NEROSIUM_ORE.get(), ModBlocks.DEEPSLATE_NEROSIUM_ORE.get());
+                .add(ModBlocks.NEROSIUM_ORE.get(), ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),
+                        ModBlocks.NEROSTEEL_ORE.get(), ModBlocks.XERTZ_QUARTZ_ORE.get());
         this.tag(ModTags.Blocks.ORES_NEROSIUM)
                 .add(ModBlocks.NEROSIUM_ORE.get(), ModBlocks.DEEPSLATE_NEROSIUM_ORE.get());
+        this.tag(ModTags.Blocks.ORES_NEROSTEEL)
+                .add(ModBlocks.NEROSTEEL_ORE.get());
+        this.tag(ModTags.Blocks.ORES_XERTZ_QUARTZ)
+                .add(ModBlocks.XERTZ_QUARTZ_ORE.get());
 
         this.tag(Tags.Blocks.STORAGE_BLOCKS)
-                .add(ModBlocks.NEROSIUM_BLOCK.get(), ModBlocks.RAW_NEROSIUM_BLOCK.get());
+                .add(ModBlocks.NEROSIUM_BLOCK.get(), ModBlocks.RAW_NEROSIUM_BLOCK.get(),
+                        ModBlocks.NEROSTEEL_BLOCK.get());
         this.tag(ModTags.Blocks.STORAGE_BLOCKS_NEROSIUM)
                 .add(ModBlocks.NEROSIUM_BLOCK.get());
         this.tag(ModTags.Blocks.STORAGE_BLOCKS_RAW_NEROSIUM)
                 .add(ModBlocks.RAW_NEROSIUM_BLOCK.get());
+        this.tag(ModTags.Blocks.STORAGE_BLOCKS_NEROSTEEL)
+                .add(ModBlocks.NEROSTEEL_BLOCK.get());
     }
 }

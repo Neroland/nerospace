@@ -37,6 +37,15 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.NEROSIUM_BLOCK.get());
                         output.accept(ModBlocks.RAW_NEROSIUM_BLOCK.get());
                         output.accept(ModBlocks.NEROSIUM_GRINDER.get());
+
+                        // Phase 3 — Greenxertz.
+                        output.accept(ModItems.RAW_NEROSTEEL.get());
+                        output.accept(ModItems.NEROSTEEL_INGOT.get());
+                        output.accept(ModItems.XERTZ_QUARTZ.get());
+                        output.accept(ModBlocks.NEROSTEEL_ORE.get());
+                        output.accept(ModBlocks.XERTZ_QUARTZ_ORE.get());
+                        output.accept(ModBlocks.NEROSTEEL_BLOCK.get());
+                        output.accept(ModItems.GREENXERTZ_NAVIGATOR.get());
                     })
                     .build());
 

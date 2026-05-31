@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "raw_nerosium_block",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "raw_nerosium_block",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "10ce6be8-204d-4df1-ac85-b6dfaa4ce9b2"
+    }
+  ],
+  "outliner": [
+    "10ce6be8-204d-4df1-ac85-b6dfaa4ce9b2"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/raw_nerosium_block.png",
+      "name": "raw_nerosium_block.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "0c2270f5-d1cf-42bd-a451-3f7dc4d24ecf",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/raw_nerosium_block.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsElEQVR4nKWTMWvbUBSFv0oCWZORIgi4Qzt5apZCTKZ2C4RQCCFTyVT0G0q2ks30NwhPmU2nZDbJFGgGJ2QwHZJCAwHzRAcjCSS1w8t9emrGvu29e865554rvTh6+/EP/3E8gIufVxRV3CnkdUPoK3PPysjcBZvXDY4U5WHU36PnLZ+RhZiVEXnd0POWAFpAyONBwueXU0PKyoiiiglcDRNS6CvjwpGH99E+G2spr14PORlGHQf2OONBQlHFRsyTbrNyyk4vAVIOF8rYlgZZGXHzYcjm6eR5iAI6fpyQP0Do07FdVDGhv2Tz9IdxBDHQaAEBi1XdvXkSwAQotjWZNoOet+wkLaLjQcL59pbVtc2kk4FOWhfswM4KBd/fMeq/Yb5KzXYC1zENPVtVUt5Y00Fe/v7GTDVPjmKDGfX3mK9SsjJqRwhch8B1OquUcO0Vhr4yZJOBvbKDW4f7uwUHt44Vmj7HjxPOt7c4GUaMB0krELgtOK8bvv7aNyRb/Mv6J+7vFhwuFEcPaSsgQPkH5quUvG7MZ1xUev6zQrF7jdmSCVHCsbv9uzqAmZpaOF37C9+c5+Ld/9yaAAAAAElFTkSuQmCC"
+    }
+  ]
+}

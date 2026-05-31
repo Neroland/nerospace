@@ -30,6 +30,14 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
                 block -> createOreDrop(block, ModItems.RAW_NEROSIUM.get()));
         add(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),
                 block -> createOreDrop(block, ModItems.RAW_NEROSIUM.get()));
+
+        // Phase 3 — Greenxertz.
+        dropSelf(ModBlocks.NEROSTEEL_BLOCK.get());
+        add(ModBlocks.NEROSTEEL_ORE.get(),
+                block -> createOreDrop(block, ModItems.RAW_NEROSTEEL.get()));
+        // Xertz quartz behaves like nether quartz: the gem drops directly (fortune-affected).
+        add(ModBlocks.XERTZ_QUARTZ_ORE.get(),
+                block -> createOreDrop(block, ModItems.XERTZ_QUARTZ.get()));
     }
 
     @Override

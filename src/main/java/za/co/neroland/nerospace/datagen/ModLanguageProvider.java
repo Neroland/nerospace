@@ -30,13 +30,28 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.RAW_NEROSIUM_BLOCK.get(), "Block of Raw Nerosium");
         add(ModBlocks.NEROSIUM_GRINDER.get(), "Nerosium Grinder");
 
+        // Phase 3 blocks.
+        add(ModBlocks.NEROSTEEL_ORE.get(), "Nerosteel Ore");
+        add(ModBlocks.XERTZ_QUARTZ_ORE.get(), "Xertz Quartz Ore");
+        add(ModBlocks.NEROSTEEL_BLOCK.get(), "Block of Nerosteel");
+
         // Items.
         add(ModItems.RAW_NEROSIUM.get(), "Raw Nerosium");
         add(ModItems.NEROSIUM_INGOT.get(), "Nerosium Ingot");
         add(ModItems.NEROSIUM_DUST.get(), "Nerosium Dust");
         add(ModItems.NEROSIUM_PICKAXE.get(), "Nerosium Pickaxe");
 
+        // Phase 3 items.
+        add(ModItems.RAW_NEROSTEEL.get(), "Raw Nerosteel");
+        add(ModItems.NEROSTEEL_INGOT.get(), "Nerosteel Ingot");
+        add(ModItems.XERTZ_QUARTZ.get(), "Xertz Quartz");
+        add(ModItems.GREENXERTZ_NAVIGATOR.get(), "Greenxertz Navigator");
+
         // Containers / GUI.
         add("container.nerospace.nerosium_grinder", "Nerosium Grinder");
+
+        // Greenxertz Navigator action feedback.
+        add("item.nerospace.greenxertz_navigator.travel", "Transported to Greenxertz");
+        add("item.nerospace.greenxertz_navigator.return", "Returned to the overworld");
     }
 }

@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
 
 /**
  * Central item registry for Nerospace (Phase 1 — materials slice).
@@ -41,11 +42,28 @@ public final class ModItems {
     // Phase 2: grinder output.
     public static final DeferredItem<Item> NEROSIUM_DUST = ITEMS.registerSimpleItem("nerosium_dust");
 
+    // Phase 3: Greenxertz materials.
+    public static final DeferredItem<Item> RAW_NEROSTEEL = ITEMS.registerSimpleItem("raw_nerosteel");
+    public static final DeferredItem<Item> NEROSTEEL_INGOT = ITEMS.registerSimpleItem("nerosteel_ingot");
+    /** Xertz quartz gem — dropped directly when mining xertz quartz ore (nether-quartz analogue). */
+    public static final DeferredItem<Item> XERTZ_QUARTZ = ITEMS.registerSimpleItem("xertz_quartz");
+
     // --- Tools --------------------------------------------------------------
 
     public static final DeferredItem<Item> NEROSIUM_PICKAXE = ITEMS.registerItem(
             "nerosium_pickaxe",
             props -> new Item(props.pickaxe(NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F)));
+
+    // --- Travel (Phase 3, temporary; replaced by rockets in Phase 4) --------
+
+    /**
+     * Greenxertz Navigator — a placeholder travel device. Right-click to toggle between the
+     * overworld and the Greenxertz dimension (server-side). Crafted from overworld materials so it
+     * is obtainable before ever reaching the planet.
+     */
+    public static final DeferredItem<Item> GREENXERTZ_NAVIGATOR = ITEMS.registerItem(
+            "greenxertz_navigator",
+            props -> new GreenxertzNavigatorItem(props.stacksTo(1)));
 
     // --- Block items --------------------------------------------------------
 
@@ -59,6 +77,14 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.RAW_NEROSIUM_BLOCK);
     public static final DeferredItem<BlockItem> NEROSIUM_GRINDER_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.NEROSIUM_GRINDER);
+
+    // Phase 3 block items.
+    public static final DeferredItem<BlockItem> NEROSTEEL_ORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.NEROSTEEL_ORE);
+    public static final DeferredItem<BlockItem> XERTZ_QUARTZ_ORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.XERTZ_QUARTZ_ORE);
+    public static final DeferredItem<BlockItem> NEROSTEEL_BLOCK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.NEROSTEEL_BLOCK);
 
     private ModItems() {
     }

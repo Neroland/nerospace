@@ -4,6 +4,9 @@
     "nerospace:deepslate_nerosium_ore",
     "nerospace:nerosium_block",
     "nerospace:raw_nerosium_block",
-    "nerospace:nerosium_grinder"
+    "nerospace:nerosium_grinder",
+    "nerospace:nerosteel_ore",
+    "nerospace:xertz_quartz_ore",
+    "nerospace:nerosteel_block"
   ]
 }

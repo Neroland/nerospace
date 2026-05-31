@@ -23,6 +23,9 @@ import za.co.neroland.nerospace.registry.ModBlocks;
 public final class ModConfiguredFeatures {
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> NEROSIUM_ORE = registerKey("nerosium_ore");
+    // Phase 3 — Greenxertz dimension ores.
+    public static final ResourceKey<ConfiguredFeature<?, ?>> NEROSTEEL_ORE = registerKey("nerosteel_ore");
+    public static final ResourceKey<ConfiguredFeature<?, ?>> XERTZ_QUARTZ_ORE = registerKey("xertz_quartz_ore");
 
     private ModConfiguredFeatures() {
     }
@@ -36,6 +39,18 @@ public final class ModConfiguredFeatures {
                 OreConfiguration.target(deepslateReplaceables, ModBlocks.DEEPSLATE_NEROSIUM_ORE.get().defaultBlockState()));
 
         context.register(NEROSIUM_ORE, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(nerosiumTargets, 9)));
+
+        // The Greenxertz biome uses overworld-style stone/deepslate, so both ores replace the same
+        // stone/deepslate target tags. A single block per material is reused at all depths.
+        List<OreConfiguration.TargetBlockState> nerosteelTargets = List.of(
+                OreConfiguration.target(stoneReplaceables, ModBlocks.NEROSTEEL_ORE.get().defaultBlockState()),
+                OreConfiguration.target(deepslateReplaceables, ModBlocks.NEROSTEEL_ORE.get().defaultBlockState()));
+        context.register(NEROSTEEL_ORE, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(nerosteelTargets, 9)));
+
+        List<OreConfiguration.TargetBlockState> xertzQuartzTargets = List.of(
+                OreConfiguration.target(stoneReplaceables, ModBlocks.XERTZ_QUARTZ_ORE.get().defaultBlockState()),
+                OreConfiguration.target(deepslateReplaceables, ModBlocks.XERTZ_QUARTZ_ORE.get().defaultBlockState()));
+        context.register(XERTZ_QUARTZ_ORE, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(xertzQuartzTargets, 14)));
     }
 
     private static ResourceKey<ConfiguredFeature<?, ?>> registerKey(String name) {

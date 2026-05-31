@@ -13,7 +13,9 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.world.ModBiomeModifiers;
+import za.co.neroland.nerospace.world.ModBiomes;
 import za.co.neroland.nerospace.world.ModConfiguredFeatures;
 import za.co.neroland.nerospace.world.ModPlacedFeatures;
 
@@ -28,7 +30,10 @@ public final class DataGenerators {
     public static final RegistrySetBuilder REGISTRY_SET_BUILDER = new RegistrySetBuilder()
             .add(Registries.CONFIGURED_FEATURE, ModConfiguredFeatures::bootstrap)
             .add(Registries.PLACED_FEATURE, ModPlacedFeatures::bootstrap)
-            .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModBiomeModifiers::bootstrap);
+            .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModBiomeModifiers::bootstrap)
+            // Phase 3 — Greenxertz dimension (reuses the vanilla overworld dimension type).
+            .add(Registries.BIOME, ModBiomes::bootstrap)
+            .add(Registries.LEVEL_STEM, ModDimensions::bootstrapStem);
 
     private DataGenerators() {
     }

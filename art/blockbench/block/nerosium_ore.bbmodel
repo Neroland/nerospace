@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "nerosium_ore",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "nerosium_ore",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "73cce7d1-dc8a-4058-9c92-ba55b1aa216e"
+    }
+  ],
+  "outliner": [
+    "73cce7d1-dc8a-4058-9c92-ba55b1aa216e"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/nerosium_ore.png",
+      "name": "nerosium_ore.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "3890ec7a-a9b7-45f8-8f6f-bdc05f576ce4",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/nerosium_ore.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB8klEQVR4nE2TP2iUQRDFf3dcsUw5fp0LsTKVYm0lWN0RUGIQAunETuFASATrgMWJhXbnWWknZ3NcwJBW4QoRsTGIJLAEkWVJtQw2sfjY5Ztq/83Me2/e9sbj8UXTNAA45zAzYoyICCKCc44SIQREBFUlhEDTNPS99zU5hECMEe89IkLOuSanlCiNUkp478k50zezmly6mhkAIkJKCTNDVQHIOdfznDODbkcRqWhKdNddRDnnlkKBpKrEGHm28Yit+ZwQQkViZoQQOH+vlUalUKqZWXv56Q/vRiMAYoyklIgxcvvgOruX5zjnKipVpV8qnk0dO8slL/oLdpZLRATvParKv4+eL/d+sXb3LVvzOb9fUZH1JpPJRYHqnGN9qhwNv3M4W3Hn8a06yvWpcu3SGz5sbhJCwHtPCKEtUA5KFC9476vah7MV23sjYoz1nfe+1aBUK2aJMVaxAJqmYXtvhHMOEal3IQQGZkbOuXbz3lf1S1FVJaVUvVHQAfS7xlBVzIyzaav0y7/njFerKlrOuU7EzDCzlkLX6wBDpzz5+gNuPGXtylWGThER9u/v0jQNGw9uVlP1C6TirBgjPx8mTk+O4dtzTk+OObAW/v7iNTlnFrPPlUqv/MYurxKFVnff1QFg0LVm+aLdKRSRi5jdEQP8Bz7lNqKw5i5nAAAAAElFTkSuQmCC"
+    }
+  ]
+}

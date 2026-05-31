@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "nerosium_grinder",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "nerosium_grinder",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "819b4881-3728-466f-ba7e-681b3cd04369"
+    }
+  ],
+  "outliner": [
+    "819b4881-3728-466f-ba7e-681b3cd04369"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/nerosium_grinder.png",
+      "name": "nerosium_grinder.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "d0f36f21-308f-436c-9db3-6f90f405cdc2",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/nerosium_grinder.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABdklEQVR4nKWSMU8CQRCFP4wNx4ZYECRq4nleKPwJFjZaWBhj/Am0JJSGX0BhT0tFRWGIsaBQCwsLCiKxJQQTJcvlqnMPSixwlzsusZBp5nZy8968mZeqVmpz1oiNdZpb7Sab0UKv38XzJVbaorC9g1IKz5fkcwVUGCAyWYQQFA+P6PW7AEsAXdDNcjKOsYlMFs+XQIGX10dTNwCaSXoS6clYc/AdmG/HdhFCoJQC5HIHju3+MsDz3hbnqVIiA8jJGKUUQgggssToyLdf19zs3iUywHQ2RYUBw9EgDiAyWQOgm+rlC/avGuYd3ZFju3GAaEQZV9+aKDGBCgOstBWb4KNdolx/iE3g+ZLhaEA+V0hK0Oh/7WB14bEzal2deYPOJ8BqxvyjwwBYaYvhaIB7UDSui8qDxQW0dsd2eXvvLSWcHJ8Zk2jLCiHwfMl0No0Bnp9eJifoPN3j2C7D0QArbRmNju0a46hwcUJte4BUtVKbt9pN/hs/jQq8vGUHD7oAAAAASUVORK5CYII="
+    }
+  ]
+}
