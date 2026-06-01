@@ -99,6 +99,16 @@ public class ModLanguageProvider extends LanguageProvider {
         // Fuel tank status (action-bar readout).
         add("block.nerospace.fuel_tank.status", "Fuel Tank: %s / %s mB");
 
+        // Oxygen generator GUI.
+        add("container.nerospace.oxygen_generator", "Oxygen Generator");
+        add("gui.nerospace.oxygen_generator.power", "Power: %s%%");
+        add("gui.nerospace.oxygen_generator.burning", "Burning");
+        add("gui.nerospace.oxygen_generator.idle", "Idle");
+
+        // Fuel tank GUI.
+        add("container.nerospace.fuel_tank", "Fuel Tank");
+        add("gui.nerospace.fuel_tank.level", "Fuel: %s%% (%s / %s mB)");
+
         // Containers / GUI.
         add("container.nerospace.nerosium_grinder", "Nerosium Grinder");
         add("container.nerospace.rocket", "Rocket");

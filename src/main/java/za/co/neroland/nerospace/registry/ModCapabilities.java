@@ -1,11 +1,14 @@
 package za.co.neroland.nerospace.registry;
 
+import net.minecraft.core.Direction;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.transfer.RangedResourceHandler;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 
 /**
  * Capability providers (Phase 2). Exposes the grinder's internal energy buffer via the NeoForge
@@ -39,5 +42,20 @@ public final class ModCapabilities {
                 Capabilities.Fluid.BLOCK,
                 ModBlockEntities.FUEL_TANK.get(),
                 (blockEntity, side) -> blockEntity.getTank());
+
+        // Item: let hoppers/pipes feed the machines.
+        // Oxygen Generator — the single fuel slot (any side).
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.OXYGEN_GENERATOR.get(),
+                (blockEntity, side) -> blockEntity.getFuelHandler());
+
+        // Nerosium Grinder — sided: insert into the input from the top/sides, extract output below.
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.NEROSIUM_GRINDER.get(),
+                (blockEntity, side) -> side == Direction.DOWN
+                        ? RangedResourceHandler.ofSingleIndex(blockEntity.getItemHandler(), NerosiumGrinderBlockEntity.OUTPUT_SLOT)
+                        : RangedResourceHandler.ofSingleIndex(blockEntity.getItemHandler(), NerosiumGrinderBlockEntity.INPUT_SLOT));
     }
 }

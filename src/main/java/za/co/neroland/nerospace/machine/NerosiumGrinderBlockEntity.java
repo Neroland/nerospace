@@ -16,8 +16,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -43,6 +46,26 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final GrinderEnergy energy = new GrinderEnergy();
     private int progress;
+
+    /**
+     * Transfer-API view of the inventory for {@code Capabilities.Item.BLOCK} (hopper/pipe access),
+     * sharing the same backing list as the {@link Container}. Only grindable items may be inserted
+     * into the input slot; the output slot rejects external insertion (extraction is always allowed).
+     */
+    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(this.items) {
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            if (index == OUTPUT_SLOT) {
+                return false;
+            }
+            return !GrinderRecipes.getResult(resource.toStack(1)).isEmpty();
+        }
+
+        @Override
+        protected void onContentsChanged(int index, ItemStack oldStack) {
+            NerosiumGrinderBlockEntity.this.setChanged();
+        }
+    };
 
     /** Synced to the open menu: [0]=progress, [1]=maxProgress, [2]=energy, [3]=capacity. */
     private final ContainerData dataAccess = new ContainerData() {
@@ -77,6 +100,11 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
     /** Exposed to {@code RegisterCapabilitiesEvent} for {@code Capabilities.Energy.BLOCK}. */
     public EnergyHandler getEnergyHandler() {
         return this.energy;
+    }
+
+    /** Exposed to {@code RegisterCapabilitiesEvent} for {@code Capabilities.Item.BLOCK}. */
+    public ResourceHandler<ItemResource> getItemHandler() {
+        return this.itemHandler;
     }
 
     // --- Ticking ------------------------------------------------------------

@@ -1,8 +1,12 @@
 package za.co.neroland.nerospace.world;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -69,10 +73,13 @@ public final class GreenxertzAtmosphere {
 
         // The scan is throttled; oxygen still mirrors to the HUD every tick from the stored value.
         if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
-            // A full Oxygen Suit is personal life support; otherwise look for a breathable zone.
-            boolean safe = isWearingFullSuit(player) || isBreathable(level, player.blockPosition());
-            if (safe) {
+            BlockPos pos = player.blockPosition();
+            if (isBreathable(level, pos) || isInSealedRoom(level, pos)) {
+                // A breathable zone (pad radius, generator bubble, or a sealed oxygenated room) refills.
                 oxygen = max;
+            } else if (isWearingFullSuit(player)) {
+                // The Oxygen Suit's finite air tank drains slowly while exposed.
+                oxygen = Math.max(0, oxygen - Config.OXYGEN_SUIT_DRAIN.get());
             } else {
                 oxygen = Math.max(0, oxygen - Config.OXYGEN_DRAIN_PER_TICK.get() * CHECK_INTERVAL_TICKS);
             }
@@ -131,6 +138,51 @@ public final class GreenxertzAtmosphere {
             }
         }
         return false;
+    }
+
+    /**
+     * Flood-fills the air space the player stands in. If it is fully enclosed (the fill terminates
+     * under {@code oxygenSealedRoomMax}) and borders an active Oxygen Generator, the whole room is
+     * oxygenated — so a sealed base is breathable even outside the generator's raw bubble radius. An
+     * open/unsealed space hits the cap and returns false.
+     */
+    private static boolean isInSealedRoom(Level level, BlockPos start) {
+        int cap = Config.OXYGEN_SEALED_ROOM_MAX.get();
+        if (cap <= 0 || !isPassable(level.getBlockState(start))) {
+            return false;
+        }
+
+        Set<BlockPos> visited = new HashSet<>();
+        Deque<BlockPos> queue = new ArrayDeque<>();
+        queue.add(start.immutable());
+        visited.add(start.immutable());
+        boolean servedByGenerator = false;
+
+        while (!queue.isEmpty()) {
+            if (visited.size() > cap) {
+                return false; // not sealed — open to the outside
+            }
+            BlockPos pos = queue.poll();
+            for (Direction dir : Direction.values()) {
+                BlockPos next = pos.relative(dir);
+                BlockState state = level.getBlockState(next);
+                if (isPassable(state)) {
+                    if (visited.add(next.immutable())) {
+                        queue.add(next.immutable());
+                    }
+                } else if (state.is(ModBlocks.OXYGEN_GENERATOR.get())
+                        && level.getBlockEntity(next) instanceof OxygenGeneratorBlockEntity gen
+                        && gen.isActive()) {
+                    servedByGenerator = true;
+                }
+            }
+        }
+        return servedByGenerator;
+    }
+
+    /** Air the player can breathe through for the sealed-room fill (air-only for now). */
+    private static boolean isPassable(BlockState state) {
+        return state.isAir();
     }
 
     /** @return true if all four Oxygen Suit pieces are worn (personal life support). */

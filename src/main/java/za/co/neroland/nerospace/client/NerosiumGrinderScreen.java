@@ -1,27 +1,40 @@
 package za.co.neroland.nerospace.client;
 
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
+import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.NerosiumGrinderMenu;
 
 /**
- * Screen for the Nerosium Grinder.
- *
- * <p>26.1 rewrote GUI rendering around a render-state submission model
- * ({@code GuiGraphicsExtractor}, {@code extractBackground}/{@code extractLabels}) and made the
- * {@code imageWidth}/{@code imageHeight} fields final (set via the super constructor). For now this
- * is a minimal functional screen using the default background; energy/progress visuals (synced via
- * the menu's {@code ContainerData}) can be drawn by overriding {@code extractBackground} with the
- * new {@code GuiGraphicsExtractor} once the slice is verified.</p>
+ * Screen for the Nerosium Grinder (Phase 9b): sci-fi panel with an energy gauge and a grind-progress
+ * gauge between the input and output slots.
  */
-public class NerosiumGrinderScreen extends AbstractContainerScreen<NerosiumGrinderMenu> {
+public class NerosiumGrinderScreen extends TexturedContainerScreen<NerosiumGrinderMenu> {
+
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/gui/nerosium_grinder.png");
+    private static final int ACCENT = 0xFFD23A8C;     // nerosium magenta
 
     public NerosiumGrinderScreen(NerosiumGrinderMenu menu, Inventory playerInventory, Component title) {
-        // Width/height of the background bounds (176x166 is the default and could be omitted).
-        super(menu, playerInventory, title, 176, 166);
+        super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;
+    }
+
+    @Override
+    protected void extractForeground(GuiGraphicsExtractor g) {
+        int energy = this.menu.getEnergy();
+        int max = this.menu.getMaxEnergy();
+        int pct = max == 0 ? 0 : energy * 100 / max;
+        float energyFrac = max == 0 ? 0f : (float) energy / max;
+
+        label(g, Component.literal("Power: " + pct + "%"), 8, 18, 0xFFE9C2DC);
+        hGauge(g, 8, 28, 160, 4, energyFrac, ACCENT);
+
+        // Grind progress arrow between input (56,35) and output (116,35).
+        hGauge(g, 78, 40, 22, 6, this.menu.getScaledProgress(1000) / 1000f, 0xFF9CF06A);
     }
 }

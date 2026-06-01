@@ -56,6 +56,16 @@ public class Config {
             .comment("Radius (blocks) of the breathable bubble around an active Oxygen Generator.")
             .defineInRange("oxygenBubbleRadius", 5, 0, 32);
 
+    public static final ModConfigSpec.IntValue OXYGEN_SUIT_DRAIN = BUILDER
+            .comment("Oxygen drained per ~0.5s while wearing a full Oxygen Suit off a safe zone "
+                    + "(its finite air tank). Lower = the suit lasts longer; 0 = the suit never runs out.")
+            .defineInRange("oxygenSuitDrain", 1, 0, 300);
+
+    public static final ModConfigSpec.IntValue OXYGEN_SEALED_ROOM_MAX = BUILDER
+            .comment("Max air blocks the sealed-room scan will flood-fill from an active Oxygen "
+                    + "Generator. Larger = bigger habitable rooms but more work; 0 disables sealed rooms.")
+            .defineInRange("oxygenSealedRoomMax", 600, 0, 4096);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {

@@ -4,11 +4,18 @@ import java.util.Set;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+
+import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.fluid.RocketFuelTank;
 import za.co.neroland.nerospace.rocket.LaunchPadMultiblock;
@@ -24,7 +31,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  * handling stay in one place. A complete 3x3 pad footprint pumps faster than a partial cluster,
  * giving players a reason to build the full multiblock.</p>
  */
-public class FuelTankBlockEntity extends BlockEntity {
+public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int CAPACITY = 32_000;
     /** Fuel moved per tick into a rocket on a partial pad cluster. */
@@ -36,8 +43,43 @@ public class FuelTankBlockEntity extends BlockEntity {
 
     private final RocketFuelTank tank = new RocketFuelTank(CAPACITY, this::setChanged);
 
+    /** Synced to the open menu: [0]=fuel, [1]=capacity. */
+    private final ContainerData dataAccess = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return index == 0 ? tank.getAmount() : tank.getCapacity();
+        }
+
+        @Override
+        public void set(int index, int value) {
+            // Read-only from the client.
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+    };
+
     public FuelTankBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FUEL_TANK.get(), pos, state);
+    }
+
+    public ContainerData getDataAccess() {
+        return this.dataAccess;
+    }
+
+    // --- MenuProvider -------------------------------------------------------
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("container.nerospace.fuel_tank");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new FuelTankMenu(containerId, playerInventory, this.dataAccess);
     }
 
     // --- Fuel access (used by the block's item interaction) -----------------

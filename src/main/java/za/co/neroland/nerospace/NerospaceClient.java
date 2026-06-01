@@ -14,7 +14,9 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 import za.co.neroland.nerospace.client.GreenxertzCreatureModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureRenderer;
+import za.co.neroland.nerospace.client.FuelTankScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
+import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
 import za.co.neroland.nerospace.client.RocketModel;
 import za.co.neroland.nerospace.client.RocketRenderer;
 import za.co.neroland.nerospace.client.RocketScreen;
@@ -41,6 +43,8 @@ public class NerospaceClient {
     @SubscribeEvent
     static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
+        event.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
+        event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
         event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
     }
 

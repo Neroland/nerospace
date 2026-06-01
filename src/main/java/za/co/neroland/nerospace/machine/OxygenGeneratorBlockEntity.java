@@ -1,30 +1,44 @@
 package za.co.neroland.nerospace.machine;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+
+import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
- * Oxygen Generator (Phase 8c/8d): a machine that projects a breathable bubble while powered. It runs
- * on an internal energy buffer (exposed via {@code Capabilities.Energy.BLOCK}) that is replenished by
- * <b>burning fuel</b> — coal, charcoal, a blaze rod, or a rocket fuel canister placed in its single
- * fuel slot (right-click to insert; hopper-fed for automation). While burning it charges the buffer
- * and stays active; once the fuel and buffer are spent it goes idle and the bubble collapses.
- * {@code GreenxertzAtmosphere} treats the area within {@code oxygenBubbleRadius} of an active
- * generator as oxygenated.
+ * Oxygen Generator (Phase 8c/8d/9): projects a breathable bubble while powered. It runs on an
+ * internal energy buffer (exposed via {@code Capabilities.Energy.BLOCK}) replenished by burning a
+ * fuel item — coal, charcoal, a blaze rod, or a rocket fuel canister. The single fuel slot is shown
+ * in the machine's GUI, fillable by hand, and exposed via {@code Capabilities.Item.BLOCK} so hoppers
+ * and pipes can feed it. Idle once fuel + buffer are spent; {@code GreenxertzAtmosphere} treats the
+ * area within {@code oxygenBubbleRadius} of an active generator as oxygenated.
  */
-public class OxygenGeneratorBlockEntity extends BlockEntity {
+public class OxygenGeneratorBlockEntity extends BlockEntity implements Container, MenuProvider {
+
+    public static final int FUEL_SLOT = 0;
+    public static final int SIZE = 1;
 
     public static final int ENERGY_CAPACITY = 10_000;
     public static final int ENERGY_MAX_INSERT = 500;
@@ -33,11 +47,52 @@ public class OxygenGeneratorBlockEntity extends BlockEntity {
     /** Minimum stored energy for the generator to count as active. */
     public static final int ACTIVE_THRESHOLD = RUN_PER_TICK;
 
+    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final GeneratorEnergy energy = new GeneratorEnergy();
-    /** Single fuel slot (right-click or hopper-fed). */
-    private final SimpleContainer fuelSlot = new SimpleContainer(1);
-    /** Remaining burn ticks of the current fuel item. */
+    /** A transfer-API view of the fuel slot for {@code Capabilities.Item.BLOCK} (hopper feeding). */
+    private final ItemStacksResourceHandler fuelHandler = new ItemStacksResourceHandler(this.items) {
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            return fuelValue(resource.toStack(1)) > 0;
+        }
+
+        @Override
+        protected void onContentsChanged(int index, ItemStack oldStack) {
+            OxygenGeneratorBlockEntity.this.setChanged();
+        }
+    };
+
+    /** Remaining burn ticks of the current fuel item, and the value it started with (for the gauge). */
     private int burnTime;
+    private int maxBurnTime;
+
+    /** Synced to the open menu: [0]=energy, [1]=capacity, [2]=burnTime, [3]=maxBurnTime. */
+    private final ContainerData dataAccess = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> energy.getAmountAsInt();
+                case 1 -> energy.getCapacityAsInt();
+                case 2 -> burnTime;
+                case 3 -> maxBurnTime;
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            switch (index) {
+                case 2 -> burnTime = value;
+                case 3 -> maxBurnTime = value;
+                default -> { }
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
+    };
 
     public OxygenGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.OXYGEN_GENERATOR.get(), pos, state);
@@ -48,9 +103,13 @@ public class OxygenGeneratorBlockEntity extends BlockEntity {
         return this.energy;
     }
 
-    /** The fuel slot (for the block's interaction and future item automation). */
-    public SimpleContainer getFuelSlot() {
-        return this.fuelSlot;
+    /** Exposed to {@code RegisterCapabilitiesEvent} for {@code Capabilities.Item.BLOCK}. */
+    public ResourceHandler<ItemResource> getFuelHandler() {
+        return this.fuelHandler;
+    }
+
+    public ContainerData getDataAccess() {
+        return this.dataAccess;
     }
 
     /** Whether the generator is currently powering a breathable bubble. */
@@ -60,13 +119,13 @@ public class OxygenGeneratorBlockEntity extends BlockEntity {
 
     /** Burn value (ticks of charging) for an accepted fuel item, or 0 if not a fuel. */
     public static int fuelValue(ItemStack stack) {
-        if (stack.is(Items.COAL) || stack.is(Items.CHARCOAL)) {
+        if (stack.is(net.minecraft.world.item.Items.COAL) || stack.is(net.minecraft.world.item.Items.CHARCOAL)) {
             return 1_600;
         }
-        if (stack.is(Items.COAL_BLOCK)) {
+        if (stack.is(net.minecraft.world.item.Items.COAL_BLOCK)) {
             return 16_000;
         }
-        if (stack.is(Items.BLAZE_ROD)) {
+        if (stack.is(net.minecraft.world.item.Items.BLAZE_ROD)) {
             return 2_400;
         }
         if (stack.is(ModItems.ROCKET_FUEL_CANISTER.get())) {
@@ -84,13 +143,15 @@ public class OxygenGeneratorBlockEntity extends BlockEntity {
             this.burnTime--;
             this.energy.generate(GENERATE_PER_TICK);
         } else {
-            // Start the next fuel item if one is available.
-            ItemStack fuel = this.fuelSlot.getItem(0);
+            ItemStack fuel = this.items.get(FUEL_SLOT);
             int value = fuelValue(fuel);
             if (value > 0 && this.energy.getAmountAsInt() < ENERGY_CAPACITY) {
                 this.burnTime = value;
+                this.maxBurnTime = value;
                 fuel.shrink(1);
                 setChanged();
+            } else if (this.maxBurnTime != 0) {
+                this.maxBurnTime = 0;
             }
         }
 
@@ -107,7 +168,8 @@ public class OxygenGeneratorBlockEntity extends BlockEntity {
         super.saveAdditional(output);
         this.energy.serialize(output.child("Energy"));
         output.putInt("BurnTime", this.burnTime);
-        output.store("Fuel", ItemStack.OPTIONAL_CODEC, this.fuelSlot.getItem(0));
+        output.putInt("MaxBurnTime", this.maxBurnTime);
+        output.store("Fuel", ItemStack.OPTIONAL_CODEC, this.items.get(FUEL_SLOT));
     }
 
     @Override
@@ -115,7 +177,83 @@ public class OxygenGeneratorBlockEntity extends BlockEntity {
         super.loadAdditional(input);
         this.energy.deserialize(input.childOrEmpty("Energy"));
         this.burnTime = input.getIntOr("BurnTime", 0);
-        this.fuelSlot.setItem(0, input.read("Fuel", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.maxBurnTime = input.getIntOr("MaxBurnTime", 0);
+        this.items.set(FUEL_SLOT, input.read("Fuel", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+    }
+
+    // --- MenuProvider -------------------------------------------------------
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("container.nerospace.oxygen_generator");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new OxygenGeneratorMenu(containerId, playerInventory, this, this.dataAccess);
+    }
+
+    // --- Container ----------------------------------------------------------
+
+    @Override
+    public int getContainerSize() {
+        return SIZE;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.items.get(FUEL_SLOT).isEmpty();
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return this.items.get(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        ItemStack stack = ContainerHelper.removeItem(this.items, slot, amount);
+        if (!stack.isEmpty()) {
+            setChanged();
+        }
+        return stack;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        ItemStack stack = ContainerHelper.takeItem(this.items, slot);
+        setChanged();
+        return stack;
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        stack.limitSize(Math.min(this.getMaxStackSize(), stack.getMaxStackSize()));
+        this.items.set(slot, stack);
+        setChanged();
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return fuelValue(stack) > 0;
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        if (this.level == null || this.level.getBlockEntity(this.worldPosition) != this) {
+            return false;
+        }
+        return player.distanceToSqr(
+                this.worldPosition.getX() + 0.5,
+                this.worldPosition.getY() + 0.5,
+                this.worldPosition.getZ() + 0.5) <= 64.0;
+    }
+
+    @Override
+    public void clearContent() {
+        this.items.clear();
+        setChanged();
     }
 
     /** Internal energy buffer: receives power but does not allow extraction by others. */
