@@ -11,6 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.item.DestinationCompassItem;
 import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
 import za.co.neroland.nerospace.rocket.RocketItem;
 import za.co.neroland.nerospace.rocket.RocketTier;
@@ -72,6 +73,17 @@ public final class ModItems {
     public static final DeferredItem<Item> GREENXERTZ_NAVIGATOR = ITEMS.registerItem(
             "greenxertz_navigator",
             props -> new GreenxertzNavigatorItem(props.stacksTo(1)));
+
+    // Creative-only destination compasses (Phase 7 polish) — one-click travel for testing/building.
+    public static final DeferredItem<Item> STATION_COMPASS = ITEMS.registerItem(
+            "station_compass",
+            props -> new DestinationCompassItem(props.stacksTo(1), ModDimensions.STATION_LEVEL));
+    public static final DeferredItem<Item> GREENXERTZ_COMPASS = ITEMS.registerItem(
+            "greenxertz_compass",
+            props -> new DestinationCompassItem(props.stacksTo(1), ModDimensions.GREENXERTZ_LEVEL));
+    public static final DeferredItem<Item> CINDARA_COMPASS = ITEMS.registerItem(
+            "cindara_compass",
+            props -> new DestinationCompassItem(props.stacksTo(1), ModDimensions.CINDARA_LEVEL));
 
     // --- Rockets (Phase 4) --------------------------------------------------
 

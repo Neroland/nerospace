@@ -63,8 +63,11 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.ROCKET_TIER_2.get());
                         output.accept(ModItems.ROCKET_TIER_3.get());
 
-                        // Creative-only legacy travel device (replaced by rockets; no survival recipe).
+                        // Creative-only travel devices (no survival recipe).
                         output.accept(ModItems.GREENXERTZ_NAVIGATOR.get());
+                        output.accept(ModItems.STATION_COMPASS.get());
+                        output.accept(ModItems.GREENXERTZ_COMPASS.get());
+                        output.accept(ModItems.CINDARA_COMPASS.get());
                     })
                     .build());
 

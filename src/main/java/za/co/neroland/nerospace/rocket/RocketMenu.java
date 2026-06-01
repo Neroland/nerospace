@@ -21,7 +21,8 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
 public class RocketMenu extends AbstractContainerMenu {
 
     public static final int BUTTON_LAUNCH = 0;
-    private static final int DATA_COUNT = 4;
+    public static final int BUTTON_CYCLE_DEST = 1;
+    private static final int DATA_COUNT = 5;
 
     private final ContainerData data;
     @Nullable
@@ -51,8 +52,15 @@ public class RocketMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (id == BUTTON_LAUNCH && this.rocket != null) {
+        if (this.rocket == null) {
+            return false;
+        }
+        if (id == BUTTON_LAUNCH) {
             this.rocket.startLaunch();
+            return true;
+        }
+        if (id == BUTTON_CYCLE_DEST) {
+            this.rocket.cycleDestination();
             return true;
         }
         return false;
@@ -90,6 +98,21 @@ public class RocketMenu extends AbstractContainerMenu {
 
     public boolean isLaunchable() {
         return this.data.get(3) != 0;
+    }
+
+    public int getDestinationIndex() {
+        return this.data.get(4);
+    }
+
+    /** Display name of the currently selected destination, for the cycle button label. */
+    public String getDestinationName() {
+        net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> key =
+                getTier().destination(getDestinationIndex());
+        return key == null ? "—" : Destinations.name(key);
+    }
+
+    public boolean hasMultipleDestinations() {
+        return getTier().destinations().size() > 1;
     }
 
     /** @return fuel scaled to {@code pixels} (e.g. height of the fuel gauge). */

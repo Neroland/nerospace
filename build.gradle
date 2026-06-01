@@ -159,6 +159,17 @@ sourceSets.main.resources.srcDir generateModMetadata
 // To avoid having to run "generateModMetadata" manually, make it run on every project reload
 neoForge.ideSyncTask generateModMetadata
 
+// Regenerate the IDE run-argument files (build/moddev/*RunProgramArgs.txt, consumed by the generated
+// .vscode/launch.json and IntelliJ run configs) on EVERY Gradle/IDE sync. ModDevGradle does not do
+// this by default, so after a `neo_version` bump the launch configs keep passing the OLD --version
+// (e.g. the IDE still launches 26.1.2.68 though gradle.properties says .70) until a run is manually
+// triggered. Wiring the prepare tasks into the sync keeps the launchers pinned to the version in
+// gradle.properties. (The runtime classpath is refreshed separately by the Java extension, since
+// .vscode/settings.json sets java.configuration.updateBuildConfiguration = automatic.)
+['prepareClientRun', 'prepareServerRun', 'prepareGameTestServerRun', 'prepareDataRun'].each { runArgTask ->
+    neoForge.ideSyncTask tasks.named(runArgTask)
+}
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {

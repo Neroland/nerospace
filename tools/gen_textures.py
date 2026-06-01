@@ -509,6 +509,61 @@ def gen_rocket_fuel_canister():
     save(img, os.path.join(ITEM_DIR, "rocket_fuel_canister.png"))
 
 
+def gen_destination_compass(name, needle):
+    img = new_img()
+    px = img.load()
+    cx = cy = 8
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx + 0.5) ** 2 + (y - cy + 0.5) ** 2) ** 0.5
+            if d <= 7:
+                if d > 6:
+                    px[x, y] = METAL_D
+                elif d > 5:
+                    px[x, y] = METAL_L
+                else:
+                    px[x, y] = (40, 42, 52, 255)
+    # needle: coloured north half + white south half
+    for (x, y) in [(8, 4), (8, 5), (8, 6), (7, 5), (9, 5)]:
+        px[x, y] = needle
+    for (x, y) in [(8, 9), (8, 10), (8, 11)]:
+        px[x, y] = R_WHITE
+    px[8, 8] = (220, 220, 230, 255)
+    save(img, os.path.join(ITEM_DIR, name + ".png"))
+
+
+def gen_rocket_fuel_bucket():
+    img = new_img()
+    px = img.load()
+    # handle arc
+    for (x, y) in [(4, 3), (5, 2), (6, 2), (9, 2), (10, 2), (11, 3), (4, 4), (11, 4)]:
+        px[x, y] = R_GRAY
+    # rim
+    for x in range(3, 13):
+        px[x, 5] = R_WHITE
+    # body (narrowing trapezoid)
+    rows = {6: (3, 13), 7: (3, 13), 8: (4, 12), 9: (4, 12),
+            10: (4, 12), 11: (5, 11), 12: (5, 11), 13: (6, 10)}
+    for y, (x0, x1) in rows.items():
+        for x in range(x0, x1):
+            if x == x0:
+                px[x, y] = R_WHITE
+            elif x == x1 - 1:
+                px[x, y] = R_DARK
+            else:
+                px[x, y] = R_GRAY
+    # fuel surface (orange) just below the rim
+    for x in range(4, 12):
+        px[x, 6] = FUEL
+    for x in range(5, 11):
+        px[x, 7] = FUEL_D
+    px[6, 6] = FUEL_HI
+    px[9, 6] = FUEL_HI
+    for x in range(6, 10):
+        px[x, 13] = R_DARK
+    save(img, os.path.join(ITEM_DIR, "rocket_fuel_bucket.png"))
+
+
 def gen_rocket_launch_pad():
     rng = random.Random(701)
     img = new_img()
@@ -703,6 +758,10 @@ if __name__ == "__main__":
     # Phase 4 — rockets
     gen_rocket_launch_pad()
     gen_rocket_fuel_canister()
+    gen_rocket_fuel_bucket()
+    gen_destination_compass("station_compass", R_GRAY)
+    gen_destination_compass("greenxertz_compass", G_GREEN_L)
+    gen_destination_compass("cindara_compass", C_ORANGE)
     gen_rocket_tier("rocket_tier_1", N_RED, N_REDHI, N_MAG, boosters=False, glow=None)
     gen_rocket_tier("rocket_tier_2", N_PURPLE, N_MAG, N_GLOW, boosters=True, glow=None)
     gen_rocket_tier("rocket_tier_3", GOLD, G_GREEN_L, GOLD, boosters=True, glow=G_GLOW)

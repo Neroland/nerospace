@@ -40,7 +40,9 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.XERTZ_QUARTZ_ORE.get());
         blockModels.createTrivialCube(ModBlocks.NEROSTEEL_BLOCK.get());
 
-        // Phase 4 — launch pad (trivial cube for now; a proper pad model can be layered later).
+        // Phase 4 — launch pad: textured full cube (proper flat/raised shape comes with the planned
+        // 3x3 multiblock pad). A hand-authored flat slab model caused missing-texture at runtime, so
+        // this uses the reliable cube_all generator.
         blockModels.createTrivialCube(ModBlocks.ROCKET_LAUNCH_PAD.get());
 
         // Phase 7 — Cindara ore + storage block.
@@ -76,6 +78,11 @@ public class ModModelProvider extends ModelProvider {
 
         // Phase 7b — rocket fuel bucket.
         itemModels.generateFlatItem(ModItems.ROCKET_FUEL_BUCKET.get(), ModelTemplates.FLAT_ITEM);
+
+        // Phase 7 polish — destination compasses.
+        itemModels.generateFlatItem(ModItems.STATION_COMPASS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.GREENXERTZ_COMPASS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.CINDARA_COMPASS.get(), ModelTemplates.FLAT_ITEM);
 
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);

@@ -1,42 +1,38 @@
 package za.co.neroland.nerospace.rocket;
 
-import javax.annotation.Nullable;
+import java.util.List;
 
-import net.minecraft.world.level.Level;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.registry.ModDimensions;
 
 /**
- * Rocket progression tiers (Phase 4). Each tier defines its fuel tank capacity, the fuel burned per
- * launch (both in millibuckets), and the destination it can reach. Higher tiers have no destination
- * wired yet — they are the framework for future planets (Phase 7+) and are the natural place to gate
- * craftable add-on modules earned by visiting earlier planets.
+ * Rocket progression tiers. Each tier defines its fuel tank capacity, the fuel burned per launch
+ * (both in millibuckets), and the ordered list of destinations it can reach. Destinations are
+ * cumulative: a higher tier can still fly to every lower-tier destination, and the player picks the
+ * target in the in-rocket UI. The tier's <em>signature</em> destination (the newest one it unlocks)
+ * is the last entry and the default selection.
  *
- * <p>Fuel is modelled as a liquid quantity (mB) so the rocket reads as a fuel-tank machine; a full
- * NeoForge {@code Fluid}/bucket (with world placement + client fluid rendering) is a deliberate
- * follow-up once it can be validated in {@code runClient}.</p>
+ * <p>Progression: Tier 1 reaches the Orbital Station; Tier 2 adds Greenxertz; Tier 3 adds Cindara.</p>
  */
 public enum RocketTier {
 
-    /** Tier 1 — reaches Greenxertz, the Phase 3 planet. The MVP-completing rocket. */
-    TIER_1(1, 3_000, 1_000, ModDimensions.GREENXERTZ_LEVEL),
-    /** Tier 2 — reaches Cindara, the volcanic moon (Phase 7). */
-    TIER_2(2, 6_000, 2_000, ModDimensions.CINDARA_LEVEL),
-    /** Tier 3 — deep-space frame; reaches the Orbital Station (Phase 7c). */
-    TIER_3(3, 12_000, 4_000, ModDimensions.STATION_LEVEL);
+    TIER_1(1, 3_000, 1_000, List.of(ModDimensions.STATION_LEVEL)),
+    TIER_2(2, 6_000, 2_000, List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL)),
+    TIER_3(3, 12_000, 4_000, List.of(
+            ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL));
 
     private final int level;
     private final int fuelCapacity;
     private final int fuelPerLaunch;
-    @Nullable
-    private final ResourceKey<Level> destination;
+    private final List<ResourceKey<Level>> destinations;
 
-    RocketTier(int level, int fuelCapacity, int fuelPerLaunch, @Nullable ResourceKey<Level> destination) {
+    RocketTier(int level, int fuelCapacity, int fuelPerLaunch, List<ResourceKey<Level>> destinations) {
         this.level = level;
         this.fuelCapacity = fuelCapacity;
         this.fuelPerLaunch = fuelPerLaunch;
-        this.destination = destination;
+        this.destinations = destinations;
     }
 
     /** Human-facing tier number (1-based). */
@@ -54,15 +50,28 @@ public enum RocketTier {
         return this.fuelPerLaunch;
     }
 
-    /** The level this tier can fly to, or {@code null} if no destination is wired yet. */
-    @Nullable
-    public ResourceKey<Level> destination() {
-        return this.destination;
+    /** Ordered list of reachable destinations (lowest unlock first, signature destination last). */
+    public List<ResourceKey<Level>> destinations() {
+        return this.destinations;
     }
 
-    /** Whether this tier has somewhere to go (false for not-yet-built planets). */
+    /** Whether this tier can fly anywhere. */
     public boolean hasDestination() {
-        return this.destination != null;
+        return !this.destinations.isEmpty();
+    }
+
+    /** Default selection: the tier's signature (newest) destination. */
+    public int defaultDestinationIndex() {
+        return Math.max(0, this.destinations.size() - 1);
+    }
+
+    /** Safe destination lookup by index (clamped). */
+    public ResourceKey<Level> destination(int index) {
+        if (this.destinations.isEmpty()) {
+            return null;
+        }
+        int clamped = Math.floorMod(index, this.destinations.size());
+        return this.destinations.get(clamped);
     }
 
     /** Safe lookup by ordinal for persistence/synced data. */

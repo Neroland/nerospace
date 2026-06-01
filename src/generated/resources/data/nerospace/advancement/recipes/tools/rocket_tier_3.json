@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_cindrite": {
+    "has_station_wall": {
       "conditions": {
         "items": [
           {
-            "items": "nerospace:cindrite"
+            "items": "nerospace:station_wall"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_cindrite"
+      "has_station_wall"
     ]
   ],
   "rewards": {

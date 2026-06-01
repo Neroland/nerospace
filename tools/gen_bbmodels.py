@@ -40,7 +40,8 @@ BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
 ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "raw_nerosteel", "nerosteel_ingot", "xertz_quartz", "greenxertz_navigator",
          "rocket_fuel_canister", "rocket_tier_1", "rocket_tier_2", "rocket_tier_3",
-         "cindrite"]
+         "cindrite", "rocket_fuel_bucket",
+         "station_compass", "greenxertz_compass", "cindara_compass"]
 
 # Entity cube lists — keep in sync with the Java LayerDefinitions. Each cube is
 # (part_name, from[x,y,z], to[x,y,z], uv_offset[u,v]).  64x64 sheets.

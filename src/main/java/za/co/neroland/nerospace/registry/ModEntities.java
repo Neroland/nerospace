@@ -28,8 +28,9 @@ public final class ModEntities {
             RocketEntity::new,
             MobCategory.MISC,
             builder -> builder
-                    .sized(0.9F, 2.6F)
-                    .eyeHeight(1.6F)
+                    // ~3x3 footprint (matches the launch pad) and tall enough to seat the rider inside.
+                    .sized(2.6F, 5.0F)
+                    .eyeHeight(2.4F)
                     .clientTrackingRange(10)
                     .updateInterval(3));
 

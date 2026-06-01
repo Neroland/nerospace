@@ -60,6 +60,9 @@ public class RocketEntity extends Entity implements MenuProvider {
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_LAUNCHING =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.BOOLEAN);
+    /** Index into the current tier's destination list. */
+    private static final EntityDataAccessor<Integer> DATA_DEST =
+            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
 
     /** Ticks of ascent before the rider is transported. */
     public static final int LAUNCH_DURATION = 100;
@@ -82,7 +85,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
     };
 
-    /** Synced to the open rocket menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable(0/1). */
+    /** Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex. */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
@@ -91,6 +94,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 1 -> getTier().fuelCapacity();
                 case 2 -> getTier().ordinal();
                 case 3 -> canLaunch() ? 1 : 0;
+                case 4 -> getDestinationIndex();
                 default -> 0;
             };
         }
@@ -102,7 +106,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
     };
 
@@ -126,6 +130,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         builder.define(DATA_FUEL, 0);
         builder.define(DATA_TIER, RocketTier.TIER_1.ordinal());
         builder.define(DATA_LAUNCHING, false);
+        builder.define(DATA_DEST, 0);
     }
 
     public int getFuel() {
@@ -150,6 +155,30 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     public void setTier(RocketTier tier) {
         this.entityData.set(DATA_TIER, tier.ordinal());
+        this.entityData.set(DATA_DEST, tier.defaultDestinationIndex());
+    }
+
+    // --- Destination selection ----------------------------------------------
+
+    public int getDestinationIndex() {
+        return this.entityData.get(DATA_DEST);
+    }
+
+    /** The currently selected destination level, or {@code null} if this tier can't fly anywhere. */
+    @Nullable
+    public net.minecraft.resources.ResourceKey<Level> selectedDestination() {
+        return getTier().destination(getDestinationIndex());
+    }
+
+    /** Cycles to the next destination available to this tier (server-side; from the menu button). */
+    public void cycleDestination() {
+        if (level().isClientSide() || isLaunching()) {
+            return;
+        }
+        int count = getTier().destinations().size();
+        if (count > 1) {
+            this.entityData.set(DATA_DEST, Math.floorMod(getDestinationIndex() + 1, count));
+        }
     }
 
     public boolean isLaunching() {
@@ -171,10 +200,10 @@ public class RocketEntity extends Entity implements MenuProvider {
         return amount - filled;
     }
 
-    /** Whether a launch could be started right now (fuelled, has a rider, and has somewhere to go). */
+    /** Whether a launch could be started right now (fuelled, has a rider, and a destination selected). */
     public boolean canLaunch() {
         return !isLaunching()
-                && getTier().hasDestination()
+                && selectedDestination() != null
                 && getFuel() >= getTier().fuelPerLaunch()
                 && this.getFirstPassenger() instanceof Player;
     }
@@ -195,14 +224,16 @@ public class RocketEntity extends Entity implements MenuProvider {
         super.tick();
 
         if (isLaunching()) {
-            // Accelerating ascent: starts slow, builds upward thrust.
-            double speed = 0.05D + 0.45D * ((double) this.launchTicks / LAUNCH_DURATION);
-            this.setDeltaMovement(0.0D, speed, 0.0D);
-            this.move(net.minecraft.world.entity.MoverType.SELF, this.getDeltaMovement());
-
             if (level().isClientSide()) {
+                // The client only draws particles; it interpolates the rocket's position from the
+                // server's movement updates, which keeps the ascent smooth (no double-stepping).
                 spawnLaunchParticles();
             } else {
+                // Smooth eased acceleration, applied server-side only.
+                double t = (double) this.launchTicks / LAUNCH_DURATION;
+                double speed = 0.08D + 0.5D * (t * t);
+                this.setDeltaMovement(0.0D, speed, 0.0D);
+                this.move(net.minecraft.world.entity.MoverType.SELF, this.getDeltaMovement());
                 this.launchTicks++;
                 if (this.launchTicks >= LAUNCH_DURATION) {
                     completeLaunch();
@@ -224,19 +255,18 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     private void completeLaunch() {
-        RocketTier tier = getTier();
-        ResourceKeyTarget target = ResourceKeyTarget.of(tier);
-        if (target == null) {
+        net.minecraft.resources.ResourceKey<Level> targetKey = selectedDestination();
+        if (targetKey == null) {
             setLaunching(false);
             return;
         }
 
-        this.fuelTank.drain(tier.fuelPerLaunch(), IFluidHandler.FluidAction.EXECUTE);
+        this.fuelTank.drain(getTier().fuelPerLaunch(), IFluidHandler.FluidAction.EXECUTE);
 
         Entity passenger = this.getFirstPassenger();
         if (passenger instanceof ServerPlayer player && level() instanceof ServerLevel current) {
             MinecraftServer server = current.getServer();
-            ServerLevel destination = server.getLevel(target.key());
+            ServerLevel destination = server.getLevel(targetKey);
             if (destination != null) {
                 player.stopRiding();
 
@@ -247,7 +277,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 destination.getChunk(blockX >> 4, blockZ >> 4);
 
                 double arrivalY;
-                if (target.key().equals(ModDimensions.STATION_LEVEL)) {
+                if (targetKey.equals(ModDimensions.STATION_LEVEL)) {
                     // The station is an empty void; lay down a landing platform to stand on.
                     int platformY = 64;
                     buildStationPlatform(destination, blockX, platformY, blockZ);
@@ -257,7 +287,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 }
 
                 player.teleportTo(destination, x, arrivalY, z, Set.of(), player.getYRot(), player.getXRot(), true);
-                player.sendSystemMessage(Component.translatable(target.key().equals(ModDimensions.STATION_LEVEL)
+                player.sendSystemMessage(Component.translatable(targetKey.equals(ModDimensions.STATION_LEVEL)
                         ? "entity.nerospace.rocket.docked"
                         : "entity.nerospace.rocket.arrived"));
             }
@@ -274,14 +304,6 @@ public class RocketEntity extends Entity implements MenuProvider {
             for (int dz = -3; dz <= 3; dz++) {
                 level.setBlockAndUpdate(new BlockPos(centerX + dx, y, centerZ + dz), floor);
             }
-        }
-    }
-
-    /** Small holder so {@link #completeLaunch()} reads cleanly even though the destination may be null. */
-    private record ResourceKeyTarget(net.minecraft.resources.ResourceKey<Level> key) {
-        @Nullable
-        static ResourceKeyTarget of(RocketTier tier) {
-            return tier.destination() == null ? null : new ResourceKeyTarget(tier.destination());
         }
     }
 
@@ -378,6 +400,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         this.entityData.set(DATA_TIER, input.getIntOr("Tier", RocketTier.TIER_1.ordinal()));
+        this.entityData.set(DATA_DEST, input.getIntOr("Destination", getTier().defaultDestinationIndex()));
         this.fuelTank.deserialize(input.childOrEmpty("FuelTank"));
         syncFuel();
         setLaunching(input.getBooleanOr("Launching", false));
@@ -387,6 +410,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
         output.putInt("Tier", getTier().ordinal());
+        output.putInt("Destination", getDestinationIndex());
         this.fuelTank.serialize(output.child("FuelTank"));
         output.putBoolean("Launching", isLaunching());
         output.putInt("LaunchTicks", this.launchTicks);

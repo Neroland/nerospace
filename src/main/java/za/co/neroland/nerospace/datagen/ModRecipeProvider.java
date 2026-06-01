@@ -223,7 +223,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_rocket_tier_1", this.has(ModItems.ROCKET_TIER_1))
                 .save(this.output);
 
-        // Tier 3 rocket: upgrades a Tier 2, gated behind cindrite mined on Cindara.
+        // Tier 3 rocket: upgrades a Tier 2, gated behind Station hull plating (reachable via the
+        // Tier-1 Orbital Station). NOTE: cindrite is no longer a gate — it sits on Cindara, which a
+        // Tier-3 rocket is what reaches, so gating Tier 3 on it would be circular.
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.TOOLS, ModItems.ROCKET_TIER_3)
                 .pattern("NTN")
@@ -232,9 +234,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('N', ModItems.NEROSTEEL_INGOT)
                 .define('T', ModItems.ROCKET_TIER_2)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
-                .define('D', ModItems.CINDRITE)
+                .define('D', ModBlocks.STATION_WALL.get())
                 .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
-                .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
+                .unlockedBy("has_station_wall", this.has(ModBlocks.STATION_WALL.get()))
                 .save(this.output);
 
         // === Phase 7 — Cindara materials ===================================

@@ -65,6 +65,10 @@ public class ModLanguageProvider extends LanguageProvider {
         // Phase 7 items.
         add(ModItems.CINDRITE.get(), "Cindrite");
         add(ModItems.ROCKET_FUEL_BUCKET.get(), "Rocket Fuel Bucket");
+        add(ModItems.STATION_COMPASS.get(), "Station Compass");
+        add(ModItems.GREENXERTZ_COMPASS.get(), "Greenxertz Compass");
+        add(ModItems.CINDARA_COMPASS.get(), "Cindara Compass");
+        add("item.nerospace.destination_compass.travel", "Travelling to %s");
 
         // Phase 7b fluid.
         add(ModBlocks.ROCKET_FUEL_BLOCK.get(), "Rocket Fuel");

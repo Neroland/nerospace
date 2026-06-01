@@ -28,7 +28,10 @@
   "gui.nerospace.rocket.not_ready": "Not ready: fuel up & board",
   "gui.nerospace.rocket.ready": "Ready for launch",
   "gui.nerospace.rocket.tier": "Tier %s Rocket",
+  "item.nerospace.cindara_compass": "Cindara Compass",
   "item.nerospace.cindrite": "Cindrite",
+  "item.nerospace.destination_compass.travel": "Travelling to %s",
+  "item.nerospace.greenxertz_compass": "Greenxertz Compass",
   "item.nerospace.greenxertz_navigator": "Greenxertz Navigator",
   "item.nerospace.greenxertz_navigator.return": "Returned to the overworld",
   "item.nerospace.greenxertz_navigator.travel": "Transported to Greenxertz",
@@ -44,6 +47,7 @@
   "item.nerospace.rocket_tier_1": "Tier 1 Rocket",
   "item.nerospace.rocket_tier_2": "Tier 2 Rocket",
   "item.nerospace.rocket_tier_3": "Tier 3 Rocket",
+  "item.nerospace.station_compass": "Station Compass",
   "item.nerospace.xertz_quartz": "Xertz Quartz",
   "itemGroup.nerospace": "Nerospace",
   "message.nerospace.greenxertz.no_air": "The thin Greenxertz air is suffocating you — get to a launch pad!"
