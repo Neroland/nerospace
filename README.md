@@ -12,9 +12,16 @@
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-26.1.2-62B47A">
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge-F16436">
   <img alt="Java" src="https://img.shields.io/badge/Java-25-007396">
-  <img alt="Version" src="https://img.shields.io/badge/version-0.0.1%20beta-blue">
-  <img alt="Status" src="https://img.shields.io/badge/status-in%20development-yellow">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.0.2%20beta-blue">
+  <img alt="Status" src="https://img.shields.io/badge/status-work%20in%20progress-orange">
 </p>
+
+> ## 🚧 Work In Progress
+>
+> **Nerospace is in early, active development — nothing here is final.** Features, recipes, balance,
+> blocks, dimensions, and art are all placeholder-to-evolving and **may change or be removed at any
+> time** between versions. Saves are **not** guaranteed to survive updates. Expect rough edges, and
+> please report anything broken — see [Contributing & feedback](#contributing--feedback).
 
 ---
 
@@ -48,7 +55,7 @@ The mod is built **standalone** — it requires no other mods — but uses conve
 | | |
 | --- | --- |
 | Minecraft | 26.1.2 |
-| Mod loader | NeoForge (`26.1.2.68-beta`) |
+| Mod loader | NeoForge (`26.1.2.70-beta`) |
 | Java | JDK 25 (64-bit) |
 
 ## Installing
@@ -94,7 +101,7 @@ Nerospace is actively in development. Planned additions include more planets and
 
 ## Contributing & feedback
 
-Bug reports and suggestions are welcome via the Issues tab. If you'd like to contribute code, please open an issue first to discuss the change.
+Because the mod is a **work in progress**, feedback genuinely shapes what gets built next. Bug reports and suggestions are very welcome via the **Issues** tab — there are ready-made forms for [🐞 Bug Reports](.github/ISSUE_TEMPLATE/bug_report.yml) and [✨ Feature Requests](.github/ISSUE_TEMPLATE/feature_request.yml). If you'd like to contribute code, please open an issue first to discuss the change; a [pull request template](.github/PULL_REQUEST_TEMPLATE.md) is provided. Just keep in mind that, this early, anything may change or be reworked.
 
 ## License
 

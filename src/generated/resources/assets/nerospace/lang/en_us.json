@@ -65,5 +65,7 @@
   "item.nerospace.station_compass": "Station Compass",
   "item.nerospace.xertz_quartz": "Xertz Quartz",
   "itemGroup.nerospace": "Nerospace",
-  "message.nerospace.greenxertz.no_air": "You are out of oxygen — reach a launch pad or an Oxygen Generator!"
+  "message.nerospace.greenxertz.no_air": "You are out of oxygen — reach a launch pad or an Oxygen Generator!",
+  "message.nerospace.welcome.link": "View the mod or report issues: ",
+  "message.nerospace.welcome.wip": "Nerospace is an early work in progress — features, balance, and art may all still change."
 }

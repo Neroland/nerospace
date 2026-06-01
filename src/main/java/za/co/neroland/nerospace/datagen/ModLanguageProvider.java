@@ -93,6 +93,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("entity.nerospace.greenling", "Greenling");
         add("entity.nerospace.cinder_stalker", "Cinder Stalker");
 
+        // Join / work-in-progress notice.
+        add("message.nerospace.welcome.wip",
+                "Nerospace is an early work in progress — features, balance, and art may all still change.");
+        add("message.nerospace.welcome.link", "View the mod or report issues: ");
+
         // Planet atmosphere.
         add("message.nerospace.greenxertz.no_air", "You are out of oxygen — reach a launch pad or an Oxygen Generator!");
 
