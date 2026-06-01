@@ -34,7 +34,7 @@ os.makedirs(OUT_ENTITY, exist_ok=True)
 BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
           "raw_nerosium_block", "nerosium_grinder",
           "nerosteel_ore", "xertz_quartz_ore", "nerosteel_block",
-          "rocket_launch_pad", "fuel_tank",
+          "rocket_launch_pad", "fuel_tank", "oxygen_generator",
           "cindrite_ore", "cindrite_block",
           "station_floor", "station_wall"]
 ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",

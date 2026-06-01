@@ -9,6 +9,7 @@
   "block.nerospace.nerosium_ore": "Nerosium Ore",
   "block.nerospace.nerosteel_block": "Block of Nerosteel",
   "block.nerospace.nerosteel_ore": "Nerosteel Ore",
+  "block.nerospace.oxygen_generator": "Oxygen Generator",
   "block.nerospace.raw_nerosium_block": "Block of Raw Nerosium",
   "block.nerospace.rocket_fuel": "Rocket Fuel",
   "block.nerospace.rocket_launch_pad": "Rocket Launch Pad",
@@ -54,5 +55,5 @@
   "item.nerospace.station_compass": "Station Compass",
   "item.nerospace.xertz_quartz": "Xertz Quartz",
   "itemGroup.nerospace": "Nerospace",
-  "message.nerospace.greenxertz.no_air": "The thin Greenxertz air is suffocating you — get to a launch pad!"
+  "message.nerospace.greenxertz.no_air": "You are out of oxygen — reach a launch pad or an Oxygen Generator!"
 }

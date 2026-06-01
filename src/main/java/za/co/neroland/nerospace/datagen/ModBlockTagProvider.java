@@ -37,7 +37,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.CINDRITE_BLOCK.get(),
                         ModBlocks.STATION_FLOOR.get(),
                         ModBlocks.STATION_WALL.get(),
-                        ModBlocks.FUEL_TANK.get());
+                        ModBlocks.FUEL_TANK.get(),
+                        ModBlocks.OXYGEN_GENERATOR.get());
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.NEROSIUM_ORE.get(),
@@ -51,7 +52,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.CINDRITE_BLOCK.get(),
                         ModBlocks.STATION_FLOOR.get(),
                         ModBlocks.STATION_WALL.get(),
-                        ModBlocks.FUEL_TANK.get());
+                        ModBlocks.FUEL_TANK.get(),
+                        ModBlocks.OXYGEN_GENERATOR.get());
 
         this.tag(Tags.Blocks.ORES)
                 .add(ModBlocks.NEROSIUM_ORE.get(), ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),

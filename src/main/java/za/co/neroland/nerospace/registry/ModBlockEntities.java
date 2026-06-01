@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
+import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 
 /**
  * Block entity types (Phase 2).
@@ -33,6 +34,13 @@ public final class ModBlockEntities {
                     FuelTankBlockEntity::new,
                     false,
                     ModBlocks.FUEL_TANK.get()));
+
+    public static final Supplier<BlockEntityType<OxygenGeneratorBlockEntity>> OXYGEN_GENERATOR = BLOCK_ENTITY_TYPES.register(
+            "oxygen_generator",
+            () -> new BlockEntityType<>(
+                    OxygenGeneratorBlockEntity::new,
+                    false,
+                    ModBlocks.OXYGEN_GENERATOR.get()));
 
     private ModBlockEntities() {
     }

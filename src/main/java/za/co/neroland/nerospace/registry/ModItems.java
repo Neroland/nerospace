@@ -150,6 +150,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> FUEL_TANK_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.FUEL_TANK);
 
+    // Phase 8c block item.
+    public static final DeferredItem<BlockItem> OXYGEN_GENERATOR_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.OXYGEN_GENERATOR);
+
     private ModItems() {
     }
 

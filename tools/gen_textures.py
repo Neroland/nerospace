@@ -623,6 +623,44 @@ def gen_fuel_tank():
     save(img, os.path.join(BLOCK_DIR, "fuel_tank.png"))
 
 
+def gen_oxygen_generator():
+    """Metal machine face with a glowing cyan vent core (oxygen) and bubble dots."""
+    rng = random.Random(811)
+    img = new_img()
+    noise_fill(img, METAL, rng)
+    px = img.load()
+    bevel(img, METAL_L, METAL_D)
+    O2_DARK = (18, 54, 64, 255)
+    O2_MID = (60, 170, 200, 255)
+    O2_HI = (150, 230, 250, 255)
+    O2_GLOW = (210, 250, 255, 255)
+    cx = cy = 8
+    # central circular vent
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx + 0.5) ** 2 + (y - cy + 0.5) ** 2) ** 0.5
+            if d <= 2.0:
+                px[x, y] = O2_GLOW
+            elif d <= 3.2:
+                px[x, y] = O2_HI
+            elif d <= 4.2:
+                px[x, y] = O2_MID
+            elif d <= 4.9:
+                px[x, y] = O2_DARK
+    # vent grille lines across the core
+    for x in range(4, 12):
+        px[x, 8] = O2_DARK
+    # rising "bubble" dots in the corners
+    for (bx, by) in [(3, 12), (12, 11), (4, 4), (12, 4)]:
+        px[bx, by] = O2_HI
+        if by - 1 >= 0:
+            px[bx, by - 1] = O2_MID
+    # corner rivets
+    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        px[rx, ry] = METAL_L
+    save(img, os.path.join(BLOCK_DIR, "oxygen_generator.png"))
+
+
 # ---------------- PHASE 7: CINDARA ----------------
 
 def gen_cindrite_ore():
@@ -788,3 +826,4 @@ if __name__ == "__main__":
     # Phase 4 — rockets
     gen_rocket_launch_pad()
     gen_fuel_tank()
+    gen_oxygen_generator()

@@ -58,6 +58,7 @@ public final class ModCreativeModeTabs {
                         // Phase 4 — Rockets.
                         output.accept(ModBlocks.ROCKET_LAUNCH_PAD.get());
                         output.accept(ModBlocks.FUEL_TANK.get());
+                        output.accept(ModBlocks.OXYGEN_GENERATOR.get());
                         output.accept(ModItems.ROCKET_FUEL_CANISTER.get());
                         output.accept(ModItems.ROCKET_FUEL_BUCKET.get());
                         output.accept(ModItems.ROCKET_TIER_1.get());

@@ -200,6 +200,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_rocket_fuel_canister", this.has(ModItems.ROCKET_FUEL_CANISTER))
                 .save(this.output);
 
+        // Oxygen Generator: a sealed nerosteel pump (glass dome, redstone, fuel canister core).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.OXYGEN_GENERATOR.get())
+                .pattern("NGN")
+                .pattern("RCR")
+                .pattern("NNN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('G', Items.GLASS)
+                .define('R', Items.REDSTONE)
+                .define('C', ModItems.ROCKET_FUEL_CANISTER)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
         // Rocket fuel canister: blaze powder + coal + xertz quartz in an iron shell (yields 2).
         ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModItems.ROCKET_FUEL_CANISTER, 2)

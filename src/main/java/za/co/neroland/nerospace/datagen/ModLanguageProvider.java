@@ -41,6 +41,9 @@ public class ModLanguageProvider extends LanguageProvider {
         // Phase 8a blocks.
         add(ModBlocks.FUEL_TANK.get(), "Fuel Tank");
 
+        // Phase 8c blocks.
+        add(ModBlocks.OXYGEN_GENERATOR.get(), "Oxygen Generator");
+
         // Phase 7 blocks.
         add(ModBlocks.CINDRITE_ORE.get(), "Cindrite Ore");
         add(ModBlocks.CINDRITE_BLOCK.get(), "Block of Cindrite");
@@ -85,7 +88,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("entity.nerospace.cinder_stalker", "Cinder Stalker");
 
         // Planet atmosphere.
-        add("message.nerospace.greenxertz.no_air", "The thin Greenxertz air is suffocating you — get to a launch pad!");
+        add("message.nerospace.greenxertz.no_air", "You are out of oxygen — reach a launch pad or an Oxygen Generator!");
 
         // Fuel tank status (action-bar readout).
         add("block.nerospace.fuel_tank.status", "Fuel Tank: %s / %s mB");

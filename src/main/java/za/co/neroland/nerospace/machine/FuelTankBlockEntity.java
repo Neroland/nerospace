@@ -9,11 +9,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
-import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.fluid.RocketFuelTank;
 import za.co.neroland.nerospace.rocket.LaunchPadMultiblock;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -37,13 +34,7 @@ public class FuelTankBlockEntity extends BlockEntity {
     /** One bucket / canister of fuel, in millibuckets. */
     public static final int CONTAINER_MB = 1_000;
 
-    private final FluidTank tank = new FluidTank(CAPACITY,
-            stack -> stack.getFluid() == ModFluids.ROCKET_FUEL.get()) {
-        @Override
-        protected void onContentsChanged() {
-            setChanged();
-        }
-    };
+    private final RocketFuelTank tank = new RocketFuelTank(CAPACITY, this::setChanged);
 
     public FuelTankBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FUEL_TANK.get(), pos, state);
@@ -52,7 +43,7 @@ public class FuelTankBlockEntity extends BlockEntity {
     // --- Fuel access (used by the block's item interaction) -----------------
 
     public int getFluidAmount() {
-        return this.tank.getFluidAmount();
+        return this.tank.getAmount();
     }
 
     public int getCapacity() {
@@ -65,9 +56,7 @@ public class FuelTankBlockEntity extends BlockEntity {
      * @return {@code true} if the whole container fit (so the caller may consume the item).
      */
     public boolean tryFillContainer() {
-        int filled = this.tank.fill(
-                new FluidStack(ModFluids.ROCKET_FUEL.get(), CONTAINER_MB), IFluidHandler.FluidAction.EXECUTE);
-        return filled == CONTAINER_MB;
+        return this.tank.fill(CONTAINER_MB) == CONTAINER_MB;
     }
 
     /**
@@ -76,28 +65,27 @@ public class FuelTankBlockEntity extends BlockEntity {
      * @return {@code true} if a full bucket was removed.
      */
     public boolean tryDrainBucket() {
-        FluidStack drained = this.tank.drain(CONTAINER_MB, IFluidHandler.FluidAction.EXECUTE);
-        return drained.getAmount() == CONTAINER_MB;
+        return this.tank.drain(CONTAINER_MB) == CONTAINER_MB;
     }
 
     /** Human-readable fuel readout for the right-click status message. */
     public Component statusMessage() {
         return Component.translatable("block.nerospace.fuel_tank.status",
-                this.tank.getFluidAmount(), this.tank.getCapacity());
+                this.tank.getAmount(), this.tank.getCapacity());
     }
 
     /** Comparator output: 0 (empty) .. 15 (full), scaled by fill fraction. */
     public int comparatorSignal() {
-        if (this.tank.getFluidAmount() <= 0) {
+        if (this.tank.getAmount() <= 0) {
             return 0;
         }
-        return 1 + (int) (this.tank.getFluidAmount() / (double) this.tank.getCapacity() * 14.0D);
+        return 1 + (int) (this.tank.getAmount() / (double) this.tank.getCapacity() * 14.0D);
     }
 
     // --- Ticking ------------------------------------------------------------
 
     public void tick(Level level, BlockPos pos, BlockState state) {
-        if (level.isClientSide() || this.tank.getFluidAmount() <= 0) {
+        if (level.isClientSide() || this.tank.isEmpty()) {
             return;
         }
 
@@ -113,16 +101,16 @@ public class FuelTankBlockEntity extends BlockEntity {
         }
 
         int rate = LaunchPadMultiblock.isFullThreeByThree(pads) ? PUMP_RATE_FULL_PAD : PUMP_RATE;
-        int toPump = Math.min(rate, this.tank.getFluidAmount());
+        int toPump = Math.min(rate, this.tank.getAmount());
         if (toPump <= 0) {
             return;
         }
 
-        FluidStack drained = this.tank.drain(toPump, IFluidHandler.FluidAction.EXECUTE);
-        int overflow = rocket.addFuel(drained.getAmount());
+        int drained = this.tank.drain(toPump);
+        int overflow = rocket.addFuel(drained);
         if (overflow > 0) {
             // The rocket was already topped up; return the unused fuel to the tank.
-            this.tank.fill(new FluidStack(ModFluids.ROCKET_FUEL.get(), overflow), IFluidHandler.FluidAction.EXECUTE);
+            this.tank.fill(overflow);
         }
     }
 

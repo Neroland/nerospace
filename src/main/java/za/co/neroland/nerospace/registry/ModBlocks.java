@@ -12,6 +12,7 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.machine.FuelTankBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
+import za.co.neroland.nerospace.machine.OxygenGeneratorBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 
 /**
@@ -169,6 +170,19 @@ public final class ModBlocks {
     public static final DeferredBlock<FuelTankBlock> FUEL_TANK = BLOCKS.registerBlock(
             "fuel_tank",
             FuelTankBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    /**
+     * Oxygen Generator (Phase 8c): a machine that projects a breathable bubble while powered. Backed
+     * by {@link za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity}.
+     */
+    public static final DeferredBlock<OxygenGeneratorBlock> OXYGEN_GENERATOR = BLOCKS.registerBlock(
+            "oxygen_generator",
+            OxygenGeneratorBlock::new,
             props -> props
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)

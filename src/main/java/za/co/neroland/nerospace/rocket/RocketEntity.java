@@ -33,11 +33,10 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
-import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.fluid.RocketFuelTank;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModEntities;
@@ -72,18 +71,12 @@ public class RocketEntity extends Entity implements MenuProvider {
     private int launchTicks;
 
     /**
-     * The authoritative fuel store: a real {@link FluidTank} of {@code rocket_fuel}, exposed to the
-     * NeoForge fluid capability (so pipes/tanks can fill it) and synced to the client via
-     * {@link #DATA_FUEL} for the GUI. Physical capacity is the largest tier's; {@link #addFuel} caps
-     * top-ups to the current tier's capacity.
+     * The authoritative fuel store: a {@link RocketFuelTank} (26.1 transfer-API handler) of
+     * {@code rocket_fuel}, synced to the client via {@link #DATA_FUEL} for the GUI. Physical capacity
+     * is the largest tier's; {@link #addFuel} caps top-ups to the current tier's capacity. The handler
+     * surface is ready to expose via {@code Capabilities.Fluid.ENTITY} for pipe automation.
      */
-    private final FluidTank fuelTank = new FluidTank(RocketTier.TIER_3.fuelCapacity(),
-            stack -> stack.getFluid() == ModFluids.ROCKET_FUEL.get()) {
-        @Override
-        protected void onContentsChanged() {
-            syncFuel();
-        }
-    };
+    private final RocketFuelTank fuelTank = new RocketFuelTank(RocketTier.TIER_3.fuelCapacity(), this::syncFuel);
 
     /**
      * A single-slot fuel intake exposed in the rocket UI. The player (or, later, a hopper/automation)
@@ -147,12 +140,12 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Pushes the server-side tank amount into the synced data accessor (client GUI + canLaunch). */
     private void syncFuel() {
         if (!level().isClientSide()) {
-            this.entityData.set(DATA_FUEL, this.fuelTank.getFluidAmount());
+            this.entityData.set(DATA_FUEL, this.fuelTank.getAmount());
         }
     }
 
-    /** The fuel tank, exposed to {@code Capabilities.FluidHandler.ENTITY}. */
-    public IFluidHandler getFuelTank() {
+    /** The fuel tank as a transfer-API handler (for a future {@code Capabilities.Fluid.ENTITY}). */
+    public ResourceHandler<FluidResource> getFuelTank() {
         return this.fuelTank;
     }
 
@@ -227,10 +220,9 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /** @return millibuckets of fuel that could not be accepted (overflow). Caps at the tier capacity. */
     public int addFuel(int amount) {
-        int room = Math.max(0, getTier().fuelCapacity() - this.fuelTank.getFluidAmount());
+        int room = Math.max(0, getTier().fuelCapacity() - this.fuelTank.getAmount());
         int toFill = Math.min(amount, room);
-        int filled = this.fuelTank.fill(
-                new FluidStack(ModFluids.ROCKET_FUEL.get(), toFill), IFluidHandler.FluidAction.EXECUTE);
+        int filled = this.fuelTank.fill(toFill);
         return amount - filled;
     }
 
@@ -336,7 +328,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             return;
         }
 
-        this.fuelTank.drain(getTier().fuelPerLaunch(), IFluidHandler.FluidAction.EXECUTE);
+        this.fuelTank.drain(getTier().fuelPerLaunch());
 
         Entity passenger = this.getFirstPassenger();
         if (passenger instanceof ServerPlayer player && level() instanceof ServerLevel current) {

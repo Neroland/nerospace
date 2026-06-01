@@ -48,6 +48,9 @@ public class ModModelProvider extends ModelProvider {
         // Phase 8a — fuel tank machine (auto-fuels a rocket on an adjacent pad).
         blockModels.createTrivialCube(ModBlocks.FUEL_TANK.get());
 
+        // Phase 8c — oxygen generator machine.
+        blockModels.createTrivialCube(ModBlocks.OXYGEN_GENERATOR.get());
+
         // Phase 7 — Cindara ore + storage block.
         blockModels.createTrivialCube(ModBlocks.CINDRITE_ORE.get());
         blockModels.createTrivialCube(ModBlocks.CINDRITE_BLOCK.get());

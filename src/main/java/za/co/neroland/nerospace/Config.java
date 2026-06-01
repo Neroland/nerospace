@@ -42,6 +42,20 @@ public class Config {
             .comment("Blocks from a Rocket Launch Pad treated as a safe, pressurised zone.")
             .defineInRange("atmosphereSafeRadius", 6, 0, 32);
 
+    // --- Nerospace: oxygen (Phase 8c) ---------------------------------------
+
+    public static final ModConfigSpec.IntValue OXYGEN_MAX = BUILDER
+            .comment("Maximum oxygen a player can carry (matches the vanilla air-supply scale, 300 = full).")
+            .defineInRange("oxygenMax", 300, 1, 6000);
+
+    public static final ModConfigSpec.IntValue OXYGEN_DRAIN_PER_TICK = BUILDER
+            .comment("Oxygen lost per tick while exposed in an airless dimension without a breathable zone.")
+            .defineInRange("oxygenDrainPerTick", 2, 1, 300);
+
+    public static final ModConfigSpec.IntValue OXYGEN_BUBBLE_RADIUS = BUILDER
+            .comment("Radius (blocks) of the breathable bubble around an active Oxygen Generator.")
+            .defineInRange("oxygenBubbleRadius", 5, 0, 32);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {
