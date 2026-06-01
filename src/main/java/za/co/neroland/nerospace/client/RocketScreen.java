@@ -1,25 +1,34 @@
 package za.co.neroland.nerospace.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.rocket.Destinations;
 import za.co.neroland.nerospace.rocket.RocketMenu;
 
 /**
- * The in-rocket UI: a destination selector (shows the target; cycles through the tier's unlocked
- * destinations) and a Launch button. Both route through the vanilla inventory-button channel
- * ({@code handleInventoryButtonClick}) to {@link RocketMenu#clickMenuButton}, handled server-side.
+ * The interactive in-rocket UI (Phase 8b). Built entirely from button widgets + the menu's fuel-intake
+ * slot, because 26.1 replaced the immediate-mode {@code GuiGraphics} with a render-state submission
+ * model ({@code GuiGraphicsExtractor}) that makes hand-drawn bars/lines impractical here.
  *
- * <p>NOTE: the container background panel still needs a {@code runClient} pass (26.1's screen render
- * model); for now the controls are plain buttons, which render fine.</p>
+ * <p>Layout (top to bottom): a live <b>fuel readout</b> (percentage + millibuckets), an interactive
+ * <b>trajectory</b> row — the launch pad followed by one selectable button per destination the tier
+ * can reach, with the chosen target highlighted — and a <b>Launch</b> button that enables only when
+ * the rocket is fuelled and crewed. Labels and button states refresh every {@link #containerTick()}.
+ * The fuel-intake slot (top-right) accepts a fuel bucket/canister.</p>
  */
 public class RocketScreen extends AbstractContainerScreen<RocketMenu> {
 
-    private int localDestIndex;
-    private Button destinationButton;
+    private Button fuelReadout;
+    private Button launchButton;
+    private final List<Button> destinationButtons = new ArrayList<>();
 
     public RocketScreen(RocketMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, 176, 166);
@@ -30,36 +39,76 @@ public class RocketScreen extends AbstractContainerScreen<RocketMenu> {
     @Override
     protected void init() {
         super.init();
-        this.localDestIndex = this.menu.getDestinationIndex();
+        this.destinationButtons.clear();
 
-        this.destinationButton = Button.builder(destinationLabel(this.localDestIndex), button -> onCycle())
-                .bounds(this.leftPos + 30, this.topPos + 18, 116, 20)
+        // Live fuel readout (non-interactive; updated each tick).
+        this.fuelReadout = Button.builder(fuelLabel(), b -> {})
+                .bounds(this.leftPos + 8, this.topPos + 16, 160, 12)
                 .build();
-        this.destinationButton.active = this.menu.hasMultipleDestinations();
-        this.addRenderableWidget(this.destinationButton);
+        this.fuelReadout.active = false;
+        this.addRenderableWidget(this.fuelReadout);
 
-        Button launch = Button.builder(Component.translatable("gui.nerospace.rocket.launch"), button -> onLaunch())
-                .bounds(this.leftPos + 50, this.topPos + 44, 76, 20)
+        // Trajectory row: launch-pad origin node, then one button per reachable destination.
+        Button origin = Button.builder(Component.translatable("gui.nerospace.rocket.pad"), b -> {})
+                .bounds(this.leftPos + 8, this.topPos + 32, 24, 18)
                 .build();
-        this.addRenderableWidget(launch);
+        origin.active = false;
+        this.addRenderableWidget(origin);
+
+        List<ResourceKey<Level>> destinations = this.menu.getTier().destinations();
+        int x = this.leftPos + 36;
+        for (int i = 0; i < destinations.size(); i++) {
+            final int index = i;
+            Button node = Button.builder(Component.literal(Destinations.name(destinations.get(i))),
+                            b -> onSelectDestination(index))
+                    .bounds(x, this.topPos + 32, 42, 18)
+                    .build();
+            // A single-destination tier can't re-route; leave that node non-interactive.
+            node.active = destinations.size() > 1;
+            this.addRenderableWidget(node);
+            this.destinationButtons.add(node);
+            x += 44;
+        }
+
+        // Launch.
+        this.launchButton = Button.builder(Component.translatable("gui.nerospace.rocket.launch"), b -> onLaunch())
+                .bounds(this.leftPos + 8, this.topPos + 54, 120, 18)
+                .build();
+        this.addRenderableWidget(this.launchButton);
+
+        refresh();
     }
 
-    private Component destinationLabel(int index) {
-        var destinations = this.menu.getTier().destinations();
-        if (destinations.isEmpty()) {
-            return Component.literal("Destination: —");
-        }
-        int clamped = Math.floorMod(index, destinations.size());
-        return Component.literal("Destination: " + Destinations.name(destinations.get(clamped)));
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        refresh();
     }
 
-    private void onCycle() {
-        sendButton(RocketMenu.BUTTON_CYCLE_DEST);
-        var destinations = this.menu.getTier().destinations();
-        if (destinations.size() > 1) {
-            this.localDestIndex = Math.floorMod(this.localDestIndex + 1, destinations.size());
-            this.destinationButton.setMessage(destinationLabel(this.localDestIndex));
+    /** Pushes current synced rocket state into the widgets. */
+    private void refresh() {
+        if (this.fuelReadout != null) {
+            this.fuelReadout.setMessage(fuelLabel());
         }
+        if (this.launchButton != null) {
+            this.launchButton.active = this.menu.isLaunchable();
+        }
+        int selected = this.menu.getDestinationIndex();
+        List<ResourceKey<Level>> destinations = this.menu.getTier().destinations();
+        for (int i = 0; i < this.destinationButtons.size() && i < destinations.size(); i++) {
+            String name = Destinations.name(destinations.get(i));
+            Component label = (i == selected) ? Component.literal("> " + name) : Component.literal(name);
+            this.destinationButtons.get(i).setMessage(label);
+        }
+    }
+
+    private Component fuelLabel() {
+        return Component.translatable("gui.nerospace.rocket.fuel_pct",
+                this.menu.getFuelPercent(), this.menu.getFuel(), this.menu.getCapacity());
+    }
+
+    private void onSelectDestination(int index) {
+        sendButton(RocketMenu.SELECT_DEST_BASE + index);
     }
 
     private void onLaunch() {

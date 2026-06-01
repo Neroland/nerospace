@@ -94,8 +94,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add("container.nerospace.nerosium_grinder", "Nerosium Grinder");
         add("container.nerospace.rocket", "Rocket");
         add("gui.nerospace.rocket.launch", "Launch");
+        add("gui.nerospace.rocket.pad", "Pad");
         add("gui.nerospace.rocket.tier", "Tier %s Rocket");
         add("gui.nerospace.rocket.fuel", "Fuel: %s / %s mB");
+        add("gui.nerospace.rocket.fuel_pct", "Fuel: %s%% (%s / %s mB)");
         add("gui.nerospace.rocket.ready", "Ready for launch");
         add("gui.nerospace.rocket.not_ready", "Not ready: fuel up & board");
 

@@ -85,6 +85,13 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
     };
 
+    /**
+     * A single-slot fuel intake exposed in the rocket UI. The player (or, later, a hopper/automation)
+     * drops a {@link ModItems#ROCKET_FUEL_BUCKET} or {@link ModItems#ROCKET_FUEL_CANISTER} here and
+     * the rocket drains it into {@link #fuelTank} on its server tick — returning an empty bucket.
+     */
+    private final net.minecraft.world.SimpleContainer fuelInput = new net.minecraft.world.SimpleContainer(1);
+
     /** Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex. */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -149,6 +156,22 @@ public class RocketEntity extends Entity implements MenuProvider {
         return this.fuelTank;
     }
 
+    /** The UI fuel-intake slot (one bucket/canister), for the menu and automation. */
+    public net.minecraft.world.Container getFuelInput() {
+        return this.fuelInput;
+    }
+
+    /** Whether {@code stack} is accepted by the fuel-intake slot. */
+    public static boolean isFuelContainer(ItemStack stack) {
+        return stack.is(ModItems.ROCKET_FUEL_BUCKET.get()) || stack.is(ModItems.ROCKET_FUEL_CANISTER.get());
+    }
+
+    /** Current fuel as a 0–100 percentage of the tier capacity (for the UI readout). */
+    public int getFuelPercent() {
+        int capacity = getTier().fuelCapacity();
+        return capacity == 0 ? 0 : Math.min(100, getFuel() * 100 / capacity);
+    }
+
     public RocketTier getTier() {
         return RocketTier.byOrdinal(this.entityData.get(DATA_TIER));
     }
@@ -178,6 +201,17 @@ public class RocketEntity extends Entity implements MenuProvider {
         int count = getTier().destinations().size();
         if (count > 1) {
             this.entityData.set(DATA_DEST, Math.floorMod(getDestinationIndex() + 1, count));
+        }
+    }
+
+    /** Selects a destination directly by index (server-side; from the trajectory buttons). */
+    public void setDestinationIndex(int index) {
+        if (level().isClientSide() || isLaunching()) {
+            return;
+        }
+        int count = getTier().destinations().size();
+        if (count > 0) {
+            this.entityData.set(DATA_DEST, Math.floorMod(index, count));
         }
     }
 
@@ -239,6 +273,47 @@ public class RocketEntity extends Entity implements MenuProvider {
                     completeLaunch();
                 }
             }
+        } else if (!level().isClientSide()) {
+            // Idle on the pad: drain any fuel container the player/automation dropped in the intake.
+            consumeFuelInput();
+        }
+    }
+
+    /**
+     * If the intake slot holds a fuel container and the tank has room, drains one unit (1000 mB) into
+     * the tank. A bucket is returned empty; a canister is consumed. Runs once per tick, server-side.
+     */
+    private void consumeFuelInput() {
+        ItemStack stack = this.fuelInput.getItem(0);
+        if (stack.isEmpty() || !isFuelContainer(stack)) {
+            return;
+        }
+        if (addFuel(CANISTER_MB) >= CANISTER_MB) {
+            return; // tank full — leave the container in place.
+        }
+        if (stack.is(ModItems.ROCKET_FUEL_BUCKET.get())) {
+            if (stack.getCount() == 1) {
+                this.fuelInput.setItem(0, new ItemStack(Items.BUCKET));
+            } else {
+                stack.shrink(1);
+                if (level() instanceof ServerLevel server) {
+                    this.spawnAtLocation(server, new ItemStack(Items.BUCKET));
+                }
+            }
+        } else {
+            stack.shrink(1); // canister consumed
+        }
+        level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                SoundEvents.BUCKET_EMPTY, SoundSource.NEUTRAL, 0.6F, 1.0F);
+    }
+
+    /** Drops the intake slot's contents into the world (called before the rocket is discarded). */
+    private void dropFuelInput() {
+        if (level() instanceof ServerLevel server) {
+            ItemStack stack = this.fuelInput.removeItemNoUpdate(0);
+            if (!stack.isEmpty()) {
+                this.spawnAtLocation(server, stack);
+            }
         }
     }
 
@@ -294,6 +369,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
 
         // The rocket is expended on launch; a return trip needs a pad + rocket on the destination.
+        dropFuelInput();
         this.discard();
     }
 
@@ -389,6 +465,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             if (!player.getAbilities().instabuild) {
                 this.spawnAtLocation(level, new ItemStack(itemForTier()));
             }
+            dropFuelInput();
             this.discard();
             return true;
         }
@@ -402,6 +479,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.entityData.set(DATA_TIER, input.getIntOr("Tier", RocketTier.TIER_1.ordinal()));
         this.entityData.set(DATA_DEST, input.getIntOr("Destination", getTier().defaultDestinationIndex()));
         this.fuelTank.deserialize(input.childOrEmpty("FuelTank"));
+        this.fuelInput.setItem(0, input.read("FuelInput", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         syncFuel();
         setLaunching(input.getBooleanOr("Launching", false));
         this.launchTicks = input.getIntOr("LaunchTicks", 0);
@@ -412,6 +490,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.putInt("Tier", getTier().ordinal());
         output.putInt("Destination", getDestinationIndex());
         this.fuelTank.serialize(output.child("FuelTank"));
+        output.store("FuelInput", ItemStack.OPTIONAL_CODEC, this.fuelInput.getItem(0));
         output.putBoolean("Launching", isLaunching());
         output.putInt("LaunchTicks", this.launchTicks);
     }
