@@ -29,9 +29,15 @@ public final class ModCapabilities {
                 ModBlockEntities.OXYGEN_GENERATOR.get(),
                 (blockEntity, side) -> blockEntity.getEnergyHandler());
 
-        // NOTE: the rocket's fuel store is now a transfer-API ResourceHandler<FluidResource>
-        // (RocketFuelTank), so exposing it via Capabilities.Fluid.ENTITY for pipe automation is a
-        // small follow-up (register the entity capability returning RocketEntity#getFuelTank). The
-        // fuel tank machine's RocketFuelTank could likewise be exposed via Capabilities.Fluid.BLOCK.
+        // Fluid: expose the rocket's tank and the Fuel Tank machine so pipes/automation can fill them.
+        event.registerEntity(
+                Capabilities.Fluid.ENTITY,
+                ModEntities.ROCKET.get(),
+                (rocket, side) -> rocket.getFuelTank());
+
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                ModBlockEntities.FUEL_TANK.get(),
+                (blockEntity, side) -> blockEntity.getTank());
     }
 }

@@ -68,6 +68,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.ROCKET_TIER_2.get(), "Tier 2 Rocket");
         add(ModItems.ROCKET_TIER_3.get(), "Tier 3 Rocket");
 
+        // Phase 8d — oxygen suit.
+        add(ModItems.OXYGEN_SUIT_HELMET.get(), "Oxygen Suit Helmet");
+        add(ModItems.OXYGEN_SUIT_CHESTPLATE.get(), "Oxygen Suit Chestplate");
+        add(ModItems.OXYGEN_SUIT_LEGGINGS.get(), "Oxygen Suit Leggings");
+        add(ModItems.OXYGEN_SUIT_BOOTS.get(), "Oxygen Suit Boots");
+
         // Phase 7 items.
         add(ModItems.CINDRITE.get(), "Cindrite");
         add(ModItems.ROCKET_FUEL_BUCKET.get(), "Rocket Fuel Bucket");

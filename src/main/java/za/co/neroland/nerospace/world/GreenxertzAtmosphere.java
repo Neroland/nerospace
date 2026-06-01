@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,6 +20,7 @@ import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.registry.ModAttachments;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.registry.ModItems;
 
 /**
  * Oxygen / atmosphere handling (Phase 8c). On airless Nerospace dimensions a survival/adventure
@@ -67,7 +69,9 @@ public final class GreenxertzAtmosphere {
 
         // The scan is throttled; oxygen still mirrors to the HUD every tick from the stored value.
         if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
-            if (isBreathable(level, player.blockPosition())) {
+            // A full Oxygen Suit is personal life support; otherwise look for a breathable zone.
+            boolean safe = isWearingFullSuit(player) || isBreathable(level, player.blockPosition());
+            if (safe) {
                 oxygen = max;
             } else {
                 oxygen = Math.max(0, oxygen - Config.OXYGEN_DRAIN_PER_TICK.get() * CHECK_INTERVAL_TICKS);
@@ -127,6 +131,14 @@ public final class GreenxertzAtmosphere {
             }
         }
         return false;
+    }
+
+    /** @return true if all four Oxygen Suit pieces are worn (personal life support). */
+    private static boolean isWearingFullSuit(Player player) {
+        return player.getItemBySlot(EquipmentSlot.HEAD).is(ModItems.OXYGEN_SUIT_HELMET.get())
+                && player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.OXYGEN_SUIT_CHESTPLATE.get())
+                && player.getItemBySlot(EquipmentSlot.LEGS).is(ModItems.OXYGEN_SUIT_LEGGINGS.get())
+                && player.getItemBySlot(EquipmentSlot.FEET).is(ModItems.OXYGEN_SUIT_BOOTS.get());
     }
 
     private static int chebyshev(BlockPos a, BlockPos b) {

@@ -42,6 +42,11 @@ public class FuelTankBlockEntity extends BlockEntity {
 
     // --- Fuel access (used by the block's item interaction) -----------------
 
+    /** The tank as a transfer-API handler, for {@code Capabilities.Fluid.BLOCK} (pipe filling). */
+    public RocketFuelTank getTank() {
+        return this.tank;
+    }
+
     public int getFluidAmount() {
         return this.tank.getAmount();
     }

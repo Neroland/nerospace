@@ -200,6 +200,43 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_rocket_fuel_canister", this.has(ModItems.ROCKET_FUEL_CANISTER))
                 .save(this.output);
 
+        // Oxygen Suit: nerosteel armour with a glass visor on the helmet (sealed life support).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_HELMET.get())
+                .pattern("NNN")
+                .pattern("NGN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('G', Items.GLASS)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_CHESTPLATE.get())
+                .pattern("N N")
+                .pattern("NCN")
+                .pattern("NNN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('C', ModItems.ROCKET_FUEL_CANISTER)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_LEGGINGS.get())
+                .pattern("NNN")
+                .pattern("N N")
+                .pattern("N N")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_BOOTS.get())
+                .pattern("N N")
+                .pattern("N N")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
         // Oxygen Generator: a sealed nerosteel pump (glass dome, redstone, fuel canister core).
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModBlocks.OXYGEN_GENERATOR.get())

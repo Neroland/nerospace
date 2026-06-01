@@ -1,10 +1,19 @@
 package za.co.neroland.nerospace.registry;
 
+import java.util.Map;
+
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAsset;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -62,6 +71,39 @@ public final class ModItems {
     public static final DeferredItem<Item> NEROSIUM_PICKAXE = ITEMS.registerItem(
             "nerosium_pickaxe",
             props -> new Item(props.pickaxe(NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F)));
+
+    // --- Space suit (Phase 8d) ----------------------------------------------
+
+    /** The worn-armour asset key ({@code assets/nerospace/equipment/oxygen_suit.json}). */
+    public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_ASSET = ResourceKey.create(
+            EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(Nerospace.MODID, "oxygen_suit"));
+
+    /**
+     * Oxygen Suit material — diamond-class protection, repaired with nerosteel. Wearing the full set
+     * acts as personal life support off-world (see {@code GreenxertzAtmosphere}).
+     */
+    public static final ArmorMaterial OXYGEN_SUIT_MATERIAL = new ArmorMaterial(
+            28,
+            Map.of(ArmorType.HELMET, 3, ArmorType.CHESTPLATE, 7, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 3),
+            12,
+            SoundEvents.ARMOR_EQUIP_IRON,
+            1.5F,
+            0.0F,
+            ModTags.Items.INGOTS_NEROSTEEL,
+            OXYGEN_SUIT_ASSET);
+
+    public static final DeferredItem<Item> OXYGEN_SUIT_HELMET = ITEMS.registerItem(
+            "oxygen_suit_helmet",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_MATERIAL, ArmorType.HELMET)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_CHESTPLATE = ITEMS.registerItem(
+            "oxygen_suit_chestplate",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_MATERIAL, ArmorType.CHESTPLATE)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_LEGGINGS = ITEMS.registerItem(
+            "oxygen_suit_leggings",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_MATERIAL, ArmorType.LEGGINGS)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_BOOTS = ITEMS.registerItem(
+            "oxygen_suit_boots",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_MATERIAL, ArmorType.BOOTS)));
 
     // --- Travel (Phase 3, temporary; replaced by rockets in Phase 4) --------
 

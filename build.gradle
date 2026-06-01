@@ -251,6 +251,7 @@ tasks.register('syncModels') {
     }
 }
 tasks.named('compileJava') { dependsOn 'syncModels' }
+
 // Regenerate procedural textures + Blockbench .bbmodel sources (additive: skips existing assets).
 // Run on demand: `gradlew genAssets`. Python auto-detected (pyenv-aware), override with -PpythonCmd=.
 tasks.register('genAssets') {

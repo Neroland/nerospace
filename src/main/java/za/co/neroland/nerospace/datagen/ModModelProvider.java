@@ -92,5 +92,11 @@ public class ModModelProvider extends ModelProvider {
 
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+
+        // Phase 8d — oxygen suit (inventory item models; the worn layer is the equipment asset).
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HELMET.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_CHESTPLATE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_BOOTS.get(), ModelTemplates.FLAT_ITEM);
     }
 }

@@ -47,14 +47,19 @@ public class NerospaceClient {
     @SubscribeEvent
     static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
+        // Distinct silhouettes from the shared mesh: scaleX, scaleY, scaleZ, shadow.
         event.registerEntityRenderer(ModEntities.XERTZ_STALKER.get(),
-                context -> new GreenxertzCreatureRenderer(context, entityTexture("xertz_stalker")));
+                context -> new GreenxertzCreatureRenderer(context, entityTexture("xertz_stalker"),
+                        0.95F, 1.35F, 0.95F, 0.5F)); // tall, lean predator
         event.registerEntityRenderer(ModEntities.QUARTZ_CRAWLER.get(),
-                context -> new GreenxertzCreatureRenderer(context, entityTexture("quartz_crawler")));
+                context -> new GreenxertzCreatureRenderer(context, entityTexture("quartz_crawler"),
+                        1.25F, 0.6F, 1.25F, 0.5F)); // low, wide crawler
         event.registerEntityRenderer(ModEntities.GREENLING.get(),
-                context -> new GreenxertzCreatureRenderer(context, entityTexture("greenling")));
+                context -> new GreenxertzCreatureRenderer(context, entityTexture("greenling"),
+                        0.7F, 0.7F, 0.7F, 0.3F)); // small, timid
         event.registerEntityRenderer(ModEntities.CINDER_STALKER.get(),
-                context -> new GreenxertzCreatureRenderer(context, entityTexture("cinder_stalker")));
+                context -> new GreenxertzCreatureRenderer(context, entityTexture("cinder_stalker"),
+                        1.25F, 1.15F, 1.25F, 0.6F)); // bulky brute
     }
 
     @SubscribeEvent

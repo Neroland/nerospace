@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": "minecraft:glass",
+    "N": "nerospace:nerosteel_ingot"
+  },
+  "pattern": [
+    "NNN",
+    "NGN"
+  ],
+  "result": {
+    "id": "nerospace:oxygen_suit_helmet"
+  }
+}
