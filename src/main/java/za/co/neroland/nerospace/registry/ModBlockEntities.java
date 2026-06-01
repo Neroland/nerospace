@@ -8,6 +8,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 
 /**
@@ -25,6 +26,13 @@ public final class ModBlockEntities {
                     // Only allow OP players to load NBT data: false.
                     false,
                     ModBlocks.NEROSIUM_GRINDER.get()));
+
+    public static final Supplier<BlockEntityType<FuelTankBlockEntity>> FUEL_TANK = BLOCK_ENTITY_TYPES.register(
+            "fuel_tank",
+            () -> new BlockEntityType<>(
+                    FuelTankBlockEntity::new,
+                    false,
+                    ModBlocks.FUEL_TANK.get()));
 
     private ModBlockEntities() {
     }

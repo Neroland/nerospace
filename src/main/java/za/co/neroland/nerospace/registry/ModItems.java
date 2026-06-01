@@ -146,6 +146,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ROCKET_LAUNCH_PAD_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.ROCKET_LAUNCH_PAD);
 
+    // Phase 8a block item.
+    public static final DeferredItem<BlockItem> FUEL_TANK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.FUEL_TANK);
+
     private ModItems() {
     }
 

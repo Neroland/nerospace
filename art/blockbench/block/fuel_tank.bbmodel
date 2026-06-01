@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "fuel_tank",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "fuel_tank",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "33ff2292-7033-456a-9fc9-565ef25e43e1"
+    }
+  ],
+  "outliner": [
+    "33ff2292-7033-456a-9fc9-565ef25e43e1"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/funny-youthful-faraday/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/fuel_tank.png",
+      "name": "fuel_tank.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "83e2b3ee-1901-4cb8-9751-c4df049f2856",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/fuel_tank.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABpUlEQVR4nKWTsW4TQRCGPyw3t94cjXVeuYgsx6KgQaJACCEqniWios4T8AARJTUPkCpNGjpcnGKlQEInc7LAWltWBOu5s3ADxeXGOYdU/NWeduefb+bXPTh5++4P/6E2wPnFGSYyALheHxHRB9ZaPfvFHNfrAyAiZN++0gIYDka8evEagGmeIUXAWsty5RERRIRpnmnxo6PHatyu3dLJWB9cXqVc/7wGYPYjB2C73SrJ+cWZnlsAy5VXxNv4+6pJAJKu2xHUqgnuNSgCw8FIm6nBcDC6cXY625dPx43io+fvcb0+0zzDRIZyUzZ3YCKDtVYRf52e7vVvISLaLOk6wjrsRig3JdM8YzgYcXmV8vDlYbP+43dtYCKDFGFHUC8RUAJm5Z0d1Hf1KBXXjZKuw0RGt/svJV1H0nU6SmOJItJI4fOH2V65xVqrMdcpKMHty/vkF3Md904KT588I52M8Ys58UHMm99xlUwnRopAfFDien38Yq5vwzpUBFIE0smY5cpjO7HuodyU1X/RqczqMdPJWKnaAH7pgQotrEMDu/quU/Ls6y+aldUulyICyQAAAABJRU5ErkJggg=="
+    }
+  ]
+}

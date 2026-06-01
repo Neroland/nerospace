@@ -34,6 +34,9 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         // Phase 4 — rockets.
         dropSelf(ModBlocks.ROCKET_LAUNCH_PAD.get());
 
+        // Phase 8a — fuel tank.
+        dropSelf(ModBlocks.FUEL_TANK.get());
+
         // Phase 3 — Greenxertz.
         dropSelf(ModBlocks.NEROSTEEL_BLOCK.get());
         add(ModBlocks.NEROSTEEL_ORE.get(),

@@ -38,6 +38,9 @@ public class ModLanguageProvider extends LanguageProvider {
         // Phase 4 blocks.
         add(ModBlocks.ROCKET_LAUNCH_PAD.get(), "Rocket Launch Pad");
 
+        // Phase 8a blocks.
+        add(ModBlocks.FUEL_TANK.get(), "Fuel Tank");
+
         // Phase 7 blocks.
         add(ModBlocks.CINDRITE_ORE.get(), "Cindrite Ore");
         add(ModBlocks.CINDRITE_BLOCK.get(), "Block of Cindrite");
@@ -83,6 +86,9 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Planet atmosphere.
         add("message.nerospace.greenxertz.no_air", "The thin Greenxertz air is suffocating you — get to a launch pad!");
+
+        // Fuel tank status (action-bar readout).
+        add("block.nerospace.fuel_tank.status", "Fuel Tank: %s / %s mB");
 
         // Containers / GUI.
         add("container.nerospace.nerosium_grinder", "Nerosium Grinder");

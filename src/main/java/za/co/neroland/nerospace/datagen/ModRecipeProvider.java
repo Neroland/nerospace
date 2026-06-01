@@ -188,6 +188,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
+        // Fuel Tank: a nerosteel-framed glass tank around a fuel canister core.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.FUEL_TANK.get())
+                .pattern("NGN")
+                .pattern("GCG")
+                .pattern("NGN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('G', Items.GLASS)
+                .define('C', ModItems.ROCKET_FUEL_CANISTER)
+                .unlockedBy("has_rocket_fuel_canister", this.has(ModItems.ROCKET_FUEL_CANISTER))
+                .save(this.output);
+
         // Rocket fuel canister: blaze powder + coal + xertz quartz in an iron shell (yields 2).
         ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModItems.ROCKET_FUEL_CANISTER, 2)

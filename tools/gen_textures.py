@@ -593,6 +593,36 @@ def gen_rocket_launch_pad():
     save(img, os.path.join(BLOCK_DIR, "rocket_launch_pad.png"))
 
 
+def gen_fuel_tank():
+    """Metal tank with a central glass window showing an orange fuel column."""
+    rng = random.Random(810)
+    img = new_img()
+    noise_fill(img, METAL, rng)
+    px = img.load()
+    bevel(img, METAL_L, METAL_D)
+    # Glass window: a recessed column down the middle showing fuel.
+    win_x0, win_x1 = 5, 10  # inclusive
+    win_y0, win_y1 = 3, 12
+    fuel_top = 6  # at/below this y inside the window is "fuel"
+    for y in range(win_y0, win_y1 + 1):
+        for x in range(win_x0, win_x1 + 1):
+            if x == win_x0 or x == win_x1:
+                px[x, y] = METAL_D  # window frame edges
+            elif y < fuel_top:
+                px[x, y] = (40, 36, 48, 255)  # empty headspace (dark glass)
+            else:
+                t = (y - fuel_top) / max(1, (win_y1 - fuel_top))
+                ramp = [C_ORANGE, C_EMBER, (255, 150, 60, 255), C_RED]
+                px[x, y] = ramp[min(len(ramp) - 1, int(t * len(ramp)))]
+    # fuel surface highlight
+    for x in range(win_x0 + 1, win_x1):
+        px[x, fuel_top] = C_GLOW
+    # corner rivets
+    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        px[rx, ry] = METAL_L
+    save(img, os.path.join(BLOCK_DIR, "fuel_tank.png"))
+
+
 # ---------------- PHASE 7: CINDARA ----------------
 
 def gen_cindrite_ore():
@@ -757,29 +787,4 @@ if __name__ == "__main__":
     gen_greenxertz_navigator()
     # Phase 4 — rockets
     gen_rocket_launch_pad()
-    gen_rocket_fuel_canister()
-    gen_rocket_fuel_bucket()
-    gen_destination_compass("station_compass", R_GRAY)
-    gen_destination_compass("greenxertz_compass", G_GREEN_L)
-    gen_destination_compass("cindara_compass", C_ORANGE)
-    gen_rocket_tier("rocket_tier_1", N_RED, N_REDHI, N_MAG, boosters=False, glow=None)
-    gen_rocket_tier("rocket_tier_2", N_PURPLE, N_MAG, N_GLOW, boosters=True, glow=None)
-    gen_rocket_tier("rocket_tier_3", GOLD, G_GREEN_L, GOLD, boosters=True, glow=G_GLOW)
-    # Phase 5 — Greenxertz creatures (entity textures)
-    gen_entity("xertz_stalker",
-               [G_DARK, G_STEEL_D, (28, 56, 40, 255), G_GREEN], N_REDHI, Q_GREEN, 801)
-    gen_entity("quartz_crawler",
-               [Q_SHADOW, Q_GREEN, Q_PALE, (160, 210, 170, 255)], G_DARK, Q_WHITE, 802)
-    gen_entity("greenling",
-               [G_GREEN, G_GREEN_L, (90, 200, 120, 255)], (20, 40, 28, 255), G_GLOW, 803)
-    gen_entity_rocket()
-    # Phase 7 — Cindara
-    gen_cindrite_ore()
-    gen_cindrite_block()
-    gen_cindrite()
-    gen_entity("cinder_stalker",
-               [C_DARK, C_ASH, (50, 20, 16, 255), C_RED], C_GLOW, C_ORANGE, 905)
-    # Phase 7c — station
-    gen_station_floor()
-    gen_station_wall()
-    print("done")
+    gen_fuel_tank()

@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.machine.FuelTankBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 
@@ -155,6 +156,19 @@ public final class ModBlocks {
     public static final DeferredBlock<RocketLaunchPadBlock> ROCKET_LAUNCH_PAD = BLOCKS.registerBlock(
             "rocket_launch_pad",
             RocketLaunchPadBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    /**
+     * Fuel Tank (Phase 8a): a fuel-storage machine that auto-fuels a rocket on an adjacent launch
+     * pad. Backed by {@link za.co.neroland.nerospace.machine.FuelTankBlockEntity}.
+     */
+    public static final DeferredBlock<FuelTankBlock> FUEL_TANK = BLOCKS.registerBlock(
+            "fuel_tank",
+            FuelTankBlock::new,
             props -> props
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
