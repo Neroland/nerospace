@@ -12,8 +12,12 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
+import za.co.neroland.nerospace.client.CinderStalkerModel;
+import za.co.neroland.nerospace.client.GreenlingModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureRenderer;
+import za.co.neroland.nerospace.client.QuartzCrawlerModel;
+import za.co.neroland.nerospace.client.XertzStalkerModel;
 import za.co.neroland.nerospace.client.FuelTankScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
@@ -51,24 +55,32 @@ public class NerospaceClient {
     @SubscribeEvent
     static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
-        // Distinct silhouettes from the shared mesh: scaleX, scaleY, scaleZ, shadow.
+        // Each creature now has its own model geometry; the scale just fine-tunes size.
         event.registerEntityRenderer(ModEntities.XERTZ_STALKER.get(),
-                context -> new GreenxertzCreatureRenderer(context, entityTexture("xertz_stalker"),
-                        0.95F, 1.35F, 0.95F, 0.5F)); // tall, lean predator
+                context -> new GreenxertzCreatureRenderer(context,
+                        new XertzStalkerModel(context.bakeLayer(XertzStalkerModel.LAYER)),
+                        entityTexture("xertz_stalker"), 1.0F, 1.0F, 1.0F, 0.5F));
         event.registerEntityRenderer(ModEntities.QUARTZ_CRAWLER.get(),
-                context -> new GreenxertzCreatureRenderer(context, entityTexture("quartz_crawler"),
-                        1.25F, 0.6F, 1.25F, 0.5F)); // low, wide crawler
+                context -> new GreenxertzCreatureRenderer(context,
+                        new QuartzCrawlerModel(context.bakeLayer(QuartzCrawlerModel.LAYER)),
+                        entityTexture("quartz_crawler"), 1.0F, 1.0F, 1.0F, 0.5F));
         event.registerEntityRenderer(ModEntities.GREENLING.get(),
-                context -> new GreenxertzCreatureRenderer(context, entityTexture("greenling"),
-                        0.7F, 0.7F, 0.7F, 0.3F)); // small, timid
+                context -> new GreenxertzCreatureRenderer(context,
+                        new GreenlingModel(context.bakeLayer(GreenlingModel.LAYER)),
+                        entityTexture("greenling"), 1.0F, 1.0F, 1.0F, 0.3F));
         event.registerEntityRenderer(ModEntities.CINDER_STALKER.get(),
-                context -> new GreenxertzCreatureRenderer(context, entityTexture("cinder_stalker"),
-                        1.25F, 1.15F, 1.25F, 0.6F)); // bulky brute
+                context -> new GreenxertzCreatureRenderer(context,
+                        new CinderStalkerModel(context.bakeLayer(CinderStalkerModel.LAYER)),
+                        entityTexture("cinder_stalker"), 1.0F, 1.0F, 1.0F, 0.6F));
     }
 
     @SubscribeEvent
     static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(GreenxertzCreatureModel.LAYER, GreenxertzCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(XertzStalkerModel.LAYER, XertzStalkerModel::createBodyLayer);
+        event.registerLayerDefinition(QuartzCrawlerModel.LAYER, QuartzCrawlerModel::createBodyLayer);
+        event.registerLayerDefinition(GreenlingModel.LAYER, GreenlingModel::createBodyLayer);
+        event.registerLayerDefinition(CinderStalkerModel.LAYER, CinderStalkerModel::createBodyLayer);
         event.registerLayerDefinition(RocketModel.LAYER, RocketModel::createBodyLayer);
     }
 

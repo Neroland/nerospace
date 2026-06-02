@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
@@ -9,22 +10,22 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 
 /**
- * Shared renderer for the Phase 5 Greenxertz creatures. One renderer class serves all four mob types
- * via the common {@link GreenxertzCreatureModel} mesh, but each is given a distinct <b>silhouette</b>
- * through a per-creature non-uniform scale + shadow (Phase 8d): a tall stalker, a low wide crawler, a
- * small greenling, a bulky cinder stalker. (Bespoke per-creature geometry/animation is a deeper art
- * pass; this gives them readable, different shapes now.)
+ * Shared renderer for the Greenxertz/Cindara creatures. As of Phase 10 each creature has its OWN
+ * model geometry (a distinct {@link EntityModel} passed in — tall stalker, low six-legged crawler,
+ * small greenling, horned cinder brute); this renderer just carries the per-creature texture plus a
+ * fine-tuning scale + shadow. (Walk/idle animation is the next slice.)
  */
-public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRenderState, GreenxertzCreatureModel> {
+public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRenderState, EntityModel<LivingEntityRenderState>> {
 
     private final Identifier texture;
     private final float scaleX;
     private final float scaleY;
     private final float scaleZ;
 
-    public GreenxertzCreatureRenderer(EntityRendererProvider.Context context, Identifier texture,
+    public GreenxertzCreatureRenderer(EntityRendererProvider.Context context,
+                                      EntityModel<LivingEntityRenderState> model, Identifier texture,
                                       float scaleX, float scaleY, float scaleZ, float shadow) {
-        super(context, new GreenxertzCreatureModel(context.bakeLayer(GreenxertzCreatureModel.LAYER)), shadow);
+        super(context, model, shadow);
         this.texture = texture;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
