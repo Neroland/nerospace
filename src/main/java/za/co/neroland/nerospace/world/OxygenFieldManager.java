@@ -8,6 +8,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntMap;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -109,109 +112,158 @@ public final class OxygenFieldManager extends SavedData {
 
     // --- Simulation ---------------------------------------------------------
 
-    /** One relaxation pass. Skipped (paused) when no player is near any source. */
+    /** Sim-pass counter, used to pace the slow evaporation drain (not persisted). */
+    private transient int simCounter;
+
+    /**
+     * One simulation pass (terraform design §1, reworked for gas-like behaviour). Each pass:
+     *
+     * <ol>
+     *   <li><b>Flood from each active source</b> through the connected air space (BFS), detecting
+     *       whether that volume is <i>sealed</i> (BFS never reaches a sky-exposed cell and stays under
+     *       the cap) or <i>leaky/open</i> (it does). A sealed volume is the breathable target at full
+     *       strength everywhere (the room fills); a leaky/open volume only pressurises a small bubble
+     *       around the generator and bleeds to 0 toward the opening — oxygen finds the leak and escapes.
+     *   <li><b>Ease the live field toward that target:</b> rise to it immediately (fill), but drain
+     *       toward it slowly so that losing supply (out of fuel / broken generator) or springing a leak
+     *       makes the oxygen evaporate over {@code oxygenEvaporateSeconds} rather than vanishing.</li>
+     * </ol>
+     *
+     * <p>Because the target is recomputed every pass from the current blocks, the field re-paths
+     * automatically when the surroundings change — seal a wall and the room fills; break one and it
+     * leaks out.</p>
+     */
     public void simulate(ServerLevel level) {
         if (this.sources.isEmpty() && this.field.isEmpty()) {
             return;
         }
-        if (!anyPlayerNearSource(level)) {
-            return; // paused; persisted state resumes correctly when a player returns
+        // Run while a player is near a source, or while leftover oxygen still needs to evaporate.
+        boolean run = anyPlayerNearSource(level) || (!this.field.isEmpty() && !level.players().isEmpty());
+        if (!run) {
+            return; // paused; persisted state resumes when a player returns
         }
 
+        this.simCounter++;
         final int max = Config.OXYGEN_MAX_CONCENTRATION.get();
-        final double diffusion = Config.OXYGEN_DIFFUSION_RATE.get();
-        final double decay = Config.OXYGEN_DECAY_PER_STEP.get();
-        final int cap = Config.OXYGEN_MAX_ACTIVE_CELLS_PER_SOURCE.get()
-                * Math.max(1, this.sources.size());
+        final int cap = Config.OXYGEN_MAX_ACTIVE_CELLS_PER_SOURCE.get();
+        final int bubbleR = Math.max(1, Config.OXYGEN_BUBBLE_RADIUS.get());
+        final int leakRange = Config.OXYGEN_LEAK_RANGE.get();
+        final int interval = Config.OXYGEN_SIM_INTERVAL_TICKS.get();
+        // Drain one concentration level every N passes so a full cell reaches 0 in ~evaporateSeconds.
+        int passesToEmpty = Math.max(1, Math.round(Config.OXYGEN_EVAPORATE_SECONDS.get() * 20.0F / interval));
+        int drainEvery = Math.max(1, Math.round((float) passesToEmpty / max));
+        boolean drainTick = this.simCounter % drainEvery == 0;
 
+        // 1. Target field: flood-fill from every active source.
+        Long2ByteOpenHashMap target = new Long2ByteOpenHashMap();
+        target.defaultReturnValue((byte) 0);
         BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
-
-        // Injection cells: the holdable cells adjacent to each source block (a generator is a solid
-        // cube, so it can't hold oxygen itself — it pumps into the air around it). These are clamped
-        // to MAX each step and are the field's entry points.
-        LongOpenHashSet inject = new LongOpenHashSet();
         LongIterator si = this.sources.iterator();
         while (si.hasNext()) {
-            BlockPos sp = BlockPos.of(si.nextLong());
-            for (Direction dir : Direction.values()) {
-                m.setWithOffset(sp, dir);
-                if (level.hasChunkAt(m) && OxygenField.canHold(level, m, level.getBlockState(m))) {
-                    inject.add(m.asLong());
-                }
-            }
+            floodFromSource(level, BlockPos.of(si.nextLong()), max, cap, bubbleR, leakRange, target, m);
         }
 
-        // Build the active set: current field + injection cells + their passable neighbours (the
-        // frontier grows one ring/step). Bounded by the safety cap so an open-vacuum dump just stops.
-        LongOpenHashSet active = new LongOpenHashSet(this.field.keySet());
-        active.addAll(inject);
-        LongOpenHashSet frontier = new LongOpenHashSet(active);
-        LongIterator it = frontier.iterator();
-        while (it.hasNext()) {
-            long c = it.nextLong();
-            BlockPos cp = BlockPos.of(c);
-            for (Direction dir : Direction.values()) {
-                m.setWithOffset(cp, dir);
-                if (active.size() >= cap) {
-                    break;
-                }
-                long np = m.asLong();
-                if (!active.contains(np) && level.hasChunkAt(m)
-                        && OxygenField.canHold(level, m, level.getBlockState(m))) {
-                    active.add(np);
-                }
-            }
-        }
-
+        // 2. Ease the live field toward the target: snap up to fill, drain slowly to evaporate/leak.
+        LongOpenHashSet cells = new LongOpenHashSet(this.field.keySet());
+        cells.addAll(target.keySet());
         Long2ByteOpenHashMap next = new Long2ByteOpenHashMap();
         next.defaultReturnValue((byte) 0);
-
-        LongIterator ai = active.iterator();
-        while (ai.hasNext()) {
-            long c = ai.nextLong();
-            BlockPos cp = BlockPos.of(c);
-            if (!level.hasChunkAt(cp)) {
-                continue;
+        LongIterator ci = cells.iterator();
+        while (ci.hasNext()) {
+            long c = ci.nextLong();
+            int old = this.field.get(c) & 0xFF;
+            int tgt = target.get(c) & 0xFF;
+            int val;
+            if (tgt >= old) {
+                val = tgt;                                  // fill: rise to target immediately
+            } else if (drainTick) {
+                val = Math.max(tgt, old - 1);               // evaporate/leak: drain one level per drain tick
+            } else {
+                val = old;
             }
-            var state = level.getBlockState(cp);
-            if (!OxygenField.canHold(level, cp, state)) {
-                continue; // sealed/solid cells never hold oxygen
-            }
-            if (inject.contains(c)) {
-                next.put(c, (byte) max); // injection clamp at the source's air cells
-                continue;
-            }
-            int oldC = this.field.get(c) & 0xFF;
-            double sum = 0.0D;
-            for (Direction dir : Direction.values()) {
-                m.setWithOffset(cp, dir);
-                if (!level.hasChunkAt(m)) {
-                    continue;
-                }
-                if (OxygenField.canHold(level, m, level.getBlockState(m))) {
-                    sum += (this.field.get(m.asLong()) & 0xFF) - oldC;
-                }
-            }
-            // Decay is the bleed to vacuum: full strength only where oxygen can actually escape — a
-            // cell open to the sky or a leaky block. Sealed interior cells (roof/walls above) barely
-            // bleed, so an enclosed room fills to near-max, while an open-air bubble stays small and a
-            // hole/open door leaks (its outside cells see sky and decay). This is what makes a sealed
-            // base breathable across the whole room instead of just a few blocks around the generator.
-            boolean exposed = level.canSeeSky(cp) || OxygenField.isLeaky(level, cp, state);
-            double localDecay = exposed ? decay : decay * 0.12D;
-            double newF = oldC + diffusion * sum - localDecay;
-            int newV = (int) Math.round(Math.max(0.0D, Math.min(max, newF)));
-            if (newV > 0) {
-                next.put(c, (byte) newV);
+            if (val > 0) {
+                next.put(c, (byte) val);
             }
         }
-
         this.field.clear();
         this.field.putAll(next);
 
         if (Config.OXYGEN_DEBUG_LOG.get()) {
             Nerospace.LOGGER.info("[oxygen] dim={} sources={} activeCells={}",
                     level.dimension(), this.sources.size(), this.field.size());
+        }
+    }
+
+    /**
+     * BFS the connected air space from a source block and write its breathable target into {@code out}.
+     * Sealed volumes (no sky-exposed cell, under the cap) fill to MAX everywhere; leaky/open volumes
+     * pressurise only a {@code bubbleR} falloff around the source and drop to 0 toward the opening.
+     */
+    private void floodFromSource(ServerLevel level, BlockPos source, int max, int cap, int bubbleR,
+                                 int leakRange, Long2ByteOpenHashMap out, BlockPos.MutableBlockPos m) {
+        Long2IntOpenHashMap dist = new Long2IntOpenHashMap();
+        dist.defaultReturnValue(-1);
+        LongArrayFIFOQueue queue = new LongArrayFIFOQueue();
+
+        // Seed from the source's holdable air neighbours (the generator block itself is solid).
+        for (Direction dir : Direction.values()) {
+            m.setWithOffset(source, dir);
+            if (level.hasChunkAt(m) && OxygenField.canHold(level, m, level.getBlockState(m))) {
+                long k = m.asLong();
+                if (dist.get(k) < 0) {
+                    dist.put(k, 0);
+                    queue.enqueue(k);
+                }
+            }
+        }
+        if (queue.isEmpty()) {
+            return;
+        }
+
+        boolean leaked = false;
+        boolean capped = false;
+        BlockPos.MutableBlockPos mm = new BlockPos.MutableBlockPos();
+        while (!queue.isEmpty()) {
+            if (dist.size() > cap) {
+                capped = true; // too big to confirm sealed → treat as open
+                break;
+            }
+            long c = queue.dequeueLong();
+            int d = dist.get(c);
+            BlockPos cp = BlockPos.of(c);
+            if (level.canSeeSky(cp)) {
+                leaked = true; // an opening to the sky/vacuum — the volume is not sealed
+            }
+            if (d >= leakRange) {
+                continue; // a generator only searches/pressurises out to oxygenLeakRange blocks
+            }
+            for (Direction dir : Direction.values()) {
+                mm.setWithOffset(cp, dir);
+                if (!level.hasChunkAt(mm)) {
+                    continue;
+                }
+                long nk = mm.asLong();
+                if (dist.get(nk) >= 0) {
+                    continue;
+                }
+                if (OxygenField.canHold(level, mm, level.getBlockState(mm))) {
+                    dist.put(nk, d + 1);
+                    queue.enqueue(nk);
+                }
+            }
+        }
+
+        boolean sealed = !leaked && !capped;
+        for (Long2IntMap.Entry e : dist.long2IntEntrySet()) {
+            int d = e.getIntValue();
+            int val = sealed ? max : Math.max(0, Math.round(max * (1.0F - (float) d / bubbleR)));
+            if (val <= 0) {
+                continue;
+            }
+            long k = e.getLongKey();
+            if ((out.get(k) & 0xFF) < val) {
+                out.put(k, (byte) val);
+            }
         }
     }
 

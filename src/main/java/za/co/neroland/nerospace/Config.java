@@ -99,6 +99,17 @@ public class Config {
                     + "vacuum stops expanding its frontier at this size instead of spiking the tick.")
             .defineInRange("oxygenMaxActiveCellsPerSource", 4096, 64, 65536);
 
+    public static final ModConfigSpec.IntValue OXYGEN_LEAK_RANGE = BUILDER
+            .comment("Max distance (blocks, through connected air) the flood-fill searches from a "
+                    + "generator for leaks / room walls. A generator pressurises at most this far. "
+                    + "Smaller = cheaper. Default 16.")
+            .defineInRange("oxygenLeakRange", 16, 4, 64);
+
+    public static final ModConfigSpec.IntValue OXYGEN_EVAPORATE_SECONDS = BUILDER
+            .comment("How long oxygen takes to evaporate once it is no longer supplied (generator out "
+                    + "of fuel/broken) or after it starts leaking out an opening.")
+            .defineInRange("oxygenEvaporateSeconds", 10, 1, 120);
+
     public static final ModConfigSpec.IntValue OXYGEN_SYNC_RADIUS = BUILDER
             .comment("Blocks around a source within which the field is simulated and synced to clients. "
                     + "Sources with no player in range pause (state persists).")

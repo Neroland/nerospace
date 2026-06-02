@@ -102,6 +102,10 @@ public class NerospaceClient {
 
     /** Tracks whether the local player was in breathable air last tick (for the boundary sound). */
     private static boolean wasBreathable;
+    /** Counts client ticks so the (cheap) sound check runs every tick but particles run rarely. */
+    private static int fxTick;
+    /** Spawn ambient particles only every Nth tick — heavy iteration, kept sparse for performance. */
+    private static final int PARTICLE_INTERVAL_TICKS = 8;
 
     /**
      * Per-tick oxygen visual FX (terraform design §1.7): drifting ambient particles (layer 1),
@@ -133,8 +137,9 @@ public class NerospaceClient {
         }
         wasBreathable = breathingNow;
 
-        Long2ByteMap field = ClientOxygenField.view();
-        if (field.isEmpty()) {
+        // Particles are the expensive layer (field iteration + spawns), so run them only every Nth tick
+        // and keep the budget tiny. A small sample near the player is plenty for the ambient cue.
+        if (++fxTick % PARTICLE_INTERVAL_TICKS != 0) {
             return;
         }
         double particleIntensity = Config.OXYGEN_PARTICLE_INTENSITY.get();
@@ -142,10 +147,15 @@ public class NerospaceClient {
         if (particleIntensity <= 0.0D && boundaryIntensity <= 0.0D) {
             return;
         }
+        Long2ByteMap field = ClientOxygenField.view();
+        if (field.isEmpty()) {
+            return;
+        }
         RandomSource rnd = level.getRandom();
         boolean full = Config.OXYGEN_VISUAL_QUALITY.get() == Config.OxygenVisualQuality.FULL;
-        int budget = (int) Math.ceil((full ? 8 : 3) * Math.max(particleIntensity, boundaryIntensity));
+        int budget = full ? 2 : 1;
         int spawned = 0;
+        long maxDistSq = 18L * 18L; // only spawn near the player
 
         for (Long2ByteMap.Entry e : field.long2ByteEntrySet()) {
             if (spawned >= budget) {
@@ -156,23 +166,14 @@ public class NerospaceClient {
                 continue;
             }
             BlockPos p = BlockPos.of(e.getLongKey());
-            if (p.distSqr(playerPos) > 32 * 32) {
+            if (p.distSqr(playerPos) > maxDistSq) {
                 continue;
             }
-            // Layer 1: drifting ambient GLOW, rate proportional to concentration (edges thin out).
-            if (particleIntensity > 0.0D && rnd.nextDouble() < particleIntensity * (conc / (double) max) * 0.12D) {
+            // Layer 1: a single drifting ambient GLOW, rate proportional to concentration.
+            if (particleIntensity > 0.0D && rnd.nextDouble() < particleIntensity * (conc / (double) max) * 0.08D) {
                 level.addParticle(ParticleTypes.GLOW,
                         p.getX() + rnd.nextDouble(), p.getY() + rnd.nextDouble(), p.getZ() + rnd.nextDouble(),
                         0.0D, 0.004D, 0.0D);
-                spawned++;
-                continue;
-            }
-            // Layer 3 (shimmer): membrane cells (breathable but bordering vacuum) sparkle on the edge.
-            if (full && boundaryIntensity > 0.0D && ClientOxygenField.isMembrane(p, threshold)
-                    && rnd.nextDouble() < boundaryIntensity * 0.05D) {
-                level.addParticle(ParticleTypes.END_ROD,
-                        p.getX() + rnd.nextDouble(), p.getY() + rnd.nextDouble(), p.getZ() + rnd.nextDouble(),
-                        0.0D, 0.0D, 0.0D);
                 spawned++;
             }
         }
