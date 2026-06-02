@@ -1,12 +1,8 @@
 package za.co.neroland.nerospace.world;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -14,17 +10,18 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.Nerospace;
-import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.registry.ModAttachments;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModItems;
+// OxygenFieldManager is in this same package (za.co.neroland.nerospace.world).
 
 /**
  * Oxygen / atmosphere handling (Phase 8c). On airless Nerospace dimensions a survival/adventure
@@ -71,11 +68,10 @@ public final class GreenxertzAtmosphere {
 
         int oxygen = Math.min(getOxygen(player, max), max);
 
-        // The scan is throttled; oxygen still mirrors to the HUD every tick from the stored value.
+        // The check is throttled; oxygen still mirrors to the HUD every tick from the stored value.
         if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
-            BlockPos pos = player.blockPosition();
-            if (isBreathable(level, pos) || isInSealedRoom(level, pos)) {
-                // A breathable zone (pad radius, generator bubble, or a sealed oxygenated room) refills.
+            if (isBreathable(level, player)) {
+                // A breathable zone (pad radius, oxygen field, or terraformed ground) refills.
                 oxygen = max;
             } else if (isWearingFullSuit(player)) {
                 // The Oxygen Suit's finite air tank drains slowly while exposed.
@@ -114,75 +110,48 @@ public final class GreenxertzAtmosphere {
         player.setAirSupply(Math.min(airMax, Math.max(0, air)));
     }
 
-    /** @return true if a launch pad or an active Oxygen Generator pressurises {@code center}. */
-    private static boolean isBreathable(Level level, BlockPos center) {
-        int safeR = Config.ATMOSPHERE_SAFE_RADIUS.get();
-        int bubbleR = Config.OXYGEN_BUBBLE_RADIUS.get();
-        int scan = Math.max(safeR, bubbleR);
-        int bubbleSq = bubbleR * bubbleR;
+    /**
+     * Breathability (terraform design §1.6): an O(1) oxygen-field lookup at the player's head, plus the
+     * permanent terraformed-ground flag (§3.4) and the launch-pad safe zone. This replaces the old
+     * per-tick scan + flood-fill — cheaper than before and correct about dissipation and leaks.
+     */
+    private static boolean isBreathable(ServerLevel level, Player player) {
+        BlockPos eye = player.blockPosition().above(); // ~head height
+        if (OxygenFieldManager.get(level).isBreathable(eye)
+                || OxygenFieldManager.get(level).isBreathable(player.blockPosition())) {
+            return true;
+        }
+        if (terraformedBreathable(level, player)) {
+            return true;
+        }
+        return nearLaunchPad(level, player.blockPosition());
+    }
 
+    /** Terraformed chunks are permanently breathable at/above the surface (not in a buried vault). */
+    private static boolean terraformedBreathable(ServerLevel level, Player player) {
+        BlockPos pos = player.blockPosition();
+        if (!Boolean.TRUE.equals(level.getChunkAt(pos).getData(ModAttachments.TERRAFORMED))) {
+            return false;
+        }
+        int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ());
+        return pos.getY() >= surfaceY - 2;
+    }
+
+    /** Cheap landing-site safety: within {@code atmosphereSafeRadius} of a Rocket Launch Pad. */
+    private static boolean nearLaunchPad(Level level, BlockPos center) {
+        int safeR = Config.ATMOSPHERE_SAFE_RADIUS.get();
+        if (safeR <= 0) {
+            return false;
+        }
         for (BlockPos pos : BlockPos.betweenClosed(
-                center.offset(-scan, -scan, -scan),
-                center.offset(scan, scan, scan))) {
+                center.offset(-safeR, -safeR, -safeR),
+                center.offset(safeR, safeR, safeR))) {
             BlockState state = level.getBlockState(pos);
-            if (state.is(ModBlocks.ROCKET_LAUNCH_PAD.get())) {
-                if (chebyshev(center, pos) <= safeR) {
-                    return true;
-                }
-            } else if (state.is(ModBlocks.OXYGEN_GENERATOR.get())) {
-                if (center.distSqr(pos) <= bubbleSq
-                        && level.getBlockEntity(pos) instanceof OxygenGeneratorBlockEntity gen
-                        && gen.isActive()) {
-                    return true;
-                }
+            if (state.is(ModBlocks.ROCKET_LAUNCH_PAD.get()) && chebyshev(center, pos) <= safeR) {
+                return true;
             }
         }
         return false;
-    }
-
-    /**
-     * Flood-fills the air space the player stands in. If it is fully enclosed (the fill terminates
-     * under {@code oxygenSealedRoomMax}) and borders an active Oxygen Generator, the whole room is
-     * oxygenated — so a sealed base is breathable even outside the generator's raw bubble radius. An
-     * open/unsealed space hits the cap and returns false.
-     */
-    private static boolean isInSealedRoom(Level level, BlockPos start) {
-        int cap = Config.OXYGEN_SEALED_ROOM_MAX.get();
-        if (cap <= 0 || !isPassable(level.getBlockState(start))) {
-            return false;
-        }
-
-        Set<BlockPos> visited = new HashSet<>();
-        Deque<BlockPos> queue = new ArrayDeque<>();
-        queue.add(start.immutable());
-        visited.add(start.immutable());
-        boolean servedByGenerator = false;
-
-        while (!queue.isEmpty()) {
-            if (visited.size() > cap) {
-                return false; // not sealed — open to the outside
-            }
-            BlockPos pos = queue.poll();
-            for (Direction dir : Direction.values()) {
-                BlockPos next = pos.relative(dir);
-                BlockState state = level.getBlockState(next);
-                if (isPassable(state)) {
-                    if (visited.add(next.immutable())) {
-                        queue.add(next.immutable());
-                    }
-                } else if (state.is(ModBlocks.OXYGEN_GENERATOR.get())
-                        && level.getBlockEntity(next) instanceof OxygenGeneratorBlockEntity gen
-                        && gen.isActive()) {
-                    servedByGenerator = true;
-                }
-            }
-        }
-        return servedByGenerator;
-    }
-
-    /** Air the player can breathe through for the sealed-room fill (air-only for now). */
-    private static boolean isPassable(BlockState state) {
-        return state.isAir();
     }
 
     /** @return true if all four Oxygen Suit pieces are worn (personal life support). */

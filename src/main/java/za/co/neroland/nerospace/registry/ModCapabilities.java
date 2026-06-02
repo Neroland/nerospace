@@ -32,6 +32,16 @@ public final class ModCapabilities {
                 ModBlockEntities.OXYGEN_GENERATOR.get(),
                 (blockEntity, side) -> blockEntity.getEnergyHandler());
 
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.TERRAFORMER.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.TERRAFORMER.get(),
+                (blockEntity, side) -> blockEntity.getFuelHandler());
+
         // Fluid: expose the rocket's tank and the Fuel Tank machine so pipes/automation can fill them.
         event.registerEntity(
                 Capabilities.Fluid.ENTITY,

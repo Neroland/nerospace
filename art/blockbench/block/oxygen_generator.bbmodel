@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "oxygen_generator",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "oxygen_generator",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "8422f3ad-c844-4f2e-8926-626f39dce842"
+    }
+  ],
+  "outliner": [
+    "8422f3ad-c844-4f2e-8926-626f39dce842"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/busy-loving-shannon/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/oxygen_generator.png",
+      "name": "oxygen_generator.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "62f3a0c0-ca94-4329-8ce1-24f5d2c5d340",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/oxygen_generator.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB5klEQVR4nKWSsYvTYBjGf4Y7uKThcEjaUIqUs4h0DE4SJHBFOpWbD8E/QHEqkqGLy9Eho5PbwdE/wMmhQpHi4FAUIZTjTkSO8CXXQSSXCEJ1yOVrcycuvsv3JbzP873P87w3vGcHv/mP2gB4934sf6RZCkDVsNB1HQARhaRZiqZqskdTNUQsUArgg/sd0iylalh/Be80W5K8u9tDr2wD5AR6ZZvj04CqYZE+8YgXgsn5GZPzM+bKkm+VLTmh8vyA2acPxAuxklC8llz84JFjM6hs0e4PS1onvofbbNFxbMaHOvFizYMkSWTjYO8h7f6QfccuEYwYMvE9RK8rx5cSinHmyrIEdoxNHGMTgH3Hpt0fMleWAOw0WysCTdWkjKIK4NX7umQpwarVEVEICgS+x8DnnyWiEKtWXxGIKMx1Zd+vSQCYLn7lPkxnBL4n45QSIE/ANRsEvsdoOpPAq+AinS9fT1YTQL5d8eOnuIcvmfgeI8oxBr7HPfUme47N+NLAj59nOUGxaR3H5tWLE+6qGoHvlQhcs4GIQo563dJaK5BHcud2m6NeF03VsGp1XLPBrYufuGYD12yQJInMv7vbu+7Bm7evpbMiCkmSRGYtohDI9yXNUo5PA0m2UWhZPy/Dolyr7/W+P9oqzQK4A/X6AAAAAElFTkSuQmCC"
+    }
+  ]
+}

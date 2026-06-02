@@ -40,6 +40,20 @@ public final class ModTags {
         public static final TagKey<Block> ORES_NEROSTEEL = blockTag("c", "ores/nerosteel");
         public static final TagKey<Block> ORES_XERTZ_QUARTZ = blockTag("c", "ores/xertz_quartz");
         public static final TagKey<Block> STORAGE_BLOCKS_NEROSTEEL = blockTag("c", "storage_blocks/nerosteel");
+
+        // --- Oxygen field (terraform design) -------------------------------
+        /** Full, airtight blocks: stop ALL oxygen flow (opaque cubes, glass, station walls). */
+        public static final TagKey<Block> OXYGEN_SEALING = blockTag("nerospace", "oxygen_sealing");
+        /** Non-full / leaky blocks: allow PARTIAL flow (fences, slabs, torches, open trapdoors). */
+        public static final TagKey<Block> OXYGEN_LEAKS = blockTag("nerospace", "oxygen_leaks");
+        /** Blocks that act as oxygen sources for the field (generators; later: alien flora). */
+        public static final TagKey<Block> OXYGEN_SOURCE = blockTag("nerospace", "oxygen_source");
+
+        // --- Terraform conversion table (data-driven) ----------------------
+        /** Surface blocks a Terraformer turns into grass (deadrock, basalt, dirt, sand, …). */
+        public static final TagKey<Block> TERRAFORM_TO_GRASS = blockTag("nerospace", "terraform_to_grass");
+        /** Sub-surface blocks a Terraformer turns into dirt. */
+        public static final TagKey<Block> TERRAFORM_TO_DIRT = blockTag("nerospace", "terraform_to_dirt");
     }
 
     public static final class Items {

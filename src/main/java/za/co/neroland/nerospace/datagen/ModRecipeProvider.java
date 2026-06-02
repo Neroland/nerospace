@@ -250,6 +250,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
+        // Terraformer: an Oxygen Generator core in a nerosteel frame packed with dirt (terraform design).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.TERRAFORMER.get())
+                .pattern("NDN")
+                .pattern("DOD")
+                .pattern("NBN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('D', Items.DIRT)
+                .define('O', ModBlocks.OXYGEN_GENERATOR.get())
+                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .unlockedBy("has_oxygen_generator", this.has(ModBlocks.OXYGEN_GENERATOR.get()))
+                .save(this.output);
+
         // Rocket fuel canister: blaze powder + coal + xertz quartz in an iron shell (yields 2).
         ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModItems.ROCKET_FUEL_CANISTER, 2)

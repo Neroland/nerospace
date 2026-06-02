@@ -197,6 +197,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> OXYGEN_GENERATOR_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.OXYGEN_GENERATOR);
 
+    // Terraform design — terraformer machine block item.
+    public static final DeferredItem<BlockItem> TERRAFORMER_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.TERRAFORMER);
+
     // --- Spawn eggs (Phase 10e) --------------------------------------------
     public static final DeferredItem<Item> XERTZ_STALKER_SPAWN_EGG = ITEMS.registerItem(
             "xertz_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.XERTZ_STALKER));

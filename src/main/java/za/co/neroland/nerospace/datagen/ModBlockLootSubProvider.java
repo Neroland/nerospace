@@ -40,6 +40,9 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         // Phase 8c — oxygen generator.
         dropSelf(ModBlocks.OXYGEN_GENERATOR.get());
 
+        // Terraform design — terraformer.
+        dropSelf(ModBlocks.TERRAFORMER.get());
+
         // Phase 3 — Greenxertz.
         dropSelf(ModBlocks.NEROSTEEL_BLOCK.get());
         add(ModBlocks.NEROSTEEL_ORE.get(),

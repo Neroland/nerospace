@@ -29,6 +29,17 @@ public final class ModAttachments {
                     .copyOnDeath()
                     .build());
 
+    /**
+     * Per-{@code LevelChunk} terraformed flag (terraform design §3.4). Once a Terraformer converts a
+     * chunk's ground it is permanently breathable at/above the surface — an O(1) flag test, no
+     * simulation. This is ordinary gameplay save data, not analytics.
+     */
+    public static final Supplier<AttachmentType<Boolean>> TERRAFORMED = ATTACHMENT_TYPES.register(
+            "terraformed",
+            () -> AttachmentType.builder(() -> Boolean.FALSE)
+                    .serialize(Codec.BOOL.fieldOf("terraformed"))
+                    .build());
+
     private ModAttachments() {
     }
 

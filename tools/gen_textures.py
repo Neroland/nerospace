@@ -26,9 +26,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCK_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/block")
 ITEM_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/item")
 ENTITY_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity")
+PARTICLE_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/particle")
+GUI_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/gui")
 os.makedirs(BLOCK_DIR, exist_ok=True)
 os.makedirs(ITEM_DIR, exist_ok=True)
 os.makedirs(ENTITY_DIR, exist_ok=True)
+os.makedirs(PARTICLE_DIR, exist_ok=True)
+os.makedirs(GUI_DIR, exist_ok=True)
 
 S = 16  # texture size
 ES = 64  # entity texture size (matches the GreenxertzCreatureModel LayerDefinition 64x64)
@@ -806,7 +810,63 @@ def gen_entity_rocket():
     print("wrote", os.path.relpath(path, ROOT))
 
 
+# ---------------- OXYGEN / TERRAFORM (particles + machine) ----------------
+
+def gen_oxygen_particle():
+    """8x8 soft white radial dot (tinted in code: cyan for O2, green for terraform)."""
+    path = os.path.join(PARTICLE_DIR, "oxygen.png")
+    if os.path.exists(path) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+        return
+    n = 8
+    img = Image.new("RGBA", (n, n), CLEAR)
+    px = img.load()
+    cx = cy = (n - 1) / 2.0
+    for y in range(n):
+        for x in range(n):
+            d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+            a = max(0.0, 1.0 - d / (n / 2.0))
+            px[x, y] = (255, 255, 255, int(255 * (a ** 1.6)))
+    img.save(path)
+    print("wrote", os.path.relpath(path, ROOT))
+
+
+def gen_terraformer():
+    """Metal machine face with a green terraforming core + soil band (terraform design §2)."""
+    rng = random.Random(820)
+    img = new_img()
+    noise_fill(img, METAL, rng)
+    px = img.load()
+    bevel(img, METAL_L, METAL_D)
+    # earthy soil band across the lower third
+    DIRT = (98, 70, 46, 255)
+    DIRT_D = (70, 49, 32, 255)
+    for y in range(11, 14):
+        for x in range(2, 14):
+            px[x, y] = DIRT if (x + y) % 2 == 0 else DIRT_D
+    # green grass crown on the band
+    for x in range(2, 14):
+        px[x, 10] = G_GREEN if x % 2 == 0 else G_GREEN_L
+    # central glowing green orb (the terraform core)
+    cx, cy = 8, 6
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx + 0.5) ** 2 + (y - cy + 0.5) ** 2) ** 0.5
+            if d <= 1.6:
+                px[x, y] = G_GLOW
+            elif d <= 2.6:
+                px[x, y] = G_GREEN_L
+            elif d <= 3.4:
+                px[x, y] = G_GREEN
+    # corner rivets
+    for (rx, ry) in [(2, 2), (13, 2)]:
+        px[rx, ry] = METAL_L
+    save(img, os.path.join(BLOCK_DIR, "terraformer.png"))
+
+
 if __name__ == "__main__":
+    gen_oxygen_particle()
+    gen_terraformer()
     gen_ore(STONE, "nerosium_ore")
     gen_ore(DEEP, "deepslate_nerosium_ore")
     gen_storage_block()

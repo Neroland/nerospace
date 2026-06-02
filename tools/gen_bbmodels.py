@@ -36,7 +36,7 @@ BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
           "nerosteel_ore", "xertz_quartz_ore", "nerosteel_block",
           "rocket_launch_pad", "fuel_tank", "oxygen_generator",
           "cindrite_ore", "cindrite_block",
-          "station_floor", "station_wall"]
+          "station_floor", "station_wall", "terraformer"]
 ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "raw_nerosteel", "nerosteel_ingot", "xertz_quartz", "greenxertz_navigator",
          "rocket_fuel_canister", "rocket_tier_1", "rocket_tier_2", "rocket_tier_3",

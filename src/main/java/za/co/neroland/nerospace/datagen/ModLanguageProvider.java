@@ -44,6 +44,9 @@ public class ModLanguageProvider extends LanguageProvider {
         // Phase 8c blocks.
         add(ModBlocks.OXYGEN_GENERATOR.get(), "Oxygen Generator");
 
+        // Terraform design — terraformer.
+        add(ModBlocks.TERRAFORMER.get(), "Terraformer");
+
         // Phase 7 blocks.
         add(ModBlocks.CINDRITE_ORE.get(), "Cindrite Ore");
         add(ModBlocks.CINDRITE_BLOCK.get(), "Block of Cindrite");
@@ -119,6 +122,14 @@ public class ModLanguageProvider extends LanguageProvider {
         // Fuel tank GUI.
         add("container.nerospace.fuel_tank", "Fuel Tank");
         add("gui.nerospace.fuel_tank.level", "Fuel: %s%% (%s / %s mB)");
+
+        // Terraformer GUI.
+        add("container.nerospace.terraformer", "Terraformer");
+        add("gui.nerospace.terraformer.power", "Power: %s%%");
+        add("gui.nerospace.terraformer.tier", "Tier %s");
+        add("gui.nerospace.terraformer.radius", "Radius: %s");
+        add("gui.nerospace.terraformer.working", "Terraforming");
+        add("gui.nerospace.terraformer.idle", "Idle");
 
         // Containers / GUI.
         add("container.nerospace.nerosium_grinder", "Nerosium Grinder");

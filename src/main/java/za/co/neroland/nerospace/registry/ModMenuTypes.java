@@ -13,6 +13,7 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.FuelTankMenu;
 import za.co.neroland.nerospace.machine.NerosiumGrinderMenu;
 import za.co.neroland.nerospace.machine.OxygenGeneratorMenu;
+import za.co.neroland.nerospace.machine.TerraformerMenu;
 import za.co.neroland.nerospace.rocket.RocketMenu;
 
 /**
@@ -34,6 +35,10 @@ public final class ModMenuTypes {
     public static final Supplier<MenuType<FuelTankMenu>> FUEL_TANK = MENU_TYPES.register(
             "fuel_tank",
             () -> new MenuType<>(FuelTankMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
+    public static final Supplier<MenuType<TerraformerMenu>> TERRAFORMER = MENU_TYPES.register(
+            "terraformer",
+            () -> new MenuType<>(TerraformerMenu::new, FeatureFlags.DEFAULT_FLAGS));
 
     /**
      * Rocket menu. Uses {@link IMenuTypeExtension#create} so the entity id can be written to the

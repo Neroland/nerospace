@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "nerospace:nerosteel_block",
+    "D": "minecraft:dirt",
+    "N": "nerospace:nerosteel_ingot",
+    "O": "nerospace:oxygen_generator"
+  },
+  "pattern": [
+    "NDN",
+    "DOD",
+    "NBN"
+  ],
+  "result": {
+    "id": "nerospace:terraformer"
+  }
+}

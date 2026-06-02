@@ -5,12 +5,26 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+
+import it.unimi.dsi.fastutil.longs.Long2ByteMap;
+
+import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.client.ClientOxygenField;
 
 import za.co.neroland.nerospace.client.CinderStalkerModel;
 import za.co.neroland.nerospace.client.GreenlingModel;
@@ -24,6 +38,7 @@ import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
 import za.co.neroland.nerospace.client.RocketModel;
 import za.co.neroland.nerospace.client.RocketRenderer;
 import za.co.neroland.nerospace.client.RocketScreen;
+import za.co.neroland.nerospace.client.TerraformerScreen;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
@@ -49,6 +64,7 @@ public class NerospaceClient {
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         event.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
         event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
+        event.register(ModMenuTypes.TERRAFORMER.get(), TerraformerScreen::new);
         event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
     }
 
@@ -82,6 +98,118 @@ public class NerospaceClient {
         event.registerLayerDefinition(GreenlingModel.LAYER, GreenlingModel::createBodyLayer);
         event.registerLayerDefinition(CinderStalkerModel.LAYER, CinderStalkerModel::createBodyLayer);
         event.registerLayerDefinition(RocketModel.LAYER, RocketModel::createBodyLayer);
+    }
+
+    /** Tracks whether the local player was in breathable air last tick (for the boundary sound). */
+    private static boolean wasBreathable;
+
+    /**
+     * Per-tick oxygen visual FX (terraform design §1.7): drifting ambient particles (layer 1),
+     * boundary-membrane shimmer + a soft crossfade sound when the breathable state flips (layer 3).
+     * Each layer is independently config-gated; the haze tint (layer 2) is in {@link #onComputeFogColor}
+     * and the HUD gauge (layer 4) rides the vanilla air-supply mirror driven server-side.
+     */
+    @SubscribeEvent
+    static void onClientTick(ClientTickEvent.Post event) {
+        if (Config.OXYGEN_VISUAL_QUALITY.get() == Config.OxygenVisualQuality.OFF) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        ClientLevel level = mc.level;
+        if (level == null || mc.player == null || mc.isPaused()) {
+            return;
+        }
+
+        int threshold = Config.OXYGEN_BREATHABLE_THRESHOLD.get();
+        int max = Config.OXYGEN_MAX_CONCENTRATION.get();
+        BlockPos playerPos = mc.player.blockPosition();
+
+        // Layer 3 (sound): crossfade an ambient note when the player crosses the breathable boundary.
+        boolean breathingNow = ClientOxygenField.concentrationAt(playerPos.above()) >= threshold
+                || ClientOxygenField.concentrationAt(playerPos) >= threshold;
+        if (breathingNow != wasBreathable && Config.OXYGEN_BOUNDARY_INTENSITY.get() > 0.0D) {
+            level.playLocalSound(playerPos, SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundSource.AMBIENT,
+                    0.25F, breathingNow ? 1.3F : 0.8F, false);
+        }
+        wasBreathable = breathingNow;
+
+        Long2ByteMap field = ClientOxygenField.view();
+        if (field.isEmpty()) {
+            return;
+        }
+        double particleIntensity = Config.OXYGEN_PARTICLE_INTENSITY.get();
+        double boundaryIntensity = Config.OXYGEN_BOUNDARY_INTENSITY.get();
+        if (particleIntensity <= 0.0D && boundaryIntensity <= 0.0D) {
+            return;
+        }
+        RandomSource rnd = level.getRandom();
+        boolean full = Config.OXYGEN_VISUAL_QUALITY.get() == Config.OxygenVisualQuality.FULL;
+        int budget = (int) Math.ceil((full ? 8 : 3) * Math.max(particleIntensity, boundaryIntensity));
+        int spawned = 0;
+
+        for (Long2ByteMap.Entry e : field.long2ByteEntrySet()) {
+            if (spawned >= budget) {
+                break;
+            }
+            int conc = e.getByteValue() & 0xFF;
+            if (conc < threshold) {
+                continue;
+            }
+            BlockPos p = BlockPos.of(e.getLongKey());
+            if (p.distSqr(playerPos) > 32 * 32) {
+                continue;
+            }
+            // Layer 1: drifting ambient GLOW, rate proportional to concentration (edges thin out).
+            if (particleIntensity > 0.0D && rnd.nextDouble() < particleIntensity * (conc / (double) max) * 0.12D) {
+                level.addParticle(ParticleTypes.GLOW,
+                        p.getX() + rnd.nextDouble(), p.getY() + rnd.nextDouble(), p.getZ() + rnd.nextDouble(),
+                        0.0D, 0.004D, 0.0D);
+                spawned++;
+                continue;
+            }
+            // Layer 3 (shimmer): membrane cells (breathable but bordering vacuum) sparkle on the edge.
+            if (full && boundaryIntensity > 0.0D && ClientOxygenField.isMembrane(p, threshold)
+                    && rnd.nextDouble() < boundaryIntensity * 0.05D) {
+                level.addParticle(ParticleTypes.END_ROD,
+                        p.getX() + rnd.nextDouble(), p.getY() + rnd.nextDouble(), p.getZ() + rnd.nextDouble(),
+                        0.0D, 0.0D, 0.0D);
+                spawned++;
+            }
+        }
+    }
+
+    /**
+     * Soft haze tint (terraform design §1.7, layer 2): nudge the fog colour toward cyan while the camera
+     * is inside breathable air, scaled by local concentration and the haze-intensity slider.
+     */
+    @SubscribeEvent
+    static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {
+        if (Config.OXYGEN_VISUAL_QUALITY.get() != Config.OxygenVisualQuality.FULL) {
+            return;
+        }
+        double haze = Config.OXYGEN_HAZE_INTENSITY.get();
+        if (haze <= 0.0D) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) {
+            return;
+        }
+        BlockPos eye = BlockPos.containing(mc.player.getEyePosition());
+        int conc = Math.max(ClientOxygenField.concentrationAt(eye), ClientOxygenField.concentrationAt(eye.above()));
+        int threshold = Config.OXYGEN_BREATHABLE_THRESHOLD.get();
+        if (conc < threshold) {
+            return;
+        }
+        float max = Config.OXYGEN_MAX_CONCENTRATION.get();
+        float a = (float) Math.min(0.6D, haze * 0.18D * (conc / max));
+        event.setRed(lerp(event.getRed(), 0.30F, a));
+        event.setGreen(lerp(event.getGreen(), 0.80F, a));
+        event.setBlue(lerp(event.getBlue(), 0.95F, a));
+    }
+
+    private static float lerp(float from, float to, float t) {
+        return from + (to - from) * t;
     }
 
     private static Identifier entityTexture(String name) {

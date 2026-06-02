@@ -51,6 +51,9 @@ public class ModModelProvider extends ModelProvider {
         // Phase 8c — oxygen generator machine.
         blockModels.createTrivialCube(ModBlocks.OXYGEN_GENERATOR.get());
 
+        // Terraform design — terraformer machine.
+        blockModels.createTrivialCube(ModBlocks.TERRAFORMER.get());
+
         // Phase 7 — Cindara ore + storage block.
         blockModels.createTrivialCube(ModBlocks.CINDRITE_ORE.get());
         blockModels.createTrivialCube(ModBlocks.CINDRITE_BLOCK.get());

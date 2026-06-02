@@ -3,6 +3,7 @@ package za.co.neroland.nerospace.machine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.world.OxygenFieldManager;
 
 /**
  * Oxygen Generator (Phase 8c/8d/9): projects a breathable bubble while powered. It runs on an
@@ -169,6 +171,25 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements Container
         if (this.energy.getAmountAsInt() >= RUN_PER_TICK) {
             this.energy.consume(RUN_PER_TICK);
         }
+
+        // Feed the oxygen field: register/forget this position as a source by active state. The field
+        // diffusion (not a raw radius bubble) decides the breathable volume — see OxygenFieldManager.
+        if (level instanceof ServerLevel serverLevel) {
+            OxygenFieldManager manager = OxygenFieldManager.get(serverLevel);
+            if (isActive()) {
+                manager.addSource(pos);
+            } else {
+                manager.removeSource(pos);
+            }
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        if (this.level instanceof ServerLevel serverLevel) {
+            OxygenFieldManager.get(serverLevel).removeSource(this.worldPosition);
+        }
+        super.setRemoved();
     }
 
     // --- Persistence (Value I/O) -------------------------------------------

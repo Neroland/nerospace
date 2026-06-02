@@ -11,6 +11,7 @@
     "nerospace:station_floor",
     "nerospace:station_wall",
     "nerospace:fuel_tank",
-    "nerospace:oxygen_generator"
+    "nerospace:oxygen_generator",
+    "nerospace:terraformer"
   ]
 }

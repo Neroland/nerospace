@@ -59,6 +59,7 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.ROCKET_LAUNCH_PAD.get());
                         output.accept(ModBlocks.FUEL_TANK.get());
                         output.accept(ModBlocks.OXYGEN_GENERATOR.get());
+                        output.accept(ModBlocks.TERRAFORMER.get());
                         output.accept(ModItems.OXYGEN_SUIT_HELMET.get());
                         output.accept(ModItems.OXYGEN_SUIT_CHESTPLATE.get());
                         output.accept(ModItems.OXYGEN_SUIT_LEGGINGS.get());

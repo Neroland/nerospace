@@ -11,6 +11,7 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 
 /**
  * Block entity types (Phase 2).
@@ -41,6 +42,13 @@ public final class ModBlockEntities {
                     OxygenGeneratorBlockEntity::new,
                     false,
                     ModBlocks.OXYGEN_GENERATOR.get()));
+
+    public static final Supplier<BlockEntityType<TerraformerBlockEntity>> TERRAFORMER = BLOCK_ENTITY_TYPES.register(
+            "terraformer",
+            () -> new BlockEntityType<>(
+                    TerraformerBlockEntity::new,
+                    false,
+                    ModBlocks.TERRAFORMER.get()));
 
     private ModBlockEntities() {
     }
