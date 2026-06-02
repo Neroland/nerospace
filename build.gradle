@@ -170,6 +170,13 @@ neoForge.ideSyncTask generateModMetadata
     neoForge.ideSyncTask tasks.named(runArgTask)
 }
 
+// `gradlew clean` deletes build/moddev/*RunVmArgs.txt, so launching a saved IDE run config straight
+// after a clean fails ("could not open ...RunVmArgs.txt"). Regenerate them as a finalizer of clean so
+// they are ALWAYS present after a clean/build — independent of whether the IDE keeps the preLaunchTask.
+tasks.named('clean') {
+    finalizedBy('prepareClientRun', 'prepareServerRun', 'prepareGameTestServerRun', 'prepareDataRun')
+}
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {

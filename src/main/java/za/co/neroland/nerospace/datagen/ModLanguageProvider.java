@@ -86,6 +86,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.ROCKET_FUEL_BLOCK.get(), "Rocket Fuel");
         add("fluid_type.nerospace.rocket_fuel", "Rocket Fuel");
 
+        // Spawn eggs.
+        add(ModItems.XERTZ_STALKER_SPAWN_EGG.get(), "Xertz Stalker Spawn Egg");
+        add(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get(), "Quartz Crawler Spawn Egg");
+        add(ModItems.GREENLING_SPAWN_EGG.get(), "Greenling Spawn Egg");
+        add(ModItems.CINDER_STALKER_SPAWN_EGG.get(), "Cinder Stalker Spawn Egg");
+
         // Entities.
         add("entity.nerospace.rocket", "Rocket");
         add("entity.nerospace.xertz_stalker", "Xertz Stalker");

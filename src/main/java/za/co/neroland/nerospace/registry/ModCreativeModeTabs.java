@@ -69,6 +69,12 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.ROCKET_TIER_2.get());
                         output.accept(ModItems.ROCKET_TIER_3.get());
 
+                        // Spawn eggs.
+                        output.accept(ModItems.XERTZ_STALKER_SPAWN_EGG.get());
+                        output.accept(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get());
+                        output.accept(ModItems.GREENLING_SPAWN_EGG.get());
+                        output.accept(ModItems.CINDER_STALKER_SPAWN_EGG.get());
+
                         // Creative-only travel devices (no survival recipe).
                         output.accept(ModItems.GREENXERTZ_NAVIGATOR.get());
                         output.accept(ModItems.STATION_COMPASS.get());

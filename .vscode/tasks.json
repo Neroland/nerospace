@@ -1,0 +1,42 @@
+{
+  "//": "preLaunchTasks for launch.json: each runs the matching ModDevGradle 'prepare<Run>' task to (re)generate build/moddev/<run>Args.txt before launch, so launches never fail after a clean. Cross-platform: gradlew on Linux/macOS, gradlew.bat on Windows.",
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "prepareClientRun",
+      "type": "process",
+      "command": "${workspaceFolder}/gradlew",
+      "windows": { "command": "${workspaceFolder}/gradlew.bat" },
+      "args": ["prepareClientRun"],
+      "presentation": { "reveal": "silent", "panel": "shared", "clear": false },
+      "problemMatcher": []
+    },
+    {
+      "label": "prepareGameTestServerRun",
+      "type": "process",
+      "command": "${workspaceFolder}/gradlew",
+      "windows": { "command": "${workspaceFolder}/gradlew.bat" },
+      "args": ["prepareGameTestServerRun"],
+      "presentation": { "reveal": "silent", "panel": "shared", "clear": false },
+      "problemMatcher": []
+    },
+    {
+      "label": "prepareServerRun",
+      "type": "process",
+      "command": "${workspaceFolder}/gradlew",
+      "windows": { "command": "${workspaceFolder}/gradlew.bat" },
+      "args": ["prepareServerRun"],
+      "presentation": { "reveal": "silent", "panel": "shared", "clear": false },
+      "problemMatcher": []
+    },
+    {
+      "label": "prepareDataRun",
+      "type": "process",
+      "command": "${workspaceFolder}/gradlew",
+      "windows": { "command": "${workspaceFolder}/gradlew.bat" },
+      "args": ["prepareDataRun"],
+      "presentation": { "reveal": "silent", "panel": "shared", "clear": false },
+      "problemMatcher": []
+    }
+  ]
+}

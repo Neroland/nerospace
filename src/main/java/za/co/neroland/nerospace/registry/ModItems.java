@@ -22,6 +22,7 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.item.DestinationCompassItem;
 import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
+import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
 import za.co.neroland.nerospace.rocket.RocketItem;
 import za.co.neroland.nerospace.rocket.RocketTier;
 
@@ -195,6 +196,16 @@ public final class ModItems {
     // Phase 8c block item.
     public static final DeferredItem<BlockItem> OXYGEN_GENERATOR_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.OXYGEN_GENERATOR);
+
+    // --- Spawn eggs (Phase 10e) --------------------------------------------
+    public static final DeferredItem<Item> XERTZ_STALKER_SPAWN_EGG = ITEMS.registerItem(
+            "xertz_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.XERTZ_STALKER));
+    public static final DeferredItem<Item> QUARTZ_CRAWLER_SPAWN_EGG = ITEMS.registerItem(
+            "quartz_crawler_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.QUARTZ_CRAWLER));
+    public static final DeferredItem<Item> GREENLING_SPAWN_EGG = ITEMS.registerItem(
+            "greenling_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.GREENLING));
+    public static final DeferredItem<Item> CINDER_STALKER_SPAWN_EGG = ITEMS.registerItem(
+            "cinder_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.CINDER_STALKER));
 
     private ModItems() {
     }

@@ -27,7 +27,11 @@ bin/
 !**/src/**/bin/
 
 ### VS Code ###
-.vscode/
+# Ignore machine-specific VS Code state, but COMMIT the generic run configs (launch.json / tasks.json)
+# so contributors get working Run/Debug + the prepare-args preLaunchTask out of the box.
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
 
 ### Mac OS ###
 .DS_Store
