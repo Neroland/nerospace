@@ -80,6 +80,11 @@ neoForge {
 
         // applies to all the run configs above
         configureEach {
+            // Stop ModDevGradle from (re)generating .vscode/launch.json with absolute,
+            // machine-specific paths on every Gradle sync. The committed generic
+            // launch.json (${workspaceFolder} + preLaunchTask) is the source of truth.
+            disableIdeRun()
+
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.

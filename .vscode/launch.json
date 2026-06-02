@@ -1,16 +1,18 @@
 {
-  "//": "Generic, committable run configs for Nerospace. Paths use ${workspaceFolder} so they work on any machine, and each config's preLaunchTask (see tasks.json) regenerates build/moddev/<run>Args.txt before launch so it never fails after a clean. NOTE: a full Gradle reimport may let ModDevGradle rewrite this file with absolute paths; if that happens, restore this version (the build.gradle clean-finalizer keeps the args present regardless).",
+  "//": "Generic, committable run configs for Nerospace. Paths use ${workspaceFolder} so they work on any machine, and each config's preLaunchTask (see tasks.json) regenerates build/moddev/<run>Args.txt before launch so it never fails after a clean. ModDevGradle no longer overwrites this file: build.gradle sets disableIdeRun() on every run, so this file is the source of truth.",
   "version": "0.2.0",
   "configurations": [
     {
       "type": "java",
       "request": "launch",
       "name": "Client",
-      "preLaunchTask": "prepareClientRun",
       "presentation": { "group": "Mod Development - nerospace", "order": 0 },
       "projectName": "nerospace",
       "mainClass": "net.neoforged.devlaunch.Main",
-      "args": ["@${workspaceFolder}/build/moddev/clientRunProgramArgs.txt"],
+      "preLaunchTask": "prepareClientRun",
+      "args": [
+        "@${workspaceFolder}/build/moddev/clientRunProgramArgs.txt"
+      ],
       "vmArgs": [
         "@${workspaceFolder}/build/moddev/clientRunVmArgs.txt",
         "-Dfml.modFolders=nerospace%%${workspaceFolder}/bin/main"
@@ -24,11 +26,13 @@
       "type": "java",
       "request": "launch",
       "name": "Data",
-      "preLaunchTask": "prepareDataRun",
       "presentation": { "group": "Mod Development - nerospace", "order": 1 },
       "projectName": "nerospace",
       "mainClass": "net.neoforged.devlaunch.Main",
-      "args": ["@${workspaceFolder}/build/moddev/dataRunProgramArgs.txt"],
+      "preLaunchTask": "prepareDataRun",
+      "args": [
+        "@${workspaceFolder}/build/moddev/dataRunProgramArgs.txt"
+      ],
       "vmArgs": [
         "@${workspaceFolder}/build/moddev/dataRunVmArgs.txt",
         "-Dfml.modFolders=nerospace%%${workspaceFolder}/bin/main"
@@ -42,11 +46,13 @@
       "type": "java",
       "request": "launch",
       "name": "GameTestServer",
-      "preLaunchTask": "prepareGameTestServerRun",
       "presentation": { "group": "Mod Development - nerospace", "order": 2 },
       "projectName": "nerospace",
       "mainClass": "net.neoforged.devlaunch.Main",
-      "args": ["@${workspaceFolder}/build/moddev/gameTestServerRunProgramArgs.txt"],
+      "preLaunchTask": "prepareGameTestServerRun",
+      "args": [
+        "@${workspaceFolder}/build/moddev/gameTestServerRunProgramArgs.txt"
+      ],
       "vmArgs": [
         "@${workspaceFolder}/build/moddev/gameTestServerRunVmArgs.txt",
         "-Dfml.modFolders=nerospace%%${workspaceFolder}/bin/main"
@@ -60,11 +66,13 @@
       "type": "java",
       "request": "launch",
       "name": "Server",
-      "preLaunchTask": "prepareServerRun",
       "presentation": { "group": "Mod Development - nerospace", "order": 3 },
       "projectName": "nerospace",
       "mainClass": "net.neoforged.devlaunch.Main",
-      "args": ["@${workspaceFolder}/build/moddev/serverRunProgramArgs.txt"],
+      "preLaunchTask": "prepareServerRun",
+      "args": [
+        "@${workspaceFolder}/build/moddev/serverRunProgramArgs.txt"
+      ],
       "vmArgs": [
         "@${workspaceFolder}/build/moddev/serverRunVmArgs.txt",
         "-Dfml.modFolders=nerospace%%${workspaceFolder}/bin/main"

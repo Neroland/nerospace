@@ -3,6 +3,7 @@ package za.co.neroland.nerospace.machine;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -60,5 +61,15 @@ public class OxygenGeneratorBlock extends BaseEntityBlock {
             serverPlayer.openMenu(gen);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return level.getBlockEntity(pos) instanceof OxygenGeneratorBlockEntity gen ? gen.comparatorSignal() : 0;
     }
 }

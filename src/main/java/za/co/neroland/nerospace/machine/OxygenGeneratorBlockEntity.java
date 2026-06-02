@@ -117,6 +117,16 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements Container
         return this.energy.getAmountAsInt() >= ACTIVE_THRESHOLD;
     }
 
+    /** Comparator output: 0 (no charge) .. 15 (full energy buffer). */
+    public int comparatorSignal() {
+        int cap = this.energy.getCapacityAsInt();
+        int stored = this.energy.getAmountAsInt();
+        if (cap <= 0 || stored <= 0) {
+            return 0;
+        }
+        return 1 + (int) (stored / (double) cap * 14.0D);
+    }
+
     /** Burn value (ticks of charging) for an accepted fuel item, or 0 if not a fuel. */
     public static int fuelValue(ItemStack stack) {
         if (stack.is(net.minecraft.world.item.Items.COAL) || stack.is(net.minecraft.world.item.Items.CHARCOAL)) {
