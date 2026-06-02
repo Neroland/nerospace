@@ -1,19 +1,29 @@
 package za.co.neroland.nerospace.machine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundChunksBiomesPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -44,6 +54,7 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModTags;
+import za.co.neroland.nerospace.world.ModBiomes;
 import za.co.neroland.nerospace.world.TerraformChunkLoader;
 
 /**
@@ -159,9 +170,9 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     /** Columns converted per work cycle, by tier (capped for TPS). */
     private int budgetPerCycle() {
         int base = switch (this.tier) {
-            case 3 -> 24;
-            case 2 -> 10;
-            default -> 4;
+            case 3 -> 6;
+            case 2 -> 3;
+            default -> 1;
         };
         return Math.min(base, Config.TERRAFORM_MAX_COLUMNS_PER_TICK.get());
     }
@@ -211,6 +222,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         int cost = Config.TERRAFORM_ENERGY_PER_BLOCK.get();
         int budget = budgetPerCycle();
         boolean changed = false;
+        Set<LevelChunk> biomeChanged = new HashSet<>();
 
         for (int processed = 0; processed < budget; processed++) {
             if (this.energy.getAmountAsInt() < cost) {
@@ -225,9 +237,18 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
                 changed = true;
             }
             int[] off = r.get(this.cursor++);
-            convertColumn(level, center.getX() + off[0], center.getZ() + off[1]);
+            convertColumn(level, center.getX() + off[0], center.getZ() + off[1], biomeChanged);
             this.energy.consume(cost);
             changed = true;
+        }
+
+        // Resync any chunks whose biome changed so clients recolour the terraformed ground.
+        if (!biomeChanged.isEmpty()) {
+            ClientboundChunksBiomesPacket packet =
+                    ClientboundChunksBiomesPacket.forChunks(new ArrayList<>(biomeChanged));
+            for (ServerPlayer player : level.players()) {
+                player.connection.send(packet);
+            }
         }
 
         if (changed) {
@@ -265,7 +286,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     }
 
     /** Convert one surface column (idempotent). @return true if the chunk was loaded and processed. */
-    private boolean convertColumn(ServerLevel level, int x, int z) {
+    private boolean convertColumn(ServerLevel level, int x, int z, Set<LevelChunk> biomeChanged) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 0, z);
         if (!level.hasChunkAt(pos)) {
             maybeForceLoad(level, x, z);
@@ -294,9 +315,39 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
             chunk.markUnsaved();
         }
 
+        if (writeTerraformedBiome(level, chunk, x, z)) {
+            biomeChanged.add(chunk);
+        }
+
         scatterPlant(level, x, surfaceY, z);
         seedResource(level, x, surfaceY, z);
         return true;
+    }
+
+    /** Write the vibrant terraformed biome down this column's sections. @return true if anything changed. */
+    private boolean writeTerraformedBiome(ServerLevel level, LevelChunk chunk, int x, int z) {
+        Holder<Biome> terra = level.registryAccess()
+                .lookupOrThrow(Registries.BIOME).getOrThrow(ModBiomes.TERRAFORMED);
+        int bx = (x & 15) >> 2;   // biome cells are 4-block resolution (0..3 within a section)
+        int bz = (z & 15) >> 2;
+        boolean changed = false;
+        for (LevelChunkSection section : chunk.getSections()) {
+            PalettedContainerRO<Holder<Biome>> ro = section.getBiomes();
+            if (!(ro instanceof PalettedContainer<?>)) {
+                continue; // not writable — skip rather than risk a cast error
+            }
+            @SuppressWarnings("unchecked")
+            PalettedContainer<Holder<Biome>> biomes = (PalettedContainer<Holder<Biome>>) ro;
+            for (int by = 0; by < 4; by++) {
+                if (biomes.getAndSet(bx, by, bz, terra) != terra) {
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            chunk.markUnsaved();
+        }
+        return changed;
     }
 
     /** Sparse grass/flower/sapling scatter on freshly grassed ground (terraform design §2.2). */

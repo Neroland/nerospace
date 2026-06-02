@@ -74,8 +74,7 @@ public final class OxygenFieldManager extends SavedData {
     public void addSource(BlockPos pos) {
         long key = pos.asLong();
         if (this.sources.add(key)) {
-            this.field.put(key, (byte) Config.OXYGEN_MAX_CONCENTRATION.get().intValue());
-            setDirty();
+            setDirty(); // injection happens at the source's air neighbours during simulate()
         }
     }
 
@@ -125,12 +124,28 @@ public final class OxygenFieldManager extends SavedData {
         final int cap = Config.OXYGEN_MAX_ACTIVE_CELLS_PER_SOURCE.get()
                 * Math.max(1, this.sources.size());
 
-        // Build the active set: current field + sources + their passable neighbours (frontier grows
-        // one ring/step). Bounded by the safety cap so an open-vacuum dump just stops expanding.
-        LongOpenHashSet active = new LongOpenHashSet(this.field.keySet());
-        active.addAll(this.sources);
-        LongOpenHashSet frontier = new LongOpenHashSet(active);
         BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
+
+        // Injection cells: the holdable cells adjacent to each source block (a generator is a solid
+        // cube, so it can't hold oxygen itself — it pumps into the air around it). These are clamped
+        // to MAX each step and are the field's entry points.
+        LongOpenHashSet inject = new LongOpenHashSet();
+        LongIterator si = this.sources.iterator();
+        while (si.hasNext()) {
+            BlockPos sp = BlockPos.of(si.nextLong());
+            for (Direction dir : Direction.values()) {
+                m.setWithOffset(sp, dir);
+                if (level.hasChunkAt(m) && OxygenField.canHold(level, m, level.getBlockState(m))) {
+                    inject.add(m.asLong());
+                }
+            }
+        }
+
+        // Build the active set: current field + injection cells + their passable neighbours (the
+        // frontier grows one ring/step). Bounded by the safety cap so an open-vacuum dump just stops.
+        LongOpenHashSet active = new LongOpenHashSet(this.field.keySet());
+        active.addAll(inject);
+        LongOpenHashSet frontier = new LongOpenHashSet(active);
         LongIterator it = frontier.iterator();
         while (it.hasNext()) {
             long c = it.nextLong();
@@ -162,8 +177,8 @@ public final class OxygenFieldManager extends SavedData {
             if (!OxygenField.canHold(level, cp, state)) {
                 continue; // sealed/solid cells never hold oxygen
             }
-            if (this.sources.contains(c)) {
-                next.put(c, (byte) max); // injection clamp
+            if (inject.contains(c)) {
+                next.put(c, (byte) max); // injection clamp at the source's air cells
                 continue;
             }
             int oldC = this.field.get(c) & 0xFF;
@@ -177,7 +192,13 @@ public final class OxygenFieldManager extends SavedData {
                     sum += (this.field.get(m.asLong()) & 0xFF) - oldC;
                 }
             }
-            double localDecay = OxygenField.isLeaky(level, cp, state) ? decay * 2.0D : decay;
+            // Decay is the bleed to vacuum: full strength only where oxygen can actually escape — a
+            // cell open to the sky or a leaky block. Sealed interior cells (roof/walls above) barely
+            // bleed, so an enclosed room fills to near-max, while an open-air bubble stays small and a
+            // hole/open door leaks (its outside cells see sky and decay). This is what makes a sealed
+            // base breathable across the whole room instead of just a few blocks around the generator.
+            boolean exposed = level.canSeeSky(cp) || OxygenField.isLeaky(level, cp, state);
+            double localDecay = exposed ? decay : decay * 0.12D;
             double newF = oldC + diffusion * sum - localDecay;
             int newV = (int) Math.round(Math.max(0.0D, Math.min(max, newF)));
             if (newV > 0) {

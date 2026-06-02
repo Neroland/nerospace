@@ -138,8 +138,8 @@ public class Config {
             .defineInRange("terraformMaxColumnsPerTick", 48, 1, 4096);
 
     public static final ModConfigSpec.IntValue TERRAFORM_WORK_INTERVAL_TICKS = BUILDER
-            .comment("Server ticks between Terraformer work cycles.")
-            .defineInRange("terraformWorkIntervalTicks", 4, 1, 100);
+            .comment("Server ticks between Terraformer work cycles. Higher = slower expansion.")
+            .defineInRange("terraformWorkIntervalTicks", 8, 1, 100);
 
     public static final ModConfigSpec.BooleanValue TERRAFORM_PLANTS_ENABLED = BUILDER
             .comment("Whether terraforming scatters grass/flowers and saplings on converted ground.")

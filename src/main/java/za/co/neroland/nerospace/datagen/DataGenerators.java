@@ -15,6 +15,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.registry.ModDimensionTypes;
 import za.co.neroland.nerospace.world.ModBiomeModifiers;
 import za.co.neroland.nerospace.world.ModBiomes;
 import za.co.neroland.nerospace.world.ModConfiguredFeatures;
@@ -29,6 +30,7 @@ public final class DataGenerators {
 
     /** Datapack registry entries (worldgen + biome modifiers). */
     public static final RegistrySetBuilder REGISTRY_SET_BUILDER = new RegistrySetBuilder()
+            .add(Registries.DIMENSION_TYPE, ModDimensionTypes::bootstrap)
             .add(Registries.CONFIGURED_FEATURE, ModConfiguredFeatures::bootstrap)
             .add(Registries.PLACED_FEATURE, ModPlacedFeatures::bootstrap)
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModBiomeModifiers::bootstrap)

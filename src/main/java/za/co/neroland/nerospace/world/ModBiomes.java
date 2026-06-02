@@ -33,12 +33,48 @@ public final class ModBiomes {
     public static final ResourceKey<Biome> CINDARA = ResourceKey.create(
             Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "cindara"));
 
+    /**
+     * Terraformed biome (terraform design): applied to columns the Terraformer converts, so livable
+     * ground reads unmistakably as "terraformed" — a vibrant neon emerald/turquoise palette (lush, but
+     * with an alien neon glow) that stands apart from the dead planet around it.
+     */
+    public static final ResourceKey<Biome> TERRAFORMED = ResourceKey.create(
+            Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "terraformed"));
+
     private ModBiomes() {
     }
 
     public static void bootstrap(BootstrapContext<Biome> context) {
         greenxertz(context);
         cindara(context);
+        terraformed(context);
+    }
+
+    private static void terraformed(BootstrapContext<Biome> context) {
+        HolderGetter<PlacedFeature> placedFeatures = context.lookup(Registries.PLACED_FEATURE);
+        HolderGetter<ConfiguredWorldCarver<?>> carvers = context.lookup(Registries.CONFIGURED_CARVER);
+
+        // Terrain is already generated; this biome is written onto converted columns at runtime, so it
+        // carries no generation features — only the vibrant palette and a calm, livable feel.
+        BiomeGenerationSettings.Builder generation = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
+
+        BiomeSpecialEffects effects = new BiomeSpecialEffects.Builder()
+                .waterColor(0x1FF0E0)              // bright turquoise water
+                .grassColorOverride(0x2BFFB0)      // neon emerald grass
+                .foliageColorOverride(0x19E8C0)    // teal-green foliage
+                .dryFoliageColorOverride(0x19E8C0)
+                .build();
+
+        Biome biome = new Biome.BiomeBuilder()
+                .hasPrecipitation(false)
+                .temperature(0.8F)
+                .downfall(0.4F)
+                .specialEffects(effects)
+                .mobSpawnSettings(MobSpawnSettings.EMPTY)
+                .generationSettings(generation.build())
+                .build();
+
+        context.register(TERRAFORMED, biome);
     }
 
     private static void greenxertz(BootstrapContext<Biome> context) {

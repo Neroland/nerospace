@@ -68,7 +68,13 @@ public final class ModDimensions {
         HolderGetter<DimensionType> dimensionTypes = context.lookup(Registries.DIMENSION_TYPE);
         HolderGetter<NoiseGeneratorSettings> noiseSettings = context.lookup(Registries.NOISE_SETTINGS);
 
+        // Greenxertz keeps the overworld dimension type: a normal day/night cycle with a sun.
         Holder<DimensionType> typeHolder = dimensionTypes.getOrThrow(BuiltinDimensionTypes.OVERWORLD);
+
+        // Cindara + the Station get the registered "space" dimension type (END starfield, no sun). It
+        // must be a registry reference (not an inline Holder.direct) — the clientbound login packet
+        // encodes the dimension type by registry id, so a direct holder fails to encode and blocks join.
+        Holder<DimensionType> spaceHolder = dimensionTypes.getOrThrow(ModDimensionTypes.SPACE);
 
         NoiseBasedChunkGenerator greenxertzGen = new NoiseBasedChunkGenerator(
                 new FixedBiomeSource(biomes.getOrThrow(ModBiomes.GREENXERTZ)),
@@ -78,7 +84,7 @@ public final class ModDimensions {
         NoiseBasedChunkGenerator cindaraGen = new NoiseBasedChunkGenerator(
                 new FixedBiomeSource(biomes.getOrThrow(ModBiomes.CINDARA)),
                 noiseSettings.getOrThrow(NoiseGeneratorSettings.OVERWORLD));
-        context.register(CINDARA_STEM, new LevelStem(typeHolder, cindaraGen));
+        context.register(CINDARA_STEM, new LevelStem(spaceHolder, cindaraGen));
 
         // Orbital Station: a flat generator with NO layers = an empty void. The rocket places a
         // landing platform on arrival so the player doesn't fall (see RocketEntity#completeLaunch).
@@ -87,6 +93,6 @@ public final class ModDimensions {
                 new FlatLevelGeneratorSettings(Optional.empty(), voidBiome, List.of())
                         .withBiomeAndLayers(List.of(), Optional.empty(), voidBiome);
         FlatLevelSource stationGen = new FlatLevelSource(stationFlat);
-        context.register(STATION_STEM, new LevelStem(typeHolder, stationGen));
+        context.register(STATION_STEM, new LevelStem(spaceHolder, stationGen));
     }
 }
