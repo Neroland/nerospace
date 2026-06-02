@@ -1,30 +1,69 @@
 name: Server Pack
 
-# Builds a ready-to-run NeoForge dedicated-server pack for Nerospace: a freshly installed
-# NeoForge server (run scripts + libraries) with the built mod already dropped into mods/,
-# zipped and uploaded as a build artifact. Versions are read from gradle.properties so this
-# stays in sync with the mod.
+# Builds a ready-to-run NeoForge dedicated-server pack for Nerospace: a freshly installed NeoForge
+# server (run scripts + libraries) with the built mod already in mods/, zipped and uploaded as a
+# build artifact. Versions are read from gradle.properties so this stays in sync with the mod.
 #
 # Triggers:
-#   - Manually (Actions tab -> Server Pack -> Run workflow).
-#   - On a pushed release tag (v*) — also attaches the zip to that GitHub Release.
+#   - Automatically AFTER the "Publish" workflow finishes (workflow_run) — when a version bump created
+#     a GitHub Release, the pack is also attached to that release. (A push/tag/release trigger can't be
+#     used: the Publish workflow creates its release via GITHUB_TOKEN, which does not fire those events.)
+#   - Manually (Actions tab -> Server Pack -> Run workflow), which just uploads the artifact.
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*"
+  workflow_run:
+    workflows: ["Publish"]
+    types: [completed]
 
 permissions:
   contents: write
 
 jobs:
+  # Decide whether to build: always for a manual run; after Publish only if it actually released
+  # (i.e. a GitHub Release for the current mod_version exists — Publish skips non-version-bump pushes).
+  gate:
+    name: Decide
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    outputs:
+      proceed: ${{ steps.decide.outputs.proceed }}
+      sha: ${{ steps.decide.outputs.sha }}
+    steps:
+      - name: Checkout (published commit)
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+          fetch-depth: 1
+
+      - name: Decide
+        id: decide
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION="$(grep -E '^mod_version=' gradle.properties | head -n1 | cut -d= -f2 | tr -d '[:space:]')"
+          echo "sha=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual run — building server pack for $VERSION."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          elif gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "Publish released v${VERSION} — building + attaching server pack."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Publish finished but no release v${VERSION} (no version bump); skipping."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          fi
+
   server-pack:
     name: Build server pack
+    needs: gate
+    if: needs.gate.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          ref: ${{ needs.gate.outputs.sha }}
           fetch-depth: 0
           fetch-tags: true
 
@@ -118,8 +157,26 @@ jobs:
           path: ${{ steps.pack.outputs.pack }}
           if-no-files-found: error
 
-      - name: Attach server pack to release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Attach server pack to the GitHub release
+        if: ${{ github.event_name == 'workflow_run' }}
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.ver.outputs.mod_version }}
           files: ${{ steps.pack.outputs.pack }}
+
+      - name: Upload server pack to CurseForge
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          # Same project/secrets as the Publish workflow; only CurseForge is set here (no GitHub
+          # token) so this only uploads the pack to CurseForge — the GitHub release is handled above.
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
+          name: Nerospace ${{ steps.ver.outputs.mod_version }} — Server Pack
+          # Distinct version label so it doesn't collide with the mod jar's upload.
+          version: ${{ steps.ver.outputs.mod_version }}-server
+          version-type: beta
+          files: ${{ steps.pack.outputs.pack }}
+          loaders: neoforge
+          game-versions: ${{ steps.ver.outputs.minecraft_version }}
+          java: 25
