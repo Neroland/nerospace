@@ -1,0 +1,47 @@
+# Roadmap
+
+A public, high-level view of where Nerospace is and where it's going. Nerospace is an early work in
+progress — order and scope may change. (Developer-facing detail lives in `FUTURE_WORK.md` in the repo.)
+
+## ✅ Done
+
+**Materials & machines**
+- Nerosium material chain (ore → raw → ingot → dust) and the **Nerosium Grinder** (double ore yield).
+- Greenxertz metals: **Nerosteel** and **Xertz Quartz**; Cindara's **Cindrite**.
+- Storage blocks, **Station Floor/Wall**, and machine GUIs with a sci-fi look + comparator output.
+- Capability automation (hoppers/pipes feed machines; fluid pipes fill tanks).
+
+**Space travel**
+- **Rockets** (Tier 1/2/3) with an interactive in-rocket UI, selectable destinations, and a launch flow.
+- **Rocket Launch Pad** + auto-fuelling **Fuel Tank** (faster on a full 3×3 pad).
+- Dimensions: **Greenxertz**, **Cindara**, and the **Orbital Station**.
+
+**Survival & atmosphere**
+- Airless dimensions with an **oxygen system**: per-block oxygen field, sealed-room fill, leak/evaporate.
+- **Oxygen Generator** (fuelled) and the four-piece **Oxygen Suit** (portable life support).
+- Bespoke **O₂ HUD bar**.
+
+**Worlds & life**
+- Custom skies: **space starfield** on Cindara & the Station, day/night + sun on Greenxertz.
+- Four bespoke **creatures** with walk animations and emissive glow.
+- **Terraformer**: expanding terrain conversion + permanent breathability + a vibrant **terraformed biome**.
+
+**Tooling**
+- Creative `/nerospace gallery` showcase command.
+
+## 🛠️ In progress / next
+
+- **Launch-pad multiblock** — key rocket size/placement to a properly formed 3×3 pad.
+- **Rocket fuel-intake automation** — let hoppers feed canisters into a deployed rocket.
+- **Oxygen Suit tiers** — Cindrite/station-gated upgrades (bigger tank, faster refill).
+- **Polish** — animated machine gauges, rocket-fuel fluid render, mob idle/ambient touches.
+
+## 🔭 Planned / exploring
+
+See **[Future Features](Future-Features)** for the longer-term wish list.
+
+## ⏳ Deferred
+
+- **Cross-mod integration** (e.g. Mekanism) is deferred until those mods port to Minecraft 26.1. The
+  mod is being built **standalone**; we prefer tags + NeoForge capabilities so integration is mostly
+  free later.
