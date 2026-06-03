@@ -208,7 +208,7 @@ public final class OxygenFieldManager extends SavedData {
         // Seed from the source's holdable air neighbours (the generator block itself is solid).
         for (Direction dir : Direction.values()) {
             m.setWithOffset(source, dir);
-            if (level.hasChunkAt(m) && OxygenField.canHold(level, m, level.getBlockState(m))) {
+            if (level.hasChunk(m.getX() >> 4, m.getZ() >> 4) && OxygenField.canHold(level, m, level.getBlockState(m))) {
                 long k = m.asLong();
                 if (dist.get(k) < 0) {
                     dist.put(k, 0);
@@ -239,7 +239,7 @@ public final class OxygenFieldManager extends SavedData {
             }
             for (Direction dir : Direction.values()) {
                 mm.setWithOffset(cp, dir);
-                if (!level.hasChunkAt(mm)) {
+                if (!level.hasChunk(mm.getX() >> 4, mm.getZ() >> 4)) {
                     continue;
                 }
                 long nk = mm.asLong();

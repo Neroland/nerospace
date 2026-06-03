@@ -36,7 +36,7 @@ public class GreenxertzNavigatorItem extends Item {
     }
 
     private void teleport(ServerPlayer player) {
-        ServerLevel current = (ServerLevel) player.level();
+        ServerLevel current = player.level();
         MinecraftServer server = current.getServer();
 
         boolean onPlanet = current.dimension().equals(ModDimensions.GREENXERTZ_LEVEL);

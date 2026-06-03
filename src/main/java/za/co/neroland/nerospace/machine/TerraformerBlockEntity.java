@@ -9,21 +9,11 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundChunksBiomesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.chunk.PalettedContainer;
-import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -33,12 +23,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -53,9 +40,8 @@ import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
-import za.co.neroland.nerospace.registry.ModTags;
-import za.co.neroland.nerospace.world.ModBiomes;
 import za.co.neroland.nerospace.world.TerraformChunkLoader;
+import za.co.neroland.nerospace.world.TerraformManager;
 
 /**
  * Terraformer machine (terraform design §2). On the same chassis as the Oxygen Generator — an internal
@@ -223,6 +209,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         int budget = budgetPerCycle();
         boolean changed = false;
         Set<LevelChunk> biomeChanged = new HashSet<>();
+        BlockPos.MutableBlockPos col = new BlockPos.MutableBlockPos();
 
         for (int processed = 0; processed < budget; processed++) {
             if (this.energy.getAmountAsInt() < cost) {
@@ -237,10 +224,22 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
                 changed = true;
             }
             int[] off = r.get(this.cursor++);
-            convertColumn(level, center.getX() + off[0], center.getZ() + off[1], biomeChanged);
+            int x = center.getX() + off[0];
+            int z = center.getZ() + off[1];
+            col.set(x, 0, z);
+            if (!level.hasChunk(col.getX() >> 4, col.getZ() >> 4)) {
+                // Lazy: leave unloaded columns for the chunk-load catch-up (TerraformManager). Optionally
+                // force-load if the player opted in. No energy spent on a skipped column.
+                maybeForceLoad(level, x, z);
+                continue;
+            }
+            TerraformConversion.convertColumn(level, x, z, this.tier, biomeChanged);
             this.energy.consume(cost);
             changed = true;
         }
+
+        // Publish our reach so the chunk-load handler can catch up unloaded columns later.
+        TerraformManager.get(level).update(this.worldPosition, this.radius, this.tier);
 
         // Resync any chunks whose biome changed so clients recolour the terraformed ground.
         if (!biomeChanged.isEmpty()) {
@@ -285,135 +284,6 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         return out;
     }
 
-    /** Convert one surface column (idempotent). @return true if the chunk was loaded and processed. */
-    private boolean convertColumn(ServerLevel level, int x, int z, Set<LevelChunk> biomeChanged) {
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 0, z);
-        if (!level.hasChunkAt(pos)) {
-            maybeForceLoad(level, x, z);
-            return false; // lazy: skip unloaded columns (terraform design §2.3)
-        }
-        int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
-        BlockPos top = new BlockPos(x, surfaceY - 1, z);
-        BlockState topState = level.getBlockState(top);
-
-        if (topState.is(ModTags.Blocks.TERRAFORM_TO_GRASS) && !topState.is(Blocks.GRASS_BLOCK)) {
-            level.setBlock(top, Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
-            for (int d = 1; d <= 3; d++) {
-                BlockPos below = new BlockPos(x, surfaceY - 1 - d, z);
-                BlockState bs = level.getBlockState(below);
-                if (bs.is(ModTags.Blocks.TERRAFORM_TO_DIRT)) {
-                    level.setBlock(below, Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
-                }
-            }
-            frontierFx(level, x, surfaceY, z);
-        }
-
-        // Atmosphere payoff (§3.4): flag the chunk permanently breathable at/above the surface.
-        LevelChunk chunk = level.getChunkAt(top);
-        if (!Boolean.TRUE.equals(chunk.getData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORMED))) {
-            chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORMED, Boolean.TRUE);
-            chunk.markUnsaved();
-        }
-
-        if (writeTerraformedBiome(level, chunk, x, z)) {
-            biomeChanged.add(chunk);
-        }
-
-        scatterPlant(level, x, surfaceY, z);
-        seedResource(level, x, surfaceY, z);
-        return true;
-    }
-
-    /** Write the vibrant terraformed biome down this column's sections. @return true if anything changed. */
-    private boolean writeTerraformedBiome(ServerLevel level, LevelChunk chunk, int x, int z) {
-        Holder<Biome> terra = level.registryAccess()
-                .lookupOrThrow(Registries.BIOME).getOrThrow(ModBiomes.TERRAFORMED);
-        int bx = (x & 15) >> 2;   // biome cells are 4-block resolution (0..3 within a section)
-        int bz = (z & 15) >> 2;
-        boolean changed = false;
-        for (LevelChunkSection section : chunk.getSections()) {
-            PalettedContainerRO<Holder<Biome>> ro = section.getBiomes();
-            if (!(ro instanceof PalettedContainer<?>)) {
-                continue; // not writable — skip rather than risk a cast error
-            }
-            @SuppressWarnings("unchecked")
-            PalettedContainer<Holder<Biome>> biomes = (PalettedContainer<Holder<Biome>>) ro;
-            for (int by = 0; by < 4; by++) {
-                if (biomes.getAndSet(bx, by, bz, terra) != terra) {
-                    changed = true;
-                }
-            }
-        }
-        if (changed) {
-            chunk.markUnsaved();
-        }
-        return changed;
-    }
-
-    /** Sparse grass/flower/sapling scatter on freshly grassed ground (terraform design §2.2). */
-    private void scatterPlant(ServerLevel level, int x, int surfaceY, int z) {
-        if (!Config.TERRAFORM_PLANTS_ENABLED.get()) {
-            return;
-        }
-        RandomSource rnd = level.getRandom();
-        if (rnd.nextDouble() >= Config.TERRAFORM_PLANT_CHANCE.get()) {
-            return;
-        }
-        BlockPos ground = new BlockPos(x, surfaceY - 1, z);
-        BlockPos above = new BlockPos(x, surfaceY, z);
-        if (!level.getBlockState(ground).is(Blocks.GRASS_BLOCK) || !level.getBlockState(above).isAir()) {
-            return;
-        }
-        double roll = rnd.nextDouble();
-        Block plant;
-        if (roll < 0.06D) {
-            plant = Blocks.OAK_SAPLING;
-        } else if (roll < 0.30D) {
-            plant = switch (rnd.nextInt(4)) {
-                case 0 -> Blocks.POPPY;
-                case 1 -> Blocks.DANDELION;
-                case 2 -> Blocks.CORNFLOWER;
-                default -> Blocks.AZURE_BLUET;
-            };
-        } else {
-            plant = Blocks.SHORT_GRASS;
-        }
-        level.setBlock(above, plant.defaultBlockState(), Block.UPDATE_CLIENTS);
-    }
-
-    /** Tier-3 low-rate ore seeding into the converted subsurface (terraform design §2.2 / §T3). */
-    private void seedResource(ServerLevel level, int x, int surfaceY, int z) {
-        if (this.tier < 3 || !Config.TERRAFORM_RESOURCES_ENABLED.get()) {
-            return;
-        }
-        RandomSource rnd = level.getRandom();
-        if (rnd.nextDouble() >= Config.TERRAFORM_RESOURCE_CHANCE.get()) {
-            return;
-        }
-        Block ore = TerraformResources.pickOre(rnd);
-        if (ore == null) {
-            return;
-        }
-        int y = surfaceY - 4 - rnd.nextInt(8);
-        BlockPos orePos = new BlockPos(x, y, z);
-        if (level.hasChunkAt(orePos) && level.getBlockState(orePos).is(ModTags.Blocks.TERRAFORM_TO_DIRT)) {
-            level.setBlock(orePos, ore.defaultBlockState(), Block.UPDATE_CLIENTS);
-        }
-    }
-
-    /** Sparse green frontier dust + a soft soil sound as a shell converts (terraform design §2.4). */
-    private void frontierFx(ServerLevel level, int x, int surfaceY, int z) {
-        RandomSource rnd = level.getRandom();
-        if (rnd.nextFloat() < 0.10F) {
-            level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                    x + 0.5D, surfaceY + 0.1D, z + 0.5D, 2, 0.3D, 0.2D, 0.3D, 0.0D);
-        }
-        if (rnd.nextFloat() < 0.02F) {
-            level.playSound(null, x + 0.5D, surfaceY, z + 0.5D,
-                    SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.3F, 0.8F + rnd.nextFloat() * 0.3F);
-        }
-    }
-
     /** Opt-in active terraforming: force-load an unloaded frontier chunk, bounded by config (§2.3). */
     private void maybeForceLoad(ServerLevel level, int x, int z) {
         if (!Config.TERRAFORM_FORCE_LOAD_CHUNKS.get()
@@ -445,6 +315,9 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     @Override
     public void setRemoved() {
         releaseForcedChunks();
+        if (this.level instanceof ServerLevel serverLevel) {
+            TerraformManager.get(serverLevel).remove(this.worldPosition);
+        }
         super.setRemoved();
     }
 

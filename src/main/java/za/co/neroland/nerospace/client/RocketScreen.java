@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.Level;
@@ -74,6 +75,22 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         }
         if (this.launchButton != null) {
             this.launchButton.active = this.menu.isLaunchable();
+        }
+
+        // A dotted trajectory arc from the pad to the selected destination node.
+        if (selected >= 0 && selected < this.destinationButtons.size()) {
+            SpaceButton node = this.destinationButtons.get(selected);
+            int x0 = this.leftPos + 26;
+            int y0 = this.topPos + 45;
+            int x1 = node.getX() + node.getWidth() / 2;
+            int y1 = this.topPos + 36;
+            int segments = 16;
+            for (int i = 0; i <= segments; i++) {
+                float t = i / (float) segments;
+                int ax = Math.round(x0 + (x1 - x0) * t);
+                int ay = Math.round(y0 + (y1 - y0) * t - Mth.sin(t * Mth.PI) * 11.0F);
+                g.fill(ax, ay, ax + 2, ay + 2, ACCENT);
+            }
         }
     }
 

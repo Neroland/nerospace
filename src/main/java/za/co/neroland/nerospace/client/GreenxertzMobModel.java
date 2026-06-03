@@ -1,7 +1,9 @@
 package za.co.neroland.nerospace.client;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -21,6 +23,9 @@ public abstract class GreenxertzMobModel extends EntityModel<LivingEntityRenderS
     }
 
     private final List<Swing> swings = new ArrayList<>();
+    /** Body parts that bob with the idle breathing (everything except the planted legs) → base Y. */
+    private final Map<ModelPart, Float> breatheBaseY = new IdentityHashMap<>();
+    private boolean breatheCaptured;
 
     protected GreenxertzMobModel(ModelPart root) {
         super(root);
@@ -46,5 +51,30 @@ public abstract class GreenxertzMobModel extends EntityModel<LivingEntityRenderS
         for (Swing s : this.swings) {
             s.part().xRot = s.baseXRot() + Mth.cos(pos * 0.6662F + s.phase()) * s.amp() * speed;
         }
+        captureBreatheParts();
+        // Idle breathing: bob the BODY parts only (legs are swing-registered and stay planted, so the
+        // feet don't lift off the ground), settling as the mob walks.
+        float bob = Mth.sin(state.ageInTicks * 0.08F) * 0.5F * (1.0F - speed);
+        for (Map.Entry<ModelPart, Float> e : this.breatheBaseY.entrySet()) {
+            e.getKey().y = e.getValue() + bob;
+        }
+    }
+
+    /** Lazily record which parts breathe: every part except the planted (swing-registered) legs. */
+    private void captureBreatheParts() {
+        if (this.breatheCaptured) {
+            return;
+        }
+        java.util.Set<ModelPart> planted = java.util.Collections.newSetFromMap(new IdentityHashMap<>());
+        for (Swing s : this.swings) {
+            planted.add(s.part());
+        }
+        ModelPart rootPart = root();
+        rootPart.getAllParts().forEach(part -> {
+            if (part != rootPart && !planted.contains(part)) {
+                this.breatheBaseY.put(part, part.y);
+            }
+        });
+        this.breatheCaptured = true;
     }
 }

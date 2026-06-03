@@ -25,11 +25,21 @@ public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRen
     public GreenxertzCreatureRenderer(EntityRendererProvider.Context context,
                                       EntityModel<LivingEntityRenderState> model, Identifier texture,
                                       float scaleX, float scaleY, float scaleZ, float shadow) {
+        this(context, model, texture, scaleX, scaleY, scaleZ, shadow, null);
+    }
+
+    public GreenxertzCreatureRenderer(EntityRendererProvider.Context context,
+                                      EntityModel<LivingEntityRenderState> model, Identifier texture,
+                                      float scaleX, float scaleY, float scaleZ, float shadow,
+                                      Identifier glowTexture) {
         super(context, model, shadow);
         this.texture = texture;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
         this.scaleZ = scaleZ;
+        if (glowTexture != null) {
+            this.addLayer(new GlowEyesLayer(this, glowTexture));
+        }
     }
 
     @Override

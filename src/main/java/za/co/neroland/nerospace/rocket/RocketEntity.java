@@ -337,23 +337,33 @@ public class RocketEntity extends Entity implements MenuProvider {
             if (destination != null) {
                 player.stopRiding();
 
-                double x = player.getX();
-                double z = player.getZ();
-                int blockX = Mth.floor(x);
-                int blockZ = Mth.floor(z);
-                destination.getChunk(blockX >> 4, blockZ >> 4);
-
+                double arrivalX;
                 double arrivalY;
+                double arrivalZ;
                 if (targetKey.equals(ModDimensions.STATION_LEVEL)) {
-                    // The station is an empty void; lay down a landing platform to stand on.
+                    // The station is a single shared platform at the origin (multi-station support is a
+                    // future feature). Build it once — never restack it relative to the arrival position,
+                    // which used to spawn a fresh platform on top of the existing one each trip.
+                    int cx = 0;
+                    int cz = 0;
                     int platformY = 64;
-                    buildStationPlatform(destination, blockX, platformY, blockZ);
+                    destination.getChunk(cx >> 4, cz >> 4);
+                    if (!destination.getBlockState(new BlockPos(cx, platformY, cz)).is(ModBlocks.STATION_FLOOR.get())) {
+                        buildStationPlatform(destination, cx, platformY, cz);
+                    }
+                    arrivalX = cx + 0.5D;
                     arrivalY = platformY + 1.0D;
+                    arrivalZ = cz + 0.5D;
                 } else {
+                    int blockX = Mth.floor(player.getX());
+                    int blockZ = Mth.floor(player.getZ());
+                    destination.getChunk(blockX >> 4, blockZ >> 4);
+                    arrivalX = player.getX();
+                    arrivalZ = player.getZ();
                     arrivalY = destination.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockX, blockZ) + 1.0D;
                 }
 
-                player.teleportTo(destination, x, arrivalY, z, Set.of(), player.getYRot(), player.getXRot(), true);
+                player.teleportTo(destination, arrivalX, arrivalY, arrivalZ, Set.of(), player.getYRot(), player.getXRot(), true);
                 player.sendSystemMessage(Component.translatable(targetKey.equals(ModDimensions.STATION_LEVEL)
                         ? "entity.nerospace.rocket.docked"
                         : "entity.nerospace.rocket.arrived"));

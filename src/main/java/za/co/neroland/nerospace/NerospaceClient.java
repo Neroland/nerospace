@@ -16,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -25,6 +26,7 @@ import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 
 import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.client.ClientOxygenField;
+import za.co.neroland.nerospace.client.OxygenHudLayer;
 
 import za.co.neroland.nerospace.client.CinderStalkerModel;
 import za.co.neroland.nerospace.client.GreenlingModel;
@@ -69,25 +71,31 @@ public class NerospaceClient {
     }
 
     @SubscribeEvent
+    static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(
+                Identifier.fromNamespaceAndPath(Nerospace.MODID, "oxygen_hud"), new OxygenHudLayer());
+    }
+
+    @SubscribeEvent
     static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
         // Each creature now has its own model geometry; the scale just fine-tunes size.
         event.registerEntityRenderer(ModEntities.XERTZ_STALKER.get(),
                 context -> new GreenxertzCreatureRenderer(context,
                         new XertzStalkerModel(context.bakeLayer(XertzStalkerModel.LAYER)),
-                        entityTexture("xertz_stalker"), 1.0F, 1.0F, 1.0F, 0.5F));
+                        entityTexture("xertz_stalker"), 1.0F, 1.0F, 1.0F, 0.5F, entityGlow("xertz_stalker")));
         event.registerEntityRenderer(ModEntities.QUARTZ_CRAWLER.get(),
                 context -> new GreenxertzCreatureRenderer(context,
                         new QuartzCrawlerModel(context.bakeLayer(QuartzCrawlerModel.LAYER)),
-                        entityTexture("quartz_crawler"), 1.0F, 1.0F, 1.0F, 0.5F));
+                        entityTexture("quartz_crawler"), 1.0F, 1.0F, 1.0F, 0.5F, entityGlow("quartz_crawler")));
         event.registerEntityRenderer(ModEntities.GREENLING.get(),
                 context -> new GreenxertzCreatureRenderer(context,
                         new GreenlingModel(context.bakeLayer(GreenlingModel.LAYER)),
-                        entityTexture("greenling"), 1.0F, 1.0F, 1.0F, 0.3F));
+                        entityTexture("greenling"), 1.0F, 1.0F, 1.0F, 0.3F, entityGlow("greenling")));
         event.registerEntityRenderer(ModEntities.CINDER_STALKER.get(),
                 context -> new GreenxertzCreatureRenderer(context,
                         new CinderStalkerModel(context.bakeLayer(CinderStalkerModel.LAYER)),
-                        entityTexture("cinder_stalker"), 1.0F, 1.0F, 1.0F, 0.6F));
+                        entityTexture("cinder_stalker"), 1.0F, 1.0F, 1.0F, 0.6F, entityGlow("cinder_stalker")));
     }
 
     @SubscribeEvent
@@ -215,5 +223,9 @@ public class NerospaceClient {
 
     private static Identifier entityTexture(String name) {
         return Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/" + name + ".png");
+    }
+
+    private static Identifier entityGlow(String name) {
+        return Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/" + name + "_glow.png");
     }
 }

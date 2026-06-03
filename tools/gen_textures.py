@@ -262,29 +262,25 @@ def gen_raw():
 
 
 def gen_pickaxe():
+    # Vanilla-style orientation: head in the TOP-LEFT (two up-tips), handle diagonal to the
+    # BOTTOM-RIGHT. The handheld display transform treats the top-left as the working tip, so this
+    # renders head-up in hand (the old top-centre/vertical-handle layout looked upside down).
     img = new_img()
     px = img.load()
-    handle = [(8, 6), (9, 7), (10, 8), (11, 9), (12, 10), (12, 11)]
-    for (x, y) in handle:
-        px[x, y] = WOOD[0]
-        if y + 1 < S:
-            px[x, y + 1] = WOOD_D
-        if x + 1 < S:
-            px[x + 1, y] = WOOD[1]
-    head_top = [(4,2),(5,2),(10,2),(11,2)]
-    head_mid = [(3,3),(4,3),(5,3),(6,3),(9,3),(10,3),(11,3),(12,3)]
-    head_bar = [(5,4),(6,4),(7,4),(8,4),(9,4),(10,4)]
-    socket   = [(7,5),(8,5)]
-    for (x, y) in head_top:
+    for (x, y) in [(1, 1), (2, 1), (6, 1), (7, 1)]:
         px[x, y] = N_GLOW
-    for (x, y) in head_mid:
-        px[x, y] = N_REDHI if x in (3, 12) else N_RED
-    for (x, y) in head_bar:
+    for (x, y) in [(1, 2), (2, 2), (3, 2), (5, 2), (6, 2), (7, 2)]:
+        px[x, y] = N_REDHI if x in (1, 7) else N_RED
+    for (x, y) in [(2, 3), (3, 3), (4, 3), (5, 3)]:
         px[x, y] = N_MAG
-    for (x, y) in socket:
+    for (x, y) in [(3, 4), (4, 4)]:
         px[x, y] = N_PURPLE
-    for (x, y) in [(3,3),(12,3),(5,4),(10,4)]:
+    for (x, y) in [(4, 5), (5, 5)]:
         px[x, y] = N_DARK
+    for (x, y) in [(6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12)]:
+        px[x, y] = WOOD[0]
+        if x + 1 < S:
+            px[x + 1, y] = WOOD_D
     save(img, os.path.join(ITEM_DIR, "nerosium_pickaxe.png"))
 
 
@@ -864,9 +860,76 @@ def gen_terraformer():
     save(img, os.path.join(BLOCK_DIR, "terraformer.png"))
 
 
+def gen_entity_glow(name, threshold=205):
+    """Derive an emissive glow overlay from a creature texture: keep only its brightest pixels
+    (painted eyes / crystals / embers) on a transparent sheet so they glow via the eyes render layer."""
+    src = os.path.join(ENTITY_DIR, name + ".png")
+    out = os.path.join(ENTITY_DIR, name + "_glow.png")
+    if not os.path.exists(src):
+        print("skip glow (no base)", name)
+        return
+    if os.path.exists(out) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(out, ROOT))
+        return
+    base = Image.open(src).convert("RGBA")
+    w, h = base.size
+    glow = Image.new("RGBA", (w, h), CLEAR)
+    bp = base.load()
+    gp = glow.load()
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = bp[x, y]
+            if a > 0 and max(r, g, b) >= threshold:
+                gp[x, y] = (r, g, b, 255)
+    glow.save(out)
+    print("wrote", os.path.relpath(out, ROOT))
+
+
 if __name__ == "__main__":
     gen_oxygen_particle()
     gen_terraformer()
+    gen_ore(STONE, "nerosium_ore")
+    gen_ore(DEEP, "deepslate_nerosium_ore")
+    gen_storage_block()
+    gen_raw_block()
+    gen_grinder()
+    gen_ingot()
+    gen_dust()
+    gen_raw()
+    gen_pickaxe()
+    gen_nerosteel_ore()
+    gen_xertz_quartz_ore()
+    gen_nerosteel_block()
+    gen_raw_nerosteel()
+    gen_nerosteel_ingot()
+    gen_xertz_quartz()
+    gen_greenxertz_navigator()
+    gen_rocket_launch_pad()
+    gen_fuel_tank()
+    gen_oxygen_generator()
+    # Emissive glow overlays for the creatures (derived from their textures).
+    for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker"):
+        gen_entity_glow(_name)
+        return
+    base = Image.open(src).convert("RGBA")
+    w, h = base.size
+    glow = Image.new("RGBA", (w, h), CLEAR)
+    bp = base.load()
+    gp = glow.load()
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = bp[x, y]
+            if a > 0 and max(r, g, b) >= threshold:
+                gp[x, y] = (r, g, b, 255)
+    glow.save(out)
+    print("wrote", os.path.relpath(out, ROOT))
+
+
+if __name__ == "__main__":
+    gen_oxygen_particle()
+    gen_terraformer()
+    for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker"):
+        gen_entity_glow(_name)
     gen_ore(STONE, "nerosium_ore")
     gen_ore(DEEP, "deepslate_nerosium_ore")
     gen_storage_block()

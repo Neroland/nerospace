@@ -53,8 +53,10 @@ public class Config {
             .defineInRange("oxygenDrainPerTick", 2, 1, 300);
 
     public static final ModConfigSpec.IntValue OXYGEN_BUBBLE_RADIUS = BUILDER
-            .comment("Radius (blocks) of the breathable bubble around an active Oxygen Generator.")
-            .defineInRange("oxygenBubbleRadius", 5, 0, 32);
+            .comment("Falloff radius (blocks) of the breathable bubble a generator pressurises in OPEN / "
+                    + "leaky space (the air escapes toward the opening). A fully sealed room fills "
+                    + "completely regardless. Bigger = more usable coverage when not perfectly sealed.")
+            .defineInRange("oxygenBubbleRadius", 14, 0, 32);
 
     public static final ModConfigSpec.IntValue OXYGEN_SUIT_DRAIN = BUILDER
             .comment("Oxygen drained per ~0.5s while wearing a full Oxygen Suit off a safe zone "
@@ -141,8 +143,9 @@ public class Config {
 
     public static final ModConfigSpec.IntValue TERRAFORM_ENERGY_PER_BLOCK = BUILDER
             .comment("Energy spent converting one block. Energy is the real throttle: a bigger sphere "
-                    + "has a bigger shell and takes longer unless fed more power or a higher tier.")
-            .defineInRange("terraformEnergyPerBlock", 4, 0, 10_000);
+                    + "has a bigger shell and takes longer unless fed more power or a higher tier. Higher "
+                    + "= the internal buffer drains faster while working.")
+            .defineInRange("terraformEnergyPerBlock", 12, 0, 10_000);
 
     public static final ModConfigSpec.IntValue TERRAFORM_MAX_COLUMNS_PER_TICK = BUILDER
             .comment("Hard per-tick work cap (columns converted) regardless of tier, to protect TPS.")

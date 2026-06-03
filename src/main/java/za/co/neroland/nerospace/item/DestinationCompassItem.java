@@ -43,7 +43,7 @@ public class DestinationCompassItem extends Item {
     }
 
     private void teleport(ServerPlayer player) {
-        ServerLevel current = (ServerLevel) player.level();
+        ServerLevel current = player.level();
         ServerLevel dest = current.getServer().getLevel(this.destination);
         if (dest == null) {
             return;
