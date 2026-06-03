@@ -43,7 +43,11 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.TERRAFORMER.get(),
                         ModBlocks.UNIVERSAL_PIPE.get(),
                         ModBlocks.COMBUSTION_GENERATOR.get(),
-                        ModBlocks.PASSIVE_GENERATOR.get());
+                        ModBlocks.PASSIVE_GENERATOR.get(),
+                        ModBlocks.BATTERY.get(),
+                        ModBlocks.FLUID_TANK.get(),
+                        ModBlocks.GAS_TANK.get(),
+                        ModBlocks.ITEM_STORE.get());
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.NEROSIUM_ORE.get(),

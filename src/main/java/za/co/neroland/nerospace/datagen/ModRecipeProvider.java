@@ -298,6 +298,51 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_nerosium_block", this.has(ModBlocks.NEROSIUM_BLOCK.get()))
                 .save(this.output);
 
+        // Battery — nerosteel casing around a redstone-and-nerosium cell.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.BATTERY.get())
+                .pattern("NRN")
+                .pattern("RIR")
+                .pattern("NRN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('R', Items.REDSTONE)
+                .define('I', ModItems.NEROSIUM_INGOT)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Fluid Tank — a nerosteel shell with glass windows.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.FLUID_TANK.get())
+                .pattern("NGN")
+                .pattern("G G")
+                .pattern("NGN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('G', Items.GLASS)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Gas Tank — a sealed fluid tank (fluid tank + nerosteel seal).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.GAS_TANK.get())
+                .pattern("NNN")
+                .pattern("NTN")
+                .pattern("NNN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('T', ModBlocks.FLUID_TANK.get())
+                .unlockedBy("has_fluid_tank", this.has(ModBlocks.FLUID_TANK.get()))
+                .save(this.output);
+
+        // Item Store — a nerosteel-reinforced chest.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.ITEM_STORE.get())
+                .pattern("NNN")
+                .pattern("NCN")
+                .pattern("NNN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('C', Items.CHEST)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
         // Configurator — the network tool.
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.TOOLS, ModItems.CONFIGURATOR.get())

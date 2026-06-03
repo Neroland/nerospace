@@ -239,6 +239,48 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL));
 
+    // --- Storage endpoints (battery / tanks / item store + creative sources) ---
+
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.BatteryBlock> BATTERY =
+            BLOCKS.registerBlock("battery", za.co.neroland.nerospace.storage.BatteryBlock::new,
+                    props -> props.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL));
+
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.CreativeBatteryBlock> CREATIVE_BATTERY =
+            BLOCKS.registerBlock("creative_battery", za.co.neroland.nerospace.storage.CreativeBatteryBlock::new,
+                    props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
+                            .sound(SoundType.METAL));
+
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.FluidTankBlock> FLUID_TANK =
+            BLOCKS.registerBlock("fluid_tank", za.co.neroland.nerospace.storage.FluidTankBlock::new,
+                    props -> props.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL));
+
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.CreativeFluidTankBlock> CREATIVE_FLUID_TANK =
+            BLOCKS.registerBlock("creative_fluid_tank", za.co.neroland.nerospace.storage.CreativeFluidTankBlock::new,
+                    props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
+                            .sound(SoundType.METAL));
+
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.GasTankBlock> GAS_TANK =
+            BLOCKS.registerBlock("gas_tank", za.co.neroland.nerospace.storage.GasTankBlock::new,
+                    props -> props.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL));
+
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.CreativeGasTankBlock> CREATIVE_GAS_TANK =
+            BLOCKS.registerBlock("creative_gas_tank", za.co.neroland.nerospace.storage.CreativeGasTankBlock::new,
+                    props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
+                            .sound(SoundType.METAL));
+
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.ItemStoreBlock> ITEM_STORE =
+            BLOCKS.registerBlock("item_store", za.co.neroland.nerospace.storage.ItemStoreBlock::new,
+                    props -> props.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL));
+
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.CreativeItemStoreBlock> CREATIVE_ITEM_STORE =
+            BLOCKS.registerBlock("creative_item_store", za.co.neroland.nerospace.storage.CreativeItemStoreBlock::new,
+                    props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
+                            .sound(SoundType.METAL));
+
     // --- Rocket Fuel liquid block (Phase 7b) --------------------------------
 
     /** The world block for the {@code rocket_fuel} fluid (placed by its bucket). */

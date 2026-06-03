@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "passive_generator",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "passive_generator",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "02802c27-d478-4acd-9d61-f04fc2f426dc"
+    }
+  ],
+  "outliner": [
+    "02802c27-d478-4acd-9d61-f04fc2f426dc"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\passive_generator.png",
+      "name": "passive_generator.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "8475f6af-f4ef-462a-b591-31dc53d7c015",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/passive_generator.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABTklEQVR4nKWSv0rDUBTGf4YOHe4gmSSBTJJC3EppoUP3QsGlb9CXcPIJfAXfwFHo7iBYSrdeTHAKJDhJhzu46aDn5KYGHTwQuJx85/u+8+fk6vrmg39ED2C33WjCGEORW6I4wRiDc07zEs45xQWSHI7GCojihLoqKXKrxUJU5LaF7anqs1VgXZXqwFd0zpEOMnbbDXVVNgSiBJAOMgDO940KwOvEtsgkguPCIrfMDkvm/bD1nT1lquoLBtKzkEgxwGI1ZbGaAjDvh8wOS3y8Ekh/Migp7nobY6irUh0HYkns/RX+Nn604JPc3z52vn11+N6CT/ISb1jvx8z7Yatw/f7Gw+mdupBb6R2zFrmFC1h3rDEl0zsRvDqQnoTZTJqT/pJtWojiRGehM1hcLvX6pEjJvMOJ4oThaNy+xLoq1Zbv5NidH60ZdAF/W6v/7xP4hrve73zLRwAAAABJRU5ErkJggg=="
+    }
+  ]
+}

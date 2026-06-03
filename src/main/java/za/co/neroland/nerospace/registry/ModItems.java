@@ -209,6 +209,24 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> PASSIVE_GENERATOR_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.PASSIVE_GENERATOR);
 
+    // Storage endpoints + creative sources.
+    public static final DeferredItem<BlockItem> BATTERY_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.BATTERY);
+    public static final DeferredItem<BlockItem> CREATIVE_BATTERY_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_BATTERY);
+    public static final DeferredItem<BlockItem> FLUID_TANK_ITEM_BLOCK =
+            ITEMS.registerSimpleBlockItem(ModBlocks.FLUID_TANK);
+    public static final DeferredItem<BlockItem> CREATIVE_FLUID_TANK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_FLUID_TANK);
+    public static final DeferredItem<BlockItem> GAS_TANK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.GAS_TANK);
+    public static final DeferredItem<BlockItem> CREATIVE_GAS_TANK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_GAS_TANK);
+    public static final DeferredItem<BlockItem> ITEM_STORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.ITEM_STORE);
+    public static final DeferredItem<BlockItem> CREATIVE_ITEM_STORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_ITEM_STORE);
+
     // The Configurator — the network tool (per-face I/O modes).
     public static final DeferredItem<Item> CONFIGURATOR = ITEMS.registerItem(
             "configurator", props -> new za.co.neroland.nerospace.item.ConfiguratorItem(props.stacksTo(1)));

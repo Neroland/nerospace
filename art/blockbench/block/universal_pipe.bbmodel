@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "universal_pipe",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "universal_pipe",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "0c3c54f9-e414-4d4c-9f2c-e9a54267bfe5"
+    }
+  ],
+  "outliner": [
+    "0c3c54f9-e414-4d4c-9f2c-e9a54267bfe5"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\universal_pipe.png",
+      "name": "universal_pipe.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "8cf93a9e-2c30-451e-b704-954aa60bed42",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/universal_pipe.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQklEQVR4nHWTPW6DQBCFny3Kd4HsSltCxBk4RUpfIH3SpPIJUqTKETiCT5DCsiyXyFAisW5dTE+KZEa7CYw0QixPb7/5YfO2f5+xEuHlFe31hubQrklQAMDlfLIDkhj6Ds4HfF1v0O8kTSMiptsuuTofEKcRu8cHMxURAMDQd5lZoYLUPU4jnA9ofwn0RhFBWdWmAfBDMPSdpZqlBGmomYaVUFa1IZZVnRHEacxuHfouN3A+/DMhmRGkt6oeAPB5n+fmGOelp+ba9+YY501zjKt7oARaylIUzaHF5Xyy+sqqtj1o9x8AgPvzk52nmqyJzgc4H2xUKYGOTkNErA9b7TJJkLSOk8zQSdp0VJ8R6B6oICUQEUtdMiUq/o6FpL0rQbrKzgf7D7ISFGvoOytDCfRMM+1BkY4k3bA4javj0xIB4BskuwZVaYLSFQAAAABJRU5ErkJggg=="
+    }
+  ]
+}

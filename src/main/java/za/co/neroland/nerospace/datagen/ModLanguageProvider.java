@@ -59,6 +59,28 @@ public class ModLanguageProvider extends LanguageProvider {
         // Gases.
         add("gas.nerospace.empty", "Empty");
         add("gas.nerospace.oxygen", "Oxygen");
+        // Storage endpoints + creative sources.
+        add(ModBlocks.BATTERY.get(), "Battery");
+        add(ModBlocks.CREATIVE_BATTERY.get(), "Creative Battery");
+        add(ModBlocks.FLUID_TANK.get(), "Fluid Tank");
+        add(ModBlocks.CREATIVE_FLUID_TANK.get(), "Creative Fluid Tank");
+        add(ModBlocks.GAS_TANK.get(), "Gas Tank");
+        add(ModBlocks.CREATIVE_GAS_TANK.get(), "Creative Gas Tank");
+        add(ModBlocks.ITEM_STORE.get(), "Item Store");
+        add(ModBlocks.CREATIVE_ITEM_STORE.get(), "Creative Item Store");
+        add("container.nerospace.item_store", "Item Store");
+        add("block.nerospace.battery.readout", "Battery: %s / %s FE");
+        add("block.nerospace.creative_battery.readout", "Creative Battery: endless energy");
+        add("block.nerospace.tank.empty", "Tank: empty");
+        add("block.nerospace.tank.readout", "Tank: %s / %s mB of %s");
+        add("block.nerospace.creative_tank.set", "Endless source set: %s");
+        add("block.nerospace.creative_tank.cleared", "Endless source cleared");
+        add("block.nerospace.creative_tank.unset", "Right-click with a filled bucket to set the endless fluid");
+        add("block.nerospace.creative_tank.readout", "Endless source: %s");
+        add("block.nerospace.creative_store.set", "Endless source set: %s");
+        add("block.nerospace.creative_store.cleared", "Endless source cleared");
+        add("block.nerospace.creative_store.unset", "Right-click holding an item to set the endless item");
+        add("block.nerospace.creative_store.readout", "Endless source: %s");
         add("item.nerospace.configurator.face", "%1$s — %2$s face: %3$s");
         add("item.nerospace.configurator.selected", "Configuring: %s");
         // Pipe resource layers.

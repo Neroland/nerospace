@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "creative_gas_tank",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "creative_gas_tank",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "01ff3eac-0027-4188-bb24-11b737f2b4eb"
+    }
+  ],
+  "outliner": [
+    "01ff3eac-0027-4188-bb24-11b737f2b4eb"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\creative_gas_tank.png",
+      "name": "creative_gas_tank.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "ac6fb4d8-16e0-43db-b2c2-46512e186a9a",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/creative_gas_tank.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABE0lEQVR4nKWTvW2EQBCFv0MEBBtcOCVRAAUQOKIAhwSEFEBMAS7gCnAxEzgg2IAAyQ5Os37YZPckNGJm5+e9nb19vX1+8wJqgGFfT86UEjlnUkqklHB3zAx3LzEzY9xaKgAzQ23OuRTS5CtU2vXqkBZRxNk6OmrXGDO+qwnNDDaZQIM5Z+ajA2Bp+uJ395IcDSvlHEXmo+O9/ih23FpSSpjZSeBSIJzBa9hX5qNjuj+KDSjdUwHF0vRM9wfj1pYJVFSl8E9EM2PimTzsK0vTP/fEfwVWVFo1qABl7GFfT7EQ8qSBu5ct03vWf22i/lrVVyhP3ZGTrxEN1KqwscZ/lwmAQ/ZAR1QK+hbimkMHgNurz/kHlUvPO75NiNAAAAAASUVORK5CYII="
+    }
+  ]
+}

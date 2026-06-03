@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "gas_tank",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "gas_tank",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "5b3d2070-835c-41a8-932e-5ca601be4c7d"
+    }
+  ],
+  "outliner": [
+    "5b3d2070-835c-41a8-932e-5ca601be4c7d"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\gas_tank.png",
+      "name": "gas_tank.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "70cbc4a2-c538-4cdb-80e8-b2a77b3cf5ed",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/gas_tank.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABAklEQVR4nKVTu20DMQx9FgxVxBWpCM/lAVIHN4BH8AA3QIbKDAYrFwIrFU6K5DGUfJ3V8CSK78OjDuevj2+8sI4AsGwVIgJ3h7sDAFQVZhbnjMy5O9rafwEAwMwimfcAopiFeRVeyDEXziDuPoCXvYLMkqVTBVUOAJnN3fG4VLg7bu/3yGV7PBsAyPS4VJRrj9jWPlgQkbBR5oaZGZatPoFk1qy4UBrZRQRt7VFMMIJTwVMPciIraGvH6fMtCkhGwrDAwaGKcu1QVSxbHQZobviRB3sgs9/cK1XFDff/SZx/YwbL+RGsjgpmn4x5wLgXETT8vQVe5jfB5oncG6TDq8/5B6tSyH+0y9rrAAAAAElFTkSuQmCC"
+    }
+  ]
+}

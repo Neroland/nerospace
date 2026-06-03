@@ -885,44 +885,43 @@ def gen_entity_glow(name, threshold=205):
     print("wrote", os.path.relpath(out, ROOT))
 
 
-if __name__ == "__main__":
-    gen_oxygen_particle()
-    gen_terraformer()
-    gen_ore(STONE, "nerosium_ore")
-    gen_ore(DEEP, "deepslate_nerosium_ore")
-    gen_storage_block()
-    gen_raw_block()
-    gen_grinder()
-    gen_ingot()
-    gen_dust()
-    gen_raw()
-    gen_pickaxe()
-    gen_nerosteel_ore()
-    gen_xertz_quartz_ore()
-    gen_nerosteel_block()
-    gen_raw_nerosteel()
-    gen_nerosteel_ingot()
-    gen_xertz_quartz()
-    gen_greenxertz_navigator()
-    gen_rocket_launch_pad()
-    gen_fuel_tank()
-    gen_oxygen_generator()
-    # Emissive glow overlays for the creatures (derived from their textures).
-    for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker"):
-        gen_entity_glow(_name)
-        return
-    base = Image.open(src).convert("RGBA")
-    w, h = base.size
-    glow = Image.new("RGBA", (w, h), CLEAR)
-    bp = base.load()
-    gp = glow.load()
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = bp[x, y]
-            if a > 0 and max(r, g, b) >= threshold:
-                gp[x, y] = (r, g, b, 255)
-    glow.save(out)
-    print("wrote", os.path.relpath(out, ROOT))
+def gen_panel_block(name, accent, symbol):
+    """A steel panel cube with an accent border + simple centre symbol; creative variants get pink."""
+    img = Image.new("RGBA", (16, 16))
+    px = img.load()
+    rng = random.Random(int(hashlib.md5(name.encode()).hexdigest(), 16) & 0xffffffff)
+    steel = [(86, 92, 100, 255), (98, 104, 112, 255), (110, 116, 124, 255)]
+    for y in range(16):
+        for x in range(16):
+            px[x, y] = rng.choice(steel)
+    # Accent border.
+    for i in range(16):
+        for (x, y) in ((i, 0), (i, 15), (0, i), (15, i)):
+            px[x, y] = accent
+    # Centre symbol (5x5 stamp of '1' cells).
+    for dy, row in enumerate(symbol):
+        for dx, cell in enumerate(row):
+            if cell:
+                px[5 + dx, 5 + dy] = accent
+    save(img, os.path.join(BLOCK_DIR, name + ".png"))
+
+
+SYM_BOLT = [(0, 1, 1, 0, 0), (0, 1, 1, 0, 0), (0, 1, 1, 1, 0), (0, 0, 1, 1, 0), (0, 0, 1, 1, 0)]
+SYM_DROP = [(0, 0, 1, 0, 0), (0, 1, 1, 1, 0), (1, 1, 1, 1, 1), (1, 1, 1, 1, 1), (0, 1, 1, 1, 0)]
+SYM_GAS = [(0, 1, 0, 1, 0), (1, 0, 1, 0, 1), (0, 1, 0, 1, 0), (1, 0, 1, 0, 1), (0, 1, 0, 1, 0)]
+SYM_BOX = [(1, 1, 1, 1, 1), (1, 0, 0, 0, 1), (1, 0, 1, 0, 1), (1, 0, 0, 0, 1), (1, 1, 1, 1, 1)]
+
+
+def gen_storage_endpoints():
+    pink = (236, 100, 196, 255)
+    gen_panel_block("battery", (224, 80, 106, 255), SYM_BOLT)
+    gen_panel_block("creative_battery", pink, SYM_BOLT)
+    gen_panel_block("fluid_tank", (60, 120, 240, 255), SYM_DROP)
+    gen_panel_block("creative_fluid_tank", pink, SYM_DROP)
+    gen_panel_block("gas_tank", (84, 212, 106, 255), SYM_GAS)
+    gen_panel_block("creative_gas_tank", pink, SYM_GAS)
+    gen_panel_block("item_store", (232, 232, 244, 255), SYM_BOX)
+    gen_panel_block("creative_item_store", pink, SYM_BOX)
 
 
 if __name__ == "__main__":
@@ -950,3 +949,5 @@ if __name__ == "__main__":
     gen_rocket_launch_pad()
     gen_fuel_tank()
     gen_oxygen_generator()
+    # Storage endpoints + creative sources.
+    gen_storage_endpoints()

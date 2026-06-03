@@ -64,6 +64,16 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.PASSIVE_GENERATOR.get());
                         output.accept(ModBlocks.UNIVERSAL_PIPE.get());
                         output.accept(ModItems.CONFIGURATOR.get());
+
+                        // Storage endpoints + creative sources.
+                        output.accept(ModBlocks.BATTERY.get());
+                        output.accept(ModBlocks.FLUID_TANK.get());
+                        output.accept(ModBlocks.GAS_TANK.get());
+                        output.accept(ModBlocks.ITEM_STORE.get());
+                        output.accept(ModBlocks.CREATIVE_BATTERY.get());
+                        output.accept(ModBlocks.CREATIVE_FLUID_TANK.get());
+                        output.accept(ModBlocks.CREATIVE_GAS_TANK.get());
+                        output.accept(ModBlocks.CREATIVE_ITEM_STORE.get());
                         output.accept(ModItems.OXYGEN_SUIT_HELMET.get());
                         output.accept(ModItems.OXYGEN_SUIT_CHESTPLATE.get());
                         output.accept(ModItems.OXYGEN_SUIT_LEGGINGS.get());

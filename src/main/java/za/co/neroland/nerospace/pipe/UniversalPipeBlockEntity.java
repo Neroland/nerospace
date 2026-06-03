@@ -118,6 +118,12 @@ public class UniversalPipeBlockEntity extends BlockEntity {
         return next;
     }
 
+    /** Directly set a face's mode for one resource type (Configurator GUI / commands). */
+    public void setMode(Direction dir, PipeResourceType type, PipeIoMode mode) {
+        this.faceModes[dir.get3DDataValue()][type.ordinal()] = mode;
+        setChanged();
+    }
+
     public void invalidateNetwork() {
         this.network = null;
     }

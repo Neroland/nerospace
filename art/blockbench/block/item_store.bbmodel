@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "item_store",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "item_store",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "eac403aa-935e-4469-811b-f07e7436e11a"
+    }
+  ],
+  "outliner": [
+    "eac403aa-935e-4469-811b-f07e7436e11a"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\item_store.png",
+      "name": "item_store.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "20461422-7ae8-4d9c-ba23-963cc15978ec",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/item_store.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA6UlEQVR4nKWTMY7DQAhFXyyXHGAOukVkuZgisrZwEeWUHIB+t4g+Yuy4yjQMBj4f5vvmHn98cWaApa9ExBBoreHumBlmBpB+RGBmbP3BVAtaa0Nyay0BVQSkBd4A6q4OVyciMld2qnSrrUmVgWKy83E2gOXnfuq+9BUzO+XOQqv0ALb9N5O3/jjFhx24e36o9F/7M3dSl1yBZl3qcwlg6Wv6aiIQ+ZcjvPbnie5RDwmgQtGTsJR0vKth7qDOpWBlJdqfNDIIKSIGHci6e4Id1ZgjVNkKRAWViZYngKkWXRXX56uNAG7f/s7/zbLL9/ibiWgAAAAASUVORK5CYII="
+    }
+  ]
+}

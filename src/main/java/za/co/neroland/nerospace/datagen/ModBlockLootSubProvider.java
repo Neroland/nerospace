@@ -48,6 +48,16 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.COMBUSTION_GENERATOR.get());
         dropSelf(ModBlocks.PASSIVE_GENERATOR.get());
 
+        // Storage endpoints + creative sources.
+        dropSelf(ModBlocks.BATTERY.get());
+        dropSelf(ModBlocks.CREATIVE_BATTERY.get());
+        dropSelf(ModBlocks.FLUID_TANK.get());
+        dropSelf(ModBlocks.CREATIVE_FLUID_TANK.get());
+        dropSelf(ModBlocks.GAS_TANK.get());
+        dropSelf(ModBlocks.CREATIVE_GAS_TANK.get());
+        dropSelf(ModBlocks.ITEM_STORE.get());
+        dropSelf(ModBlocks.CREATIVE_ITEM_STORE.get());
+
         // Phase 3 — Greenxertz.
         dropSelf(ModBlocks.NEROSTEEL_BLOCK.get());
         add(ModBlocks.NEROSTEEL_ORE.get(),

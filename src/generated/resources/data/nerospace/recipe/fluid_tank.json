@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass",
+    "N": "nerospace:nerosteel_ingot"
+  },
+  "pattern": [
+    "NGN",
+    "G G",
+    "NGN"
+  ],
+  "result": {
+    "id": "nerospace:fluid_tank"
+  }
+}

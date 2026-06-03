@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "battery",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "battery",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "240e7d3a-8a63-469c-b09c-0fe4a056ead4"
+    }
+  ],
+  "outliner": [
+    "240e7d3a-8a63-469c-b09c-0fe4a056ead4"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\battery.png",
+      "name": "battery.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "1b349a4a-ffc7-4868-b165-f9489dc4eff6",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/battery.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA8klEQVR4nKVTIXIDQQxTMjeHhIL8gDyo7yjsAwIKC/LCgEKjQ0YhLdjRVrt3RTHxnseWJdt3+n57/8ELtgDA/XpBVYEkqgpVBQCICADoMX0rdstnA1CBvCfJk0RmguSQc/ZkkkOCOotZROwAFj0iApkJAEOBTDG9m22NwayRJL5qxcdjAwBkZmfi+TsJYiA/z0EzcLAO4OY6b/lERHT9mTnIPUv/DPAZ67/AOwaipuDRulyiD3TBZH5M9+tl6OgNZItLOGIiUGfVcx5bA/DCmboYRMSw7ga+/g1xPmenqbgXH65R+rUqP2WSPeZbO736O/8C9B7Lx4JFyNkAAAAASUVORK5CYII="
+    }
+  ]
+}

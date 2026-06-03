@@ -59,6 +59,16 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.COMBUSTION_GENERATOR.get());
         blockModels.createTrivialCube(ModBlocks.PASSIVE_GENERATOR.get());
 
+        // Storage endpoints + creative sources.
+        blockModels.createTrivialCube(ModBlocks.BATTERY.get());
+        blockModels.createTrivialCube(ModBlocks.CREATIVE_BATTERY.get());
+        blockModels.createTrivialCube(ModBlocks.FLUID_TANK.get());
+        blockModels.createTrivialCube(ModBlocks.CREATIVE_FLUID_TANK.get());
+        blockModels.createTrivialCube(ModBlocks.GAS_TANK.get());
+        blockModels.createTrivialCube(ModBlocks.CREATIVE_GAS_TANK.get());
+        blockModels.createTrivialCube(ModBlocks.ITEM_STORE.get());
+        blockModels.createTrivialCube(ModBlocks.CREATIVE_ITEM_STORE.get());
+
         // Phase 7 — Cindara ore + storage block.
         blockModels.createTrivialCube(ModBlocks.CINDRITE_ORE.get());
         blockModels.createTrivialCube(ModBlocks.CINDRITE_BLOCK.get());

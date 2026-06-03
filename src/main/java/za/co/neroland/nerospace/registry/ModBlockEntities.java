@@ -15,6 +15,14 @@ import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
+import za.co.neroland.nerospace.storage.BatteryBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeGasTankBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
+import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
+import za.co.neroland.nerospace.storage.GasTankBlockEntity;
+import za.co.neroland.nerospace.storage.ItemStoreBlockEntity;
 
 /**
  * Block entity types (Phase 2).
@@ -69,6 +77,39 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("passive_generator",
                     () -> new BlockEntityType<>(
                             PassiveGeneratorBlockEntity::new, false, ModBlocks.PASSIVE_GENERATOR.get()));
+
+    // Storage endpoints + creative sources.
+    public static final Supplier<BlockEntityType<BatteryBlockEntity>> BATTERY =
+            BLOCK_ENTITY_TYPES.register("battery",
+                    () -> new BlockEntityType<>(BatteryBlockEntity::new, false, ModBlocks.BATTERY.get()));
+
+    public static final Supplier<BlockEntityType<CreativeBatteryBlockEntity>> CREATIVE_BATTERY =
+            BLOCK_ENTITY_TYPES.register("creative_battery",
+                    () -> new BlockEntityType<>(CreativeBatteryBlockEntity::new, false, ModBlocks.CREATIVE_BATTERY.get()));
+
+    public static final Supplier<BlockEntityType<FluidTankBlockEntity>> FLUID_TANK =
+            BLOCK_ENTITY_TYPES.register("fluid_tank",
+                    () -> new BlockEntityType<>(FluidTankBlockEntity::new, false, ModBlocks.FLUID_TANK.get()));
+
+    public static final Supplier<BlockEntityType<CreativeFluidTankBlockEntity>> CREATIVE_FLUID_TANK =
+            BLOCK_ENTITY_TYPES.register("creative_fluid_tank",
+                    () -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, false, ModBlocks.CREATIVE_FLUID_TANK.get()));
+
+    public static final Supplier<BlockEntityType<GasTankBlockEntity>> GAS_TANK =
+            BLOCK_ENTITY_TYPES.register("gas_tank",
+                    () -> new BlockEntityType<>(GasTankBlockEntity::new, false, ModBlocks.GAS_TANK.get()));
+
+    public static final Supplier<BlockEntityType<CreativeGasTankBlockEntity>> CREATIVE_GAS_TANK =
+            BLOCK_ENTITY_TYPES.register("creative_gas_tank",
+                    () -> new BlockEntityType<>(CreativeGasTankBlockEntity::new, false, ModBlocks.CREATIVE_GAS_TANK.get()));
+
+    public static final Supplier<BlockEntityType<ItemStoreBlockEntity>> ITEM_STORE =
+            BLOCK_ENTITY_TYPES.register("item_store",
+                    () -> new BlockEntityType<>(ItemStoreBlockEntity::new, false, ModBlocks.ITEM_STORE.get()));
+
+    public static final Supplier<BlockEntityType<CreativeItemStoreBlockEntity>> CREATIVE_ITEM_STORE =
+            BLOCK_ENTITY_TYPES.register("creative_item_store",
+                    () -> new BlockEntityType<>(CreativeItemStoreBlockEntity::new, false, ModBlocks.CREATIVE_ITEM_STORE.get()));
 
     private ModBlockEntities() {
     }

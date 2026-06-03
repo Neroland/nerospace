@@ -17,6 +17,10 @@
     "nerospace:terraformer",
     "nerospace:universal_pipe",
     "nerospace:combustion_generator",
-    "nerospace:passive_generator"
+    "nerospace:passive_generator",
+    "nerospace:battery",
+    "nerospace:fluid_tank",
+    "nerospace:gas_tank",
+    "nerospace:item_store"
   ]
 }

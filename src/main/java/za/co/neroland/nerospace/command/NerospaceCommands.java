@@ -8,6 +8,7 @@ import com.mojang.brigadier.Command;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,13 +17,22 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.pipe.PipeIoMode;
+import za.co.neroland.nerospace.pipe.PipeResourceType;
+import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModEntities;
+import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
 
 /**
  * Creative-only debug commands (cheats / op level 2). {@code /nerospace gallery} builds a showcase
@@ -126,6 +136,41 @@ public final class NerospaceCommands {
         level.setBlockAndUpdate(new BlockPos(gx + 3, fy + 1, gz), ModBlocks.NEROSIUM_GRINDER.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(gx + 1, fy + 1, gz + 1), ModBlocks.PASSIVE_GENERATOR.get().defaultBlockState());
 
+        // FOUR LIVE PIPE SCENARIOS: creative source → 3 pipes → sink, one row per resource layer.
+        // The source-touching face is set IN (pull-only — otherwise the pipe would void its buffer
+        // back into the endless source) and the sink-touching face OUT, mirroring real Configurator use.
+        int px = origin.getX() + 4;
+        int pz = origin.getZ() - 24;
+        Block[][] scenarioRows = {
+                {ModBlocks.CREATIVE_BATTERY.get(), ModBlocks.BATTERY.get()},
+                {ModBlocks.CREATIVE_FLUID_TANK.get(), ModBlocks.FLUID_TANK.get()},
+                {ModBlocks.CREATIVE_GAS_TANK.get(), ModBlocks.GAS_TANK.get()},
+                {ModBlocks.CREATIVE_ITEM_STORE.get(), ModBlocks.ITEM_STORE.get()},
+        };
+        for (int row = 0; row < scenarioRows.length; row++) {
+            int rz = pz - row * 3;
+            for (int dx = -1; dx <= 5; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    level.setBlockAndUpdate(new BlockPos(px + dx, fy, rz + dz), floor);
+                }
+            }
+            level.setBlockAndUpdate(new BlockPos(px, fy + 1, rz), scenarioRows[row][0].defaultBlockState());
+            for (int dx = 1; dx <= 3; dx++) {
+                level.setBlockAndUpdate(new BlockPos(px + dx, fy + 1, rz),
+                        ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+            }
+            level.setBlockAndUpdate(new BlockPos(px + 4, fy + 1, rz), scenarioRows[row][1].defaultBlockState());
+            setAllModes(level, new BlockPos(px + 1, fy + 1, rz), Direction.WEST, PipeIoMode.IN);
+            setAllModes(level, new BlockPos(px + 3, fy + 1, rz), Direction.EAST, PipeIoMode.OUT);
+        }
+        // Pre-configure the endless sources so the rows run on arrival.
+        if (level.getBlockEntity(new BlockPos(px, fy + 1, pz - 3)) instanceof CreativeFluidTankBlockEntity tank) {
+            tank.setSource(FluidResource.of(Fluids.WATER));
+        }
+        if (level.getBlockEntity(new BlockPos(px, fy + 1, pz - 9)) instanceof CreativeItemStoreBlockEntity store) {
+            store.setSource(ItemResource.of(ModItems.NEROSIUM_INGOT.get()));
+        }
+
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
         int mx = origin.getX() + 4;
         int mz = origin.getZ() - 12;
@@ -143,9 +188,18 @@ public final class NerospaceCommands {
         }
 
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
-                + blocks.size() + " blocks, a structure cluster, a power-grid demo, and 4 creatures "
-                + "(AI + frozen)."), false);
+                + blocks.size() + " blocks, a structure cluster, a power-grid demo, 4 live pipe "
+                + "scenarios (energy/fluid/gas/items), and 4 creatures (AI + frozen)."), false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    /** Set one face of the pipe at {@code pos} to {@code mode} for ALL four resource layers. */
+    private static void setAllModes(ServerLevel level, BlockPos pos, Direction face, PipeIoMode mode) {
+        if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
+            for (PipeResourceType type : PipeResourceType.VALUES) {
+                pipe.setMode(face, type, mode);
+            }
+        }
     }
 
     private static void spawnShowcase(ServerLevel level, EntityType<? extends Mob> type, BlockPos pos, boolean noAi) {

@@ -51,6 +51,40 @@ public final class ModCapabilities {
                 za.co.neroland.nerospace.gas.GasCapability.BLOCK,
                 ModBlockEntities.UNIVERSAL_PIPE.get(),
                 (blockEntity, side) -> blockEntity.getGasHandler());
+
+        // Storage endpoints + creative sources.
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.BATTERY.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.CREATIVE_BATTERY.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                ModBlockEntities.FLUID_TANK.get(),
+                (blockEntity, side) -> blockEntity.getFluidHandler());
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                ModBlockEntities.CREATIVE_FLUID_TANK.get(),
+                (blockEntity, side) -> blockEntity.getFluidHandler());
+        event.registerBlockEntity(
+                za.co.neroland.nerospace.gas.GasCapability.BLOCK,
+                ModBlockEntities.GAS_TANK.get(),
+                (blockEntity, side) -> blockEntity.getGasHandler());
+        event.registerBlockEntity(
+                za.co.neroland.nerospace.gas.GasCapability.BLOCK,
+                ModBlockEntities.CREATIVE_GAS_TANK.get(),
+                (blockEntity, side) -> blockEntity.getGasHandler());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.ITEM_STORE.get(),
+                (blockEntity, side) -> blockEntity.getItemHandler());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.CREATIVE_ITEM_STORE.get(),
+                (blockEntity, side) -> blockEntity.getItemHandler());
         event.registerBlockEntity(
                 Capabilities.Energy.BLOCK,
                 ModBlockEntities.COMBUSTION_GENERATOR.get(),

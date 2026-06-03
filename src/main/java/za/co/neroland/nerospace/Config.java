@@ -232,6 +232,18 @@ public class Config {
             .comment("Ticks between extraction pulses on pulling pipe faces.")
             .defineInRange("itemPipeExtractPeriod", 10, 1, 200);
 
+    public static final ModConfigSpec.IntValue BATTERY_CAPACITY = BUILDER
+            .comment("Energy (FE) the Battery block stores.")
+            .defineInRange("batteryCapacity", 200_000, 1_000, 100_000_000);
+
+    public static final ModConfigSpec.IntValue FLUID_TANK_CAPACITY = BUILDER
+            .comment("Fluid (mB) the Fluid Tank block stores.")
+            .defineInRange("fluidTankCapacity", 16_000, 1_000, 10_000_000);
+
+    public static final ModConfigSpec.IntValue GAS_TANK_CAPACITY = BUILDER
+            .comment("Gas (mB) the Gas Tank block stores.")
+            .defineInRange("gasTankCapacity", 16_000, 1_000, 10_000_000);
+
     public static final ModConfigSpec.IntValue COMBUSTION_GENERATOR_FE_PER_TICK = BUILDER
             .comment("Energy (FE) the Combustion Generator produces each tick while burning fuel.")
             .defineInRange("combustionGeneratorFePerTick", 60, 1, 1_000_000);
