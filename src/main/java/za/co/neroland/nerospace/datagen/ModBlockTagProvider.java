@@ -40,7 +40,10 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.STATION_WALL.get(),
                         ModBlocks.FUEL_TANK.get(),
                         ModBlocks.OXYGEN_GENERATOR.get(),
-                        ModBlocks.TERRAFORMER.get());
+                        ModBlocks.TERRAFORMER.get(),
+                        ModBlocks.UNIVERSAL_PIPE.get(),
+                        ModBlocks.COMBUSTION_GENERATOR.get(),
+                        ModBlocks.PASSIVE_GENERATOR.get());
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.NEROSIUM_ORE.get(),
@@ -56,7 +59,10 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.STATION_WALL.get(),
                         ModBlocks.FUEL_TANK.get(),
                         ModBlocks.OXYGEN_GENERATOR.get(),
-                        ModBlocks.TERRAFORMER.get());
+                        ModBlocks.TERRAFORMER.get(),
+                        ModBlocks.UNIVERSAL_PIPE.get(),
+                        ModBlocks.COMBUSTION_GENERATOR.get(),
+                        ModBlocks.PASSIVE_GENERATOR.get());
 
         this.tag(Tags.Blocks.ORES)
                 .add(ModBlocks.NEROSIUM_ORE.get(), ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),

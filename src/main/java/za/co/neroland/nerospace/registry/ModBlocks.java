@@ -10,10 +10,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.machine.CombustionGeneratorBlock;
 import za.co.neroland.nerospace.machine.FuelTankBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlock;
+import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
 import za.co.neroland.nerospace.machine.TerraformerBlock;
+import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 
 /**
@@ -197,6 +200,39 @@ public final class ModBlocks {
     public static final DeferredBlock<TerraformerBlock> TERRAFORMER = BLOCKS.registerBlock(
             "terraformer",
             TerraformerBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    // --- Power grid (Universal Pipe + generators) ---------------------------
+
+    /** The Universal Pipe: a connection-aware transmitter that moves energy (and later items/fluids/gas). */
+    public static final DeferredBlock<UniversalPipeBlock> UNIVERSAL_PIPE = BLOCKS.registerBlock(
+            "universal_pipe",
+            UniversalPipeBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(1.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL)
+                    .noOcclusion());
+
+    /** Combustion Generator: burns fuel into energy for the grid. */
+    public static final DeferredBlock<CombustionGeneratorBlock> COMBUSTION_GENERATOR = BLOCKS.registerBlock(
+            "combustion_generator",
+            CombustionGeneratorBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    /** Passive Generator: trickles energy from a nerosium core. */
+    public static final DeferredBlock<PassiveGeneratorBlock> PASSIVE_GENERATOR = BLOCKS.registerBlock(
+            "passive_generator",
+            PassiveGeneratorBlock::new,
             props -> props
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)

@@ -116,8 +116,8 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
 
         boolean changed = false;
 
-        // Internal "RTG" charge (placeholder power source until a real generator exists).
-        this.energy.generate(GENERATE_PER_TICK);
+        // Grid-powered: the Grinder no longer self-charges — it runs on energy fed by the power grid
+        // (a generator via the Universal Pipe network, or any external cable) into its internal buffer.
 
         ItemStack input = this.items.get(INPUT_SLOT);
         ItemStack result = GrinderRecipes.getResult(input);

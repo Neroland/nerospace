@@ -37,6 +37,31 @@ public final class ModCapabilities {
                 ModBlockEntities.TERRAFORMER.get(),
                 (blockEntity, side) -> blockEntity.getEnergyHandler());
 
+        // Power grid: the pipe (network buffer) + both generators expose the energy capability so the
+        // network, machines and other mods' cables interoperate.
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.UNIVERSAL_PIPE.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.COMBUSTION_GENERATOR.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.PASSIVE_GENERATOR.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+
+        // Generators expose their fuel/core slot so hoppers and pipes can feed them.
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.COMBUSTION_GENERATOR.get(),
+                (blockEntity, side) -> blockEntity.getFuelHandler());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.PASSIVE_GENERATOR.get(),
+                (blockEntity, side) -> blockEntity.getCoreHandler());
+
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.TERRAFORMER.get(),

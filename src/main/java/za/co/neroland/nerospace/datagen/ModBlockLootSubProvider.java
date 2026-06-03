@@ -43,6 +43,11 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         // Terraform design — terraformer.
         dropSelf(ModBlocks.TERRAFORMER.get());
 
+        // Power grid.
+        dropSelf(ModBlocks.UNIVERSAL_PIPE.get());
+        dropSelf(ModBlocks.COMBUSTION_GENERATOR.get());
+        dropSelf(ModBlocks.PASSIVE_GENERATOR.get());
+
         // Phase 3 — Greenxertz.
         dropSelf(ModBlocks.NEROSTEEL_BLOCK.get());
         add(ModBlocks.NEROSTEEL_ORE.get(),

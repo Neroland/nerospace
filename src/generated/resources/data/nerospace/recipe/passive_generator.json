@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "nerospace:nerosium_block",
+    "N": "nerospace:nerosteel_ingot",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "NNN",
+    "NBN",
+    "NRN"
+  ],
+  "result": {
+    "id": "nerospace:passive_generator"
+  }
+}

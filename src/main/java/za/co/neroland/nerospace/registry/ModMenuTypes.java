@@ -10,9 +10,11 @@ import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.machine.CombustionGeneratorMenu;
 import za.co.neroland.nerospace.machine.FuelTankMenu;
 import za.co.neroland.nerospace.machine.NerosiumGrinderMenu;
 import za.co.neroland.nerospace.machine.OxygenGeneratorMenu;
+import za.co.neroland.nerospace.machine.PassiveGeneratorMenu;
 import za.co.neroland.nerospace.machine.TerraformerMenu;
 import za.co.neroland.nerospace.rocket.RocketMenu;
 
@@ -39,6 +41,14 @@ public final class ModMenuTypes {
     public static final Supplier<MenuType<TerraformerMenu>> TERRAFORMER = MENU_TYPES.register(
             "terraformer",
             () -> new MenuType<>(TerraformerMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
+    public static final Supplier<MenuType<CombustionGeneratorMenu>> COMBUSTION_GENERATOR = MENU_TYPES.register(
+            "combustion_generator",
+            () -> new MenuType<>(CombustionGeneratorMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
+    public static final Supplier<MenuType<PassiveGeneratorMenu>> PASSIVE_GENERATOR = MENU_TYPES.register(
+            "passive_generator",
+            () -> new MenuType<>(PassiveGeneratorMenu::new, FeatureFlags.DEFAULT_FLAGS));
 
     /**
      * Rocket menu. Uses {@link IMenuTypeExtension#create} so the entity id can be written to the

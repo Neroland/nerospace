@@ -37,6 +37,8 @@ import za.co.neroland.nerospace.client.XertzStalkerModel;
 import za.co.neroland.nerospace.client.FuelTankScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
+import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
+import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
 import za.co.neroland.nerospace.client.RocketModel;
 import za.co.neroland.nerospace.client.RocketRenderer;
 import za.co.neroland.nerospace.client.RocketScreen;
@@ -67,6 +69,8 @@ public class NerospaceClient {
         event.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
         event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
         event.register(ModMenuTypes.TERRAFORMER.get(), TerraformerScreen::new);
+        event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
+        event.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
         event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
     }
 

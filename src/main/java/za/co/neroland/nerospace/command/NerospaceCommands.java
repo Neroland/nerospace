@@ -112,6 +112,20 @@ public final class NerospaceCommands {
         level.setBlockAndUpdate(new BlockPos(sx + 4, fy + 1, sz + 1), ModBlocks.OXYGEN_GENERATOR.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(sx + 4, fy + 1, sz + 2), ModBlocks.TERRAFORMER.get().defaultBlockState());
 
+        // A connected POWER-GRID demo: generators → Universal Pipe → a powered Grinder.
+        int gx = origin.getX() + 4;
+        int gz = origin.getZ() - 18;
+        for (int dx = -1; dx <= 4; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                level.setBlockAndUpdate(new BlockPos(gx + dx, fy, gz + dz), floor);
+            }
+        }
+        level.setBlockAndUpdate(new BlockPos(gx, fy + 1, gz), ModBlocks.COMBUSTION_GENERATOR.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(gx + 1, fy + 1, gz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(gx + 2, fy + 1, gz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(gx + 3, fy + 1, gz), ModBlocks.NEROSIUM_GRINDER.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(gx + 1, fy + 1, gz + 1), ModBlocks.PASSIVE_GENERATOR.get().defaultBlockState());
+
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
         int mx = origin.getX() + 4;
         int mz = origin.getZ() - 12;
@@ -129,7 +143,8 @@ public final class NerospaceCommands {
         }
 
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
-                + blocks.size() + " blocks, a structure cluster, and 4 creatures (AI + frozen)."), false);
+                + blocks.size() + " blocks, a structure cluster, a power-grid demo, and 4 creatures "
+                + "(AI + frozen)."), false);
         return Command.SINGLE_SUCCESS;
     }
 

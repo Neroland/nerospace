@@ -47,6 +47,22 @@ public class ModLanguageProvider extends LanguageProvider {
         // Terraform design — terraformer.
         add(ModBlocks.TERRAFORMER.get(), "Terraformer");
 
+        // Power grid.
+        add(ModBlocks.UNIVERSAL_PIPE.get(), "Universal Pipe");
+        add(ModBlocks.COMBUSTION_GENERATOR.get(), "Combustion Generator");
+        add(ModBlocks.PASSIVE_GENERATOR.get(), "Passive Generator");
+        add(ModItems.CONFIGURATOR.get(), "Configurator");
+        add("block.nerospace.universal_pipe.energy", "Pipe energy: %s FE");
+        add("item.nerospace.configurator.face", "%s face: %s");
+        // Generator GUIs.
+        add("container.nerospace.combustion_generator", "Combustion Generator");
+        add("container.nerospace.passive_generator", "Passive Generator");
+        add("gui.nerospace.generator.output", "Power: %s%%");
+        add("gui.nerospace.generator.burning", "Generating");
+        add("gui.nerospace.generator.idle", "Idle");
+        add("gui.nerospace.generator.core_active", "Core active");
+        add("gui.nerospace.generator.core_empty", "No core");
+
         // Phase 7 blocks.
         add(ModBlocks.CINDRITE_ORE.get(), "Cindrite Ore");
         add(ModBlocks.CINDRITE_BLOCK.get(), "Block of Cindrite");

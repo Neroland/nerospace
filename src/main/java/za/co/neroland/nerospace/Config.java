@@ -191,6 +191,25 @@ public class Config {
             .comment("Guard on how many chunks active terraforming may force-load at once.")
             .defineInRange("terraformMaxForcedChunks", 16, 0, 256);
 
+    // --- Nerospace: power grid (Universal Pipe network) ---------------------
+
+    public static final ModConfigSpec.IntValue ENERGY_PIPE_CAPACITY = BUILDER
+            .comment("Energy (FE) each Universal Pipe segment can buffer. The network shares/balances "
+                    + "energy across all connected segments.")
+            .defineInRange("energyPipeCapacity", 8_000, 100, 10_000_000);
+
+    public static final ModConfigSpec.IntValue ENERGY_PIPE_THROUGHPUT = BUILDER
+            .comment("Max energy (FE) a single pipe connection moves per tick (per face, per tick).")
+            .defineInRange("energyPipeThroughput", 4_000, 1, 10_000_000);
+
+    public static final ModConfigSpec.IntValue COMBUSTION_GENERATOR_FE_PER_TICK = BUILDER
+            .comment("Energy (FE) the Combustion Generator produces each tick while burning fuel.")
+            .defineInRange("combustionGeneratorFePerTick", 60, 1, 1_000_000);
+
+    public static final ModConfigSpec.IntValue PASSIVE_GENERATOR_FE_PER_TICK = BUILDER
+            .comment("Energy (FE) the Passive Generator trickles each tick while it holds a fuel core.")
+            .defineInRange("passiveGeneratorFePerTick", 10, 1, 1_000_000);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     /** Client oxygen-visual quality tiers. */

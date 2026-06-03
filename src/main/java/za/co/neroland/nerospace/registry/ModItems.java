@@ -201,6 +201,18 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> TERRAFORMER_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.TERRAFORMER);
 
+    // Power grid block items.
+    public static final DeferredItem<BlockItem> UNIVERSAL_PIPE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.UNIVERSAL_PIPE);
+    public static final DeferredItem<BlockItem> COMBUSTION_GENERATOR_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.COMBUSTION_GENERATOR);
+    public static final DeferredItem<BlockItem> PASSIVE_GENERATOR_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.PASSIVE_GENERATOR);
+
+    // The Configurator — the network tool (per-face I/O modes).
+    public static final DeferredItem<Item> CONFIGURATOR = ITEMS.registerItem(
+            "configurator", props -> new za.co.neroland.nerospace.item.ConfiguratorItem(props.stacksTo(1)));
+
     // --- Spawn eggs (Phase 10e) --------------------------------------------
     public static final DeferredItem<Item> XERTZ_STALKER_SPAWN_EGG = ITEMS.registerItem(
             "xertz_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.XERTZ_STALKER));

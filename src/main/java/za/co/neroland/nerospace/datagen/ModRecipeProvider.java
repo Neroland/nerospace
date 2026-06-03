@@ -263,6 +263,52 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_oxygen_generator", this.has(ModBlocks.OXYGEN_GENERATOR.get()))
                 .save(this.output);
 
+        // Power grid: Universal Pipe — a nerosteel sheath around a glass core (yields 8).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.UNIVERSAL_PIPE.get(), 8)
+                .pattern("NNN")
+                .pattern("NGN")
+                .pattern("NNN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('G', Items.GLASS)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Combustion Generator — a nerosteel frame around a furnace, wired with redstone.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.COMBUSTION_GENERATOR.get())
+                .pattern("NNN")
+                .pattern("NFN")
+                .pattern("NRN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('F', Items.FURNACE)
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Passive Generator — a nerosteel frame around a nerosium block core, wired with redstone.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.PASSIVE_GENERATOR.get())
+                .pattern("NNN")
+                .pattern("NBN")
+                .pattern("NRN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('B', ModBlocks.NEROSIUM_BLOCK.get())
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_nerosium_block", this.has(ModBlocks.NEROSIUM_BLOCK.get()))
+                .save(this.output);
+
+        // Configurator — the network tool.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.CONFIGURATOR.get())
+                .pattern("N")
+                .pattern("N")
+                .pattern("R")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
         // Rocket fuel canister: blaze powder + coal + xertz quartz in an iron shell (yields 2).
         ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModItems.ROCKET_FUEL_CANISTER, 2)

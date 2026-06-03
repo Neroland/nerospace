@@ -54,6 +54,11 @@ public class ModModelProvider extends ModelProvider {
         // Terraform design — terraformer machine.
         blockModels.createTrivialCube(ModBlocks.TERRAFORMER.get());
 
+        // Power grid — pipe + generators (trivial cubes for now; a connected pipe model is polish).
+        blockModels.createTrivialCube(ModBlocks.UNIVERSAL_PIPE.get());
+        blockModels.createTrivialCube(ModBlocks.COMBUSTION_GENERATOR.get());
+        blockModels.createTrivialCube(ModBlocks.PASSIVE_GENERATOR.get());
+
         // Phase 7 — Cindara ore + storage block.
         blockModels.createTrivialCube(ModBlocks.CINDRITE_ORE.get());
         blockModels.createTrivialCube(ModBlocks.CINDRITE_BLOCK.get());
@@ -95,6 +100,9 @@ public class ModModelProvider extends ModelProvider {
 
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+
+        // Power grid — the Configurator tool.
+        itemModels.generateFlatItem(ModItems.CONFIGURATOR.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
 
         // Phase 8d — oxygen suit (inventory item models; the worn layer is the equipment asset).
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HELMET.get(), ModelTemplates.FLAT_ITEM);

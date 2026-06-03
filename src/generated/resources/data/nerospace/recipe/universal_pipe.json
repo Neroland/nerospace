@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass",
+    "N": "nerospace:nerosteel_ingot"
+  },
+  "pattern": [
+    "NNN",
+    "NGN",
+    "NNN"
+  ],
+  "result": {
+    "count": 8,
+    "id": "nerospace:universal_pipe"
+  }
+}

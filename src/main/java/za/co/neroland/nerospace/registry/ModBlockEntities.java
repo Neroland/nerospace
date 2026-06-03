@@ -8,10 +8,13 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
+import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 
 /**
  * Block entity types (Phase 2).
@@ -49,6 +52,23 @@ public final class ModBlockEntities {
                     TerraformerBlockEntity::new,
                     false,
                     ModBlocks.TERRAFORMER.get()));
+
+    public static final Supplier<BlockEntityType<UniversalPipeBlockEntity>> UNIVERSAL_PIPE = BLOCK_ENTITY_TYPES.register(
+            "universal_pipe",
+            () -> new BlockEntityType<>(
+                    UniversalPipeBlockEntity::new,
+                    false,
+                    ModBlocks.UNIVERSAL_PIPE.get()));
+
+    public static final Supplier<BlockEntityType<CombustionGeneratorBlockEntity>> COMBUSTION_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("combustion_generator",
+                    () -> new BlockEntityType<>(
+                            CombustionGeneratorBlockEntity::new, false, ModBlocks.COMBUSTION_GENERATOR.get()));
+
+    public static final Supplier<BlockEntityType<PassiveGeneratorBlockEntity>> PASSIVE_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("passive_generator",
+                    () -> new BlockEntityType<>(
+                            PassiveGeneratorBlockEntity::new, false, ModBlocks.PASSIVE_GENERATOR.get()));
 
     private ModBlockEntities() {
     }
