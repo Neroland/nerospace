@@ -202,6 +202,36 @@ public class Config {
             .comment("Max energy (FE) a single pipe connection moves per tick (per face, per tick).")
             .defineInRange("energyPipeThroughput", 4_000, 1, 10_000_000);
 
+    public static final ModConfigSpec.IntValue FLUID_PIPE_CAPACITY = BUILDER
+            .comment("Fluid (mB) each Universal Pipe segment can buffer. One fluid type per network; "
+                    + "other fluids are refused until the network drains.")
+            .defineInRange("fluidPipeCapacity", 4_000, 100, 1_000_000);
+
+    public static final ModConfigSpec.IntValue FLUID_PIPE_THROUGHPUT = BUILDER
+            .comment("Max fluid (mB) a single pipe connection moves per tick (per face, per tick).")
+            .defineInRange("fluidPipeThroughput", 500, 1, 1_000_000);
+
+    public static final ModConfigSpec.IntValue GAS_PIPE_CAPACITY = BUILDER
+            .comment("Gas (mB) each Universal Pipe segment can buffer. One gas type per network; "
+                    + "breaking a pipe vents that segment's gas.")
+            .defineInRange("gasPipeCapacity", 4_000, 100, 1_000_000);
+
+    public static final ModConfigSpec.IntValue GAS_PIPE_THROUGHPUT = BUILDER
+            .comment("Max gas (mB) a single pipe connection moves per tick (per face, per tick).")
+            .defineInRange("gasPipeThroughput", 250, 1, 1_000_000);
+
+    public static final ModConfigSpec.IntValue ITEM_PIPE_TICKS_PER_BLOCK = BUILDER
+            .comment("Ticks an item takes to cross one pipe segment (10 = 2 blocks/second).")
+            .defineInRange("itemPipeTicksPerBlock", 10, 1, 200);
+
+    public static final ModConfigSpec.IntValue ITEM_PIPE_EXTRACT_AMOUNT = BUILDER
+            .comment("Max items pulled from an inventory per extraction.")
+            .defineInRange("itemPipeExtractAmount", 8, 1, 64);
+
+    public static final ModConfigSpec.IntValue ITEM_PIPE_EXTRACT_PERIOD = BUILDER
+            .comment("Ticks between extraction pulses on pulling pipe faces.")
+            .defineInRange("itemPipeExtractPeriod", 10, 1, 200);
+
     public static final ModConfigSpec.IntValue COMBUSTION_GENERATOR_FE_PER_TICK = BUILDER
             .comment("Energy (FE) the Combustion Generator produces each tick while burning fuel.")
             .defineInRange("combustionGeneratorFePerTick", 60, 1, 1_000_000);

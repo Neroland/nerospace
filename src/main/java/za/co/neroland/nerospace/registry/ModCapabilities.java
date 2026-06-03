@@ -44,6 +44,14 @@ public final class ModCapabilities {
                 ModBlockEntities.UNIVERSAL_PIPE.get(),
                 (blockEntity, side) -> blockEntity.getEnergyHandler());
         event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                ModBlockEntities.UNIVERSAL_PIPE.get(),
+                (blockEntity, side) -> blockEntity.getFluidHandler());
+        event.registerBlockEntity(
+                za.co.neroland.nerospace.gas.GasCapability.BLOCK,
+                ModBlockEntities.UNIVERSAL_PIPE.get(),
+                (blockEntity, side) -> blockEntity.getGasHandler());
+        event.registerBlockEntity(
                 Capabilities.Energy.BLOCK,
                 ModBlockEntities.COMBUSTION_GENERATOR.get(),
                 (blockEntity, side) -> blockEntity.getEnergyHandler());

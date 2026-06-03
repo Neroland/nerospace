@@ -1,19 +1,34 @@
 package za.co.neroland.nerospace.pipe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.gas.GasResource;
+import za.co.neroland.nerospace.gas.GasStacksResourceHandler;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -28,8 +43,15 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class UniversalPipeBlockEntity extends BlockEntity {
 
-    private final PipeConnectionMode[] faceModes = new PipeConnectionMode[6];
+    /** Per-face (6), per-resource-type (4) I/O mode. Default AUTO everywhere. */
+    private final PipeIoMode[][] faceModes = new PipeIoMode[6][PipeResourceType.VALUES.length];
+    /** Soft cap on simultaneous travelling stacks per segment (extraction pauses above it). */
+    public static final int MAX_TRAVELLING_ITEMS = 16;
+
     private final PipeEnergy energy = new PipeEnergy();
+    private final PipeFluid fluid = new PipeFluid();
+    private final PipeGas gas = new PipeGas();
+    private final List<TravellingItem> items = new ArrayList<>();
 
     /** Transient: the network this pipe belongs to, lazily (re)built and shared with all members. */
     @Nullable
@@ -37,8 +59,10 @@ public class UniversalPipeBlockEntity extends BlockEntity {
 
     public UniversalPipeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.UNIVERSAL_PIPE.get(), pos, state);
-        for (int i = 0; i < 6; i++) {
-            this.faceModes[i] = PipeConnectionMode.AUTO;
+        for (int f = 0; f < 6; f++) {
+            for (int t = 0; t < PipeResourceType.VALUES.length; t++) {
+                this.faceModes[f][t] = PipeIoMode.AUTO;
+            }
         }
     }
 
@@ -51,14 +75,45 @@ public class UniversalPipeBlockEntity extends BlockEntity {
         return this.energy;
     }
 
-    public PipeConnectionMode faceMode(Direction dir) {
-        return this.faceModes[dir.get3DDataValue()];
+    /** Exposed to {@code Capabilities.Fluid.BLOCK} so tanks, machines and other mods' pipes interop. */
+    public ResourceHandler<FluidResource> getFluidHandler() {
+        return this.fluid;
     }
 
-    /** Cycle a face's mode (Configurator). @return the new mode. */
-    public PipeConnectionMode cycleFaceMode(Direction dir) {
-        PipeConnectionMode next = faceMode(dir).next();
-        this.faceModes[dir.get3DDataValue()] = next;
+    PipeFluid fluid() {
+        return this.fluid;
+    }
+
+    /** Exposed via the mod's dedicated {@code GasCapability.BLOCK}. */
+    public ResourceHandler<GasResource> getGasHandler() {
+        return this.gas;
+    }
+
+    PipeGas gas() {
+        return this.gas;
+    }
+
+    /** The item stacks currently travelling through this segment (mutated by the network). */
+    public List<TravellingItem> items() {
+        return this.items;
+    }
+
+    /** Mark the travelling items dirty + push a sync packet so clients can render them. */
+    void syncItems() {
+        setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    public PipeIoMode mode(Direction dir, PipeResourceType type) {
+        return this.faceModes[dir.get3DDataValue()][type.ordinal()];
+    }
+
+    /** Cycle a face's mode for one resource type (Configurator). @return the new mode. */
+    public PipeIoMode cycleMode(Direction dir, PipeResourceType type) {
+        PipeIoMode next = mode(dir, type).next();
+        this.faceModes[dir.get3DDataValue()][type.ordinal()] = next;
         setChanged();
         return next;
     }
@@ -87,23 +142,74 @@ public class UniversalPipeBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        int packed = 0;
-        for (int i = 0; i < 6; i++) {
-            packed |= (this.faceModes[i].ordinal() & 0x3) << (i * 2);
+        long packed = 0L;
+        int types = PipeResourceType.VALUES.length;
+        for (int f = 0; f < 6; f++) {
+            for (int t = 0; t < types; t++) {
+                packed |= ((long) (this.faceModes[f][t].ordinal() & 0x3)) << ((f * types + t) * 2);
+            }
         }
-        output.putInt("Faces", packed);
+        output.putLong("Faces", packed);
         this.energy.serialize(output.child("Energy"));
+        this.fluid.serialize(output.child("Fluid"));
+        this.gas.serialize(output.child("Gas"));
+        ValueOutput.TypedOutputList<TravellingItem> itemList = output.list("Items", TravellingItem.CODEC);
+        for (TravellingItem item : this.items) {
+            itemList.add(item);
+        }
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        int packed = input.getIntOr("Faces", 0);
-        PipeConnectionMode[] modes = PipeConnectionMode.values();
-        for (int i = 0; i < 6; i++) {
-            this.faceModes[i] = modes[(packed >> (i * 2)) & 0x3];
+        long packed = input.getLongOr("Faces", 0L);
+        int types = PipeResourceType.VALUES.length;
+        for (int f = 0; f < 6; f++) {
+            for (int t = 0; t < types; t++) {
+                this.faceModes[f][t] = PipeIoMode.VALUES[(int) ((packed >> ((f * types + t) * 2)) & 0x3L)];
+            }
         }
         this.energy.deserialize(input.childOrEmpty("Energy"));
+        this.fluid.deserialize(input.childOrEmpty("Fluid"));
+        this.gas.deserialize(input.childOrEmpty("Gas"));
+        this.items.clear();
+        for (TravellingItem item : input.listOrEmpty("Items", TravellingItem.CODEC)) {
+            this.items.add(item);
+        }
+    }
+
+    // --- Client sync (travelling items are rendered) --------------------------
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
+    }
+
+    /**
+     * Breaking a pipe vents its gas with a visible puff (the gas is lost — it IS gas) and drops any
+     * items that were travelling through the segment.
+     */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level instanceof ServerLevel serverLevel) {
+            if (this.gas.amount() > 0) {
+                int puffs = Math.min(12, 2 + this.gas.amount() / 500);
+                serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD,
+                        pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        puffs, 0.2, 0.2, 0.2, 0.02);
+            }
+            for (TravellingItem item : this.items) {
+                Containers.dropItemStack(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        item.resource().toStack(item.amount()));
+            }
+            this.items.clear();
+        }
     }
 
     /** The pipe's FE buffer; capacity/throughput from config. {@link #setStored} is used for balancing. */
@@ -120,6 +226,64 @@ public class UniversalPipeBlockEntity extends BlockEntity {
 
         void setStored(int value) {
             set(Math.max(0, Math.min(getCapacityAsInt(), value)));
+        }
+    }
+
+    /**
+     * The pipe's fluid buffer (one stack slot, capacity from config). The network enforces "one fluid
+     * per network" and balances the contents across segments; {@link #setContents} is the balancing hook.
+     */
+    final class PipeFluid extends FluidStacksResourceHandler {
+        PipeFluid() {
+            super(1, Config.FLUID_PIPE_CAPACITY.get());
+        }
+
+        @Override
+        protected void onContentsChanged(int index, FluidStack oldStack) {
+            UniversalPipeBlockEntity.this.setChanged();
+        }
+
+        FluidResource resource() {
+            return getResource(0);
+        }
+
+        int amount() {
+            return getAmountAsInt(0);
+        }
+
+        /** Directly set the buffer (network balancing); zero amount clears to empty. */
+        void setContents(FluidResource resource, int amount) {
+            int clamped = Math.max(0, Math.min(this.capacity, amount));
+            set(0, clamped == 0 ? FluidResource.EMPTY : resource, clamped);
+        }
+    }
+
+    /**
+     * The pipe's gas buffer (one slot, capacity from config). One gas per network; balanced like the
+     * fluid layer. Lost (vented) when the pipe is broken.
+     */
+    final class PipeGas extends GasStacksResourceHandler {
+        PipeGas() {
+            super(1, Config.GAS_PIPE_CAPACITY.get());
+        }
+
+        @Override
+        protected void onContentsChanged(int index, net.neoforged.neoforge.transfer.resource.ResourceStack<GasResource> oldStack) {
+            UniversalPipeBlockEntity.this.setChanged();
+        }
+
+        GasResource resource() {
+            return getResource(0);
+        }
+
+        int amount() {
+            return getAmountAsInt(0);
+        }
+
+        /** Directly set the buffer (network balancing); zero amount clears to empty. */
+        void setContents(GasResource resource, int amount) {
+            int clamped = Math.max(0, Math.min(this.capacity, amount));
+            set(0, clamped == 0 ? GasResource.EMPTY : resource, clamped);
         }
     }
 }

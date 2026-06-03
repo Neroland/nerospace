@@ -53,7 +53,24 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.PASSIVE_GENERATOR.get(), "Passive Generator");
         add(ModItems.CONFIGURATOR.get(), "Configurator");
         add("block.nerospace.universal_pipe.energy", "Pipe energy: %s FE");
-        add("item.nerospace.configurator.face", "%s face: %s");
+        add("block.nerospace.universal_pipe.fluid", "Pipe fluid: %s mB of %s");
+        add("block.nerospace.universal_pipe.gas", "Pipe gas: %s mB of %s");
+        add("block.nerospace.universal_pipe.items", "Items in transit: %s");
+        // Gases.
+        add("gas.nerospace.empty", "Empty");
+        add("gas.nerospace.oxygen", "Oxygen");
+        add("item.nerospace.configurator.face", "%1$s — %2$s face: %3$s");
+        add("item.nerospace.configurator.selected", "Configuring: %s");
+        // Pipe resource layers.
+        add("pipe.nerospace.type.energy", "Energy");
+        add("pipe.nerospace.type.fluid", "Fluid");
+        add("pipe.nerospace.type.gas", "Gas");
+        add("pipe.nerospace.type.item", "Items");
+        // Pipe face I/O modes.
+        add("pipe.nerospace.mode.auto", "Auto");
+        add("pipe.nerospace.mode.in", "In");
+        add("pipe.nerospace.mode.out", "Out");
+        add("pipe.nerospace.mode.off", "Off");
         // Generator GUIs.
         add("container.nerospace.combustion_generator", "Combustion Generator");
         add("container.nerospace.passive_generator", "Passive Generator");

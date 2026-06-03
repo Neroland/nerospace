@@ -2,20 +2,32 @@ package za.co.neroland.nerospace.pipe;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandlerUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.gas.GasCapability;
+import za.co.neroland.nerospace.gas.GasResource;
 
 /**
  * A connected group of {@link UniversalPipeBlockEntity} segments that move resources as one. Built by
@@ -35,6 +47,8 @@ public final class PipeNetwork {
     private final LongOpenHashSet memberSet;
     private boolean valid = true;
     private long lastTick = -1L;
+    /** Rotates over routing candidates so deliveries spread round-robin across destinations. */
+    private int itemRoundRobin;
 
     private PipeNetwork(List<BlockPos> members, LongOpenHashSet memberSet) {
         this.members = members;
@@ -80,7 +94,7 @@ public final class PipeNetwork {
         return network;
     }
 
-    /** Move + balance the energy layer. Guarded so it runs at most once per game tick. */
+    /** Move + balance every resource layer. Guarded so it runs at most once per game tick. */
     public void tick(ServerLevel level) {
         long gameTime = level.getGameTime();
         if (gameTime == this.lastTick) {
@@ -103,20 +117,27 @@ public final class PipeNetwork {
             return;
         }
 
+        tickEnergy(level, pipes);
+        tickFluid(level, pipes);
+        tickGas(level, pipes);
+        tickItems(level, pipes);
+    }
+
+    // --- Energy layer ---------------------------------------------------------
+
+    private void tickEnergy(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
         int throughput = Config.ENERGY_PIPE_THROUGHPUT.get();
 
         // Pull from providers / push to receivers on every non-pipe face, within one transaction.
         try (Transaction tx = Transaction.openRoot()) {
-            for (BlockPos pos : this.members) {
-                if (!(level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe)) {
-                    continue;
-                }
+            for (UniversalPipeBlockEntity pipe : pipes) {
+                BlockPos pos = pipe.getBlockPos();
                 for (Direction dir : Direction.values()) {
                     BlockPos np = pos.relative(dir);
                     if (this.memberSet.contains(np.asLong())) {
                         continue; // internal pipe-to-pipe link is handled by balancing
                     }
-                    PipeConnectionMode mode = pipe.faceMode(dir);
+                    PipeIoMode mode = pipe.mode(dir, PipeResourceType.ENERGY);
                     if (!mode.isConnected()) {
                         continue;
                     }
@@ -128,13 +149,13 @@ public final class PipeNetwork {
                     if (mode.canPull()) {
                         int pulled = EnergyHandlerUtil.move(neighbor, pipe.energy(), throughput, tx);
                         if (pulled > 0) {
-                            flowParticle(level, pos, dir, false); // into the pipe (from a provider)
+                            flowParticle(level, ParticleTypes.GLOW, pos, dir, false);
                         }
                     }
                     if (mode.canPush()) {
                         int pushed = EnergyHandlerUtil.move(pipe.energy(), neighbor, throughput, tx);
                         if (pushed > 0) {
-                            flowParticle(level, pos, dir, true);  // out of the pipe (to a receiver)
+                            flowParticle(level, ParticleTypes.GLOW, pos, dir, true);
                         }
                     }
                 }
@@ -155,11 +176,394 @@ public final class PipeNetwork {
         }
     }
 
+    // --- Fluid layer ------------------------------------------------------------
+
     /**
-     * Spawn a sparse, colour-coded flow particle drifting along an active connection so players can see
-     * energy moving (cyan = energy; item/fluid/gas layers will use their own colours). Throttled.
+     * One fluid type per network: the first fluid in claims the fluid layer; other fluids are refused
+     * at the inlets until the network drains. Pipes push whatever they hold (so a stray fluid from a
+     * network merge still drains out), and the shared pool is balanced across matching segments.
      */
-    private static void flowParticle(ServerLevel level, BlockPos pipe, Direction dir, boolean outward) {
+    private void tickFluid(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
+        int throughput = Config.FLUID_PIPE_THROUGHPUT.get();
+
+        // The network's claimed fluid = the first non-empty buffer found.
+        FluidResource networkFluid = FluidResource.EMPTY;
+        for (UniversalPipeBlockEntity pipe : pipes) {
+            if (!pipe.fluid().resource().isEmpty()) {
+                networkFluid = pipe.fluid().resource();
+                break;
+            }
+        }
+
+        try (Transaction tx = Transaction.openRoot()) {
+            for (UniversalPipeBlockEntity pipe : pipes) {
+                BlockPos pos = pipe.getBlockPos();
+                for (Direction dir : Direction.values()) {
+                    BlockPos np = pos.relative(dir);
+                    if (this.memberSet.contains(np.asLong())) {
+                        continue;
+                    }
+                    PipeIoMode mode = pipe.mode(dir, PipeResourceType.FLUID);
+                    if (!mode.isConnected()) {
+                        continue;
+                    }
+                    ResourceHandler<FluidResource> neighbor =
+                            Capabilities.Fluid.BLOCK.getCapability(level, np, null, null, dir.getOpposite());
+                    if (neighbor == null) {
+                        continue;
+                    }
+                    if (mode.canPull()) {
+                        FluidResource claimed = networkFluid;
+                        int pulled = ResourceHandlerUtil.move(neighbor, pipe.fluid(),
+                                r -> claimed.isEmpty() || r.equals(claimed), throughput, tx);
+                        if (pulled > 0) {
+                            if (networkFluid.isEmpty()) {
+                                networkFluid = pipe.fluid().resource(); // first fluid claims the network
+                            }
+                            flowParticle(level, ParticleTypes.SPLASH, pos, dir, false);
+                        }
+                    }
+                    if (mode.canPush()) {
+                        int pushed = ResourceHandlerUtil.move(pipe.fluid(), neighbor,
+                                r -> true, throughput, tx);
+                        if (pushed > 0) {
+                            flowParticle(level, ParticleTypes.SPLASH, pos, dir, true);
+                        }
+                    }
+                }
+            }
+            tx.commit();
+        }
+
+        // Balance the claimed fluid across matching (or empty) segments — one shared pool.
+        if (networkFluid.isEmpty()) {
+            return;
+        }
+        List<UniversalPipeBlockEntity> matching = new ArrayList<>(pipes.size());
+        long total = 0L;
+        for (UniversalPipeBlockEntity pipe : pipes) {
+            FluidResource held = pipe.fluid().resource();
+            if (held.isEmpty() || held.equals(networkFluid)) {
+                matching.add(pipe);
+                total += pipe.fluid().amount();
+            }
+        }
+        if (matching.isEmpty()) {
+            return;
+        }
+        int n = matching.size();
+        int base = (int) (total / n);
+        int remainder = (int) (total % n);
+        for (int i = 0; i < n; i++) {
+            matching.get(i).fluid().setContents(networkFluid, base + (i < remainder ? 1 : 0));
+        }
+    }
+
+    // --- Gas layer --------------------------------------------------------------
+
+    /**
+     * Same rules as the fluid layer (one gas claims the network, push-anything, balanced pool), over
+     * the mod's dedicated gas capability. Venting on pipe break is handled by the block entity.
+     */
+    private void tickGas(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
+        int throughput = Config.GAS_PIPE_THROUGHPUT.get();
+
+        GasResource networkGas = GasResource.EMPTY;
+        for (UniversalPipeBlockEntity pipe : pipes) {
+            if (!pipe.gas().resource().isEmpty()) {
+                networkGas = pipe.gas().resource();
+                break;
+            }
+        }
+
+        try (Transaction tx = Transaction.openRoot()) {
+            for (UniversalPipeBlockEntity pipe : pipes) {
+                BlockPos pos = pipe.getBlockPos();
+                for (Direction dir : Direction.values()) {
+                    BlockPos np = pos.relative(dir);
+                    if (this.memberSet.contains(np.asLong())) {
+                        continue;
+                    }
+                    PipeIoMode mode = pipe.mode(dir, PipeResourceType.GAS);
+                    if (!mode.isConnected()) {
+                        continue;
+                    }
+                    ResourceHandler<GasResource> neighbor =
+                            GasCapability.BLOCK.getCapability(level, np, null, null, dir.getOpposite());
+                    if (neighbor == null) {
+                        continue;
+                    }
+                    if (mode.canPull()) {
+                        GasResource claimed = networkGas;
+                        int pulled = ResourceHandlerUtil.move(neighbor, pipe.gas(),
+                                r -> claimed.isEmpty() || r == claimed, throughput, tx);
+                        if (pulled > 0) {
+                            if (networkGas.isEmpty()) {
+                                networkGas = pipe.gas().resource();
+                            }
+                            flowParticle(level, ParticleTypes.HAPPY_VILLAGER, pos, dir, false);
+                        }
+                    }
+                    if (mode.canPush()) {
+                        int pushed = ResourceHandlerUtil.move(pipe.gas(), neighbor,
+                                r -> true, throughput, tx);
+                        if (pushed > 0) {
+                            flowParticle(level, ParticleTypes.HAPPY_VILLAGER, pos, dir, true);
+                        }
+                    }
+                }
+            }
+            tx.commit();
+        }
+
+        if (networkGas == GasResource.EMPTY) {
+            return;
+        }
+        List<UniversalPipeBlockEntity> matching = new ArrayList<>(pipes.size());
+        long total = 0L;
+        for (UniversalPipeBlockEntity pipe : pipes) {
+            GasResource held = pipe.gas().resource();
+            if (held.isEmpty() || held == networkGas) {
+                matching.add(pipe);
+                total += pipe.gas().amount();
+            }
+        }
+        if (matching.isEmpty()) {
+            return;
+        }
+        int n = matching.size();
+        int base = (int) (total / n);
+        int remainder = (int) (total % n);
+        for (int i = 0; i < n; i++) {
+            matching.get(i).gas().setContents(networkGas, base + (i < remainder ? 1 : 0));
+        }
+    }
+
+    // --- Item layer -------------------------------------------------------------
+
+    /**
+     * Items travel as visible packets: pulling faces extract from inventories on a pulse, packets run
+     * through segments at a configured speed, junctions hand them to the next segment toward their
+     * destination, and arrival inserts into the target inventory. Destinations are chosen round-robin
+     * over every reachable inventory that accepts the item; a full/blocked destination causes a
+     * re-route, and with no route the packet parks in the pipe until one opens up. Nothing is dropped.
+     */
+    private void tickItems(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
+        float step = 1.0F / Config.ITEM_PIPE_TICKS_PER_BLOCK.get();
+
+        // 1. Advance, hand off and deliver travelling items.
+        for (UniversalPipeBlockEntity pipe : pipes) {
+            if (pipe.items().isEmpty()) {
+                continue;
+            }
+            BlockPos pos = pipe.getBlockPos();
+            boolean changed = false;
+            Iterator<TravellingItem> it = pipe.items().iterator();
+            while (it.hasNext()) {
+                TravellingItem item = it.next();
+
+                if (item.isParked()) {
+                    // Periodically look for a route that has opened up.
+                    if ((level.getGameTime() & 7L) == 0L) {
+                        Direction exit = chooseExit(level, pipe, item.resource(), null);
+                        if (exit != null) {
+                            item.redirect(item.from(), exit, 0.0F);
+                            changed = true;
+                        }
+                    }
+                    continue;
+                }
+
+                item.advance(step);
+                if (item.progress() < 1.0F) {
+                    continue;
+                }
+
+                Direction to = item.to();
+                BlockPos np = pos.relative(to);
+
+                // Hand off to the next pipe segment.
+                if (this.memberSet.contains(np.asLong())
+                        && level.getBlockEntity(np) instanceof UniversalPipeBlockEntity next) {
+                    it.remove();
+                    changed = true;
+                    Direction enter = to.getOpposite();
+                    Direction exit = chooseExit(level, next, item.resource(), enter);
+                    next.items().add(new TravellingItem(item.resource(), item.amount(), enter, exit, 0.0F));
+                    next.syncItems();
+                    continue;
+                }
+
+                // Arrived at a non-pipe face: try to insert.
+                int inserted = 0;
+                if (pipe.mode(to, PipeResourceType.ITEM).canPush()) {
+                    ResourceHandler<ItemResource> target =
+                            Capabilities.Item.BLOCK.getCapability(level, np, null, null, to.getOpposite());
+                    if (target != null) {
+                        try (Transaction tx = Transaction.openRoot()) {
+                            inserted = ResourceHandlerUtil.insertStacking(target, item.resource(), item.amount(), tx);
+                            if (inserted > 0) {
+                                tx.commit();
+                            }
+                        }
+                    }
+                }
+                if (inserted >= item.amount()) {
+                    it.remove();
+                    changed = true;
+                    continue;
+                }
+                if (inserted > 0) {
+                    item.shrink(inserted);
+                    changed = true;
+                }
+                // Full/blocked: re-route the remainder; with no route, park and wait.
+                Direction exit = chooseExit(level, pipe, item.resource(), to);
+                if (exit != null) {
+                    item.redirect(to, exit, 0.0F);
+                } else {
+                    item.redirect(to, null, 0.0F);
+                }
+                changed = true;
+            }
+            if (changed) {
+                pipe.syncItems();
+            }
+        }
+
+        // 2. Extraction pulse on pulling faces.
+        if (level.getGameTime() % Config.ITEM_PIPE_EXTRACT_PERIOD.get() != 0L) {
+            return;
+        }
+        int extractMax = Config.ITEM_PIPE_EXTRACT_AMOUNT.get();
+        for (UniversalPipeBlockEntity pipe : pipes) {
+            if (pipe.items().size() >= UniversalPipeBlockEntity.MAX_TRAVELLING_ITEMS) {
+                continue;
+            }
+            BlockPos pos = pipe.getBlockPos();
+            for (Direction dir : Direction.values()) {
+                BlockPos np = pos.relative(dir);
+                if (this.memberSet.contains(np.asLong())
+                        || !pipe.mode(dir, PipeResourceType.ITEM).canPull()) {
+                    continue;
+                }
+                ResourceHandler<ItemResource> source =
+                        Capabilities.Item.BLOCK.getCapability(level, np, null, null, dir.getOpposite());
+                if (source == null) {
+                    continue;
+                }
+                // Peek what would come out (transaction aborted), route it, then extract for real.
+                // NOTE: extractFirst returns null (not an empty stack) when nothing is extractable.
+                ItemResource peeked;
+                try (Transaction tx = Transaction.openRoot()) {
+                    ResourceStack<ItemResource> got =
+                            ResourceHandlerUtil.extractFirst(source, r -> true, extractMax, tx);
+                    peeked = got == null ? ItemResource.EMPTY : got.resource();
+                }
+                if (peeked.isEmpty()) {
+                    continue;
+                }
+                Direction exit = chooseExit(level, pipe, peeked, dir);
+                if (exit == null) {
+                    continue; // nowhere to send it — leave the items where they are
+                }
+                int amount = 0;
+                try (Transaction tx = Transaction.openRoot()) {
+                    ResourceStack<ItemResource> got =
+                            ResourceHandlerUtil.extractFirst(source, peeked::equals, extractMax, tx);
+                    amount = got == null ? 0 : got.amount();
+                    if (amount > 0) {
+                        tx.commit();
+                    }
+                }
+                if (amount > 0) {
+                    pipe.items().add(new TravellingItem(peeked, amount, dir, exit, 0.0F));
+                    pipe.syncItems();
+                }
+            }
+        }
+    }
+
+    /**
+     * Pick the exit face an item should take from {@code start}: BFS the pipe graph for every
+     * destination inventory that can accept the resource (a non-pipe neighbour behind a face whose
+     * item mode allows pushing), rotate round-robin over the candidates, and return the first BFS step
+     * toward the chosen one ({@code null} = no route right now). {@code excludeFace} stops the packet
+     * from being sent straight back into the inventory/face it came from.
+     */
+    @Nullable
+    private Direction chooseExit(ServerLevel level, UniversalPipeBlockEntity start, ItemResource resource,
+            @Nullable Direction excludeFace) {
+        record Candidate(ResourceHandler<ItemResource> target, Direction firstStep) {
+        }
+        List<Candidate> candidates = new ArrayList<>();
+
+        // BFS over member pipes, remembering the first step out of the start pipe.
+        Long2LongOpenHashMap firstSteps = new Long2LongOpenHashMap(); // pos -> Direction ordinal
+        firstSteps.defaultReturnValue(-1L);
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        LongOpenHashSet seen = new LongOpenHashSet();
+        BlockPos startPos = start.getBlockPos();
+        queue.add(startPos);
+        seen.add(startPos.asLong());
+
+        while (!queue.isEmpty()) {
+            BlockPos pos = queue.poll();
+            if (!(level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe)) {
+                continue;
+            }
+            boolean isStart = pos.equals(startPos);
+            long inheritedStep = firstSteps.get(pos.asLong());
+
+            for (Direction dir : Direction.values()) {
+                BlockPos np = pos.relative(dir);
+                boolean isPipe = this.memberSet.contains(np.asLong());
+
+                if (isPipe) {
+                    if (seen.add(np.asLong())) {
+                        firstSteps.put(np.asLong(), isStart ? dir.get3DDataValue() : inheritedStep);
+                        queue.add(np);
+                    }
+                    continue;
+                }
+                if (isStart && dir == excludeFace) {
+                    continue;
+                }
+                if (!pipe.mode(dir, PipeResourceType.ITEM).canPush()) {
+                    continue;
+                }
+                ResourceHandler<ItemResource> target =
+                        Capabilities.Item.BLOCK.getCapability(level, np, null, null, dir.getOpposite());
+                if (target == null) {
+                    continue;
+                }
+                Direction firstStep = isStart ? dir : Direction.from3DDataValue((int) inheritedStep);
+                candidates.add(new Candidate(target, firstStep));
+            }
+        }
+
+        if (candidates.isEmpty()) {
+            return null;
+        }
+        // Round-robin over candidates; take the first that actually accepts the item right now.
+        int offset = Math.floorMod(this.itemRoundRobin++, candidates.size());
+        for (int i = 0; i < candidates.size(); i++) {
+            Candidate candidate = candidates.get((offset + i) % candidates.size());
+            try (Transaction tx = Transaction.openRoot()) {
+                if (ResourceHandlerUtil.insertStacking(candidate.target(), resource, 1, tx) > 0) {
+                    return candidate.firstStep(); // aborted — it was only a probe
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Spawn a sparse, per-layer flow particle drifting along an active connection so players can see
+     * what is moving (glow = energy, splash = fluid; gas/item layers add their own). Throttled.
+     */
+    private static void flowParticle(ServerLevel level, ParticleOptions particle, BlockPos pipe,
+            Direction dir, boolean outward) {
         if (level.getRandom().nextFloat() >= 0.18F) {
             return;
         }
@@ -168,7 +572,7 @@ public final class PipeNetwork {
         double x = pipe.getX() + 0.5 + dir.getStepX() * 0.45;
         double y = pipe.getY() + 0.5 + dir.getStepY() * 0.45;
         double z = pipe.getZ() + 0.5 + dir.getStepZ() * 0.45;
-        level.sendParticles(ParticleTypes.GLOW, x, y, z, 0,
+        level.sendParticles(particle, x, y, z, 0,
                 flow.getStepX() * 0.08, flow.getStepY() * 0.08, flow.getStepZ() * 0.08, 1.0);
     }
 }

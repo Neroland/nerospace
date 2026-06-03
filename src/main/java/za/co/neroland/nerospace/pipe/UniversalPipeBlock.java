@@ -65,6 +65,24 @@ public class UniversalPipeBlock extends BaseEntityBlock {
                 && level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
             serverPlayer.sendSystemMessage(Component.translatable(
                     "block.nerospace.universal_pipe.energy", pipe.getEnergyHandler().getAmountAsInt()));
+            if (!pipe.fluid().resource().isEmpty()) {
+                serverPlayer.sendSystemMessage(Component.translatable(
+                        "block.nerospace.universal_pipe.fluid", pipe.fluid().amount(),
+                        pipe.fluid().resource().getFluid().getFluidType().getDescription()));
+            }
+            if (!pipe.gas().resource().isEmpty()) {
+                serverPlayer.sendSystemMessage(Component.translatable(
+                        "block.nerospace.universal_pipe.gas", pipe.gas().amount(),
+                        pipe.gas().resource().label()));
+            }
+            if (!pipe.items().isEmpty()) {
+                int count = 0;
+                for (var item : pipe.items()) {
+                    count += item.amount();
+                }
+                serverPlayer.sendSystemMessage(Component.translatable(
+                        "block.nerospace.universal_pipe.items", count));
+            }
         }
         return InteractionResult.SUCCESS;
     }
