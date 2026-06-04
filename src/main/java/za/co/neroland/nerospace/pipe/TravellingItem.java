@@ -72,7 +72,8 @@ public final class TravellingItem {
         this.amount -= by;
     }
 
-    void advance(float by) {
+    /** Move along the segment (also used client-side for smooth motion between syncs). */
+    public void advance(float by) {
         this.progress = Math.min(1.0F, this.progress + by);
     }
 

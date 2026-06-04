@@ -3,8 +3,18 @@ package za.co.neroland.nerospace.datagen;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.blockstates.ConditionBuilder;
+import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplate;
+import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.registry.ModBlocks;
@@ -54,8 +64,9 @@ public class ModModelProvider extends ModelProvider {
         // Terraform design — terraformer machine.
         blockModels.createTrivialCube(ModBlocks.TERRAFORMER.get());
 
-        // Power grid — pipe + generators (trivial cubes for now; a connected pipe model is polish).
-        blockModels.createTrivialCube(ModBlocks.UNIVERSAL_PIPE.get());
+        // Power grid — connection-aware translucent pipe (multipart: core + one arm per connected
+        // face; translucency comes from the texture's alpha) + generators.
+        registerUniversalPipe(blockModels);
         blockModels.createTrivialCube(ModBlocks.COMBUSTION_GENERATOR.get());
         blockModels.createTrivialCube(ModBlocks.PASSIVE_GENERATOR.get());
 
@@ -125,5 +136,54 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GREENLING_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CINDER_STALKER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
+    }
+
+    /**
+     * The Universal Pipe: a multipart blockstate — always the translucent core (4..12 cube), plus one
+     * arm per connected face (the north arm model rotated for the other five). Translucency comes from
+     * the {@code universal_pipe_glass} texture's alpha (26.1 derives chunk layers from the sprites).
+     */
+    private void registerUniversalPipe(BlockModelGenerators blockModels) {
+        Block pipe = ModBlocks.UNIVERSAL_PIPE.get();
+        var glass = TextureMapping.getBlockTexture(pipe, "_glass");
+        TextureMapping mapping = new TextureMapping().put(TextureSlot.ALL, glass).put(TextureSlot.PARTICLE, glass);
+
+        ExtendedModelTemplate coreTemplate = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.ALL)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .ambientOcclusion(false)
+                .element(e -> e.from(4, 4, 4).to(12, 12, 12)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .build();
+        ExtendedModelTemplate armTemplate = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.ALL)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .ambientOcclusion(false)
+                .element(e -> e.from(4, 4, 0).to(12, 12, 4)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .build();
+
+        Identifier core = coreTemplate.create(
+                ModelLocationUtils.getModelLocation(pipe, "_core"), mapping, blockModels.modelOutput);
+        Identifier arm = armTemplate.create(
+                ModelLocationUtils.getModelLocation(pipe, "_arm"), mapping, blockModels.modelOutput);
+
+        blockModels.blockStateOutput.accept(MultiPartGenerator.multiPart(pipe)
+                .with(BlockModelGenerators.plainVariant(core))
+                .with(new ConditionBuilder().term(BlockStateProperties.NORTH, true),
+                        BlockModelGenerators.plainVariant(arm))
+                .with(new ConditionBuilder().term(BlockStateProperties.EAST, true),
+                        BlockModelGenerators.plainVariant(arm).with(BlockModelGenerators.Y_ROT_90))
+                .with(new ConditionBuilder().term(BlockStateProperties.SOUTH, true),
+                        BlockModelGenerators.plainVariant(arm).with(BlockModelGenerators.Y_ROT_180))
+                .with(new ConditionBuilder().term(BlockStateProperties.WEST, true),
+                        BlockModelGenerators.plainVariant(arm).with(BlockModelGenerators.Y_ROT_270))
+                .with(new ConditionBuilder().term(BlockStateProperties.UP, true),
+                        BlockModelGenerators.plainVariant(arm).with(BlockModelGenerators.X_ROT_270))
+                .with(new ConditionBuilder().term(BlockStateProperties.DOWN, true),
+                        BlockModelGenerators.plainVariant(arm).with(BlockModelGenerators.X_ROT_90)));
+
+        // The block item shows the core cube.
+        blockModels.registerSimpleItemModel(pipe, core);
     }
 }

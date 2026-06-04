@@ -57,6 +57,12 @@ public class UniversalPipeBlockEntity extends BlockEntity {
     @Nullable
     private PipeNetwork network;
 
+    /** CLIENT-only: animation clock for smooth travelling-item motion (set by the renderer). */
+    public float clientItemTime;
+
+    /** Server: last synced content fingerprint (drives the renderer's stream layers). */
+    private int lastContentSync = -1;
+
     public UniversalPipeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.UNIVERSAL_PIPE.get(), pos, state);
         for (int f = 0; f < 6; f++) {
@@ -141,6 +147,18 @@ public class UniversalPipeBlockEntity extends BlockEntity {
             this.network = PipeNetwork.getOrBuild(serverLevel, pos);
         }
         this.network.tick(serverLevel);
+
+        // Sync content PRESENCE changes to clients (the renderer's streams key off them). Amounts
+        // change every tick from balancing, so only the cheap fingerprint triggers a packet.
+        if ((serverLevel.getGameTime() & 7L) == 0L) {
+            int fingerprint = (this.energy.getAmountAsInt() > 0 ? 1 : 0)
+                    | (this.fluid.amount() > 0 ? 2 : 0)
+                    | (this.gas.amount() > 0 ? 4 : 0);
+            if (fingerprint != this.lastContentSync) {
+                this.lastContentSync = fingerprint;
+                serverLevel.sendBlockUpdated(pos, state, state, 3);
+            }
+        }
     }
 
     // --- Persistence --------------------------------------------------------

@@ -119,6 +119,12 @@
   "message.nerospace.greenxertz.no_air": "You are out of oxygen — reach a launch pad or an Oxygen Generator!",
   "message.nerospace.welcome.link": "View the mod or report issues: ",
   "message.nerospace.welcome.wip": "Nerospace is an early work in progress — features, balance, and art may all still change.",
+  "pipe.nerospace.face.down": "Bottom",
+  "pipe.nerospace.face.east": "East",
+  "pipe.nerospace.face.north": "North",
+  "pipe.nerospace.face.south": "South",
+  "pipe.nerospace.face.up": "Top",
+  "pipe.nerospace.face.west": "West",
   "pipe.nerospace.mode.auto": "Auto",
   "pipe.nerospace.mode.in": "In",
   "pipe.nerospace.mode.off": "Off",
@@ -126,5 +132,6 @@
   "pipe.nerospace.type.energy": "Energy",
   "pipe.nerospace.type.fluid": "Fluid",
   "pipe.nerospace.type.gas": "Gas",
-  "pipe.nerospace.type.item": "Items"
+  "pipe.nerospace.type.item": "Items",
+  "screen.nerospace.pipe_config": "Pipe Configuration"
 }

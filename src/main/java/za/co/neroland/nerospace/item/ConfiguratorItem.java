@@ -53,6 +53,11 @@ public class ConfiguratorItem extends Item {
         Player player = context.getPlayer();
 
         if (player != null && player.isShiftKeyDown()) {
+            // Sneak on a pipe opens the config panel (handled client-side); only cycle the selected
+            // type when sneaking on other blocks.
+            if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity) {
+                return InteractionResult.SUCCESS;
+            }
             if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
                 PipeResourceType type = cycleSelectedType(context.getItemInHand());
                 serverPlayer.sendSystemMessage(Component.translatable(

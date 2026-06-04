@@ -912,6 +912,28 @@ SYM_GAS = [(0, 1, 0, 1, 0), (1, 0, 1, 0, 1), (0, 1, 0, 1, 0), (1, 0, 1, 0, 1), (
 SYM_BOX = [(1, 1, 1, 1, 1), (1, 0, 0, 0, 1), (1, 0, 1, 0, 1), (1, 0, 0, 0, 1), (1, 1, 1, 1, 1)]
 
 
+def gen_universal_pipe_glass():
+    """Translucent tube texture for the Universal Pipe (alpha drives the chunk layer in 26.1)."""
+    img = Image.new("RGBA", (16, 16))
+    px = img.load()
+    rng = random.Random(0x9192)
+    for y in range(16):
+        for x in range(16):
+            a = 110 + rng.randint(-10, 10)
+            c = 190 + rng.randint(-12, 12)
+            px[x, y] = (c, min(255, c + 8), 255, a)
+    rim = (96, 102, 112, 255)
+    for i in range(16):
+        for (x, y) in ((i, 0), (i, 15), (0, i), (15, i)):
+            px[x, y] = rim
+    for (x, y) in ((1, 1), (14, 1), (1, 14), (14, 14)):
+        px[x, y] = (130, 136, 146, 255)
+    for i in range(3, 13):
+        r, g, b, a = px[i, 16 - i - 1]
+        px[i, 16 - i - 1] = (min(255, r + 35), min(255, g + 35), 255, min(255, a + 25))
+    save(img, os.path.join(BLOCK_DIR, "universal_pipe_glass.png"))
+
+
 def gen_storage_endpoints():
     pink = (236, 100, 196, 255)
     gen_panel_block("battery", (224, 80, 106, 255), SYM_BOLT)
@@ -951,3 +973,5 @@ if __name__ == "__main__":
     gen_oxygen_generator()
     # Storage endpoints + creative sources.
     gen_storage_endpoints()
+    # Universal pipe translucent tube.
+    gen_universal_pipe_glass()

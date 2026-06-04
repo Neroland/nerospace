@@ -41,6 +41,7 @@ import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
 import za.co.neroland.nerospace.client.RocketModel;
 import za.co.neroland.nerospace.client.RocketRenderer;
+import za.co.neroland.nerospace.client.UniversalPipeRenderer;
 import za.co.neroland.nerospace.client.RocketScreen;
 import za.co.neroland.nerospace.client.TerraformerScreen;
 import za.co.neroland.nerospace.registry.ModEntities;
@@ -100,6 +101,11 @@ public class NerospaceClient {
                 context -> new GreenxertzCreatureRenderer(context,
                         new CinderStalkerModel(context.bakeLayer(CinderStalkerModel.LAYER)),
                         entityTexture("cinder_stalker"), 1.0F, 1.0F, 1.0F, 0.6F, entityGlow("cinder_stalker")));
+
+        // Universal Pipe: streams + travelling items (the tube itself is the multipart block model).
+        event.registerBlockEntityRenderer(
+                za.co.neroland.nerospace.registry.ModBlockEntities.UNIVERSAL_PIPE.get(),
+                context -> new UniversalPipeRenderer());
     }
 
     @SubscribeEvent

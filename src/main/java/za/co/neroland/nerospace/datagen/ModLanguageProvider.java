@@ -93,6 +93,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add("pipe.nerospace.mode.in", "In");
         add("pipe.nerospace.mode.out", "Out");
         add("pipe.nerospace.mode.off", "Off");
+        // Configurator panel.
+        add("screen.nerospace.pipe_config", "Pipe Configuration");
+        add("pipe.nerospace.face.down", "Bottom");
+        add("pipe.nerospace.face.up", "Top");
+        add("pipe.nerospace.face.north", "North");
+        add("pipe.nerospace.face.south", "South");
+        add("pipe.nerospace.face.west", "West");
+        add("pipe.nerospace.face.east", "East");
         // Generator GUIs.
         add("container.nerospace.combustion_generator", "Combustion Generator");
         add("container.nerospace.passive_generator", "Passive Generator");
