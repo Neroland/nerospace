@@ -1,10 +1,8 @@
 package za.co.neroland.nerospace.machine;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +18,6 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -38,19 +35,14 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
     public static final int SIZE = 1;
     public static final int ENERGY_CAPACITY = 50_000;
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final GenEnergy energy = new GenEnergy();
-    private final ItemStacksResourceHandler fuelHandler = new ItemStacksResourceHandler(this.items) {
-        @Override
-        public boolean isValid(int index, ItemResource resource) {
-            return fuelValue(resource.toStack(1)) > 0;
-        }
-
-        @Override
-        protected void onContentsChanged(int index, ItemStack oldStack) {
-            CombustionGeneratorBlockEntity.this.setChanged();
-        }
-    };
+    /**
+     * The authoritative fuel slot ({@link MachineItemHandler}): the capability surface AND the
+     * backing store of the Container/GUI/tick — never a parallel copy (see that class's javadoc).
+     */
+    @SuppressWarnings("this-escape") // setChanged callback, invoked only after construction
+    private final MachineItemHandler fuelHandler = new MachineItemHandler(SIZE, this::setChanged,
+            (index, resource) -> fuelValue(resource.toStack(1)) > 0);
 
     private int burnTime;
     private int maxBurnTime;
@@ -132,7 +124,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
                 this.energy.generate(Config.COMBUSTION_GENERATOR_FE_PER_TICK.get());
             }
         } else {
-            ItemStack fuel = this.items.get(FUEL_SLOT);
+            ItemStack fuel = this.fuelHandler.getStack(FUEL_SLOT);
             int value = fuelValue(fuel);
             if (value > 0 && this.energy.getAmountAsInt() < ENERGY_CAPACITY) {
                 this.burnTime = value;
@@ -153,7 +145,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
         this.energy.serialize(output.child("Energy"));
         output.putInt("BurnTime", this.burnTime);
         output.putInt("MaxBurnTime", this.maxBurnTime);
-        output.store("Fuel", ItemStack.OPTIONAL_CODEC, this.items.get(FUEL_SLOT));
+        output.store("Fuel", ItemStack.OPTIONAL_CODEC, this.fuelHandler.getStack(FUEL_SLOT));
     }
 
     @Override
@@ -162,7 +154,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
         this.energy.deserialize(input.childOrEmpty("Energy"));
         this.burnTime = input.getIntOr("BurnTime", 0);
         this.maxBurnTime = input.getIntOr("MaxBurnTime", 0);
-        this.items.set(FUEL_SLOT, input.read("Fuel", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.fuelHandler.setStack(FUEL_SLOT, input.read("Fuel", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
     }
 
     // --- MenuProvider -------------------------------------------------------
@@ -187,35 +179,28 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
 
     @Override
     public boolean isEmpty() {
-        return this.items.get(FUEL_SLOT).isEmpty();
+        return this.fuelHandler.isStoreEmpty();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        return this.items.get(slot);
+        return this.fuelHandler.getStack(slot);
     }
 
     @Override
     public ItemStack removeItem(int slot, int amount) {
-        ItemStack stack = ContainerHelper.removeItem(this.items, slot, amount);
-        if (!stack.isEmpty()) {
-            setChanged();
-        }
-        return stack;
+        return this.fuelHandler.removeStack(slot, amount);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
-        ItemStack stack = ContainerHelper.takeItem(this.items, slot);
-        setChanged();
-        return stack;
+        return this.fuelHandler.takeStack(slot);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
         stack.limitSize(Math.min(this.getMaxStackSize(), stack.getMaxStackSize()));
-        this.items.set(slot, stack);
-        setChanged();
+        this.fuelHandler.setStack(slot, stack);
     }
 
     @Override
@@ -234,8 +219,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
 
     @Override
     public void clearContent() {
-        this.items.clear();
-        setChanged();
+        this.fuelHandler.clearStore();
     }
 
     private final class GenEnergy extends SimpleEnergyHandler {

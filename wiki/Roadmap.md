@@ -46,12 +46,11 @@ progress — order and scope may change. (Developer-facing detail lives in `FUTU
 **Tooling**
 - Creative `/nerospace gallery` showcase command with live pipe demonstrations per resource layer.
 - A **gametest suite** (`runGameTestServer`): pad gating, Tier 3 ring, intake automation, airlock
-  refill, suit tiers, and a registry-sync regression test.
+  refill, suit tiers, a registry-sync regression test, and per-machine hopper/pipe feeding tests
+  (grinder, both generators, terraformer, item store).
 
 ## 🛠️ In progress / next
 
-- **Machine inventory audit** — align machine Containers with the transfer-API handler stores so
-  hopper/pipe inserts are always visible to the machine (the rocket intake already works this way).
 - **Polish** — animated machine gauges, rocket-fuel fluid render, per-creature texture art.
 - **Bigger multiblock pad** — grow beyond the 3×3 (modules, size-keyed rockets).
 

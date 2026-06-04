@@ -35,7 +35,9 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import za.co.neroland.nerospace.Nerospace;
@@ -100,6 +102,14 @@ public final class NerospaceGameTests {
         functions.put("suit_airlock_refill", NerospaceGameTests::testSuitAirlockRefill);
         functions.put("suit_tier_detection", NerospaceGameTests::testSuitTierDetection);
         functions.put("test_instance_sync_roundtrip", NerospaceGameTests::testInstanceSyncRoundtrip);
+        // Machine-automation audit: items inserted through Capabilities.Item.BLOCK must be visible
+        // to (and consumed by) the machine itself — guards against the StacksResourceHandler
+        // copies-the-list gotcha that silently severed handlers from machine Containers.
+        functions.put("combustion_generator_cap_feed", NerospaceGameTests::testCombustionGeneratorCapFeed);
+        functions.put("passive_generator_cap_feed", NerospaceGameTests::testPassiveGeneratorCapFeed);
+        functions.put("grinder_cap_feed_and_extract", NerospaceGameTests::testGrinderCapFeedAndExtract);
+        functions.put("item_store_cap_roundtrip", NerospaceGameTests::testItemStoreCapRoundtrip);
+        functions.put("terraformer_cap_upgrade_feed", NerospaceGameTests::testTerraformerCapUpgradeFeed);
         return functions;
     }
 
@@ -285,6 +295,153 @@ public final class NerospaceGameTests {
         player.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
         helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.NONE,
                 "a partial set is not life support");
+        helper.succeed();
+    }
+
+    // --- Machine-automation audit ----------------------------------------------
+
+    /** Inserts {@code count} of {@code item} through the block's item capability; returns inserted. */
+    private static int insertViaCap(GameTestHelper helper, BlockPos pos, Direction side,
+            net.minecraft.world.item.Item item, int count) {
+        ResourceHandler<ItemResource> handler = Capabilities.Item.BLOCK.getCapability(
+                helper.getLevel(), helper.absolutePos(pos), null, null, side);
+        if (handler == null) {
+            helper.fail("block must expose an item capability at " + pos);
+            return 0;
+        }
+        try (Transaction tx = Transaction.openRoot()) {
+            int inserted = handler.insert(0, ItemResource.of(item), count, tx);
+            tx.commit();
+            return inserted;
+        }
+    }
+
+    /** Pushes energy into a machine's energy capability (multiple calls to beat per-call caps). */
+    private static void energiseViaCap(GameTestHelper helper, BlockPos pos, int calls, int perCall) {
+        net.neoforged.neoforge.transfer.energy.EnergyHandler energy =
+                Capabilities.Energy.BLOCK.getCapability(helper.getLevel(), helper.absolutePos(pos),
+                        null, null, Direction.NORTH);
+        if (energy == null) {
+            helper.fail("machine must expose an energy capability at " + pos);
+            return;
+        }
+        try (Transaction tx = Transaction.openRoot()) {
+            for (int i = 0; i < calls; i++) {
+                energy.insert(perCall, tx);
+            }
+            tx.commit();
+        }
+    }
+
+    /** Coal inserted through the capability must actually burn (energy rises, slot empties). */
+    private static void testCombustionGeneratorCapFeed(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.COMBUSTION_GENERATOR.get());
+        int inserted = insertViaCap(helper, pos, Direction.UP, net.minecraft.world.item.Items.COAL, 1);
+        helper.assertTrue(inserted == 1, "the fuel slot must accept coal via the capability");
+
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity generator)) {
+            helper.fail("expected a CombustionGeneratorBlockEntity");
+            return;
+        }
+        helper.succeedWhen(() -> {
+            helper.assertTrue(generator.getEnergyHandler().getAmountAsLong() > 0,
+                    "capability-fed coal must burn into energy");
+            helper.assertTrue(generator.getItem(0).isEmpty(),
+                    "the burned coal must vanish from the machine's own slot");
+        });
+    }
+
+    /** A nerosium core inserted through the capability must power the passive generator. */
+    private static void testPassiveGeneratorCapFeed(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.PASSIVE_GENERATOR.get());
+        int inserted = insertViaCap(helper, pos, Direction.UP, ModItems.NEROSIUM_DUST.get(), 1);
+        helper.assertTrue(inserted == 1, "the core slot must accept a nerosium core via the capability");
+
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity generator)) {
+            helper.fail("expected a PassiveGeneratorBlockEntity");
+            return;
+        }
+        helper.succeedWhen(() -> helper.assertTrue(generator.getEnergyHandler().getAmountAsLong() > 0,
+                "capability-fed core must trickle energy"));
+    }
+
+    /** Grindable input piped in from the top must be ground; dust must be extractable below. */
+    private static void testGrinderCapFeedAndExtract(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.NEROSIUM_GRINDER.get());
+        energiseViaCap(helper, pos, 10, 500); // 5,000 FE >= 100 ticks * 30 FE
+        int inserted = insertViaCap(helper, pos, Direction.UP, ModItems.RAW_NEROSIUM.get(), 1);
+        helper.assertTrue(inserted == 1, "the input slot must accept raw nerosium via the capability");
+
+        helper.succeedWhen(() -> {
+            ResourceHandler<ItemResource> below = Capabilities.Item.BLOCK.getCapability(
+                    helper.getLevel(), helper.absolutePos(pos), null, null, Direction.DOWN);
+            if (below == null) {
+                helper.fail("grinder must expose the output side");
+                return;
+            }
+            try (Transaction tx = Transaction.openRoot()) {
+                ResourceStack<ItemResource> got = ResourceHandlerUtil.extractFirst(
+                        below, r -> true, 64, tx);
+                helper.assertTrue(got != null && got.amount() >= 2
+                                && got.resource().toStack(1).is(ModItems.NEROSIUM_DUST.get()),
+                        "capability-fed input must grind into extractable dust");
+                // Aborted: leave the dust for the assertion to re-find (test ends on success).
+            }
+        });
+    }
+
+    /** Items piped into the Item Store must be visible in the GUI inventory and extractable again. */
+    private static void testItemStoreCapRoundtrip(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ITEM_STORE.get());
+        int inserted = insertViaCap(helper, pos, Direction.UP, ModItems.NEROSTEEL_INGOT.get(), 3);
+        helper.assertTrue(inserted == 3, "the item store must accept items via the capability");
+
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.storage.ItemStoreBlockEntity store)) {
+            helper.fail("expected an ItemStoreBlockEntity");
+            return;
+        }
+        helper.assertTrue(store.getItem(0).is(ModItems.NEROSTEEL_INGOT.get())
+                        && store.getItem(0).getCount() == 3,
+                "capability-inserted items must be visible in the store's own inventory");
+
+        ResourceHandler<ItemResource> handler = Capabilities.Item.BLOCK.getCapability(
+                helper.getLevel(), helper.absolutePos(pos), null, null, Direction.NORTH);
+        if (handler == null) {
+            helper.fail("item store must expose an item capability");
+            return;
+        }
+        try (Transaction tx = Transaction.openRoot()) {
+            ResourceStack<ItemResource> got = ResourceHandlerUtil.extractFirst(handler, r -> true, 64, tx);
+            tx.commit();
+            helper.assertTrue(got != null && got.amount() == 3,
+                    "the same items must be extractable back out via the capability");
+        }
+        helper.assertTrue(store.getItem(0).isEmpty(),
+                "extraction must empty the store's own inventory");
+        helper.succeed();
+    }
+
+    /** Upgrade items piped into the Terraformer must land in its own upgrade slot. */
+    private static void testTerraformerCapUpgradeFeed(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.TERRAFORMER.get());
+        int inserted = insertViaCap(helper, pos, Direction.UP, ModItems.NEROSTEEL_INGOT.get(), 1);
+        helper.assertTrue(inserted == 1, "the upgrade slot must accept a nerosteel ingot via the capability");
+
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.machine.TerraformerBlockEntity terraformer)) {
+            helper.fail("expected a TerraformerBlockEntity");
+            return;
+        }
+        helper.assertTrue(terraformer.getItem(0).is(ModItems.NEROSTEEL_INGOT.get()),
+                "the capability-inserted upgrade must be visible in the machine's own slot");
         helper.succeed();
     }
 

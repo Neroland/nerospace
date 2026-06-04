@@ -1,10 +1,8 @@
 package za.co.neroland.nerospace.machine;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +18,6 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -41,19 +38,14 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
     /** Run-time (ticks) granted per nerosium core item. */
     public static final int CORE_TICKS = 24_000;
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final GenEnergy energy = new GenEnergy();
-    private final ItemStacksResourceHandler coreHandler = new ItemStacksResourceHandler(this.items) {
-        @Override
-        public boolean isValid(int index, ItemResource resource) {
-            return isCore(resource.toStack(1));
-        }
-
-        @Override
-        protected void onContentsChanged(int index, ItemStack oldStack) {
-            PassiveGeneratorBlockEntity.this.setChanged();
-        }
-    };
+    /**
+     * The authoritative core slot ({@link MachineItemHandler}): the capability surface AND the
+     * backing store of the Container/GUI/tick — never a parallel copy (see that class's javadoc).
+     */
+    @SuppressWarnings("this-escape") // setChanged callback, invoked only after construction
+    private final MachineItemHandler coreHandler = new MachineItemHandler(SIZE, this::setChanged,
+            (index, resource) -> isCore(resource.toStack(1)));
 
     private int coreTicks;
 
@@ -115,7 +107,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
             return;
         }
         if (this.coreTicks <= 0) {
-            ItemStack core = this.items.get(CORE_SLOT);
+            ItemStack core = this.coreHandler.getStack(CORE_SLOT);
             if (isCore(core)) {
                 core.shrink(1);
                 this.coreTicks = CORE_TICKS;
@@ -133,7 +125,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
         super.saveAdditional(output);
         this.energy.serialize(output.child("Energy"));
         output.putInt("CoreTicks", this.coreTicks);
-        output.store("Core", ItemStack.OPTIONAL_CODEC, this.items.get(CORE_SLOT));
+        output.store("Core", ItemStack.OPTIONAL_CODEC, this.coreHandler.getStack(CORE_SLOT));
     }
 
     @Override
@@ -141,7 +133,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
         super.loadAdditional(input);
         this.energy.deserialize(input.childOrEmpty("Energy"));
         this.coreTicks = input.getIntOr("CoreTicks", 0);
-        this.items.set(CORE_SLOT, input.read("Core", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.coreHandler.setStack(CORE_SLOT, input.read("Core", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
     }
 
     // --- MenuProvider -------------------------------------------------------
@@ -166,35 +158,28 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
 
     @Override
     public boolean isEmpty() {
-        return this.items.get(CORE_SLOT).isEmpty();
+        return this.coreHandler.isStoreEmpty();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        return this.items.get(slot);
+        return this.coreHandler.getStack(slot);
     }
 
     @Override
     public ItemStack removeItem(int slot, int amount) {
-        ItemStack stack = ContainerHelper.removeItem(this.items, slot, amount);
-        if (!stack.isEmpty()) {
-            setChanged();
-        }
-        return stack;
+        return this.coreHandler.removeStack(slot, amount);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
-        ItemStack stack = ContainerHelper.takeItem(this.items, slot);
-        setChanged();
-        return stack;
+        return this.coreHandler.takeStack(slot);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
         stack.limitSize(Math.min(this.getMaxStackSize(), stack.getMaxStackSize()));
-        this.items.set(slot, stack);
-        setChanged();
+        this.coreHandler.setStack(slot, stack);
     }
 
     @Override
@@ -213,8 +198,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
 
     @Override
     public void clearContent() {
-        this.items.clear();
-        setChanged();
+        this.coreHandler.clearStore();
     }
 
     private final class GenEnergy extends SimpleEnergyHandler {

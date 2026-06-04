@@ -8,7 +8,8 @@ progress** (Minecraft 26.1 / NeoForge), built standalone — order and scope may
 
 ## ✅ Implemented
 - **Materials & machines** — Nerosium chain + Nerosium Grinder; Nerosteel, Xertz Quartz, Cindrite;
-  storage & station blocks; machine GUIs + comparator output; hopper/pipe automation.
+  storage & station blocks; machine GUIs + comparator output; hopper/pipe automation (gametested:
+  capability-fed items are consumed by every machine).
 - **Space travel** — Tier 1/2/3 rockets with an interactive UI; formed **3×3 launch pad** gating
   (Tier 3 needs a Station Wall ring) + auto-fuelling Fuel Tank + hopper/pipe fuel feeding through the
   pad; the Greenxertz, Cindara and Orbital Station dimensions.
@@ -28,7 +29,6 @@ progress** (Minecraft 26.1 / NeoForge), built standalone — order and scope may
   **gametest suite** (pad gating, intake automation, airlock refill, registry-sync round-trip).
 
 ## 🛠️ Next up
-- Audit machine inventories for the transfer-API copy gotcha (handler vs Container stores).
 - Machine/visual polish (animated gauges, fluid render, per-creature texture art); bigger multiblock
   pad; space-suit hazard variants.
 

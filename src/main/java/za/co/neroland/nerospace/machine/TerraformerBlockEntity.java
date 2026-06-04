@@ -9,13 +9,11 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundChunksBiomesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +30,6 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -61,21 +58,17 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     public static final int ENERGY_CAPACITY = 100_000;
     public static final int ENERGY_MAX_INSERT = 2_000;
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final TerraformerEnergy energy = new TerraformerEnergy();
-    /** A transfer-API view of the upgrade slot so hoppers/pipes can feed tier upgrades. */
-    private final ItemStacksResourceHandler upgradeHandler = new ItemStacksResourceHandler(this.items) {
-        @Override
-        public boolean isValid(int index, ItemResource resource) {
-            ItemStack stack = resource.toStack(1);
-            return stack.is(ModItems.NEROSTEEL_INGOT.get()) || stack.is(ModItems.CINDRITE.get());
-        }
-
-        @Override
-        protected void onContentsChanged(int index, ItemStack oldStack) {
-            TerraformerBlockEntity.this.setChanged();
-        }
-    };
+    /**
+     * The authoritative upgrade slot ({@link MachineItemHandler}): the capability surface AND the
+     * backing store of the Container/GUI/tick — never a parallel copy (see that class's javadoc).
+     */
+    @SuppressWarnings("this-escape") // setChanged callback, invoked only after construction
+    private final MachineItemHandler upgradeHandler = new MachineItemHandler(SIZE, this::setChanged,
+            (index, resource) -> {
+                ItemStack stack = resource.toStack(1);
+                return stack.is(ModItems.NEROSTEEL_INGOT.get()) || stack.is(ModItems.CINDRITE.get());
+            });
 
     /** Machine tier (1..3): more columns per cycle, and Tier 3 unlocks ore seeding. */
     private int tier = 1;
@@ -165,7 +158,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         // Grid-only power: the buffer is filled exclusively through the energy capability (pipes).
 
         // Auto-consume tier upgrades: a Nerosteel Ingot → T2, a Cindrite → T3.
-        ItemStack upgrade = this.items.get(UPGRADE_SLOT);
+        ItemStack upgrade = this.upgradeHandler.getStack(UPGRADE_SLOT);
         if (!upgrade.isEmpty()) {
             if (this.tier < 2 && upgrade.is(ModItems.NEROSTEEL_INGOT.get())) {
                 upgrade.shrink(1);
@@ -309,7 +302,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         output.putInt("Tier", this.tier);
         output.putInt("Radius", this.radius);
         output.putInt("Cursor", this.cursor);
-        output.store("Upgrade", ItemStack.OPTIONAL_CODEC, this.items.get(UPGRADE_SLOT));
+        output.store("Upgrade", ItemStack.OPTIONAL_CODEC, this.upgradeHandler.getStack(UPGRADE_SLOT));
     }
 
     @Override
@@ -320,7 +313,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         this.radius = input.getIntOr("Radius", 0);
         this.cursor = input.getIntOr("Cursor", 0);
         this.ringFor = -1;
-        this.items.set(UPGRADE_SLOT, input.read("Upgrade", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.upgradeHandler.setStack(UPGRADE_SLOT, input.read("Upgrade", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
     }
 
     // --- MenuProvider -------------------------------------------------------
@@ -345,35 +338,28 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
 
     @Override
     public boolean isEmpty() {
-        return this.items.get(UPGRADE_SLOT).isEmpty();
+        return this.upgradeHandler.isStoreEmpty();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        return this.items.get(slot);
+        return this.upgradeHandler.getStack(slot);
     }
 
     @Override
     public ItemStack removeItem(int slot, int amount) {
-        ItemStack stack = ContainerHelper.removeItem(this.items, slot, amount);
-        if (!stack.isEmpty()) {
-            setChanged();
-        }
-        return stack;
+        return this.upgradeHandler.removeStack(slot, amount);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
-        ItemStack stack = ContainerHelper.takeItem(this.items, slot);
-        setChanged();
-        return stack;
+        return this.upgradeHandler.takeStack(slot);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
         stack.limitSize(Math.min(this.getMaxStackSize(), stack.getMaxStackSize()));
-        this.items.set(slot, stack);
-        setChanged();
+        this.upgradeHandler.setStack(slot, stack);
     }
 
     @Override
@@ -392,8 +378,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
 
     @Override
     public void clearContent() {
-        this.items.clear();
-        setChanged();
+        this.upgradeHandler.clearStore();
     }
 
     private final class TerraformerEnergy extends SimpleEnergyHandler {

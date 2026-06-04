@@ -1,10 +1,8 @@
 package za.co.neroland.nerospace.machine;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +18,6 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -43,29 +40,20 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
     public static final int ENERGY_PER_TICK = 30;
     public static final int GENERATE_PER_TICK = 15;
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final GrinderEnergy energy = new GrinderEnergy();
     private int progress;
 
     /**
-     * Transfer-API view of the inventory for {@code Capabilities.Item.BLOCK} (hopper/pipe access),
-     * sharing the same backing list as the {@link Container}. Only grindable items may be inserted
-     * into the input slot; the output slot rejects external insertion (extraction is always allowed).
+     * The authoritative inventory ({@link MachineItemHandler}): the capability surface (sided via
+     * {@code RangedResourceHandler} in {@code ModCapabilities}) AND the backing store of the
+     * Container/GUI/tick — never a parallel copy (see that class's javadoc). Only grindable items may
+     * be inserted into the input slot; the output slot rejects external insertion (extraction is
+     * always allowed).
      */
-    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(this.items) {
-        @Override
-        public boolean isValid(int index, ItemResource resource) {
-            if (index == OUTPUT_SLOT) {
-                return false;
-            }
-            return !GrinderRecipes.getResult(resource.toStack(1)).isEmpty();
-        }
-
-        @Override
-        protected void onContentsChanged(int index, ItemStack oldStack) {
-            NerosiumGrinderBlockEntity.this.setChanged();
-        }
-    };
+    @SuppressWarnings("this-escape") // setChanged callback, invoked only after construction
+    private final MachineItemHandler itemHandler = new MachineItemHandler(SIZE, this::setChanged,
+            (index, resource) -> index != OUTPUT_SLOT
+                    && !GrinderRecipes.getResult(resource.toStack(1)).isEmpty());
 
     /** Synced to the open menu: [0]=progress, [1]=maxProgress, [2]=energy, [3]=capacity. */
     private final ContainerData dataAccess = new ContainerData() {
@@ -119,7 +107,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
         // Grid-powered: the Grinder no longer self-charges — it runs on energy fed by the power grid
         // (a generator via the Universal Pipe network, or any external cable) into its internal buffer.
 
-        ItemStack input = this.items.get(INPUT_SLOT);
+        ItemStack input = this.itemHandler.getStack(INPUT_SLOT);
         ItemStack result = GrinderRecipes.getResult(input);
         boolean canWork = !result.isEmpty()
                 && canInsertOutput(result)
@@ -144,17 +132,17 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
     }
 
     private void craft(ItemStack result) {
-        this.items.get(INPUT_SLOT).shrink(1);
-        ItemStack output = this.items.get(OUTPUT_SLOT);
+        this.itemHandler.getStack(INPUT_SLOT).shrink(1);
+        ItemStack output = this.itemHandler.getStack(OUTPUT_SLOT);
         if (output.isEmpty()) {
-            this.items.set(OUTPUT_SLOT, result.copy());
+            this.itemHandler.setStack(OUTPUT_SLOT, result.copy());
         } else {
             output.grow(result.getCount());
         }
     }
 
     private boolean canInsertOutput(ItemStack result) {
-        ItemStack output = this.items.get(OUTPUT_SLOT);
+        ItemStack output = this.itemHandler.getStack(OUTPUT_SLOT);
         if (output.isEmpty()) {
             return true;
         }
@@ -167,8 +155,8 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.store("Input", ItemStack.OPTIONAL_CODEC, this.items.get(INPUT_SLOT));
-        output.store("Output", ItemStack.OPTIONAL_CODEC, this.items.get(OUTPUT_SLOT));
+        output.store("Input", ItemStack.OPTIONAL_CODEC, this.itemHandler.getStack(INPUT_SLOT));
+        output.store("Output", ItemStack.OPTIONAL_CODEC, this.itemHandler.getStack(OUTPUT_SLOT));
         output.putInt("Progress", this.progress);
         this.energy.serialize(output.child("Energy"));
     }
@@ -176,8 +164,8 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        this.items.set(INPUT_SLOT, input.read("Input", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
-        this.items.set(OUTPUT_SLOT, input.read("Output", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.itemHandler.setStack(INPUT_SLOT, input.read("Input", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.itemHandler.setStack(OUTPUT_SLOT, input.read("Output", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.progress = input.getIntOr("Progress", 0);
         this.energy.deserialize(input.childOrEmpty("Energy"));
     }
@@ -204,35 +192,28 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
 
     @Override
     public boolean isEmpty() {
-        return this.items.stream().allMatch(ItemStack::isEmpty);
+        return this.itemHandler.isStoreEmpty();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        return this.items.get(slot);
+        return this.itemHandler.getStack(slot);
     }
 
     @Override
     public ItemStack removeItem(int slot, int amount) {
-        ItemStack stack = ContainerHelper.removeItem(this.items, slot, amount);
-        if (!stack.isEmpty()) {
-            setChanged();
-        }
-        return stack;
+        return this.itemHandler.removeStack(slot, amount);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
-        ItemStack stack = ContainerHelper.takeItem(this.items, slot);
-        setChanged();
-        return stack;
+        return this.itemHandler.takeStack(slot);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
         stack.limitSize(Math.min(this.getMaxStackSize(), stack.getMaxStackSize()));
-        this.items.set(slot, stack);
-        setChanged();
+        this.itemHandler.setStack(slot, stack);
     }
 
     @Override
@@ -248,8 +229,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
 
     @Override
     public void clearContent() {
-        this.items.clear();
-        setChanged();
+        this.itemHandler.clearStore();
     }
 
     /**

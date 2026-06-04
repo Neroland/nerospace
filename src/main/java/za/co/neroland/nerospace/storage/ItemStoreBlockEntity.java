@@ -17,7 +17,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+
+import za.co.neroland.nerospace.machine.MachineItemHandler;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -29,13 +30,12 @@ public class ItemStoreBlockEntity extends BlockEntity implements Container, Menu
 
     public static final int SIZE = 27;
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
-    private final ItemStacksResourceHandler handler = new ItemStacksResourceHandler(this.items) {
-        @Override
-        protected void onContentsChanged(int index, ItemStack oldStack) {
-            ItemStoreBlockEntity.this.setChanged();
-        }
-    };
+    /**
+     * The authoritative inventory ({@link MachineItemHandler}): the capability surface AND the
+     * backing store of the Container/GUI — never a parallel copy (see that class's javadoc).
+     */
+    @SuppressWarnings("this-escape") // setChanged callback, invoked only after construction
+    private final MachineItemHandler handler = new MachineItemHandler(SIZE, this::setChanged);
 
     public ItemStoreBlockEntity(BlockPos pos, BlockState state) {
         super(za.co.neroland.nerospace.registry.ModBlockEntities.ITEM_STORE.get(), pos, state);
@@ -48,13 +48,18 @@ public class ItemStoreBlockEntity extends BlockEntity implements Container, Menu
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        ContainerHelper.saveAllItems(output, this.items);
+        // Same NBT layout as before (ContainerHelper "Items" list) via a copy of the handler store.
+        ContainerHelper.saveAllItems(output, this.handler.copyToList());
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        ContainerHelper.loadAllItems(input, this.items);
+        NonNullList<ItemStack> loaded = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input, loaded);
+        for (int i = 0; i < SIZE; i++) {
+            this.handler.setStack(i, loaded.get(i));
+        }
     }
 
     /** Spill the inventory like a chest when the block goes away. */
@@ -89,35 +94,28 @@ public class ItemStoreBlockEntity extends BlockEntity implements Container, Menu
 
     @Override
     public boolean isEmpty() {
-        return this.items.stream().allMatch(ItemStack::isEmpty);
+        return this.handler.isStoreEmpty();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        return this.items.get(slot);
+        return this.handler.getStack(slot);
     }
 
     @Override
     public ItemStack removeItem(int slot, int amount) {
-        ItemStack stack = ContainerHelper.removeItem(this.items, slot, amount);
-        if (!stack.isEmpty()) {
-            setChanged();
-        }
-        return stack;
+        return this.handler.removeStack(slot, amount);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
-        ItemStack stack = ContainerHelper.takeItem(this.items, slot);
-        setChanged();
-        return stack;
+        return this.handler.takeStack(slot);
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
         stack.limitSize(Math.min(this.getMaxStackSize(), stack.getMaxStackSize()));
-        this.items.set(slot, stack);
-        setChanged();
+        this.handler.setStack(slot, stack);
     }
 
     @Override
@@ -131,7 +129,6 @@ public class ItemStoreBlockEntity extends BlockEntity implements Container, Menu
 
     @Override
     public void clearContent() {
-        this.items.clear();
-        setChanged();
+        this.handler.clearStore();
     }
 }
