@@ -1,0 +1,357 @@
+package za.co.neroland.nerospace.gametest;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.GameTestInstance;
+import net.minecraft.gametest.framework.TestData;
+import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.event.RegisterGameTestsEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+
+import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.gas.GasCapability;
+import za.co.neroland.nerospace.gas.GasResource;
+import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.registry.ModEntities;
+import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.rocket.LaunchPadMultiblock;
+import za.co.neroland.nerospace.rocket.RocketEntity;
+import za.co.neroland.nerospace.rocket.RocketTier;
+import za.co.neroland.nerospace.world.GreenxertzAtmosphere;
+
+/**
+ * The mod's gametests (26.1 data-driven framework, registered in code via
+ * {@link RegisterGameTestsEvent}). Run with {@code gradlew runGameTestServer}; all tests share an
+ * empty structure template ({@code nerospace:gametest/empty}, 7x12x7) and build their fixtures in
+ * code. Covers the suit-and-station integration batch: launch-pad multiblock gating (deploy + Tier 3
+ * Station Wall ring), the pad's item-capability proxy into a deployed rocket's fuel intake, and the
+ * suit's airlock refill from a Gas Tank.
+ *
+ * <p>SYNC-SAFETY: the {@code TEST_INSTANCE} registry is a datapack registry that vanilla SYNCS to
+ * joining clients, so every registered instance must round-trip through its
+ * {@link GameTestInstance#codec()} — returning some other type's codec breaks world join with a
+ * {@code ClassCastException} during {@code RegistrySynchronization}. {@link CodeTest} therefore has
+ * its own {@code nerospace:code} type (registered into {@code TEST_INSTANCE_TYPE}) whose codec
+ * stores the function by NAME and resolves it from the static {@link #FUNCTIONS} map on decode.</p>
+ */
+@EventBusSubscriber(modid = Nerospace.MODID)
+public final class NerospaceGameTests {
+
+    /** Empty 7x12x7 test arena (generated NBT under {@code data/nerospace/structure/gametest/}). */
+    private static final Identifier EMPTY_STRUCTURE =
+            Identifier.fromNamespaceAndPath(Nerospace.MODID, "gametest/empty");
+
+    /** Test functions by name — the codec's decode side resolves against this map. */
+    private static final Map<String, Consumer<GameTestHelper>> FUNCTIONS = buildFunctions();
+
+    /** Max ticks per test (only the intake test waits on entity ticks; one budget fits all). */
+    private static final int MAX_TICKS = 200;
+
+    private static final DeferredRegister<MapCodec<? extends GameTestInstance>> INSTANCE_TYPES =
+            DeferredRegister.create(Registries.TEST_INSTANCE_TYPE, Nerospace.MODID);
+
+    /** The {@code nerospace:code} instance type — lets {@link CodeTest} serialize legitimately. */
+    public static final Supplier<MapCodec<CodeTest>> CODE_TEST_TYPE =
+            INSTANCE_TYPES.register("code", () -> CodeTest.CODEC);
+
+    private NerospaceGameTests() {
+    }
+
+    /** Called from the mod constructor (like every other DeferredRegister). */
+    public static void register(IEventBus modEventBus) {
+        INSTANCE_TYPES.register(modEventBus);
+    }
+
+    private static Map<String, Consumer<GameTestHelper>> buildFunctions() {
+        Map<String, Consumer<GameTestHelper>> functions = new LinkedHashMap<>();
+        functions.put("deploy_requires_full_pad", NerospaceGameTests::testDeployRequiresFullPad);
+        functions.put("tier3_requires_station_wall_ring", NerospaceGameTests::testTier3RequiresRing);
+        functions.put("pad_proxies_rocket_intake", NerospaceGameTests::testPadProxiesRocketIntake);
+        functions.put("suit_airlock_refill", NerospaceGameTests::testSuitAirlockRefill);
+        functions.put("suit_tier_detection", NerospaceGameTests::testSuitTierDetection);
+        functions.put("test_instance_sync_roundtrip", NerospaceGameTests::testInstanceSyncRoundtrip);
+        return functions;
+    }
+
+    @SubscribeEvent
+    public static void onRegisterGameTests(RegisterGameTestsEvent event) {
+        Holder<TestEnvironmentDefinition<?>> env = event.registerEnvironment(
+                Identifier.fromNamespaceAndPath(Nerospace.MODID, "default"),
+                new TestEnvironmentDefinition.AllOf());
+
+        FUNCTIONS.forEach((name, function) -> {
+            TestData<Holder<TestEnvironmentDefinition<?>>> data =
+                    new TestData<>(env, EMPTY_STRUCTURE, MAX_TICKS, 1, true);
+            event.registerTest(
+                    Identifier.fromNamespaceAndPath(Nerospace.MODID, "tests/" + name),
+                    d -> new CodeTest(d, name),
+                    data);
+        });
+    }
+
+    // --- Fixtures -------------------------------------------------------------
+
+    /** Lays a complete 3x3 launch pad with min-corner (1,1,1) in relative coords; returns centre. */
+    private static BlockPos buildFullPad(GameTestHelper helper) {
+        for (int dx = 0; dx < 3; dx++) {
+            for (int dz = 0; dz < 3; dz++) {
+                helper.setBlock(new BlockPos(1 + dx, 1, 1 + dz), ModBlocks.ROCKET_LAUNCH_PAD.get());
+            }
+        }
+        return new BlockPos(2, 1, 2);
+    }
+
+    /** Adds the 16-block 5x5 Station Wall border around the 3x3 pad laid by {@link #buildFullPad}. */
+    private static void buildStationWallRing(GameTestHelper helper) {
+        for (int dx = 0; dx <= 4; dx++) {
+            for (int dz = 0; dz <= 4; dz++) {
+                if (dx == 0 || dx == 4 || dz == 0 || dz == 4) {
+                    helper.setBlock(new BlockPos(dx, 1, dz), ModBlocks.STATION_WALL.get());
+                }
+            }
+        }
+    }
+
+    /** Uses {@code stack} on the relative position {@code pos} as a survival mock player. */
+    private static void useItemOn(GameTestHelper helper, ItemStack stack, BlockPos pos) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        BlockPos abs = helper.absolutePos(pos);
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(abs), Direction.UP, abs, false);
+        player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        stack.getItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+    }
+
+    private static void equipSuit(Player player, boolean tier2) {
+        player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(
+                tier2 ? ModItems.OXYGEN_SUIT_T2_HELMET.get() : ModItems.OXYGEN_SUIT_HELMET.get()));
+        player.setItemSlot(EquipmentSlot.CHEST, new ItemStack(
+                tier2 ? ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get() : ModItems.OXYGEN_SUIT_CHESTPLATE.get()));
+        player.setItemSlot(EquipmentSlot.LEGS, new ItemStack(
+                tier2 ? ModItems.OXYGEN_SUIT_T2_LEGGINGS.get() : ModItems.OXYGEN_SUIT_LEGGINGS.get()));
+        player.setItemSlot(EquipmentSlot.FEET, new ItemStack(
+                tier2 ? ModItems.OXYGEN_SUIT_T2_BOOTS.get() : ModItems.OXYGEN_SUIT_BOOTS.get()));
+    }
+
+    // --- Tests ----------------------------------------------------------------
+
+    /** An incomplete pad rejects deployment; completing the 3x3 accepts it. */
+    private static void testDeployRequiresFullPad(GameTestHelper helper) {
+        // A single pad block is not enough.
+        helper.setBlock(new BlockPos(2, 1, 2), ModBlocks.ROCKET_LAUNCH_PAD.get());
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_1.get()), new BlockPos(2, 1, 2));
+        helper.assertEntityNotPresent(ModEntities.ROCKET.get());
+
+        // The complete 3x3 deploys.
+        BlockPos centre = buildFullPad(helper);
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_1.get()), centre);
+        helper.assertEntityPresent(ModEntities.ROCKET.get());
+        helper.succeed();
+    }
+
+    /** A Tier 3 rocket needs the 3x3 pad ringed with Station Wall. */
+    private static void testTier3RequiresRing(GameTestHelper helper) {
+        BlockPos centre = buildFullPad(helper);
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_3.get()), centre);
+        helper.assertEntityNotPresent(ModEntities.ROCKET.get());
+        helper.assertFalse(
+                LaunchPadMultiblock.hasStationWallRing(helper.getLevel(),
+                        LaunchPadMultiblock.connectedPads(helper.getLevel(), helper.absolutePos(centre))),
+                "ring must not be detected before the Station Wall border exists");
+
+        buildStationWallRing(helper);
+        helper.assertTrue(
+                LaunchPadMultiblock.hasStationWallRing(helper.getLevel(),
+                        LaunchPadMultiblock.connectedPads(helper.getLevel(), helper.absolutePos(centre))),
+                "ring must be detected once the Station Wall border is complete");
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_3.get()), centre);
+        helper.assertEntityPresent(ModEntities.ROCKET.get());
+        helper.succeed();
+    }
+
+    /** A fuel canister inserted through the pad's item capability ends up as rocket fuel. */
+    private static void testPadProxiesRocketIntake(GameTestHelper helper) {
+        BlockPos centre = buildFullPad(helper);
+        BlockPos absCentre = helper.absolutePos(centre);
+        RocketEntity rocket = new RocketEntity(helper.getLevel(),
+                absCentre.getX() + 0.5D, absCentre.getY() + 1.0D, absCentre.getZ() + 0.5D,
+                RocketTier.TIER_1);
+        helper.getLevel().addFreshEntity(rocket);
+
+        // The pad block proxies the rocket's intake slot into the block-capability graph.
+        ResourceHandler<ItemResource> viaPad = Capabilities.Item.BLOCK.getCapability(
+                helper.getLevel(), absCentre, null, null, Direction.UP);
+        if (viaPad == null) {
+            helper.fail("launch pad must expose the deployed rocket's intake");
+            return;
+        }
+        int inserted;
+        try (Transaction tx = Transaction.openRoot()) {
+            inserted = viaPad.insert(0, ItemResource.of(ModItems.ROCKET_FUEL_CANISTER.get()), 1, tx);
+            tx.commit();
+        }
+        helper.assertTrue(inserted == 1, "the intake must accept one fuel canister via the pad");
+        helper.assertTrue(!rocket.getFuelInput().getItem(0).isEmpty(),
+                "the committed insert must land in the rocket's intake container");
+
+        // The rocket drains the canister into its tank on its server tick.
+        helper.succeedWhen(() -> helper.assertTrue(
+                rocket.getFuel() >= RocketEntity.CANISTER_MB,
+                "rocket must consume the piped-in canister into fuel (fuel=" + rocket.getFuel()
+                        + ", intake=" + rocket.getFuelInput().getItem(0) + ")"));
+    }
+
+    /** A worn suit refills from an oxygen-holding Gas Tank nearby, draining the gas. */
+    private static void testSuitAirlockRefill(GameTestHelper helper) {
+        BlockPos tankPos = new BlockPos(2, 1, 2);
+        helper.setBlock(tankPos, ModBlocks.GAS_TANK.get());
+        ResourceHandler<GasResource> tank = GasCapability.BLOCK.getCapability(
+                helper.getLevel(), helper.absolutePos(tankPos), null, null, null);
+        if (tank == null) {
+            helper.fail("gas tank must expose the gas capability");
+            return;
+        }
+        try (Transaction tx = Transaction.openRoot()) {
+            int filled = tank.insert(0, GasResource.OXYGEN, 4_000, tx);
+            helper.assertTrue(filled == 4_000, "test setup: tank accepts oxygen");
+            tx.commit();
+        }
+
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        equipSuit(player, false);
+        player.setPos(Vec3.atCenterOf(helper.absolutePos(new BlockPos(2, 2, 2))));
+
+        int before = (int) tank.getAmountAsLong(0);
+        int restored = GreenxertzAtmosphere.airlockRefill(helper.getLevel(), player,
+                GreenxertzAtmosphere.SuitTier.TIER_1, 100);
+        int after = (int) tank.getAmountAsLong(0);
+
+        helper.assertTrue(restored > 0, "suit must refill next to an oxygen-holding gas tank");
+        helper.assertTrue(after < before, "airlock refill must drain oxygen from the tank");
+
+        // Out of range: no refill (and no gas drawn).
+        player.setPos(Vec3.atCenterOf(helper.absolutePos(new BlockPos(2, 9, 2))));
+        int farRestored = GreenxertzAtmosphere.airlockRefill(helper.getLevel(), player,
+                GreenxertzAtmosphere.SuitTier.TIER_1, 100);
+        helper.assertTrue(farRestored == 0, "suit must not refill outside the airlock radius");
+        helper.succeed();
+    }
+
+    /** Full sets detect their tier; a mixed set counts as Tier 1; a partial set is no suit. */
+    private static void testSuitTierDetection(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+
+        equipSuit(player, false);
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.TIER_1,
+                "full Tier 1 set must detect as TIER_1");
+
+        equipSuit(player, true);
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.TIER_2,
+                "full Tier 2 set must detect as TIER_2");
+
+        player.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.OXYGEN_SUIT_BOOTS.get()));
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.TIER_1,
+                "mixed T1/T2 set must count as TIER_1");
+
+        player.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.NONE,
+                "a partial set is not life support");
+        helper.succeed();
+    }
+
+    /**
+     * Regression guard for the world-join crash: vanilla SYNCS the {@code TEST_INSTANCE} registry to
+     * joining clients, encoding every entry through {@link GameTestInstance#DIRECT_CODEC}. A test
+     * instance whose {@code codec()} can't round-trip it kills the connection — so round-trip one of
+     * our own entries through the exact same codec here.
+     */
+    private static void testInstanceSyncRoundtrip(GameTestHelper helper) {
+        net.minecraft.core.RegistryAccess access = helper.getLevel().registryAccess();
+        GameTestInstance self = access.lookupOrThrow(Registries.TEST_INSTANCE)
+                .getValue(Identifier.fromNamespaceAndPath(Nerospace.MODID, "tests/suit_tier_detection"));
+        helper.assertTrue(self != null, "our test instances must be in the TEST_INSTANCE registry");
+
+        net.minecraft.resources.RegistryOps<net.minecraft.nbt.Tag> ops =
+                net.minecraft.resources.RegistryOps.create(net.minecraft.nbt.NbtOps.INSTANCE, access);
+        var encoded = GameTestInstance.DIRECT_CODEC.encodeStart(ops, self);
+        helper.assertTrue(encoded.result().isPresent(),
+                "test instance must ENCODE for registry sync: " + encoded.error().map(Object::toString).orElse(""));
+        var decoded = GameTestInstance.DIRECT_CODEC.parse(ops, encoded.result().orElseThrow());
+        helper.assertTrue(decoded.result().isPresent(),
+                "test instance must DECODE after registry sync: " + decoded.error().map(Object::toString).orElse(""));
+        helper.assertTrue(decoded.result().orElseThrow() instanceof CodeTest,
+                "decoded instance must be a nerospace CodeTest");
+        helper.succeed();
+    }
+
+    /**
+     * A code-backed test instance with a REAL codec: serializes as {@code {type: nerospace:code,
+     * function: <name>, ...TestData}} so vanilla's registry sync round-trips it cleanly (see the
+     * class javadoc); decode resolves the function from {@link #FUNCTIONS} by name.
+     */
+    public static final class CodeTest extends GameTestInstance {
+
+        public static final MapCodec<CodeTest> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Codec.STRING.fieldOf("function").forGetter(test -> test.name),
+                TestData.CODEC.forGetter(test -> test.info()))
+                .apply(instance, CodeTest::new));
+
+        private final String name;
+        private final Consumer<GameTestHelper> function;
+
+        CodeTest(String name, TestData<Holder<TestEnvironmentDefinition<?>>> data) {
+            super(data);
+            this.name = name;
+            this.function = FUNCTIONS.getOrDefault(name,
+                    helper -> helper.fail("unknown nerospace test function: " + name));
+        }
+
+        CodeTest(TestData<Holder<TestEnvironmentDefinition<?>>> data, String name) {
+            this(name, data);
+        }
+
+        @Override
+        public void run(GameTestHelper helper) {
+            this.function.accept(helper);
+        }
+
+        @Override
+        public MapCodec<? extends GameTestInstance> codec() {
+            return CODEC;
+        }
+
+        @Override
+        protected MutableComponent typeDescription() {
+            return Component.literal("nerospace code test: " + this.name);
+        }
+    }
+}

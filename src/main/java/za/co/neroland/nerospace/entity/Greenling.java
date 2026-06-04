@@ -11,7 +11,11 @@ import net.minecraft.world.entity.ai.goal.PanicGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.Level;
+
+import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
  * Greenling (Phase 5) — a small, harmless ambient creature. It wanders the Greenxertz surface and
@@ -21,6 +25,21 @@ public class Greenling extends PathfinderMob {
 
     public Greenling(EntityType<? extends Greenling> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return ModSounds.GREENLING_AMBIENT.get();
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return ModSounds.GREENLING_HURT.get();
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.GREENLING_DEATH.get();
     }
 
     public static AttributeSupplier.Builder createAttributes() {

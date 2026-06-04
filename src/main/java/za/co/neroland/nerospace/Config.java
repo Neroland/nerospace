@@ -28,6 +28,17 @@ public class Config {
             .comment("A list of items to log on common setup.")
             .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
 
+    // --- Nerospace: telemetry / crash reporting (see PRIVACY.md) ------------
+
+    public static final ModConfigSpec.BooleanValue TELEMETRY_ENABLED = BUILDER
+            .comment(
+                    "Send anonymous error reports for Nerospace bugs to the developers (Sentry, EU servers).",
+                    "Only errors caused by Nerospace are sent: stack trace, mod/Minecraft/NeoForge versions,",
+                    "OS and Java version. No IP address, username, UUID, world data or chat is ever sent;",
+                    "file paths are scrubbed of your account name. Set to false to opt out (takes effect",
+                    "immediately on config reload). Full details: PRIVACY.md in the mod repository.")
+            .define("telemetryEnabled", true);
+
     // --- Nerospace: planet/station atmosphere (Phase 7) ---------------------
 
     public static final ModConfigSpec.BooleanValue ATMOSPHERE_DAMAGE_ENABLED = BUILDER
@@ -62,6 +73,26 @@ public class Config {
             .comment("Oxygen drained per ~0.5s while wearing a full Oxygen Suit off a safe zone "
                     + "(its finite air tank). Lower = the suit lasts longer; 0 = the suit never runs out.")
             .defineInRange("oxygenSuitDrain", 1, 0, 300);
+
+    public static final ModConfigSpec.IntValue OXYGEN_SUIT_T2_MAX = BUILDER
+            .comment("Air capacity of a full Tier 2 (cindrite-upgraded) Oxygen Suit. The Tier 1 suit "
+                    + "and bare lungs use oxygenMax. A mixed T1/T2 set counts as Tier 1.")
+            .defineInRange("oxygenSuitT2Max", 600, 1, 12_000);
+
+    public static final ModConfigSpec.IntValue OXYGEN_AIRLOCK_RADIUS = BUILDER
+            .comment("Radius (blocks) within which a worn Oxygen Suit refills its air tank from a Gas "
+                    + "Tank or Oxygen Generator holding Oxygen — a tank by the base door acts as an "
+                    + "airlock. 0 disables airlock refilling.")
+            .defineInRange("oxygenAirlockRadius", 3, 0, 16);
+
+    public static final ModConfigSpec.IntValue OXYGEN_AIRLOCK_REFILL_PER_CHECK = BUILDER
+            .comment("Air units restored per suit check (~0.5s) while refilling from a nearby gas "
+                    + "store. A Tier 2 suit refills at twice this rate.")
+            .defineInRange("oxygenAirlockRefillPerCheck", 20, 1, 6000);
+
+    public static final ModConfigSpec.IntValue OXYGEN_AIRLOCK_MB_PER_AIR = BUILDER
+            .comment("Millibuckets of Oxygen gas drawn from the nearby store per air unit restored.")
+            .defineInRange("oxygenAirlockMbPerAir", 5, 0, 1000);
 
     public static final ModConfigSpec.IntValue OXYGEN_SEALED_ROOM_MAX = BUILDER
             .comment("Max air blocks the sealed-room scan will flood-fill from an active Oxygen "

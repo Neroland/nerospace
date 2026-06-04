@@ -32,6 +32,9 @@ N N N
 - **Loss:** if the tank runs dry or the machine is broken, the oxygen **evaporates over ~10 seconds**
   (configurable).
 - **HUD:** a cyan **O₂ bar** appears above the hotbar in airless dimensions (it turns red when low).
+- **Airlock:** a player wearing a full [Oxygen Suit](Oxygen-Suit) within a few blocks (default 3)
+  refills the suit's air directly from the machine's tank, draining the gas — handy at a base door
+  even when the room itself isn't breathable yet.
 - **Automation:** emits a **comparator signal** from its oxygen tank level.
 
 ## Tips

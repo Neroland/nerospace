@@ -13,12 +13,17 @@ progress — order and scope may change. (Developer-facing detail lives in `FUTU
 
 **Space travel**
 - **Rockets** (Tier 1/2/3) with an interactive in-rocket UI, selectable destinations, and a launch flow.
-- **Rocket Launch Pad** + auto-fuelling **Fuel Tank** (faster on a full 3×3 pad).
+- **Rocket Launch Pad multiblock**: deploying requires a formed **3×3 pad**; a Tier 3 rocket needs the
+  pad **ringed with Station Wall**; checks re-run at launch.
+- Auto-fuelling **Fuel Tank** (faster on the full 3×3) and **hands-free fuel feeding** — pad blocks
+  proxy the rocket's intake slot, so hoppers and item pipes deliver buckets/canisters.
 - Dimensions: **Greenxertz**, **Cindara**, and the **Orbital Station**.
 
 **Survival & atmosphere**
 - Airless dimensions with an **oxygen system**: per-block oxygen field, sealed-room fill, leak/evaporate.
-- **Oxygen Generator** (fuelled) and the four-piece **Oxygen Suit** (portable life support).
+- **Oxygen Generator** (fuelled) and the four-piece **Oxygen Suit** (portable life support) — now in
+  **two tiers** (the cindrite Tier 2 doubles the air tank) with **airlock refilling** from any nearby
+  oxygen-holding Gas Tank or Oxygen Generator.
 - Bespoke **O₂ HUD bar**.
 
 **Worlds & life**
@@ -40,14 +45,15 @@ progress — order and scope may change. (Developer-facing detail lives in `FUTU
 
 **Tooling**
 - Creative `/nerospace gallery` showcase command with live pipe demonstrations per resource layer.
+- A **gametest suite** (`runGameTestServer`): pad gating, Tier 3 ring, intake automation, airlock
+  refill, suit tiers, and a registry-sync regression test.
 
 ## 🛠️ In progress / next
 
-- **Launch-pad multiblock** — key rocket size/placement to a properly formed 3×3 pad.
-- **Rocket fuel-intake automation** — let hoppers feed canisters into a deployed rocket.
-- **Oxygen Suit tiers** — Cindrite/station-gated upgrades (bigger tank, faster refill); suits
-  refilling from piped/tanked oxygen.
+- **Machine inventory audit** — align machine Containers with the transfer-API handler stores so
+  hopper/pipe inserts are always visible to the machine (the rocket intake already works this way).
 - **Polish** — animated machine gauges, rocket-fuel fluid render, per-creature texture art.
+- **Bigger multiblock pad** — grow beyond the 3×3 (modules, size-keyed rockets).
 
 ## 🔭 Planned / exploring
 

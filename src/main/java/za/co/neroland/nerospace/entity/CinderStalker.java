@@ -12,7 +12,11 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.Level;
+
+import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
  * Cinder Stalker (Phase 7) — the hostile predator of the volcanic moon Cindara. Tougher and faster
@@ -23,6 +27,21 @@ public class CinderStalker extends Monster {
 
     public CinderStalker(EntityType<? extends CinderStalker> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return ModSounds.CINDER_STALKER_AMBIENT.get();
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return ModSounds.CINDER_STALKER_HURT.get();
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.CINDER_STALKER_DEATH.get();
     }
 
     public static AttributeSupplier.Builder createAttributes() {

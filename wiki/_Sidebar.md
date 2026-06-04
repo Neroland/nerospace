@@ -40,6 +40,7 @@
 
 **More**
 - [Items](Items)
+- [Oxygen Suit](Oxygen-Suit)
 - [Creatures](Creatures)
 - [Roadmap](Roadmap)
 - [Future Features](Future-Features)

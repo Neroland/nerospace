@@ -66,7 +66,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(Tags.Items.GEMS).add(ModItems.XERTZ_QUARTZ.get());
         this.tag(ModTags.Items.GEMS_XERTZ_QUARTZ).add(ModItems.XERTZ_QUARTZ.get());
 
-        // Cindrite is a gem-style drop.
+        // Cindrite is a gem-style drop (and the Tier 2 Oxygen Suit's repair material).
         this.tag(Tags.Items.GEMS).add(ModItems.CINDRITE.get());
+        this.tag(ModTags.Items.GEMS_CINDRITE).add(ModItems.CINDRITE.get());
     }
 }

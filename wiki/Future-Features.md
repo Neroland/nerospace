@@ -4,14 +4,17 @@ A longer-term wish list — ideas under consideration, not commitments. Feedback
 issue on GitHub). Grouped by theme.
 
 ## Space & travel
-- **Massive multiblock launch pad** — larger footprint with modules; rockets keyed to a formed pad.
+- **Massive multiblock launch pad** — larger footprint with modules. (Rockets are now keyed to a
+  formed 3×3 pad, with a Station Wall ring gating Tier 3; the "massive" version is the follow-up.)
 - **Multiple stations** — let players build and register their own orbital platforms (currently one
   shared station platform).
 - More **destinations** — additional planets/moons, each with its own materials, hazards and biomes.
-- **Rocket fuel automation** — full pipe/hopper feeding of rockets and a proper fluid render.
+- ~~Rocket fuel automation~~ — **done**: pipes/hoppers feed rockets through the pad blocks. A proper
+  fluid render is still open.
 
 ## Survival & atmosphere
-- **Oxygen Suit tiers & upgrades** — bigger air tanks, faster refills, gated behind Cindrite/station.
+- ~~Oxygen Suit tiers & upgrades~~ — **done**: the Tier 2 (cindrite) suit has a bigger tank and
+  faster airlock refill; see [Oxygen Suit](Oxygen-Suit). Further tiers/upgrades remain possible.
 - **Hazard suits** — heat protection for Cindara, radiation, etc.
 - **Smarter oxygen visuals** — fog/haze tuning, boundary shimmer, optional top-down "fill" effect.
 

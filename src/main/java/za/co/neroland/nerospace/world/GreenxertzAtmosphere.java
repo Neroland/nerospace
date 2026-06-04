@@ -14,9 +14,15 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.resource.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.gas.GasCapability;
+import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.registry.ModAttachments;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
@@ -54,7 +60,8 @@ public final class GreenxertzAtmosphere {
             return;
         }
 
-        int max = Config.OXYGEN_MAX.get();
+        SuitTier suit = suitTier(player);
+        int max = suit.capacity();
 
         // Off-world only; the overworld (and any non-listed dimension) stays breathable and tops up.
         boolean airless = PLANETS.contains(level.dimension())
@@ -73,9 +80,15 @@ public final class GreenxertzAtmosphere {
             if (isBreathable(level, player)) {
                 // A breathable zone (pad radius, oxygen field, or terraformed ground) refills.
                 oxygen = max;
-            } else if (isWearingFullSuit(player)) {
-                // The Oxygen Suit's finite air tank drains slowly while exposed.
-                oxygen = Math.max(0, oxygen - Config.OXYGEN_SUIT_DRAIN.get());
+            } else if (suit != SuitTier.NONE) {
+                // Airlock refill: a worn suit taps a nearby Gas Tank / Oxygen Generator holding O2.
+                int refilled = airlockRefill(level, player, suit, max - oxygen);
+                if (refilled > 0) {
+                    oxygen += refilled;
+                } else {
+                    // The Oxygen Suit's finite air tank drains slowly while exposed.
+                    oxygen = Math.max(0, oxygen - Config.OXYGEN_SUIT_DRAIN.get());
+                }
             } else {
                 oxygen = Math.max(0, oxygen - Config.OXYGEN_DRAIN_PER_TICK.get() * CHECK_INTERVAL_TICKS);
             }
@@ -154,12 +167,124 @@ public final class GreenxertzAtmosphere {
         return false;
     }
 
-    /** @return true if all four Oxygen Suit pieces are worn (personal life support). */
-    private static boolean isWearingFullSuit(Player player) {
-        return player.getItemBySlot(EquipmentSlot.HEAD).is(ModItems.OXYGEN_SUIT_HELMET.get())
-                && player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.OXYGEN_SUIT_CHESTPLATE.get())
-                && player.getItemBySlot(EquipmentSlot.LEGS).is(ModItems.OXYGEN_SUIT_LEGGINGS.get())
-                && player.getItemBySlot(EquipmentSlot.FEET).is(ModItems.OXYGEN_SUIT_BOOTS.get());
+    /**
+     * The worn Oxygen Suit tier. A full set of any mix of suit pieces is life support; only a full
+     * Tier 2 set earns the Tier 2 tank and refill speed (a mixed set counts as Tier 1).
+     */
+    public static SuitTier suitTier(Player player) {
+        int h = pieceTier(player.getItemBySlot(EquipmentSlot.HEAD),
+                ModItems.OXYGEN_SUIT_HELMET.get(), ModItems.OXYGEN_SUIT_T2_HELMET.get());
+        int c = pieceTier(player.getItemBySlot(EquipmentSlot.CHEST),
+                ModItems.OXYGEN_SUIT_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get());
+        int l = pieceTier(player.getItemBySlot(EquipmentSlot.LEGS),
+                ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_LEGGINGS.get());
+        int b = pieceTier(player.getItemBySlot(EquipmentSlot.FEET),
+                ModItems.OXYGEN_SUIT_BOOTS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get());
+        if (h == 0 || c == 0 || l == 0 || b == 0) {
+            return SuitTier.NONE;
+        }
+        return (h == 2 && c == 2 && l == 2 && b == 2) ? SuitTier.TIER_2 : SuitTier.TIER_1;
+    }
+
+    /** 2 = Tier 2 piece, 1 = Tier 1 piece, 0 = not a suit piece. */
+    private static int pieceTier(net.minecraft.world.item.ItemStack worn,
+            net.minecraft.world.item.Item t1, net.minecraft.world.item.Item t2) {
+        if (worn.is(t2)) {
+            return 2;
+        }
+        return worn.is(t1) ? 1 : 0;
+    }
+
+    /**
+     * Airlock refill (suit-and-station integration): a worn suit within
+     * {@code oxygenAirlockRadius} of a Gas Tank or Oxygen Generator holding Oxygen draws gas from it
+     * to refill the suit's air tank — so a tank at the base entrance acts as an airlock. Each air
+     * unit costs {@code oxygenAirlockMbPerAir} mB; a Tier 2 suit refills at double rate.
+     *
+     * <p>Public for the gametests, which exercise it directly (the event path only runs on airless
+     * dimensions).</p>
+     *
+     * @param need air units missing from the suit tank
+     * @return air units actually restored (0 when no usable store is in range)
+     */
+    public static int airlockRefill(ServerLevel level, Player player, SuitTier suit, int need) {
+        int radius = Config.OXYGEN_AIRLOCK_RADIUS.get();
+        if (radius <= 0 || need <= 0) {
+            return 0;
+        }
+        int rate = Config.OXYGEN_AIRLOCK_REFILL_PER_CHECK.get() * (suit == SuitTier.TIER_2 ? 2 : 1);
+        int want = Math.min(need, rate);
+        int mbPerAir = Config.OXYGEN_AIRLOCK_MB_PER_AIR.get();
+
+        BlockPos center = player.blockPosition();
+        int restored = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(
+                center.offset(-radius, -radius, -radius),
+                center.offset(radius, radius, radius))) {
+            if (want <= 0) {
+                break;
+            }
+            BlockState state = level.getBlockState(pos);
+            if (!state.is(ModBlocks.GAS_TANK.get())
+                    && !state.is(ModBlocks.CREATIVE_GAS_TANK.get())
+                    && !state.is(ModBlocks.OXYGEN_GENERATOR.get())) {
+                continue;
+            }
+            ResourceHandler<GasResource> handler =
+                    GasCapability.BLOCK.getCapability(level, pos.immutable(), state, null, null);
+            if (handler == null) {
+                continue;
+            }
+            int gained = drawOxygen(handler, want, mbPerAir);
+            restored += gained;
+            want -= gained;
+        }
+        if (restored > 0) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                    net.minecraft.sounds.SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT,
+                    net.minecraft.sounds.SoundSource.PLAYERS, 0.3F, 1.4F);
+        }
+        return restored;
+    }
+
+    /** Extracts whole air units of Oxygen from {@code handler}: peek, floor to units, then commit. */
+    private static int drawOxygen(ResourceHandler<GasResource> handler, int wantAir, int mbPerAir) {
+        if (mbPerAir <= 0) {
+            // Free air (config): the store just has to hold any oxygen.
+            try (Transaction tx = Transaction.openRoot()) {
+                ResourceStack<GasResource> peeked = ResourceHandlerUtil.extractFirst(
+                        handler, r -> r == GasResource.OXYGEN, 1, tx);
+                return peeked == null ? 0 : wantAir;
+            }
+        }
+        int available;
+        try (Transaction tx = Transaction.openRoot()) {
+            ResourceStack<GasResource> peeked = ResourceHandlerUtil.extractFirst(
+                    handler, r -> r == GasResource.OXYGEN, wantAir * mbPerAir, tx);
+            available = peeked == null ? 0 : peeked.amount();
+            // Aborted (no commit): this was only a peek.
+        }
+        int air = available / mbPerAir;
+        if (air <= 0) {
+            return 0;
+        }
+        try (Transaction tx = Transaction.openRoot()) {
+            ResourceHandlerUtil.extractFirst(handler, r -> r == GasResource.OXYGEN, air * mbPerAir, tx);
+            tx.commit();
+        }
+        return air;
+    }
+
+    /** The worn-suit tiers and their air-tank capacities. */
+    public enum SuitTier {
+        NONE,
+        TIER_1,
+        TIER_2;
+
+        /** The air capacity this tier grants (bare lungs share the Tier 1 scale). */
+        public int capacity() {
+            return this == TIER_2 ? Config.OXYGEN_SUIT_T2_MAX.get() : Config.OXYGEN_MAX.get();
+        }
     }
 
     private static int chebyshev(BlockPos a, BlockPos b) {

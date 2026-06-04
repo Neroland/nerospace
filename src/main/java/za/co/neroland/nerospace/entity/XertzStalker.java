@@ -12,7 +12,11 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.Level;
+
+import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
  * Xertz Stalker (Phase 5) — the hostile predator of Greenxertz. A crystalline monster that hunts
@@ -22,6 +26,21 @@ public class XertzStalker extends Monster {
 
     public XertzStalker(EntityType<? extends XertzStalker> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return ModSounds.XERTZ_STALKER_AMBIENT.get();
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return ModSounds.XERTZ_STALKER_HURT.get();
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.XERTZ_STALKER_DEATH.get();
     }
 
     public static AttributeSupplier.Builder createAttributes() {

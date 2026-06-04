@@ -86,6 +86,10 @@ neoForge {
             // launch.json (${workspaceFolder} + preLaunchTask) is the source of truth.
             disableIdeRun()
 
+            // Telemetry self-test (PRIVACY.md): `gradlew runClient -PtelemetryTest=true`
+            // sends one synthetic Sentry event on config load. Off by default.
+            systemProperty 'nerospace.telemetry.test', providers.gradleProperty('telemetryTest').getOrElse('false')
+
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.
@@ -140,6 +144,17 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    // Sentry error-reporting SDK (telemetry/NerospaceTelemetry). Embedded in the mod jar
+    // via NeoForge JarJar so players need no extra download; JarJar also dedupes if another
+    // mod ships Sentry. The core 'sentry' artifact is dependency-free. Privacy rules
+    // (opt-out config, nerospace-only filter, PII scrubbing) live in PRIVACY.md.
+    jarJar(implementation('io.sentry:sentry')) {
+        version {
+            strictly '[8.0.0,9.0.0)'
+            prefer '8.42.0'
+        }
+    }
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

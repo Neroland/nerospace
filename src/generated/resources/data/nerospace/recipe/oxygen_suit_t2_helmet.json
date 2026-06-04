@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "nerospace:cindrite",
+    "H": "nerospace:oxygen_suit_helmet"
+  },
+  "pattern": [
+    " C ",
+    "CHC",
+    " C "
+  ],
+  "result": {
+    "id": "nerospace:oxygen_suit_t2_helmet"
+  }
+}

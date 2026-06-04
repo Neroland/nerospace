@@ -38,12 +38,28 @@ public class RocketItem extends Item {
         }
 
         if (!level.isClientSide()) {
+            // Multiblock gating: deploying needs a properly formed 3x3 pad; a Tier 3 rocket
+            // additionally needs the pad ringed with Station Wall (the same checks re-run at launch).
+            Player player = context.getPlayer();
+            java.util.Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level, pos);
+            if (!LaunchPadMultiblock.isFullThreeByThree(pads)) {
+                if (player != null) {
+                    player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_incomplete"));
+                }
+                return InteractionResult.SUCCESS;
+            }
+            if (this.tier == RocketTier.TIER_3 && !LaunchPadMultiblock.hasStationWallRing(level, pads)) {
+                if (player != null) {
+                    player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_ring_required"));
+                }
+                return InteractionResult.SUCCESS;
+            }
+
             BlockPos above = pos.above();
             RocketEntity rocket = new RocketEntity(
                     level, above.getX() + 0.5D, above.getY(), above.getZ() + 0.5D, this.tier);
             level.addFreshEntity(rocket);
 
-            Player player = context.getPlayer();
             ItemStack stack = context.getItemInHand();
             if (player != null && !player.getAbilities().instabuild) {
                 stack.shrink(1);

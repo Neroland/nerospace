@@ -8,9 +8,12 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
+import za.co.neroland.nerospace.gametest.NerospaceGameTests;
 import za.co.neroland.nerospace.registry.ModAttachments;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
@@ -19,6 +22,7 @@ import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModDataComponents;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
+import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
  * Nerospace — a space-exploration / tech-progression mod for Minecraft (Java Edition),
@@ -44,14 +48,31 @@ public final class Nerospace {
         ModDataComponents.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModEntities.register(modEventBus);
+        ModSounds.register(modEventBus);
         ModMenuTypes.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModCreativeModeTabs.register(modEventBus);
+        // Gametest instance-type codec (sync-safe serialization of the mod's code-backed tests).
+        NerospaceGameTests.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
         // Register the common config spec so FML manages the config file for us.
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        // Telemetry (Sentry error reporting, PRIVACY.md): start/stop strictly follows the
+        // telemetryEnabled config value, so nothing initialises before the player's choice
+        // is loaded and an opt-out applies immediately on config reload.
+        modEventBus.addListener((final ModConfigEvent.Loading event) -> {
+            if (event.getConfig().getSpec() == Config.SPEC) {
+                NerospaceTelemetry.onConfigChanged(modContainer);
+            }
+        });
+        modEventBus.addListener((final ModConfigEvent.Reloading event) -> {
+            if (event.getConfig().getSpec() == Config.SPEC) {
+                NerospaceTelemetry.onConfigChanged(modContainer);
+            }
+        });
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

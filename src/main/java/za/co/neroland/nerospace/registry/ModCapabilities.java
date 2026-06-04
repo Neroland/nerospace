@@ -115,6 +115,27 @@ public final class ModCapabilities {
                 ModEntities.ROCKET.get(),
                 (rocket, side) -> rocket.getFuelTank());
 
+        // Items: the rocket's fuel-intake slot, for hoppers/pipes aimed at the entity directly.
+        event.registerEntity(
+                Capabilities.Item.ENTITY,
+                ModEntities.ROCKET.get(),
+                (rocket, side) -> rocket.getIntakeHandler());
+
+        // Pad proxy (launch-prep automation): a launch pad block forwards the item capability to the
+        // rocket deployed above its connected pad cluster, putting the entity's intake slot into the
+        // block-capability graph — so plain hoppers and the pipe item layer feed fuel containers in
+        // without special-casing entities. No rocket on the pad = no capability.
+        event.registerBlock(
+                Capabilities.Item.BLOCK,
+                (level, pos, state, blockEntity, side) -> {
+                    java.util.Set<net.minecraft.core.BlockPos> pads =
+                            za.co.neroland.nerospace.rocket.LaunchPadMultiblock.connectedPads(level, pos);
+                    za.co.neroland.nerospace.rocket.RocketEntity rocket =
+                            za.co.neroland.nerospace.rocket.LaunchPadMultiblock.rocketAbove(level, pads);
+                    return rocket != null ? rocket.getIntakeHandler() : null;
+                },
+                ModBlocks.ROCKET_LAUNCH_PAD.get());
+
         event.registerBlockEntity(
                 Capabilities.Fluid.BLOCK,
                 ModBlockEntities.FUEL_TANK.get(),

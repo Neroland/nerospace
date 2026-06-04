@@ -41,6 +41,11 @@ authors="Neroland"
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 A space themed mod that brings science and adventure together.
+
+Telemetry: anonymous error reports for Nerospace bugs are sent to the developers
+(Sentry, EU servers) so crashes can be fixed. No IP, username, UUID, world or chat
+data is collected. Opt out any time: set telemetryEnabled=false in
+config/nerospace-common.toml. Details: PRIVACY.md in the mod repository.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.

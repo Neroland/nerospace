@@ -17,6 +17,9 @@ N N N
   [Oxygen Generator](Oxygen-Generator) into it as a life-support buffer.
 - Gas is gas: **breaking a gas-filled pipe (or the tank itself) vents the contents** — plan your
   plumbing before tearing it up.
+- **Airlock:** a player wearing a full [Oxygen Suit](Oxygen-Suit) within a few blocks (default 3) of
+  a tank holding Oxygen **refills the suit's air from it**, draining the gas — a tank by the base
+  door is a working airlock. A Tier 2 suit refills twice as fast.
 - Bare-hand right-click reads out the contents.
 
 A **Creative Gas Tank** variant supplies endless Oxygen — see

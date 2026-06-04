@@ -78,20 +78,53 @@ public final class LaunchPadMultiblock {
             return false;
         }
         for (BlockPos corner : pads) {
-            boolean complete = true;
-            for (int dx = 0; dx < 3 && complete; dx++) {
-                for (int dz = 0; dz < 3; dz++) {
-                    if (!pads.contains(new BlockPos(corner.getX() + dx, corner.getY(), corner.getZ() + dz))) {
-                        complete = false;
-                        break;
-                    }
-                }
-            }
-            if (complete) {
+            if (isThreeByThreeFrom(pads, corner)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /** Whether the 3x3 with min-corner {@code corner} is entirely contained in {@code pads}. */
+    private static boolean isThreeByThreeFrom(Set<BlockPos> pads, BlockPos corner) {
+        for (int dx = 0; dx < 3; dx++) {
+            for (int dz = 0; dz < 3; dz++) {
+                if (!pads.contains(new BlockPos(corner.getX() + dx, corner.getY(), corner.getZ() + dz))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Tier 3 gating: whether some complete 3x3 in {@code pads} is ringed with Station Wall — the 16
+     * border cells of the surrounding 5x5, at pad level. Checked against every candidate 3x3 corner
+     * so an oversized pad field still qualifies if any aligned 3x3 carries a full ring.
+     */
+    public static boolean hasStationWallRing(Level level, Set<BlockPos> pads) {
+        for (BlockPos corner : pads) {
+            if (isThreeByThreeFrom(pads, corner) && hasRingAt(level, corner)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Whether the 5x5 border around the 3x3 with min-corner {@code corner} is all Station Wall. */
+    private static boolean hasRingAt(Level level, BlockPos corner) {
+        for (int dx = -1; dx <= 3; dx++) {
+            for (int dz = -1; dz <= 3; dz++) {
+                if (dx != -1 && dx != 3 && dz != -1 && dz != 3) {
+                    continue; // interior — the pad itself
+                }
+                BlockPos pos = new BlockPos(corner.getX() + dx, corner.getY(), corner.getZ() + dz);
+                if (!level.getBlockState(pos).is(za.co.neroland.nerospace.registry.ModBlocks.STATION_WALL.get())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /** The first {@link RocketEntity} standing on top of any pad in {@code pads}, or {@code null}. */

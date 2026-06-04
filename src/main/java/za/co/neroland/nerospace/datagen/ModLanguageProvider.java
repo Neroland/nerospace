@@ -152,6 +152,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.OXYGEN_SUIT_LEGGINGS.get(), "Oxygen Suit Leggings");
         add(ModItems.OXYGEN_SUIT_BOOTS.get(), "Oxygen Suit Boots");
 
+        // Suit-and-station integration — Tier 2 (cindrite-upgraded) oxygen suit.
+        add(ModItems.OXYGEN_SUIT_T2_HELMET.get(), "Tier 2 Oxygen Suit Helmet");
+        add(ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(), "Tier 2 Oxygen Suit Chestplate");
+        add(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), "Tier 2 Oxygen Suit Leggings");
+        add(ModItems.OXYGEN_SUIT_T2_BOOTS.get(), "Tier 2 Oxygen Suit Boots");
+
         // Phase 7 items.
         add(ModItems.CINDRITE.get(), "Cindrite");
         add(ModItems.ROCKET_FUEL_BUCKET.get(), "Rocket Fuel Bucket");
@@ -176,6 +182,22 @@ public class ModLanguageProvider extends LanguageProvider {
         add("entity.nerospace.quartz_crawler", "Quartz Crawler");
         add("entity.nerospace.greenling", "Greenling");
         add("entity.nerospace.cinder_stalker", "Cinder Stalker");
+
+        // Creature sound subtitles (Phase 10 ambience). The sounds.json placeholders alias vanilla
+        // audio for now; these subtitles describe the creature, so they stay correct when real audio
+        // is dropped in later.
+        add("subtitles.nerospace.xertz_stalker.ambient", "Xertz Stalker chitters");
+        add("subtitles.nerospace.xertz_stalker.hurt", "Xertz Stalker shrieks");
+        add("subtitles.nerospace.xertz_stalker.death", "Xertz Stalker shatters");
+        add("subtitles.nerospace.quartz_crawler.ambient", "Quartz Crawler skitters");
+        add("subtitles.nerospace.quartz_crawler.hurt", "Quartz Crawler cracks");
+        add("subtitles.nerospace.quartz_crawler.death", "Quartz Crawler crumbles");
+        add("subtitles.nerospace.greenling.ambient", "Greenling chirps");
+        add("subtitles.nerospace.greenling.hurt", "Greenling squeaks");
+        add("subtitles.nerospace.greenling.death", "Greenling wilts");
+        add("subtitles.nerospace.cinder_stalker.ambient", "Cinder Stalker smoulders");
+        add("subtitles.nerospace.cinder_stalker.hurt", "Cinder Stalker roars");
+        add("subtitles.nerospace.cinder_stalker.death", "Cinder Stalker cools");
 
         // Join / work-in-progress notice.
         add("message.nerospace.welcome.wip",
@@ -220,6 +242,10 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Rocket action feedback.
         add("item.nerospace.rocket.deployed", "Rocket deployed on the launch pad");
+        add("item.nerospace.rocket.pad_incomplete",
+                "The launch pad is incomplete — a rocket needs a full 3x3 of Launch Pad blocks");
+        add("item.nerospace.rocket.pad_ring_required",
+                "A Tier 3 rocket needs the 3x3 pad ringed with Station Wall");
         add("entity.nerospace.rocket.arrived", "You have arrived on the planet");
         add("entity.nerospace.rocket.docked", "Docked at the Orbital Station");
 

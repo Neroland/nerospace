@@ -1,0 +1,48 @@
+package za.co.neroland.nerospace.telemetry;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
+
+/**
+ * Log4j2 appender that feeds {@link NerospaceTelemetry}. Minecraft routes essentially every
+ * failure through log4j — handled errors, event-bus listener exceptions, and the crash report
+ * itself — so listening on the root logger catches Nerospace failures without mixins or
+ * invasive hooks. Filtering (Nerospace-only), de-dup, rate-limiting and PII scrubbing all
+ * happen in {@link NerospaceTelemetry}; this class only selects candidate log events:
+ *
+ * <ul>
+ *   <li>ERROR/FATAL with a throwable whose stack touches Nerospace code → exception event;</li>
+ *   <li>FATAL text that names the Nerospace package without a throwable (the printed crash
+ *       report) → scrubbed, truncated message event.</li>
+ * </ul>
+ */
+final class SentryLogAppender extends AbstractAppender {
+
+    SentryLogAppender() {
+        super("NerospaceSentry", null, null, false, Property.EMPTY_ARRAY);
+    }
+
+    @Override
+    public void append(LogEvent event) {
+        if (!NerospaceTelemetry.isActive()) {
+            return;
+        }
+        Level level = event.getLevel();
+        if (!level.isMoreSpecificThan(Level.ERROR)) {
+            return;
+        }
+        Throwable thrown = event.getThrown();
+        if (thrown != null) {
+            if (NerospaceTelemetry.touchesNerospace(thrown)) {
+                NerospaceTelemetry.capture(thrown);
+            }
+        } else if (level == Level.FATAL) {
+            String message = event.getMessage() == null ? null : event.getMessage().getFormattedMessage();
+            if (message != null && message.contains("za.co.neroland.nerospace")) {
+                NerospaceTelemetry.captureMessage(message);
+            }
+        }
+    }
+}

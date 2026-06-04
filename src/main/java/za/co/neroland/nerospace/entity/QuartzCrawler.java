@@ -11,7 +11,11 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.Level;
+
+import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
  * Quartz Crawler (Phase 5) — a neutral creature. It grazes the Greenxertz surface peacefully and
@@ -22,6 +26,21 @@ public class QuartzCrawler extends PathfinderMob {
 
     public QuartzCrawler(EntityType<? extends QuartzCrawler> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return ModSounds.QUARTZ_CRAWLER_AMBIENT.get();
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return ModSounds.QUARTZ_CRAWLER_HURT.get();
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.QUARTZ_CRAWLER_DEATH.get();
     }
 
     public static AttributeSupplier.Builder createAttributes() {

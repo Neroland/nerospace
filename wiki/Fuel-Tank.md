@@ -22,7 +22,11 @@ N G N
   returned); a fluid pipe can fill it via the fluid capability. Empty-hand right-click prints the
   current fuel level.
 - **Auto-fuelling:** when a rocket is on an adjacent launch pad, the tank pumps fuel into it. A
-  complete **3×3 launch pad** pumps **4× faster** (160 vs 40 mB/tick) — a reason to build the full pad.
+  complete **3×3 launch pad** pumps **4× faster** (160 vs 40 mB/tick) — and since the multiblock
+  gating pass a rocket can only deploy on a full 3×3 anyway.
+- **Full automation:** the pad itself also proxies the rocket's **fuel-intake slot** as an item
+  capability, so hoppers/[Universal Pipes](Universal-Pipe) can deliver Rocket Fuel Buckets and
+  Canisters straight into the rocket — a Fuel Tank + an item line makes launch prep hands-free.
 - **Comparator:** emits a redstone signal scaled to its fill level.
 
 ## Details

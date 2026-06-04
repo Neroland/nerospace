@@ -237,6 +237,49 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
+        // Tier 2 Oxygen Suit: each Tier 1 piece reinforced with cindrite. Cindrite only mines on
+        // Cindara (Tier 3 rocket, itself gated on Station Wall), so the upgrade sits at the same
+        // depth of progression as the Tier 3 rocket.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_T2_HELMET.get())
+                .pattern(" C ")
+                .pattern("CHC")
+                .pattern(" C ")
+                .define('C', ModItems.CINDRITE)
+                .define('H', ModItems.OXYGEN_SUIT_HELMET)
+                .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
+                .save(this.output);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get())
+                .pattern(" C ")
+                .pattern("CHC")
+                .pattern(" C ")
+                .define('C', ModItems.CINDRITE)
+                .define('H', ModItems.OXYGEN_SUIT_CHESTPLATE)
+                .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
+                .save(this.output);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_T2_LEGGINGS.get())
+                .pattern(" C ")
+                .pattern("CHC")
+                .pattern(" C ")
+                .define('C', ModItems.CINDRITE)
+                .define('H', ModItems.OXYGEN_SUIT_LEGGINGS)
+                .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
+                .save(this.output);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_T2_BOOTS.get())
+                .pattern(" C ")
+                .pattern("CHC")
+                .pattern(" C ")
+                .define('C', ModItems.CINDRITE)
+                .define('H', ModItems.OXYGEN_SUIT_BOOTS)
+                .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
+                .save(this.output);
+
         // Oxygen Generator: a sealed nerosteel pump (glass dome, redstone, fuel canister core).
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModBlocks.OXYGEN_GENERATOR.get())

@@ -1,0 +1,53 @@
+{
+  "entity.xertz_stalker.ambient": {
+    "subtitle": "subtitles.nerospace.xertz_stalker.ambient",
+    "sounds": [{ "name": "entity.spider.ambient", "type": "event" }]
+  },
+  "entity.xertz_stalker.hurt": {
+    "subtitle": "subtitles.nerospace.xertz_stalker.hurt",
+    "sounds": [{ "name": "entity.spider.hurt", "type": "event" }]
+  },
+  "entity.xertz_stalker.death": {
+    "subtitle": "subtitles.nerospace.xertz_stalker.death",
+    "sounds": [{ "name": "entity.spider.death", "type": "event" }]
+  },
+
+  "entity.quartz_crawler.ambient": {
+    "subtitle": "subtitles.nerospace.quartz_crawler.ambient",
+    "sounds": [{ "name": "entity.silverfish.ambient", "type": "event" }]
+  },
+  "entity.quartz_crawler.hurt": {
+    "subtitle": "subtitles.nerospace.quartz_crawler.hurt",
+    "sounds": [{ "name": "entity.silverfish.hurt", "type": "event" }]
+  },
+  "entity.quartz_crawler.death": {
+    "subtitle": "subtitles.nerospace.quartz_crawler.death",
+    "sounds": [{ "name": "entity.silverfish.death", "type": "event" }]
+  },
+
+  "entity.greenling.ambient": {
+    "subtitle": "subtitles.nerospace.greenling.ambient",
+    "sounds": [{ "name": "entity.panda.ambient", "type": "event" }]
+  },
+  "entity.greenling.hurt": {
+    "subtitle": "subtitles.nerospace.greenling.hurt",
+    "sounds": [{ "name": "entity.panda.hurt", "type": "event" }]
+  },
+  "entity.greenling.death": {
+    "subtitle": "subtitles.nerospace.greenling.death",
+    "sounds": [{ "name": "entity.panda.death", "type": "event" }]
+  },
+
+  "entity.cinder_stalker.ambient": {
+    "subtitle": "subtitles.nerospace.cinder_stalker.ambient",
+    "sounds": [{ "name": "entity.blaze.ambient", "type": "event" }]
+  },
+  "entity.cinder_stalker.hurt": {
+    "subtitle": "subtitles.nerospace.cinder_stalker.hurt",
+    "sounds": [{ "name": "entity.blaze.hurt", "type": "event" }]
+  },
+  "entity.cinder_stalker.death": {
+    "subtitle": "subtitles.nerospace.cinder_stalker.death",
+    "sounds": [{ "name": "entity.blaze.death", "type": "event" }]
+  }
+}

@@ -35,6 +35,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import za.co.neroland.nerospace.fluid.RocketFuelTank;
 import za.co.neroland.nerospace.registry.ModBlocks;
@@ -80,11 +82,95 @@ public class RocketEntity extends Entity implements MenuProvider {
     private final RocketFuelTank fuelTank = new RocketFuelTank(RocketTier.TIER_3.fuelCapacity(), this::syncFuel);
 
     /**
-     * A single-slot fuel intake exposed in the rocket UI. The player (or, later, a hopper/automation)
-     * drops a {@link ModItems#ROCKET_FUEL_BUCKET} or {@link ModItems#ROCKET_FUEL_CANISTER} here and
-     * the rocket drains it into {@link #fuelTank} on its server tick — returning an empty bucket.
+     * The single-slot fuel intake's authoritative store, as a transfer-API handler — exposed via
+     * {@code Capabilities.Item.ENTITY} and proxied by the launch pad's {@code Capabilities.Item.BLOCK},
+     * so pipes and hoppers can feed fuel containers in. Only fuel containers may be inserted;
+     * extraction is open so automation can also collect the emptied buckets.
+     *
+     * <p>NOTE: {@code StacksResourceHandler} COPIES any list passed to its constructor (it never
+     * shares a Container's backing list), so the handler owns the slot and {@link #fuelInput} is a
+     * {@link net.minecraft.world.Container} view over it for the menu and the entity tick.</p>
      */
-    private final net.minecraft.world.SimpleContainer fuelInput = new net.minecraft.world.SimpleContainer(1);
+    private final IntakeHandler intakeHandler = new IntakeHandler();
+
+    /**
+     * Container view of {@link #intakeHandler} for the rocket UI and {@link #consumeFuelInput()}: the
+     * player (or hopper/pipe automation) drops a {@link ModItems#ROCKET_FUEL_BUCKET} or
+     * {@link ModItems#ROCKET_FUEL_CANISTER} here and the rocket drains it into {@link #fuelTank} on
+     * its server tick — returning an empty bucket.
+     */
+    private final net.minecraft.world.Container fuelInput = new IntakeContainer();
+
+    /** Single-slot intake store: validates fuel containers, exposes the slot to the Container view. */
+    private final class IntakeHandler extends ItemStacksResourceHandler {
+
+        private IntakeHandler() {
+            super(1);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            return isFuelContainer(resource.toStack(1));
+        }
+
+        ItemStack getStack() {
+            return this.stacks.get(0);
+        }
+
+        void setStack(ItemStack stack) {
+            this.stacks.set(0, stack);
+        }
+    }
+
+    /** Vanilla-Container view over {@link IntakeHandler} (menus and ticks read/write the same slot). */
+    private final class IntakeContainer implements net.minecraft.world.Container {
+
+        @Override
+        public int getContainerSize() {
+            return 1;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return RocketEntity.this.intakeHandler.getStack().isEmpty();
+        }
+
+        @Override
+        public ItemStack getItem(int slot) {
+            return RocketEntity.this.intakeHandler.getStack();
+        }
+
+        @Override
+        public ItemStack removeItem(int slot, int amount) {
+            return RocketEntity.this.intakeHandler.getStack().split(amount);
+        }
+
+        @Override
+        public ItemStack removeItemNoUpdate(int slot) {
+            ItemStack stack = RocketEntity.this.intakeHandler.getStack();
+            RocketEntity.this.intakeHandler.setStack(ItemStack.EMPTY);
+            return stack;
+        }
+
+        @Override
+        public void setItem(int slot, ItemStack stack) {
+            RocketEntity.this.intakeHandler.setStack(stack);
+        }
+
+        @Override
+        public void setChanged() {
+        }
+
+        @Override
+        public boolean stillValid(Player player) {
+            return !RocketEntity.this.isRemoved();
+        }
+
+        @Override
+        public void clearContent() {
+            RocketEntity.this.intakeHandler.setStack(ItemStack.EMPTY);
+        }
+    }
 
     /** Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex. */
     private final ContainerData dataAccess = new ContainerData() {
@@ -155,6 +241,11 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** The UI fuel-intake slot (one bucket/canister), for the menu and automation. */
     public net.minecraft.world.Container getFuelInput() {
         return this.fuelInput;
+    }
+
+    /** The intake slot as a transfer-API handler ({@code Capabilities.Item.ENTITY} + pad proxy). */
+    public ResourceHandler<ItemResource> getIntakeHandler() {
+        return this.intakeHandler;
     }
 
     /** Whether {@code stack} is accepted by the fuel-intake slot. */
@@ -234,12 +325,34 @@ public class RocketEntity extends Entity implements MenuProvider {
         return !isLaunching()
                 && selectedDestination() != null
                 && getFuel() >= getTier().fuelPerLaunch()
-                && this.getFirstPassenger() instanceof Player;
+                && this.getFirstPassenger() instanceof Player
+                && isOnValidPad();
+    }
+
+    /**
+     * Launch-pad gating (re-checked at launch, so breaking pad blocks under a deployed rocket grounds
+     * it): the rocket must stand on a complete 3x3 pad; a Tier 3 rocket additionally needs the pad
+     * ringed with Station Wall. Mirrors the deploy-time check in {@link RocketItem}.
+     */
+    public boolean isOnValidPad() {
+        Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), this.blockPosition().below());
+        if (!LaunchPadMultiblock.isFullThreeByThree(pads)) {
+            return false;
+        }
+        return getTier() != RocketTier.TIER_3 || LaunchPadMultiblock.hasStationWallRing(level(), pads);
     }
 
     /** Begins the ascent. Server-side; called from the rocket menu's Launch button. */
     public void startLaunch() {
         if (level().isClientSide() || !canLaunch()) {
+            if (!level().isClientSide() && !isLaunching() && !isOnValidPad()
+                    && this.getFirstPassenger() instanceof ServerPlayer rider) {
+                Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), this.blockPosition().below());
+                rider.sendSystemMessage(Component.translatable(
+                        LaunchPadMultiblock.isFullThreeByThree(pads)
+                                ? "item.nerospace.rocket.pad_ring_required"
+                                : "item.nerospace.rocket.pad_incomplete"));
+            }
             return;
         }
         setLaunching(true);

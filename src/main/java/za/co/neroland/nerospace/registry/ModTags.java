@@ -76,5 +76,9 @@ public final class ModTags {
         public static final TagKey<Item> STORAGE_BLOCKS_NEROSTEEL = itemTag("c", "storage_blocks/nerosteel");
         /** Mirrors {@code c:gems/quartz}; xertz quartz is a gem-style drop. */
         public static final TagKey<Item> GEMS_XERTZ_QUARTZ = itemTag("c", "gems/xertz_quartz");
+
+        // Phase 7a — Cindara materials.
+        /** Cindrite shards (repair material of the Tier 2 Oxygen Suit). */
+        public static final TagKey<Item> GEMS_CINDRITE = itemTag("c", "gems/cindrite");
     }
 }

@@ -22,6 +22,7 @@ import os
 import sys
 import uuid
 
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEX = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures")
 OUT_BLOCK = os.path.join(ROOT, "art/blockbench/block")

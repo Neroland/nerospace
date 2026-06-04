@@ -81,6 +81,31 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
+      # Register the release in Sentry so error reports group per mod version.
+      # The release name and environment must match what the SDK sends
+      # (NerospaceTelemetry: release "nerospace@<mod_version>", environment derived
+      # from the version's channel suffix: -alpha -> alpha, -beta -> beta, else production).
+      # Requires repository secrets: SENTRY_AUTH_TOKEN, SENTRY_ORG, SENTRY_PROJECT.
+      # Privacy (POPIA/GDPR): this step logs only the version string - no personal data.
+      - name: Determine Sentry environment
+        id: sentry_env
+        run: |
+          case "${{ needs.detect.outputs.version }}" in
+            *-alpha*) echo "environment=alpha" >> "$GITHUB_OUTPUT" ;;
+            *-beta*)  echo "environment=beta"  >> "$GITHUB_OUTPUT" ;;
+            *)        echo "environment=production" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v3
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          release: nerospace@${{ needs.detect.outputs.version }}
+          environment: ${{ steps.sentry_env.outputs.environment }}
+
       - name: Publish to CurseForge and GitHub Release
         uses: Kir-Antipov/mc-publish@v3.3
         with:

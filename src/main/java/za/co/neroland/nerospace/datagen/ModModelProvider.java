@@ -134,6 +134,12 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_BOOTS.get(), ModelTemplates.FLAT_ITEM);
 
+        // Suit-and-station integration — Tier 2 (cindrite-upgraded) oxygen suit.
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_BOOTS.get(), ModelTemplates.FLAT_ITEM);
+
         // Phase 10e — spawn eggs (custom flat egg icons, not the procedural tinted template).
         itemModels.generateFlatItem(ModItems.XERTZ_STALKER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);

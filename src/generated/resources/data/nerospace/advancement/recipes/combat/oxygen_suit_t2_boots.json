@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_cindrite": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:cindrite"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "nerospace:oxygen_suit_t2_boots"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_cindrite"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nerospace:oxygen_suit_t2_boots"
+    ]
+  }
+}

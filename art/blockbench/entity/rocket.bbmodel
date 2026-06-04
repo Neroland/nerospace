@@ -649,7 +649,7 @@
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\rocket.png",
+      "path": "/sessions/eager-festive-shannon/mnt/nerospace/src/main/resources/assets/nerospace/textures/entity/rocket.png",
       "name": "rocket.png",
       "folder": "entity",
       "namespace": "nerospace",

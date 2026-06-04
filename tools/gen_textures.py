@@ -742,45 +742,271 @@ def gen_station_wall():
     save(img, os.path.join(BLOCK_DIR, "station_wall.png"))
 
 
-# ---------------- PHASE 5: GREENXERTZ CREATURES (entities) ----------------
+# ---------------- PHASE 5/7/10: GREENXERTZ & CINDARA CREATURES (entities) ----------------
 #
-# These are 64x64 entity textures mapped to the shared GreenxertzCreatureModel
-# (body texOffs 0,0 / head 0,14 / legs 28,0). We fill the whole sheet opaquely so every
-# box face samples a sensible colour, then paint eyes onto the head's front-face UV region
-# (x 6..12, y 20..26) for a bit of character. Palettes keep the planet's green/steel family.
+# 64x64 entity textures for the four bespoke creature models. Each model is box-UV with three
+# texOffs regions shared across its parts:
+#   - body parts   -> texOffs(0, 0)   => upper-left block,  UV area x[0..44]  y[0..28]
+#   - head parts   -> texOffs(0, 28)  => lower-left block,  UV area x[0..44]  y[28..64]
+#   - detail parts -> texOffs(44, 0)  => right strip,       UV area x[44..64] y[0..64]
+#     (crests/fins/arms/legs for the stalker; crystals for the crawler; fronds/limbs for the
+#      greenling; horns/back-plates/legs for the cinder stalker)
+# We paint each region with a palette + pattern matched to the creature's identity, then drop
+# eye glints onto the head's front-face UV cell. Brightest pixels (facets / quartz / embers /
+# eyes) are picked up by gen_entity_glow() into the emissive overlay, so they read in the dark.
+#
+# These four files are committed art. The generators are additive (skip if the PNG exists) and
+# only (re)render when invoked with the deliberate, creature-scoped --creatures flag, so they
+# never trample the rest of the committed textures the way a global --force would.
 
-def _entity_eyes(px, eye, socket):
-    # Head front face occupies x in [6,12), y in [20,26) for a 6x6x6 head at texOffs(0,14).
-    for (ex, ey) in [(6, 21), (7, 21), (10, 21), (11, 21)]:
-        px[ex, ey] = socket
-    px[6, 22] = eye; px[7, 22] = eye      # left eye
-    px[10, 22] = eye; px[11, 22] = eye    # right eye
+FORCE_CREATURES = "--creatures" in sys.argv or "--force" in sys.argv
 
 
-def gen_entity(name, palette, eye, accent, seed):
+def _mix(a, b, t):
+    return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3)) + (255,)
+
+
+def _eyes(px, head_w, head_d, eye, socket, glint=None, big=False):
+    """Paint a pair of eyes on the head FRONT face. For box-UV the front face starts at
+    (u+d, v+d) with size (w, h); heads use texOffs(0, 28) so u=0, v=28."""
+    fx = head_d            # front-face left edge  (u + d)
+    fy = 28 + head_d       # front-face top edge    (v + d)
+    cx = fx + head_w / 2.0
+    # eye sockets sit a little inset from centre, a third of the way down the face
+    ey = int(fy + (3 if big else 2))
+    off = max(1, int(head_w * (0.28 if big else 0.22)))
+    ew = 2 if big else 1
+    for sgn in (-1, 1):
+        ex = int(round(cx + sgn * off)) - (ew // 2)
+        for dx in range(ew):
+            for dy in range(ew):
+                px[ex + dx, ey + dy] = socket
+        px[ex, ey] = eye
+        if ew > 1:
+            px[ex + 1, ey] = eye
+        if glint is not None:
+            px[ex, ey] = glint
+
+
+def _gen_creature(name, paint_body, paint_head, paint_detail, head_w, head_d,
+                  eye, socket, seed, glint=None, big_eyes=False):
     path = os.path.join(ENTITY_DIR, name + ".png")
-    if os.path.exists(path) and "--force" not in sys.argv:
+    if os.path.exists(path) and not FORCE_CREATURES:
         print("skip (exists)", os.path.relpath(path, ROOT))
         return
     rng = random.Random(seed)
     img = Image.new("RGBA", (ES, ES), CLEAR)
     px = img.load()
-    # Opaque fill of the model's used UV area (with a margin) so no face samples transparency.
-    for y in range(ES):
-        for x in range(ES):
-            c = rng.choice(palette)
-            # subtle vertical shading: darken toward the bottom of each ~14px band
-            if (y % 14) >= 11:
-                c = palette[0]
-            px[x, y] = c
-    # scattered accent flecks (crystal / glow) for texture
-    for _ in range(60):
-        x = rng.randint(0, 47)
-        y = rng.randint(0, 47)
-        px[x, y] = accent
-    _entity_eyes(px, eye, palette[0])
+    # Region 1: body (x 0..44, y 0..28)
+    for y in range(0, 28):
+        for x in range(0, 44):
+            px[x, y] = paint_body(x, y, rng)
+    # Region 2: head (x 0..44, y 28..64)
+    for y in range(28, 64):
+        for x in range(0, 44):
+            px[x, y] = paint_head(x, y, rng)
+    # Region 3: detail strip (x 44..64, y 0..64)
+    for y in range(0, 64):
+        for x in range(44, 64):
+            px[x, y] = paint_detail(x, y, rng)
+    _eyes(px, head_w, head_d, eye, socket, glint, big_eyes)
     img.save(path)
     print("wrote", os.path.relpath(path, ROOT))
+
+
+# --- Per-creature palettes ------------------------------------------------
+
+# Xertz Stalker — crystalline apex predator: deep emerald/teal crystal hide with angular cyan
+# facets and a bright cyan-white glow on its edges & eyes.
+XS_DARK  = (12, 38, 40, 255)
+XS_BODY  = (22, 70, 66, 255)
+XS_MID   = (34, 120, 104, 255)
+XS_FACET = (90, 220, 200, 255)
+XS_GLOW  = (190, 255, 240, 255)
+
+# Quartz Crawler — milky quartz carapace: pale grey-white plates with rose-quartz veins and
+# soft green crystal sparkle on its back cluster.
+# NB: only QC_CRY (the back crystal cluster) and the eye glint exceed the glow threshold (205);
+# the carapace stays below it so the plates read as solid, non-emissive quartz.
+QC_SEAM  = (118, 120, 134, 255)
+QC_PLATE = (176, 178, 190, 255)
+QC_HI    = (200, 202, 204, 255)
+QC_ROSE  = (196, 150, 168, 255)
+QC_CRY   = (150, 245, 180, 255)
+
+# Greenling — soft friendly sprout: warm leafy greens, a lighter belly, gentle spots; small
+# dark eyes with a tiny white glint (kept dim so it barely glows).
+# Greenling stays soft: every body colour is below the glow threshold so only its tiny eye glint
+# is emissive (a friendly creature, not a glowing one).
+GL_DARK  = (40, 120, 58, 255)
+GL_BODY  = (86, 190, 96, 255)
+GL_LITE  = (150, 200, 140, 255)
+GL_SPOT  = (64, 158, 74, 255)
+GL_LEAF  = (120, 200, 120, 255)
+
+# Cinder Stalker — ember-cracked volcanic hide: charcoal/obsidian rock veined with glowing
+# orange-red lava cracks and bright ember eyes.
+CS_ROCK  = (34, 26, 28, 255)
+CS_ROCK2 = (52, 42, 44, 255)
+CS_OBS   = (20, 14, 20, 255)
+CS_RED   = (200, 56, 28, 255)
+CS_ORANGE= (244, 128, 40, 255)
+CS_EMBER = (255, 196, 96, 255)
+CS_GLOW_EYE = (255, 232, 150, 255)
+
+
+def _xs_body(x, y, rng):
+    # angular crystalline facets: diagonal banding + sparse bright facet edges
+    base = _mix(XS_DARK, XS_BODY, ((x + y) % 12) / 12.0)
+    if (x * 2 + y) % 9 == 0:
+        base = XS_MID
+    if rng.random() < 0.06:
+        base = XS_FACET
+    return base
+
+
+def _xs_head(x, y, rng):
+    base = _mix(XS_BODY, XS_MID, (y % 10) / 10.0)
+    if rng.random() < 0.05:
+        base = XS_FACET
+    return base
+
+
+def _xs_detail(x, y, rng):
+    # blade-arms / crest / fins: brighter crystal with glowing edges
+    t = ((y) % 8) / 8.0
+    base = _mix(XS_MID, XS_FACET, t)
+    if (x + y) % 6 == 0:
+        base = XS_GLOW
+    return base
+
+
+def _qc_body(x, y, rng):
+    # domed carapace plates: light quartz with darker seams on a grid + rose veins
+    seam = (x % 11 == 0) or (y % 9 == 0)
+    base = QC_SEAM if seam else _mix(QC_PLATE, QC_HI, rng.random() * 0.5)
+    if rng.random() < 0.04:
+        base = QC_ROSE
+    return base
+
+
+def _qc_head(x, y, rng):
+    base = _mix(QC_PLATE, QC_HI, (y % 6) / 6.0)
+    if y % 7 == 0:
+        base = QC_SEAM
+    return base
+
+
+def _qc_detail(x, y, rng):
+    # back crystal cluster + legs: green-quartz sparkle
+    base = _mix(QC_HI, QC_CRY, ((x + y) % 7) / 7.0)
+    if rng.random() < 0.10:
+        base = QC_CRY
+    return base
+
+
+def _gl_body(x, y, rng):
+    # soft mottled green, lighter toward the belly band (lower rows)
+    t = y / 28.0
+    base = _mix(GL_BODY, GL_LITE, t * 0.7)
+    if rng.random() < 0.05:
+        base = GL_SPOT
+    return base
+
+
+def _gl_head(x, y, rng):
+    base = _mix(GL_BODY, GL_LITE, ((y - 28) % 8) / 12.0)
+    if rng.random() < 0.04:
+        base = GL_SPOT
+    return base
+
+
+def _gl_detail(x, y, rng):
+    # leaf crest + little limbs
+    base = _mix(GL_LEAF, GL_LITE, (y % 6) / 6.0)
+    if x % 4 == 0:
+        base = GL_DARK
+    return base
+
+
+def _cs_body(x, y, rng):
+    # dark rock with branching glowing lava cracks
+    base = CS_ROCK if rng.random() < 0.55 else CS_ROCK2
+    crack = ((x * 3 + y * 2) % 17 < 2) or ((x - y) % 13 == 0)
+    if crack:
+        r = rng.random()
+        base = CS_RED if r < 0.4 else (CS_ORANGE if r < 0.8 else CS_EMBER)
+    return base
+
+
+def _cs_head(x, y, rng):
+    base = CS_ROCK if rng.random() < 0.6 else CS_OBS
+    if ((x + y) % 11) < 2:
+        base = CS_RED if rng.random() < 0.6 else CS_ORANGE
+    return base
+
+
+def _cs_detail(x, y, rng):
+    # horns/back-plates = obsidian; back-plate ridges glow hot at the seams
+    base = CS_OBS if rng.random() < 0.7 else CS_ROCK
+    if y % 6 == 0:
+        base = CS_ORANGE if rng.random() < 0.5 else CS_EMBER
+    return base
+
+
+def gen_creatures():
+    # head_w / head_d are the model head's width & depth (for front-face eye placement).
+    _gen_creature("xertz_stalker", _xs_body, _xs_head, _xs_detail,
+                  head_w=6, head_d=7, eye=XS_GLOW, socket=XS_DARK, seed=501, glint=XS_GLOW)
+    _gen_creature("quartz_crawler", _qc_body, _qc_head, _qc_detail,
+                  head_w=6, head_d=4, eye=QC_CRY, socket=QC_SEAM, seed=502, glint=(220, 255, 235, 255))
+    _gen_creature("greenling", _gl_body, _gl_head, _gl_detail,
+                  head_w=8, head_d=8, eye=(20, 40, 24, 255), socket=GL_DARK, seed=503,
+                  glint=(235, 255, 235, 255), big_eyes=True)
+    _gen_creature("cinder_stalker", _cs_body, _cs_head, _cs_detail,
+                  head_w=8, head_d=8, eye=CS_EMBER, socket=CS_OBS, seed=504, glint=CS_GLOW_EYE)
+
+
+# Egg silhouette mask (per-row x range) for a 16x16 vanilla-style spawn egg: pointed top, round
+# bottom. Outer cells are the outline; inner cells take the base colour with accent spots.
+_EGG_ROWS = {
+    2: (7, 9), 3: (6, 10), 4: (6, 10), 5: (5, 11), 6: (5, 11), 7: (4, 12), 8: (4, 12),
+    9: (4, 12), 10: (4, 12), 11: (4, 12), 12: (5, 11), 13: (5, 11), 14: (6, 10),
+}
+
+
+def gen_spawn_egg(name, base, spot, outline, seed):
+    """A classic spawn-egg icon: base-coloured egg with accent spots and a dark outline, matched to
+    the creature's palette. Additive: only (re)rendered under the --creatures flag."""
+    path = os.path.join(ITEM_DIR, name + "_spawn_egg.png")
+    if os.path.exists(path) and not FORCE_CREATURES:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+        return
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (S, S), CLEAR)
+    px = img.load()
+    for y, (x0, x1) in _EGG_ROWS.items():
+        for x in range(x0, x1 + 1):
+            edge = (x == x0 or x == x1 or y == min(_EGG_ROWS) or y == max(_EGG_ROWS)
+                    or (y - 1 not in _EGG_ROWS) or (y + 1 not in _EGG_ROWS))
+            if edge:
+                px[x, y] = outline
+            else:
+                px[x, y] = spot if rng.random() < 0.32 else base
+    # subtle top-left highlight for a rounded read
+    for (hx, hy) in [(7, 4), (8, 4), (6, 5)]:
+        r, g, b, a = px[hx, hy]
+        if a:
+            px[hx, hy] = (min(255, r + 40), min(255, g + 40), min(255, b + 40), 255)
+    img.save(path)
+    print("wrote", os.path.relpath(path, ROOT))
+
+
+def gen_spawn_eggs():
+    gen_spawn_egg("xertz_stalker", XS_BODY, XS_FACET, XS_DARK, 611)
+    gen_spawn_egg("quartz_crawler", (188, 190, 202, 255), QC_CRY, QC_SEAM, 612)
+    gen_spawn_egg("greenling", GL_BODY, GL_LITE, GL_DARK, 613)
+    gen_spawn_egg("cinder_stalker", CS_ROCK2, CS_ORANGE, CS_OBS, 614)
 
 
 def gen_entity_rocket():
@@ -868,7 +1094,7 @@ def gen_entity_glow(name, threshold=205):
     if not os.path.exists(src):
         print("skip glow (no base)", name)
         return
-    if os.path.exists(out) and "--force" not in sys.argv:
+    if os.path.exists(out) and not FORCE_CREATURES:
         print("skip (exists)", os.path.relpath(out, ROOT))
         return
     base = Image.open(src).convert("RGBA")
@@ -946,9 +1172,65 @@ def gen_storage_endpoints():
     gen_panel_block("creative_item_store", pink, SYM_BOX)
 
 
+# ---- Tier 2 (cindrite-upgraded) Oxygen Suit -------------------------------
+#
+# Derived art: the committed Tier 1 suit textures re-trimmed with cindrite embers (Cindara palette —
+# hot orange/red over dark volcanic rock) so the upgrade reads at a glance. Additive like the rest:
+# skipped when the output PNG already exists.
+
+CINDRITE_EMBER = (236, 108, 32)
+CINDRITE_DEEP = (118, 38, 18)
+
+
+def _emberize(src_path, dst_path):
+    """Recolour a Tier 1 suit texture toward the cindrite palette: saturated (suit-coloured) pixels
+    blend toward ember orange, dark trim deepens toward volcanic rock. Grey/metal pixels keep their
+    read so the suit silhouette stays recognisably the same family."""
+    if os.path.exists(dst_path) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(dst_path, ROOT))
+        return
+    if not os.path.exists(src_path):
+        print("MISSING source", os.path.relpath(src_path, ROOT))
+        return
+    img = Image.open(src_path).convert("RGBA")
+    px = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            mx, mn = max(r, g, b), min(r, g, b)
+            sat = 0 if mx == 0 else (mx - mn) / mx
+            lum = (r + g + b) / 3.0
+            if sat > 0.18:  # coloured trim -> ember
+                t = min(1.0, sat * 1.4)
+                er, eg, eb = CINDRITE_EMBER if lum > 90 else CINDRITE_DEEP
+                # keep the source's shading by scaling the ember by relative luminance
+                shade = max(0.45, min(1.25, lum / 140.0))
+                r = int(r * (1 - t) + er * shade * t)
+                g = int(g * (1 - t) + eg * shade * t)
+                b = int(b * (1 - t) + eb * shade * t)
+                px[x, y] = (min(255, r), min(255, g), min(255, b), a)
+    img.save(dst_path)
+    print("wrote", os.path.relpath(dst_path, ROOT))
+
+
+def gen_oxygen_suit_t2():
+    for piece in ("helmet", "chestplate", "leggings", "boots"):
+        _emberize(os.path.join(ITEM_DIR, "oxygen_suit_%s.png" % piece),
+                  os.path.join(ITEM_DIR, "oxygen_suit_t2_%s.png" % piece))
+    equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
+    for layer in ("humanoid", "humanoid_leggings"):
+        _emberize(os.path.join(equip, layer, "oxygen_suit.png"),
+                  os.path.join(equip, layer, "oxygen_suit_t2.png"))
+
+
 if __name__ == "__main__":
     gen_oxygen_particle()
     gen_terraformer()
+    # Creature base textures (additive; (re)render only under the creature-scoped --creatures flag).
+    gen_creatures()
+    gen_spawn_eggs()
     for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker"):
         gen_entity_glow(_name)
     gen_ore(STONE, "nerosium_ore")
@@ -975,3 +1257,5 @@ if __name__ == "__main__":
     gen_storage_endpoints()
     # Universal pipe translucent tube.
     gen_universal_pipe_glass()
+    # Suit-and-station integration — Tier 2 (cindrite-upgraded) oxygen suit, derived from Tier 1 art.
+    gen_oxygen_suit_t2()

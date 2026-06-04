@@ -106,6 +106,38 @@ public final class ModItems {
             "oxygen_suit_boots",
             props -> new Item(props.humanoidArmor(OXYGEN_SUIT_MATERIAL, ArmorType.BOOTS)));
 
+    /** The Tier 2 worn-armour asset key ({@code assets/nerospace/equipment/oxygen_suit_t2.json}). */
+    public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_T2_ASSET = ResourceKey.create(
+            EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(Nerospace.MODID, "oxygen_suit_t2"));
+
+    /**
+     * Tier 2 Oxygen Suit material — the cindrite-upgraded suit: tougher, repaired with cindrite. A
+     * full Tier 2 set carries a bigger air tank and refills faster at airlocks (see
+     * {@code GreenxertzAtmosphere}).
+     */
+    public static final ArmorMaterial OXYGEN_SUIT_T2_MATERIAL = new ArmorMaterial(
+            36,
+            Map.of(ArmorType.HELMET, 4, ArmorType.CHESTPLATE, 8, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 4),
+            14,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            2.0F,
+            0.0F,
+            ModTags.Items.GEMS_CINDRITE,
+            OXYGEN_SUIT_T2_ASSET);
+
+    public static final DeferredItem<Item> OXYGEN_SUIT_T2_HELMET = ITEMS.registerItem(
+            "oxygen_suit_t2_helmet",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_T2_MATERIAL, ArmorType.HELMET)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_T2_CHESTPLATE = ITEMS.registerItem(
+            "oxygen_suit_t2_chestplate",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_T2_MATERIAL, ArmorType.CHESTPLATE)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_T2_LEGGINGS = ITEMS.registerItem(
+            "oxygen_suit_t2_leggings",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_T2_MATERIAL, ArmorType.LEGGINGS)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_T2_BOOTS = ITEMS.registerItem(
+            "oxygen_suit_t2_boots",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_T2_MATERIAL, ArmorType.BOOTS)));
+
     // --- Travel (Phase 3, temporary; replaced by rockets in Phase 4) --------
 
     /**
