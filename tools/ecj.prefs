@@ -1,0 +1,39 @@
+# Eclipse compiler (ECJ) analysis settings for the `ecjCheck` Gradle task.
+# Mirrors what VS Code's Java language server reports for this project, so the
+# assistant can see (and fix) the same Problems-panel diagnostics from the build.
+#
+# Null analysis: VS Code enables annotation-based null analysis automatically when
+# org.jetbrains.annotations is on the classpath — replicate that here.
+org.eclipse.jdt.core.compiler.annotation.nullanalysis=enabled
+org.eclipse.jdt.core.compiler.annotation.nullable=org.jetbrains.annotations.Nullable
+org.eclipse.jdt.core.compiler.annotation.nonnull=org.jetbrains.annotations.NotNull
+org.eclipse.jdt.core.compiler.annotation.nonnullbydefault=org.eclipse.jdt.annotation.NonNullByDefault
+org.eclipse.jdt.core.compiler.annotation.inheritNullAnnotations=enabled
+org.eclipse.jdt.core.compiler.problem.missingNonNullByDefaultAnnotation=ignore
+org.eclipse.jdt.core.compiler.problem.nullSpecViolation=warning
+org.eclipse.jdt.core.compiler.problem.nullAnnotationInferenceConflict=warning
+org.eclipse.jdt.core.compiler.problem.nullUncheckedConversion=warning
+org.eclipse.jdt.core.compiler.problem.potentialNullReference=warning
+org.eclipse.jdt.core.compiler.problem.redundantNullCheck=warning
+org.eclipse.jdt.core.compiler.problem.nullReference=warning
+# Unused-code diagnostics (match the Problems panel).
+org.eclipse.jdt.core.compiler.problem.unusedImport=warning
+org.eclipse.jdt.core.compiler.problem.unusedPrivateMember=warning
+org.eclipse.jdt.core.compiler.problem.unusedLocal=warning
+org.eclipse.jdt.core.compiler.problem.unusedWarningToken=warning
+org.eclipse.jdt.core.compiler.problem.unnecessaryTypeCheck=warning
+org.eclipse.jdt.core.compiler.problem.unnecessaryElse=ignore
+# Keep noise that javac already covers (or that MC idioms trip constantly) quiet.
+# - ECJ doesn't know javac's "this-escape" token; don't flag its suppressions.
+org.eclipse.jdt.core.compiler.problem.unhandledWarningToken=ignore
+# - Event/capability lambdas routinely ignore parameters ((be, side) -> ...).
+org.eclipse.jdt.core.compiler.problem.unusedLambdaParameter=ignore
+# - Pedantic "free type variable may be @Nullable" speculation.
+org.eclipse.jdt.core.compiler.problem.pessimisticNullAnalysisForFreeTypeVariables=ignore
+# - NeoForge's @NotNull type arguments flowing into our unannotated generics (info-level pedantry).
+org.eclipse.jdt.core.compiler.problem.annotatedTypeArgumentToUnannotated=ignore
+org.eclipse.jdt.core.compiler.problem.rawTypeReference=ignore
+org.eclipse.jdt.core.compiler.problem.uncheckedTypeOperation=ignore
+org.eclipse.jdt.core.compiler.problem.deprecation=ignore
+org.eclipse.jdt.core.compiler.problem.forbiddenReference=ignore
+org.eclipse.jdt.core.compiler.problem.discouragedReference=ignore

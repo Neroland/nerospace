@@ -43,7 +43,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
     private final ItemStacksResourceHandler fuelHandler = new ItemStacksResourceHandler(this.items) {
         @Override
         public boolean isValid(int index, ItemResource resource) {
-            return OxygenGeneratorBlockEntity.fuelValue(resource.toStack(1)) > 0;
+            return fuelValue(resource.toStack(1)) > 0;
         }
 
         @Override
@@ -105,6 +105,23 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
         return (cap <= 0 || stored <= 0) ? 0 : 1 + (int) (stored / (double) cap * 14.0D);
     }
 
+    /** Burn value (ticks of generation) for an accepted fuel item, or 0 if not a fuel. */
+    public static int fuelValue(ItemStack stack) {
+        if (stack.is(net.minecraft.world.item.Items.COAL) || stack.is(net.minecraft.world.item.Items.CHARCOAL)) {
+            return 1_600;
+        }
+        if (stack.is(net.minecraft.world.item.Items.COAL_BLOCK)) {
+            return 16_000;
+        }
+        if (stack.is(net.minecraft.world.item.Items.BLAZE_ROD)) {
+            return 2_400;
+        }
+        if (stack.is(za.co.neroland.nerospace.registry.ModItems.ROCKET_FUEL_CANISTER.get())) {
+            return 4_000;
+        }
+        return 0;
+    }
+
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) {
             return;
@@ -116,7 +133,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
             }
         } else {
             ItemStack fuel = this.items.get(FUEL_SLOT);
-            int value = OxygenGeneratorBlockEntity.fuelValue(fuel);
+            int value = fuelValue(fuel);
             if (value > 0 && this.energy.getAmountAsInt() < ENERGY_CAPACITY) {
                 this.burnTime = value;
                 this.maxBurnTime = value;
@@ -203,7 +220,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return OxygenGeneratorBlockEntity.fuelValue(stack) > 0;
+        return CombustionGeneratorBlockEntity.fuelValue(stack) > 0;
     }
 
     @Override

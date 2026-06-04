@@ -80,7 +80,6 @@ public final class TerraformConversion {
             if (!(ro instanceof PalettedContainer<?>)) {
                 continue; // not writable — skip rather than risk a cast error
             }
-            @SuppressWarnings("unchecked")
             PalettedContainer<Holder<Biome>> biomes = (PalettedContainer<Holder<Biome>>) ro;
             for (int by = 0; by < 4; by++) {
                 if (biomes.getAndSet(bx, by, bz, terra) != terra) {

@@ -27,6 +27,12 @@ public final class ModDataComponents {
                     .persistent(Codec.intRange(0, 3))
                     .networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** The item a Pipe Filter is set to (applied to pipe faces to restrict the item layer). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.neoforged.neoforge.transfer.item.ItemResource>> FILTER_ITEM =
+            COMPONENTS.registerComponentType("filter_item", builder -> builder
+                    .persistent(net.neoforged.neoforge.transfer.item.ItemResource.CODEC)
+                    .networkSynchronized(net.neoforged.neoforge.transfer.item.ItemResource.STREAM_CODEC));
+
     private ModDataComponents() {
     }
 

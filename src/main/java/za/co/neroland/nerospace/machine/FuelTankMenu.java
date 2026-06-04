@@ -23,6 +23,7 @@ public class FuelTankMenu extends AbstractContainerMenu {
     }
 
     /** Server constructor. */
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public FuelTankMenu(int containerId, Inventory playerInventory, ContainerData data) {
         super(ModMenuTypes.FUEL_TANK.get(), containerId);
         checkContainerDataCount(data, 2);

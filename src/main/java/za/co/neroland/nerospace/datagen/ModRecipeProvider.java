@@ -343,6 +343,41 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
+        // Pipe Filter — a nerosteel frame around a hopper grate.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.PIPE_FILTER.get(), 4)
+                .pattern("NIN")
+                .pattern("I I")
+                .pattern("NIN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('I', Items.IRON_BARS)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Speed Upgrade — redstone-driven.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.SPEED_UPGRADE.get())
+                .pattern("NRN")
+                .pattern("RGR")
+                .pattern("NRN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('R', Items.REDSTONE)
+                .define('G', Items.GOLD_INGOT)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Capacity Upgrade — chest-hearted.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.CAPACITY_UPGRADE.get())
+                .pattern("NQN")
+                .pattern("QCQ")
+                .pattern("NQN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('Q', ModItems.XERTZ_QUARTZ)
+                .define('C', Items.CHEST)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
         // Configurator — the network tool.
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.TOOLS, ModItems.CONFIGURATOR.get())

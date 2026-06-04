@@ -30,6 +30,7 @@ public class NerosiumGrinderMenu extends AbstractContainerMenu {
     }
 
     /** Server constructor. */
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public NerosiumGrinderMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
         super(ModMenuTypes.NEROSIUM_GRINDER.get(), containerId);
         checkContainerSize(container, NerosiumGrinderBlockEntity.SIZE);

@@ -23,6 +23,7 @@ public class XertzStalkerModel extends GreenxertzMobModel {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "xertz_stalker"), "main");
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public XertzStalkerModel(ModelPart root) {
         super(root);
         swingLimb("leg_l", 0F, 0.5F);

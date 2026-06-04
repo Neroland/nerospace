@@ -21,6 +21,7 @@ public class QuartzCrawlerModel extends GreenxertzMobModel {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "quartz_crawler"), "main");
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public QuartzCrawlerModel(ModelPart root) {
         super(root);
         for (int i = 0; i < 3; i++) {

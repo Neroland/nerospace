@@ -1,84 +1,52 @@
 package za.co.neroland.nerospace.machine;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 
+import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /**
- * Menu for the Oxygen Generator: a single fuel slot plus four synced data values (energy, capacity,
- * burn time, max burn time) for the screen's energy and burn gauges.
+ * Menu for the Oxygen Generator (gas-layer rework): no machine slots — the machine runs on piped
+ * power and pipes its oxygen out — just four synced values (energy, energy cap, oxygen, oxygen cap)
+ * for the screen's gauges, plus the player inventory.
  */
 public class OxygenGeneratorMenu extends AbstractContainerMenu {
 
-    private static final int FUEL_SLOT = 0;
-    private static final int PLAYER_INV_START = 1;
-    private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
-
-    private final Container container;
     private final ContainerData data;
+    private final ContainerLevelAccess access;
 
     /** Client constructor (referenced by the {@code MenuType}). */
     public OxygenGeneratorMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainer(OxygenGeneratorBlockEntity.SIZE),
-                new SimpleContainerData(4));
+        this(containerId, playerInventory, new SimpleContainerData(4), ContainerLevelAccess.NULL);
     }
 
     /** Server constructor. */
-    public OxygenGeneratorMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
+    public OxygenGeneratorMenu(int containerId, Inventory playerInventory, ContainerData data,
+            ContainerLevelAccess access) {
         super(ModMenuTypes.OXYGEN_GENERATOR.get(), containerId);
-        checkContainerSize(container, OxygenGeneratorBlockEntity.SIZE);
         checkContainerDataCount(data, 4);
-        this.container = container;
         this.data = data;
+        this.access = access;
 
-        this.addSlot(new FuelSlot(container, OxygenGeneratorBlockEntity.FUEL_SLOT, 80, 46));
         this.addStandardInventorySlots(playerInventory, 8, 84);
         this.addDataSlots(data);
     }
 
     @Override
     public boolean stillValid(Player player) {
-        return this.container.stillValid(player);
+        return stillValid(this.access, player, ModBlocks.OXYGEN_GENERATOR.get());
     }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
-        ItemStack moved = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasItem()) {
-            ItemStack raw = slot.getItem();
-            moved = raw.copy();
-            if (index == FUEL_SLOT) {
-                if (!this.moveItemStackTo(raw, PLAYER_INV_START, PLAYER_INV_END, true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (OxygenGeneratorBlockEntity.fuelValue(raw) > 0) {
-                if (!this.moveItemStackTo(raw, FUEL_SLOT, FUEL_SLOT + 1, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else {
-                return ItemStack.EMPTY;
-            }
-
-            if (raw.isEmpty()) {
-                slot.setByPlayer(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-            if (raw.getCount() == moved.getCount()) {
-                return ItemStack.EMPTY;
-            }
-            slot.onTake(player, raw);
-        }
-        return moved;
+        return ItemStack.EMPTY; // no machine slots
     }
 
     // --- Screen helpers -----------------------------------------------------
@@ -91,32 +59,16 @@ public class OxygenGeneratorMenu extends AbstractContainerMenu {
         return this.data.get(1);
     }
 
-    public boolean isBurning() {
-        return this.data.get(2) > 0;
+    public int getOxygen() {
+        return this.data.get(2);
     }
 
-    /** @return energy scaled to {@code pixels} (e.g. a bar height). */
-    public int getScaledEnergy(int pixels) {
-        int cap = getMaxEnergy();
-        return cap != 0 ? getEnergy() * pixels / cap : 0;
+    public int getMaxOxygen() {
+        return this.data.get(3);
     }
 
-    /** @return current burn progress scaled to {@code pixels}. */
-    public int getScaledBurn(int pixels) {
-        int max = this.data.get(3);
-        int cur = this.data.get(2);
-        return (max != 0 && cur != 0) ? cur * pixels / max : 0;
-    }
-
-    /** Fuel slot: only burnable items may be placed. */
-    private static class FuelSlot extends Slot {
-        FuelSlot(Container container, int slot, int x, int y) {
-            super(container, slot, x, y);
-        }
-
-        @Override
-        public boolean mayPlace(ItemStack stack) {
-            return OxygenGeneratorBlockEntity.fuelValue(stack) > 0;
-        }
+    public boolean isProducing() {
+        return getEnergy() >= OxygenGeneratorBlockEntity.FE_PER_MB
+                && getOxygen() < getMaxOxygen();
     }
 }

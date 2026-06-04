@@ -27,6 +27,7 @@ public class PassiveGeneratorMenu extends AbstractContainerMenu {
                 new SimpleContainerData(4));
     }
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public PassiveGeneratorMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
         super(ModMenuTypes.PASSIVE_GENERATOR.get(), containerId);
         checkContainerSize(container, PassiveGeneratorBlockEntity.SIZE);

@@ -28,6 +28,7 @@ public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRen
         this(context, model, texture, scaleX, scaleY, scaleZ, shadow, null);
     }
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public GreenxertzCreatureRenderer(EntityRendererProvider.Context context,
                                       EntityModel<LivingEntityRenderState> model, Identifier texture,
                                       float scaleX, float scaleY, float scaleZ, float shadow,

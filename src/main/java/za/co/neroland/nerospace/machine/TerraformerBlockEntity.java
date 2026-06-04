@@ -55,20 +55,20 @@ import za.co.neroland.nerospace.world.TerraformManager;
  */
 public class TerraformerBlockEntity extends BlockEntity implements Container, MenuProvider {
 
-    public static final int FUEL_SLOT = 0;
-    public static final int UPGRADE_SLOT = 1;
-    public static final int SIZE = 2;
+    public static final int UPGRADE_SLOT = 0;
+    public static final int SIZE = 1;
 
     public static final int ENERGY_CAPACITY = 100_000;
     public static final int ENERGY_MAX_INSERT = 2_000;
-    public static final int GENERATE_PER_TICK = 40;
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final TerraformerEnergy energy = new TerraformerEnergy();
-    private final ItemStacksResourceHandler fuelHandler = new ItemStacksResourceHandler(this.items) {
+    /** A transfer-API view of the upgrade slot so hoppers/pipes can feed tier upgrades. */
+    private final ItemStacksResourceHandler upgradeHandler = new ItemStacksResourceHandler(this.items) {
         @Override
         public boolean isValid(int index, ItemResource resource) {
-            return index == FUEL_SLOT && OxygenGeneratorBlockEntity.fuelValue(resource.toStack(1)) > 0;
+            ItemStack stack = resource.toStack(1);
+            return stack.is(ModItems.NEROSTEEL_INGOT.get()) || stack.is(ModItems.CINDRITE.get());
         }
 
         @Override
@@ -77,8 +77,6 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         }
     };
 
-    private int burnTime;
-    private int maxBurnTime;
     /** Machine tier (1..3): more columns per cycle, and Tier 3 unlocks ore seeding. */
     private int tier = 1;
     /** Expanding frontier (terraform design §2.1): horizontal radius + a within-ring column cursor. */
@@ -91,17 +89,15 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     /** Chunks this machine has force-loaded (only when active terraforming is enabled). */
     private final transient LongOpenHashSet forcedChunks = new LongOpenHashSet();
 
-    /** Synced to the menu: [0]=energy [1]=capacity [2]=burnTime [3]=maxBurnTime [4]=tier [5]=radius. */
+    /** Synced to the menu: [0]=energy [1]=capacity [2]=tier [3]=radius. */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
                 case 0 -> energy.getAmountAsInt();
                 case 1 -> energy.getCapacityAsInt();
-                case 2 -> burnTime;
-                case 3 -> maxBurnTime;
-                case 4 -> tier;
-                case 5 -> radius;
+                case 2 -> tier;
+                case 3 -> radius;
                 default -> 0;
             };
         }
@@ -109,17 +105,15 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         @Override
         public void set(int index, int value) {
             switch (index) {
-                case 2 -> burnTime = value;
-                case 3 -> maxBurnTime = value;
-                case 4 -> tier = value;
-                case 5 -> radius = value;
+                case 2 -> tier = value;
+                case 3 -> radius = value;
                 default -> { }
             }
         }
 
         @Override
         public int getCount() {
-            return 6;
+            return 4;
         }
     };
 
@@ -131,8 +125,8 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         return this.energy;
     }
 
-    public ResourceHandler<ItemResource> getFuelHandler() {
-        return this.fuelHandler;
+    public ResourceHandler<ItemResource> getUpgradeHandler() {
+        return this.upgradeHandler;
     }
 
     public ContainerData getDataAccess() {
@@ -168,22 +162,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
             return;
         }
 
-        // Fuel → energy (shared chassis with the Oxygen Generator).
-        if (this.burnTime > 0) {
-            this.burnTime--;
-            this.energy.generate(GENERATE_PER_TICK);
-        } else {
-            ItemStack fuel = this.items.get(FUEL_SLOT);
-            int value = OxygenGeneratorBlockEntity.fuelValue(fuel);
-            if (value > 0 && this.energy.getAmountAsInt() < ENERGY_CAPACITY) {
-                this.burnTime = value;
-                this.maxBurnTime = value;
-                fuel.shrink(1);
-                setChanged();
-            } else if (this.maxBurnTime != 0) {
-                this.maxBurnTime = 0;
-            }
-        }
+        // Grid-only power: the buffer is filled exclusively through the energy capability (pipes).
 
         // Auto-consume tier upgrades: a Nerosteel Ingot → T2, a Cindrite → T3.
         ItemStack upgrade = this.items.get(UPGRADE_SLOT);
@@ -327,12 +306,9 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         this.energy.serialize(output.child("Energy"));
-        output.putInt("BurnTime", this.burnTime);
-        output.putInt("MaxBurnTime", this.maxBurnTime);
         output.putInt("Tier", this.tier);
         output.putInt("Radius", this.radius);
         output.putInt("Cursor", this.cursor);
-        output.store("Fuel", ItemStack.OPTIONAL_CODEC, this.items.get(FUEL_SLOT));
         output.store("Upgrade", ItemStack.OPTIONAL_CODEC, this.items.get(UPGRADE_SLOT));
     }
 
@@ -340,13 +316,10 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.energy.deserialize(input.childOrEmpty("Energy"));
-        this.burnTime = input.getIntOr("BurnTime", 0);
-        this.maxBurnTime = input.getIntOr("MaxBurnTime", 0);
         this.tier = Math.max(1, input.getIntOr("Tier", 1));
         this.radius = input.getIntOr("Radius", 0);
         this.cursor = input.getIntOr("Cursor", 0);
         this.ringFor = -1;
-        this.items.set(FUEL_SLOT, input.read("Fuel", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.items.set(UPGRADE_SLOT, input.read("Upgrade", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
     }
 
@@ -372,7 +345,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
 
     @Override
     public boolean isEmpty() {
-        return this.items.get(FUEL_SLOT).isEmpty() && this.items.get(UPGRADE_SLOT).isEmpty();
+        return this.items.get(UPGRADE_SLOT).isEmpty();
     }
 
     @Override
@@ -405,9 +378,6 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        if (slot == FUEL_SLOT) {
-            return OxygenGeneratorBlockEntity.fuelValue(stack) > 0;
-        }
         return stack.is(ModItems.NEROSTEEL_INGOT.get()) || stack.is(ModItems.CINDRITE.get());
     }
 
@@ -434,14 +404,6 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
         @Override
         protected void onEnergyChanged(int previousAmount) {
             TerraformerBlockEntity.this.setChanged();
-        }
-
-        void generate(int amount) {
-            int current = getAmountAsInt();
-            int next = Math.min(getCapacityAsInt(), current + amount);
-            if (next != current) {
-                set(next);
-            }
         }
 
         void consume(int amount) {

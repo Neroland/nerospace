@@ -107,7 +107,7 @@ public final class ModCapabilities {
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.TERRAFORMER.get(),
-                (blockEntity, side) -> blockEntity.getFuelHandler());
+                (blockEntity, side) -> blockEntity.getUpgradeHandler());
 
         // Fluid: expose the rocket's tank and the Fuel Tank machine so pipes/automation can fill them.
         event.registerEntity(
@@ -120,12 +120,11 @@ public final class ModCapabilities {
                 ModBlockEntities.FUEL_TANK.get(),
                 (blockEntity, side) -> blockEntity.getTank());
 
-        // Item: let hoppers/pipes feed the machines.
-        // Oxygen Generator — the single fuel slot (any side).
+        // Oxygen Generator (gas rework) — pipes can carry its oxygen away (or bottle it in Gas Tanks).
         event.registerBlockEntity(
-                Capabilities.Item.BLOCK,
+                za.co.neroland.nerospace.gas.GasCapability.BLOCK,
                 ModBlockEntities.OXYGEN_GENERATOR.get(),
-                (blockEntity, side) -> blockEntity.getFuelHandler());
+                (blockEntity, side) -> blockEntity.getGasHandler());
 
         // Nerosium Grinder — sided: insert into the input from the top/sides, extract output below.
         event.registerBlockEntity(

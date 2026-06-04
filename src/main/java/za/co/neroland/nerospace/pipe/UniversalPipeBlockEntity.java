@@ -23,6 +23,7 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -47,11 +48,18 @@ public class UniversalPipeBlockEntity extends BlockEntity {
     private final PipeIoMode[][] faceModes = new PipeIoMode[6][PipeResourceType.VALUES.length];
     /** Soft cap on simultaneous travelling stacks per segment (extraction pauses above it). */
     public static final int MAX_TRAVELLING_ITEMS = 16;
+    /** Max installed upgrades of each kind per segment. */
+    public static final int MAX_UPGRADES = 3;
 
     private final PipeEnergy energy = new PipeEnergy();
     private final PipeFluid fluid = new PipeFluid();
     private final PipeGas gas = new PipeGas();
     private final List<TravellingItem> items = new ArrayList<>();
+
+    /** Per-face item-layer filter (EMPTY = unfiltered), indexed by {@code Direction.get3DDataValue()}. */
+    private final ItemResource[] faceFilters = new ItemResource[6];
+    private int speedUpgrades;
+    private int capacityUpgrades;
 
     /** Transient: the network this pipe belongs to, lazily (re)built and shared with all members. */
     @Nullable
@@ -69,7 +77,74 @@ public class UniversalPipeBlockEntity extends BlockEntity {
             for (int t = 0; t < PipeResourceType.VALUES.length; t++) {
                 this.faceModes[f][t] = PipeIoMode.AUTO;
             }
+            this.faceFilters[f] = ItemResource.EMPTY;
         }
+    }
+
+    // --- Filters + upgrades ----------------------------------------------------
+
+    public ItemResource filter(Direction dir) {
+        return this.faceFilters[dir.get3DDataValue()];
+    }
+
+    public void setFilter(Direction dir, ItemResource filter) {
+        this.faceFilters[dir.get3DDataValue()] = filter;
+        setChanged();
+    }
+
+    public boolean installUpgrade(za.co.neroland.nerospace.item.PipeUpgradeItem.Kind kind) {
+        if (upgradeCount(kind) >= MAX_UPGRADES) {
+            return false;
+        }
+        if (kind == za.co.neroland.nerospace.item.PipeUpgradeItem.Kind.SPEED) {
+            this.speedUpgrades++;
+        } else {
+            this.capacityUpgrades++;
+        }
+        setChanged();
+        return true;
+    }
+
+    public int upgradeCount(za.co.neroland.nerospace.item.PipeUpgradeItem.Kind kind) {
+        return kind == za.co.neroland.nerospace.item.PipeUpgradeItem.Kind.SPEED
+                ? this.speedUpgrades : this.capacityUpgrades;
+    }
+
+    /** Pops all installed upgrades back out (sneak-right-click with an empty hand). @return count. */
+    public int uninstallUpgrades() {
+        int total = this.speedUpgrades + this.capacityUpgrades;
+        if (total > 0 && this.level instanceof ServerLevel serverLevel) {
+            BlockPos pos = getBlockPos();
+            if (this.speedUpgrades > 0) {
+                Containers.dropItemStack(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        new net.minecraft.world.item.ItemStack(
+                                za.co.neroland.nerospace.registry.ModItems.SPEED_UPGRADE.get(), this.speedUpgrades));
+            }
+            if (this.capacityUpgrades > 0) {
+                Containers.dropItemStack(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        new net.minecraft.world.item.ItemStack(
+                                za.co.neroland.nerospace.registry.ModItems.CAPACITY_UPGRADE.get(), this.capacityUpgrades));
+            }
+            this.speedUpgrades = 0;
+            this.capacityUpgrades = 0;
+            setChanged();
+        }
+        return total;
+    }
+
+    /** Throughput multiplier for the energy/fluid/gas layers (and item speed). */
+    public int speedMultiplier() {
+        return 1 + this.speedUpgrades;
+    }
+
+    /** Buffer multiplier for the fluid/gas tanks and the in-transit item cap. */
+    public int capacityMultiplier() {
+        return 1 + this.capacityUpgrades;
+    }
+
+    /** Ticks an item needs to cross this segment (speed upgrades shorten it). */
+    public int itemTicksPerBlock() {
+        return Math.max(1, Config.ITEM_PIPE_TICKS_PER_BLOCK.get() / speedMultiplier());
     }
 
     /** Exposed to {@code Capabilities.Energy.BLOCK} so generators, machines and other cables interop. */
@@ -143,10 +218,12 @@ public class UniversalPipeBlockEntity extends BlockEntity {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (this.network == null || !this.network.isValid()) {
-            this.network = PipeNetwork.getOrBuild(serverLevel, pos);
+        PipeNetwork net = this.network; // local so the null/valid check holds for the analyzer
+        if (net == null || !net.isValid()) {
+            net = PipeNetwork.getOrBuild(serverLevel, pos);
+            this.network = net;
         }
-        this.network.tick(serverLevel);
+        net.tick(serverLevel);
 
         // Sync content PRESENCE changes to clients (the renderer's streams key off them). Amounts
         // change every tick from balancing, so only the cheap fingerprint triggers a packet.
@@ -181,6 +258,12 @@ public class UniversalPipeBlockEntity extends BlockEntity {
         for (TravellingItem item : this.items) {
             itemList.add(item);
         }
+        ValueOutput.TypedOutputList<ItemResource> filterList = output.list("Filters", ItemResource.OPTIONAL_CODEC);
+        for (ItemResource filter : this.faceFilters) {
+            filterList.add(filter);
+        }
+        output.putInt("SpeedUpgrades", this.speedUpgrades);
+        output.putInt("CapacityUpgrades", this.capacityUpgrades);
     }
 
     @Override
@@ -200,6 +283,14 @@ public class UniversalPipeBlockEntity extends BlockEntity {
         for (TravellingItem item : input.listOrEmpty("Items", TravellingItem.CODEC)) {
             this.items.add(item);
         }
+        int f = 0;
+        for (ItemResource filter : input.listOrEmpty("Filters", ItemResource.OPTIONAL_CODEC)) {
+            if (f < 6) {
+                this.faceFilters[f++] = filter;
+            }
+        }
+        this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
+        this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);
     }
 
     // --- Client sync (travelling items are rendered) --------------------------
@@ -263,6 +354,11 @@ public class UniversalPipeBlockEntity extends BlockEntity {
         }
 
         @Override
+        protected int getCapacity(int index, FluidResource resource) {
+            return this.capacity * capacityMultiplier();
+        }
+
+        @Override
         protected void onContentsChanged(int index, FluidStack oldStack) {
             UniversalPipeBlockEntity.this.setChanged();
         }
@@ -277,7 +373,7 @@ public class UniversalPipeBlockEntity extends BlockEntity {
 
         /** Directly set the buffer (network balancing); zero amount clears to empty. */
         void setContents(FluidResource resource, int amount) {
-            int clamped = Math.max(0, Math.min(this.capacity, amount));
+            int clamped = Math.max(0, Math.min(getCapacity(0, resource), amount));
             set(0, clamped == 0 ? FluidResource.EMPTY : resource, clamped);
         }
     }
@@ -289,6 +385,11 @@ public class UniversalPipeBlockEntity extends BlockEntity {
     final class PipeGas extends GasStacksResourceHandler {
         PipeGas() {
             super(1, Config.GAS_PIPE_CAPACITY.get());
+        }
+
+        @Override
+        protected int getCapacity(int index, GasResource resource) {
+            return super.getCapacity(index, resource) * capacityMultiplier();
         }
 
         @Override
@@ -306,7 +407,7 @@ public class UniversalPipeBlockEntity extends BlockEntity {
 
         /** Directly set the buffer (network balancing); zero amount clears to empty. */
         void setContents(GasResource resource, int amount) {
-            int clamped = Math.max(0, Math.min(this.capacity, amount));
+            int clamped = Math.max(0, Math.min(getCapacity(0, resource), amount));
             set(0, clamped == 0 ? GasResource.EMPTY : resource, clamped);
         }
     }

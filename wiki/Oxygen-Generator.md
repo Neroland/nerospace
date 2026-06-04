@@ -1,10 +1,12 @@
 # Oxygen Generator
 
-Keeps you alive off-world by pressurising the air around it.
+Keeps you alive off-world by turning grid power into Oxygen gas — and pressurising the air around it.
 
 ## Overview
-Every Nerospace dimension is **airless** — exposed players lose oxygen and suffocate. An active Oxygen
-Generator injects breathable air into the surrounding space so you can build a habitable base.
+Every Nerospace dimension is **airless** — exposed players lose oxygen and suffocate. The Oxygen
+Generator is an **electrolysis machine**: it consumes energy from the pipe network and produces
+**Oxygen gas** into an internal tank. That tank both feeds the breathable field around the machine and
+can be **piped out** through Universal Pipes (gas layer) into Gas Tanks or other rooms.
 
 ## Obtaining
 **Craft** (shaped):
@@ -16,25 +18,28 @@ N N N
 `N` = Nerosteel Ingot · `G` = Glass · `R` = Redstone · `C` = Rocket Fuel Canister
 
 ## How it works
-- **Fuel → power:** put a fuel item in its slot (coal, charcoal, a coal block, a blaze rod, or a
-  Rocket Fuel Canister). Burning fuel charges an internal energy buffer; the generator runs while it
-  has power and goes idle when fuel and buffer are spent.
-- **Oxygen field:** while powered it becomes an oxygen **source**. Air spreads outward through
-  connected open space:
+- **Power in:** connect a Universal Pipe carrying energy (from a Combustion/Passive Generator or a
+  Battery). The machine stores up to 10,000 FE and cannot burn fuel directly — it is grid-only.
+- **Oxygen out:** while powered it produces up to 5 mB of Oxygen per tick (2 FE per mB) into an
+  8,000 mB internal tank. Pipes connected to it can carry the gas away (green stream).
+- **Oxygen field:** while the tank holds gas the machine is an oxygen **source**, slowly draining
+  (2 mB/t) to keep the air up. Air spreads outward through connected open space:
   - **Sealed room** (walls/roof — full blocks and glass are airtight): the **whole room fills** and
     stays breathable.
   - **Open / leaky space:** only a bubble around the generator pressurises (the air escapes toward any
     opening), so seal your base for full coverage. A door or gap counts as a leak.
   - Search/coverage reaches up to ~16 blocks of connected air from the generator (configurable).
-- **Loss:** if the generator runs out of fuel or is broken, the oxygen **evaporates over ~10 seconds**
+- **Loss:** if the tank runs dry or the machine is broken, the oxygen **evaporates over ~10 seconds**
   (configurable).
 - **HUD:** a cyan **O₂ bar** appears above the hotbar in airless dimensions (it turns red when low).
-- **Automation:** hoppers/pipes can feed the fuel slot; emits a **comparator signal** from its charge.
+- **Automation:** emits a **comparator signal** from its oxygen tank level.
 
 ## Tips
-Build an airtight room (any full blocks or glass), drop a generator inside, and keep it fuelled. A full
+Build an airtight room, run a power line to a generator inside it, and the room stays breathable as
+long as the grid is up. Pipe surplus oxygen into a **Gas Tank** as a buffer for power outages. A full
 **Oxygen Suit** is the portable alternative for exploring away from a generator.
 
 ## Details
 - ID: `nerospace:oxygen_generator` · Tool: pickaxe, iron tier · Drops: itself
+- GUI: power gauge + oxygen tank gauge with a Producing/No-power status
 - Config: `oxygenBubbleRadius`, `oxygenLeakRange`, `oxygenEvaporateSeconds`, `oxygenBreathableThreshold`, …

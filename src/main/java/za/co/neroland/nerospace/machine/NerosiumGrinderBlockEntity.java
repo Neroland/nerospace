@@ -253,9 +253,9 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
     }
 
     /**
-     * Internal energy buffer. Receives power (so external mods can push energy in once they port to
-     * 26.1) but does not allow extraction. {@link #generate}/{@link #consume} are transaction-free
-     * helpers for the machine's own logic; {@code onEnergyChanged} keeps the chunk saved.
+     * Internal energy buffer. Receives power from the pipe network but does not allow extraction.
+     * {@link #consume} is a transaction-free helper for the machine's own logic;
+     * {@code onEnergyChanged} keeps the chunk saved.
      */
     private final class GrinderEnergy extends SimpleEnergyHandler {
         private GrinderEnergy() {
@@ -265,14 +265,6 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
         @Override
         protected void onEnergyChanged(int previousAmount) {
             NerosiumGrinderBlockEntity.this.setChanged();
-        }
-
-        void generate(int amount) {
-            int current = getAmountAsInt();
-            int next = Math.min(getCapacityAsInt(), current + amount);
-            if (next != current) {
-                set(next);
-            }
         }
 
         void consume(int amount) {

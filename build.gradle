@@ -28,6 +28,7 @@ sourceSets.main.resources {
 
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
+    mavenCentral() // ECJ (the Eclipse/IDE analyzer) for the ecjCheck verification task
 }
 
 base {
@@ -198,6 +199,8 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    // Keep the codebase warning-free: full lint, with intentional idioms suppressed at the source.
+    options.compilerArgs << '-Xlint:all' << '-Xlint:-processing'
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
@@ -263,6 +266,41 @@ tasks.register('syncModels') {
     }
 }
 tasks.named('compileJava') { dependsOn 'syncModels' }
+
+// ---------------------------------------------------------------------------
+// ecjCheck: run the Eclipse compiler (the SAME analyzer VS Code's Java
+// extension uses) over the main sources, with tools/ecj.prefs mirroring the
+// IDE's diagnostic settings. This surfaces Problems-panel warnings (null
+// analysis, unused members, unnecessary suppressions, ...) from the command
+// line / gradle MCP, so they can be fixed without screenshots.
+// Warnings are reported in the log; the task only FAILS on real errors.
+configurations {
+    ecj
+}
+dependencies {
+    ecj 'org.eclipse.jdt:ecj:+'
+}
+tasks.register('ecjCheck', JavaExec) {
+    group = 'verification'
+    description = 'Run the Eclipse (IDE) analyzer over main sources and report its diagnostics.'
+    notCompatibleWithConfigurationCache('assembles the analysis classpath at execution time')
+    dependsOn tasks.named('compileJava') // ensures the NeoForge artifacts exist
+    classpath = configurations.ecj
+    mainClass = 'org.eclipse.jdt.internal.compiler.batch.Main'
+    doFirst {
+        def analysisCp = (sourceSets.main.compileClasspath.files + sourceSets.main.output.files)
+                .findAll { it.exists() }
+                .join(File.pathSeparator)
+        args = [
+                '--release', java.toolchain.languageVersion.get().asInt().toString(),
+                '-proc:none',
+                '-d', 'none',
+                '-properties', file('tools/ecj.prefs').absolutePath,
+                '-classpath', analysisCp,
+                file('src/main/java').absolutePath,
+        ]
+    }
+}
 
 // Regenerate procedural textures + Blockbench .bbmodel sources (additive: skips existing assets).
 // Run on demand: `gradlew genAssets`. Python auto-detected (pyenv-aware), override with -PpythonCmd=.

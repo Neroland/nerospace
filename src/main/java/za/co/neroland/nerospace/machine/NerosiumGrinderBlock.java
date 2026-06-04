@@ -32,6 +32,7 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
     public static final MapCodec<NerosiumGrinderBlock> CODEC = simpleCodec(NerosiumGrinderBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public NerosiumGrinderBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));

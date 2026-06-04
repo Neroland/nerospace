@@ -93,6 +93,18 @@ public class ModLanguageProvider extends LanguageProvider {
         add("pipe.nerospace.mode.in", "In");
         add("pipe.nerospace.mode.out", "Out");
         add("pipe.nerospace.mode.off", "Off");
+        // Pipe filter + upgrades.
+        add(ModItems.PIPE_FILTER.get(), "Pipe Filter");
+        add(ModItems.SPEED_UPGRADE.get(), "Speed Upgrade");
+        add(ModItems.CAPACITY_UPGRADE.get(), "Capacity Upgrade");
+        add("item.nerospace.pipe_filter.set", "Filter set: %s");
+        add("item.nerospace.pipe_filter.cleared", "Filter cleared");
+        add("item.nerospace.pipe_filter.applied", "Face filter applied: %s on the %s face");
+        add("item.nerospace.pipe_filter.cleared_face", "Face filter removed from the %s face");
+        add("item.nerospace.pipe_upgrade.installed", "%s installed (%s/%s)");
+        add("item.nerospace.pipe_upgrade.full", "This pipe segment has no room for that upgrade");
+        add("block.nerospace.universal_pipe.upgrades_removed", "Upgrades popped out");
+        add("block.nerospace.universal_pipe.no_upgrades", "No upgrades installed");
         // Configurator panel.
         add("screen.nerospace.pipe_config", "Pipe Configuration");
         add("pipe.nerospace.face.down", "Bottom");
@@ -179,8 +191,9 @@ public class ModLanguageProvider extends LanguageProvider {
         // Oxygen generator GUI.
         add("container.nerospace.oxygen_generator", "Oxygen Generator");
         add("gui.nerospace.oxygen_generator.power", "Power: %s%%");
-        add("gui.nerospace.oxygen_generator.burning", "Burning");
-        add("gui.nerospace.oxygen_generator.idle", "Idle");
+        add("gui.nerospace.oxygen_generator.oxygen", "Oxygen: %s / %s mB");
+        add("gui.nerospace.oxygen_generator.producing", "Producing oxygen");
+        add("gui.nerospace.oxygen_generator.starved", "No power");
 
         // Fuel tank GUI.
         add("container.nerospace.fuel_tank", "Fuel Tank");

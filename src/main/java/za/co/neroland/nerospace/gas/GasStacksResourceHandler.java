@@ -16,7 +16,7 @@ public class GasStacksResourceHandler extends ResourceStacksResourceHandler<GasR
     private static final Codec<ResourceStack<GasResource>> STACK_CODEC = RecordCodecBuilder.create(i -> i.group(
             GasResource.CODEC.fieldOf("gas").forGetter(ResourceStack::resource),
             Codec.INT.fieldOf("amount").forGetter(ResourceStack::amount))
-            .apply(i, ResourceStack::new));
+            .apply(i, (gas, amount) -> new ResourceStack<>(gas, amount)));
 
     protected final int capacity;
 

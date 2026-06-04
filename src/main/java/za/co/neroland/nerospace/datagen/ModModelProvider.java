@@ -122,8 +122,11 @@ public class ModModelProvider extends ModelProvider {
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
 
-        // Power grid — the Configurator tool.
+        // Power grid — the Configurator tool + filter/upgrade modules.
         itemModels.generateFlatItem(ModItems.CONFIGURATOR.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.PIPE_FILTER.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.SPEED_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.CAPACITY_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
 
         // Phase 8d — oxygen suit (inventory item models; the worn layer is the equipment asset).
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HELMET.get(), ModelTemplates.FLAT_ITEM);

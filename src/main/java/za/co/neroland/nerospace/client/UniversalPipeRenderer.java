@@ -17,7 +17,6 @@ import net.minecraft.world.phys.Vec3;
 
 import com.mojang.math.Axis;
 
-import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.TravellingItem;
@@ -75,7 +74,7 @@ public class UniversalPipeRenderer implements BlockEntityRenderer<UniversalPipeB
         // Travelling items: advance progress locally for smooth motion between server syncs.
         float dt = pipe.clientItemTime == 0.0F ? 0.0F : Math.max(0.0F, now - pipe.clientItemTime);
         pipe.clientItemTime = now;
-        float step = 1.0F / Math.max(1, Config.ITEM_PIPE_TICKS_PER_BLOCK.get());
+        float step = 1.0F / pipe.itemTicksPerBlock();
 
         int count = Math.min(MAX_RENDERED_ITEMS, pipe.items().size());
         state.visibleItems = count;
@@ -90,7 +89,8 @@ public class UniversalPipeRenderer implements BlockEntityRenderer<UniversalPipeB
             float fx = item.from().getStepX();
             float fy = item.from().getStepY();
             float fz = item.from().getStepZ();
-            if (item.isParked() || item.to() == null) {
+            Direction to = item.to(); // local so the null check holds for the analyzer
+            if (item.isParked() || to == null) {
                 entry.x = 0.5F;
                 entry.y = 0.5F;
                 entry.z = 0.5F;
@@ -101,9 +101,9 @@ public class UniversalPipeRenderer implements BlockEntityRenderer<UniversalPipeB
                 entry.z = 0.5F + fz * k;
             } else {
                 float k = t - 0.5F; // centre -> to face
-                entry.x = 0.5F + item.to().getStepX() * k;
-                entry.y = 0.5F + item.to().getStepY() * k;
-                entry.z = 0.5F + item.to().getStepZ() * k;
+                entry.x = 0.5F + to.getStepX() * k;
+                entry.y = 0.5F + to.getStepY() * k;
+                entry.z = 0.5F + to.getStepZ() * k;
             }
             entry.spin = (now * 4.0F + i * 45.0F) % 360.0F;
 

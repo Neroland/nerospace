@@ -21,6 +21,7 @@ public class GreenlingModel extends GreenxertzMobModel {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "greenling"), "main");
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public GreenlingModel(ModelPart root) {
         super(root);
         swingLimb("leg_left", 0F, 0.5F);

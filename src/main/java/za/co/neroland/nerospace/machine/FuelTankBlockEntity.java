@@ -41,6 +41,7 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
     /** One bucket / canister of fuel, in millibuckets. */
     public static final int CONTAINER_MB = 1_000;
 
+    @SuppressWarnings("this-escape") // change-callback wiring, used only after construction
     private final RocketFuelTank tank = new RocketFuelTank(CAPACITY, this::setChanged);
 
     /** Synced to the open menu: [0]=fuel, [1]=capacity. */

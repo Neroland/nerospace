@@ -24,7 +24,6 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 
-import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.client.ClientOxygenField;
 import za.co.neroland.nerospace.client.OxygenHudLayer;
 

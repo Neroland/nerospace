@@ -16,6 +16,10 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 ## Tools
 - **Nerosium Pickaxe** — iron-tier mining, higher durability and a small attack bonus. Craft:
   3 Nerosium Ingots over two sticks (standard pickaxe pattern).
+- **[Configurator](Configurator)** — the pipe-network tool: per-face × per-layer I/O modes, with a
+  full configuration panel on sneak-right-click.
+- **Pipe Filter / Speed Upgrade / Capacity Upgrade** — see
+  [Pipe Filters and Upgrades](Pipe-Filters-and-Upgrades).
 
 ## Oxygen Suit
 A four-piece nerosteel armour set — **Helmet, Chestplate, Leggings, Boots** — that doubles as personal

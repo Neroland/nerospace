@@ -21,6 +21,7 @@ public class CinderStalkerModel extends GreenxertzMobModel {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "cinder_stalker"), "main");
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public CinderStalkerModel(ModelPart root) {
         super(root);
         swingLimb("leg_fl", 0F, 0.6F);

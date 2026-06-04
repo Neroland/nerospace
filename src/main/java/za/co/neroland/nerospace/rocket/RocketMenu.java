@@ -51,6 +51,7 @@ public class RocketMenu extends AbstractContainerMenu {
     }
 
     /** Server constructor (and client, via the resolved rocket). */
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public RocketMenu(int containerId, Inventory playerInventory, @Nullable RocketEntity rocket, ContainerData data) {
         super(ModMenuTypes.ROCKET.get(), containerId);
         checkContainerDataCount(data, DATA_COUNT);
@@ -70,19 +71,20 @@ public class RocketMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (this.rocket == null) {
+        RocketEntity current = this.rocket; // local copy so the null check holds for the analyzer
+        if (current == null) {
             return false;
         }
         if (id == BUTTON_LAUNCH) {
-            this.rocket.startLaunch();
+            current.startLaunch();
             return true;
         }
         if (id == BUTTON_CYCLE_DEST) {
-            this.rocket.cycleDestination();
+            current.cycleDestination();
             return true;
         }
         if (id >= SELECT_DEST_BASE) {
-            this.rocket.setDestinationIndex(id - SELECT_DEST_BASE);
+            current.setDestinationIndex(id - SELECT_DEST_BASE);
             return true;
         }
         return false;

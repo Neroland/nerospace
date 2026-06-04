@@ -28,7 +28,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const SERVER_NAME = 'gradle-mcp';
-const SERVER_VERSION = '1.0.0';
+const SERVER_VERSION = '1.1.0';
 const DEFAULT_PROTOCOL = '2025-06-18';
 
 // Where to run Gradle. Override per-call with the `project_dir` argument.
@@ -213,6 +213,21 @@ const TOOLS = [
     },
   },
   {
+    name: 'gradle_analyze',
+    description:
+      'Convenience: start the `ecjCheck` task asynchronously — runs the Eclipse ' +
+      'compiler (the same analyzer as the VS Code Problems panel, configured by ' +
+      'tools/ecj.prefs) over the main sources. Poll with gradle_status, then read ' +
+      'diagnostics with gradle_log (grep "WARNING|ERROR" for a summary).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        extra_args: { type: 'array', items: { type: 'string' } },
+        project_dir: { type: 'string' },
+      },
+    },
+  },
+  {
     name: 'gradle_status',
     description:
       'Poll a build. Returns status, outcome (BUILD SUCCESSFUL/FAILED once known), ' +
@@ -282,6 +297,14 @@ function callTool(name, args) {
     case 'gradle_run_data': {
       const rec = startBuild({
         tasks: ['runData'],
+        extra_args: args.extra_args,
+        project_dir: args.project_dir,
+      });
+      return summarize(rec, 0);
+    }
+    case 'gradle_analyze': {
+      const rec = startBuild({
+        tasks: ['ecjCheck'],
         extra_args: args.extra_args,
         project_dir: args.project_dir,
       });

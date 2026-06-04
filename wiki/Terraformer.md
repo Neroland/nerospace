@@ -18,8 +18,8 @@ N B N
 `N` = Nerosteel Ingot · `D` = Dirt · `O` = [Oxygen Generator](Oxygen-Generator) · `B` = Block of Nerosteel
 
 ## How it works
-- **Fuel → power:** burns the same fuels as the Oxygen Generator into an internal energy buffer; the
-  buffer drains as it works (higher tiers / more power = faster).
+- **Grid power:** runs exclusively on piped energy — connect a Universal Pipe carrying FE. Its
+  100,000 FE buffer drains as it works (higher tiers / more power = faster).
 - **Expanding frontier:** each work cycle it converts a ring of surface columns, then grows its radius
   — **uncapped**, but energy-throttled (it spends energy per block). Converting the ground:
   - turns exposed stone/sand/dirt-type surfaces into **grass**, with **dirt** beneath;

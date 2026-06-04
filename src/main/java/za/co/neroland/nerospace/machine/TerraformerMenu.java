@@ -14,14 +14,13 @@ import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /**
- * Menu for the Terraformer: a fuel slot and a tier-upgrade slot plus six synced data values (energy,
- * capacity, burn time, max burn time, tier, radius) for the screen gauges/readouts.
+ * Menu for the Terraformer (grid-only rework): a tier-upgrade slot plus four synced data values
+ * (energy, capacity, tier, radius). Power arrives exclusively through the Universal Pipe network.
  */
 public class TerraformerMenu extends AbstractContainerMenu {
 
-    private static final int FUEL_SLOT = 0;
-    private static final int UPGRADE_SLOT = 1;
-    private static final int PLAYER_INV_START = 2;
+    private static final int UPGRADE_SLOT = 0;
+    private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36;
 
     private final Container container;
@@ -29,18 +28,18 @@ public class TerraformerMenu extends AbstractContainerMenu {
 
     public TerraformerMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(TerraformerBlockEntity.SIZE),
-                new SimpleContainerData(6));
+                new SimpleContainerData(4));
     }
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public TerraformerMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
         super(ModMenuTypes.TERRAFORMER.get(), containerId);
         checkContainerSize(container, TerraformerBlockEntity.SIZE);
-        checkContainerDataCount(data, 6);
+        checkContainerDataCount(data, 4);
         this.container = container;
         this.data = data;
 
-        this.addSlot(new FuelSlot(container, TerraformerBlockEntity.FUEL_SLOT, 62, 46));
-        this.addSlot(new UpgradeSlot(container, TerraformerBlockEntity.UPGRADE_SLOT, 98, 46));
+        this.addSlot(new UpgradeSlot(container, TerraformerBlockEntity.UPGRADE_SLOT, 80, 46));
         this.addStandardInventorySlots(playerInventory, 8, 84);
         this.addDataSlots(data);
     }
@@ -57,12 +56,8 @@ public class TerraformerMenu extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack raw = slot.getItem();
             moved = raw.copy();
-            if (index == FUEL_SLOT || index == UPGRADE_SLOT) {
+            if (index == UPGRADE_SLOT) {
                 if (!this.moveItemStackTo(raw, PLAYER_INV_START, PLAYER_INV_END, true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (OxygenGeneratorBlockEntity.fuelValue(raw) > 0) {
-                if (!this.moveItemStackTo(raw, FUEL_SLOT, FUEL_SLOT + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (raw.is(ModItems.NEROSTEEL_INGOT.get()) || raw.is(ModItems.CINDRITE.get())) {
@@ -96,31 +91,16 @@ public class TerraformerMenu extends AbstractContainerMenu {
         return this.data.get(1);
     }
 
-    public boolean isBurning() {
-        return this.data.get(2) > 0;
-    }
-
     public int getTier() {
-        return this.data.get(4);
+        return this.data.get(2);
     }
 
     public int getRadius() {
-        return this.data.get(5);
+        return this.data.get(3);
     }
 
     public boolean isActive() {
         return getEnergy() > 0;
-    }
-
-    private static class FuelSlot extends Slot {
-        FuelSlot(Container container, int slot, int x, int y) {
-            super(container, slot, x, y);
-        }
-
-        @Override
-        public boolean mayPlace(ItemStack stack) {
-            return OxygenGeneratorBlockEntity.fuelValue(stack) > 0;
-        }
     }
 
     private static class UpgradeSlot extends Slot {

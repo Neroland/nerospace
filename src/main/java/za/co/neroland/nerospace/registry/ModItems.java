@@ -231,6 +231,16 @@ public final class ModItems {
     public static final DeferredItem<Item> CONFIGURATOR = ITEMS.registerItem(
             "configurator", props -> new za.co.neroland.nerospace.item.ConfiguratorItem(props.stacksTo(1)));
 
+    // Pipe logistics: per-face item filter + segment upgrades.
+    public static final DeferredItem<Item> PIPE_FILTER = ITEMS.registerItem(
+            "pipe_filter", props -> new za.co.neroland.nerospace.item.PipeFilterItem(props.stacksTo(16)));
+    public static final DeferredItem<Item> SPEED_UPGRADE = ITEMS.registerItem(
+            "speed_upgrade", props -> new za.co.neroland.nerospace.item.PipeUpgradeItem(props,
+                    za.co.neroland.nerospace.item.PipeUpgradeItem.Kind.SPEED));
+    public static final DeferredItem<Item> CAPACITY_UPGRADE = ITEMS.registerItem(
+            "capacity_upgrade", props -> new za.co.neroland.nerospace.item.PipeUpgradeItem(props,
+                    za.co.neroland.nerospace.item.PipeUpgradeItem.Kind.CAPACITY));
+
     // --- Spawn eggs (Phase 10e) --------------------------------------------
     public static final DeferredItem<Item> XERTZ_STALKER_SPAWN_EGG = ITEMS.registerItem(
             "xertz_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.XERTZ_STALKER));

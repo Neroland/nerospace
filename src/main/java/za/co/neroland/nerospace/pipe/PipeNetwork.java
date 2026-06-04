@@ -126,11 +126,12 @@ public final class PipeNetwork {
     // --- Energy layer ---------------------------------------------------------
 
     private void tickEnergy(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
-        int throughput = Config.ENERGY_PIPE_THROUGHPUT.get();
+        int baseThroughput = Config.ENERGY_PIPE_THROUGHPUT.get();
 
         // Pull from providers / push to receivers on every non-pipe face, within one transaction.
         try (Transaction tx = Transaction.openRoot()) {
             for (UniversalPipeBlockEntity pipe : pipes) {
+                int throughput = baseThroughput * pipe.speedMultiplier();
                 BlockPos pos = pipe.getBlockPos();
                 for (Direction dir : Direction.values()) {
                     BlockPos np = pos.relative(dir);
@@ -184,7 +185,7 @@ public final class PipeNetwork {
      * network merge still drains out), and the shared pool is balanced across matching segments.
      */
     private void tickFluid(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
-        int throughput = Config.FLUID_PIPE_THROUGHPUT.get();
+        int baseThroughput = Config.FLUID_PIPE_THROUGHPUT.get();
 
         // The network's claimed fluid = the first non-empty buffer found.
         FluidResource networkFluid = FluidResource.EMPTY;
@@ -197,6 +198,7 @@ public final class PipeNetwork {
 
         try (Transaction tx = Transaction.openRoot()) {
             for (UniversalPipeBlockEntity pipe : pipes) {
+                int throughput = baseThroughput * pipe.speedMultiplier();
                 BlockPos pos = pipe.getBlockPos();
                 for (Direction dir : Direction.values()) {
                     BlockPos np = pos.relative(dir);
@@ -266,7 +268,7 @@ public final class PipeNetwork {
      * the mod's dedicated gas capability. Venting on pipe break is handled by the block entity.
      */
     private void tickGas(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
-        int throughput = Config.GAS_PIPE_THROUGHPUT.get();
+        int baseThroughput = Config.GAS_PIPE_THROUGHPUT.get();
 
         GasResource networkGas = GasResource.EMPTY;
         for (UniversalPipeBlockEntity pipe : pipes) {
@@ -278,6 +280,7 @@ public final class PipeNetwork {
 
         try (Transaction tx = Transaction.openRoot()) {
             for (UniversalPipeBlockEntity pipe : pipes) {
+                int throughput = baseThroughput * pipe.speedMultiplier();
                 BlockPos pos = pipe.getBlockPos();
                 for (Direction dir : Direction.values()) {
                     BlockPos np = pos.relative(dir);
@@ -349,13 +352,12 @@ public final class PipeNetwork {
      * re-route, and with no route the packet parks in the pipe until one opens up. Nothing is dropped.
      */
     private void tickItems(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
-        float step = 1.0F / Config.ITEM_PIPE_TICKS_PER_BLOCK.get();
-
         // 1. Advance, hand off and deliver travelling items.
         for (UniversalPipeBlockEntity pipe : pipes) {
             if (pipe.items().isEmpty()) {
                 continue;
             }
+            float step = 1.0F / pipe.itemTicksPerBlock();
             BlockPos pos = pipe.getBlockPos();
             boolean changed = false;
             Iterator<TravellingItem> it = pipe.items().iterator();
@@ -380,6 +382,9 @@ public final class PipeNetwork {
                 }
 
                 Direction to = item.to();
+                if (to == null) {
+                    continue; // defensive: isParked() covered this, but make it provable
+                }
                 BlockPos np = pos.relative(to);
 
                 // Hand off to the next pipe segment.
@@ -394,9 +399,11 @@ public final class PipeNetwork {
                     continue;
                 }
 
-                // Arrived at a non-pipe face: try to insert.
+                // Arrived at a non-pipe face: try to insert (the face filter must allow it).
                 int inserted = 0;
-                if (pipe.mode(to, PipeResourceType.ITEM).canPush()) {
+                ItemResource deliveryFilter = pipe.filter(to);
+                if (pipe.mode(to, PipeResourceType.ITEM).canPush()
+                        && (deliveryFilter.isEmpty() || deliveryFilter.equals(item.resource()))) {
                     ResourceHandler<ItemResource> target =
                             Capabilities.Item.BLOCK.getCapability(level, np, null, null, to.getOpposite());
                     if (target != null) {
@@ -437,7 +444,7 @@ public final class PipeNetwork {
         }
         int extractMax = Config.ITEM_PIPE_EXTRACT_AMOUNT.get();
         for (UniversalPipeBlockEntity pipe : pipes) {
-            if (pipe.items().size() >= UniversalPipeBlockEntity.MAX_TRAVELLING_ITEMS) {
+            if (pipe.items().size() >= UniversalPipeBlockEntity.MAX_TRAVELLING_ITEMS * pipe.capacityMultiplier()) {
                 continue;
             }
             BlockPos pos = pipe.getBlockPos();
@@ -454,10 +461,11 @@ public final class PipeNetwork {
                 }
                 // Peek what would come out (transaction aborted), route it, then extract for real.
                 // NOTE: extractFirst returns null (not an empty stack) when nothing is extractable.
+                ItemResource faceFilter = pipe.filter(dir);
                 ItemResource peeked;
                 try (Transaction tx = Transaction.openRoot()) {
-                    ResourceStack<ItemResource> got =
-                            ResourceHandlerUtil.extractFirst(source, r -> true, extractMax, tx);
+                    ResourceStack<ItemResource> got = ResourceHandlerUtil.extractFirst(source,
+                            r -> faceFilter.isEmpty() || r.equals(faceFilter), extractMax, tx);
                     peeked = got == null ? ItemResource.EMPTY : got.resource();
                 }
                 if (peeked.isEmpty()) {
@@ -530,6 +538,10 @@ public final class PipeNetwork {
                     continue;
                 }
                 if (!pipe.mode(dir, PipeResourceType.ITEM).canPush()) {
+                    continue;
+                }
+                ItemResource faceFilter = pipe.filter(dir);
+                if (!faceFilter.isEmpty() && !faceFilter.equals(resource)) {
                     continue;
                 }
                 ResourceHandler<ItemResource> target =

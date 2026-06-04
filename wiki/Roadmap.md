@@ -26,15 +26,28 @@ progress — order and scope may change. (Developer-facing detail lives in `FUTU
 - Four bespoke **creatures** with walk animations and emissive glow.
 - **Terraformer**: expanding terrain conversion + permanent breathability + a vibrant **terraformed biome**.
 
+**Logistics (the big pipe update)**
+- The **Universal Pipe**: one translucent, connection-aware tube carrying **energy, fluids, gases and
+  items at the same time**, with per-face × per-layer I/O modes.
+- **Items travel visibly** through pipes (round-robin routing, reroute-or-wait, never spilled);
+  coloured streams show energy/fluid/gas flow.
+- **Configurator** tool + full 6×4 configuration panel; **Pipe Filters** and **Speed/Capacity
+  Upgrades**.
+- Generators (**Combustion**, **Passive**), **Battery**, **Fluid Tank**, **Gas Tank**, **Item Store**
+  — plus creative endless-source variants of all four.
+- A dedicated **gas system** (Oxygen first): the Oxygen Generator is now a grid-powered electrolysis
+  machine producing pipeable O₂; the Terraformer is grid-powered too.
+
 **Tooling**
-- Creative `/nerospace gallery` showcase command.
+- Creative `/nerospace gallery` showcase command with live pipe demonstrations per resource layer.
 
 ## 🛠️ In progress / next
 
 - **Launch-pad multiblock** — key rocket size/placement to a properly formed 3×3 pad.
 - **Rocket fuel-intake automation** — let hoppers feed canisters into a deployed rocket.
-- **Oxygen Suit tiers** — Cindrite/station-gated upgrades (bigger tank, faster refill).
-- **Polish** — animated machine gauges, rocket-fuel fluid render, mob idle/ambient touches.
+- **Oxygen Suit tiers** — Cindrite/station-gated upgrades (bigger tank, faster refill); suits
+  refilling from piped/tanked oxygen.
+- **Polish** — animated machine gauges, rocket-fuel fluid render, per-creature texture art.
 
 ## 🔭 Planned / exploring
 

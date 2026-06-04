@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "minecraft:chest",
+    "N": "nerospace:nerosteel_ingot",
+    "Q": "nerospace:xertz_quartz"
+  },
+  "pattern": [
+    "NQN",
+    "QCQ",
+    "NQN"
+  ],
+  "result": {
+    "id": "nerospace:capacity_upgrade"
+  }
+}

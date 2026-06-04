@@ -63,6 +63,7 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     /** Voxel shapes indexed by the 6-bit connection mask (bit = direction 3D data value). */
     private static final VoxelShape[] SHAPES = buildShapes();
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public UniversalPipeBlock(Properties properties) {
         super(properties);
         BlockState base = this.stateDefinition.any();
@@ -206,6 +207,14 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
+            // Sneak + empty hand: pop installed upgrades back out.
+            if (player.isShiftKeyDown()) {
+                int popped = pipe.uninstallUpgrades();
+                serverPlayer.sendSystemMessage(Component.translatable(
+                        popped > 0 ? "block.nerospace.universal_pipe.upgrades_removed"
+                                : "block.nerospace.universal_pipe.no_upgrades"));
+                return InteractionResult.SUCCESS;
+            }
             serverPlayer.sendSystemMessage(Component.translatable(
                     "block.nerospace.universal_pipe.energy", pipe.getEnergyHandler().getAmountAsInt()));
             if (!pipe.fluid().resource().isEmpty()) {

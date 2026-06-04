@@ -76,6 +76,7 @@ public class RocketEntity extends Entity implements MenuProvider {
      * is the largest tier's; {@link #addFuel} caps top-ups to the current tier's capacity. The handler
      * surface is ready to expose via {@code Capabilities.Fluid.ENTITY} for pipe automation.
      */
+    @SuppressWarnings("this-escape") // change-callback wiring, used only after construction
     private final RocketFuelTank fuelTank = new RocketFuelTank(RocketTier.TIER_3.fuelCapacity(), this::syncFuel);
 
     /**
@@ -110,6 +111,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
     };
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public RocketEntity(EntityType<? extends RocketEntity> type, Level level) {
         super(type, level);
         this.setNoGravity(true);
@@ -117,6 +119,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     /** Convenience constructor for spawning from the rocket item. */
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public RocketEntity(Level level, double x, double y, double z, RocketTier tier) {
         this(ModEntities.ROCKET.get(), level);
         this.setPos(x, y, z);

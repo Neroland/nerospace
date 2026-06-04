@@ -64,6 +64,9 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.PASSIVE_GENERATOR.get());
                         output.accept(ModBlocks.UNIVERSAL_PIPE.get());
                         output.accept(ModItems.CONFIGURATOR.get());
+                        output.accept(ModItems.PIPE_FILTER.get());
+                        output.accept(ModItems.SPEED_UPGRADE.get());
+                        output.accept(ModItems.CAPACITY_UPGRADE.get());
 
                         // Storage endpoints + creative sources.
                         output.accept(ModBlocks.BATTERY.get());

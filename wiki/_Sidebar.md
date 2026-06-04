@@ -9,7 +9,7 @@
 - [Xertz Quartz Ore](Xertz-Quartz-Ore)
 - [Cindrite Ore](Cindrite-Ore)
 
-**Blocks — Storage**
+**Blocks — Material Storage**
 - [Block of Nerosium](Block-of-Nerosium)
 - [Block of Raw Nerosium](Block-of-Raw-Nerosium)
 - [Block of Nerosteel](Block-of-Nerosteel)
@@ -20,6 +20,18 @@
 - [Oxygen Generator](Oxygen-Generator)
 - [Fuel Tank](Fuel-Tank)
 - [Terraformer](Terraformer)
+
+**Logistics**
+- [Universal Pipe](Universal-Pipe)
+- [Configurator](Configurator)
+- [Pipe Filters and Upgrades](Pipe-Filters-and-Upgrades)
+- [Combustion Generator](Combustion-Generator)
+- [Passive Generator](Passive-Generator)
+- [Battery](Battery)
+- [Fluid Tank](Fluid-Tank)
+- [Gas Tank](Gas-Tank)
+- [Item Store](Item-Store)
+- [Creative Source Blocks](Creative-Source-Blocks)
 
 **Blocks — Structures**
 - [Rocket Launch Pad](Rocket-Launch-Pad)

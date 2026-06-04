@@ -27,6 +27,7 @@ public class CombustionGeneratorMenu extends AbstractContainerMenu {
                 new SimpleContainerData(4));
     }
 
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public CombustionGeneratorMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
         super(ModMenuTypes.COMBUSTION_GENERATOR.get(), containerId);
         checkContainerSize(container, CombustionGeneratorBlockEntity.SIZE);
@@ -54,7 +55,7 @@ public class CombustionGeneratorMenu extends AbstractContainerMenu {
                 if (!this.moveItemStackTo(raw, PLAYER_INV_START, PLAYER_INV_END, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (OxygenGeneratorBlockEntity.fuelValue(raw) > 0) {
+            } else if (CombustionGeneratorBlockEntity.fuelValue(raw) > 0) {
                 if (!this.moveItemStackTo(raw, FUEL_SLOT, FUEL_SLOT + 1, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -99,7 +100,7 @@ public class CombustionGeneratorMenu extends AbstractContainerMenu {
 
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return OxygenGeneratorBlockEntity.fuelValue(stack) > 0;
+            return CombustionGeneratorBlockEntity.fuelValue(stack) > 0;
         }
     }
 }

@@ -9,15 +9,14 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.TerraformerMenu;
 
 /**
- * Screen for the Terraformer (terraform design §2.4): a power-buffer gauge, fuel + tier-upgrade slots,
- * and a live tier / frontier-radius readout, themed green (the terraforming accent).
+ * Screen for the Terraformer (grid-only rework): a power-buffer gauge (fed by pipes), the
+ * tier-upgrade slot, and a live tier / frontier-radius readout, themed green.
  */
 public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> {
 
     private static final Identifier TEXTURE =
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/gui/terraformer.png");
     private static final int ACCENT = 0xFF54D46A;     // green (terraform)
-    private static final int FLAME = 0xFFF0A83C;      // burn
 
     public TerraformerScreen(TerraformerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
@@ -38,9 +37,9 @@ public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> 
         label(g, Component.translatable("gui.nerospace.terraformer.tier", this.menu.getTier()), 8, 48, ACCENT);
         label(g, Component.translatable("gui.nerospace.terraformer.radius", this.menu.getRadius()), 8, 60, 0xFFB7E8C2);
 
-        boolean burning = this.menu.isBurning();
-        label(g, Component.translatable(burning
+        boolean active = this.menu.isActive();
+        label(g, Component.translatable(active
                 ? "gui.nerospace.terraformer.working"
-                : "gui.nerospace.terraformer.idle"), 116, 20, burning ? 0xFF9CF0C0 : 0xFF7E8EA0);
+                : "gui.nerospace.terraformer.idle"), 116, 20, active ? 0xFF9CF0C0 : 0xFF7E8EA0);
     }
 }

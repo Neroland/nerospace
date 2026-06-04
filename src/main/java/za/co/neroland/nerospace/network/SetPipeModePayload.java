@@ -25,7 +25,7 @@ public record SetPipeModePayload(BlockPos pos, int face, int layer, int mode) im
                     ByteBufCodecs.VAR_INT, SetPipeModePayload::face,
                     ByteBufCodecs.VAR_INT, SetPipeModePayload::layer,
                     ByteBufCodecs.VAR_INT, SetPipeModePayload::mode,
-                    SetPipeModePayload::new);
+                    (pos, face, layer, mode) -> new SetPipeModePayload(pos, face, layer, mode));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
