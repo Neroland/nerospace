@@ -38,7 +38,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(Tags.Items.ORES)
                 .add(ModItems.NEROSIUM_ORE_ITEM.get(), ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get(),
                         ModItems.NEROSTEEL_ORE_ITEM.get(), ModItems.XERTZ_QUARTZ_ORE_ITEM.get(),
-                        ModItems.CINDRITE_ORE_ITEM.get());
+                        ModItems.CINDRITE_ORE_ITEM.get(), ModItems.GLACITE_ORE_ITEM.get());
         this.tag(ModTags.Items.ORES_NEROSIUM)
                 .add(ModItems.NEROSIUM_ORE_ITEM.get(), ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get());
         this.tag(ModTags.Items.ORES_NEROSTEEL)
@@ -48,7 +48,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(Tags.Items.STORAGE_BLOCKS)
                 .add(ModItems.NEROSIUM_BLOCK_ITEM.get(), ModItems.RAW_NEROSIUM_BLOCK_ITEM.get(),
-                        ModItems.NEROSTEEL_BLOCK_ITEM.get(), ModItems.CINDRITE_BLOCK_ITEM.get());
+                        ModItems.NEROSTEEL_BLOCK_ITEM.get(), ModItems.CINDRITE_BLOCK_ITEM.get(),
+                        ModItems.GLACITE_BLOCK_ITEM.get());
         this.tag(ModTags.Items.STORAGE_BLOCKS_NEROSIUM)
                 .add(ModItems.NEROSIUM_BLOCK_ITEM.get());
         this.tag(ModTags.Items.STORAGE_BLOCKS_RAW_NEROSIUM)
@@ -69,5 +70,9 @@ public class ModItemTagProvider extends ItemTagsProvider {
         // Cindrite is a gem-style drop (and the Tier 2 Oxygen Suit's repair material).
         this.tag(Tags.Items.GEMS).add(ModItems.CINDRITE.get());
         this.tag(ModTags.Items.GEMS_CINDRITE).add(ModItems.CINDRITE.get());
+
+        // Glacite is a gem-style drop (future cold-suit / terraforming feedstock).
+        this.tag(Tags.Items.GEMS).add(ModItems.GLACITE.get());
+        this.tag(ModTags.Items.GEMS_GLACITE).add(ModItems.GLACITE.get());
     }
 }

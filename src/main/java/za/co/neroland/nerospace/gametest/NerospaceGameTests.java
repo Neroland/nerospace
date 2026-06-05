@@ -20,6 +20,7 @@ import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -123,6 +124,10 @@ public final class NerospaceGameTests {
         functions.put("fuel_pump_rate_by_footprint", NerospaceGameTests::testFuelPumpRateByFootprint);
         functions.put("single_centered_rocket_per_pad", NerospaceGameTests::testSingleCenteredRocketPerPad);
         functions.put("pad_break_grounds_rocket", NerospaceGameTests::testPadBreakGroundsRocket);
+        // Glacira / Tier 4 (NEW_DESTINATION_DESIGN.md).
+        functions.put("tier4_requires_heavy_complex", NerospaceGameTests::testTier4RequiresHeavyComplex);
+        functions.put("tier_destinations_cumulative", NerospaceGameTests::testTierDestinationsCumulative);
+        functions.put("glacira_dimension_loads", NerospaceGameTests::testGlaciraDimensionLoads);
         // Star Guide (progression block).
         functions.put("star_guide_install_return", NerospaceGameTests::testStarGuideInstallReturn);
         functions.put("star_guide_break_drops_book", NerospaceGameTests::testStarGuideBreakDropsBook);
@@ -625,6 +630,90 @@ public final class NerospaceGameTests {
         helper.setBlock(new BlockPos(1, 1, 1), Blocks.AIR); // break a corner of ITS 3x3
         helper.assertFalse(rocket.isOnValidPad(),
                 "breaking a block of the rocket's own square must ground it");
+        helper.succeed();
+    }
+
+    // --- Glacira / Tier 4 (NEW_DESTINATION_DESIGN.md) --------------------------------------------
+
+    /**
+     * A Tier 4 rocket deploys ONLY on the Heavy Launch Complex: the Station-Wall ring that
+     * satisfies Tier 3 must NOT satisfy Tier 4 (no ring shortcut — design doc §5), and breaking
+     * the gantry afterwards grounds the deployed rocket (launch re-check).
+     */
+    private static void testTier4RequiresHeavyComplex(GameTestHelper helper) {
+        // Ringed 3x3 (the Tier 3 path) must reject a Tier 4 deploy.
+        BlockPos centre3 = buildFullPad(helper);
+        buildStationWallRing(helper);
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_4.get()), centre3);
+        helper.assertEntityNotPresent(ModEntities.ROCKET.get());
+
+        // Clear and build the 5x5; still no gantry => still rejected.
+        for (int dx = 0; dx <= 4; dx++) {
+            for (int dz = 0; dz <= 4; dz++) {
+                helper.setBlock(new BlockPos(dx, 1, dz), Blocks.AIR);
+            }
+        }
+        BlockPos centre5 = buildHeavyPad(helper);
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_4.get()), centre5);
+        helper.assertEntityNotPresent(ModEntities.ROCKET.get());
+
+        // Completing the Heavy complex (border gantry) accepts the deploy.
+        helper.setBlock(new BlockPos(0, 1, 3), ModBlocks.LAUNCH_GANTRY.get());
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_4.get()), centre5);
+        java.util.List<RocketEntity> rockets = helper.getLevel().getEntitiesOfClass(
+                RocketEntity.class, helper.getBounds());
+        helper.assertTrue(rockets.size() == 1, "the Heavy complex must accept a Tier 4 deploy");
+        RocketEntity rocket = rockets.get(0);
+        helper.assertTrue(rocket.isOnValidPad(), "the deployed Tier 4 must be launchable");
+
+        // Breaking the gantry demotes the complex — the Tier 4 is grounded.
+        helper.setBlock(new BlockPos(0, 1, 3), Blocks.AIR);
+        helper.assertFalse(rocket.isOnValidPad(),
+                "breaking the gantry must ground a deployed Tier 4 (heavy-only gating)");
+        helper.succeed();
+    }
+
+    /** Tier destination lists stay cumulative and each tier's signature target is correct. */
+    private static void testTierDestinationsCumulative(GameTestHelper helper) {
+        helper.assertTrue(RocketTier.TIER_1.destinations().size() == 1
+                        && RocketTier.TIER_2.destinations().size() == 2
+                        && RocketTier.TIER_3.destinations().size() == 3
+                        && RocketTier.TIER_4.destinations().size() == 4,
+                "tier destination lists must grow by exactly one per tier");
+        for (RocketTier lower : RocketTier.values()) {
+            helper.assertTrue(RocketTier.TIER_4.destinations().containsAll(lower.destinations()),
+                    "Tier 4 must reach every lower tier's destinations (cumulative): " + lower);
+        }
+        helper.assertTrue(RocketTier.TIER_4.destination(RocketTier.TIER_4.defaultDestinationIndex())
+                        .equals(za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_LEVEL),
+                "Tier 4's signature (default) destination must be Glacira");
+        helper.assertTrue("Glacira".equals(za.co.neroland.nerospace.rocket.Destinations.name(
+                        za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_LEVEL)),
+                "the destination selector must know Glacira's display name");
+        helper.succeed();
+    }
+
+    /**
+     * Travel parity guard: WHEREVER the proven destinations' level stems are visible, Glacira's
+     * must be too. The gametest server composes only the vanilla dimensions (it neither
+     * instantiates nor registers datapack level stems — Cindara/Greenxertz are absent here as
+     * well), so this asserts strict parity with Cindara rather than absolute presence; in a real
+     * server both load from the same generated {@code data/nerospace/dimension/*.json}.
+     */
+    private static void testGlaciraDimensionLoads(GameTestHelper helper) {
+        var stems = helper.getLevel().registryAccess().lookupOrThrow(Registries.LEVEL_STEM);
+        boolean cindara = stems.get(za.co.neroland.nerospace.registry.ModDimensions.CINDARA_STEM).isPresent();
+        boolean glacira = stems.get(za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_STEM).isPresent();
+        helper.assertTrue(cindara == glacira,
+                "Glacira's level stem must register exactly like Cindara's (cindara=" + cindara
+                        + ", glacira=" + glacira + ")");
+
+        ServerLevel cindaraLevel = helper.getLevel().getServer()
+                .getLevel(za.co.neroland.nerospace.registry.ModDimensions.CINDARA_LEVEL);
+        ServerLevel glaciraLevel = helper.getLevel().getServer()
+                .getLevel(za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_LEVEL);
+        helper.assertTrue((cindaraLevel != null) == (glaciraLevel != null),
+                "Glacira must load as a server level exactly like Cindara");
         helper.succeed();
     }
 

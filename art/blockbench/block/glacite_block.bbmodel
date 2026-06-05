@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "glacite_block",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "glacite_block",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "40762f34-acb6-44d3-8eef-3915ae720fea"
+    }
+  ],
+  "outliner": [
+    "40762f34-acb6-44d3-8eef-3915ae720fea"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/glacite_block.png",
+      "name": "glacite_block.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "c487a7a9-8b9a-4406-8f67-1986c6a32466",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/glacite_block.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABO0lEQVR4nKVTq27DQBAcR8aOsWWZ2aCg0CouCXBAPsEgKuoHlIS0f2AFRQH5hJDQYiuwKLKZZRlfT+VXEM1m3Rdoluzd3nlmdvbs1cY5XBE+AJTLF3THA5K8GOUgSlFu1tg9PAIAwjiD6RvYoZU7EyIFUQoAcgAAdmglh3EGfdf0zUUBg6xfQXnGWhhnsvcBwPTNNwa9T/JiBGL6BkGUwg7tuQU7tCPZlM4a10leSDsk8DWL6ZsRm15rj3RMtClkJtBuu8IimeL1rUa5WYtxWp1XG+f23Tt+i6ebKU4fwE93qvns3EI1n4lEOkypi+1KPtg/V2L4aAp6XOyTIGTmY9ImC4AuUAW9ILMeK9fyEqmAWbdAIILpkYsCIv6Vu+NBlHLkAC7/gh1aKepxca9V6pfr1ca5+9s7/Dc+AYAKx/P7HL9ZAAAAAElFTkSuQmCC"
+    }
+  ]
+}

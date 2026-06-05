@@ -137,6 +137,23 @@ public class ModAdvancements implements AdvancementSubProvider {
         item(saver, cindara, "guide/cindrite", ModItems.CINDRITE.get(),
                 "Heart of the Volcano", "Mine cindrite on Cindara");
 
+        AdvancementHolder tier4 = item(saver, cindara, "guide/rocket_tier_4",
+                ModItems.ROCKET_TIER_4.get(),
+                "To the Ice Moon", "Craft a Tier 4 Rocket (it launches only from a Heavy Launch Complex)");
+
+        AdvancementHolder glacira = Advancement.Builder.advancement()
+                .parent(tier4)
+                .display(ModItems.GLACITE.get(),
+                        Component.literal("Into the Cold"),
+                        Component.literal("Travel to the frozen moon Glacira"),
+                        null, AdvancementType.GOAL, true, true, false)
+                .addCriterion("reached_glacira",
+                        ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(ModDimensions.GLACIRA_LEVEL))
+                .save(saver, "nerospace:glacira");
+
+        item(saver, glacira, "guide/glacite", ModItems.GLACITE.get(),
+                "Heart of the Glacier", "Mine glacite on Glacira");
+
         // --- Chapter 6: Surviving Vacuum -------------------------------------------------------
         AdvancementHolder oxygenGen = item(saver, station, "guide/oxygen_generator",
                 ModBlocks.OXYGEN_GENERATOR.get(),

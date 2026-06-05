@@ -221,14 +221,15 @@ public final class NerospaceCommands {
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
         int mx = origin.getX() + 4;
         int mz = origin.getZ() - 12;
-        for (int dx = -1; dx <= 4 * 4; dx++) {
+        for (int dx = -1; dx <= 5 * 4; dx++) {
             for (int dz = -1; dz <= 3; dz++) {
                 level.setBlockAndUpdate(new BlockPos(mx + dx, fy, mz + dz), floor);
             }
         }
         List<EntityType<? extends Mob>> creatures = List.of(
                 ModEntities.XERTZ_STALKER.get(), ModEntities.QUARTZ_CRAWLER.get(),
-                ModEntities.GREENLING.get(), ModEntities.CINDER_STALKER.get());
+                ModEntities.GREENLING.get(), ModEntities.CINDER_STALKER.get(),
+                ModEntities.FROST_STRIDER.get());
         for (int i = 0; i < creatures.size(); i++) {
             spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz), false);     // AI
             spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz + 2), true);  // frozen
@@ -238,7 +239,7 @@ public final class NerospaceCommands {
                 + blocks.size() + " blocks, a structure cluster, a power-grid demo, 4 live pipe "
                 + "scenarios (energy/fluid/gas/items), suit stands (T1 + T2), a loaded Star Guide "
                 + "pedestal, a Heavy Launch Complex (5x5 + gantry + tank + T3 rocket), and "
-                + "4 creatures (AI + frozen)."), false);
+                + "5 creatures (AI + frozen)."), false);
         return Command.SINGLE_SUCCESS;
     }
 

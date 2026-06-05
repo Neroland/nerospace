@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.entity.CinderStalker;
+import za.co.neroland.nerospace.entity.FrostStrider;
 import za.co.neroland.nerospace.entity.Greenling;
 import za.co.neroland.nerospace.entity.QuartzCrawler;
 import za.co.neroland.nerospace.entity.XertzStalker;
@@ -64,6 +65,15 @@ public final class ModEntities {
             CinderStalker::new,
             MobCategory.MONSTER,
             builder -> builder.sized(0.8F, 2.0F).eyeHeight(1.7F).fireImmune().clientTrackingRange(8));
+
+    // --- Glacira creatures (NEW_DESTINATION_DESIGN.md) -----------------------
+
+    /** Tall stilt-legged ice predator; freeze immunity lives in {@link FrostStrider#canFreeze()}. */
+    public static final Supplier<EntityType<FrostStrider>> FROST_STRIDER = ENTITY_TYPES.registerEntityType(
+            "frost_strider",
+            FrostStrider::new,
+            MobCategory.MONSTER,
+            builder -> builder.sized(0.8F, 2.4F).eyeHeight(2.1F).clientTrackingRange(8));
 
     private ModEntities() {
     }

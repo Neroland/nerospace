@@ -77,7 +77,10 @@ public final class StarGuide {
                     step("nerosteel_ingot", () -> ModItems.RAW_NEROSTEEL.get(), "guide/nerosteel_ingot"),
                     step("rocket_tier_3", () -> ModItems.ROCKET_TIER_3.get(), "guide/rocket_tier_3"),
                     step("cindara", () -> ModItems.CINDRITE.get(), "cindara"),
-                    step("cindrite", () -> ModBlocks.CINDRITE_BLOCK.get(), "guide/cindrite"))),
+                    step("cindrite", () -> ModBlocks.CINDRITE_BLOCK.get(), "guide/cindrite"),
+                    step("rocket_tier_4", () -> ModItems.ROCKET_TIER_4.get(), "guide/rocket_tier_4"),
+                    step("glacira", () -> ModItems.GLACITE.get(), "glacira"),
+                    step("glacite", () -> ModBlocks.GLACITE_BLOCK.get(), "guide/glacite"))),
             new Chapter("vacuum", List.of(
                     step("oxygen_generator", () -> ModBlocks.OXYGEN_GENERATOR.get(), "guide/oxygen_generator"),
                     step("gas_tank", () -> ModBlocks.GAS_TANK.get(), "guide/gas_tank"),

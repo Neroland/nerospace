@@ -41,6 +41,10 @@ public final class ModTags {
         public static final TagKey<Block> ORES_XERTZ_QUARTZ = blockTag("c", "ores/xertz_quartz");
         public static final TagKey<Block> STORAGE_BLOCKS_NEROSTEEL = blockTag("c", "storage_blocks/nerosteel");
 
+        // Glacira ore (NEW_DESTINATION_DESIGN.md).
+        public static final TagKey<Block> ORES_GLACITE = blockTag("c", "ores/glacite");
+        public static final TagKey<Block> STORAGE_BLOCKS_GLACITE = blockTag("c", "storage_blocks/glacite");
+
         // --- Oxygen field (terraform design) -------------------------------
         /** Full, airtight blocks: stop ALL oxygen flow (opaque cubes, glass, station walls). */
         public static final TagKey<Block> OXYGEN_SEALING = blockTag("nerospace", "oxygen_sealing");
@@ -80,5 +84,9 @@ public final class ModTags {
         // Phase 7a — Cindara materials.
         /** Cindrite shards (repair material of the Tier 2 Oxygen Suit). */
         public static final TagKey<Item> GEMS_CINDRITE = itemTag("c", "gems/cindrite");
+
+        // Glacira materials (NEW_DESTINATION_DESIGN.md).
+        /** Glacite crystals (future cold-suit repair / terraforming water-cycle feedstock). */
+        public static final TagKey<Item> GEMS_GLACITE = itemTag("c", "gems/glacite");
     }
 }

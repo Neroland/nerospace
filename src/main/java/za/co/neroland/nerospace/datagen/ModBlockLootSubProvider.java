@@ -75,6 +75,11 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         add(ModBlocks.CINDRITE_ORE.get(),
                 block -> createOreDrop(block, ModItems.CINDRITE.get()));
 
+        // Glacira (NEW_DESTINATION_DESIGN.md).
+        dropSelf(ModBlocks.GLACITE_BLOCK.get());
+        add(ModBlocks.GLACITE_ORE.get(),
+                block -> createOreDrop(block, ModItems.GLACITE.get()));
+
         // Phase 7c — station blocks.
         dropSelf(ModBlocks.STATION_FLOOR.get());
         dropSelf(ModBlocks.STATION_WALL.get());

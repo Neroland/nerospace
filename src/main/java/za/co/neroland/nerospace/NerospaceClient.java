@@ -30,6 +30,7 @@ import za.co.neroland.nerospace.client.ClientOxygenField;
 import za.co.neroland.nerospace.client.OxygenHudLayer;
 
 import za.co.neroland.nerospace.client.CinderStalkerModel;
+import za.co.neroland.nerospace.client.FrostStriderModel;
 import za.co.neroland.nerospace.client.GreenlingModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureRenderer;
@@ -121,6 +122,10 @@ public class NerospaceClient {
                 context -> new GreenxertzCreatureRenderer(context,
                         new CinderStalkerModel(context.bakeLayer(CinderStalkerModel.LAYER)),
                         entityTexture("cinder_stalker"), 1.0F, 1.0F, 1.0F, 0.6F, entityGlow("cinder_stalker")));
+        event.registerEntityRenderer(ModEntities.FROST_STRIDER.get(),
+                context -> new GreenxertzCreatureRenderer(context,
+                        new FrostStriderModel(context.bakeLayer(FrostStriderModel.LAYER)),
+                        entityTexture("frost_strider"), 1.0F, 1.0F, 1.0F, 0.5F, entityGlow("frost_strider")));
 
         // Universal Pipe: streams + travelling items (the tube itself is the multipart block model).
         event.registerBlockEntityRenderer(
@@ -140,6 +145,7 @@ public class NerospaceClient {
         event.registerLayerDefinition(QuartzCrawlerModel.LAYER, QuartzCrawlerModel::createBodyLayer);
         event.registerLayerDefinition(GreenlingModel.LAYER, GreenlingModel::createBodyLayer);
         event.registerLayerDefinition(CinderStalkerModel.LAYER, CinderStalkerModel::createBodyLayer);
+        event.registerLayerDefinition(FrostStriderModel.LAYER, FrostStriderModel::createBodyLayer);
         event.registerLayerDefinition(RocketModel.LAYER, RocketModel::createBodyLayer);
     }
 

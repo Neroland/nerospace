@@ -42,8 +42,17 @@ box only after the gradle-MCP build + gametests are green AND the in-game check 
       (all nodes have showToast; confirm the three milestone toasts visually in runClient)
 
 ### More planets / destinations
-- [ ] Design + implement at least one destination beyond Greenxertz / Cindara / Station
-- [ ] Tier/recipe gating for the new destination(s)
+- [x] Design + implement at least one destination beyond Greenxertz / Cindara / Station —
+      **Glacira** ice moon (`NEW_DESTINATION_DESIGN.md`, signed off 2026-06-05): dimension +
+      biome + glacite ore/gem/block chain + Frost Strider mob + Glacira compass + Star Guide
+      steps/advancements (22→25 nodes). Build + ecjCheck + gametests 25/25 green (incl.
+      `glacira_dimension_loads`, `tier_destinations_cumulative`); confirm in runClient: sky/
+      palette, arrival, Frost Strider look, glacite textures
+- [x] Tier/recipe gating for the new destination(s) — **Tier 4 rocket** (24k tank / 8k per
+      launch), recipe gated on cindrite (previous planet unlocks the next), deploys + launches
+      ONLY on the Heavy Launch Complex (no ring shortcut — finally gives the Heavy pad a
+      purpose); gametested (`tier4_requires_heavy_complex` incl. gantry-break grounding);
+      confirm T4 stance/scale (2.8x) on the Heavy pad in runClient
 
 ### Multiple player-built stations
 - [ ] Design: how players found/register additional stations as rocket destinations

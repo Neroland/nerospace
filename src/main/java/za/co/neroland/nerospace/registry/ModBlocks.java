@@ -124,6 +124,29 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL));
 
+    // --- Glacira dimension (NEW_DESTINATION_DESIGN.md) -----------------------
+
+    /**
+     * Glacite ore — the frozen moon Glacira's signature crystal. Drops the {@code glacite} gem
+     * directly (fortune-affected), iron-tier. Hosted in stone/deepslate like the other planet ores.
+     */
+    public static final DeferredBlock<Block> GLACITE_ORE = BLOCKS.registerSimpleBlock(
+            "glacite_ore",
+            props -> props
+                    .mapColor(MapColor.ICE)
+                    .strength(3.5F, 3.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE));
+
+    /** Storage block for glacite gems. */
+    public static final DeferredBlock<Block> GLACITE_BLOCK = BLOCKS.registerSimpleBlock(
+            "glacite_block",
+            props -> props
+                    .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                    .strength(5.0F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
     // --- Orbital station building blocks (Phase 7c) -------------------------
 
     /** Station floor plating — the landing platform is built from this; craft more to expand. */

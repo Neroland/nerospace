@@ -95,6 +95,14 @@ C_EMBER  = (255, 180, 70, 255)
 C_GLOW   = (255, 230, 150, 255)
 EMBER_RAMP = [C_DARK, C_RED, C_ORANGE, C_EMBER, C_GLOW]
 
+# Glacira palette (NEW_DESTINATION_DESIGN.md) — frozen ice moon: deep glacial blue -> frost white.
+I_DEEP  = (10, 30, 55, 255)
+I_BLUE  = (60, 130, 200, 255)
+I_CYAN  = (120, 210, 240, 255)
+I_FROST = (200, 240, 255, 255)
+I_WHITE = (240, 252, 255, 255)
+FROST_RAMP = [I_DEEP, I_BLUE, I_CYAN, I_FROST, I_WHITE]
+
 
 def new_img():
     return Image.new("RGBA", (S, S), CLEAR)
@@ -710,6 +718,55 @@ def gen_cindrite():
     save(img, os.path.join(ITEM_DIR, "cindrite.png"))
 
 
+# ---------------- GLACIRA (NEW_DESTINATION_DESIGN.md) ----------------
+
+def gen_glacite_ore():
+    rng = random.Random(905)
+    img = new_img()
+    noise_fill(img, STONE, rng)
+    for (cx, cy, r) in [(5, 5, 3.0), (11, 7, 2.6), (8, 12, 2.8)]:
+        blob(img, cx, cy, r, FROST_RAMP, rng, density=0.95)
+    px = img.load()
+    px[5, 4] = I_WHITE
+    px[11, 7] = I_WHITE
+    save(img, os.path.join(BLOCK_DIR, "glacite_ore.png"))
+
+
+def gen_glacite_block():
+    rng = random.Random(906)
+    img = new_img()
+    noise_fill(img, [I_DEEP, (24, 56, 92, 255), (40, 84, 130, 255)], rng)
+    px = img.load()
+    for i in range(S):
+        px[i, 8] = I_CYAN
+        px[8, i] = I_CYAN
+    blob(img, 8, 8, 3.2, [I_BLUE, I_CYAN, I_FROST, I_WHITE], rng, density=1.0)
+    bevel(img, I_FROST, I_DEEP)
+    save(img, os.path.join(BLOCK_DIR, "glacite_block.png"))
+
+
+def gen_glacite():
+    img = new_img()
+    px = img.load()
+    shape = {
+        3: (7, 9), 4: (6, 10), 5: (5, 11), 6: (4, 12),
+        7: (4, 12), 8: (4, 12), 9: (5, 11), 10: (6, 10),
+        11: (7, 9), 12: (8, 8),
+    }
+    for y, (x0, x1) in shape.items():
+        mid = (x0 + x1) / 2
+        for x in range(x0, x1):
+            if abs(x - mid) < 1:
+                px[x, y] = I_WHITE
+            elif x < mid:
+                px[x, y] = I_CYAN
+            else:
+                px[x, y] = I_BLUE
+    for x in range(7, 9):
+        px[x, 3] = I_FROST
+    save(img, os.path.join(ITEM_DIR, "glacite.png"))
+
+
 def gen_station_floor():
     rng = random.Random(710)
     img = new_img()
@@ -954,6 +1011,41 @@ def _cs_detail(x, y, rng):
     return base
 
 
+# Frost Strider — Glacira's stilt-legged ice predator: deep glacial blue hide sheeted with pale
+# ice plates; bright frost-white shard edges and cold cyan eyes glow in the dark.
+FS_DEEP  = (14, 36, 62, 255)
+FS_BODY  = (32, 72, 112, 255)
+FS_ICE   = (84, 150, 196, 255)
+FS_PLATE = (150, 212, 240, 255)
+FS_GLOW  = (220, 248, 255, 255)
+
+
+def _fs_body(x, y, rng):
+    # sheeted ice plates: horizontal banding with frozen seams + sparse bright plate glints
+    base = _mix(FS_DEEP, FS_BODY, ((y * 2 + x) % 10) / 10.0)
+    if y % 7 == 0:
+        base = FS_ICE
+    if rng.random() < 0.05:
+        base = FS_PLATE
+    return base
+
+
+def _fs_head(x, y, rng):
+    base = _mix(FS_BODY, FS_ICE, ((y - 28) % 8) / 8.0)
+    if rng.random() < 0.05:
+        base = FS_PLATE
+    return base
+
+
+def _fs_detail(x, y, rng):
+    # shards + stilt legs: pale ice with glowing frost edges
+    t = (y % 8) / 8.0
+    base = _mix(FS_ICE, FS_PLATE, t)
+    if (x + y) % 6 == 0:
+        base = FS_GLOW
+    return base
+
+
 def gen_creatures():
     # head_w / head_d are the model head's width & depth (for front-face eye placement).
     _gen_creature("xertz_stalker", _xs_body, _xs_head, _xs_detail,
@@ -965,6 +1057,8 @@ def gen_creatures():
                   glint=(235, 255, 235, 255), big_eyes=True)
     _gen_creature("cinder_stalker", _cs_body, _cs_head, _cs_detail,
                   head_w=8, head_d=8, eye=CS_EMBER, socket=CS_OBS, seed=504, glint=CS_GLOW_EYE)
+    _gen_creature("frost_strider", _fs_body, _fs_head, _fs_detail,
+                  head_w=5, head_d=7, eye=FS_GLOW, socket=FS_DEEP, seed=505, glint=FS_GLOW)
 
 
 # Egg silhouette mask (per-row x range) for a 16x16 vanilla-style spawn egg: pointed top, round
@@ -1007,6 +1101,7 @@ def gen_spawn_eggs():
     gen_spawn_egg("quartz_crawler", (188, 190, 202, 255), QC_CRY, QC_SEAM, 612)
     gen_spawn_egg("greenling", GL_BODY, GL_LITE, GL_DARK, 613)
     gen_spawn_egg("cinder_stalker", CS_ROCK2, CS_ORANGE, CS_OBS, 614)
+    gen_spawn_egg("frost_strider", FS_BODY, FS_PLATE, FS_DEEP, 615)
 
 
 def gen_entity_rocket():
@@ -1270,6 +1365,8 @@ ROCKET_TIER_SPECS = {
     "rocket_t1": {"accent": (224, 58, 58, 255), "trim": (160, 36, 36, 255)},
     "rocket_t2": {"accent": (179, 39, 158, 255), "trim": (106, 31, 140, 255)},
     "rocket_t3": {"accent": (240, 200, 80, 255), "trim": (60, 170, 90, 255)},
+    # Tier 4 — Glacira run: ice-cyan accent + glacial blue trim (palette rule: steel + per-tier accent).
+    "rocket_t4": {"accent": (120, 210, 240, 255), "trim": (60, 130, 200, 255)},
 }
 
 
@@ -1475,7 +1572,7 @@ if __name__ == "__main__":
     # Creature base textures (additive; (re)render only under the creature-scoped --creatures flag).
     gen_creatures()
     gen_spawn_eggs()
-    for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker"):
+    for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker", "frost_strider"):
         gen_entity_glow(_name)
     gen_ore(STONE, "nerosium_ore")
     gen_ore(DEEP, "deepslate_nerosium_ore")
@@ -1503,3 +1600,9 @@ if __name__ == "__main__":
     gen_universal_pipe_glass()
     # Suit-and-station integration — Tier 2 (cindrite-upgraded) oxygen suit, derived from Tier 1 art.
     gen_oxygen_suit_t2()
+    # Glacira (NEW_DESTINATION_DESIGN.md): glacite chain, Tier 4 rocket icon, compass.
+    gen_glacite_ore()
+    gen_glacite_block()
+    gen_glacite()
+    gen_rocket_tier("rocket_tier_4", I_FROST, I_CYAN, I_BLUE, boosters=True, glow=I_WHITE)
+    gen_destination_compass("glacira_compass", I_CYAN)

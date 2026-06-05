@@ -30,6 +30,8 @@ public final class ModPlacedFeatures {
     public static final ResourceKey<PlacedFeature> XERTZ_QUARTZ_ORE_PLACED = registerKey("xertz_quartz_ore_placed");
     // Phase 7 — Cindara dimension ore.
     public static final ResourceKey<PlacedFeature> CINDRITE_ORE_PLACED = registerKey("cindrite_ore_placed");
+    // Glacira dimension ore (NEW_DESTINATION_DESIGN.md).
+    public static final ResourceKey<PlacedFeature> GLACITE_ORE_PLACED = registerKey("glacite_ore_placed");
 
     private ModPlacedFeatures() {
     }
@@ -66,6 +68,15 @@ public final class ModPlacedFeatures {
         // Cindrite: a rarer Cindara crystal, deep-to-mid.
         context.register(CINDRITE_ORE_PLACED, new PlacedFeature(
                 configuredFeatures.getOrThrow(ModConfiguredFeatures.CINDRITE_ORE),
+                List.of(
+                        CountPlacement.of(7),
+                        InSquarePlacement.spread(),
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-48), VerticalAnchor.absolute(48)),
+                        BiomeFilter.biome())));
+
+        // Glacite: rarer like cindrite, deep-to-mid in the Glacira column.
+        context.register(GLACITE_ORE_PLACED, new PlacedFeature(
+                configuredFeatures.getOrThrow(ModConfiguredFeatures.GLACITE_ORE),
                 List.of(
                         CountPlacement.of(7),
                         InSquarePlacement.spread(),

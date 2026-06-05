@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:glacira",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:glacite"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Mine glacite on Glacira",
+    "icon": {
+      "id": "nerospace:glacite"
+    },
+    "title": "Heart of the Glacier"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

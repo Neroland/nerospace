@@ -28,6 +28,8 @@ public final class ModConfiguredFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>> XERTZ_QUARTZ_ORE = registerKey("xertz_quartz_ore");
     // Phase 7 — Cindara dimension ore.
     public static final ResourceKey<ConfiguredFeature<?, ?>> CINDRITE_ORE = registerKey("cindrite_ore");
+    // Glacira dimension ore (NEW_DESTINATION_DESIGN.md).
+    public static final ResourceKey<ConfiguredFeature<?, ?>> GLACITE_ORE = registerKey("glacite_ore");
 
     private ModConfiguredFeatures() {
     }
@@ -59,6 +61,12 @@ public final class ModConfiguredFeatures {
                 OreConfiguration.target(stoneReplaceables, ModBlocks.CINDRITE_ORE.get().defaultBlockState()),
                 OreConfiguration.target(deepslateReplaceables, ModBlocks.CINDRITE_ORE.get().defaultBlockState()));
         context.register(CINDRITE_ORE, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(cindriteTargets, 8)));
+
+        // Glacira: glacite crystal frozen through the icy column.
+        List<OreConfiguration.TargetBlockState> glaciteTargets = List.of(
+                OreConfiguration.target(stoneReplaceables, ModBlocks.GLACITE_ORE.get().defaultBlockState()),
+                OreConfiguration.target(deepslateReplaceables, ModBlocks.GLACITE_ORE.get().defaultBlockState()));
+        context.register(GLACITE_ORE, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(glaciteTargets, 8)));
     }
 
     private static ResourceKey<ConfiguredFeature<?, ?>> registerKey(String name) {

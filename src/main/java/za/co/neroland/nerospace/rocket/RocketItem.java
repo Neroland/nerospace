@@ -57,6 +57,14 @@ public class RocketItem extends Item {
                 }
                 return InteractionResult.SUCCESS;
             }
+            // Tier 4 needs the Heavy Launch Complex specifically (no ring shortcut) — the heavy
+            // pad is the launch infrastructure for the Glacira run (NEW_DESTINATION_DESIGN.md §5).
+            if (this.tier == RocketTier.TIER_4 && !LaunchPadMultiblock.isHeavyComplex(level, pads)) {
+                if (player != null) {
+                    player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_heavy_required"));
+                }
+                return InteractionResult.SUCCESS;
+            }
 
             // One rocket per pad: reject a second deploy onto an occupied cluster.
             if (LaunchPadMultiblock.rocketAbove(level, pads) != null) {

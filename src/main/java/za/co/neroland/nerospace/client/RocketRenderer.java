@@ -25,6 +25,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/rocket_t1.png"),
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/rocket_t2.png"),
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/rocket_t3.png"),
+            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/rocket_t4.png"),
     };
     private static final int FULL_BRIGHT = 0x00F000F0;
 

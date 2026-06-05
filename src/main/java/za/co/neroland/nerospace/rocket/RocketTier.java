@@ -15,14 +15,19 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  * target in the in-rocket UI. The tier's <em>signature</em> destination (the newest one it unlocks)
  * is the last entry and the default selection.
  *
- * <p>Progression: Tier 1 reaches the Orbital Station; Tier 2 adds Greenxertz; Tier 3 adds Cindara.</p>
+ * <p>Progression: Tier 1 reaches the Orbital Station; Tier 2 adds Greenxertz; Tier 3 adds Cindara;
+ * Tier 4 adds Glacira (and deploys only on the Heavy Launch Complex — see
+ * {@code NEW_DESTINATION_DESIGN.md}).</p>
  */
 public enum RocketTier {
 
     TIER_1(1, 3_000, 1_000, List.of(ModDimensions.STATION_LEVEL)),
     TIER_2(2, 6_000, 2_000, List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL)),
     TIER_3(3, 12_000, 4_000, List.of(
-            ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL));
+            ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL)),
+    TIER_4(4, 24_000, 8_000, List.of(
+            ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
+            ModDimensions.GLACIRA_LEVEL));
 
     private final int level;
     private final int fuelCapacity;

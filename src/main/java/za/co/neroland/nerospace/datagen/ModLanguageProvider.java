@@ -125,6 +125,10 @@ public class ModLanguageProvider extends LanguageProvider {
         // Phase 7 blocks.
         add(ModBlocks.CINDRITE_ORE.get(), "Cindrite Ore");
         add(ModBlocks.CINDRITE_BLOCK.get(), "Block of Cindrite");
+
+        // Glacira blocks (NEW_DESTINATION_DESIGN.md).
+        add(ModBlocks.GLACITE_ORE.get(), "Glacite Ore");
+        add(ModBlocks.GLACITE_BLOCK.get(), "Block of Glacite");
         add(ModBlocks.STATION_FLOOR.get(), "Station Floor");
         add(ModBlocks.STATION_WALL.get(), "Station Wall");
 
@@ -145,6 +149,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.ROCKET_TIER_1.get(), "Tier 1 Rocket");
         add(ModItems.ROCKET_TIER_2.get(), "Tier 2 Rocket");
         add(ModItems.ROCKET_TIER_3.get(), "Tier 3 Rocket");
+        add(ModItems.ROCKET_TIER_4.get(), "Tier 4 Rocket");
 
         // Phase 8d — oxygen suit.
         add(ModItems.OXYGEN_SUIT_HELMET.get(), "Oxygen Suit Helmet");
@@ -160,10 +165,12 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Phase 7 items.
         add(ModItems.CINDRITE.get(), "Cindrite");
+        add(ModItems.GLACITE.get(), "Glacite");
         add(ModItems.ROCKET_FUEL_BUCKET.get(), "Rocket Fuel Bucket");
         add(ModItems.STATION_COMPASS.get(), "Station Compass");
         add(ModItems.GREENXERTZ_COMPASS.get(), "Greenxertz Compass");
         add(ModItems.CINDARA_COMPASS.get(), "Cindara Compass");
+        add(ModItems.GLACIRA_COMPASS.get(), "Glacira Compass");
         add("item.nerospace.destination_compass.travel", "Travelling to %s");
 
         // Phase 7b fluid.
@@ -175,6 +182,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get(), "Quartz Crawler Spawn Egg");
         add(ModItems.GREENLING_SPAWN_EGG.get(), "Greenling Spawn Egg");
         add(ModItems.CINDER_STALKER_SPAWN_EGG.get(), "Cinder Stalker Spawn Egg");
+        add(ModItems.FROST_STRIDER_SPAWN_EGG.get(), "Frost Strider Spawn Egg");
 
         // Entities.
         add("entity.nerospace.rocket", "Rocket");
@@ -182,6 +190,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("entity.nerospace.quartz_crawler", "Quartz Crawler");
         add("entity.nerospace.greenling", "Greenling");
         add("entity.nerospace.cinder_stalker", "Cinder Stalker");
+        add("entity.nerospace.frost_strider", "Frost Strider");
 
         // Creature sound subtitles (Phase 10 ambience). The sounds.json placeholders alias vanilla
         // audio for now; these subtitles describe the creature, so they stay correct when real audio
@@ -198,6 +207,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("subtitles.nerospace.cinder_stalker.ambient", "Cinder Stalker smoulders");
         add("subtitles.nerospace.cinder_stalker.hurt", "Cinder Stalker roars");
         add("subtitles.nerospace.cinder_stalker.death", "Cinder Stalker cools");
+        add("subtitles.nerospace.frost_strider.ambient", "Frost Strider creaks");
+        add("subtitles.nerospace.frost_strider.hurt", "Frost Strider splinters");
+        add("subtitles.nerospace.frost_strider.death", "Frost Strider shatters");
         // Machine sounds (placeholder vanilla aliases in sounds.json, same pattern as the creatures).
         add("subtitles.nerospace.fuel_tank.pump", "Fuel Tank pumps");
 
@@ -340,6 +352,18 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.star_guide.step.cindrite.text",
                 "Cindrite crystals upgrade your oxygen suit to Tier 2 and gate the deepest "
                         + "progression. Mine them from Cindara's stone.");
+        add("gui.nerospace.star_guide.step.rocket_tier_4", "To the Ice Moon");
+        add("gui.nerospace.star_guide.step.rocket_tier_4.text",
+                "Tier 4 reaches Glacira, the frozen edge of the system. Built around a cindrite "
+                        + "core, it launches only from a Heavy Launch Complex (5x5 pad + gantry).");
+        add("gui.nerospace.star_guide.step.glacira", "Into the Cold");
+        add("gui.nerospace.star_guide.step.glacira.text",
+                "Glacira is an ice moon: pale frozen plains, stilt-legged striders and glacite. "
+                        + "The last stop before you turn a world green.");
+        add("gui.nerospace.star_guide.step.glacite", "Heart of the Glacier");
+        add("gui.nerospace.star_guide.step.glacite.text",
+                "Glacite is crystallised water-ice — the key to cold-weather suits and, one day, "
+                        + "to giving a terraformed world its water. Mine it from Glacira's stone.");
 
         add("gui.nerospace.star_guide.step.oxygen_generator", "Something to Breathe");
         add("gui.nerospace.star_guide.step.oxygen_generator.text",
@@ -374,6 +398,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.nerospace.rocket.pad_ring_required",
                 "A Tier 3 rocket needs the 3x3 pad ringed with Station Wall — or a Heavy Launch "
                         + "Complex (full 5x5 pad with a Launch Gantry)");
+        add("item.nerospace.rocket.pad_heavy_required",
+                "A Tier 4 rocket launches only from a Heavy Launch Complex (full 5x5 pad with a "
+                        + "Launch Gantry)");
         add("item.nerospace.rocket.pad_occupied",
                 "There is already a rocket on this pad");
 

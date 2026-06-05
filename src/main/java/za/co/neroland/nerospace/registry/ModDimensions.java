@@ -53,6 +53,13 @@ public final class ModDimensions {
     public static final ResourceKey<Level> CINDARA_LEVEL = ResourceKey.create(
             Registries.DIMENSION, Identifier.fromNamespaceAndPath(Nerospace.MODID, "cindara"));
 
+    /** Glacira — the frozen ice moon (NEW_DESTINATION_DESIGN.md); the Tier-4 rocket's destination. */
+    public static final ResourceKey<LevelStem> GLACIRA_STEM = ResourceKey.create(
+            Registries.LEVEL_STEM, Identifier.fromNamespaceAndPath(Nerospace.MODID, "glacira"));
+
+    public static final ResourceKey<Level> GLACIRA_LEVEL = ResourceKey.create(
+            Registries.DIMENSION, Identifier.fromNamespaceAndPath(Nerospace.MODID, "glacira"));
+
     /** Orbital Station — an empty void "in orbit" (Phase 7c); the Tier-3 rocket's destination. */
     public static final ResourceKey<LevelStem> STATION_STEM = ResourceKey.create(
             Registries.LEVEL_STEM, Identifier.fromNamespaceAndPath(Nerospace.MODID, "station"));
@@ -85,6 +92,12 @@ public final class ModDimensions {
                 new FixedBiomeSource(biomes.getOrThrow(ModBiomes.CINDARA)),
                 noiseSettings.getOrThrow(NoiseGeneratorSettings.OVERWORLD));
         context.register(CINDARA_STEM, new LevelStem(spaceHolder, cindaraGen));
+
+        // Glacira: the outermost frozen moon — same space sky as Cindara, icy palette from the biome.
+        NoiseBasedChunkGenerator glaciraGen = new NoiseBasedChunkGenerator(
+                new FixedBiomeSource(biomes.getOrThrow(ModBiomes.GLACIRA)),
+                noiseSettings.getOrThrow(NoiseGeneratorSettings.OVERWORLD));
+        context.register(GLACIRA_STEM, new LevelStem(spaceHolder, glaciraGen));
 
         // Orbital Station: a flat generator with NO layers = an empty void. The rocket places a
         // landing platform on arrival so the player doesn't fall (see RocketEntity#completeLaunch).

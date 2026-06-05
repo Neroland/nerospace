@@ -67,6 +67,10 @@ public final class ModItems {
     /** Cindrite gem — dropped by cindrite ore on Cindara; gates the Tier-3 rocket. */
     public static final DeferredItem<Item> CINDRITE = ITEMS.registerSimpleItem("cindrite");
 
+    // Glacira (frozen moon) materials (NEW_DESTINATION_DESIGN.md).
+    /** Glacite gem — dropped by glacite ore on Glacira; feeds future suit variants/terraforming. */
+    public static final DeferredItem<Item> GLACITE = ITEMS.registerSimpleItem("glacite");
+
     // --- Tools --------------------------------------------------------------
 
     public static final DeferredItem<Item> NEROSIUM_PICKAXE = ITEMS.registerItem(
@@ -159,6 +163,9 @@ public final class ModItems {
     public static final DeferredItem<Item> CINDARA_COMPASS = ITEMS.registerItem(
             "cindara_compass",
             props -> new DestinationCompassItem(props.stacksTo(1), ModDimensions.CINDARA_LEVEL));
+    public static final DeferredItem<Item> GLACIRA_COMPASS = ITEMS.registerItem(
+            "glacira_compass",
+            props -> new DestinationCompassItem(props.stacksTo(1), ModDimensions.GLACIRA_LEVEL));
 
     // --- Rockets (Phase 4) --------------------------------------------------
 
@@ -183,6 +190,10 @@ public final class ModItems {
     public static final DeferredItem<Item> ROCKET_TIER_3 = ITEMS.registerItem(
             "rocket_tier_3",
             props -> new RocketItem(props.stacksTo(1), RocketTier.TIER_3));
+    /** Tier 4 — reaches Glacira; deploys ONLY on the Heavy Launch Complex (design doc §5). */
+    public static final DeferredItem<Item> ROCKET_TIER_4 = ITEMS.registerItem(
+            "rocket_tier_4",
+            props -> new RocketItem(props.stacksTo(1), RocketTier.TIER_4));
 
     // --- Block items --------------------------------------------------------
 
@@ -210,6 +221,12 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.CINDRITE_ORE);
     public static final DeferredItem<BlockItem> CINDRITE_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.CINDRITE_BLOCK);
+
+    // Glacira block items.
+    public static final DeferredItem<BlockItem> GLACITE_ORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.GLACITE_ORE);
+    public static final DeferredItem<BlockItem> GLACITE_BLOCK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.GLACITE_BLOCK);
 
     // Phase 7c — station block items.
     public static final DeferredItem<BlockItem> STATION_FLOOR_ITEM =
@@ -292,6 +309,8 @@ public final class ModItems {
             "greenling_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.GREENLING));
     public static final DeferredItem<Item> CINDER_STALKER_SPAWN_EGG = ITEMS.registerItem(
             "cinder_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.CINDER_STALKER));
+    public static final DeferredItem<Item> FROST_STRIDER_SPAWN_EGG = ITEMS.registerItem(
+            "frost_strider_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.FROST_STRIDER));
 
     private ModItems() {
     }

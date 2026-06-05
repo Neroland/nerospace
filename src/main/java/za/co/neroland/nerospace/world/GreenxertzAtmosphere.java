@@ -47,7 +47,8 @@ public final class GreenxertzAtmosphere {
 
     /** Every Nerospace planet (and the vacuum of the station) is airless. */
     private static final Set<ResourceKey<Level>> PLANETS = Set.of(
-            ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL, ModDimensions.STATION_LEVEL);
+            ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL, ModDimensions.STATION_LEVEL,
+            ModDimensions.GLACIRA_LEVEL);
 
     private GreenxertzAtmosphere() {
     }

@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "launch_gantry",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "launch_gantry",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "6d927657-b20f-48b4-bfbe-cb87699d8bec"
+    }
+  ],
+  "outliner": [
+    "6d927657-b20f-48b4-bfbe-cb87699d8bec"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/launch_gantry.png",
+      "name": "launch_gantry.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "ca83bef8-11ac-4305-90ec-a867278c0c2a",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/launch_gantry.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABTklEQVR4nK2Tr2/CQBTHPzQoxIkLmjyFqiBLdTNVgZqaqkb0D6pAVy9TCCS6sgrVoMmJE1gm4L21WzBs36Tm8t633x93k/6tum4uZ57BdjZnurmc2c7mNFlKjBHnHADee0IIxBgREQBCCADEGKmOJzaXMwlAvVxQtt1oue97I+z73v6qy/VyAXAjcM7RZCll29myiBjho2UjUDRZynp/+OXVOUcIgep4YlfkOOfM1qQo3q9PJXjHFCDPX0fSAdb7A02WAlC2HbsiH4UoInx+ftwI4JawSvXesytyyrudJkvhx7IGm+ihfo/gvbdWQgim1ELUA4Va2BU5ZduZfO893nub+58QV6sX86U9D32KCCEEyrazO6AhJkP5w56Ht0/l18sF1fE0spvogHrW4SGGnuvlgvX+YHMJfPccY7RhERk9Iq1PROztwB9D3M7mfAEdDMPTxE/dmQAAAABJRU5ErkJggg=="
+    }
+  ]
+}

@@ -33,6 +33,10 @@ public final class ModBiomes {
     public static final ResourceKey<Biome> CINDARA = ResourceKey.create(
             Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "cindara"));
 
+    /** Glacira surface biome (NEW_DESTINATION_DESIGN.md) — frozen ice moon; pale cyan palette. */
+    public static final ResourceKey<Biome> GLACIRA = ResourceKey.create(
+            Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "glacira"));
+
     /**
      * Terraformed biome (terraform design): applied to columns the Terraformer converts, so livable
      * ground reads unmistakably as "terraformed" — a vibrant neon emerald/turquoise palette (lush, but
@@ -47,6 +51,7 @@ public final class ModBiomes {
     public static void bootstrap(BootstrapContext<Biome> context) {
         greenxertz(context);
         cindara(context);
+        glacira(context);
         terraformed(context);
     }
 
@@ -154,5 +159,42 @@ public final class ModBiomes {
                 .build();
 
         context.register(CINDARA, biome);
+    }
+
+    private static void glacira(BootstrapContext<Biome> context) {
+        HolderGetter<PlacedFeature> placedFeatures = context.lookup(Registries.PLACED_FEATURE);
+        HolderGetter<ConfiguredWorldCarver<?>> carvers = context.lookup(Registries.CONFIGURED_CARVER);
+
+        BiomeGenerationSettings.Builder generation = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
+        generation.addCarver(Carvers.CAVE);
+        generation.addCarver(Carvers.CAVE_EXTRA_UNDERGROUND);
+        generation.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES,
+                placedFeatures.getOrThrow(ModPlacedFeatures.GLACITE_ORE_PLACED));
+
+        // Pale frosted palette to mirror Cindara's heat with cold: ice-blue water, white-cyan tints.
+        // (Airless — hasPrecipitation(false) — so the freeze reads through colour, not snowfall;
+        // true ice/snow surface rules are deferred to the art-overhaul pass per the design doc.)
+        BiomeSpecialEffects effects = new BiomeSpecialEffects.Builder()
+                .waterColor(0x77C8E8)
+                .grassColorOverride(0xC8E8F0)
+                .foliageColorOverride(0xA8D8E8)
+                .build();
+
+        // A single hostile predator stalks the ice: the Frost Strider.
+        MobSpawnSettings spawns = new MobSpawnSettings.Builder()
+                .addSpawn(MobCategory.MONSTER, 14,
+                        new MobSpawnSettings.SpawnerData(ModEntities.FROST_STRIDER.get(), 1, 2))
+                .build();
+
+        Biome biome = new Biome.BiomeBuilder()
+                .hasPrecipitation(false)
+                .temperature(-0.5F)
+                .downfall(0.0F)
+                .specialEffects(effects)
+                .mobSpawnSettings(spawns)
+                .generationSettings(generation.build())
+                .build();
+
+        context.register(GLACIRA, biome);
     }
 }

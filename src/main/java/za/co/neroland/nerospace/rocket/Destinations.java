@@ -21,6 +21,9 @@ public final class Destinations {
         if (key.equals(ModDimensions.CINDARA_LEVEL)) {
             return "Cindara";
         }
+        if (key.equals(ModDimensions.GLACIRA_LEVEL)) {
+            return "Glacira";
+        }
         return "Unknown";
     }
 }

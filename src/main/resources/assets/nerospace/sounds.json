@@ -54,5 +54,18 @@
   "entity.cinder_stalker.death": {
     "subtitle": "subtitles.nerospace.cinder_stalker.death",
     "sounds": [{ "name": "entity.blaze.death", "type": "event" }]
+  },
+
+  "entity.frost_strider.ambient": {
+    "subtitle": "subtitles.nerospace.frost_strider.ambient",
+    "sounds": [{ "name": "entity.stray.ambient", "type": "event" }]
+  },
+  "entity.frost_strider.hurt": {
+    "subtitle": "subtitles.nerospace.frost_strider.hurt",
+    "sounds": [{ "name": "entity.stray.hurt", "type": "event" }]
+  },
+  "entity.frost_strider.death": {
+    "subtitle": "subtitles.nerospace.frost_strider.death",
+    "sounds": [{ "name": "entity.stray.death", "type": "event" }]
   }
 }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "nerospace:nerosteel_block",
+    "C": "nerospace:rocket_fuel_canister",
+    "G": "nerospace:cindrite",
+    "N": "nerospace:nerosteel_ingot",
+    "T": "nerospace:rocket_tier_3"
+  },
+  "pattern": [
+    "NTN",
+    "GCG",
+    "NBN"
+  ],
+  "result": {
+    "id": "nerospace:rocket_tier_4"
+  }
+}

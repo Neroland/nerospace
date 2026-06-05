@@ -514,6 +514,22 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_station_wall", this.has(ModBlocks.STATION_WALL.get()))
                 .save(this.output);
 
+        // Tier 4 rocket: upgrades a Tier 3, gated on cindrite (mined on Cindara — the previous
+        // planet unlocks the next, mirroring the Tier 2 suit's progression depth; NOT circular
+        // because glacite plays no part in reaching Glacira).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.ROCKET_TIER_4)
+                .pattern("NTN")
+                .pattern("GCG")
+                .pattern("NBN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('T', ModItems.ROCKET_TIER_3)
+                .define('C', ModItems.ROCKET_FUEL_CANISTER)
+                .define('G', ModItems.CINDRITE)
+                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
+                .save(this.output);
+
         // === Phase 7 — Cindara materials ===================================
 
         // Cindrite storage block pack / unpack.
@@ -531,6 +547,24 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModBlocks.CINDRITE_BLOCK.get())
                 .unlockedBy("has_cindrite_block", this.has(ModBlocks.CINDRITE_BLOCK.get()))
                 .save(this.output, "cindrite_from_cindrite_block");
+
+        // === Glacira materials (NEW_DESTINATION_DESIGN.md) =================
+
+        // Glacite storage block pack / unpack.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.BUILDING_BLOCKS, ModBlocks.GLACITE_BLOCK.get())
+                .pattern("###")
+                .pattern("###")
+                .pattern("###")
+                .define('#', ModItems.GLACITE)
+                .unlockedBy("has_glacite", this.has(ModItems.GLACITE))
+                .save(this.output);
+
+        ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModItems.GLACITE, 9)
+                .requires(ModBlocks.GLACITE_BLOCK.get())
+                .unlockedBy("has_glacite_block", this.has(ModBlocks.GLACITE_BLOCK.get()))
+                .save(this.output, "glacite_from_glacite_block");
 
         // === Phase 7c — station building blocks ============================
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),

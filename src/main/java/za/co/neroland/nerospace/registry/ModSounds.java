@@ -49,6 +49,11 @@ public final class ModSounds {
     public static final Supplier<SoundEvent> CINDER_STALKER_HURT = register("entity.cinder_stalker.hurt");
     public static final Supplier<SoundEvent> CINDER_STALKER_DEATH = register("entity.cinder_stalker.death");
 
+    // --- Frost Strider (Glacira, hostile stilt-legged ice predator) ---------
+    public static final Supplier<SoundEvent> FROST_STRIDER_AMBIENT = register("entity.frost_strider.ambient");
+    public static final Supplier<SoundEvent> FROST_STRIDER_HURT = register("entity.frost_strider.hurt");
+    public static final Supplier<SoundEvent> FROST_STRIDER_DEATH = register("entity.frost_strider.death");
+
     private static Supplier<SoundEvent> register(String path) {
         Identifier id = Identifier.fromNamespaceAndPath(Nerospace.MODID, path);
         return SOUND_EVENTS.register(path, () -> SoundEvent.createVariableRangeEvent(id));

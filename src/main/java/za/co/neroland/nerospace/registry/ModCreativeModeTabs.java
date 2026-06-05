@@ -51,6 +51,11 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.CINDRITE_ORE.get());
                         output.accept(ModBlocks.CINDRITE_BLOCK.get());
 
+                        // Glacira (NEW_DESTINATION_DESIGN.md).
+                        output.accept(ModItems.GLACITE.get());
+                        output.accept(ModBlocks.GLACITE_ORE.get());
+                        output.accept(ModBlocks.GLACITE_BLOCK.get());
+
                         // Phase 7c — station.
                         output.accept(ModBlocks.STATION_FLOOR.get());
                         output.accept(ModBlocks.STATION_WALL.get());
@@ -91,6 +96,7 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.ROCKET_TIER_1.get());
                         output.accept(ModItems.ROCKET_TIER_2.get());
                         output.accept(ModItems.ROCKET_TIER_3.get());
+                        output.accept(ModItems.ROCKET_TIER_4.get());
 
                         // Star Guide (progression block, 1.0).
                         output.accept(ModBlocks.STAR_GUIDE.get());
@@ -101,12 +107,14 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get());
                         output.accept(ModItems.GREENLING_SPAWN_EGG.get());
                         output.accept(ModItems.CINDER_STALKER_SPAWN_EGG.get());
+                        output.accept(ModItems.FROST_STRIDER_SPAWN_EGG.get());
 
                         // Creative-only travel devices (no survival recipe).
                         output.accept(ModItems.GREENXERTZ_NAVIGATOR.get());
                         output.accept(ModItems.STATION_COMPASS.get());
                         output.accept(ModItems.GREENXERTZ_COMPASS.get());
                         output.accept(ModItems.CINDARA_COMPASS.get());
+                        output.accept(ModItems.GLACIRA_COMPASS.get());
                     })
                     .build());
 

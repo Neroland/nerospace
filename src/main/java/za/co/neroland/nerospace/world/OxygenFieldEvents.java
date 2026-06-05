@@ -26,7 +26,8 @@ public final class OxygenFieldEvents {
 
     /** Dimensions whose atmosphere is driven by the oxygen field (mirrors GreenxertzAtmosphere). */
     public static final Set<ResourceKey<Level>> FIELD_DIMENSIONS = Set.of(
-            ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL, ModDimensions.STATION_LEVEL);
+            ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL, ModDimensions.STATION_LEVEL,
+            ModDimensions.GLACIRA_LEVEL);
 
     /** How often the range-limited field view is pushed to nearby clients. */
     private static final int SYNC_INTERVAL_TICKS = 10;

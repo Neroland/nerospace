@@ -101,6 +101,10 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.CINDRITE_ORE.get());
         blockModels.createTrivialCube(ModBlocks.CINDRITE_BLOCK.get());
 
+        // Glacira ore + storage block (NEW_DESTINATION_DESIGN.md).
+        blockModels.createTrivialCube(ModBlocks.GLACITE_ORE.get());
+        blockModels.createTrivialCube(ModBlocks.GLACITE_BLOCK.get());
+
         // Phase 7c — station building blocks.
         blockModels.createTrivialCube(ModBlocks.STATION_FLOOR.get());
         blockModels.createTrivialCube(ModBlocks.STATION_WALL.get());
@@ -127,9 +131,13 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.ROCKET_TIER_1.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ROCKET_TIER_2.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ROCKET_TIER_3.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ROCKET_TIER_4.get(), ModelTemplates.FLAT_ITEM);
 
         // Phase 7 — Cindara.
         itemModels.generateFlatItem(ModItems.CINDRITE.get(), ModelTemplates.FLAT_ITEM);
+
+        // Glacira (NEW_DESTINATION_DESIGN.md).
+        itemModels.generateFlatItem(ModItems.GLACITE.get(), ModelTemplates.FLAT_ITEM);
 
         // Phase 7b — rocket fuel bucket.
         itemModels.generateFlatItem(ModItems.ROCKET_FUEL_BUCKET.get(), ModelTemplates.FLAT_ITEM);
@@ -138,6 +146,7 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.STATION_COMPASS.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GREENXERTZ_COMPASS.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CINDARA_COMPASS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.GLACIRA_COMPASS.get(), ModelTemplates.FLAT_ITEM);
 
         // Handheld (item/handheld) model for the pickaxe.
         itemModels.generateFlatItem(ModItems.NEROSIUM_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
@@ -168,6 +177,7 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GREENLING_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CINDER_STALKER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.FROST_STRIDER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
     }
 
     /**

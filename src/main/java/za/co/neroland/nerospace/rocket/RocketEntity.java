@@ -223,6 +223,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             case TIER_1 -> 1.6F;
             case TIER_2 -> 2.0F;
             case TIER_3 -> 2.4F;
+            case TIER_4 -> 2.8F;
         };
     }
 
@@ -372,13 +373,17 @@ public class RocketEntity extends Entity implements MenuProvider {
      * grounds it): the rocket must stand ON a complete 3x3 pad — the square must CONTAIN the
      * rocket's position, so an intact square elsewhere in the connected cluster cannot keep a
      * degraded pad launchable. A Tier 3 rocket additionally needs that pad ringed with Station
-     * Wall OR to stand within a Heavy Launch Complex (5x5 + gantry).
+     * Wall OR to stand within a Heavy Launch Complex (5x5 + gantry); a Tier 4 rocket needs the
+     * Heavy Launch Complex specifically (NEW_DESTINATION_DESIGN.md §5 — no ring shortcut).
      */
     public boolean isOnValidPad() {
         BlockPos origin = padScanOrigin();
         Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), origin);
         if (LaunchPadMultiblock.fullSquareCornerContaining(pads, 3, origin) == null) {
             return false;
+        }
+        if (getTier() == RocketTier.TIER_4) {
+            return LaunchPadMultiblock.isHeavyComplexContaining(level(), pads, origin);
         }
         return getTier() != RocketTier.TIER_3
                 || LaunchPadMultiblock.hasStationWallRingAround(level(), pads, origin)
@@ -400,10 +405,15 @@ public class RocketEntity extends Entity implements MenuProvider {
             if (!level().isClientSide() && !isLaunching() && !isOnValidPad()
                     && this.getFirstPassenger() instanceof ServerPlayer rider) {
                 Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), padScanOrigin());
-                rider.sendSystemMessage(Component.translatable(
-                        LaunchPadMultiblock.isFullThreeByThree(pads)
-                                ? "item.nerospace.rocket.pad_ring_required"
-                                : "item.nerospace.rocket.pad_incomplete"));
+                String message;
+                if (!LaunchPadMultiblock.isFullThreeByThree(pads)) {
+                    message = "item.nerospace.rocket.pad_incomplete";
+                } else if (getTier() == RocketTier.TIER_4) {
+                    message = "item.nerospace.rocket.pad_heavy_required";
+                } else {
+                    message = "item.nerospace.rocket.pad_ring_required";
+                }
+                rider.sendSystemMessage(Component.translatable(message));
             }
             return;
         }
@@ -629,6 +639,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             case TIER_1 -> ModItems.ROCKET_TIER_1.get();
             case TIER_2 -> ModItems.ROCKET_TIER_2.get();
             case TIER_3 -> ModItems.ROCKET_TIER_3.get();
+            case TIER_4 -> ModItems.ROCKET_TIER_4.get();
         };
     }
 
