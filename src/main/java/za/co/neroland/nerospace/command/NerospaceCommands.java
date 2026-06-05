@@ -193,6 +193,31 @@ public final class NerospaceCommands {
             guide.installBook(new ItemStack(ModItems.STAR_GUIDE_BOOK.get()));
         }
 
+        // Heavy Launch Complex demo: 5x5 pad + Launch Gantry + Fuel Tank, with a Tier 3 rocket
+        // standing on it (the ring-free T3 path) — see LAUNCH_PAD_DESIGN.md.
+        int hx = origin.getX() + 4;
+        int hz = origin.getZ() - 46;
+        for (int dx = -2; dx <= 6; dx++) {
+            for (int dz = -2; dz <= 6; dz++) {
+                level.setBlockAndUpdate(new BlockPos(hx + dx, fy, hz + dz), floor);
+            }
+        }
+        for (int dx = 0; dx < 5; dx++) {
+            for (int dz = 0; dz < 5; dz++) {
+                level.setBlockAndUpdate(new BlockPos(hx + dx, fy + 1, hz + dz),
+                        ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState());
+            }
+        }
+        level.setBlockAndUpdate(new BlockPos(hx - 1, fy + 1, hz + 2),
+                ModBlocks.LAUNCH_GANTRY.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(hx + 5, fy + 1, hz + 2),
+                ModBlocks.FUEL_TANK.get().defaultBlockState());
+        za.co.neroland.nerospace.rocket.RocketEntity heavyRocket =
+                new za.co.neroland.nerospace.rocket.RocketEntity(level,
+                        hx + 2.5D, fy + 1 + za.co.neroland.nerospace.rocket.RocketLaunchPadBlock.SURFACE_HEIGHT,
+                        hz + 2.5D, za.co.neroland.nerospace.rocket.RocketTier.TIER_3);
+        level.addFreshEntity(heavyRocket);
+
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
         int mx = origin.getX() + 4;
         int mz = origin.getZ() - 12;
@@ -212,7 +237,8 @@ public final class NerospaceCommands {
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
                 + blocks.size() + " blocks, a structure cluster, a power-grid demo, 4 live pipe "
                 + "scenarios (energy/fluid/gas/items), suit stands (T1 + T2), a loaded Star Guide "
-                + "pedestal, and 4 creatures (AI + frozen)."), false);
+                + "pedestal, a Heavy Launch Complex (5x5 + gantry + tank + T3 rocket), and "
+                + "4 creatures (AI + frozen)."), false);
         return Command.SINGLE_SUCCESS;
     }
 

@@ -41,7 +41,7 @@ BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
           "universal_pipe", "combustion_generator", "passive_generator",
           "battery", "creative_battery", "fluid_tank", "creative_fluid_tank",
           "gas_tank", "creative_gas_tank", "item_store", "creative_item_store",
-          "star_guide"]
+          "star_guide", "launch_gantry"]
 ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "raw_nerosteel", "nerosteel_ingot", "xertz_quartz", "greenxertz_navigator",
          "rocket_fuel_canister", "rocket_tier_1", "rocket_tier_2", "rocket_tier_3",

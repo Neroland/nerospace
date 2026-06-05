@@ -34,22 +34,25 @@ public class RocketModel extends EntityModel<EntityRenderState> {
 
         // model_sync:begin
         root.addOrReplaceChild("body",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-4F, -16F, -4F, 8F, 36F, 8F),
+                CubeListBuilder.create().texOffs(0, 0).addBox(-6F, -16F, -6F, 12F, 36F, 12F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("nose",
-                CubeListBuilder.create().texOffs(0, 46).addBox(-3F, -24F, -3F, 6F, 8F, 6F),
+                CubeListBuilder.create().texOffs(0, 48).addBox(-4F, -24F, -4F, 8F, 8F, 8F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("console",
+                CubeListBuilder.create().texOffs(32, 48).addBox(-4F, -1.5F, -5.5F, 8F, 5F, 1F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_north",
-                CubeListBuilder.create().texOffs(40, 0).addBox(-1F, 14F, -8F, 2F, 10F, 4F),
+                CubeListBuilder.create().texOffs(48, 0).addBox(-1F, 14F, -10F, 2F, 10F, 4F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_south",
-                CubeListBuilder.create().texOffs(40, 0).addBox(-1F, 14F, 4F, 2F, 10F, 4F),
+                CubeListBuilder.create().texOffs(48, 0).addBox(-1F, 14F, 6F, 2F, 10F, 4F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_west",
-                CubeListBuilder.create().texOffs(40, 0).addBox(-8F, 14F, -1F, 4F, 10F, 2F),
+                CubeListBuilder.create().texOffs(48, 0).addBox(-10F, 14F, -1F, 4F, 10F, 2F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_east",
-                CubeListBuilder.create().texOffs(40, 0).addBox(4F, 14F, -1F, 4F, 10F, 2F),
+                CubeListBuilder.create().texOffs(48, 0).addBox(6F, 14F, -1F, 4F, 10F, 2F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         // model_sync:end
 

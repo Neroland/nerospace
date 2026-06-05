@@ -157,9 +157,7 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
 
-        int rate = LaunchPadMultiblock.isFullThreeByThree(pads)
-                ? Tuning.fuelTankPumpRateFullPad() : Tuning.fuelTankPumpRate();
-        int toPump = Math.min(rate, this.tank.getAmount());
+        int toPump = Math.min(pumpRate(level, pads), this.tank.getAmount());
         if (toPump <= 0) {
             return;
         }
@@ -173,6 +171,19 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
         if (drained - overflow > 0 && level instanceof ServerLevel serverLevel) {
             pumpingFx(serverLevel, pos, rocket);
         }
+    }
+
+    /**
+     * Pump rate by pad footprint (LAUNCH_PAD_DESIGN.md §3): base on a partial cluster, 4x on the
+     * canonical 3x3, 12x on a Heavy Launch Complex (5x5 + gantry). Public static so the gametests
+     * can assert the selection against fixture pads.
+     */
+    public static int pumpRate(Level level, Set<BlockPos> pads) {
+        if (LaunchPadMultiblock.isHeavyComplex(level, pads)) {
+            return Tuning.fuelTankPumpRateHeavyPad();
+        }
+        return LaunchPadMultiblock.isFullThreeByThree(pads)
+                ? Tuning.fuelTankPumpRateFullPad() : Tuning.fuelTankPumpRate();
     }
 
     /**

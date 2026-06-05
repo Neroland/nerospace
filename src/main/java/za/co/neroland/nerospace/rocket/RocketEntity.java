@@ -20,6 +20,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -197,11 +198,48 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
     };
 
+    /** Client-side position interpolation: without it the ascent (and the seated rider, who
+     *  follows the vehicle) steps once per sync packet instead of moving smoothly. */
+    private final net.minecraft.world.entity.InterpolationHandler interpolation =
+            new net.minecraft.world.entity.InterpolationHandler(this);
+
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public RocketEntity(EntityType<? extends RocketEntity> type, Level level) {
         super(type, level);
         this.setNoGravity(true);
         this.blocksBuilding = true;
+    }
+
+    @Override
+    public net.minecraft.world.entity.InterpolationHandler getInterpolation() {
+        return this.interpolation;
+    }
+
+    // --- Per-tier presentation (cockpit rework) -------------------------------
+
+    /** Render scale by tier — bigger boosters genuinely LOOK bigger (T1 keeps the old size). */
+    public float visualScale() {
+        return switch (getTier()) {
+            case TIER_1 -> 1.6F;
+            case TIER_2 -> 2.0F;
+            case TIER_3 -> 2.4F;
+        };
+    }
+
+    /** The rider STANDS at the cockpit console instead of sitting on the hull. */
+    @Override
+    public boolean shouldRiderSit() {
+        return false;
+    }
+
+    /**
+     * Stand the rider so their eyes line up with the hull's window band (model y ≈ -11, i.e.
+     * {@code (24+11)/16 = 2.1875} model-blocks above the fins, scaled by tier; standing eye
+     * height is 1.62).
+     */
+    @Override
+    protected Vec3 getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float scale) {
+        return new Vec3(0.0D, Math.max(0.4D, 2.1875D * visualScale() - 1.62D), 0.0D);
     }
 
     /** Convenience constructor for spawning from the rocket item. */
@@ -330,16 +368,30 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     /**
-     * Launch-pad gating (re-checked at launch, so breaking pad blocks under a deployed rocket grounds
-     * it): the rocket must stand on a complete 3x3 pad; a Tier 3 rocket additionally needs the pad
-     * ringed with Station Wall. Mirrors the deploy-time check in {@link RocketItem}.
+     * Launch-pad gating (re-checked at launch, so breaking pad blocks under a deployed rocket
+     * grounds it): the rocket must stand ON a complete 3x3 pad — the square must CONTAIN the
+     * rocket's position, so an intact square elsewhere in the connected cluster cannot keep a
+     * degraded pad launchable. A Tier 3 rocket additionally needs that pad ringed with Station
+     * Wall OR to stand within a Heavy Launch Complex (5x5 + gantry).
      */
     public boolean isOnValidPad() {
-        Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), this.blockPosition().below());
-        if (!LaunchPadMultiblock.isFullThreeByThree(pads)) {
+        BlockPos origin = padScanOrigin();
+        Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), origin);
+        if (LaunchPadMultiblock.fullSquareCornerContaining(pads, 3, origin) == null) {
             return false;
         }
-        return getTier() != RocketTier.TIER_3 || LaunchPadMultiblock.hasStationWallRing(level(), pads);
+        return getTier() != RocketTier.TIER_3
+                || LaunchPadMultiblock.hasStationWallRingAround(level(), pads, origin)
+                || LaunchPadMultiblock.isHeavyComplexContaining(level(), pads, origin);
+    }
+
+    /**
+     * Where to look for the pad under the rocket. The rocket stands ON the pad's 3px plate, so its
+     * feet share the pad's block position; standing on a full block puts the pad one below.
+     */
+    private BlockPos padScanOrigin() {
+        BlockPos feet = this.blockPosition();
+        return level().getBlockState(feet).getBlock() instanceof RocketLaunchPadBlock ? feet : feet.below();
     }
 
     /** Begins the ascent. Server-side; called from the rocket menu's Launch button. */
@@ -347,7 +399,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (level().isClientSide() || !canLaunch()) {
             if (!level().isClientSide() && !isLaunching() && !isOnValidPad()
                     && this.getFirstPassenger() instanceof ServerPlayer rider) {
-                Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), this.blockPosition().below());
+                Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), padScanOrigin());
                 rider.sendSystemMessage(Component.translatable(
                         LaunchPadMultiblock.isFullThreeByThree(pads)
                                 ? "item.nerospace.rocket.pad_ring_required"
@@ -364,6 +416,12 @@ public class RocketEntity extends Entity implements MenuProvider {
     @Override
     public void tick() {
         super.tick();
+
+        // Advance the client-side interpolation toward the latest server position (vanilla
+        // vehicle pattern) — this is what actually smooths the ascent for the rider.
+        if (level().isClientSide() && this.interpolation.hasActiveInterpolation()) {
+            this.interpolation.interpolate();
+        }
 
         if (isLaunching()) {
             if (level().isClientSide()) {

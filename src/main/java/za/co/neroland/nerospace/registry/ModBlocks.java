@@ -168,6 +168,18 @@ public final class ModBlocks {
                     .sound(SoundType.METAL));
 
     /**
+     * Launch Gantry module (LAUNCH_PAD_DESIGN.md): on a 5x5 pad's border ring it forms the Heavy
+     * Launch Complex; right-click boards the rocket on the pad.
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.rocket.LaunchGantryBlock> LAUNCH_GANTRY =
+            BLOCKS.registerBlock("launch_gantry", za.co.neroland.nerospace.rocket.LaunchGantryBlock::new,
+                    props -> props
+                            .mapColor(MapColor.METAL)
+                            .strength(3.5F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.METAL));
+
+    /**
      * Fuel Tank (Phase 8a): a fuel-storage machine that auto-fuels a rocket on an adjacent launch
      * pad. Backed by {@link za.co.neroland.nerospace.machine.FuelTankBlockEntity}.
      */

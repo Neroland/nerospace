@@ -22,6 +22,7 @@
     "nerospace:fluid_tank",
     "nerospace:gas_tank",
     "nerospace:item_store",
-    "nerospace:star_guide"
+    "nerospace:star_guide",
+    "nerospace:launch_gantry"
   ]
 }

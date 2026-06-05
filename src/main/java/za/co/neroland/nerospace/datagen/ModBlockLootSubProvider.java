@@ -33,6 +33,7 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
 
         // Phase 4 — rockets.
         dropSelf(ModBlocks.ROCKET_LAUNCH_PAD.get());
+        dropSelf(ModBlocks.LAUNCH_GANTRY.get());
 
         // Star Guide pedestal (the installed book pops separately via the BE's remove hook).
         dropSelf(ModBlocks.STAR_GUIDE.get());

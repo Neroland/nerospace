@@ -53,7 +53,24 @@ public class ModModelProvider extends ModelProvider {
         // Phase 4 — launch pad: textured full cube (proper flat/raised shape comes with the planned
         // 3x3 multiblock pad). A hand-authored flat slab model caused missing-texture at runtime, so
         // this uses the reliable cube_all generator.
-        blockModels.createTrivialCube(ModBlocks.ROCKET_LAUNCH_PAD.get());
+        // Launch pad: a flat 3px plate matching its collision shape (LAUNCH_PAD_DESIGN.md sign-off),
+        // not the old near-full cube. Element-built like the pipe's custom models.
+        Block pad = ModBlocks.ROCKET_LAUNCH_PAD.get();
+        var padTexture = TextureMapping.getBlockTexture(pad);
+        TextureMapping padMapping = new TextureMapping()
+                .put(TextureSlot.ALL, padTexture).put(TextureSlot.PARTICLE, padTexture);
+        ExtendedModelTemplate padTemplate = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.ALL)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .element(e -> e.from(0, 0, 0).to(16, 3, 16)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .build();
+        Identifier padModel = padTemplate.create(
+                ModelLocationUtils.getModelLocation(pad), padMapping, blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(
+                BlockModelGenerators.createSimpleBlock(pad, BlockModelGenerators.plainVariant(padModel)));
+
+        blockModels.createTrivialCube(ModBlocks.LAUNCH_GANTRY.get());
 
         // Phase 8a — fuel tank machine (auto-fuels a rocket on an adjacent pad).
         blockModels.createTrivialCube(ModBlocks.FUEL_TANK.get());

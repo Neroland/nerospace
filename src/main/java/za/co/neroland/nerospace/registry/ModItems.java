@@ -221,6 +221,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ROCKET_LAUNCH_PAD_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.ROCKET_LAUNCH_PAD);
 
+    // Heavy Launch Complex module.
+    public static final DeferredItem<BlockItem> LAUNCH_GANTRY_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.LAUNCH_GANTRY);
+
     // Phase 8a block item.
     public static final DeferredItem<BlockItem> FUEL_TANK_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.FUEL_TANK);

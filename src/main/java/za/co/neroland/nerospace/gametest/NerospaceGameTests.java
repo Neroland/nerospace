@@ -117,6 +117,12 @@ public final class NerospaceGameTests {
         // Oxygen field boundary classification: doors/trapdoors seal when closed and flow when
         // open, glass seals (full collision cube fallback), panes/fences hold-but-leak.
         functions.put("oxygen_sealing_boundaries", NerospaceGameTests::testOxygenSealingBoundaries);
+        // Heavy Launch Complex (LAUNCH_PAD_DESIGN.md).
+        functions.put("heavy_complex_detection", NerospaceGameTests::testHeavyComplexDetection);
+        functions.put("tier3_deploys_on_heavy_complex", NerospaceGameTests::testTier3DeploysOnHeavyComplex);
+        functions.put("fuel_pump_rate_by_footprint", NerospaceGameTests::testFuelPumpRateByFootprint);
+        functions.put("single_centered_rocket_per_pad", NerospaceGameTests::testSingleCenteredRocketPerPad);
+        functions.put("pad_break_grounds_rocket", NerospaceGameTests::testPadBreakGroundsRocket);
         // Star Guide (progression block).
         functions.put("star_guide_install_return", NerospaceGameTests::testStarGuideInstallReturn);
         functions.put("star_guide_break_drops_book", NerospaceGameTests::testStarGuideBreakDropsBook);
@@ -162,6 +168,16 @@ public final class NerospaceGameTests {
                 }
             }
         }
+    }
+
+    /** Lays a complete 5x5 launch pad with min-corner (1,1,1) in relative coords; returns centre. */
+    private static BlockPos buildHeavyPad(GameTestHelper helper) {
+        for (int dx = 0; dx < 5; dx++) {
+            for (int dz = 0; dz < 5; dz++) {
+                helper.setBlock(new BlockPos(1 + dx, 1, 1 + dz), ModBlocks.ROCKET_LAUNCH_PAD.get());
+            }
+        }
+        return new BlockPos(3, 1, 3);
     }
 
     /** Uses {@code stack} on the relative position {@code pos} as a survival mock player. */
@@ -512,6 +528,104 @@ public final class NerospaceGameTests {
         BlockPos abs = helper.absolutePos(pos);
         BlockState state = helper.getLevel().getBlockState(abs);
         helper.assertTrue(OxygenField.isLeaky(helper.getLevel(), abs, state) == expected, message);
+    }
+
+    // --- Heavy Launch Complex (LAUNCH_PAD_DESIGN.md) ---------------------------------------------
+
+    /** A bare 5x5 is not a Heavy complex; adding a Launch Gantry on the border ring forms it. */
+    private static void testHeavyComplexDetection(GameTestHelper helper) {
+        BlockPos centre = buildHeavyPad(helper);
+        java.util.Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(
+                helper.getLevel(), helper.absolutePos(centre));
+        helper.assertTrue(pads.size() == 25, "the 5x5 cluster must flood-fill completely (MAX_PADS)");
+        helper.assertTrue(LaunchPadMultiblock.fullSquareCorner(pads, 5) != null,
+                "the full 5x5 must be detected");
+        helper.assertTrue(LaunchPadMultiblock.isFullThreeByThree(pads),
+                "a 5x5 must still count as a basic 3x3 pad");
+        helper.assertFalse(LaunchPadMultiblock.isHeavyComplex(helper.getLevel(), pads),
+                "a bare 5x5 must NOT be a Heavy complex (gantry required — sign-off Q2)");
+
+        helper.setBlock(new BlockPos(0, 1, 3), ModBlocks.LAUNCH_GANTRY.get());
+        helper.assertTrue(LaunchPadMultiblock.isHeavyComplex(helper.getLevel(), pads),
+                "5x5 + border gantry must form the Heavy complex");
+        helper.succeed();
+    }
+
+    /** A Tier 3 rocket deploys on a Heavy complex without the Station-Wall ring (sign-off Q1). */
+    private static void testTier3DeploysOnHeavyComplex(GameTestHelper helper) {
+        BlockPos centre = buildHeavyPad(helper);
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_3.get()), centre);
+        helper.assertEntityNotPresent(ModEntities.ROCKET.get());
+
+        helper.setBlock(new BlockPos(0, 1, 3), ModBlocks.LAUNCH_GANTRY.get());
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_3.get()), centre);
+        helper.assertEntityPresent(ModEntities.ROCKET.get());
+        helper.succeed();
+    }
+
+    /** Fuel pump rate steps with the footprint: base → 4x on a 3x3 → 12x on the Heavy complex. */
+    private static void testFuelPumpRateByFootprint(GameTestHelper helper) {
+        // Partial cluster (2 pads): base rate.
+        helper.setBlock(new BlockPos(1, 1, 1), ModBlocks.ROCKET_LAUNCH_PAD.get());
+        helper.setBlock(new BlockPos(2, 1, 1), ModBlocks.ROCKET_LAUNCH_PAD.get());
+        java.util.Set<BlockPos> partial = LaunchPadMultiblock.connectedPads(
+                helper.getLevel(), helper.absolutePos(new BlockPos(1, 1, 1)));
+        helper.assertTrue(za.co.neroland.nerospace.machine.FuelTankBlockEntity
+                        .pumpRate(helper.getLevel(), partial) == za.co.neroland.nerospace.Tuning.fuelTankPumpRate(),
+                "a partial cluster must pump at the base rate");
+
+        // Full 5x5 without gantry: the 3x3 (full-pad) rate.
+        BlockPos centre = buildHeavyPad(helper);
+        java.util.Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(
+                helper.getLevel(), helper.absolutePos(centre));
+        helper.assertTrue(za.co.neroland.nerospace.machine.FuelTankBlockEntity
+                        .pumpRate(helper.getLevel(), pads) == za.co.neroland.nerospace.Tuning.fuelTankPumpRateFullPad(),
+                "a bare 5x5 must pump at the full-pad (3x3) rate");
+
+        // Heavy complex: 12x.
+        helper.setBlock(new BlockPos(0, 1, 3), ModBlocks.LAUNCH_GANTRY.get());
+        helper.assertTrue(za.co.neroland.nerospace.machine.FuelTankBlockEntity
+                        .pumpRate(helper.getLevel(), pads) == za.co.neroland.nerospace.Tuning.fuelTankPumpRateHeavyPad(),
+                "the Heavy complex must pump at the heavy rate");
+        helper.succeed();
+    }
+
+    /** Deploys centre the rocket on the formed square, and an occupied pad rejects a second one. */
+    private static void testSingleCenteredRocketPerPad(GameTestHelper helper) {
+        BlockPos centre = buildFullPad(helper); // corner (1,1,1) → centre (2,1,2)
+        // Click a CORNER pad: the rocket must still end up on the square's centre.
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_1.get()), new BlockPos(1, 1, 1));
+        java.util.List<RocketEntity> rockets = helper.getLevel().getEntitiesOfClass(
+                RocketEntity.class, helper.getBounds());
+        helper.assertTrue(rockets.size() == 1, "the deploy must spawn exactly one rocket");
+        RocketEntity rocket = rockets.get(0);
+        BlockPos absCentre = helper.absolutePos(centre);
+        helper.assertTrue(Math.abs(rocket.getX() - (absCentre.getX() + 0.5D)) < 0.01D
+                        && Math.abs(rocket.getZ() - (absCentre.getZ() + 0.5D)) < 0.01D,
+                "the rocket must be centred on the 3x3 (got " + rocket.position() + ")");
+
+        // Second deploy on the same (occupied) pad must be rejected.
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_1.get()), centre);
+        helper.assertTrue(helper.getLevel().getEntitiesOfClass(
+                        RocketEntity.class, helper.getBounds()).size() == 1,
+                "an occupied pad must reject a second rocket");
+        helper.succeed();
+    }
+
+    /** Breaking a block of the square the rocket stands on grounds it (launch re-check). */
+    private static void testPadBreakGroundsRocket(GameTestHelper helper) {
+        BlockPos centre = buildFullPad(helper);
+        useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_1.get()), centre);
+        java.util.List<RocketEntity> rockets = helper.getLevel().getEntitiesOfClass(
+                RocketEntity.class, helper.getBounds());
+        helper.assertTrue(rockets.size() == 1, "test setup: one deployed rocket");
+        RocketEntity rocket = rockets.get(0);
+        helper.assertTrue(rocket.isOnValidPad(), "the freshly deployed rocket must be launchable");
+
+        helper.setBlock(new BlockPos(1, 1, 1), Blocks.AIR); // break a corner of ITS 3x3
+        helper.assertFalse(rocket.isOnValidPad(),
+                "breaking a block of the rocket's own square must ground it");
+        helper.succeed();
     }
 
     // --- Star Guide (progression block) ---------------------------------------------------------

@@ -32,14 +32,14 @@
       "render_order": "default",
       "allow_mirror_modeling": true,
       "from": [
-        -4,
+        -6,
         4,
-        -4
+        -6
       ],
       "to": [
-        4,
+        6,
         40,
-        4
+        6
       ],
       "autouv": 0,
       "color": 0,
@@ -112,21 +112,21 @@
       "box_uv": true,
       "uv_offset": [
         0,
-        46
+        48
       ],
       "rescale": false,
       "locked": false,
       "render_order": "default",
       "allow_mirror_modeling": true,
       "from": [
-        -3,
+        -4,
         40,
-        -3
+        -4
       ],
       "to": [
-        3,
+        4,
         48,
-        3
+        4
       ],
       "autouv": 0,
       "color": 0,
@@ -195,10 +195,97 @@
       "uuid": "2f340f4c-1ae9-eb7b-98dd-da6c934e59cd"
     },
     {
+      "name": "console",
+      "box_uv": true,
+      "uv_offset": [
+        32,
+        48
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -4,
+        20.5,
+        -5.5
+      ],
+      "to": [
+        4,
+        25.5,
+        -4.5
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "d6fd4a3c-8f03-5c67-b4e9-224056b80a73"
+    },
+    {
       "name": "fin_north",
       "box_uv": true,
       "uv_offset": [
-        40,
+        48,
         0
       ],
       "rescale": false,
@@ -208,12 +295,12 @@
       "from": [
         -1,
         0,
-        -8
+        -10
       ],
       "to": [
         1,
         10,
-        -4
+        -6
       ],
       "autouv": 0,
       "color": 0,
@@ -285,7 +372,7 @@
       "name": "fin_south",
       "box_uv": true,
       "uv_offset": [
-        40,
+        48,
         0
       ],
       "rescale": false,
@@ -295,12 +382,12 @@
       "from": [
         -1,
         0,
-        4
+        6
       ],
       "to": [
         1,
         10,
-        8
+        10
       ],
       "autouv": 0,
       "color": 0,
@@ -372,7 +459,7 @@
       "name": "fin_west",
       "box_uv": true,
       "uv_offset": [
-        40,
+        48,
         0
       ],
       "rescale": false,
@@ -380,12 +467,12 @@
       "render_order": "default",
       "allow_mirror_modeling": true,
       "from": [
-        -8,
+        -10,
         0,
         -1
       ],
       "to": [
-        -4,
+        -6,
         10,
         1
       ],
@@ -459,7 +546,7 @@
       "name": "fin_east",
       "box_uv": true,
       "uv_offset": [
-        40,
+        48,
         0
       ],
       "rescale": false,
@@ -467,12 +554,12 @@
       "render_order": "default",
       "allow_mirror_modeling": true,
       "from": [
-        4,
+        6,
         0,
         -1
       ],
       "to": [
-        8,
+        10,
         10,
         1
       ],
@@ -579,6 +666,23 @@
       ]
     },
     {
+      "name": "console",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "0dcdf3f9-530f-8bcd-83d9-a51ffe82ba05",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "d6fd4a3c-8f03-5c67-b4e9-224056b80a73"
+      ]
+    },
+    {
       "name": "fin_north",
       "origin": [
         0,
@@ -649,7 +753,7 @@
   ],
   "textures": [
     {
-      "path": "/sessions/eager-festive-shannon/mnt/nerospace/src/main/resources/assets/nerospace/textures/entity/rocket.png",
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\rocket.png",
       "name": "rocket.png",
       "folder": "entity",
       "namespace": "nerospace",

@@ -207,6 +207,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
+        // Launch Gantry: a nerosteel service tower (LAUNCH_PAD_DESIGN.md — Heavy complex module).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.LAUNCH_GANTRY.get())
+                .pattern("N N")
+                .pattern("NIN")
+                .pattern("NSN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('I', Items.IRON_BARS)
+                .define('S', ModBlocks.STATION_WALL.get())
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
         // Fuel Tank: a nerosteel-framed glass tank around a fuel canister core.
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModBlocks.FUEL_TANK.get())

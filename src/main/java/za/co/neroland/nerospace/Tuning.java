@@ -74,6 +74,8 @@ public final class Tuning {
     public static final int BASE_FUEL_TANK_PUMP_RATE = 40;
     /** Faster feed once the canonical full 3x3 pad is formed (mB/tick). */
     public static final int BASE_FUEL_TANK_PUMP_RATE_FULL_PAD = 160;
+    /** Heavy Launch Complex feed (5x5 + gantry; LAUNCH_PAD_DESIGN.md sign-off: 12x base). */
+    public static final int BASE_FUEL_TANK_PUMP_RATE_HEAVY_PAD = 480;
     /** Server ticks between Terraformer work cycles (lower = faster expansion). */
     public static final int BASE_TERRAFORM_WORK_INTERVAL_TICKS = 8;
     /** Ticks an item takes to cross one pipe segment (10 = 2 blocks/second). */
@@ -273,6 +275,10 @@ public final class Tuning {
 
     public static int fuelTankPumpRateFullPad() {
         return scale(BASE_FUEL_TANK_PUMP_RATE_FULL_PAD, Config.MACHINE_SPEED_MULTIPLIER.get());
+    }
+
+    public static int fuelTankPumpRateHeavyPad() {
+        return scale(BASE_FUEL_TANK_PUMP_RATE_HEAVY_PAD, Config.MACHINE_SPEED_MULTIPLIER.get());
     }
 
     public static int fluidPipeThroughput() {

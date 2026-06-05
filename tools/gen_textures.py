@@ -1259,6 +1259,107 @@ def gen_oxygen_hud_icon():
     save(img, os.path.join(GUI_DIR, "oxygen_hud_icon.png"))
 
 
+# ---- Per-tier rocket entity textures (cockpit rework) -----------------------
+#
+# Layout matches RocketModel (64x64): body (12,36,12)@(0,0) — sides v12..48 in four 12-px
+# columns; nose (8,8,8)@(0,48); fins @(48,0); console (8,5,1)@(32,48). Each side face gets a
+# DARK-FRAMED, fully TRANSPARENT window (entityCutout discards alpha = a real hole the standing
+# rider sees out of), an accent stripe per tier, and the console carries the interior gauge art.
+
+ROCKET_TIER_SPECS = {
+    "rocket_t1": {"accent": (224, 58, 58, 255), "trim": (160, 36, 36, 255)},
+    "rocket_t2": {"accent": (179, 39, 158, 255), "trim": (106, 31, 140, 255)},
+    "rocket_t3": {"accent": (240, 200, 80, 255), "trim": (60, 170, 90, 255)},
+}
+
+
+def gen_rocket_tier_entity(name, spec):
+    rng = random.Random(hash(name) & 0xffffffff)
+    img = Image.new("RGBA", (64, 64), CLEAR)
+    px = img.load()
+    whites = [(232, 232, 244, 255), (214, 214, 228, 255), (196, 196, 212, 255)]
+    dark = (70, 70, 86, 255)
+    ink = (28, 28, 36, 255)
+    accent, trim = spec["accent"], spec["trim"]
+
+    def plate(x0, y0, x1, y1):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                px[x, y] = rng.choice(whites)
+
+    plate(12, 0, 36, 12)
+    plate(0, 12, 48, 48)
+    for u0 in (0, 12, 24, 36):
+        for x in range(u0, u0 + 12):
+            for y in range(28, 33):
+                px[x, y] = accent
+            px[x, 12] = dark
+            px[x, 47] = dark
+            px[x, 44] = trim
+        # Window band at the standing rider's eye line (model y ~ -5; v = 12 + (y + 16)).
+        for y in range(20, 27):
+            for x in range(u0 + 3, u0 + 9):
+                px[x, y] = ink
+        for y in range(21, 26):
+            for x in range(u0 + 4, u0 + 8):
+                px[x, y] = CLEAR
+    plate(0, 48, 32, 64)
+    for x in range(0, 32):
+        px[x, 56] = accent
+        px[x, 63] = dark
+    plate(48, 0, 60, 14)
+    for x in range(48, 60):
+        px[x, 4] = accent
+        px[x, 13] = dark
+    for y in range(48, 54):
+        for x in range(32, 50):
+            px[x, y] = (16, 22, 30, 255)
+    g = (88, 224, 128, 255)
+    a = (255, 196, 64, 255)
+    r = (236, 80, 80, 255)
+    b = (96, 196, 255, 255)
+    for i, c in enumerate((g, g, a, g, r, b, g, a)):
+        px[34 + i, 50] = c
+    for i in range(6):
+        px[42 + i, 52] = b if i % 2 == 0 else (40, 90, 130, 255)
+    for i in range(4):
+        px[34 + i * 2, 52] = a
+    save(img, os.path.join(ENTITY_DIR, name + ".png"))
+
+
+def gen_rocket_tier_entities():
+    for name, spec in ROCKET_TIER_SPECS.items():
+        gen_rocket_tier_entity(name, spec)
+
+
+# ---- Launch Gantry (Heavy Launch Complex module) ----------------------------
+
+def gen_launch_gantry():
+    """Steel service-tower lattice: rocket-family steel with red accent cross-bracing."""
+    rng = random.Random(0x6A47)
+    img = new_img()
+    px = img.load()
+    steel = [(150, 150, 168, 255), (132, 132, 150, 255), (118, 118, 136, 255)]
+    dark = (70, 70, 86, 255)
+    accent = (224, 80, 106, 255)  # rocket red
+    for y in range(S):
+        for x in range(S):
+            px[x, y] = rng.choice(steel)
+    # Lattice frame: edges + cross-braces.
+    for i in range(S):
+        px[i, 0] = dark
+        px[i, S - 1] = dark
+        px[0, i] = dark
+        px[S - 1, i] = dark
+        px[i, i] = accent
+        px[i, S - 1 - i] = accent
+    # Horizontal service platforms.
+    for x in range(1, 15):
+        px[x, 5] = dark
+        px[x, 10] = dark
+    save(img, os.path.join(BLOCK_DIR, "launch_gantry.png"))
+
+
 # ---- Star Guide (progression block, 1.0) -----------------------------------
 
 def _star(px, cx, cy, color, arm=2):
@@ -1361,6 +1462,9 @@ def gen_gui_star_guide():
 
 
 if __name__ == "__main__":
+    # Heavy Launch Complex + cockpit rework.
+    gen_launch_gantry()
+    gen_rocket_tier_entities()
     # Star Guide (progression block, 1.0).
     gen_star_guide()
     gen_star_guide_book()

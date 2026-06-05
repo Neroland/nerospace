@@ -31,6 +31,9 @@ public final class ModEntities {
                     // ~3x3 footprint (matches the launch pad) and tall enough to seat the rider inside.
                     .sized(2.6F, 5.0F)
                     .eyeHeight(2.4F)
+                    // Seat the rider INSIDE the hull at cockpit height (the window band), not
+                    // perched on the nose cone (the default attachment is the entity's top).
+                    .passengerAttachments(2.2F)
                     .clientTrackingRange(10)
                     .updateInterval(3));
 

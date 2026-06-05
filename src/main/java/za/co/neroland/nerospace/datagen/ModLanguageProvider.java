@@ -372,7 +372,29 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.nerospace.rocket.pad_incomplete",
                 "The launch pad is incomplete — a rocket needs a full 3x3 of Launch Pad blocks");
         add("item.nerospace.rocket.pad_ring_required",
-                "A Tier 3 rocket needs the 3x3 pad ringed with Station Wall");
+                "A Tier 3 rocket needs the 3x3 pad ringed with Station Wall — or a Heavy Launch "
+                        + "Complex (full 5x5 pad with a Launch Gantry)");
+        add("item.nerospace.rocket.pad_occupied",
+                "There is already a rocket on this pad");
+
+        // Heavy Launch Complex (LAUNCH_PAD_DESIGN.md).
+        add(ModBlocks.LAUNCH_GANTRY.get(), "Launch Gantry");
+        add("block.nerospace.launch_gantry.no_rocket", "No rocket on the pad to board");
+        add("block.nerospace.launch_gantry.boarded", "Boarded the rocket — strap in");
+        add("block.nerospace.rocket_launch_pad.report.none",
+                "Pad cluster: %s block(s) — no complete square yet (a rocket needs a full 3x3)");
+        add("block.nerospace.rocket_launch_pad.report.3x3",
+                "Pad cluster: %s block(s) — 3x3 pad formed (rockets can deploy)");
+        add("block.nerospace.rocket_launch_pad.report.5x5",
+                "Pad cluster: %s block(s) — full 5x5 formed");
+        add("block.nerospace.rocket_launch_pad.report.heavy",
+                "Pad cluster: %s block(s) — HEAVY LAUNCH COMPLEX online (12x fuel feed)");
+        add("block.nerospace.rocket_launch_pad.report.need_gantry",
+                "Add a Launch Gantry beside the 5x5 to complete the Heavy Launch Complex");
+        add("block.nerospace.rocket_launch_pad.report.t3_ready",
+                "Tier 3 ready: Station Wall ring or Heavy complex present");
+        add("block.nerospace.rocket_launch_pad.report.t3_not_ready",
+                "Tier 3 needs a Station Wall ring or a Heavy Launch Complex");
         add("entity.nerospace.rocket.arrived", "You have arrived on the planet");
         add("entity.nerospace.rocket.docked", "Docked at the Orbital Station");
 

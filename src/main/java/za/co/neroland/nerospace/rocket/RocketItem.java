@@ -48,16 +48,34 @@ public class RocketItem extends Item {
                 }
                 return InteractionResult.SUCCESS;
             }
-            if (this.tier == RocketTier.TIER_3 && !LaunchPadMultiblock.hasStationWallRing(level, pads)) {
+            // Tier 3 needs the Station-Wall ring OR a Heavy Launch Complex (5x5 + gantry).
+            if (this.tier == RocketTier.TIER_3
+                    && !LaunchPadMultiblock.hasStationWallRing(level, pads)
+                    && !LaunchPadMultiblock.isHeavyComplex(level, pads)) {
                 if (player != null) {
                     player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_ring_required"));
                 }
                 return InteractionResult.SUCCESS;
             }
 
-            BlockPos above = pos.above();
+            // One rocket per pad: reject a second deploy onto an occupied cluster.
+            if (LaunchPadMultiblock.rocketAbove(level, pads) != null) {
+                if (player != null) {
+                    player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_occupied"));
+                }
+                return InteractionResult.SUCCESS;
+            }
+
+            // Centre the rocket on the formed square (the 5x5 when present, else the 3x3) and
+            // stand it on the pad's plate surface (the pad is a 3px platform, not a cube).
+            BlockPos corner5 = LaunchPadMultiblock.fullSquareCorner(pads, 5);
+            BlockPos corner = corner5 != null ? corner5 : LaunchPadMultiblock.fullSquareCorner(pads, 3);
+            int size = corner5 != null ? 5 : 3;
+            BlockPos centre = corner == null ? pos
+                    : new BlockPos(corner.getX() + size / 2, corner.getY(), corner.getZ() + size / 2);
             RocketEntity rocket = new RocketEntity(
-                    level, above.getX() + 0.5D, above.getY(), above.getZ() + 0.5D, this.tier);
+                    level, centre.getX() + 0.5D, centre.getY() + RocketLaunchPadBlock.SURFACE_HEIGHT,
+                    centre.getZ() + 0.5D, this.tier);
             level.addFreshEntity(rocket);
 
             ItemStack stack = context.getItemInHand();

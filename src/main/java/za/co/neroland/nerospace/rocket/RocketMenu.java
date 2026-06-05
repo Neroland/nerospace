@@ -145,7 +145,11 @@ public class RocketMenu extends AbstractContainerMenu {
     }
 
     public RocketTier getTier() {
-        return RocketTier.byOrdinal(this.data.get(2));
+        // Prefer the resolved entity: its synced data is already correct when the screen inits,
+        // while menu data slots are zero until the first broadcast — building the destination
+        // row from slot data made every rocket look Tier 1 for the opening frames.
+        RocketEntity current = this.rocket;
+        return current != null ? current.getTier() : RocketTier.byOrdinal(this.data.get(2));
     }
 
     public boolean isLaunchable() {

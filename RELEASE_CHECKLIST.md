@@ -10,11 +10,18 @@ box only after the gradle-MCP build + gametests are green AND the in-game check 
 ## 1. Feature completion — new content for 1.0
 
 ### Big multiblock launch pad
-- [ ] Design doc for the larger pad (footprint, modules: fuel, gantry, etc.)
-- [ ] Implement bigger footprint (5×5+) with functional modules
-- [ ] Migrate/keep the 3×3 tier as the entry-level pad (no breaking of existing worlds)
-- [ ] Flatter/proper pad block model (replaces the near-full cube)
-- [ ] Gametests for new pad formation + gating
+- [x] Design doc for the larger pad (footprint, modules: fuel, gantry, etc.) —
+      `LAUNCH_PAD_DESIGN.md`, signed off (ring OR Heavy for T3; gantry required; 12× fuel; flat
+      plate model now)
+- [x] Implement bigger footprint (5×5+) with functional modules — Heavy Launch Complex =
+      5×5 + Launch Gantry (boards the rocket on right-click); fuel module = Fuel Tank at 12×
+      (480 mB/t via `Tuning`); pad formation report on empty-hand right-click
+- [x] Migrate/keep the 3×3 tier as the entry-level pad (no breaking of existing worlds) — T1/T2
+      unchanged; T3 deploys on ring OR Heavy complex (both gametested)
+- [x] Flatter/proper pad block model (replaces the near-full cube) — 3px plate model generated
+      (matches the existing collision exactly); confirm the look + rocket stance in runClient
+- [x] Gametests for new pad formation + gating (`heavy_complex_detection`,
+      `tier3_deploys_on_heavy_complex`, `fuel_pump_rate_by_footprint` — 20/20 green)
 
 ### Star Guide (progression block) — NEW
 - [x] Design: a block that holds the guidebook and shows an **interactive visual progression/quest
