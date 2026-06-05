@@ -26,6 +26,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
@@ -50,6 +53,7 @@ import za.co.neroland.nerospace.rocket.LaunchPadMultiblock;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.rocket.RocketTier;
 import za.co.neroland.nerospace.world.GreenxertzAtmosphere;
+import za.co.neroland.nerospace.world.OxygenField;
 
 /**
  * The mod's gametests (26.1 data-driven framework, registered in code via
@@ -110,6 +114,9 @@ public final class NerospaceGameTests {
         functions.put("grinder_cap_feed_and_extract", NerospaceGameTests::testGrinderCapFeedAndExtract);
         functions.put("item_store_cap_roundtrip", NerospaceGameTests::testItemStoreCapRoundtrip);
         functions.put("terraformer_cap_upgrade_feed", NerospaceGameTests::testTerraformerCapUpgradeFeed);
+        // Oxygen field boundary classification: doors/trapdoors seal when closed and flow when
+        // open, glass seals (full collision cube fallback), panes/fences hold-but-leak.
+        functions.put("oxygen_sealing_boundaries", NerospaceGameTests::testOxygenSealingBoundaries);
         return functions;
     }
 
@@ -443,6 +450,63 @@ public final class NerospaceGameTests {
         helper.assertTrue(terraformer.getItem(0).is(ModItems.NEROSTEEL_INGOT.get()),
                 "the capability-inserted upgrade must be visible in the machine's own slot");
         helper.succeed();
+    }
+
+    // --- Oxygen field boundaries -------------------------------------------------
+
+    /**
+     * Doors/trapdoors/glass as sealed-room boundaries (terraform design §1.4): a closed door or
+     * trapdoor is a wall, an open one lets oxygen flow (and leak), glass seals through the
+     * full-collision-cube fallback (airtight windows), and a glass pane holds-but-leaks. Exercises
+     * {@link OxygenField#canHold}/{@link OxygenField#isLeaky} — the exact predicates the field
+     * simulation BFS uses to decide sealed vs leaky volumes.
+     */
+    private static void testOxygenSealingBoundaries(GameTestHelper helper) {
+        BlockPos base = new BlockPos(2, 1, 2);
+        BlockPos pos = new BlockPos(2, 2, 2);
+        helper.setBlock(base, Blocks.STONE); // sturdy support so the door states are stable
+
+        helper.setBlock(pos, Blocks.GLASS);
+        assertHolds(helper, pos, false, "glass must seal (airtight window)");
+
+        helper.setBlock(pos, Blocks.GLASS_PANE);
+        assertHolds(helper, pos, true, "a glass pane is not airtight (holds but bleeds)");
+
+        helper.setBlock(pos, Blocks.OAK_DOOR); // default state: closed
+        assertHolds(helper, pos, false, "a closed door must seal the room");
+        assertLeaky(helper, pos, false, "a closed door must not read as a leak");
+        helper.setBlock(pos, Blocks.OAK_DOOR.defaultBlockState()
+                .setValue(BlockStateProperties.OPEN, true));
+        assertHolds(helper, pos, true, "an open door must let oxygen flow");
+        assertLeaky(helper, pos, true, "an open door is a leak");
+
+        helper.setBlock(pos, Blocks.OAK_TRAPDOOR); // default state: closed
+        assertHolds(helper, pos, false, "a closed trapdoor must seal the room");
+        assertLeaky(helper, pos, false,
+                "a closed trapdoor must not read as a leak (OXYGEN_LEAKS tag ordering)");
+        helper.setBlock(pos, Blocks.OAK_TRAPDOOR.defaultBlockState()
+                .setValue(BlockStateProperties.OPEN, true));
+        assertHolds(helper, pos, true, "an open trapdoor must let oxygen flow");
+        assertLeaky(helper, pos, true, "an open trapdoor is a leak");
+
+        helper.setBlock(pos, ModBlocks.STATION_WALL.get());
+        assertHolds(helper, pos, false, "station wall must seal (OXYGEN_SEALING tag)");
+
+        helper.setBlock(pos, Blocks.AIR);
+        assertHolds(helper, pos, true, "air must hold oxygen");
+        helper.succeed();
+    }
+
+    private static void assertHolds(GameTestHelper helper, BlockPos pos, boolean expected, String message) {
+        BlockPos abs = helper.absolutePos(pos);
+        BlockState state = helper.getLevel().getBlockState(abs);
+        helper.assertTrue(OxygenField.canHold(helper.getLevel(), abs, state) == expected, message);
+    }
+
+    private static void assertLeaky(GameTestHelper helper, BlockPos pos, boolean expected, String message) {
+        BlockPos abs = helper.absolutePos(pos);
+        BlockState state = helper.getLevel().getBlockState(abs);
+        helper.assertTrue(OxygenField.isLeaky(helper.getLevel(), abs, state) == expected, message);
     }
 
     /**

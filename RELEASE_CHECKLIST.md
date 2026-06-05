@@ -45,10 +45,15 @@ box only after the gradle-MCP build + gametests are green AND the in-game check 
 - [ ] HUD badge + `suitTier` handling extended for variants
 
 ### Remaining small features (from FUTURE_WORK)
-- [ ] Hopper/pipe feeding of the Oxygen Generator fuel slot (`Capabilities.Item.BLOCK`)
-- [ ] Item cap on the rocket intake (`Capabilities.Item.ENTITY`)
-- [ ] Rocket UI: painted background panel, graphical fuel gauge, trajectory arc
-- [ ] Doors/trapdoors/glass as valid sealed-room boundaries
+- [x] ~~Hopper/pipe feeding of the Oxygen Generator fuel slot~~ N/A — stale item: the gas rework
+      made the O₂ Generator grid-powered electrolysis (no fuel slot; energy arrives via pipes)
+- [x] Item cap on the rocket intake (`Capabilities.Item.ENTITY`) — landed in the suit-station
+      batch (entity cap + pad proxy, `pad_proxies_rocket_intake` gametest)
+- [x] Rocket UI: painted background panel, graphical fuel gauge, trajectory arc — landed in the
+      machine-GUI batch (`rocket.png` panel via `TexturedContainerScreen`, `hGauge`, dotted arc)
+- [x] Doors/trapdoors/glass as valid sealed-room boundaries — in `OxygenField.canHold` (closed
+      door/trapdoor = wall, open = leak, glass = airtight); `isLeaky` tag-order bug fixed +
+      `oxygen_sealing_boundaries` gametest added (13/13 green)
 
 ## 2. Art & model overhaul
 

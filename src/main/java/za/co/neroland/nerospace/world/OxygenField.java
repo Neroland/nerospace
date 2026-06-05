@@ -49,12 +49,11 @@ public final class OxygenField {
         if (state.isAir()) {
             return false;
         }
-        if (state.is(ModTags.Blocks.OXYGEN_LEAKS)) {
-            return true;
-        }
+        // Doors/trapdoors BEFORE the leaks tag: vanilla TRAPDOORS are in OXYGEN_LEAKS, but a
+        // closed one is a wall (canHold false) and must never read as leaky.
         if (state.getBlock() instanceof DoorBlock || state.getBlock() instanceof TrapDoorBlock) {
             return state.hasProperty(BlockStateProperties.OPEN) && state.getValue(BlockStateProperties.OPEN);
         }
-        return false;
+        return state.is(ModTags.Blocks.OXYGEN_LEAKS);
     }
 }
