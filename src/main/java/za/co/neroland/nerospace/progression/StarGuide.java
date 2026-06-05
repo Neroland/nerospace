@@ -70,7 +70,8 @@ public final class StarGuide {
                     step("rocket_fuel_canister", () -> ModItems.ROCKET_FUEL_CANISTER.get(), "guide/rocket_fuel_canister"),
                     step("rocket_launch_pad", () -> ModBlocks.ROCKET_LAUNCH_PAD.get(), "guide/rocket_launch_pad"),
                     step("rocket_tier_1", () -> ModItems.ROCKET_TIER_1.get(), "rocket"),
-                    step("station", () -> ModBlocks.STATION_FLOOR.get(), "station"))),
+                    step("station", () -> ModBlocks.STATION_FLOOR.get(), "station"),
+                    step("station_charter", () -> ModItems.STATION_CHARTER.get(), "guide/station_charter"))),
             new Chapter("new_worlds", List.of(
                     step("rocket_tier_2", () -> ModItems.ROCKET_TIER_2.get(), "guide/rocket_tier_2"),
                     step("greenxertz", () -> ModItems.NEROSTEEL_INGOT.get(), "greenxertz"),

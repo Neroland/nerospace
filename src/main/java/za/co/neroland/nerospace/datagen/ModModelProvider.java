@@ -109,6 +109,9 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.STATION_FLOOR.get());
         blockModels.createTrivialCube(ModBlocks.STATION_WALL.get());
 
+        // Station Core (MULTI_STATION_DESIGN.md; founding-only, but the model/blockstate still gen).
+        blockModels.createTrivialCube(ModBlocks.STATION_CORE.get());
+
         // Phase 7b — the rocket fuel liquid block: a particle-only blockstate (the fluid itself is
         // drawn by the FluidType render, not a block model).
         blockModels.createParticleOnlyBlock(ModBlocks.ROCKET_FUEL_BLOCK.get());
@@ -181,6 +184,9 @@ public class ModModelProvider extends ModelProvider {
 
         // Star Guide book.
         itemModels.generateFlatItem(ModItems.STAR_GUIDE_BOOK.get(), ModelTemplates.FLAT_ITEM);
+
+        // Station Charter (MULTI_STATION_DESIGN.md).
+        itemModels.generateFlatItem(ModItems.STATION_CHARTER.get(), ModelTemplates.FLAT_ITEM);
 
         // Phase 10e — spawn eggs (custom flat egg icons, not the procedural tinted template).
         itemModels.generateFlatItem(ModItems.XERTZ_STALKER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);

@@ -65,6 +65,14 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Index into the current tier's destination list. */
     private static final EntityDataAccessor<Integer> DATA_DEST =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    /** Player-station selection: {@link #STATION_NONE}, {@link #STATION_FOUND}, or a slot id. */
+    private static final EntityDataAccessor<Integer> DATA_STATION =
+            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+
+    /** No station selected — the planet destination ({@code DATA_DEST}) applies. */
+    public static final int STATION_NONE = -1;
+    /** The FOUND node: launch consumes a Station Charter and founds a new station. */
+    public static final int STATION_FOUND = -2;
 
     /** Ticks of ascent before the rider is transported. */
     public static final int LAUNCH_DURATION = 100;
@@ -80,7 +88,16 @@ public class RocketEntity extends Entity implements MenuProvider {
      * surface is ready to expose via {@code Capabilities.Fluid.ENTITY} for pipe automation.
      */
     @SuppressWarnings("this-escape") // change-callback wiring, used only after construction
-    private final RocketFuelTank fuelTank = new RocketFuelTank(RocketTier.TIER_3.fuelCapacity(), this::syncFuel);
+    private final RocketFuelTank fuelTank = new RocketFuelTank(maxTierFuelCapacity(), this::syncFuel);
+
+    /** The largest tier's tank — the physical handler capacity (per-tier caps live in addFuel). */
+    private static int maxTierFuelCapacity() {
+        int max = 0;
+        for (RocketTier tier : RocketTier.values()) {
+            max = Math.max(max, tier.fuelCapacity());
+        }
+        return max;
+    }
 
     /**
      * The single-slot fuel intake's authoritative store, as a transfer-API handler — exposed via
@@ -173,7 +190,11 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
     }
 
-    /** Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex. */
+    /**
+     * Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable,
+     * [4]=destinationIndex, [5]=stationSelection (offset by 8 so the FOUND marker −2 survives the
+     * unsigned-short container-data sync — see {@code RocketMenu.STATION_SYNC_OFFSET}).
+     */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
@@ -183,6 +204,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 2 -> getTier().ordinal();
                 case 3 -> canLaunch() ? 1 : 0;
                 case 4 -> getDestinationIndex();
+                case 5 -> stationSelection() + RocketMenu.STATION_SYNC_OFFSET;
                 default -> 0;
             };
         }
@@ -194,7 +216,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
     };
 
@@ -259,6 +281,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         builder.define(DATA_TIER, RocketTier.TIER_1.ordinal());
         builder.define(DATA_LAUNCHING, false);
         builder.define(DATA_DEST, 0);
+        builder.define(DATA_STATION, STATION_NONE);
     }
 
     public int getFuel() {
@@ -313,9 +336,16 @@ public class RocketEntity extends Entity implements MenuProvider {
         return this.entityData.get(DATA_DEST);
     }
 
-    /** The currently selected destination level, or {@code null} if this tier can't fly anywhere. */
+    /**
+     * The currently selected destination level, or {@code null} if this tier can't fly anywhere.
+     * Any station selection (a founded station or the FOUND marker) targets the shared station
+     * dimension; the per-station coordinates resolve in {@link #completeLaunch()}.
+     */
     @Nullable
     public net.minecraft.resources.ResourceKey<Level> selectedDestination() {
+        if (stationSelection() != STATION_NONE) {
+            return ModDimensions.STATION_LEVEL;
+        }
         return getTier().destination(getDestinationIndex());
     }
 
@@ -327,6 +357,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         int count = getTier().destinations().size();
         if (count > 1) {
             this.entityData.set(DATA_DEST, Math.floorMod(getDestinationIndex() + 1, count));
+            this.entityData.set(DATA_STATION, STATION_NONE);
         }
     }
 
@@ -338,7 +369,64 @@ public class RocketEntity extends Entity implements MenuProvider {
         int count = getTier().destinations().size();
         if (count > 0) {
             this.entityData.set(DATA_DEST, Math.floorMod(index, count));
+            this.entityData.set(DATA_STATION, STATION_NONE);
         }
+    }
+
+    // --- Player stations (MULTI_STATION_DESIGN.md) ---------------------------
+
+    /** {@link #STATION_NONE}, {@link #STATION_FOUND}, or the selected station's slot id. */
+    public int stationSelection() {
+        return this.entityData.get(DATA_STATION);
+    }
+
+    /** Selects a founded station by slot id (server-side; validated against the registry). */
+    public void selectStation(int slot) {
+        if (level().isClientSide() || isLaunching() || !(level() instanceof ServerLevel server)) {
+            return;
+        }
+        if (StationRegistry.get(server.getServer()).get(slot) != null) {
+            this.entityData.set(DATA_STATION, slot);
+        }
+    }
+
+    /** Cycles through founded stations in founding order (server-authoritative registry order). */
+    public void cycleStation() {
+        if (level().isClientSide() || isLaunching() || !(level() instanceof ServerLevel server)) {
+            return;
+        }
+        int next = StationRegistry.get(server.getServer())
+                .nextSlotAfter(Math.max(stationSelection(), STATION_NONE));
+        if (next >= 0) {
+            this.entityData.set(DATA_STATION, next);
+        }
+    }
+
+    /** Selects the FOUND marker (server-side; the rider must carry a Station Charter). */
+    public void selectFound() {
+        if (level().isClientSide() || isLaunching() || !(level() instanceof ServerLevel server)) {
+            return;
+        }
+        if (this.getFirstPassenger() instanceof Player rider && hasCharter(rider)
+                && !StationRegistry.get(server.getServer()).isFull()) {
+            this.entityData.set(DATA_STATION, STATION_FOUND);
+        }
+    }
+
+    /** Whether {@code player} carries at least one Station Charter. */
+    public static boolean hasCharter(Player player) {
+        return findCharter(player) >= 0;
+    }
+
+    /** Inventory slot of the first Station Charter, or −1. */
+    private static int findCharter(Player player) {
+        Inventory inventory = player.getInventory();
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            if (inventory.getItem(i).is(ModItems.STATION_CHARTER.get())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public boolean isLaunching() {
@@ -401,6 +489,28 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /** Begins the ascent. Server-side; called from the rocket menu's Launch button. */
     public void startLaunch() {
+        // Station selections re-validate against the live registry/inventory before ignition.
+        if (!level().isClientSide() && level() instanceof ServerLevel server
+                && this.getFirstPassenger() instanceof ServerPlayer rider) {
+            int station = stationSelection();
+            if (station == STATION_FOUND) {
+                if (!hasCharter(rider)) {
+                    rider.sendSystemMessage(Component.translatable("entity.nerospace.rocket.no_charter"));
+                    this.entityData.set(DATA_STATION, STATION_NONE);
+                    return;
+                }
+                if (StationRegistry.get(server.getServer()).isFull()) {
+                    rider.sendSystemMessage(Component.translatable("entity.nerospace.rocket.stations_full"));
+                    this.entityData.set(DATA_STATION, STATION_NONE);
+                    return;
+                }
+            } else if (station >= 0
+                    && StationRegistry.get(server.getServer()).get(station) == null) {
+                rider.sendSystemMessage(Component.translatable("entity.nerospace.rocket.station_missing"));
+                this.entityData.set(DATA_STATION, STATION_NONE);
+                return;
+            }
+        }
         if (level().isClientSide() || !canLaunch()) {
             if (!level().isClientSide() && !isLaunching() && !isOnValidPad()
                     && this.getFirstPassenger() instanceof ServerPlayer rider) {
@@ -524,20 +634,41 @@ public class RocketEntity extends Entity implements MenuProvider {
                 double arrivalX;
                 double arrivalY;
                 double arrivalZ;
+                Component arrivalMessage;
                 if (targetKey.equals(ModDimensions.STATION_LEVEL)) {
-                    // The station is a single shared platform at the origin (multi-station support is a
-                    // future feature). Build it once — never restack it relative to the arrival position,
-                    // which used to spawn a fresh platform on top of the existing one each trip.
-                    int cx = 0;
-                    int cz = 0;
-                    int platformY = 64;
-                    destination.getChunk(cx >> 4, cz >> 4);
-                    if (!destination.getBlockState(new BlockPos(cx, platformY, cz)).is(ModBlocks.STATION_FLOOR.get())) {
-                        buildStationPlatform(destination, cx, platformY, cz);
+                    // Origin = the shared public platform; player stations resolve their slot's
+                    // offset (MULTI_STATION_DESIGN.md §2); FOUND allocates a fresh slot and
+                    // anchors it with a Station Core. Platforms build once — never restacked.
+                    int station = stationSelection();
+                    BlockPos centre = new BlockPos(0, StationRegistry.PLATFORM_Y, 0);
+                    arrivalMessage = Component.translatable("entity.nerospace.rocket.docked");
+                    if (station == STATION_FOUND) {
+                        StationRegistry.StationEntry founded = foundStation(server, destination, player);
+                        if (founded != null) {
+                            centre = founded.center();
+                            arrivalMessage = Component.translatable(
+                                    "entity.nerospace.rocket.founded", founded.name());
+                        }
+                    } else if (station >= 0) {
+                        StationRegistry.StationEntry entry =
+                                StationRegistry.get(server).get(station);
+                        if (entry != null) {
+                            centre = entry.center();
+                            arrivalMessage = Component.translatable(
+                                    "entity.nerospace.rocket.station_arrived", entry.name());
+                        } else {
+                            arrivalMessage = Component.translatable(
+                                    "entity.nerospace.rocket.station_missing");
+                        }
                     }
-                    arrivalX = cx + 0.5D;
-                    arrivalY = platformY + 1.0D;
-                    arrivalZ = cz + 0.5D;
+                    destination.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
+                    if (!destination.getBlockState(centre).is(ModBlocks.STATION_FLOOR.get())
+                            && !destination.getBlockState(centre).is(ModBlocks.STATION_CORE.get())) {
+                        buildStationPlatform(destination, centre.getX(), centre.getY(), centre.getZ());
+                    }
+                    arrivalX = centre.getX() + 0.5D;
+                    arrivalY = centre.getY() + 1.0D;
+                    arrivalZ = centre.getZ() + 0.5D;
                 } else {
                     int blockX = Mth.floor(player.getX());
                     int blockZ = Mth.floor(player.getZ());
@@ -545,18 +676,51 @@ public class RocketEntity extends Entity implements MenuProvider {
                     arrivalX = player.getX();
                     arrivalZ = player.getZ();
                     arrivalY = destination.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockX, blockZ) + 1.0D;
+                    arrivalMessage = Component.translatable("entity.nerospace.rocket.arrived");
                 }
 
                 player.teleportTo(destination, arrivalX, arrivalY, arrivalZ, Set.of(), player.getYRot(), player.getXRot(), true);
-                player.sendSystemMessage(Component.translatable(targetKey.equals(ModDimensions.STATION_LEVEL)
-                        ? "entity.nerospace.rocket.docked"
-                        : "entity.nerospace.rocket.arrived"));
+                player.sendSystemMessage(arrivalMessage);
             }
         }
 
         // The rocket is expended on launch; a return trip needs a pad + rocket on the destination.
         dropFuelInput();
         this.discard();
+    }
+
+    /**
+     * Founds a new station (MULTI_STATION_DESIGN.md §1): consumes one Station Charter from the
+     * rider (its anvil name becomes the station name), allocates the next slot, builds the
+     * platform with a bound Station Core at its centre, and fires the {@code founded_station}
+     * criterion. @return the new entry, or {@code null} if the charter/slot vanished mid-flight
+     * (the rider then docks at the public origin platform instead).
+     */
+    @Nullable
+    private StationRegistry.StationEntry foundStation(MinecraftServer server, ServerLevel station,
+            ServerPlayer rider) {
+        int charterSlot = findCharter(rider);
+        if (charterSlot < 0) {
+            return null;
+        }
+        ItemStack charter = rider.getInventory().getItem(charterSlot);
+        Component customName = charter.get(net.minecraft.core.component.DataComponents.CUSTOM_NAME);
+        StationRegistry.StationEntry entry = StationRegistry.get(server)
+                .found(customName == null ? null : customName.getString());
+        if (entry == null) {
+            return null;
+        }
+        charter.shrink(1);
+
+        BlockPos centre = entry.center();
+        station.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
+        buildStationPlatform(station, centre.getX(), centre.getY(), centre.getZ());
+        station.setBlockAndUpdate(centre, ModBlocks.STATION_CORE.get().defaultBlockState());
+        if (station.getBlockEntity(centre) instanceof StationCoreBlockEntity core) {
+            core.bindStation(entry.slot(), entry.name());
+        }
+        za.co.neroland.nerospace.registry.ModCriteria.FOUNDED_STATION.get().trigger(rider);
+        return entry;
     }
 
     /** Lay a 7x7 station-floor landing pad so a rider arriving in the void station has solid ground. */
@@ -610,7 +774,23 @@ public class RocketEntity extends Entity implements MenuProvider {
                 player.startRiding(this);
             }
             if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.openMenu(this, buffer -> buffer.writeVarInt(this.getId()));
+                // Menu-open snapshot (MULTI_STATION_DESIGN.md §4): entity id + the station list
+                // (slot + name pairs) + whether the rider carries a charter. Stations change
+                // rarely, so a per-open snapshot is correct enough; reopening refreshes.
+                java.util.List<StationRegistry.StationEntry> stations =
+                        level() instanceof ServerLevel server
+                                ? StationRegistry.get(server.getServer()).all()
+                                : java.util.List.of();
+                boolean charter = hasCharter(serverPlayer);
+                serverPlayer.openMenu(this, buffer -> {
+                    buffer.writeVarInt(this.getId());
+                    buffer.writeVarInt(stations.size());
+                    for (StationRegistry.StationEntry entry : stations) {
+                        buffer.writeVarInt(entry.slot());
+                        buffer.writeUtf(entry.name());
+                    }
+                    buffer.writeBoolean(charter);
+                });
             }
         }
         return InteractionResult.SUCCESS;
@@ -665,6 +845,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     protected void readAdditionalSaveData(ValueInput input) {
         this.entityData.set(DATA_TIER, input.getIntOr("Tier", RocketTier.TIER_1.ordinal()));
         this.entityData.set(DATA_DEST, input.getIntOr("Destination", getTier().defaultDestinationIndex()));
+        this.entityData.set(DATA_STATION, input.getIntOr("Station", STATION_NONE));
         this.fuelTank.deserialize(input.childOrEmpty("FuelTank"));
         this.fuelInput.setItem(0, input.read("FuelInput", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         syncFuel();
@@ -676,6 +857,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     protected void addAdditionalSaveData(ValueOutput output) {
         output.putInt("Tier", getTier().ordinal());
         output.putInt("Destination", getDestinationIndex());
+        output.putInt("Station", stationSelection());
         this.fuelTank.serialize(output.child("FuelTank"));
         output.store("FuelInput", ItemStack.OPTIONAL_CODEC, this.fuelInput.getItem(0));
         output.putBoolean("Launching", isLaunching());

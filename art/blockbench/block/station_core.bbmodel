@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "station_core",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "station_core",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "8ed4bd07-3abe-419d-a4f3-18ce162e82ba"
+    }
+  ],
+  "outliner": [
+    "8ed4bd07-3abe-419d-a4f3-18ce162e82ba"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/station_core.png",
+      "name": "station_core.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "1dc0df55-ba15-498a-9bc4-3c858462fc16",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/station_core.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABX0lEQVR4nKWSr2/CQBTHPyPIE81pUjMkCoVCT06SCRTqxNQUfwB/AOIygUIsBLUs/BFTU0jE0jRN1aVZTlQ02QS8o7e67Wua3r33/fHe3ZSl/+Yf6APs968opdA6IctyANJ0gHMVdV3TNA0ASikAvPek6QBrLT0p3u1eQqNA6yQ0ts8PhzecqwDOBM5VGGPCIRCciKJzFVonaJ1gjMF7f42gdRIKsiyP1MRVluWhrjMDgVw6V+G9Z/VxBGA1nYSZSKzIgTS0lZVSDOeLc/HxPTRmWR6GGUUQe6I8nC94HN8CsAZO2w3L8SgSCARFUV4Z+1GqOO/lrq7r2EHTNJGt5XiE+jyyvvw/feW46QRx20avbUcKZBan7YbTdtNx0l5xtEbvfbTS5/s7iqLsrK4zRCGR1chX4L3vuIxeIoC1NthL00FE+JvUWhv+A8Fs9hDevHNVZFvURdkYE0cQ9b/gB8Z9ut6dJ580AAAAAElFTkSuQmCC"
+    }
+  ]
+}

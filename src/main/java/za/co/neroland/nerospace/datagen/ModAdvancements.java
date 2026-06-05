@@ -103,6 +103,18 @@ public class ModAdvancements implements AdvancementSubProvider {
                         ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(ModDimensions.STATION_LEVEL))
                 .save(saver, "nerospace:station");
 
+        // Multiple stations (MULTI_STATION_DESIGN.md §7): found your own station.
+        Advancement.Builder.advancement()
+                .parent(station)
+                .display(ModItems.STATION_CHARTER.get(),
+                        Component.literal("Homestead in Orbit"),
+                        Component.literal("Found your own station with a Station Charter"),
+                        null, AdvancementType.GOAL, true, true, false)
+                .addCriterion("founded_station", new Criterion<>(
+                        ModCriteria.FOUNDED_STATION.get(),
+                        new PlayerTrigger.TriggerInstance(Optional.empty())))
+                .save(saver, "nerospace:guide/station_charter");
+
         // --- Chapter 5: New Worlds -----------------------------------------------------------
         AdvancementHolder tier2 = item(saver, station, "guide/rocket_tier_2",
                 ModItems.ROCKET_TIER_2.get(),

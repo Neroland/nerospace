@@ -28,40 +28,87 @@ public class RocketMenu extends AbstractContainerMenu {
 
     public static final int BUTTON_LAUNCH = 0;
     public static final int BUTTON_CYCLE_DEST = 1;
+    /** Cycles through founded player stations (MULTI_STATION_DESIGN.md §4). */
+    public static final int BUTTON_CYCLE_STATION = 2;
+    /** Selects the FOUND marker (launch consumes a Station Charter and founds a station). */
+    public static final int BUTTON_SELECT_FOUND = 3;
     /** Select destination {@code n} via button id {@code SELECT_DEST_BASE + n}. */
     public static final int SELECT_DEST_BASE = 100;
+    /** Select station SLOT {@code n} via {@code SELECT_STATION_BASE + n} (slot-id-stable, not list position). */
+    public static final int SELECT_STATION_BASE = 1000;
 
-    private static final int DATA_COUNT = 5;
+    /**
+     * Container-data slots sync as unsigned shorts, so the station selection (which can be the
+     * −2 FOUND marker) travels offset by this and is shifted back on read.
+     */
+    public static final int STATION_SYNC_OFFSET = 8;
+
+    /** A founded station as snapshotted into the menu-open buffer: slot id + display name. */
+    public record StationSnapshot(int slot, String name) {
+    }
+
+    private static final int DATA_COUNT = 6;
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
 
+    // Beside the fuel gauge (the old 148,52 spot now hosts the FOUND node — multi-station rework).
     private static final int FUEL_SLOT_X = 148;
-    private static final int FUEL_SLOT_Y = 52;
+    private static final int FUEL_SLOT_Y = 17;
 
     private final ContainerData data;
     private final Container fuelContainer;
     @Nullable
     private final RocketEntity rocket;
+    /** Station list snapshot taken at menu-open (client: from the buffer; server: from the registry). */
+    private final java.util.List<StationSnapshot> stations;
+    /** Whether the rider carried a Station Charter at menu-open (enables the FOUND node). */
+    private final boolean canFound;
 
     /** Client constructor (referenced by the menu type); resolves the rocket from its synced id. */
     public RocketMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
         this(containerId, playerInventory, resolveRocket(playerInventory, buffer.readVarInt()),
-                new SimpleContainerData(DATA_COUNT));
+                new SimpleContainerData(DATA_COUNT), readStations(buffer), buffer.readBoolean());
     }
 
-    /** Server constructor (and client, via the resolved rocket). */
-    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
+    /** Server constructor: snapshots the station registry + the rider's charter state itself. */
     public RocketMenu(int containerId, Inventory playerInventory, @Nullable RocketEntity rocket, ContainerData data) {
+        this(containerId, playerInventory, rocket, data,
+                serverStations(playerInventory), RocketEntity.hasCharter(playerInventory.player));
+    }
+
+    @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
+    private RocketMenu(int containerId, Inventory playerInventory, @Nullable RocketEntity rocket,
+            ContainerData data, java.util.List<StationSnapshot> stations, boolean canFound) {
         super(ModMenuTypes.ROCKET.get(), containerId);
         checkContainerDataCount(data, DATA_COUNT);
         this.rocket = rocket;
         this.data = data;
+        this.stations = stations;
+        this.canFound = canFound;
         this.fuelContainer = rocket != null ? rocket.getFuelInput() : new SimpleContainer(1);
 
         this.addSlot(new FuelSlot(this.fuelContainer, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
         this.addStandardInventorySlots(playerInventory, 8, 84);
         this.addDataSlots(data);
+    }
+
+    private static java.util.List<StationSnapshot> readStations(RegistryFriendlyByteBuf buffer) {
+        int count = buffer.readVarInt();
+        java.util.List<StationSnapshot> stations = new java.util.ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            stations.add(new StationSnapshot(buffer.readVarInt(), buffer.readUtf()));
+        }
+        return stations;
+    }
+
+    private static java.util.List<StationSnapshot> serverStations(Inventory playerInventory) {
+        if (!(playerInventory.player.level() instanceof net.minecraft.server.level.ServerLevel server)) {
+            return java.util.List.of();
+        }
+        return StationRegistry.get(server.getServer()).all().stream()
+                .map(entry -> new StationSnapshot(entry.slot(), entry.name()))
+                .toList();
     }
 
     @Nullable
@@ -81,6 +128,18 @@ public class RocketMenu extends AbstractContainerMenu {
         }
         if (id == BUTTON_CYCLE_DEST) {
             current.cycleDestination();
+            return true;
+        }
+        if (id == BUTTON_CYCLE_STATION) {
+            current.cycleStation();
+            return true;
+        }
+        if (id == BUTTON_SELECT_FOUND) {
+            current.selectFound();
+            return true;
+        }
+        if (id >= SELECT_STATION_BASE) {
+            current.selectStation(id - SELECT_STATION_BASE);
             return true;
         }
         if (id >= SELECT_DEST_BASE) {
@@ -160,14 +219,46 @@ public class RocketMenu extends AbstractContainerMenu {
         return this.data.get(4);
     }
 
+    /** {@link RocketEntity#STATION_NONE}/{@link RocketEntity#STATION_FOUND} or a station slot id. */
+    public int getStationSelection() {
+        return this.data.get(5) - STATION_SYNC_OFFSET;
+    }
+
+    /** The menu-open snapshot of founded stations (slot + name, founding order). */
+    public java.util.List<StationSnapshot> getStations() {
+        return this.stations;
+    }
+
+    /** Whether the rider carried a Station Charter at menu-open (shows the FOUND node). */
+    public boolean canFound() {
+        return this.canFound;
+    }
+
+    /** Display name for a station slot from the snapshot (fallback for post-open changes). */
+    public String stationName(int slot) {
+        for (StationSnapshot station : this.stations) {
+            if (station.slot() == slot) {
+                return station.name();
+            }
+        }
+        return "Station " + (slot + 1);
+    }
+
     /** Current fuel as a 0–100 percentage of the tier capacity. */
     public int getFuelPercent() {
         int capacity = getCapacity();
         return capacity == 0 ? 0 : Math.min(100, getFuel() * 100 / capacity);
     }
 
-    /** Display name of the currently selected destination. */
+    /** Display name of the currently selected destination (planet, station, or FOUND). */
     public String getDestinationName() {
+        int station = getStationSelection();
+        if (station == RocketEntity.STATION_FOUND) {
+            return "New Station";
+        }
+        if (station >= 0) {
+            return stationName(station);
+        }
         net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> key =
                 getTier().destination(getDestinationIndex());
         return key == null ? "—" : Destinations.name(key);

@@ -131,6 +131,10 @@ public final class NerospaceGameTests {
         functions.put("tier4_requires_heavy_complex", NerospaceGameTests::testTier4RequiresHeavyComplex);
         functions.put("tier_destinations_cumulative", NerospaceGameTests::testTierDestinationsCumulative);
         functions.put("glacira_dimension_loads", NerospaceGameTests::testGlaciraDimensionLoads);
+        // Multiple stations (MULTI_STATION_DESIGN.md).
+        functions.put("station_registry_roundtrip", NerospaceGameTests::testStationRegistryRoundtrip);
+        functions.put("station_core_break_unregisters", NerospaceGameTests::testStationCoreBreakUnregisters);
+        functions.put("rocket_station_selection", NerospaceGameTests::testRocketStationSelection);
         // Star Guide (progression block).
         functions.put("star_guide_install_return", NerospaceGameTests::testStarGuideInstallReturn);
         functions.put("star_guide_break_drops_book", NerospaceGameTests::testStarGuideBreakDropsBook);
@@ -827,6 +831,148 @@ public final class NerospaceGameTests {
                 .getLevel(za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_LEVEL);
         helper.assertTrue((cindaraLevel != null) == (glaciraLevel != null),
                 "Glacira must load as a server level exactly like Cindara");
+        helper.succeed();
+    }
+
+    // --- Multiple stations (MULTI_STATION_DESIGN.md) ---------------------------------------------
+
+    /**
+     * Registry behaviour: founding allocates unique, never-reused slots at well-separated centres;
+     * names come from the charter (blank = auto "Station N"); entries codec-round-trip (the shape
+     * the SavedData persists). Registers clean up so tests stay order-independent.
+     */
+    private static void testStationRegistryRoundtrip(GameTestHelper helper) {
+        za.co.neroland.nerospace.rocket.StationRegistry registry =
+                za.co.neroland.nerospace.rocket.StationRegistry.get(helper.getLevel().getServer());
+        int before = registry.count();
+
+        // Null-narrowed locals (the @Nullable founder returns; ECJ-friendly explicit checks).
+        za.co.neroland.nerospace.rocket.StationRegistry.StationEntry named = registry.found("Port Dario");
+        za.co.neroland.nerospace.rocket.StationRegistry.StationEntry auto = registry.found("  ");
+        if (named == null || auto == null) {
+            helper.fail("founding must register below the cap");
+            return;
+        }
+        try {
+            helper.assertTrue("Port Dario".equals(named.name()),
+                    "the charter name must become the station name");
+            helper.assertTrue(auto.name().startsWith("Station "),
+                    "a blank charter must auto-name (got '" + auto.name() + "')");
+            helper.assertTrue(named.slot() != auto.slot(), "slots must be unique");
+            helper.assertTrue(Math.abs(named.center().getX() - auto.center().getX())
+                            >= za.co.neroland.nerospace.rocket.StationRegistry.SLOT_SPACING,
+                    "station centres must be separated by at least one slot spacing");
+            helper.assertTrue(registry.count() == before + 2, "both stations must be registered");
+
+            // Entry codec round-trip (what the SavedData persists).
+            var encoded = za.co.neroland.nerospace.rocket.StationRegistry.StationEntry.CODEC
+                    .encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, named);
+            helper.assertTrue(encoded.result().isPresent(), "the station entry must encode");
+            var decoded = za.co.neroland.nerospace.rocket.StationRegistry.StationEntry.CODEC
+                    .parse(net.minecraft.nbt.NbtOps.INSTANCE, encoded.result().orElseThrow());
+            helper.assertTrue(decoded.result().isPresent() && named.equals(decoded.result().orElseThrow()),
+                    "the station entry must decode back to an equal record");
+
+            // Unregistering frees the entry but never the slot number.
+            int freedSlot = auto.slot();
+            helper.assertTrue(registry.unregister(freedSlot) != null, "unregister must remove the entry");
+            helper.assertTrue(registry.get(freedSlot) == null, "the slot must be gone after unregister");
+            za.co.neroland.nerospace.rocket.StationRegistry.StationEntry third = registry.found(null);
+            if (third == null) {
+                helper.fail("re-founding after an unregister must succeed");
+                return;
+            }
+            helper.assertTrue(third.slot() > freedSlot,
+                    "slot numbers must never be reused (no founding inside abandoned hulls)");
+            registry.unregister(third.slot());
+        } finally {
+            registry.unregister(named.slot());
+            registry.unregister(auto.slot());
+        }
+        helper.assertTrue(registry.count() == before, "the test must leave the registry as it found it");
+        helper.succeed();
+    }
+
+    /** Breaking a bound Station Core unregisters its station and pops a charter named after it. */
+    private static void testStationCoreBreakUnregisters(GameTestHelper helper) {
+        za.co.neroland.nerospace.rocket.StationRegistry registry =
+                za.co.neroland.nerospace.rocket.StationRegistry.get(helper.getLevel().getServer());
+        za.co.neroland.nerospace.rocket.StationRegistry.StationEntry entry = registry.found("Testopolis");
+        if (entry == null) {
+            helper.fail("test setup: a founded station");
+            return;
+        }
+
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.STATION_CORE.get());
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.rocket.StationCoreBlockEntity core)) {
+            helper.fail("expected a StationCoreBlockEntity");
+            return;
+        }
+        core.bindStation(entry.slot(), entry.name());
+        helper.assertTrue(core.comparatorSignal() == 15, "a bound core must read comparator 15");
+
+        helper.getLevel().destroyBlock(helper.absolutePos(pos), true);
+        helper.assertTrue(registry.get(entry.slot()) == null,
+                "breaking the core must unregister its station");
+        helper.succeedWhen(() -> helper.assertItemEntityPresent(
+                ModItems.STATION_CHARTER.get(), pos, 3.0D));
+    }
+
+    /** Station selection on the rocket: slot-stable, registry-validated, cleared by planet picks. */
+    private static void testRocketStationSelection(GameTestHelper helper) {
+        za.co.neroland.nerospace.rocket.StationRegistry registry =
+                za.co.neroland.nerospace.rocket.StationRegistry.get(helper.getLevel().getServer());
+        za.co.neroland.nerospace.rocket.StationRegistry.StationEntry entry = registry.found("Waypoint Alpha");
+        if (entry == null) {
+            helper.fail("test setup: a founded station");
+            return;
+        }
+        try {
+            BlockPos centre = buildFullPad(helper);
+            useItemOn(helper, new ItemStack(ModItems.ROCKET_TIER_1.get()), centre);
+            java.util.List<RocketEntity> rockets = helper.getLevel().getEntitiesOfClass(
+                    RocketEntity.class, helper.getBounds());
+            helper.assertTrue(rockets.size() == 1, "test setup: one deployed rocket");
+            RocketEntity rocket = rockets.get(0);
+
+            // Select the founded station: the destination resolves to the station dimension.
+            rocket.selectStation(entry.slot());
+            helper.assertTrue(rocket.stationSelection() == entry.slot(),
+                    "selecting a registered station must stick");
+            helper.assertTrue(za.co.neroland.nerospace.registry.ModDimensions.STATION_LEVEL
+                            .equals(rocket.selectedDestination()),
+                    "a station selection must target the station dimension");
+
+            // A planet pick clears the station selection.
+            rocket.setDestinationIndex(0);
+            helper.assertTrue(rocket.stationSelection() == RocketEntity.STATION_NONE,
+                    "picking a planet must clear the station selection");
+
+            // Cycling enters the station list; an unregistered slot is rejected.
+            rocket.cycleStation();
+            helper.assertTrue(rocket.stationSelection() >= 0,
+                    "cycling must select a registered station");
+            rocket.setDestinationIndex(0);
+            rocket.selectStation(9_999);
+            helper.assertTrue(rocket.stationSelection() == RocketEntity.STATION_NONE,
+                    "selecting an unregistered slot must be rejected");
+
+            // FOUND requires a charter in the rider's inventory.
+            Player rider = helper.makeMockPlayer(GameType.SURVIVAL);
+            rider.startRiding(rocket);
+            rocket.selectFound();
+            helper.assertTrue(rocket.stationSelection() == RocketEntity.STATION_NONE,
+                    "FOUND must be rejected without a Station Charter");
+            rider.getInventory().add(new ItemStack(ModItems.STATION_CHARTER.get()));
+            rocket.selectFound();
+            helper.assertTrue(rocket.stationSelection() == RocketEntity.STATION_FOUND,
+                    "FOUND must be selectable with a charter aboard");
+            rider.stopRiding();
+        } finally {
+            registry.unregister(entry.slot());
+        }
         helper.succeed();
     }
 

@@ -1377,6 +1377,60 @@ def gen_oxygen_suit_heat():
                 HEAT_BRIGHT, HEAT_DEEP, lum_split=120)
 
 
+# ---- Multiple stations (MULTI_STATION_DESIGN.md) ----------------------------
+
+def gen_station_core():
+    """Station Core: station-family steel panel with a glowing cyan beacon core + seam cross."""
+    rng = random.Random(0x57A7)
+    img = new_img()
+    noise_fill(img, [(176, 176, 192, 255), (158, 158, 176, 255), (146, 146, 164, 255)], rng)
+    px = img.load()
+    CYAN_D = (24, 96, 120, 255)
+    CYAN = (60, 190, 220, 255)
+    CYAN_HI = (170, 240, 255, 255)
+    for i in range(S):  # seam cross
+        px[i, 8] = R_GRAY
+        px[8, i] = R_GRAY
+    # Beacon core: a 4x4 glowing diamond at the centre.
+    for (cx, cy) in [(7, 7), (8, 7), (7, 8), (8, 8)]:
+        px[cx, cy] = CYAN_HI
+    for (cx, cy) in [(6, 7), (6, 8), (9, 7), (9, 8), (7, 6), (8, 6), (7, 9), (8, 9)]:
+        px[cx, cy] = CYAN
+    for (cx, cy) in [(5, 7), (5, 8), (10, 7), (10, 8), (7, 5), (8, 5), (7, 10), (8, 10)]:
+        px[cx, cy] = CYAN_D
+    bevel(img, R_WHITE, R_DARK)
+    for (bx, by) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        px[bx, by] = R_DARK  # corner rivets
+    save(img, os.path.join(BLOCK_DIR, "station_core.png"))
+
+
+def gen_station_charter():
+    """Station Charter: a rolled blueprint — pale scroll, cyan station seal, steel end-caps."""
+    img = new_img()
+    px = img.load()
+    PAPER = (228, 232, 238, 255)
+    PAPER_D = (188, 196, 206, 255)
+    SEAL = (60, 190, 220, 255)
+    SEAL_D = (24, 96, 120, 255)
+    for y in range(3, 13):  # scroll body
+        for x in range(4, 12):
+            px[x, y] = PAPER if (x + y) % 5 else PAPER_D
+    for y in range(3, 13):  # rolled edges
+        px[4, y] = PAPER_D
+        px[11, y] = PAPER_D
+    for x in range(3, 13):  # steel end-caps
+        px[x, 2] = R_GRAY
+        px[x, 13] = R_GRAY
+    px[3, 2] = R_DARK; px[12, 2] = R_DARK
+    px[3, 13] = R_DARK; px[12, 13] = R_DARK
+    # Station seal: a small cyan diamond.
+    px[7, 7] = SEAL; px[8, 7] = SEAL
+    px[7, 8] = SEAL; px[8, 8] = SEAL
+    px[7, 6] = SEAL_D; px[8, 9] = SEAL_D
+    px[6, 7] = SEAL_D; px[9, 8] = SEAL_D
+    save(img, os.path.join(ITEM_DIR, "station_charter.png"))
+
+
 def gen_oxygen_suit_cold():
     equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
     for piece in ("helmet", "chestplate", "leggings", "boots"):
@@ -1678,3 +1732,6 @@ if __name__ == "__main__":
     # Hazard suit variants (SUIT_HAZARD_DESIGN.md), derived from the committed T2/T1 art.
     gen_oxygen_suit_heat()
     gen_oxygen_suit_cold()
+    # Multiple stations (MULTI_STATION_DESIGN.md).
+    gen_station_core()
+    gen_station_charter()

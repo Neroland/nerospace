@@ -38,7 +38,7 @@ BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
           "rocket_launch_pad", "fuel_tank", "oxygen_generator",
           "cindrite_ore", "cindrite_block",
           "glacite_ore", "glacite_block",
-          "station_floor", "station_wall", "terraformer",
+          "station_floor", "station_wall", "station_core", "terraformer",
           "universal_pipe", "combustion_generator", "passive_generator",
           "battery", "creative_battery", "fluid_tank", "creative_fluid_tank",
           "gas_tank", "creative_gas_tank", "item_store", "creative_item_store",
@@ -49,7 +49,7 @@ ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "rocket_tier_4",
          "cindrite", "rocket_fuel_bucket", "glacite",
          "station_compass", "greenxertz_compass", "cindara_compass", "glacira_compass",
-         "star_guide_book"]
+         "star_guide_book", "station_charter"]
 
 # Entity cube lists — keep in sync with the Java LayerDefinitions. Each cube is
 # (part_name, from[x,y,z], to[x,y,z], uv_offset[u,v]).  64x64 sheets.

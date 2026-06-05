@@ -55,8 +55,19 @@ box only after the gradle-MCP build + gametests are green AND the in-game check 
       confirm T4 stance/scale (2.8x) on the Heavy pad in runClient
 
 ### Multiple player-built stations
-- [ ] Design: how players found/register additional stations as rocket destinations
-- [ ] Implement station creation + destination selection in the rocket UI
+- [x] Design: how players found/register additional stations as rocket destinations —
+      `MULTI_STATION_DESIGN.md`, signed off 2026-06-06: Station Charter (anvil rename = station
+      name) + FOUND trajectory node; Station Core anchors/unregisters; single station dimension
+      with x = 4096·(i+1) slots (cap 64, never reused); all tiers + all players; NO ownership
+      data stored (POPIA/GDPR-clean)
+- [x] Implement station creation + destination selection in the rocket UI — `StationRegistry`
+      SavedData (overworld) + Charter/Core content + founding flow in `completeLaunch` (platform +
+      bound Core + `founded_station` advancement, Star Guide rocketry step, tree 27→28) + rocket
+      UI station row (cycler + FOUND node, slot-id-stable selection, menu-open snapshot sync) +
+      graceful missing-station fallback; fuel slot moved beside the gauge; also fixed the latent
+      T4 tank cap (physical tank was sized to T3). Gametested (`station_registry_roundtrip`,
+      `station_core_break_unregisters`, `rocket_station_selection` — 30/30 green); confirm the
+      reworked rocket UI layout + an actual founding flight in runClient
 
 ### Deeper terraforming
 - [ ] Design pass: what "deeper" means (stages? biomes? water cycle?)

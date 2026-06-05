@@ -24,6 +24,10 @@ public final class ModCriteria {
     public static final Supplier<PlayerTrigger> TERRAFORMED_GROUND =
             TRIGGER_TYPES.register("terraformed_ground", PlayerTrigger::new);
 
+    /** Fired from the rocket's founding flow when a player founds a new station. */
+    public static final Supplier<PlayerTrigger> FOUNDED_STATION =
+            TRIGGER_TYPES.register("founded_station", PlayerTrigger::new);
+
     private ModCriteria() {
     }
 

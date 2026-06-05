@@ -167,6 +167,20 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL));
 
+    /**
+     * Station Core (MULTI_STATION_DESIGN.md): the anchor of a player-founded station. Placed only
+     * by the founding flow (no recipe, no loot table — breaking pops a named Station Charter via
+     * the block entity and unregisters the station).
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.rocket.StationCoreBlock> STATION_CORE =
+            BLOCKS.registerBlock("station_core", za.co.neroland.nerospace.rocket.StationCoreBlock::new,
+                    props -> props
+                            .mapColor(MapColor.COLOR_CYAN)
+                            .strength(4.0F, 12.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.METAL)
+                            .noLootTable());
+
     // --- Machines (Phase 2) -------------------------------------------------
 
     public static final DeferredBlock<NerosiumGrinderBlock> NEROSIUM_GRINDER = BLOCKS.registerBlock(

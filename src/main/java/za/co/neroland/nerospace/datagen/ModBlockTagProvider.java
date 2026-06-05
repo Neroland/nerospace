@@ -40,6 +40,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.GLACITE_BLOCK.get(),
                         ModBlocks.STATION_FLOOR.get(),
                         ModBlocks.STATION_WALL.get(),
+                        ModBlocks.STATION_CORE.get(),
                         ModBlocks.FUEL_TANK.get(),
                         ModBlocks.OXYGEN_GENERATOR.get(),
                         ModBlocks.TERRAFORMER.get(),

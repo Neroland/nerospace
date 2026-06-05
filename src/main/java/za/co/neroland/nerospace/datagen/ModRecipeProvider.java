@@ -586,6 +586,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_glacite_block", this.has(ModBlocks.GLACITE_BLOCK.get()))
                 .save(this.output, "glacite_from_glacite_block");
 
+        // Station Charter (MULTI_STATION_DESIGN.md): 8x Station Wall ring around a Station Floor.
+        // Rename it in an anvil to name the station it will found.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.TOOLS, ModItems.STATION_CHARTER.get())
+                .pattern("WWW")
+                .pattern("WFW")
+                .pattern("WWW")
+                .define('W', ModBlocks.STATION_WALL.get())
+                .define('F', ModBlocks.STATION_FLOOR.get())
+                .unlockedBy("has_station_wall", this.has(ModBlocks.STATION_WALL.get()))
+                .save(this.output);
+
         // === Phase 7c — station building blocks ============================
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.BUILDING_BLOCKS, ModBlocks.STATION_FLOOR.get(), 8)

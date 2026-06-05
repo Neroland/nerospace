@@ -237,6 +237,13 @@ public final class ModItems {
      */
     public static final DeferredItem<Item> ROCKET_FUEL_CANISTER = ITEMS.registerSimpleItem("rocket_fuel_canister");
 
+    /**
+     * Station Charter (MULTI_STATION_DESIGN.md): consumed by the rocket's FOUND trajectory node to
+     * found a new station. Rename it in an anvil to name the station (unnamed = "Station N").
+     */
+    public static final DeferredItem<Item> STATION_CHARTER = ITEMS.registerItem(
+            "station_charter", props -> new Item(props.stacksTo(16)));
+
     /** A real bucket of the {@code rocket_fuel} fluid; right-click a rocket to pour it into the tank. */
     public static final DeferredItem<BucketItem> ROCKET_FUEL_BUCKET = ITEMS.registerItem(
             "rocket_fuel_bucket",

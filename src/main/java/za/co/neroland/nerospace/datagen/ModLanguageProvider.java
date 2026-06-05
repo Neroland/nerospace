@@ -132,6 +132,23 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.STATION_FLOOR.get(), "Station Floor");
         add(ModBlocks.STATION_WALL.get(), "Station Wall");
 
+        // Multiple stations (MULTI_STATION_DESIGN.md).
+        add(ModBlocks.STATION_CORE.get(), "Station Core");
+        add(ModItems.STATION_CHARTER.get(), "Station Charter");
+        add("block.nerospace.station_core.bound", "Station Core: %s");
+        add("block.nerospace.station_core.unbound", "Station Core: not bound to a station");
+        add("entity.nerospace.rocket.founded", "Station founded: %s");
+        add("entity.nerospace.rocket.station_arrived", "Docked at %s");
+        add("entity.nerospace.rocket.station_missing",
+                "That station is no longer registered — trajectory reset");
+        add("entity.nerospace.rocket.no_charter",
+                "Founding a station needs a Station Charter in your inventory");
+        add("entity.nerospace.rocket.stations_full",
+                "The orbital lanes are full — no new station slots available");
+        add("gui.nerospace.rocket.found", "FOUND");
+        add("gui.nerospace.rocket.stations_none", "NO STATIONS");
+        add("gui.nerospace.rocket.station_node", "STN: %s");
+
         // Items.
         add(ModItems.RAW_NEROSIUM.get(), "Raw Nerosium");
         add(ModItems.NEROSIUM_INGOT.get(), "Nerosium Ingot");
@@ -337,6 +354,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.star_guide.step.station.text",
                 "The Orbital Station is your first destination — vacuum-cold and airless. Stay "
                         + "near the pad's safe zone until you have oxygen gear.");
+        add("gui.nerospace.star_guide.step.station_charter", "Homestead in Orbit");
+        add("gui.nerospace.star_guide.step.station_charter.text",
+                "Craft a Station Charter (rename it in an anvil to name your station), pick the "
+                        + "FOUND node in any rocket and launch. The Station Core anchors it — "
+                        + "break the Core to unregister and reclaim the charter.");
 
         add("gui.nerospace.star_guide.step.rocket_tier_2", "Bigger Boosters");
         add("gui.nerospace.star_guide.step.rocket_tier_2.text",
