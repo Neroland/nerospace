@@ -20,6 +20,7 @@ import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.GasStacksResourceHandler;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -35,17 +36,7 @@ import za.co.neroland.nerospace.world.OxygenFieldManager;
  */
 public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
-    public static final int ENERGY_CAPACITY = 10_000;
     public static final int ENERGY_MAX_INSERT = 500;
-
-    /** Internal oxygen tank size (mB). */
-    public static final int O2_CAPACITY = 8_000;
-    /** Oxygen produced per tick at full power (mB). */
-    public static final int MAKE_MB_PER_TICK = 5;
-    /** Energy cost per mB of oxygen produced. */
-    public static final int FE_PER_MB = 2;
-    /** Oxygen consumed per tick to keep the local breathable field alive (mB). */
-    public static final int EMIT_MB_PER_TICK = 2;
 
     private final GeneratorEnergy energy = new GeneratorEnergy();
     private final O2Tank tank = new O2Tank();
@@ -58,7 +49,7 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
                 case 0 -> energy.getAmountAsInt();
                 case 1 -> energy.getCapacityAsInt();
                 case 2 -> tank.getAmountAsInt(0);
-                case 3 -> O2_CAPACITY;
+                case 3 -> Tuning.oxygenGeneratorO2Capacity();
                 default -> 0;
             };
         }
@@ -93,13 +84,13 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
 
     /** Whether the generator is currently feeding a breathable bubble. */
     public boolean isActive() {
-        return this.tank.getAmountAsInt(0) >= EMIT_MB_PER_TICK;
+        return this.tank.getAmountAsInt(0) >= Tuning.oxygenGeneratorEmitMbPerTick();
     }
 
     /** Comparator output: 0 (empty tank) .. 15 (full oxygen tank). */
     public int comparatorSignal() {
         int stored = this.tank.getAmountAsInt(0);
-        return stored <= 0 ? 0 : 1 + (int) (stored / (double) O2_CAPACITY * 14.0D);
+        return stored <= 0 ? 0 : 1 + (int) (stored / (double) Tuning.oxygenGeneratorO2Capacity() * 14.0D);
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {
@@ -108,16 +99,18 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
         }
 
         // Electrolysis: grid power -> oxygen, throttled by available energy and tank room.
-        int room = O2_CAPACITY - this.tank.getAmountAsInt(0);
-        int make = Math.min(MAKE_MB_PER_TICK, Math.min(room, this.energy.getAmountAsInt() / FE_PER_MB));
+        int fePerMb = Tuning.oxygenGeneratorFePerMb();
+        int room = Tuning.oxygenGeneratorO2Capacity() - this.tank.getAmountAsInt(0);
+        int make = Math.min(Tuning.oxygenGeneratorMakeMbPerTick(),
+                Math.min(room, this.energy.getAmountAsInt() / fePerMb));
         if (make > 0) {
-            this.energy.consume(make * FE_PER_MB);
+            this.energy.consume(make * fePerMb);
             this.tank.fill(make);
         }
 
         // The breathable field drinks from the tank.
         if (isActive()) {
-            this.tank.drain(EMIT_MB_PER_TICK);
+            this.tank.drain(Tuning.oxygenGeneratorEmitMbPerTick());
         }
 
         // Feed the oxygen field: register/forget this position as a source by active state. The field
@@ -173,7 +166,7 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
     /** Internal energy buffer: receives power but does not allow extraction by others. */
     private final class GeneratorEnergy extends SimpleEnergyHandler {
         private GeneratorEnergy() {
-            super(ENERGY_CAPACITY, ENERGY_MAX_INSERT, 0);
+            super(Tuning.oxygenGeneratorBuffer(), ENERGY_MAX_INSERT, 0);
         }
 
         @Override
@@ -189,7 +182,7 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
     /** The internal oxygen tank: produced here, drained by the field and by pipes. */
     private final class O2Tank extends GasStacksResourceHandler {
         private O2Tank() {
-            super(1, O2_CAPACITY);
+            super(1, Tuning.oxygenGeneratorO2Capacity());
         }
 
         @Override
@@ -203,7 +196,7 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
         }
 
         void fill(int amount) {
-            int next = Math.min(O2_CAPACITY, getAmountAsInt(0) + amount);
+            int next = Math.min(Tuning.oxygenGeneratorO2Capacity(), getAmountAsInt(0) + amount);
             set(0, GasResource.OXYGEN, next);
         }
 

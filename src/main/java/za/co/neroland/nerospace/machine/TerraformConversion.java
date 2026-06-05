@@ -21,6 +21,7 @@ import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.registry.ModAttachments;
 import za.co.neroland.nerospace.registry.ModTags;
 import za.co.neroland.nerospace.world.ModBiomes;
@@ -99,7 +100,7 @@ public final class TerraformConversion {
             return;
         }
         RandomSource rnd = level.getRandom();
-        if (rnd.nextDouble() >= Config.TERRAFORM_PLANT_CHANCE.get()) {
+        if (rnd.nextDouble() >= Tuning.TERRAFORM_PLANT_CHANCE) {
             return;
         }
         BlockPos ground = new BlockPos(x, surfaceY - 1, z);
@@ -130,7 +131,7 @@ public final class TerraformConversion {
             return;
         }
         RandomSource rnd = level.getRandom();
-        if (rnd.nextDouble() >= Config.TERRAFORM_RESOURCE_CHANCE.get()) {
+        if (rnd.nextDouble() >= Tuning.TERRAFORM_RESOURCE_CHANCE) {
             return;
         }
         Block ore = TerraformResources.pickOre(rnd);

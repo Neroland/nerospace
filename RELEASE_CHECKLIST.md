@@ -80,10 +80,13 @@ green/steel, rocket tiers steel + accent) but raise saturation/contrast.
 
 Goal: shrink the config file while keeping modpack flexibility — **base numbers + multiplier keys**.
 
-- [ ] Redesign config: internal base values, exposed multipliers (oxygen, energy, fuel, drain rates)
-- [ ] Migrate existing config keys (or document the breaking change pre-1.0 — last chance)
-- [ ] Document every key in the wiki
-- [ ] Sanity-check extreme multiplier values don't break machines/atmosphere
+- [x] Redesign config: internal base values (`Tuning.java`), five exposed multipliers
+      (`oxygenDrain`, `oxygenCapacity`, `energyRate`, `fuelCost`, `machineSpeed`, clamped 0.1–10)
+- [x] Migrate existing config keys (breaking change documented in FUTURE_WORK.md +
+      `wiki/Configuration.md`; dev config deleted/regenerates)
+- [x] Document every key in the wiki (`wiki/Configuration.md`)
+- [ ] Sanity-check extreme multiplier values don't break machines/atmosphere (code clamps scaled
+      values to ≥1 and launch cost to tank size; confirm 0.1x/10x in runClient)
 
 ## 5. Balance
 

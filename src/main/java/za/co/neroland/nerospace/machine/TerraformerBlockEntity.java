@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.world.TerraformChunkLoader;
@@ -55,7 +56,6 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     public static final int UPGRADE_SLOT = 0;
     public static final int SIZE = 1;
 
-    public static final int ENERGY_CAPACITY = 100_000;
     public static final int ENERGY_MAX_INSERT = 2_000;
 
     private final TerraformerEnergy energy = new TerraformerEnergy();
@@ -131,7 +131,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
     }
 
     public boolean isActive() {
-        return this.energy.getAmountAsInt() >= Config.TERRAFORM_ENERGY_PER_BLOCK.get();
+        return this.energy.getAmountAsInt() >= Tuning.terraformEnergyPerBlock();
     }
 
     public int comparatorSignal() {
@@ -171,13 +171,13 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
             }
         }
 
-        if (serverLevel.getGameTime() % Config.TERRAFORM_WORK_INTERVAL_TICKS.get() == 0) {
+        if (serverLevel.getGameTime() % Tuning.terraformWorkIntervalTicks() == 0) {
             work(serverLevel, pos);
         }
     }
 
     private void work(ServerLevel level, BlockPos center) {
-        int cost = Config.TERRAFORM_ENERGY_PER_BLOCK.get();
+        int cost = Tuning.terraformEnergyPerBlock();
         int budget = budgetPerCycle();
         boolean changed = false;
         Set<LevelChunk> biomeChanged = new HashSet<>();
@@ -383,7 +383,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
 
     private final class TerraformerEnergy extends SimpleEnergyHandler {
         private TerraformerEnergy() {
-            super(ENERGY_CAPACITY, ENERGY_MAX_INSERT, 0);
+            super(Tuning.terraformerBuffer(), ENERGY_MAX_INSERT, 0);
         }
 
         @Override

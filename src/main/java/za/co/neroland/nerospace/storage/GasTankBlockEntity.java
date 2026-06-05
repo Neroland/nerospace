@@ -8,7 +8,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.resource.ResourceStack;
 
-import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.GasStacksResourceHandler;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -35,7 +35,7 @@ public class GasTankBlockEntity extends BlockEntity {
     }
 
     public int capacity() {
-        return Config.GAS_TANK_CAPACITY.get();
+        return Tuning.gasTankCapacity();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class GasTankBlockEntity extends BlockEntity {
 
     private final class Tank extends GasStacksResourceHandler {
         private Tank() {
-            super(1, Config.GAS_TANK_CAPACITY.get());
+            super(1, Tuning.gasTankCapacity());
         }
 
         @Override

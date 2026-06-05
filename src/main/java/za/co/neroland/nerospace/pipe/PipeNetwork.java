@@ -25,7 +25,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import org.jetbrains.annotations.Nullable;
 
-import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.gas.GasCapability;
 import za.co.neroland.nerospace.gas.GasResource;
 
@@ -126,7 +126,7 @@ public final class PipeNetwork {
     // --- Energy layer ---------------------------------------------------------
 
     private void tickEnergy(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
-        int baseThroughput = Config.ENERGY_PIPE_THROUGHPUT.get();
+        int baseThroughput = Tuning.energyPipeThroughput();
 
         // Pull from providers / push to receivers on every non-pipe face, within one transaction.
         try (Transaction tx = Transaction.openRoot()) {
@@ -185,7 +185,7 @@ public final class PipeNetwork {
      * network merge still drains out), and the shared pool is balanced across matching segments.
      */
     private void tickFluid(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
-        int baseThroughput = Config.FLUID_PIPE_THROUGHPUT.get();
+        int baseThroughput = Tuning.fluidPipeThroughput();
 
         // The network's claimed fluid = the first non-empty buffer found.
         FluidResource networkFluid = FluidResource.EMPTY;
@@ -268,7 +268,7 @@ public final class PipeNetwork {
      * the mod's dedicated gas capability. Venting on pipe break is handled by the block entity.
      */
     private void tickGas(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
-        int baseThroughput = Config.GAS_PIPE_THROUGHPUT.get();
+        int baseThroughput = Tuning.gasPipeThroughput();
 
         GasResource networkGas = GasResource.EMPTY;
         for (UniversalPipeBlockEntity pipe : pipes) {
@@ -439,10 +439,10 @@ public final class PipeNetwork {
         }
 
         // 2. Extraction pulse on pulling faces.
-        if (level.getGameTime() % Config.ITEM_PIPE_EXTRACT_PERIOD.get() != 0L) {
+        if (level.getGameTime() % Tuning.itemPipeExtractPeriod() != 0L) {
             return;
         }
-        int extractMax = Config.ITEM_PIPE_EXTRACT_AMOUNT.get();
+        int extractMax = Tuning.ITEM_PIPE_EXTRACT_AMOUNT;
         for (UniversalPipeBlockEntity pipe : pipes) {
             if (pipe.items().size() >= UniversalPipeBlockEntity.MAX_TRAVELLING_ITEMS * pipe.capacityMultiplier()) {
                 continue;

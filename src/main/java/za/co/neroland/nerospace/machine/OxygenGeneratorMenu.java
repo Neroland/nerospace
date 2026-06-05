@@ -68,7 +68,7 @@ public class OxygenGeneratorMenu extends AbstractContainerMenu {
     }
 
     public boolean isProducing() {
-        return getEnergy() >= OxygenGeneratorBlockEntity.FE_PER_MB
+        return getEnergy() >= za.co.neroland.nerospace.Tuning.oxygenGeneratorFePerMb()
                 && getOxygen() < getMaxOxygen();
     }
 }

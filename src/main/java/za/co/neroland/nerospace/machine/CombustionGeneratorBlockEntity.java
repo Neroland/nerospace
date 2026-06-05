@@ -21,7 +21,7 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import org.jetbrains.annotations.Nullable;
 
-import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -33,7 +33,6 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
 
     public static final int FUEL_SLOT = 0;
     public static final int SIZE = 1;
-    public static final int ENERGY_CAPACITY = 50_000;
 
     private final GenEnergy energy = new GenEnergy();
     /**
@@ -119,14 +118,14 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
             return;
         }
         if (this.burnTime > 0) {
-            if (this.energy.getAmountAsInt() < ENERGY_CAPACITY) {
+            if (this.energy.getAmountAsInt() < this.energy.getCapacityAsInt()) {
                 this.burnTime--;
-                this.energy.generate(Config.COMBUSTION_GENERATOR_FE_PER_TICK.get());
+                this.energy.generate(Tuning.combustionGeneratorFePerTick());
             }
         } else {
             ItemStack fuel = this.fuelHandler.getStack(FUEL_SLOT);
             int value = fuelValue(fuel);
-            if (value > 0 && this.energy.getAmountAsInt() < ENERGY_CAPACITY) {
+            if (value > 0 && this.energy.getAmountAsInt() < this.energy.getCapacityAsInt()) {
                 this.burnTime = value;
                 this.maxBurnTime = value;
                 fuel.shrink(1);
@@ -224,7 +223,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
 
     private final class GenEnergy extends SimpleEnergyHandler {
         private GenEnergy() {
-            super(ENERGY_CAPACITY, 0, Config.ENERGY_PIPE_THROUGHPUT.get());
+            super(Tuning.combustionGeneratorBuffer(), 0, Tuning.energyPipeThroughput());
         }
 
         @Override

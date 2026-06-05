@@ -8,7 +8,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 
-import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -41,8 +41,8 @@ public class BatteryBlockEntity extends BlockEntity {
 
     private final class Cell extends SimpleEnergyHandler {
         private Cell() {
-            super(Config.BATTERY_CAPACITY.get(),
-                    Config.ENERGY_PIPE_THROUGHPUT.get(), Config.ENERGY_PIPE_THROUGHPUT.get());
+            super(Tuning.batteryCapacity(),
+                    Tuning.energyPipeThroughput(), Tuning.energyPipeThroughput());
         }
 
         @Override

@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.registry.ModDimensions;
 
 /**
@@ -40,14 +41,17 @@ public enum RocketTier {
         return this.level;
     }
 
-    /** Fuel tank capacity, in millibuckets. */
+    /** Fuel tank capacity, in millibuckets (base value scaled by {@code energyRateMultiplier}). */
     public int fuelCapacity() {
-        return this.fuelCapacity;
+        return Tuning.rocketFuelCapacity(this.fuelCapacity);
     }
 
-    /** Fuel consumed by a single launch, in millibuckets. */
+    /**
+     * Fuel consumed by a single launch, in millibuckets (base value scaled by
+     * {@code fuelCostMultiplier}, clamped to the tank size so a launch is always possible).
+     */
     public int fuelPerLaunch() {
-        return this.fuelPerLaunch;
+        return Tuning.rocketFuelPerLaunch(this.fuelPerLaunch, this.fuelCapacity);
     }
 
     /** Ordered list of reachable destinations (lowest unlock first, signature destination last). */

@@ -19,6 +19,7 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 import org.jetbrains.annotations.Nullable;
@@ -34,11 +35,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
     public static final int OUTPUT_SLOT = 1;
     public static final int SIZE = 2;
 
-    public static final int MAX_PROGRESS = 100;
-    public static final int ENERGY_CAPACITY = 10_000;
     public static final int ENERGY_MAX_INSERT = 500;
-    public static final int ENERGY_PER_TICK = 30;
-    public static final int GENERATE_PER_TICK = 15;
 
     private final GrinderEnergy energy = new GrinderEnergy();
     private int progress;
@@ -61,7 +58,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
         public int get(int index) {
             return switch (index) {
                 case 0 -> progress;
-                case 1 -> MAX_PROGRESS;
+                case 1 -> Tuning.grinderMaxProgress();
                 case 2 -> energy.getAmountAsInt();
                 case 3 -> energy.getCapacityAsInt();
                 default -> 0;
@@ -109,14 +106,15 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
 
         ItemStack input = this.itemHandler.getStack(INPUT_SLOT);
         ItemStack result = GrinderRecipes.getResult(input);
+        int energyPerTick = Tuning.grinderEnergyPerTick();
         boolean canWork = !result.isEmpty()
                 && canInsertOutput(result)
-                && this.energy.getAmountAsInt() >= ENERGY_PER_TICK;
+                && this.energy.getAmountAsInt() >= energyPerTick;
 
         if (canWork) {
             this.progress++;
-            this.energy.consume(ENERGY_PER_TICK);
-            if (this.progress >= MAX_PROGRESS) {
+            this.energy.consume(energyPerTick);
+            if (this.progress >= Tuning.grinderMaxProgress()) {
                 craft(result);
                 this.progress = 0;
             }
@@ -239,7 +237,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements Container
      */
     private final class GrinderEnergy extends SimpleEnergyHandler {
         private GrinderEnergy() {
-            super(ENERGY_CAPACITY, ENERGY_MAX_INSERT, 0);
+            super(Tuning.grinderBuffer(), ENERGY_MAX_INSERT, 0);
         }
 
         @Override

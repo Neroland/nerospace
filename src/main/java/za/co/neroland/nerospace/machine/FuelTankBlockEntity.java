@@ -21,6 +21,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.fluid.RocketFuelTank;
 import za.co.neroland.nerospace.rocket.LaunchPadMultiblock;
 import za.co.neroland.nerospace.rocket.RocketEntity;
@@ -38,11 +39,6 @@ import za.co.neroland.nerospace.registry.ModSounds;
  */
 public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
 
-    public static final int CAPACITY = 32_000;
-    /** Fuel moved per tick into a rocket on a partial pad cluster. */
-    public static final int PUMP_RATE = 40;
-    /** Faster feed once the canonical full 3x3 pad is formed. */
-    public static final int PUMP_RATE_FULL_PAD = 160;
     /** One bucket / canister of fuel, in millibuckets. */
     public static final int CONTAINER_MB = 1_000;
 
@@ -55,7 +51,7 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
     private int fxTick;
 
     @SuppressWarnings("this-escape") // change-callback wiring, used only after construction
-    private final RocketFuelTank tank = new RocketFuelTank(CAPACITY, this::setChanged);
+    private final RocketFuelTank tank = new RocketFuelTank(Tuning.fuelTankCapacity(), this::setChanged);
 
     /** Synced to the open menu: [0]=fuel, [1]=capacity. */
     private final ContainerData dataAccess = new ContainerData() {
@@ -161,7 +157,8 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
 
-        int rate = LaunchPadMultiblock.isFullThreeByThree(pads) ? PUMP_RATE_FULL_PAD : PUMP_RATE;
+        int rate = LaunchPadMultiblock.isFullThreeByThree(pads)
+                ? Tuning.fuelTankPumpRateFullPad() : Tuning.fuelTankPumpRate();
         int toPump = Math.min(rate, this.tank.getAmount());
         if (toPump <= 0) {
             return;

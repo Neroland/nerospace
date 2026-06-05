@@ -2,33 +2,20 @@ package za.co.neroland.nerospace;
 
 import java.util.List;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Neo's config APIs
+/**
+ * Nerospace common config. Pre-1.0 refactor (BREAKING — the old flat key list is gone, see
+ * {@code wiki/Configuration.md}): the mod owns its base balance numbers in {@link Tuning}; packs
+ * tune them through five clamped multipliers. Everything else that remains here is genuinely
+ * absolute — booleans, radii, performance caps, the advanced oxygen-field simulation tuning and
+ * client visual preferences.
+ */
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue LOG_DIRT_BLOCK = BUILDER
-            .comment("Whether to log the dirt block on common setup")
-            .define("logDirtBlock", true);
-
-    public static final ModConfigSpec.IntValue MAGIC_NUMBER = BUILDER
-            .comment("A magic number")
-            .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
-
-    public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
-            .comment("What you want the introduction message to be for the magic number")
-            .define("magicNumberIntroduction", "The magic number is... ");
-
-    // a list of strings that are treated as resource locations for items
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
-            .comment("A list of items to log on common setup.")
-            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
-
-    // --- Nerospace: telemetry / crash reporting (see PRIVACY.md) ------------
+    // --- Telemetry / crash reporting (see PRIVACY.md) -----------------------
 
     public static final ModConfigSpec.BooleanValue TELEMETRY_ENABLED = BUILDER
             .comment(
@@ -39,29 +26,50 @@ public class Config {
                     "immediately on config reload). Full details: PRIVACY.md in the mod repository.")
             .define("telemetryEnabled", true);
 
-    // --- Nerospace: planet/station atmosphere (Phase 7) ---------------------
+    // --- Balance multipliers -------------------------------------------------
+    //
+    // The base numbers live in code (Tuning.java) and are documented in wiki/Configuration.md.
+    // All scaled rates/costs are clamped to >= 1 internally, so extreme values can't zero a rate,
+    // stall progression or divide by zero.
+
+    public static final ModConfigSpec.DoubleValue OXYGEN_DRAIN_MULTIPLIER = BUILDER
+            .comment("Scales how fast oxygen is consumed: bare-lungs drain, suit tank drain and",
+                    "suffocation damage. >1 = harsher planets, <1 = gentler.")
+            .defineInRange("oxygenDrainMultiplier", 1.0D, 0.1D, 10.0D);
+
+    public static final ModConfigSpec.DoubleValue OXYGEN_CAPACITY_MULTIPLIER = BUILDER
+            .comment("Scales air capacities: the player's oxygen supply and the Tier 2 suit tank.")
+            .defineInRange("oxygenCapacityMultiplier", 1.0D, 0.1D, 10.0D);
+
+    public static final ModConfigSpec.DoubleValue ENERGY_RATE_MULTIPLIER = BUILDER
+            .comment("Scales the energy & storage economy: generator FE/t output, energy pipe",
+                    "throughput, and every buffer/tank capacity (battery, fluid/gas/fuel tanks,",
+                    "pipe buffers, machine energy buffers, rocket fuel tanks).")
+            .defineInRange("energyRateMultiplier", 1.0D, 0.1D, 10.0D);
+
+    public static final ModConfigSpec.DoubleValue FUEL_COST_MULTIPLIER = BUILDER
+            .comment("Scales consumable costs: rocket fuel per launch (clamped to tank size),",
+                    "airlock oxygen-gas per air unit, and machine energy costs (Terraformer FE per",
+                    "block, Grinder FE/t, Oxygen Generator FE per mB).")
+            .defineInRange("fuelCostMultiplier", 1.0D, 0.1D, 10.0D);
+
+    public static final ModConfigSpec.DoubleValue MACHINE_SPEED_MULTIPLIER = BUILDER
+            .comment("Scales machine working speed: grinder progress, oxygen make/emit rate, fuel",
+                    "tank pump rate, airlock refill rate, fluid/gas pipe throughput, item pipe",
+                    "travel/extraction speed, and the Terraformer work interval.")
+            .defineInRange("machineSpeedMultiplier", 1.0D, 0.1D, 10.0D);
+
+    // --- Atmosphere ----------------------------------------------------------
 
     public static final ModConfigSpec.BooleanValue ATMOSPHERE_DAMAGE_ENABLED = BUILDER
             .comment("Whether the thin atmosphere on Nerospace planets and the station hurts unprotected players.")
             .define("atmosphereDamageEnabled", true);
 
-    public static final ModConfigSpec.IntValue ATMOSPHERE_DAMAGE = BUILDER
-            .comment("Half-hearts of suffocation damage applied each interval (every 2s) off a safe zone.")
-            .defineInRange("atmosphereDamage", 1, 0, 20);
-
     public static final ModConfigSpec.IntValue ATMOSPHERE_SAFE_RADIUS = BUILDER
             .comment("Blocks from a Rocket Launch Pad treated as a safe, pressurised zone.")
             .defineInRange("atmosphereSafeRadius", 6, 0, 32);
 
-    // --- Nerospace: oxygen (Phase 8c) ---------------------------------------
-
-    public static final ModConfigSpec.IntValue OXYGEN_MAX = BUILDER
-            .comment("Maximum oxygen a player can carry (matches the vanilla air-supply scale, 300 = full).")
-            .defineInRange("oxygenMax", 300, 1, 6000);
-
-    public static final ModConfigSpec.IntValue OXYGEN_DRAIN_PER_TICK = BUILDER
-            .comment("Oxygen lost per tick while exposed in an airless dimension without a breathable zone.")
-            .defineInRange("oxygenDrainPerTick", 2, 1, 300);
+    // --- Oxygen: structural radii / caps -------------------------------------
 
     public static final ModConfigSpec.IntValue OXYGEN_BUBBLE_RADIUS = BUILDER
             .comment("Falloff radius (blocks) of the breathable bubble a generator pressurises in OPEN / "
@@ -69,84 +77,60 @@ public class Config {
                     + "completely regardless. Bigger = more usable coverage when not perfectly sealed.")
             .defineInRange("oxygenBubbleRadius", 14, 0, 32);
 
-    public static final ModConfigSpec.IntValue OXYGEN_SUIT_DRAIN = BUILDER
-            .comment("Oxygen drained per ~0.5s while wearing a full Oxygen Suit off a safe zone "
-                    + "(its finite air tank). Lower = the suit lasts longer; 0 = the suit never runs out.")
-            .defineInRange("oxygenSuitDrain", 1, 0, 300);
-
-    public static final ModConfigSpec.IntValue OXYGEN_SUIT_T2_MAX = BUILDER
-            .comment("Air capacity of a full Tier 2 (cindrite-upgraded) Oxygen Suit. The Tier 1 suit "
-                    + "and bare lungs use oxygenMax. A mixed T1/T2 set counts as Tier 1.")
-            .defineInRange("oxygenSuitT2Max", 600, 1, 12_000);
-
     public static final ModConfigSpec.IntValue OXYGEN_AIRLOCK_RADIUS = BUILDER
             .comment("Radius (blocks) within which a worn Oxygen Suit refills its air tank from a Gas "
                     + "Tank or Oxygen Generator holding Oxygen — a tank by the base door acts as an "
                     + "airlock. 0 disables airlock refilling.")
             .defineInRange("oxygenAirlockRadius", 3, 0, 16);
 
-    public static final ModConfigSpec.IntValue OXYGEN_AIRLOCK_REFILL_PER_CHECK = BUILDER
-            .comment("Air units restored per suit check (~0.5s) while refilling from a nearby gas "
-                    + "store. A Tier 2 suit refills at twice this rate.")
-            .defineInRange("oxygenAirlockRefillPerCheck", 20, 1, 6000);
-
-    public static final ModConfigSpec.IntValue OXYGEN_AIRLOCK_MB_PER_AIR = BUILDER
-            .comment("Millibuckets of Oxygen gas drawn from the nearby store per air unit restored.")
-            .defineInRange("oxygenAirlockMbPerAir", 5, 0, 1000);
-
-    public static final ModConfigSpec.IntValue OXYGEN_SEALED_ROOM_MAX = BUILDER
-            .comment("Max air blocks the sealed-room scan will flood-fill from an active Oxygen "
-                    + "Generator. Larger = bigger habitable rooms but more work; 0 disables sealed rooms.")
-            .defineInRange("oxygenSealedRoomMax", 600, 0, 4096);
-
-    // --- Nerospace: oxygen FIELD (terraform design) ------------------------
+    // --- Oxygen field simulation (ADVANCED) ----------------------------------
     //
-    // A persistent per-block diffusion-with-decay field replaces the old on-demand flood-fill.
-    // One rule yields all three behaviours: open space dissipates (decay outpaces supply far from a
-    // source), sealed space fills (walls remove the diffusion path to vacuum), and a hole leaks (an
-    // opening is a low-concentration sink). See OXYGEN_TERRAFORM_DESIGN.md §1.
+    // Simulation tuning, not balance. Wrong values can break terraforming/oxygen behaviour —
+    // leave at defaults unless you are debugging server performance. See OXYGEN_TERRAFORM_DESIGN.md.
 
     public static final ModConfigSpec.IntValue OXYGEN_MAX_CONCENTRATION = BUILDER
-            .comment("Maximum per-block oxygen concentration in the field (0..this). 15 is plenty.")
+            .comment("ADVANCED. Maximum per-block oxygen concentration in the field (0..this). 15 is plenty.")
             .defineInRange("oxygenMaxConcentration", 15, 1, 15);
 
     public static final ModConfigSpec.IntValue OXYGEN_BREATHABLE_THRESHOLD = BUILDER
-            .comment("Field concentration at/above which a cell is breathable.")
+            .comment("ADVANCED. Field concentration at/above which a cell is breathable.")
             .defineInRange("oxygenBreathableThreshold", 6, 1, 15);
 
     public static final ModConfigSpec.DoubleValue OXYGEN_DIFFUSION_RATE = BUILDER
-            .comment("Fraction of the neighbour gradient that flows into a cell each sim step (0..0.4).")
+            .comment("ADVANCED. Fraction of the neighbour gradient that flows into a cell each sim step (0..0.4).")
             .defineInRange("oxygenDiffusionRate", 0.22D, 0.0D, 0.4D);
 
     public static final ModConfigSpec.DoubleValue OXYGEN_DECAY_PER_STEP = BUILDER
-            .comment("Oxygen bled to the thin atmosphere/vacuum each sim step. The sink that keeps "
+            .comment("ADVANCED. Oxygen bled to the thin atmosphere/vacuum each sim step. The sink that keeps "
                     + "open-air bubbles finite; small values let big sealed rooms fill.")
             .defineInRange("oxygenDecayPerStep", 0.18D, 0.0D, 5.0D);
 
     public static final ModConfigSpec.IntValue OXYGEN_SIM_INTERVAL_TICKS = BUILDER
-            .comment("Server ticks between oxygen-field relaxation passes (5 ~= 4 Hz).")
+            .comment("ADVANCED. Server ticks between oxygen-field relaxation passes (5 ~= 4 Hz).")
             .defineInRange("oxygenSimIntervalTicks", 5, 1, 100);
 
     public static final ModConfigSpec.IntValue OXYGEN_MAX_ACTIVE_CELLS_PER_SOURCE = BUILDER
-            .comment("Safety cap on active (simulated) cells per source. A generator dumped into open "
+            .comment("ADVANCED. Safety cap on active (simulated) cells per source. A generator dumped into open "
                     + "vacuum stops expanding its frontier at this size instead of spiking the tick.")
             .defineInRange("oxygenMaxActiveCellsPerSource", 4096, 64, 65536);
 
     public static final ModConfigSpec.IntValue OXYGEN_LEAK_RANGE = BUILDER
-            .comment("Max distance (blocks, through connected air) the flood-fill searches from a "
+            .comment("ADVANCED. Max distance (blocks, through connected air) the flood-fill searches from a "
                     + "generator for leaks / room walls. A generator pressurises at most this far. "
                     + "Smaller = cheaper. Default 16.")
             .defineInRange("oxygenLeakRange", 16, 4, 64);
 
     public static final ModConfigSpec.IntValue OXYGEN_EVAPORATE_SECONDS = BUILDER
-            .comment("How long oxygen takes to evaporate once it is no longer supplied (generator out "
+            .comment("ADVANCED. How long oxygen takes to evaporate once it is no longer supplied (generator out "
                     + "of fuel/broken) or after it starts leaking out an opening.")
             .defineInRange("oxygenEvaporateSeconds", 10, 1, 120);
 
     public static final ModConfigSpec.IntValue OXYGEN_SYNC_RADIUS = BUILDER
-            .comment("Blocks around a source within which the field is simulated and synced to clients. "
+            .comment("ADVANCED. Blocks around a source within which the field is simulated and synced to clients. "
                     + "Sources with no player in range pause (state persists).")
             .defineInRange("oxygenSyncRadius", 32, 8, 128);
+
+    // --- Client visuals -------------------------------------------------------
 
     public static final ModConfigSpec.EnumValue<OxygenVisualQuality> OXYGEN_VISUAL_QUALITY = BUILDER
             .comment("Client oxygen visuals: OFF (none), MINIMAL (HUD + sparse particles), "
@@ -170,29 +154,11 @@ public class Config {
                     + "counts only — never player identifiers). Off by shipped default (POPIA/GDPR).")
             .define("oxygenDebugLog", false);
 
-    // --- Nerospace: Terraformer machine (terraform design §2) ---------------
-
-    public static final ModConfigSpec.IntValue TERRAFORM_ENERGY_PER_BLOCK = BUILDER
-            .comment("Energy spent converting one block. Energy is the real throttle: a bigger sphere "
-                    + "has a bigger shell and takes longer unless fed more power or a higher tier. Higher "
-                    + "= the internal buffer drains faster while working.")
-            .defineInRange("terraformEnergyPerBlock", 12, 0, 10_000);
-
-    public static final ModConfigSpec.IntValue TERRAFORM_MAX_COLUMNS_PER_TICK = BUILDER
-            .comment("Hard per-tick work cap (columns converted) regardless of tier, to protect TPS.")
-            .defineInRange("terraformMaxColumnsPerTick", 48, 1, 4096);
-
-    public static final ModConfigSpec.IntValue TERRAFORM_WORK_INTERVAL_TICKS = BUILDER
-            .comment("Server ticks between Terraformer work cycles. Higher = slower expansion.")
-            .defineInRange("terraformWorkIntervalTicks", 8, 1, 100);
+    // --- Terraformer: feature toggles + performance caps ----------------------
 
     public static final ModConfigSpec.BooleanValue TERRAFORM_PLANTS_ENABLED = BUILDER
             .comment("Whether terraforming scatters grass/flowers and saplings on converted ground.")
             .define("terraformPlantsEnabled", true);
-
-    public static final ModConfigSpec.DoubleValue TERRAFORM_PLANT_CHANCE = BUILDER
-            .comment("Per-converted-column chance to place a plant/flower/sapling.")
-            .defineInRange("terraformPlantChance", 0.08D, 0.0D, 1.0D);
 
     public static final ModConfigSpec.BooleanValue TERRAFORM_WATER_ENABLED = BUILDER
             .comment("Whether terraforming fills low/exposed cells with water.")
@@ -202,16 +168,15 @@ public class Config {
             .comment("Whether a Tier-3 Terraformer seeds ores into the converted subsurface (low rate).")
             .define("terraformResourcesEnabled", true);
 
-    public static final ModConfigSpec.DoubleValue TERRAFORM_RESOURCE_CHANCE = BUILDER
-            .comment("Per-converted-column chance to seed one ore (Tier 3 only). Kept low so it does "
-                    + "not trivialise mining.")
-            .defineInRange("terraformResourceChance", 0.015D, 0.0D, 1.0D);
-
     public static final ModConfigSpec.ConfigValue<List<? extends String>> TERRAFORM_RESOURCE_ORES = BUILDER
             .comment("Ore block ids the Tier-3 Terraformer may seed. Defaults to Nerospace ores.")
             .defineListAllowEmpty("terraformResourceOres",
                     List.of("nerospace:nerosteel_ore", "nerospace:xertz_quartz_ore", "nerospace:nerosium_ore"),
                     () -> "nerospace:nerosteel_ore", Config::validateResourceLocation);
+
+    public static final ModConfigSpec.IntValue TERRAFORM_MAX_COLUMNS_PER_TICK = BUILDER
+            .comment("Hard per-tick work cap (columns converted) regardless of tier, to protect TPS.")
+            .defineInRange("terraformMaxColumnsPerTick", 48, 1, 4096);
 
     public static final ModConfigSpec.BooleanValue TERRAFORM_FORCE_LOAD_CHUNKS = BUILDER
             .comment("ACTIVE terraforming: force-load a bounded arc around the working frontier so it "
@@ -222,76 +187,11 @@ public class Config {
             .comment("Guard on how many chunks active terraforming may force-load at once.")
             .defineInRange("terraformMaxForcedChunks", 16, 0, 256);
 
-    // --- Nerospace: power grid (Universal Pipe network) ---------------------
-
-    public static final ModConfigSpec.IntValue ENERGY_PIPE_CAPACITY = BUILDER
-            .comment("Energy (FE) each Universal Pipe segment can buffer. The network shares/balances "
-                    + "energy across all connected segments.")
-            .defineInRange("energyPipeCapacity", 8_000, 100, 10_000_000);
-
-    public static final ModConfigSpec.IntValue ENERGY_PIPE_THROUGHPUT = BUILDER
-            .comment("Max energy (FE) a single pipe connection moves per tick (per face, per tick).")
-            .defineInRange("energyPipeThroughput", 4_000, 1, 10_000_000);
-
-    public static final ModConfigSpec.IntValue FLUID_PIPE_CAPACITY = BUILDER
-            .comment("Fluid (mB) each Universal Pipe segment can buffer. One fluid type per network; "
-                    + "other fluids are refused until the network drains.")
-            .defineInRange("fluidPipeCapacity", 4_000, 100, 1_000_000);
-
-    public static final ModConfigSpec.IntValue FLUID_PIPE_THROUGHPUT = BUILDER
-            .comment("Max fluid (mB) a single pipe connection moves per tick (per face, per tick).")
-            .defineInRange("fluidPipeThroughput", 500, 1, 1_000_000);
-
-    public static final ModConfigSpec.IntValue GAS_PIPE_CAPACITY = BUILDER
-            .comment("Gas (mB) each Universal Pipe segment can buffer. One gas type per network; "
-                    + "breaking a pipe vents that segment's gas.")
-            .defineInRange("gasPipeCapacity", 4_000, 100, 1_000_000);
-
-    public static final ModConfigSpec.IntValue GAS_PIPE_THROUGHPUT = BUILDER
-            .comment("Max gas (mB) a single pipe connection moves per tick (per face, per tick).")
-            .defineInRange("gasPipeThroughput", 250, 1, 1_000_000);
-
-    public static final ModConfigSpec.IntValue ITEM_PIPE_TICKS_PER_BLOCK = BUILDER
-            .comment("Ticks an item takes to cross one pipe segment (10 = 2 blocks/second).")
-            .defineInRange("itemPipeTicksPerBlock", 10, 1, 200);
-
-    public static final ModConfigSpec.IntValue ITEM_PIPE_EXTRACT_AMOUNT = BUILDER
-            .comment("Max items pulled from an inventory per extraction.")
-            .defineInRange("itemPipeExtractAmount", 8, 1, 64);
-
-    public static final ModConfigSpec.IntValue ITEM_PIPE_EXTRACT_PERIOD = BUILDER
-            .comment("Ticks between extraction pulses on pulling pipe faces.")
-            .defineInRange("itemPipeExtractPeriod", 10, 1, 200);
-
-    public static final ModConfigSpec.IntValue BATTERY_CAPACITY = BUILDER
-            .comment("Energy (FE) the Battery block stores.")
-            .defineInRange("batteryCapacity", 200_000, 1_000, 100_000_000);
-
-    public static final ModConfigSpec.IntValue FLUID_TANK_CAPACITY = BUILDER
-            .comment("Fluid (mB) the Fluid Tank block stores.")
-            .defineInRange("fluidTankCapacity", 16_000, 1_000, 10_000_000);
-
-    public static final ModConfigSpec.IntValue GAS_TANK_CAPACITY = BUILDER
-            .comment("Gas (mB) the Gas Tank block stores.")
-            .defineInRange("gasTankCapacity", 16_000, 1_000, 10_000_000);
-
-    public static final ModConfigSpec.IntValue COMBUSTION_GENERATOR_FE_PER_TICK = BUILDER
-            .comment("Energy (FE) the Combustion Generator produces each tick while burning fuel.")
-            .defineInRange("combustionGeneratorFePerTick", 60, 1, 1_000_000);
-
-    public static final ModConfigSpec.IntValue PASSIVE_GENERATOR_FE_PER_TICK = BUILDER
-            .comment("Energy (FE) the Passive Generator trickles each tick while it holds a fuel core.")
-            .defineInRange("passiveGeneratorFePerTick", 10, 1, 1_000_000);
-
     static final ModConfigSpec SPEC = BUILDER.build();
 
     /** Client oxygen-visual quality tiers. */
     public enum OxygenVisualQuality {
         OFF, MINIMAL, FULL
-    }
-
-    private static boolean validateItemName(final Object obj) {
-        return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(Identifier.parse(itemName));
     }
 
     /** Lenient validator: a well-formed resource location (registry membership checked at use). */

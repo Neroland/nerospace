@@ -10,7 +10,7 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 
-import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -38,7 +38,7 @@ public class FluidTankBlockEntity extends BlockEntity {
     }
 
     public int capacity() {
-        return Config.FLUID_TANK_CAPACITY.get();
+        return Tuning.fluidTankCapacity();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class FluidTankBlockEntity extends BlockEntity {
 
     private final class Tank extends FluidStacksResourceHandler {
         private Tank() {
-            super(1, Config.FLUID_TANK_CAPACITY.get());
+            super(1, Tuning.fluidTankCapacity());
         }
 
         @Override

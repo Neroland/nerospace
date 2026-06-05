@@ -21,7 +21,7 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import org.jetbrains.annotations.Nullable;
 
-import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -34,7 +34,6 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
 
     public static final int CORE_SLOT = 0;
     public static final int SIZE = 1;
-    public static final int ENERGY_CAPACITY = 20_000;
     /** Run-time (ticks) granted per nerosium core item. */
     public static final int CORE_TICKS = 24_000;
 
@@ -114,9 +113,9 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
                 setChanged();
             }
         }
-        if (this.coreTicks > 0 && this.energy.getAmountAsInt() < ENERGY_CAPACITY) {
+        if (this.coreTicks > 0 && this.energy.getAmountAsInt() < this.energy.getCapacityAsInt()) {
             this.coreTicks--;
-            this.energy.generate(Config.PASSIVE_GENERATOR_FE_PER_TICK.get());
+            this.energy.generate(Tuning.passiveGeneratorFePerTick());
         }
     }
 
@@ -203,7 +202,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements Containe
 
     private final class GenEnergy extends SimpleEnergyHandler {
         private GenEnergy() {
-            super(ENERGY_CAPACITY, 0, Config.ENERGY_PIPE_THROUGHPUT.get());
+            super(Tuning.passiveGeneratorBuffer(), 0, Tuning.energyPipeThroughput());
         }
 
         @Override

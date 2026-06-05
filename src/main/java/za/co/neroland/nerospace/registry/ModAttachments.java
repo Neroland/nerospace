@@ -9,8 +9,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.Tuning;
 
 /**
  * Per-entity data attachments (Phase 8c). {@link #OXYGEN} stores a player's remaining oxygen as an
@@ -24,7 +24,7 @@ public final class ModAttachments {
 
     public static final Supplier<AttachmentType<Integer>> OXYGEN = ATTACHMENT_TYPES.register(
             "oxygen",
-            () -> AttachmentType.builder(() -> Config.OXYGEN_MAX.get())
+            () -> AttachmentType.builder(() -> Tuning.oxygenMax())
                     .serialize(Codec.INT.fieldOf("oxygen"))
                     .copyOnDeath()
                     .build());

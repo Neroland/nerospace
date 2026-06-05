@@ -21,6 +21,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import za.co.neroland.nerospace.Config;
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.gas.GasCapability;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.registry.ModAttachments;
@@ -87,10 +88,10 @@ public final class GreenxertzAtmosphere {
                     oxygen += refilled;
                 } else {
                     // The Oxygen Suit's finite air tank drains slowly while exposed.
-                    oxygen = Math.max(0, oxygen - Config.OXYGEN_SUIT_DRAIN.get());
+                    oxygen = Math.max(0, oxygen - Tuning.oxygenSuitDrain());
                 }
             } else {
-                oxygen = Math.max(0, oxygen - Config.OXYGEN_DRAIN_PER_TICK.get() * CHECK_INTERVAL_TICKS);
+                oxygen = Math.max(0, oxygen - Tuning.oxygenDrainPerTick() * CHECK_INTERVAL_TICKS);
             }
             setOxygen(player, oxygen);
         }
@@ -98,7 +99,7 @@ public final class GreenxertzAtmosphere {
         mirrorToAirSupply(player, oxygen, max);
 
         if (oxygen <= 0 && player.tickCount % DAMAGE_INTERVAL_TICKS == 0) {
-            player.hurtServer(level, level.damageSources().generic(), Config.ATMOSPHERE_DAMAGE.get().floatValue());
+            player.hurtServer(level, level.damageSources().generic(), Tuning.atmosphereDamage());
             if (player.tickCount % (DAMAGE_INTERVAL_TICKS * 3) == 0) {
                 player.sendSystemMessage(Component.translatable("message.nerospace.greenxertz.no_air"));
             }
@@ -212,9 +213,9 @@ public final class GreenxertzAtmosphere {
         if (radius <= 0 || need <= 0) {
             return 0;
         }
-        int rate = Config.OXYGEN_AIRLOCK_REFILL_PER_CHECK.get() * (suit == SuitTier.TIER_2 ? 2 : 1);
+        int rate = Tuning.oxygenAirlockRefillPerCheck() * (suit == SuitTier.TIER_2 ? 2 : 1);
         int want = Math.min(need, rate);
-        int mbPerAir = Config.OXYGEN_AIRLOCK_MB_PER_AIR.get();
+        int mbPerAir = Tuning.oxygenAirlockMbPerAir();
 
         BlockPos center = player.blockPosition();
         int restored = 0;
@@ -283,7 +284,7 @@ public final class GreenxertzAtmosphere {
 
         /** The air capacity this tier grants (bare lungs share the Tier 1 scale). */
         public int capacity() {
-            return this == TIER_2 ? Config.OXYGEN_SUIT_T2_MAX.get() : Config.OXYGEN_MAX.get();
+            return this == TIER_2 ? Tuning.oxygenSuitT2Max() : Tuning.oxygenMax();
         }
     }
 

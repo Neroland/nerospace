@@ -27,7 +27,7 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import org.jetbrains.annotations.Nullable;
 
-import za.co.neroland.nerospace.Config;
+import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.GasStacksResourceHandler;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -144,7 +144,7 @@ public class UniversalPipeBlockEntity extends BlockEntity {
 
     /** Ticks an item needs to cross this segment (speed upgrades shorten it). */
     public int itemTicksPerBlock() {
-        return Math.max(1, Config.ITEM_PIPE_TICKS_PER_BLOCK.get() / speedMultiplier());
+        return Math.max(1, Tuning.itemPipeTicksPerBlock() / speedMultiplier());
     }
 
     /** Exposed to {@code Capabilities.Energy.BLOCK} so generators, machines and other cables interop. */
@@ -330,8 +330,8 @@ public class UniversalPipeBlockEntity extends BlockEntity {
     /** The pipe's FE buffer; capacity/throughput from config. {@link #setStored} is used for balancing. */
     final class PipeEnergy extends SimpleEnergyHandler {
         PipeEnergy() {
-            super(Config.ENERGY_PIPE_CAPACITY.get(),
-                    Config.ENERGY_PIPE_THROUGHPUT.get(), Config.ENERGY_PIPE_THROUGHPUT.get());
+            super(Tuning.energyPipeCapacity(),
+                    Tuning.energyPipeThroughput(), Tuning.energyPipeThroughput());
         }
 
         @Override
@@ -350,7 +350,7 @@ public class UniversalPipeBlockEntity extends BlockEntity {
      */
     final class PipeFluid extends FluidStacksResourceHandler {
         PipeFluid() {
-            super(1, Config.FLUID_PIPE_CAPACITY.get());
+            super(1, Tuning.fluidPipeCapacity());
         }
 
         @Override
@@ -384,7 +384,7 @@ public class UniversalPipeBlockEntity extends BlockEntity {
      */
     final class PipeGas extends GasStacksResourceHandler {
         PipeGas() {
-            super(1, Config.GAS_PIPE_CAPACITY.get());
+            super(1, Tuning.gasPipeCapacity());
         }
 
         @Override
