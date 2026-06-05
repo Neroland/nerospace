@@ -63,9 +63,19 @@ box only after the gradle-MCP build + gametests are green AND the in-game check 
 - [ ] Implement chosen scope; keep existing Terraformer saves working
 
 ### Space-suit hazard variants
-- [ ] Heat-resistant suit variant (Cindara/volcanic)
-- [ ] Any other hazard variant per design (radiation?)
-- [ ] HUD badge + `suitTier` handling extended for variants
+- [x] Heat-resistant suit variant (Cindara/volcanic) — **Thermal Suit** (`SUIT_HAZARD_DESIGN.md`,
+      signed off 2026-06-06): T2 piece + 4 cindrite; Cindara heat = ×4 O₂ drain unprotected (no
+      new damage path — zero-O₂ suffocation stays the killer), ember-puff feedback; gametested
+      (`hazard_drain_multiplier`); confirm worn art + particles in runClient
+- [x] Any other hazard variant per design — **Cryo Suit** (Glacira/cold): T2 piece + 4 glacite
+      (the glacite hook from `NEW_DESTINATION_DESIGN.md` §3), frost-vignette feedback (capped
+      `ticksFrozen`, never freeze damage). **Radiation: deferred past 1.0 by design** — no
+      radiation source exists yet (revisit with an asteroid-field destination)
+- [x] HUD badge + `suitTier` handling extended for variants — orthogonal `HazardShield`
+      (all-4-matching rule; variant pieces stay Tier-2-class for capacity, mixed-set rules
+      intact — gametested `hazard_shield_detection`); badge shows SUIT HEAT/COLD + red
+      HEAT!/COLD! warning when exposed unprotected; Star Guide vacuum chapter +2 steps
+      (tree 25→27). 27/27 gametests green; confirm badge layout in runClient
 
 ### Remaining small features (from FUTURE_WORK)
 - [x] ~~Hopper/pipe feeding of the Oxygen Generator fuel slot~~ N/A — stale item: the gas rework

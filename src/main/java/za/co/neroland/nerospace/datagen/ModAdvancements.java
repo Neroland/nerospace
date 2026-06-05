@@ -172,7 +172,7 @@ public class ModAdvancements implements AdvancementSubProvider {
                         ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_BOOTS.get()))
                 .save(saver, "nerospace:guide/oxygen_suit");
 
-        Advancement.Builder.advancement()
+        AdvancementHolder suitT2 = Advancement.Builder.advancement()
                 .parent(suit)
                 .display(ModItems.OXYGEN_SUIT_T2_HELMET.get(),
                         Component.literal("Ember-Proof"),
@@ -182,6 +182,29 @@ public class ModAdvancements implements AdvancementSubProvider {
                         ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
                         ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get()))
                 .save(saver, "nerospace:guide/oxygen_suit_t2");
+
+        // Hazard suit variants (SUIT_HAZARD_DESIGN.md): sidegrades of T2, both parented on it.
+        Advancement.Builder.advancement()
+                .parent(suitT2)
+                .display(ModItems.OXYGEN_SUIT_HEAT_HELMET.get(),
+                        Component.literal("Forged for the Fire"),
+                        Component.literal("Assemble a full Thermal Suit — Cindara's heat stops draining your air"),
+                        null, AdvancementType.GOAL, true, true, false)
+                .addCriterion("has_thermal_suit", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(),
+                        ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_HEAT_BOOTS.get()))
+                .save(saver, "nerospace:guide/thermal_suit");
+
+        Advancement.Builder.advancement()
+                .parent(suitT2)
+                .display(ModItems.OXYGEN_SUIT_COLD_HELMET.get(),
+                        Component.literal("Dressed for the Deep Cold"),
+                        Component.literal("Assemble a full Cryo Suit — Glacira's cold stops draining your air"),
+                        null, AdvancementType.GOAL, true, true, false)
+                .addCriterion("has_cryo_suit", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ModItems.OXYGEN_SUIT_COLD_HELMET.get(), ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get(),
+                        ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get(), ModItems.OXYGEN_SUIT_COLD_BOOTS.get()))
+                .save(saver, "nerospace:guide/cryo_suit");
 
         // --- Chapter 7: Terraforming ------------------------------------------------------------
         AdvancementHolder terraformer = item(saver, cindara, "guide/terraformer",

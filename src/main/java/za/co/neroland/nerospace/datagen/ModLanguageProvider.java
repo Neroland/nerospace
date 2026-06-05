@@ -163,6 +163,16 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), "Tier 2 Oxygen Suit Leggings");
         add(ModItems.OXYGEN_SUIT_T2_BOOTS.get(), "Tier 2 Oxygen Suit Boots");
 
+        // Hazard suit variants (SUIT_HAZARD_DESIGN.md).
+        add(ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), "Thermal Suit Helmet");
+        add(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(), "Thermal Suit Chestplate");
+        add(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), "Thermal Suit Leggings");
+        add(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(), "Thermal Suit Boots");
+        add(ModItems.OXYGEN_SUIT_COLD_HELMET.get(), "Cryo Suit Helmet");
+        add(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get(), "Cryo Suit Chestplate");
+        add(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get(), "Cryo Suit Leggings");
+        add(ModItems.OXYGEN_SUIT_COLD_BOOTS.get(), "Cryo Suit Boots");
+
         // Phase 7 items.
         add(ModItems.CINDRITE.get(), "Cindrite");
         add(ModItems.GLACITE.get(), "Glacite");
@@ -381,6 +391,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.star_guide.step.oxygen_suit_t2.text",
                 "The cindrite-upgraded Tier 2 suit doubles your air and refills twice as fast. "
                         + "A mixed set counts as Tier 1 — wear all four pieces.");
+        add("gui.nerospace.star_guide.step.thermal_suit", "Forged for the Fire");
+        add("gui.nerospace.star_guide.step.thermal_suit.text",
+                "Cindara's heat makes any other suit burn air four times faster. The Thermal Suit "
+                        + "(Tier 2 piece + cindrite) shrugs it off — all four pieces, or no shield.");
+        add("gui.nerospace.star_guide.step.cryo_suit", "Dressed for the Deep Cold");
+        add("gui.nerospace.star_guide.step.cryo_suit.text",
+                "Glacira's cold drains an unprotected suit four times faster and frosts your visor. "
+                        + "The glacite-lined Cryo Suit keeps you warm — all four pieces, or no shield.");
 
         add("gui.nerospace.star_guide.step.terraformer", "World Engine");
         add("gui.nerospace.star_guide.step.terraformer.text",

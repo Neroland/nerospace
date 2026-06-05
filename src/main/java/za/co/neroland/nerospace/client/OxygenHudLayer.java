@@ -40,6 +40,8 @@ public class OxygenHudLayer implements GuiLayer {
     private static final int LABEL = 0xFFCFE7FF;
     private static final int TIER1 = 0xFF96AAB4;    // steel — Tier 1 suit badge
     private static final int TIER2 = 0xFFF0C850;    // gold — Tier 2 suit badge
+    private static final int HEAT = 0xFFF07830;     // ember — Thermal Suit shield badge
+    private static final int COLD = 0xFF78D2F0;     // ice — Cryo Suit shield badge
 
     private static final int ICON_SIZE = 16;
     private static final int BAR_W = 80;
@@ -81,12 +83,31 @@ public class OxygenHudLayer implements GuiLayer {
 
         g.text(mc.font, Component.literal("O2  " + Math.round(frac * 100) + "%"), barX, y - 9, LABEL, true);
 
-        // Suit-tier badge (armour slots are already client-synced; this is a pure item check).
+        // Suit badge (armour slots are already client-synced; these are pure item checks): an
+        // active hazard SHIELD outranks the capacity tier on the badge — both axes still apply.
         GreenxertzAtmosphere.SuitTier suit = GreenxertzAtmosphere.suitTier(player);
-        if (suit != GreenxertzAtmosphere.SuitTier.NONE) {
+        GreenxertzAtmosphere.HazardShield shield = GreenxertzAtmosphere.hazardShield(player);
+        int badgeRight = barX + BAR_W;
+        if (shield != GreenxertzAtmosphere.HazardShield.NONE) {
+            boolean heat = shield == GreenxertzAtmosphere.HazardShield.HEAT;
+            Component badge = Component.literal(heat ? "SUIT HEAT" : "SUIT COLD");
+            int w = mc.font.width(badge);
+            g.text(mc.font, badge, badgeRight - w, y - 9, heat ? HEAT : COLD, true);
+            badgeRight -= w + 6;
+        } else if (suit != GreenxertzAtmosphere.SuitTier.NONE) {
             boolean t2 = suit == GreenxertzAtmosphere.SuitTier.TIER_2;
             Component badge = Component.literal(t2 ? "SUIT T2" : "SUIT T1");
-            g.text(mc.font, badge, barX + BAR_W - mc.font.width(badge), y - 9, t2 ? TIER2 : TIER1, true);
+            int w = mc.font.width(badge);
+            g.text(mc.font, badge, badgeRight - w, y - 9, t2 ? TIER2 : TIER1, true);
+            badgeRight -= w + 6;
+        }
+
+        // Uncountered dimension hazard: a red warning so the x4 drain is never mysterious.
+        GreenxertzAtmosphere.Hazard hazard = GreenxertzAtmosphere.hazardFor(player.level().dimension());
+        if (hazard != GreenxertzAtmosphere.Hazard.NONE && shield != hazard.counteredBy()) {
+            Component warn = Component.literal(hazard == GreenxertzAtmosphere.Hazard.HEAT
+                    ? "HEAT!" : "COLD!");
+            g.text(mc.font, warn, badgeRight - mc.font.width(warn), y - 9, LOW, true);
         }
     }
 }

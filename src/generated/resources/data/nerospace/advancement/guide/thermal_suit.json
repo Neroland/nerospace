@@ -1,0 +1,38 @@
+{
+  "parent": "nerospace:guide/oxygen_suit_t2",
+  "criteria": {
+    "has_thermal_suit": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:oxygen_suit_heat_helmet"
+          },
+          {
+            "items": "nerospace:oxygen_suit_heat_chestplate"
+          },
+          {
+            "items": "nerospace:oxygen_suit_heat_leggings"
+          },
+          {
+            "items": "nerospace:oxygen_suit_heat_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Assemble a full Thermal Suit — Cindara's heat stops draining your air",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:oxygen_suit_heat_helmet"
+    },
+    "title": "Forged for the Fire"
+  },
+  "requirements": [
+    [
+      "has_thermal_suit"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

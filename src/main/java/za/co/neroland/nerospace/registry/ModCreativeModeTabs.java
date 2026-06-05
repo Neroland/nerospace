@@ -91,6 +91,14 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get());
                         output.accept(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get());
                         output.accept(ModItems.OXYGEN_SUIT_T2_BOOTS.get());
+                        output.accept(ModItems.OXYGEN_SUIT_HEAT_HELMET.get());
+                        output.accept(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get());
+                        output.accept(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get());
+                        output.accept(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get());
+                        output.accept(ModItems.OXYGEN_SUIT_COLD_HELMET.get());
+                        output.accept(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get());
+                        output.accept(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get());
+                        output.accept(ModItems.OXYGEN_SUIT_COLD_BOOTS.get());
                         output.accept(ModItems.ROCKET_FUEL_CANISTER.get());
                         output.accept(ModItems.ROCKET_FUEL_BUCKET.get());
                         output.accept(ModItems.ROCKET_TIER_1.get());

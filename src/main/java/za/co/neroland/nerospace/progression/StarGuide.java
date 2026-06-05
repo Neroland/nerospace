@@ -85,7 +85,9 @@ public final class StarGuide {
                     step("oxygen_generator", () -> ModBlocks.OXYGEN_GENERATOR.get(), "guide/oxygen_generator"),
                     step("gas_tank", () -> ModBlocks.GAS_TANK.get(), "guide/gas_tank"),
                     step("oxygen_suit", () -> ModItems.OXYGEN_SUIT_HELMET.get(), "guide/oxygen_suit"),
-                    step("oxygen_suit_t2", () -> ModItems.OXYGEN_SUIT_T2_HELMET.get(), "guide/oxygen_suit_t2"))),
+                    step("oxygen_suit_t2", () -> ModItems.OXYGEN_SUIT_T2_HELMET.get(), "guide/oxygen_suit_t2"),
+                    step("thermal_suit", () -> ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), "guide/thermal_suit"),
+                    step("cryo_suit", () -> ModItems.OXYGEN_SUIT_COLD_HELMET.get(), "guide/cryo_suit"))),
             new Chapter("terraforming", List.of(
                     step("terraformer", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformer"),
                     step("terraformed_ground", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformed_ground"))));

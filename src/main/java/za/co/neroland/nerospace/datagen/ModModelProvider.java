@@ -169,6 +169,16 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_BOOTS.get(), ModelTemplates.FLAT_ITEM);
 
+        // Hazard suit variants (SUIT_HAZARD_DESIGN.md).
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_COLD_HELMET.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_COLD_BOOTS.get(), ModelTemplates.FLAT_ITEM);
+
         // Star Guide book.
         itemModels.generateFlatItem(ModItems.STAR_GUIDE_BOOK.get(), ModelTemplates.FLAT_ITEM);
 

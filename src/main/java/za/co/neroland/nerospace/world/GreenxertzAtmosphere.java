@@ -50,6 +50,39 @@ public final class GreenxertzAtmosphere {
             ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL, ModDimensions.STATION_LEVEL,
             ModDimensions.GLACIRA_LEVEL);
 
+    /**
+     * Per-dimension environmental hazards (SUIT_HAZARD_DESIGN.md): heat on Cindara, cold on
+     * Glacira. A hazard multiplies the oxygen drain (suit AND bare lungs) by
+     * {@link Tuning#BASE_HAZARD_DRAIN_MULTIPLIER} unless the matching {@link HazardShield} variant
+     * is worn — there is deliberately NO extra damage path; lethality stays with zero-O₂
+     * suffocation.
+     */
+    public static Hazard hazardFor(ResourceKey<Level> dimension) {
+        if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
+            return Hazard.HEAT;
+        }
+        if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
+            return Hazard.COLD;
+        }
+        return Hazard.NONE;
+    }
+
+    /** Environmental hazards a dimension can carry. */
+    public enum Hazard {
+        NONE,
+        HEAT,
+        COLD;
+
+        /** The shield that negates this hazard. */
+        public HazardShield counteredBy() {
+            return switch (this) {
+                case NONE -> HazardShield.NONE;
+                case HEAT -> HazardShield.HEAT;
+                case COLD -> HazardShield.COLD;
+            };
+        }
+    }
+
     private GreenxertzAtmosphere() {
     }
 
@@ -79,7 +112,8 @@ public final class GreenxertzAtmosphere {
 
         // The check is throttled; oxygen still mirrors to the HUD every tick from the stored value.
         if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
-            if (isBreathable(level, player)) {
+            boolean breathable = isBreathable(level, player);
+            if (breathable) {
                 // A breathable zone (pad radius, oxygen field, or terraformed ground) refills.
                 oxygen = max;
             } else if (suit != SuitTier.NONE) {
@@ -88,13 +122,20 @@ public final class GreenxertzAtmosphere {
                 if (refilled > 0) {
                     oxygen += refilled;
                 } else {
-                    // The Oxygen Suit's finite air tank drains slowly while exposed.
-                    oxygen = Math.max(0, oxygen - Tuning.oxygenSuitDrain());
+                    // The Oxygen Suit's finite air tank drains slowly while exposed; an
+                    // uncountered dimension hazard multiplies the climate-control cost.
+                    oxygen = Math.max(0, oxygen
+                            - Tuning.oxygenSuitDrain() * hazardDrainMultiplier(level, player));
                 }
             } else {
-                oxygen = Math.max(0, oxygen - Tuning.oxygenDrainPerTick() * CHECK_INTERVAL_TICKS);
+                oxygen = Math.max(0, oxygen - Tuning.oxygenDrainPerTick() * CHECK_INTERVAL_TICKS
+                        * hazardDrainMultiplier(level, player));
             }
             setOxygen(player, oxygen);
+
+            if (!breathable) {
+                hazardFeedback(level, player);
+            }
         }
 
         mirrorToAirSupply(player, oxygen, max);
@@ -192,13 +233,92 @@ public final class GreenxertzAtmosphere {
         return (h == 2 && c == 2 && l == 2 && b == 2) ? SuitTier.TIER_2 : SuitTier.TIER_1;
     }
 
-    /** 2 = Tier 2 piece, 1 = Tier 1 piece, 0 = not a suit piece. */
+    /**
+     * 2 = Tier-2-class piece (T2 OR a hazard variant — variants are crafted FROM T2 pieces, so
+     * they keep the Tier 2 tank/refill), 1 = Tier 1 piece, 0 = not a suit piece.
+     */
     private static int pieceTier(net.minecraft.world.item.ItemStack worn,
             net.minecraft.world.item.Item t1, net.minecraft.world.item.Item t2) {
-        if (worn.is(t2)) {
+        if (worn.is(t2) || pieceVariant(worn) != HazardShield.NONE) {
             return 2;
         }
         return worn.is(t1) ? 1 : 0;
+    }
+
+    /**
+     * The worn hazard shield (SUIT_HAZARD_DESIGN.md §3): orthogonal to {@link SuitTier}. Requires
+     * ALL FOUR pieces of the SAME variant — the variant analogue of the mixed-set rule, so a heat
+     * helmet on a cryo suit gives Tier 2 capacity but no shield.
+     */
+    public static HazardShield hazardShield(Player player) {
+        HazardShield head = pieceVariant(player.getItemBySlot(EquipmentSlot.HEAD));
+        if (head == HazardShield.NONE) {
+            return HazardShield.NONE;
+        }
+        if (pieceVariant(player.getItemBySlot(EquipmentSlot.CHEST)) == head
+                && pieceVariant(player.getItemBySlot(EquipmentSlot.LEGS)) == head
+                && pieceVariant(player.getItemBySlot(EquipmentSlot.FEET)) == head) {
+            return head;
+        }
+        return HazardShield.NONE;
+    }
+
+    /** Which hazard variant a single worn piece belongs to (NONE for T1/T2/non-suit items). */
+    private static HazardShield pieceVariant(net.minecraft.world.item.ItemStack worn) {
+        if (worn.is(ModItems.OXYGEN_SUIT_HEAT_HELMET.get())
+                || worn.is(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get())
+                || worn.is(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get())
+                || worn.is(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get())) {
+            return HazardShield.HEAT;
+        }
+        if (worn.is(ModItems.OXYGEN_SUIT_COLD_HELMET.get())
+                || worn.is(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())
+                || worn.is(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())
+                || worn.is(ModItems.OXYGEN_SUIT_COLD_BOOTS.get())) {
+            return HazardShield.COLD;
+        }
+        return HazardShield.NONE;
+    }
+
+    /**
+     * The effective hazard drain factor for {@code player} on {@code level}:
+     * {@link Tuning#BASE_HAZARD_DRAIN_MULTIPLIER} when the dimension carries a hazard the worn
+     * shield does not counter, else 1. Public for the HUD warning and the gametests.
+     */
+    public static int hazardDrainMultiplier(Level level, Player player) {
+        return hazardDrainMultiplier(level.dimension(), player);
+    }
+
+    /** Dimension-key overload (the gametests run in the overworld, so they pass keys directly). */
+    public static int hazardDrainMultiplier(ResourceKey<Level> dimension, Player player) {
+        Hazard hazard = hazardFor(dimension);
+        if (hazard == Hazard.NONE || hazardShield(player) == hazard.counteredBy()) {
+            return 1;
+        }
+        return Tuning.BASE_HAZARD_DRAIN_MULTIPLIER;
+    }
+
+    /**
+     * Thematic hazard feedback for an EXPOSED, unprotected player (no new damage — the O₂ bar is
+     * the cost): on Glacira the vanilla frost vignette builds ({@code ticksFrozen}, capped below
+     * fully-frozen so vanilla freeze damage never double-dips); on Cindara sparse smoke puffs
+     * shimmer off the suit (vanilla particles only).
+     */
+    private static void hazardFeedback(ServerLevel level, Player player) {
+        Hazard hazard = hazardFor(level.dimension());
+        if (hazard == Hazard.NONE || hazardShield(player) == hazard.counteredBy()) {
+            return;
+        }
+        if (hazard == Hazard.COLD) {
+            // Vanilla thaws ~2/tick; +(CHECK_INTERVAL*2 + 15) per check nets a visible build-up.
+            int cap = player.getTicksRequiredToFreeze() - 2; // never "fully frozen" => no damage
+            player.setTicksFrozen(Math.min(cap,
+                    player.getTicksFrozen() + CHECK_INTERVAL_TICKS * 2 + 15));
+        } else if (player.tickCount % (CHECK_INTERVAL_TICKS * 4) == 0) {
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,
+                    player.getX(), player.getY() + 1.2D, player.getZ(),
+                    3, 0.25D, 0.4D, 0.25D, 0.01D);
+        }
     }
 
     /**
@@ -279,6 +399,13 @@ public final class GreenxertzAtmosphere {
             tx.commit();
         }
         return air;
+    }
+
+    /** The hazard-shield variants (SUIT_HAZARD_DESIGN.md): orthogonal to {@link SuitTier}. */
+    public enum HazardShield {
+        NONE,
+        HEAT,
+        COLD
     }
 
     /** The worn-suit tiers and their air-tank capacities. */

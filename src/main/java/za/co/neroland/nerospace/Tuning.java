@@ -36,6 +36,13 @@ public final class Tuning {
     public static final int BASE_OXYGEN_AIRLOCK_REFILL_PER_CHECK = 20;
     /** Millibuckets of Oxygen gas drawn per air unit restored by an airlock refill. */
     public static final int BASE_OXYGEN_AIRLOCK_MB_PER_AIR = 5;
+    /**
+     * Oxygen-drain factor on a hazard dimension without the matching suit variant
+     * (SUIT_HAZARD_DESIGN.md §2). Internalised (no config key): it multiplies the already
+     * {@code oxygenDrainMultiplier}-scaled drains, and {@code atmosphereDamageEnabled=false}
+     * still switches the whole system off.
+     */
+    public static final int BASE_HAZARD_DRAIN_MULTIPLIER = 4;
 
     // ------------------------------------------------------------------
     // Base values: power grid / storage

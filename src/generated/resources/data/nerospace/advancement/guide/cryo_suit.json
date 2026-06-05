@@ -1,0 +1,38 @@
+{
+  "parent": "nerospace:guide/oxygen_suit_t2",
+  "criteria": {
+    "has_cryo_suit": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:oxygen_suit_cold_helmet"
+          },
+          {
+            "items": "nerospace:oxygen_suit_cold_chestplate"
+          },
+          {
+            "items": "nerospace:oxygen_suit_cold_leggings"
+          },
+          {
+            "items": "nerospace:oxygen_suit_cold_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Assemble a full Cryo Suit — Glacira's cold stops draining your air",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:oxygen_suit_cold_helmet"
+    },
+    "title": "Dressed for the Deep Cold"
+  },
+  "requirements": [
+    [
+      "has_cryo_suit"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -142,6 +142,67 @@ public final class ModItems {
             "oxygen_suit_t2_boots",
             props -> new Item(props.humanoidArmor(OXYGEN_SUIT_T2_MATERIAL, ArmorType.BOOTS)));
 
+    // --- Hazard suit variants (SUIT_HAZARD_DESIGN.md) ------------------------
+    // Sidegrades OF Tier 2: same protection class and Tier-2 tank; a full matching set counters
+    // its dimension hazard (heat = Cindara, cold = Glacira). Detection lives in
+    // GreenxertzAtmosphere.hazardShield.
+
+    /** The Thermal Suit worn-armour asset key ({@code assets/nerospace/equipment/oxygen_suit_heat.json}). */
+    public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_HEAT_ASSET = ResourceKey.create(
+            EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(Nerospace.MODID, "oxygen_suit_heat"));
+
+    /** Thermal Suit material — T2 numbers, repaired with cindrite. */
+    public static final ArmorMaterial OXYGEN_SUIT_HEAT_MATERIAL = new ArmorMaterial(
+            36,
+            Map.of(ArmorType.HELMET, 4, ArmorType.CHESTPLATE, 8, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 4),
+            14,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            2.0F,
+            0.0F,
+            ModTags.Items.GEMS_CINDRITE,
+            OXYGEN_SUIT_HEAT_ASSET);
+
+    public static final DeferredItem<Item> OXYGEN_SUIT_HEAT_HELMET = ITEMS.registerItem(
+            "oxygen_suit_heat_helmet",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_HEAT_MATERIAL, ArmorType.HELMET)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_HEAT_CHESTPLATE = ITEMS.registerItem(
+            "oxygen_suit_heat_chestplate",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_HEAT_MATERIAL, ArmorType.CHESTPLATE)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_HEAT_LEGGINGS = ITEMS.registerItem(
+            "oxygen_suit_heat_leggings",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_HEAT_MATERIAL, ArmorType.LEGGINGS)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_HEAT_BOOTS = ITEMS.registerItem(
+            "oxygen_suit_heat_boots",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_HEAT_MATERIAL, ArmorType.BOOTS)));
+
+    /** The Cryo Suit worn-armour asset key ({@code assets/nerospace/equipment/oxygen_suit_cold.json}). */
+    public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_COLD_ASSET = ResourceKey.create(
+            EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(Nerospace.MODID, "oxygen_suit_cold"));
+
+    /** Cryo Suit material — T2 numbers, repaired with glacite. */
+    public static final ArmorMaterial OXYGEN_SUIT_COLD_MATERIAL = new ArmorMaterial(
+            36,
+            Map.of(ArmorType.HELMET, 4, ArmorType.CHESTPLATE, 8, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 4),
+            14,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            2.0F,
+            0.0F,
+            ModTags.Items.GEMS_GLACITE,
+            OXYGEN_SUIT_COLD_ASSET);
+
+    public static final DeferredItem<Item> OXYGEN_SUIT_COLD_HELMET = ITEMS.registerItem(
+            "oxygen_suit_cold_helmet",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_COLD_MATERIAL, ArmorType.HELMET)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_COLD_CHESTPLATE = ITEMS.registerItem(
+            "oxygen_suit_cold_chestplate",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_COLD_MATERIAL, ArmorType.CHESTPLATE)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_COLD_LEGGINGS = ITEMS.registerItem(
+            "oxygen_suit_cold_leggings",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_COLD_MATERIAL, ArmorType.LEGGINGS)));
+    public static final DeferredItem<Item> OXYGEN_SUIT_COLD_BOOTS = ITEMS.registerItem(
+            "oxygen_suit_cold_boots",
+            props -> new Item(props.humanoidArmor(OXYGEN_SUIT_COLD_MATERIAL, ArmorType.BOOTS)));
+
     // --- Travel (Phase 3, temporary; replaced by rockets in Phase 4) --------
 
     /**

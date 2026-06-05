@@ -124,6 +124,9 @@ public final class NerospaceGameTests {
         functions.put("fuel_pump_rate_by_footprint", NerospaceGameTests::testFuelPumpRateByFootprint);
         functions.put("single_centered_rocket_per_pad", NerospaceGameTests::testSingleCenteredRocketPerPad);
         functions.put("pad_break_grounds_rocket", NerospaceGameTests::testPadBreakGroundsRocket);
+        // Hazard suit variants (SUIT_HAZARD_DESIGN.md).
+        functions.put("hazard_shield_detection", NerospaceGameTests::testHazardShieldDetection);
+        functions.put("hazard_drain_multiplier", NerospaceGameTests::testHazardDrainMultiplier);
         // Glacira / Tier 4 (NEW_DESTINATION_DESIGN.md).
         functions.put("tier4_requires_heavy_complex", NerospaceGameTests::testTier4RequiresHeavyComplex);
         functions.put("tier_destinations_cumulative", NerospaceGameTests::testTierDestinationsCumulative);
@@ -203,6 +206,18 @@ public final class NerospaceGameTests {
                 tier2 ? ModItems.OXYGEN_SUIT_T2_LEGGINGS.get() : ModItems.OXYGEN_SUIT_LEGGINGS.get()));
         player.setItemSlot(EquipmentSlot.FEET, new ItemStack(
                 tier2 ? ModItems.OXYGEN_SUIT_T2_BOOTS.get() : ModItems.OXYGEN_SUIT_BOOTS.get()));
+    }
+
+    /** Equips a full hazard-variant set: true = Thermal (heat), false = Cryo (cold). */
+    private static void equipVariant(Player player, boolean heat) {
+        player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(
+                heat ? ModItems.OXYGEN_SUIT_HEAT_HELMET.get() : ModItems.OXYGEN_SUIT_COLD_HELMET.get()));
+        player.setItemSlot(EquipmentSlot.CHEST, new ItemStack(
+                heat ? ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get() : ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get()));
+        player.setItemSlot(EquipmentSlot.LEGS, new ItemStack(
+                heat ? ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get() : ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get()));
+        player.setItemSlot(EquipmentSlot.FEET, new ItemStack(
+                heat ? ModItems.OXYGEN_SUIT_HEAT_BOOTS.get() : ModItems.OXYGEN_SUIT_COLD_BOOTS.get()));
     }
 
     // --- Tests ----------------------------------------------------------------
@@ -630,6 +645,104 @@ public final class NerospaceGameTests {
         helper.setBlock(new BlockPos(1, 1, 1), Blocks.AIR); // break a corner of ITS 3x3
         helper.assertFalse(rocket.isOnValidPad(),
                 "breaking a block of the rocket's own square must ground it");
+        helper.succeed();
+    }
+
+    // --- Hazard suit variants (SUIT_HAZARD_DESIGN.md) --------------------------------------------
+
+    /**
+     * Shield detection is orthogonal to the capacity tier: a full matching variant set grants its
+     * shield AND Tier 2 capacity; mixing variants keeps Tier 2 capacity (all pieces are T2-class)
+     * but voids the shield; a T1 piece demotes capacity AND voids the shield.
+     */
+    private static void testHazardShieldDetection(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+
+        equipVariant(player, true);
+        helper.assertTrue(GreenxertzAtmosphere.hazardShield(player) == GreenxertzAtmosphere.HazardShield.HEAT,
+                "a full Thermal set must shield HEAT");
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.TIER_2,
+                "variant pieces are Tier-2-class: full Thermal set keeps TIER_2 capacity");
+
+        equipVariant(player, false);
+        helper.assertTrue(GreenxertzAtmosphere.hazardShield(player) == GreenxertzAtmosphere.HazardShield.COLD,
+                "a full Cryo set must shield COLD");
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.TIER_2,
+                "variant pieces are Tier-2-class: full Cryo set keeps TIER_2 capacity");
+
+        // Mixed variants: capacity stays Tier 2, but the shield is void (all-4-matching rule).
+        player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.OXYGEN_SUIT_HEAT_HELMET.get()));
+        helper.assertTrue(GreenxertzAtmosphere.hazardShield(player) == GreenxertzAtmosphere.HazardShield.NONE,
+                "a heat helmet on a cryo suit must void the shield");
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.TIER_2,
+                "mixed variants are still all Tier-2-class pieces (TIER_2 capacity)");
+
+        // A plain T2 piece in a variant set: same — capacity holds, shield voids.
+        equipVariant(player, true);
+        player.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.OXYGEN_SUIT_T2_BOOTS.get()));
+        helper.assertTrue(GreenxertzAtmosphere.hazardShield(player) == GreenxertzAtmosphere.HazardShield.NONE,
+                "a plain T2 boot in a Thermal set must void the shield");
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.TIER_2,
+                "T2 + variant mix keeps TIER_2 capacity");
+
+        // A T1 piece demotes capacity and (trivially) the shield.
+        player.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.OXYGEN_SUIT_BOOTS.get()));
+        helper.assertTrue(GreenxertzAtmosphere.suitTier(player) == GreenxertzAtmosphere.SuitTier.TIER_1,
+                "a T1 piece in a variant set demotes capacity to TIER_1 (mixed-set rule)");
+        helper.assertTrue(GreenxertzAtmosphere.hazardShield(player) == GreenxertzAtmosphere.HazardShield.NONE,
+                "a T1 piece also voids the shield");
+        helper.succeed();
+    }
+
+    /** Hazard map + effective drain: ×4 unprotected on hazard worlds, ×1 with the matching shield. */
+    private static void testHazardDrainMultiplier(GameTestHelper helper) {
+        helper.assertTrue(GreenxertzAtmosphere.hazardFor(
+                        za.co.neroland.nerospace.registry.ModDimensions.CINDARA_LEVEL)
+                        == GreenxertzAtmosphere.Hazard.HEAT,
+                "Cindara must carry the HEAT hazard");
+        helper.assertTrue(GreenxertzAtmosphere.hazardFor(
+                        za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_LEVEL)
+                        == GreenxertzAtmosphere.Hazard.COLD,
+                "Glacira must carry the COLD hazard");
+        helper.assertTrue(GreenxertzAtmosphere.hazardFor(
+                        za.co.neroland.nerospace.registry.ModDimensions.GREENXERTZ_LEVEL)
+                        == GreenxertzAtmosphere.Hazard.NONE
+                        && GreenxertzAtmosphere.hazardFor(
+                                za.co.neroland.nerospace.registry.ModDimensions.STATION_LEVEL)
+                        == GreenxertzAtmosphere.Hazard.NONE,
+                "Greenxertz and the Station must stay hazard-free");
+
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        int x = za.co.neroland.nerospace.Tuning.BASE_HAZARD_DRAIN_MULTIPLIER;
+
+        // Unprotected (T2 suit): hazard worlds drain x4.
+        equipSuit(player, true);
+        helper.assertTrue(GreenxertzAtmosphere.hazardDrainMultiplier(
+                        za.co.neroland.nerospace.registry.ModDimensions.CINDARA_LEVEL, player) == x,
+                "a T2 suit on Cindara must drain x" + x);
+        helper.assertTrue(GreenxertzAtmosphere.hazardDrainMultiplier(
+                        za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_LEVEL, player) == x,
+                "a T2 suit on Glacira must drain x" + x);
+        helper.assertTrue(GreenxertzAtmosphere.hazardDrainMultiplier(
+                        za.co.neroland.nerospace.registry.ModDimensions.GREENXERTZ_LEVEL, player) == 1,
+                "Greenxertz never hazard-drains");
+
+        // The matching shield counters its own hazard — and ONLY its own.
+        equipVariant(player, true);
+        helper.assertTrue(GreenxertzAtmosphere.hazardDrainMultiplier(
+                        za.co.neroland.nerospace.registry.ModDimensions.CINDARA_LEVEL, player) == 1,
+                "a Thermal Suit must counter Cindara's heat");
+        helper.assertTrue(GreenxertzAtmosphere.hazardDrainMultiplier(
+                        za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_LEVEL, player) == x,
+                "a Thermal Suit must NOT counter Glacira's cold");
+
+        equipVariant(player, false);
+        helper.assertTrue(GreenxertzAtmosphere.hazardDrainMultiplier(
+                        za.co.neroland.nerospace.registry.ModDimensions.GLACIRA_LEVEL, player) == 1,
+                "a Cryo Suit must counter Glacira's cold");
+        helper.assertTrue(GreenxertzAtmosphere.hazardDrainMultiplier(
+                        za.co.neroland.nerospace.registry.ModDimensions.CINDARA_LEVEL, player) == x,
+                "a Cryo Suit must NOT counter Cindara's heat");
         helper.succeed();
     }
 

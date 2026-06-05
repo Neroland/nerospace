@@ -311,6 +311,26 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
                 .save(this.output);
 
+        // Hazard suit variants (SUIT_HAZARD_DESIGN.md): sidegrades OF Tier 2 pieces — Thermal
+        // (heat, Cindara) doubles down on cindrite; Cryo (cold, Glacira) uses glacite. The hazard
+        // slows unprotected excursions (x4 O2 drain) but never gates entry, so neither is circular.
+        suitVariant(ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_T2_HELMET.get(),
+                ModItems.CINDRITE.get(), "has_cindrite");
+        suitVariant(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
+                ModItems.CINDRITE.get(), "has_cindrite");
+        suitVariant(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(),
+                ModItems.CINDRITE.get(), "has_cindrite");
+        suitVariant(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get(),
+                ModItems.CINDRITE.get(), "has_cindrite");
+        suitVariant(ModItems.OXYGEN_SUIT_COLD_HELMET.get(), ModItems.OXYGEN_SUIT_T2_HELMET.get(),
+                ModItems.GLACITE.get(), "has_glacite");
+        suitVariant(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
+                ModItems.GLACITE.get(), "has_glacite");
+        suitVariant(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(),
+                ModItems.GLACITE.get(), "has_glacite");
+        suitVariant(ModItems.OXYGEN_SUIT_COLD_BOOTS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get(),
+                ModItems.GLACITE.get(), "has_glacite");
+
         // Oxygen Generator: a sealed nerosteel pump (glass dome, redstone, fuel canister core).
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModBlocks.OXYGEN_GENERATOR.get())
@@ -584,6 +604,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('#', ModItems.NEROSTEEL_INGOT)
                 .define('I', Items.IRON_INGOT)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+    }
+
+    /** A hazard-variant suit piece: the matching Tier 2 piece ringed by 4 gems (T1→T2 shape). */
+    private void suitVariant(net.minecraft.world.item.Item result, net.minecraft.world.item.Item t2Piece,
+            net.minecraft.world.item.Item gem, String unlockName) {
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.COMBAT, result)
+                .pattern(" G ")
+                .pattern("GHG")
+                .pattern(" G ")
+                .define('G', gem)
+                .define('H', t2Piece)
+                .unlockedBy(unlockName, this.has(gem))
                 .save(this.output);
     }
 

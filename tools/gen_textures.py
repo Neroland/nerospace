@@ -1320,6 +1320,75 @@ def gen_oxygen_suit_t2():
                   os.path.join(equip, layer, "oxygen_suit_t2.png"))
 
 
+# ---- Hazard suit variants (SUIT_HAZARD_DESIGN.md) ---------------------------
+#
+# Derived art like the T2 suit, same algorithm with different palettes:
+#  - Thermal (heat):  recolour the T2 art FURTHER — bright ember seams over dark obsidian
+#    plating, so it reads "furnace-grade" next to T2's warm trim.
+#  - Cryo (cold):     recolour the T1 art toward the Glacira frost palette — the clean
+#    white-cyan opposite of the ember track.
+
+HEAT_BRIGHT = (255, 150, 60)
+HEAT_DEEP = (44, 22, 26)
+COLD_BRIGHT = (160, 220, 245)
+COLD_DEEP = (40, 80, 130)
+
+
+def _retrim(src_path, dst_path, bright, deep, lum_split=90):
+    """The _emberize algorithm with a parameterised palette: saturated (suit-coloured) pixels
+    blend toward `bright` (above `lum_split` luminance) or `deep`; greys keep their read."""
+    if os.path.exists(dst_path) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(dst_path, ROOT))
+        return
+    if not os.path.exists(src_path):
+        print("MISSING source", os.path.relpath(src_path, ROOT))
+        return
+    img = Image.open(src_path).convert("RGBA")
+    px = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            mx, mn = max(r, g, b), min(r, g, b)
+            sat = 0 if mx == 0 else (mx - mn) / mx
+            lum = (r + g + b) / 3.0
+            if sat > 0.18:
+                t = min(1.0, sat * 1.4)
+                er, eg, eb = bright if lum > lum_split else deep
+                shade = max(0.45, min(1.25, lum / 140.0))
+                r = int(r * (1 - t) + er * shade * t)
+                g = int(g * (1 - t) + eg * shade * t)
+                b = int(b * (1 - t) + eb * shade * t)
+                px[x, y] = (min(255, r), min(255, g), min(255, b), a)
+    img.save(dst_path)
+    print("wrote", os.path.relpath(dst_path, ROOT))
+
+
+def gen_oxygen_suit_heat():
+    equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
+    for piece in ("helmet", "chestplate", "leggings", "boots"):
+        _retrim(os.path.join(ITEM_DIR, "oxygen_suit_t2_%s.png" % piece),
+                os.path.join(ITEM_DIR, "oxygen_suit_heat_%s.png" % piece),
+                HEAT_BRIGHT, HEAT_DEEP, lum_split=120)
+    for layer in ("humanoid", "humanoid_leggings"):
+        _retrim(os.path.join(equip, layer, "oxygen_suit_t2.png"),
+                os.path.join(equip, layer, "oxygen_suit_heat.png"),
+                HEAT_BRIGHT, HEAT_DEEP, lum_split=120)
+
+
+def gen_oxygen_suit_cold():
+    equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
+    for piece in ("helmet", "chestplate", "leggings", "boots"):
+        _retrim(os.path.join(ITEM_DIR, "oxygen_suit_%s.png" % piece),
+                os.path.join(ITEM_DIR, "oxygen_suit_cold_%s.png" % piece),
+                COLD_BRIGHT, COLD_DEEP)
+    for layer in ("humanoid", "humanoid_leggings"):
+        _retrim(os.path.join(equip, layer, "oxygen_suit.png"),
+                os.path.join(equip, layer, "oxygen_suit_cold.png"),
+                COLD_BRIGHT, COLD_DEEP)
+
+
 def gen_oxygen_hud_icon():
     """16x16 HUD icon for the bespoke oxygen gauge (OxygenHudLayer): a chunky air bubble with two
     trailing bubblets, inked outline, cyan body matching the gauge fill (0xFF3CC8E6). GUI texture
@@ -1606,3 +1675,6 @@ if __name__ == "__main__":
     gen_glacite()
     gen_rocket_tier("rocket_tier_4", I_FROST, I_CYAN, I_BLUE, boosters=True, glow=I_WHITE)
     gen_destination_compass("glacira_compass", I_CYAN)
+    # Hazard suit variants (SUIT_HAZARD_DESIGN.md), derived from the committed T2/T1 art.
+    gen_oxygen_suit_heat()
+    gen_oxygen_suit_cold()
