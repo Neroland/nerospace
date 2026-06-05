@@ -1259,7 +1259,112 @@ def gen_oxygen_hud_icon():
     save(img, os.path.join(GUI_DIR, "oxygen_hud_icon.png"))
 
 
+# ---- Star Guide (progression block, 1.0) -----------------------------------
+
+def _star(px, cx, cy, color, arm=2):
+    """A 4-point pixel star stamped around (cx, cy)."""
+    for d in range(-arm, arm + 1):
+        if 0 <= cx + d < S:
+            px[cx + d, cy] = color
+        if 0 <= cy + d < S:
+            px[cx, cy + d] = color
+
+
+def gen_star_guide():
+    """Pedestal cube: dark steel with a nerosium-purple accent border and a glowing star face."""
+    rng = random.Random(0x57A6)
+    img = noise_fill(new_img(), METAL, rng)
+    px = img.load()
+    for i in range(S):  # accent border
+        for (x, y) in ((i, 0), (i, S - 1), (0, i), (S - 1, i)):
+            px[x, y] = N_PURPLE
+    bevel_inner = N_MAG
+    for (x, y) in ((1, 1), (S - 2, 1), (1, S - 2), (S - 2, S - 2)):
+        px[x, y] = bevel_inner
+    _star(px, 8, 7, N_GLOW, arm=3)
+    _star(px, 8, 7, N_BRIGHT, arm=1)
+    for (sx, sy) in ((3, 11), (12, 4), (12, 12), (3, 3)):  # tiny satellite stars
+        px[sx, sy] = N_GLOW
+    save(img, os.path.join(BLOCK_DIR, "star_guide.png"))
+
+
+def gen_star_guide_book():
+    """Item: a purple-bound guidebook with a star on the cover and a steel clasp."""
+    img = new_img()
+    px = img.load()
+    COVER = N_PURPLE
+    COVER_D = N_DARK
+    PAGE = (236, 230, 214, 255)
+    for y in range(2, 14):
+        for x in range(3, 13):
+            px[x, y] = COVER
+    for y in range(2, 14):  # spine shading + page block on the right
+        px[3, y] = COVER_D
+        px[12, y] = PAGE
+    for y in range(3, 13):
+        px[11, y] = PAGE
+    for x in range(3, 13):  # cover outline
+        px[x, 2] = COVER_D
+        px[x, 13] = COVER_D
+    _star(px, 7, 7, N_GLOW, arm=2)
+    px[7, 7] = N_BRIGHT
+    px[12, 7] = METAL_L  # clasp
+    px[13, 7] = METAL_D
+    save(img, os.path.join(ITEM_DIR, "star_guide_book.png"))
+
+
+def gen_gui_star_guide():
+    """The Star Guide screen panel: 240x200 sci-fi hull in a 256x256 sheet (see StarGuideScreen).
+    Layout zones: title strip, chapter rail (x 6..78), step canvas (x 80..234, y 20..96) and the
+    guide-text panel (y 96..194)."""
+    W, H = 240, 200
+    img = Image.new("RGBA", (256, 256), CLEAR)
+    px = img.load()
+    rng = random.Random(0x57A66)
+    INK = (5, 8, 13, 255)
+    HULL = [(13, 17, 25, 255), (15, 20, 29, 255), (11, 15, 22, 255)]
+    PANEL = (8, 11, 17, 255)
+    ACCENT = (176, 90, 224, 255)
+    ACCENT_D = (88, 45, 112, 255)
+    for y in range(H):  # hull body with light noise
+        for x in range(W):
+            px[x, y] = rng.choice(HULL)
+    for i in range(W):  # outer frame
+        px[i, 0] = ACCENT
+        px[i, H - 1] = ACCENT_D
+    for i in range(H):
+        px[0, i] = ACCENT
+        px[W - 1, i] = ACCENT_D
+    for y in range(1, H - 1):  # inset shadow line
+        px[1, y] = INK
+        px[W - 2, y] = INK
+    for x in range(1, W - 1):
+        px[x, 1] = INK
+        px[x, H - 2] = INK
+    # Recessed zones: chapter rail, step canvas, text panel.
+    def recess(x0, y0, x1, y1):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                px[x, y] = PANEL
+        for x in range(x0, x1):
+            px[x, y0] = INK
+            px[x, y1 - 1] = (30, 40, 56, 255)
+        for y in range(y0, y1):
+            px[x0, y] = INK
+            px[x1 - 1, y] = (30, 40, 56, 255)
+    recess(6, 19, 78, 194)     # chapter rail
+    recess(80, 19, 234, 95)    # step canvas
+    recess(80, 97, 234, 194)   # guide text
+    for x in range(6, 234, 2):  # title underline dots
+        px[x, 16] = ACCENT_D
+    save(img, os.path.join(GUI_DIR, "star_guide.png"))
+
+
 if __name__ == "__main__":
+    # Star Guide (progression block, 1.0).
+    gen_star_guide()
+    gen_star_guide_book()
+    gen_gui_star_guide()
     gen_oxygen_particle()
     gen_oxygen_hud_icon()
     gen_terraformer()

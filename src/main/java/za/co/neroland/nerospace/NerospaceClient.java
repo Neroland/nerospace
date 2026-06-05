@@ -74,6 +74,7 @@ public class NerospaceClient {
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
         event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
+        event.register(ModMenuTypes.STAR_GUIDE.get(), za.co.neroland.nerospace.client.StarGuideScreen::new);
     }
 
     @SubscribeEvent
@@ -125,6 +126,11 @@ public class NerospaceClient {
         event.registerBlockEntityRenderer(
                 za.co.neroland.nerospace.registry.ModBlockEntities.UNIVERSAL_PIPE.get(),
                 context -> new UniversalPipeRenderer());
+
+        // Star Guide pedestal: the floating next-step hologram.
+        event.registerBlockEntityRenderer(
+                za.co.neroland.nerospace.registry.ModBlockEntities.STAR_GUIDE.get(),
+                context -> new za.co.neroland.nerospace.client.StarGuideHologramRenderer());
     }
 
     @SubscribeEvent

@@ -30,6 +30,19 @@ public final class ModAttachments {
                     .build());
 
     /**
+     * Star Guide seen-state (STAR_GUIDE_DESIGN.md §3): per-player list of per-chapter bitmasks —
+     * bit i of entry c = "the player has viewed step i of chapter c in the guide". Completion
+     * itself lives in advancements; this only drives the completed-but-unseen pulse in the GUI.
+     */
+    public static final Supplier<AttachmentType<java.util.List<Integer>>> STAR_GUIDE_SEEN =
+            ATTACHMENT_TYPES.register(
+                    "star_guide_seen",
+                    () -> AttachmentType.<java.util.List<Integer>>builder(() -> java.util.List.of())
+                            .serialize(Codec.INT.listOf().fieldOf("seen"))
+                            .copyOnDeath()
+                            .build());
+
+    /**
      * Per-{@code LevelChunk} terraformed flag (terraform design §3.4). Once a Terraformer converts a
      * chunk's ground it is permanently breathable at/above the surface — an O(1) flag test, no
      * simulation. This is ordinary gameplay save data, not analytics.

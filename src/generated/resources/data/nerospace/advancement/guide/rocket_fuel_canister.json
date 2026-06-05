@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/combustion_generator",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:rocket_fuel_canister"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Fill a Rocket Fuel Canister",
+    "icon": {
+      "id": "nerospace:rocket_fuel_canister"
+    },
+    "title": "Highly Flammable"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

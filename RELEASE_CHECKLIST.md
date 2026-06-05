@@ -17,15 +17,22 @@ box only after the gradle-MCP build + gametests are green AND the in-game check 
 - [ ] Gametests for new pad formation + gating
 
 ### Star Guide (progression block) — NEW
-- [ ] Design: a block that holds the guidebook and shows an **interactive visual progression/quest
-      tree** ("Star Guide")
-- [ ] Guidebook item (placeable on the Star Guide block)
-- [ ] Interactive GUI: progression chapters nerosium → machines → rocket → planets → terraforming
-- [ ] Quest/step completion tracking (per-player attachment, synced)
+- [x] Design: a block that holds the guidebook and shows an **interactive visual progression/quest
+      tree** ("Star Guide") — `STAR_GUIDE_DESIGN.md`, signed off (advancements = completion truth,
+      lectern-style pedestal + book-in-hand opens the same live GUI, next-step hologram)
+- [x] Guidebook item (placeable on the Star Guide block) — install/return/break-drop gametested
+- [x] Interactive GUI: progression chapters nerosium → machines → rocket → planets → terraforming
+      — 7 chapters / 22 steps, node arcs, guide text, completed-pulse; confirmed in-game
+      (screenshot 2026-06-05); row-wrap connector reworked to an L-route after the look
+- [x] Quest/step completion tracking — per design sign-off: advancements are the source of truth
+      (synced by vanilla); the per-player attachment carries seen-state. Gametested
+      (`star_guide_progress_and_seen`, `star_guide_advancements_resolve`)
 
 ### Advancements
-- [ ] Full advancement tree mirroring the Star Guide progression (datagen)
+- [x] Full advancement tree mirroring the Star Guide progression (datagen) — 22 nodes, every guide
+      step maps to one; custom `terraformed_ground` criterion fired from the atmosphere tick
 - [ ] Advancement-triggered toasts for key milestones (first launch, first planet, terraformed)
+      (all nodes have showToast; confirm the three milestone toasts visually in runClient)
 
 ### More planets / destinations
 - [ ] Design + implement at least one destination beyond Greenxertz / Cindara / Station

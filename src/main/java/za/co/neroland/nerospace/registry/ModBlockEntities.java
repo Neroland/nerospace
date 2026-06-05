@@ -111,6 +111,14 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("creative_item_store",
                     () -> new BlockEntityType<>(CreativeItemStoreBlockEntity::new, false, ModBlocks.CREATIVE_ITEM_STORE.get()));
 
+    // Star Guide pedestal (progression block, 1.0).
+    public static final Supplier<BlockEntityType<za.co.neroland.nerospace.progression.StarGuideBlockEntity>> STAR_GUIDE =
+            BLOCK_ENTITY_TYPES.register("star_guide",
+                    () -> new BlockEntityType<>(
+                            za.co.neroland.nerospace.progression.StarGuideBlockEntity::new,
+                            false,
+                            ModBlocks.STAR_GUIDE.get()));
+
     private ModBlockEntities() {
     }
 

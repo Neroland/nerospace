@@ -21,6 +21,7 @@
     "nerospace:battery",
     "nerospace:fluid_tank",
     "nerospace:gas_tank",
-    "nerospace:item_store"
+    "nerospace:item_store",
+    "nerospace:star_guide"
   ]
 }

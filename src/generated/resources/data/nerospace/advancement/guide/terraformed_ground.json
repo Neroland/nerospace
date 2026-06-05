@@ -1,0 +1,22 @@
+{
+  "parent": "nerospace:guide/terraformer",
+  "criteria": {
+    "terraformed_ground": {
+      "trigger": "nerospace:terraformed_ground"
+    }
+  },
+  "display": {
+    "description": "Stand on ground your Terraformer made breathable",
+    "frame": "challenge",
+    "icon": {
+      "id": "nerospace:terraformer"
+    },
+    "title": "Green Again"
+  },
+  "requirements": [
+    [
+      "terraformed_ground"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

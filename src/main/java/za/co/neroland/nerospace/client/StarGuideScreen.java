@@ -1,0 +1,181 @@
+package za.co.neroland.nerospace.client;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Inventory;
+
+import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.progression.StarGuide;
+import za.co.neroland.nerospace.progression.StarGuideMenu;
+
+/**
+ * The Star Guide screen (STAR_GUIDE_DESIGN.md §4): a chapter rail on the left, the selected
+ * chapter's step nodes connected by a dotted trajectory line on the right (rocket-UI styling), and
+ * a guide-text panel underneath. Completed steps light up; completed-but-unseen steps pulse until
+ * clicked (the click reports seen to the server via a menu button).
+ */
+public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
+
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/gui/star_guide.png");
+    /** Star Guide accent: nerosium purple (the mod's signpost block). */
+    private static final int ACCENT = 0xFFB05AE0;
+    private static final int DONE = 0xFF58D08A;
+
+    private final List<SpaceButton> chapterButtons = new ArrayList<>();
+    private final List<SpaceButton> stepButtons = new ArrayList<>();
+    private int selectedChapter;
+    private int selectedStep;
+
+    public StarGuideScreen(StarGuideMenu menu, Inventory playerInventory, Component title) {
+        super(menu, playerInventory, title, TEXTURE, ACCENT, 240, 200);
+        this.titleLabelX = 10;
+        this.inventoryLabelY = 10_000; // no player inventory on this panel
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.chapterButtons.clear();
+        for (int i = 0; i < StarGuide.CHAPTER_COUNT; i++) {
+            final int chapter = i;
+            SpaceButton button = new SpaceButton(this.leftPos + 8, this.topPos + 22 + i * 17, 66, 14,
+                    Component.translatable(StarGuide.CHAPTERS.get(i).titleKey()), ACCENT,
+                    b -> selectChapter(chapter));
+            this.addRenderableWidget(button);
+            this.chapterButtons.add(button);
+        }
+        rebuildStepButtons();
+    }
+
+    private void selectChapter(int chapter) {
+        this.selectedChapter = chapter;
+        this.selectedStep = 0;
+        rebuildStepButtons();
+    }
+
+    private void rebuildStepButtons() {
+        this.stepButtons.forEach(this::removeWidget);
+        this.stepButtons.clear();
+        List<StarGuide.Step> steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps();
+        for (int i = 0; i < steps.size(); i++) {
+            final int step = i;
+            SpaceButton node = new SpaceButton(stepX(i), stepY(i), 42, 14,
+                    Component.literal(String.valueOf(i + 1)), ACCENT, b -> selectStep(step));
+            this.addRenderableWidget(node);
+            this.stepButtons.add(node);
+        }
+    }
+
+    /** Serpentine layout: odd rows run right-to-left so the path snakes without crossing nodes. */
+    private int stepX(int index) {
+        int col = index % 3;
+        if ((index / 3) % 2 == 1) {
+            col = 2 - col;
+        }
+        return this.leftPos + 82 + col * 52;
+    }
+
+    private int stepY(int index) {
+        return this.topPos + 26 + (index / 3) * 32;
+    }
+
+    private void selectStep(int step) {
+        this.selectedStep = step;
+        // Report "seen" so the completed-pulse stops (server writes the attachment).
+        if (this.minecraft != null && this.minecraft.gameMode != null) {
+            this.minecraft.gameMode.handleInventoryButtonClick(
+                    this.menu.containerId, this.selectedChapter * 16 + step);
+        }
+    }
+
+    @Override
+    protected void extractForeground(GuiGraphicsExtractor g) {
+        List<StarGuide.Step> steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps();
+        long now = System.currentTimeMillis();
+        boolean pulseOn = (now / 400L) % 2L == 0L;
+
+        // Chapter rail: light fully-completed chapters.
+        for (int i = 0; i < this.chapterButtons.size(); i++) {
+            int total = StarGuide.CHAPTERS.get(i).steps().size();
+            boolean allDone = Integer.bitCount(this.menu.completionMask(i)) >= total;
+            this.chapterButtons.get(i).setSelected(i == this.selectedChapter || allDone);
+        }
+
+        // Dotted trajectory line linking the chapter's nodes in order (the progression path).
+        // The serpentine layout keeps consecutive nodes adjacent: same row = a short horizontal
+        // run between neighbours, row wrap = a short vertical drop in the shared column.
+        for (int i = 0; i < steps.size() - 1; i++) {
+            boolean done = this.menu.isStepComplete(this.selectedChapter, i);
+            int color = done ? DONE : 0xFF31506B;
+            if (i / 3 == (i + 1) / 3) {
+                int xa = Math.min(stepX(i), stepX(i + 1)) + 44;
+                int xb = Math.max(stepX(i), stepX(i + 1)) - 2;
+                dottedLine(g, xa, stepY(i) + 7, xb, stepY(i) + 7, color);
+            } else {
+                int cx = stepX(i) + 21; // same column as the next node (serpentine turn)
+                dottedLine(g, cx, stepY(i) + 15, cx, stepY(i + 1) - 1, color);
+            }
+        }
+
+        // Step nodes: completed steps lit (green-lit when seen, pulsing until clicked once).
+        for (int i = 0; i < this.stepButtons.size(); i++) {
+            boolean done = this.menu.isStepComplete(this.selectedChapter, i);
+            boolean seen = this.menu.isStepSeen(this.selectedChapter, i);
+            SpaceButton node = this.stepButtons.get(i);
+            node.setSelected(done && (seen || pulseOn));
+            if (done) {
+                g.fill(node.getX() + node.getWidth() - 5, node.getY() + 2, // completion pip
+                        node.getX() + node.getWidth() - 2, node.getY() + 5, DONE);
+            }
+        }
+
+        // Guide-text panel for the selected step.
+        StarGuide.Step step = steps.get(Math.min(this.selectedStep, steps.size() - 1));
+        boolean stepDone = this.menu.isStepComplete(this.selectedChapter, this.selectedStep);
+        Component title = Component.translatable(step.titleKey());
+        label(g, title, 82, 100, stepDone ? DONE : 0xFFE6D2FF);
+        if (stepDone) {
+            // Right-aligned inside the text panel; skipped when a long title would collide
+            // (the green title + node pip already read as complete).
+            Component complete = Component.translatable("gui.nerospace.star_guide.complete");
+            int tagX = 230 - this.font.width(complete);
+            if (tagX >= 82 + this.font.width(title) + 6) {
+                label(g, complete, tagX, 100, DONE);
+            }
+        }
+        int y = 112;
+        for (FormattedCharSequence line : this.font.split(
+                Component.translatable(step.textKey()), 150)) {
+            if (y > 186) {
+                break;
+            }
+            g.text(this.font, line, this.leftPos + 82, this.topPos + y, 0xFFB6C6D8, false);
+            y += 10;
+        }
+    }
+
+    /** A dotted 2px line between two points (axis-aligned or otherwise), ~5px pitch. */
+    private static void dottedLine(GuiGraphicsExtractor g, int x0, int y0, int x1, int y1, int color) {
+        int steps = Math.max(1, (int) (Math.hypot(x1 - x0, y1 - y0) / 5.0D));
+        for (int s = 0; s <= steps; s++) {
+            float t = s / (float) steps;
+            int ax = Math.round(Mth.lerp(t, x0, x1));
+            int ay = Math.round(Mth.lerp(t, y0, y1));
+            g.fill(ax, ay, ax + 2, ay + 2, color);
+        }
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor extractor, int mouseX, int mouseY) {
+        extractor.text(this.font, this.title, this.titleLabelX, this.titleLabelY, TITLE, false);
+        // No inventory label: the panel has no player slots.
+    }
+
+}

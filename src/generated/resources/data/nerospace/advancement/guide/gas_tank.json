@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/oxygen_generator",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:gas_tank"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Gas Tank for oxygen storage",
+    "icon": {
+      "id": "nerospace:gas_tank"
+    },
+    "title": "Bottled Air"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

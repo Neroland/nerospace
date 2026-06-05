@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:root",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:nerosium_pickaxe"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a nerosium pickaxe",
+    "icon": {
+      "id": "nerospace:nerosium_pickaxe"
+    },
+    "title": "Tools of the Trade"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

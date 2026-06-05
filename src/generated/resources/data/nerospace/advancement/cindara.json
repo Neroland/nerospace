@@ -1,5 +1,5 @@
 {
-  "parent": "nerospace:greenxertz",
+  "parent": "nerospace:guide/rocket_tier_3",
   "criteria": {
     "reached_cindara": {
       "conditions": {

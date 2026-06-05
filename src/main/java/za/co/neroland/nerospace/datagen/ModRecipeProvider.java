@@ -93,6 +93,25 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_raw_nerosium_block", this.has(ModBlocks.RAW_NEROSIUM_BLOCK.get()))
                 .save(this.output, "raw_nerosium_from_raw_nerosium_block");
 
+        // --- Star Guide (the tutorial block — deliberately day-one cheap) -----
+        ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModItems.STAR_GUIDE_BOOK)
+                .requires(Items.BOOK)
+                .requires(ModItems.RAW_NEROSIUM)
+                .unlockedBy("has_raw_nerosium", this.has(ModItems.RAW_NEROSIUM))
+                .save(this.output);
+
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.DECORATIONS, ModBlocks.STAR_GUIDE.get())
+                .pattern(" R ")
+                .pattern(" P ")
+                .pattern("SSS")
+                .define('R', ModItems.RAW_NEROSIUM)
+                .define('P', net.minecraft.tags.ItemTags.PLANKS)
+                .define('S', Items.COBBLESTONE)
+                .unlockedBy("has_raw_nerosium", this.has(ModItems.RAW_NEROSIUM))
+                .save(this.output);
+
         // --- Tools ----------------------------------------------------------
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.TOOLS, ModItems.NEROSIUM_PICKAXE)

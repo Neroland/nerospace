@@ -281,6 +281,19 @@ public final class ModBlocks {
                     props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
                             .sound(SoundType.METAL));
 
+    // --- Star Guide (progression block, 1.0) ---------------------------------
+
+    /**
+     * The Star Guide pedestal: holds the Star Guide Book and shows the interactive progression
+     * tree (see {@code STAR_GUIDE_DESIGN.md}). Deliberately cheap/early — it's the tutorial block.
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.progression.StarGuideBlock> STAR_GUIDE =
+            BLOCKS.registerBlock("star_guide", za.co.neroland.nerospace.progression.StarGuideBlock::new,
+                    props -> props
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .strength(1.5F, 6.0F)
+                            .sound(SoundType.STONE));
+
     // --- Rocket Fuel liquid block (Phase 7b) --------------------------------
 
     /** The world block for the {@code rocket_fuel} fluid (placed by its bucket). */

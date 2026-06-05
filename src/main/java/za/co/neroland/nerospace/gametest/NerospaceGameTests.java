@@ -117,6 +117,11 @@ public final class NerospaceGameTests {
         // Oxygen field boundary classification: doors/trapdoors seal when closed and flow when
         // open, glass seals (full collision cube fallback), panes/fences hold-but-leak.
         functions.put("oxygen_sealing_boundaries", NerospaceGameTests::testOxygenSealingBoundaries);
+        // Star Guide (progression block).
+        functions.put("star_guide_install_return", NerospaceGameTests::testStarGuideInstallReturn);
+        functions.put("star_guide_break_drops_book", NerospaceGameTests::testStarGuideBreakDropsBook);
+        functions.put("star_guide_advancements_resolve", NerospaceGameTests::testStarGuideAdvancementsResolve);
+        functions.put("star_guide_progress_and_seen", NerospaceGameTests::testStarGuideProgressAndSeen);
         return functions;
     }
 
@@ -507,6 +512,96 @@ public final class NerospaceGameTests {
         BlockPos abs = helper.absolutePos(pos);
         BlockState state = helper.getLevel().getBlockState(abs);
         helper.assertTrue(OxygenField.isLeaky(helper.getLevel(), abs, state) == expected, message);
+    }
+
+    // --- Star Guide (progression block) ---------------------------------------------------------
+
+    /** Installing the book loads the pedestal; sneak-use returns it and the pedestal goes bare. */
+    private static void testStarGuideInstallReturn(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, za.co.neroland.nerospace.registry.ModBlocks.STAR_GUIDE.get());
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.progression.StarGuideBlockEntity guide)) {
+            helper.fail("expected a StarGuideBlockEntity");
+            return;
+        }
+        helper.assertFalse(guide.hasBook(), "a fresh pedestal must be bare");
+        helper.assertTrue(guide.comparatorSignal() == 0, "bare pedestal comparator must read 0");
+
+        ItemStack book = new ItemStack(ModItems.STAR_GUIDE_BOOK.get());
+        helper.assertTrue(guide.installBook(book), "the pedestal must accept a Star Guide Book");
+        helper.assertTrue(book.isEmpty(), "installing must consume the held book");
+        helper.assertTrue(guide.hasBook(), "the pedestal must hold the installed book");
+        helper.assertTrue(guide.comparatorSignal() == 15, "loaded pedestal comparator must read 15");
+        helper.assertFalse(guide.installBook(new ItemStack(ModItems.STAR_GUIDE_BOOK.get())),
+                "a loaded pedestal must reject a second book");
+
+        ItemStack returned = guide.removeBook();
+        helper.assertTrue(returned.is(ModItems.STAR_GUIDE_BOOK.get()),
+                "removing must return the installed book");
+        helper.assertFalse(guide.hasBook(), "the pedestal must be bare after removal");
+        helper.succeed();
+    }
+
+    /** Breaking a loaded pedestal pops the book (plus the block via loot). */
+    private static void testStarGuideBreakDropsBook(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, za.co.neroland.nerospace.registry.ModBlocks.STAR_GUIDE.get());
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.progression.StarGuideBlockEntity guide)) {
+            helper.fail("expected a StarGuideBlockEntity");
+            return;
+        }
+        guide.installBook(new ItemStack(ModItems.STAR_GUIDE_BOOK.get()));
+        helper.getLevel().destroyBlock(helper.absolutePos(pos), true);
+        helper.succeedWhen(() -> helper.assertItemEntityPresent(
+                ModItems.STAR_GUIDE_BOOK.get(), pos, 3.0D));
+    }
+
+    /** Every Star Guide step's advancement id must resolve (guards table ↔ datagen drift). */
+    private static void testStarGuideAdvancementsResolve(GameTestHelper helper) {
+        var manager = helper.getLevel().getServer().getAdvancements();
+        for (za.co.neroland.nerospace.progression.StarGuide.Chapter chapter
+                : za.co.neroland.nerospace.progression.StarGuide.CHAPTERS) {
+            for (za.co.neroland.nerospace.progression.StarGuide.Step step : chapter.steps()) {
+                helper.assertTrue(manager.get(step.advancement()) != null,
+                        "step '" + step.id() + "' names a missing advancement: " + step.advancement());
+            }
+        }
+        helper.succeed();
+    }
+
+    /** Awarding a step's advancement flips its completion bit; a menu click marks it seen. */
+    private static void testStarGuideProgressAndSeen(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        var manager = helper.getLevel().getServer().getAdvancements();
+
+        // Chapter 0 ("nerosium"), step 1 = the root advancement (nerosium ingot).
+        helper.assertTrue(za.co.neroland.nerospace.progression.StarGuideProgress
+                .chapterMask(player, 0) == 0, "a fresh player has no completed steps");
+
+        var root = manager.get(Identifier.fromNamespaceAndPath(Nerospace.MODID, "root"));
+        if (root == null) {
+            helper.fail("nerospace:root advancement missing");
+            return;
+        }
+        root.value().criteria().keySet().forEach(c -> player.getAdvancements().award(root, c));
+        helper.assertTrue((za.co.neroland.nerospace.progression.StarGuideProgress
+                        .chapterMask(player, 0) & 0b010) != 0,
+                "completing nerospace:root must flip chapter 0 / step 1");
+        helper.assertTrue(za.co.neroland.nerospace.progression.StarGuideProgress
+                        .nextStepIcon(player).is(ModItems.RAW_NEROSIUM.get()),
+                "the next-step hologram icon must be the first incomplete step (raw nerosium)");
+
+        // Seen-state: the menu click writes the attachment bit.
+        var menu = new za.co.neroland.nerospace.progression.StarGuideMenu(1, player.getInventory(), player);
+        helper.assertTrue(menu.clickMenuButton(player, 0 * 16 + 1), "the seen click must be accepted");
+        java.util.List<Integer> seen = player.getData(
+                za.co.neroland.nerospace.registry.ModAttachments.STAR_GUIDE_SEEN);
+        helper.assertTrue(!seen.isEmpty() && (seen.get(0) & 0b010) != 0,
+                "the click must set the seen bit in the attachment");
+        player.disconnect();
+        helper.succeed();
     }
 
     /**

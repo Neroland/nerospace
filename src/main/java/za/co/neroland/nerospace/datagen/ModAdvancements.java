@@ -1,24 +1,32 @@
 package za.co.neroland.nerospace.datagen;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.criterion.ChangeDimensionTrigger;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.criterion.PlayerTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.ItemLike;
 
 import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.registry.ModCriteria;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
- * The Nerospace progression advancement tree (Phase 7d): mine → machine → rocket → planets → station.
- * Titles/descriptions are inline literals to avoid a separate lang file for advancements.
+ * The Nerospace progression advancement tree — the Star Guide's source of truth
+ * (STAR_GUIDE_DESIGN.md §3): every guide step names one of these advancements, so the tree mirrors
+ * the guide by construction. The original six ids (root, nerosium_grinder, rocket, greenxertz,
+ * cindara, station) are preserved; the expansion lives under {@code nerospace:guide/*}. Titles and
+ * descriptions are inline literals to avoid a separate lang pass for advancements.
  */
 public class ModAdvancements implements AdvancementSubProvider {
 
@@ -27,6 +35,7 @@ public class ModAdvancements implements AdvancementSubProvider {
 
     @Override
     public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
+        // --- Chapter 1: Nerosium -------------------------------------------------------------
         AdvancementHolder root = Advancement.Builder.advancement()
                 .display(ModItems.NEROSIUM_INGOT.get(),
                         Component.literal("Nerospace"),
@@ -35,6 +44,12 @@ public class ModAdvancements implements AdvancementSubProvider {
                 .addCriterion("has_nerosium", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.NEROSIUM_INGOT.get()))
                 .save(saver, "nerospace:root");
 
+        item(saver, root, "guide/raw_nerosium", ModItems.RAW_NEROSIUM.get(),
+                "Strange Red Rock", "Mine raw nerosium from nerosium ore");
+        item(saver, root, "guide/nerosium_pickaxe", ModItems.NEROSIUM_PICKAXE.get(),
+                "Tools of the Trade", "Craft a nerosium pickaxe");
+
+        // --- Chapter 2: Machines -------------------------------------------------------------
         AdvancementHolder grinder = Advancement.Builder.advancement()
                 .parent(root)
                 .display(ModBlocks.NEROSIUM_GRINDER.get(),
@@ -44,8 +59,33 @@ public class ModAdvancements implements AdvancementSubProvider {
                 .addCriterion("has_grinder", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.NEROSIUM_GRINDER.get()))
                 .save(saver, "nerospace:nerosium_grinder");
 
+        item(saver, grinder, "guide/nerosium_dust", ModItems.NEROSIUM_DUST.get(),
+                "Finely Ground", "Grind nerosium into dust");
+        AdvancementHolder combustion = item(saver, grinder, "guide/combustion_generator",
+                ModBlocks.COMBUSTION_GENERATOR.get(),
+                "Burning Bright", "Build a Combustion Generator");
+
+        // --- Chapter 3: Power Grid -----------------------------------------------------------
+        AdvancementHolder pipe = item(saver, combustion, "guide/universal_pipe",
+                ModBlocks.UNIVERSAL_PIPE.get(),
+                "Connect Everything", "Craft a Universal Pipe");
+        item(saver, pipe, "guide/battery", ModBlocks.BATTERY.get(),
+                "Stored Potential", "Craft a Battery");
+        item(saver, pipe, "guide/passive_generator", ModBlocks.PASSIVE_GENERATOR.get(),
+                "Slow and Steady", "Build a Passive Generator");
+        item(saver, pipe, "guide/configurator", ModItems.CONFIGURATOR.get(),
+                "Fine Tuning", "Craft a Configurator");
+
+        // --- Chapter 4: Rocketry -------------------------------------------------------------
+        AdvancementHolder canister = item(saver, combustion, "guide/rocket_fuel_canister",
+                ModItems.ROCKET_FUEL_CANISTER.get(),
+                "Highly Flammable", "Fill a Rocket Fuel Canister");
+        AdvancementHolder pad = item(saver, canister, "guide/rocket_launch_pad",
+                ModBlocks.ROCKET_LAUNCH_PAD.get(),
+                "Ground Control", "Craft a Rocket Launch Pad (you'll want a 3x3)");
+
         AdvancementHolder rocket = Advancement.Builder.advancement()
-                .parent(grinder)
+                .parent(pad)
                 .display(ModItems.ROCKET_TIER_1.get(),
                         Component.literal("We Have Liftoff"),
                         Component.literal("Craft a Tier 1 Rocket"),
@@ -53,8 +93,23 @@ public class ModAdvancements implements AdvancementSubProvider {
                 .addCriterion("has_rocket", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.ROCKET_TIER_1.get()))
                 .save(saver, "nerospace:rocket");
 
-        AdvancementHolder greenxertz = Advancement.Builder.advancement()
+        AdvancementHolder station = Advancement.Builder.advancement()
                 .parent(rocket)
+                .display(ModBlocks.STATION_FLOOR.get(),
+                        Component.literal("Orbital"),
+                        Component.literal("Dock at the Orbital Station"),
+                        null, AdvancementType.GOAL, true, true, false)
+                .addCriterion("reached_station",
+                        ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(ModDimensions.STATION_LEVEL))
+                .save(saver, "nerospace:station");
+
+        // --- Chapter 5: New Worlds -----------------------------------------------------------
+        AdvancementHolder tier2 = item(saver, station, "guide/rocket_tier_2",
+                ModItems.ROCKET_TIER_2.get(),
+                "Bigger Boosters", "Craft a Tier 2 Rocket");
+
+        AdvancementHolder greenxertz = Advancement.Builder.advancement()
+                .parent(tier2)
                 .display(ModItems.NEROSTEEL_INGOT.get(),
                         Component.literal("A Whole New World"),
                         Component.literal("Travel to Greenxertz"),
@@ -63,8 +118,14 @@ public class ModAdvancements implements AdvancementSubProvider {
                         ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(ModDimensions.GREENXERTZ_LEVEL))
                 .save(saver, "nerospace:greenxertz");
 
+        item(saver, greenxertz, "guide/nerosteel_ingot", ModItems.NEROSTEEL_INGOT.get(),
+                "Alien Alloy", "Smelt a nerosteel ingot from Greenxertz ore");
+        AdvancementHolder tier3 = item(saver, greenxertz, "guide/rocket_tier_3",
+                ModItems.ROCKET_TIER_3.get(),
+                "To the Fire Moon", "Craft a Tier 3 Rocket (its pad needs a Station Wall ring)");
+
         AdvancementHolder cindara = Advancement.Builder.advancement()
-                .parent(greenxertz)
+                .parent(tier3)
                 .display(ModItems.CINDRITE.get(),
                         Component.literal("Into the Fire"),
                         Component.literal("Travel to the volcanic moon Cindara"),
@@ -73,14 +134,65 @@ public class ModAdvancements implements AdvancementSubProvider {
                         ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(ModDimensions.CINDARA_LEVEL))
                 .save(saver, "nerospace:cindara");
 
+        item(saver, cindara, "guide/cindrite", ModItems.CINDRITE.get(),
+                "Heart of the Volcano", "Mine cindrite on Cindara");
+
+        // --- Chapter 6: Surviving Vacuum -------------------------------------------------------
+        AdvancementHolder oxygenGen = item(saver, station, "guide/oxygen_generator",
+                ModBlocks.OXYGEN_GENERATOR.get(),
+                "Something to Breathe", "Build an Oxygen Generator");
+        item(saver, oxygenGen, "guide/gas_tank", ModBlocks.GAS_TANK.get(),
+                "Bottled Air", "Craft a Gas Tank for oxygen storage");
+
+        AdvancementHolder suit = Advancement.Builder.advancement()
+                .parent(oxygenGen)
+                .display(ModItems.OXYGEN_SUIT_HELMET.get(),
+                        Component.literal("Suit Up"),
+                        Component.literal("Assemble a full Oxygen Suit"),
+                        null, AdvancementType.GOAL, true, true, false)
+                .addCriterion("has_suit", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ModItems.OXYGEN_SUIT_HELMET.get(), ModItems.OXYGEN_SUIT_CHESTPLATE.get(),
+                        ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_BOOTS.get()))
+                .save(saver, "nerospace:guide/oxygen_suit");
+
         Advancement.Builder.advancement()
-                .parent(cindara)
-                .display(ModBlocks.STATION_FLOOR.get(),
-                        Component.literal("Orbital"),
-                        Component.literal("Dock at the Orbital Station"),
+                .parent(suit)
+                .display(ModItems.OXYGEN_SUIT_T2_HELMET.get(),
+                        Component.literal("Ember-Proof"),
+                        Component.literal("Assemble a full Tier 2 (cindrite) Oxygen Suit"),
+                        null, AdvancementType.GOAL, true, true, false)
+                .addCriterion("has_suit_t2", InventoryChangeTrigger.TriggerInstance.hasItems(
+                        ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
+                        ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get()))
+                .save(saver, "nerospace:guide/oxygen_suit_t2");
+
+        // --- Chapter 7: Terraforming ------------------------------------------------------------
+        AdvancementHolder terraformer = item(saver, cindara, "guide/terraformer",
+                ModBlocks.TERRAFORMER.get(),
+                "World Engine", "Build a Terraformer");
+
+        Advancement.Builder.advancement()
+                .parent(terraformer)
+                .display(ModBlocks.TERRAFORMER.get(),
+                        Component.literal("Green Again"),
+                        Component.literal("Stand on ground your Terraformer made breathable"),
                         null, AdvancementType.CHALLENGE, true, true, false)
-                .addCriterion("reached_station",
-                        ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(ModDimensions.STATION_LEVEL))
-                .save(saver, "nerospace:station");
+                .addCriterion("terraformed_ground", new Criterion<>(
+                        ModCriteria.TERRAFORMED_GROUND.get(),
+                        new PlayerTrigger.TriggerInstance(Optional.empty())))
+                .save(saver, "nerospace:guide/terraformed_ground");
+    }
+
+    /** A simple has-item TASK advancement under {@code nerospace:<path>}. */
+    private static AdvancementHolder item(Consumer<AdvancementHolder> saver, AdvancementHolder parent,
+            String path, ItemLike icon, String title, String description) {
+        return Advancement.Builder.advancement()
+                .parent(parent)
+                .display(icon,
+                        Component.literal(title),
+                        Component.literal(description),
+                        null, AdvancementType.TASK, true, true, false)
+                .addCriterion("has_item", InventoryChangeTrigger.TriggerInstance.hasItems(icon))
+                .save(saver, "nerospace:" + path);
     }
 }

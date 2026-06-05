@@ -1,5 +1,5 @@
 {
-  "parent": "nerospace:rocket",
+  "parent": "nerospace:guide/rocket_tier_2",
   "criteria": {
     "reached_greenxertz": {
       "conditions": {

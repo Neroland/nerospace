@@ -1,0 +1,99 @@
+package za.co.neroland.nerospace.progression;
+
+import java.util.List;
+import java.util.function.Supplier;
+
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+
+import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.registry.ModItems;
+
+/**
+ * The Star Guide content table (STAR_GUIDE_DESIGN.md §2): chapters → steps, in code. Completion is
+ * advancement-driven (§3) — each step names the advancement that completes it, and the menu packs
+ * per-chapter completion bitmasks from {@code ServerPlayer.getAdvancements()}. Icons are suppliers
+ * because the table is built before registry objects exist.
+ */
+public final class StarGuide {
+
+    /** One step of a chapter: icon + lang keys + the advancement that completes it. */
+    public record Step(String id, Supplier<? extends ItemLike> icon, Identifier advancement) {
+
+        public String titleKey() {
+            return "gui.nerospace.star_guide.step." + this.id;
+        }
+
+        public String textKey() {
+            return "gui.nerospace.star_guide.step." + this.id + ".text";
+        }
+
+        public ItemStack iconStack() {
+            return new ItemStack(this.icon.get());
+        }
+    }
+
+    /** A chapter: lang key + ordered steps (≤ 16 so the completion bitmask fits a data slot). */
+    public record Chapter(String id, List<Step> steps) {
+
+        public String titleKey() {
+            return "gui.nerospace.star_guide.chapter." + this.id;
+        }
+    }
+
+    private static Identifier adv(String path) {
+        return Identifier.fromNamespaceAndPath(Nerospace.MODID, path);
+    }
+
+    private static Step step(String id, Supplier<? extends ItemLike> icon, String advancementPath) {
+        return new Step(id, icon, adv(advancementPath));
+    }
+
+    /** The seven chapters (order = chapter index used by menu/attachment bitmasks). */
+    public static final List<Chapter> CHAPTERS = List.of(
+            new Chapter("nerosium", List.of(
+                    step("raw_nerosium", () -> ModItems.RAW_NEROSIUM.get(), "guide/raw_nerosium"),
+                    step("nerosium_ingot", () -> ModItems.NEROSIUM_INGOT.get(), "root"),
+                    step("nerosium_pickaxe", () -> ModItems.NEROSIUM_PICKAXE.get(), "guide/nerosium_pickaxe"))),
+            new Chapter("machines", List.of(
+                    step("nerosium_grinder", () -> ModBlocks.NEROSIUM_GRINDER.get(), "nerosium_grinder"),
+                    step("nerosium_dust", () -> ModItems.NEROSIUM_DUST.get(), "guide/nerosium_dust"),
+                    step("combustion_generator", () -> ModBlocks.COMBUSTION_GENERATOR.get(), "guide/combustion_generator"))),
+            new Chapter("power_grid", List.of(
+                    step("universal_pipe", () -> ModBlocks.UNIVERSAL_PIPE.get(), "guide/universal_pipe"),
+                    step("battery", () -> ModBlocks.BATTERY.get(), "guide/battery"),
+                    step("passive_generator", () -> ModBlocks.PASSIVE_GENERATOR.get(), "guide/passive_generator"),
+                    step("configurator", () -> ModItems.CONFIGURATOR.get(), "guide/configurator"))),
+            new Chapter("rocketry", List.of(
+                    step("rocket_fuel_canister", () -> ModItems.ROCKET_FUEL_CANISTER.get(), "guide/rocket_fuel_canister"),
+                    step("rocket_launch_pad", () -> ModBlocks.ROCKET_LAUNCH_PAD.get(), "guide/rocket_launch_pad"),
+                    step("rocket_tier_1", () -> ModItems.ROCKET_TIER_1.get(), "rocket"),
+                    step("station", () -> ModBlocks.STATION_FLOOR.get(), "station"))),
+            new Chapter("new_worlds", List.of(
+                    step("rocket_tier_2", () -> ModItems.ROCKET_TIER_2.get(), "guide/rocket_tier_2"),
+                    step("greenxertz", () -> ModItems.NEROSTEEL_INGOT.get(), "greenxertz"),
+                    step("nerosteel_ingot", () -> ModItems.RAW_NEROSTEEL.get(), "guide/nerosteel_ingot"),
+                    step("rocket_tier_3", () -> ModItems.ROCKET_TIER_3.get(), "guide/rocket_tier_3"),
+                    step("cindara", () -> ModItems.CINDRITE.get(), "cindara"),
+                    step("cindrite", () -> ModBlocks.CINDRITE_BLOCK.get(), "guide/cindrite"))),
+            new Chapter("vacuum", List.of(
+                    step("oxygen_generator", () -> ModBlocks.OXYGEN_GENERATOR.get(), "guide/oxygen_generator"),
+                    step("gas_tank", () -> ModBlocks.GAS_TANK.get(), "guide/gas_tank"),
+                    step("oxygen_suit", () -> ModItems.OXYGEN_SUIT_HELMET.get(), "guide/oxygen_suit"),
+                    step("oxygen_suit_t2", () -> ModItems.OXYGEN_SUIT_T2_HELMET.get(), "guide/oxygen_suit_t2"))),
+            new Chapter("terraforming", List.of(
+                    step("terraformer", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformer"),
+                    step("terraformed_ground", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformed_ground"))));
+
+    public static final int CHAPTER_COUNT = CHAPTERS.size();
+
+    private StarGuide() {
+    }
+
+    /** Total step count across all chapters (sanity bound for menu button ids). */
+    public static int totalSteps() {
+        return CHAPTERS.stream().mapToInt(c -> c.steps().size()).sum();
+    }
+}

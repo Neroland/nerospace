@@ -51,6 +51,7 @@ public final class Nerospace {
         ModSounds.register(modEventBus);
         ModMenuTypes.register(modEventBus);
         ModAttachments.register(modEventBus);
+        za.co.neroland.nerospace.registry.ModCriteria.register(modEventBus);
         ModCreativeModeTabs.register(modEventBus);
         // Gametest instance-type codec (sync-safe serialization of the mod's code-backed tests).
         NerospaceGameTests.register(modEventBus);

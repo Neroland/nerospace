@@ -14,7 +14,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
@@ -171,6 +174,25 @@ public final class NerospaceCommands {
             store.setSource(ItemResource.of(ModItems.NEROSIUM_INGOT.get()));
         }
 
+        // Suit displays + a LOADED Star Guide pedestal (book installed → the hologram runs).
+        int ax = origin.getX() + 4;
+        int az = origin.getZ() - 36;
+        for (int dx = -1; dx <= 6; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                level.setBlockAndUpdate(new BlockPos(ax + dx, fy, az + dz), floor);
+            }
+        }
+        spawnSuitStand(level, new BlockPos(ax, fy + 1, az), false,
+                Component.literal("Oxygen Suit"));
+        spawnSuitStand(level, new BlockPos(ax + 2, fy + 1, az), true,
+                Component.literal("Tier 2 Oxygen Suit"));
+        BlockPos guidePos = new BlockPos(ax + 5, fy + 1, az);
+        level.setBlockAndUpdate(guidePos, ModBlocks.STAR_GUIDE.get().defaultBlockState());
+        if (level.getBlockEntity(guidePos)
+                instanceof za.co.neroland.nerospace.progression.StarGuideBlockEntity guide) {
+            guide.installBook(new ItemStack(ModItems.STAR_GUIDE_BOOK.get()));
+        }
+
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
         int mx = origin.getX() + 4;
         int mz = origin.getZ() - 12;
@@ -189,8 +211,28 @@ public final class NerospaceCommands {
 
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
                 + blocks.size() + " blocks, a structure cluster, a power-grid demo, 4 live pipe "
-                + "scenarios (energy/fluid/gas/items), and 4 creatures (AI + frozen)."), false);
+                + "scenarios (energy/fluid/gas/items), suit stands (T1 + T2), a loaded Star Guide "
+                + "pedestal, and 4 creatures (AI + frozen)."), false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    /** An invulnerable, named armor stand wearing the full Tier 1 or Tier 2 Oxygen Suit. */
+    private static void spawnSuitStand(ServerLevel level, BlockPos pos, boolean tier2, Component name) {
+        ArmorStand stand = EntityType.ARMOR_STAND.spawn(level, pos, EntitySpawnReason.COMMAND);
+        if (stand == null) {
+            return;
+        }
+        stand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(
+                tier2 ? ModItems.OXYGEN_SUIT_T2_HELMET.get() : ModItems.OXYGEN_SUIT_HELMET.get()));
+        stand.setItemSlot(EquipmentSlot.CHEST, new ItemStack(
+                tier2 ? ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get() : ModItems.OXYGEN_SUIT_CHESTPLATE.get()));
+        stand.setItemSlot(EquipmentSlot.LEGS, new ItemStack(
+                tier2 ? ModItems.OXYGEN_SUIT_T2_LEGGINGS.get() : ModItems.OXYGEN_SUIT_LEGGINGS.get()));
+        stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(
+                tier2 ? ModItems.OXYGEN_SUIT_T2_BOOTS.get() : ModItems.OXYGEN_SUIT_BOOTS.get()));
+        stand.setCustomName(name);
+        stand.setCustomNameVisible(true);
+        stand.setInvulnerable(true);
     }
 
     /** Set one face of the pipe at {@code pos} to {@code mode} for ALL four resource layers. */

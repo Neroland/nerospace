@@ -1,5 +1,5 @@
 {
-  "parent": "nerospace:cindara",
+  "parent": "nerospace:rocket",
   "criteria": {
     "reached_station": {
       "conditions": {
@@ -10,7 +10,7 @@
   },
   "display": {
     "description": "Dock at the Orbital Station",
-    "frame": "challenge",
+    "frame": "goal",
     "icon": {
       "id": "nerospace:station_floor"
     },

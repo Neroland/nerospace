@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "#minecraft:planks",
+    "R": "nerospace:raw_nerosium",
+    "S": "minecraft:cobblestone"
+  },
+  "pattern": [
+    " R ",
+    " P ",
+    "SSS"
+  ],
+  "result": {
+    "id": "nerospace:star_guide"
+  }
+}

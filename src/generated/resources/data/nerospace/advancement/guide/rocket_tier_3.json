@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:greenxertz",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:rocket_tier_3"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Tier 3 Rocket (its pad needs a Station Wall ring)",
+    "icon": {
+      "id": "nerospace:rocket_tier_3"
+    },
+    "title": "To the Fire Moon"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

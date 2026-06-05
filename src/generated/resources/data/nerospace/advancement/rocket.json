@@ -1,5 +1,5 @@
 {
-  "parent": "nerospace:nerosium_grinder",
+  "parent": "nerospace:guide/rocket_launch_pad",
   "criteria": {
     "has_rocket": {
       "conditions": {

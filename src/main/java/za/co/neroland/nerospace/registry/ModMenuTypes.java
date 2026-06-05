@@ -59,6 +59,12 @@ public final class ModMenuTypes {
             "rocket",
             () -> IMenuTypeExtension.create(RocketMenu::new));
 
+    /** Star Guide progression tree (no slots; per-chapter bitmask data). */
+    public static final Supplier<MenuType<za.co.neroland.nerospace.progression.StarGuideMenu>> STAR_GUIDE =
+            MENU_TYPES.register("star_guide",
+                    () -> new MenuType<>(za.co.neroland.nerospace.progression.StarGuideMenu::new,
+                            FeatureFlags.DEFAULT_FLAGS));
+
     private ModMenuTypes() {
     }
 

@@ -91,6 +91,10 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.ROCKET_TIER_2.get());
                         output.accept(ModItems.ROCKET_TIER_3.get());
 
+                        // Star Guide (progression block, 1.0).
+                        output.accept(ModBlocks.STAR_GUIDE.get());
+                        output.accept(ModItems.STAR_GUIDE_BOOK.get());
+
                         // Spawn eggs.
                         output.accept(ModItems.XERTZ_STALKER_SPAWN_EGG.get());
                         output.accept(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get());

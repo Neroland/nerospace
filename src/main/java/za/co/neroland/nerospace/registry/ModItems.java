@@ -273,6 +273,12 @@ public final class ModItems {
             "capacity_upgrade", props -> new za.co.neroland.nerospace.item.PipeUpgradeItem(props,
                     za.co.neroland.nerospace.item.PipeUpgradeItem.Kind.CAPACITY));
 
+    // --- Star Guide (progression block, 1.0) ---------------------------------
+    public static final DeferredItem<BlockItem> STAR_GUIDE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.STAR_GUIDE);
+    public static final DeferredItem<Item> STAR_GUIDE_BOOK = ITEMS.registerItem(
+            "star_guide_book", props -> new za.co.neroland.nerospace.item.StarGuideBookItem(props.stacksTo(1)));
+
     // --- Spawn eggs (Phase 10e) --------------------------------------------
     public static final DeferredItem<Item> XERTZ_STALKER_SPAWN_EGG = ITEMS.registerItem(
             "xertz_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.XERTZ_STALKER));

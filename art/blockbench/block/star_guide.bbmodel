@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "star_guide",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "star_guide",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "85d825fe-1185-4a93-9c20-128565810485"
+    }
+  ],
+  "outliner": [
+    "85d825fe-1185-4a93-9c20-128565810485"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/nice-vigilant-mendel/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/star_guide.png",
+      "name": "star_guide.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "acb17a1d-9253-4288-ae18-c73bb0dbcf42",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/star_guide.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABvUlEQVR4nKWTPWsbQRRFj42K7OhZRRDSoiZC6AfEtQtDCodgSCNw7bQi6QNx6WAXaQIhdQyuDCpDkDsX+RfLspVYCZFieTubLinG8+ytPd18nXfvfTM78xdf/vGE0QF48+w5F3vXpMMR5XqFdHsAaF3hG49LHNLtISJ28V32il9//7AL2GVVxTeezbZERAwU11TVABd71wABECsvjy9xiWPQT1FVRIRBP21JVlXyIiMdjh4AeZEh3R4HN3OTDhgUwCUOrSuWx5dMxtN2BnFBRCjXK3zjSYejlmffeCbjKbO7c/IiAyDlZVDweMSDUQFHKYN+amuqikuczTvxYAzMJY7F4VmgHQX/y68/4LYE4PXPj/jGW6CdWBUwyP7VaahwB4vP35h9ek9eZCHcugptvbdnFiIkHY6YjKfkRRaq3JbkRcZkPEVELP1yvXoAxFZpXZEXGeV6xaCfstkG2baviqoaxACxbb9PvjMZT4PHe6mzu3M7rHWFiFgXDBCTP7iZm1ffeKTbM6nlekU6HLE4PLN9A0TPvvEm1yWuFWyE7F+dtl7oLoSPEXutdcVmW7YeUgzvMexD+RaAnad+5/9GgtoyK5D78AAAAABJRU5ErkJggg=="
+    }
+  ]
+}

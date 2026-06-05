@@ -92,6 +92,9 @@ public class ModModelProvider extends ModelProvider {
         // drawn by the FluidType render, not a block model).
         blockModels.createParticleOnlyBlock(ModBlocks.ROCKET_FUEL_BLOCK.get());
 
+        // Star Guide pedestal (bespoke model is an art-pass item; trivial cube for now).
+        blockModels.createTrivialCube(ModBlocks.STAR_GUIDE.get());
+
         // Flat (item/generated) item models.
         itemModels.generateFlatItem(ModItems.RAW_NEROSIUM.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.NEROSIUM_INGOT.get(), ModelTemplates.FLAT_ITEM);
@@ -139,6 +142,9 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_T2_BOOTS.get(), ModelTemplates.FLAT_ITEM);
+
+        // Star Guide book.
+        itemModels.generateFlatItem(ModItems.STAR_GUIDE_BOOK.get(), ModelTemplates.FLAT_ITEM);
 
         // Phase 10e — spawn eggs (custom flat egg icons, not the procedural tinted template).
         itemModels.generateFlatItem(ModItems.XERTZ_STALKER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);

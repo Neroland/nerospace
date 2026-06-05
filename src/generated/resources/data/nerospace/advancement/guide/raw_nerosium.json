@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:root",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:raw_nerosium"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Mine raw nerosium from nerosium ore",
+    "icon": {
+      "id": "nerospace:raw_nerosium"
+    },
+    "title": "Strange Red Rock"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
