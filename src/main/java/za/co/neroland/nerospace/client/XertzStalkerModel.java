@@ -7,6 +7,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
@@ -16,7 +17,9 @@ import za.co.neroland.nerospace.Nerospace;
  * Xertz Stalker — "Crystal Hunter" (Phase 10d). The hero predator: a tall upright crystalline biped
  * with a layered torso, broad shoulders, a browed head, a crest, a row of bladed back-fins, long
  * blade-arms and two legs. Each arm and leg is a single hip-pivoted part (thigh+shin+foot /
- * upper+forearm+blade) that swings as it stalks forward.
+ * upper+forearm+blade) that swings as it stalks forward. Idle (10f): subtle head sway plus its
+ * signature — the crystal blade-arms slowly flex out and back at the shoulder, like a hunter
+ * keeping its blades limber.
  */
 public class XertzStalkerModel extends GreenxertzMobModel {
 
@@ -30,6 +33,12 @@ public class XertzStalkerModel extends GreenxertzMobModel {
         swingLimb("leg_r", Mth.PI, 0.5F);
         swingLimb("arm_l", Mth.PI, 0.22F);
         swingLimb("arm_r", 0F, 0.22F);
+        // Idle: slow predatory head sway (jaw tracks the head)…
+        ambient("head", Direction.Axis.Y, 0.055F, 0F, 0.06F);
+        ambient("jaw", Direction.Axis.Y, 0.055F, 0F, 0.06F);
+        // …and the signature blade-arm flex: both blades roll outward together at the shoulder.
+        ambient("arm_l", Direction.Axis.Z, 0.09F, 0F, 0.05F);
+        ambient("arm_r", Direction.Axis.Z, 0.09F, Mth.PI, 0.05F);
     }
 
     public static LayerDefinition createBodyLayer() {

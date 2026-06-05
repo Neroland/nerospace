@@ -4,9 +4,11 @@ Offline previewer for the Nerospace entity models (with eyes + animation poses).
 
 Minecraft `EntityModel` geometry is just data — boxes with a position, size and a per-part pose
 (offset + rotation). This rebuilds each mob's cubes (mirroring the matching `*Model.java`), projects
-a 3/4 view with face shading + drawn eyes, and writes `art/preview/<name>.png`. Animated limbs are
-hip-pivoted and tagged with a group; passing a pose (extra xRot per group) renders a walk frame, so
-animation can be checked offline too.
+a 3/4 view with face shading + drawn eyes, and writes `art/preview/<name>.png`. Animated parts are
+hip-pivoted and tagged with a group; passing a pose (extra (xRot,yRot,zRot) per group) renders a
+walk or idle frame, so both the walk swing and the Phase 10f ambient motion (head sway, blade-arm
+flex, frond wiggle, at-rest leg ripple) can be checked offline. (The breathing Y-bob is a
+translation, not a rotation, so it isn't mirrored here.)
 
 IMPORTANT: this is a hand-kept MIRROR of the Java models + their setupAnim phases — keep them in sync.
 
@@ -34,9 +36,9 @@ CINDER = [
     ("body", (0, 0, 0, 0, 0, 0), (-6, 8, -6, 12, 9, 11), None),
     ("body", (0, 0, 0, 0, 0, 0), (-5, 5, -5, 10, 4, 8), None),
     ("body", (0, 0, 0, 0, 0, 0), (-5, 16, -5, 10, 3, 9), None),
-    ("face", (0, 0, 0, 0, 0, 0), (-4, 9, -13, 8, 8, 8), None),
-    ("head", (0, 0, 0, 0, 0, 0), (-4.5, 8, -11, 9, 2, 6), None),
-    ("head", (0, 0, 0, 0, 0, 0), (-3.5, 15, -13, 7, 2, 8), None),
+    ("face", (0, 0, 0, 0, 0, 0), (-4, 9, -13, 8, 8, 8), "head"),
+    ("head", (0, 0, 0, 0, 0, 0), (-4.5, 8, -11, 9, 2, 6), "head"),
+    ("head", (0, 0, 0, 0, 0, 0), (-3.5, 15, -13, 7, 2, 8), "head"),
     ("limb", (-3, 9, -9, -0.5, 0, 0.25), (-1, -4, -1, 2, 5, 2), None),
     ("limb", (3, 9, -9, -0.5, 0, -0.25), (-1, -4, -1, 2, 5, 2), None),
 ] + [("limb", (0, 6, pz, -0.35, 0, 0), (-3, -4, -1, 6, 5, 2), None) for pz in (-3, 1, 5)] + [
@@ -46,29 +48,35 @@ CINDER = [
     ("limb", (4, 16, 3, 0, 0, 0), (-2, 0, -2, 4, 8, 4), "leg_br"),
 ]
 CINDER_ANIM = {"leg_fl": (0, 0.6), "leg_br": (0, 0.6), "leg_fr": (PI, 0.6), "leg_bl": (PI, 0.6)}
+# Idle (10f): ponderous head sweep; the heavy breathing bob is a translation (not previewed).
+CINDER_IDLE = {"head": (0, 0.05, 0)}
 
 # ---------------- GREENLING (cute biped) ----------------
 GREENLING = [
     ("body", (0, 0, 0, 0, 0, 0), (-3.5, 15, -3, 7, 6, 6), None),
     ("body", (0, 0, 0, 0, 0, 0), (-3, 19, -2.5, 6, 3, 5), None),
-    ("face", (0, 0, 0, 0, 0, 0), (-4, 7, -4, 8, 8, 8), None),
-    ("head", (0, 0, 0, 0, 0, 0), (-4.5, 10, -3.5, 9, 3, 7), None),
-    ("limb", (0, 7, 0, 0, 0, 0), (-0.5, -6, -0.5, 1, 6, 1), None),
-    ("limb", (-1.5, 7, 0, 0, 0, 0.5), (-0.5, -5, -0.5, 1, 5, 1), None),
-    ("limb", (1.5, 7, 0, 0, 0, -0.5), (-0.5, -5, -0.5, 1, 5, 1), None),
+    ("face", (0, 0, 0, 0, 0, 0), (-4, 7, -4, 8, 8, 8), "head"),
+    ("head", (0, 0, 0, 0, 0, 0), (-4.5, 10, -3.5, 9, 3, 7), "head"),
+    ("limb", (0, 7, 0, 0, 0, 0), (-0.5, -6, -0.5, 1, 6, 1), "frond_m"),
+    ("limb", (-1.5, 7, 0, 0, 0, 0.5), (-0.5, -5, -0.5, 1, 5, 1), "frond_l"),
+    ("limb", (1.5, 7, 0, 0, 0, -0.5), (-0.5, -5, -0.5, 1, 5, 1), "frond_r"),
     ("limb", (-3.5, 15.5, 0, 0, 0, 0.15), (-1.5, 0, -1, 2, 5, 2), "arm_l"),
     ("limb", (3.5, 15.5, 0, 0, 0, -0.15), (-0.5, 0, -1, 2, 5, 2), "arm_r"),
     ("limb", (-1.25, 21, 0, 0, 0, 0), (-1.25, 0, -1.5, 2.5, 3, 3), "leg_l"),
     ("limb", (1.25, 21, 0, 0, 0, 0), (-1.25, 0, -1.5, 2.5, 3, 3), "leg_r"),
 ]
 GREENLING_ANIM = {"leg_l": (0, 0.5), "leg_r": (PI, 0.5), "arm_l": (PI, 0.3), "arm_r": (0, 0.3)}
+# Idle (10f): curious head sway + the signature out-of-phase leaf-crest wiggle (zRot fronds).
+GREENLING_IDLE = {"head": (0, 0.07, 0)}
+for _g, _ph in (("frond_m", 0.0), ("frond_l", 0.9), ("frond_r", 1.8)):
+    GREENLING_IDLE[_g] = (0, 0, math.sin(1.2 + _ph) * 0.09)
 
 # ---------------- QUARTZ CRAWLER (six-legged geode) ----------------
 QUARTZ = [
     ("body", (0, 0, 0, 0, 0, 0), (-4, 12, -4, 8, 3, 8), None),
     ("body", (0, 0, 0, 0, 0, 0), (-5, 15, -5, 10, 4, 10), None),
     ("body", (0, 0, 0, 0, 0, 0), (-5.5, 17, -5.5, 11, 2, 11), None),
-    ("face", (0, 0, 0, 0, 0, 0), (-3, 15, -9, 6, 4, 4), None),
+    ("face", (0, 0, 0, 0, 0, 0), (-3, 15, -9, 6, 4, 4), "head"),
     ("limb", (-1.5, 12, 0, -0.2, 0, 0.3), (-1, -4, -1, 2, 5, 2), None),
     ("limb", (1, 12, -1, 0, 0, 0), (-1, -5, -1, 2, 6, 2), None),
     ("limb", (0, 12, 2.5, -0.3, 0, -0.2), (-1, -3, -1, 2, 4, 2), None),
@@ -79,6 +87,11 @@ for _i, _z in enumerate((-3.5, 0, 3.5)):
     QUARTZ.append(("limb", (5, 16, _z, 0, 0, -0.55), (-1, 0, -1, 2, 10, 2), "leg_r%d" % _i))
     QUARTZ_ANIM["leg_l%d" % _i] = (_i * 2.1, 0.3)
     QUARTZ_ANIM["leg_r%d" % _i] = (PI + _i * 2.1, 0.3)
+# Idle (10f): the sensor-head scans + the signature faint at-rest leg ripple (staggered xRot).
+QUARTZ_IDLE = {"head": (0, 0.08, 0)}
+for _i in range(3):
+    QUARTZ_IDLE["leg_l%d" % _i] = (math.sin(1.2 + _i * 2.1) * 0.05, 0, 0)
+    QUARTZ_IDLE["leg_r%d" % _i] = (math.sin(1.2 + PI + _i * 2.1) * 0.05, 0, 0)
 
 # ---------------- XERTZ STALKER (crystal hunter, hero biped) ----------------
 XERTZ = [
@@ -88,8 +101,8 @@ XERTZ = [
     ("body", (0, 0, 0, 0, 0, 0), (-6, 4, -2.5, 3, 4, 5), None),
     ("body", (0, 0, 0, 0, 0, 0), (3, 4, -2.5, 3, 4, 5), None),
     ("body", (0, 0, 0, 0, 0, 0), (-2, 1, -2, 4, 4, 4), None),
-    ("face", (0, 0, 0, 0, 0, 0), (-3, -3, -6, 6, 5, 7), None),
-    ("head", (0, 0, 0, 0, 0, 0), (-2.5, 2, -6, 5, 2, 6), None),
+    ("face", (0, 0, 0, 0, 0, 0), (-3, -3, -6, 6, 5, 7), "head"),
+    ("head", (0, 0, 0, 0, 0, 0), (-2.5, 2, -6, 5, 2, 6), "head"),
     ("limb", (0, -2, 1, -0.4, 0, 0), (-1, -7, -1, 2, 6, 3), None),
 ] + [("limb", (0, 5, fz, -0.25, 0, 0), (-0.5, -fh, -1, 1, fh, 3), None)
      for fz, fh in ((1.5, 7), (4, 6), (7, 4))]
@@ -102,12 +115,14 @@ for _side, _x in (("leg_l", -2.5), ("leg_r", 2.5)):
     for _box in ((-2, 0, -2, 4, 6, 4), (-1.5, 6, -1.5, 3, 3, 3), (-1.5, 7, -5, 3, 2, 6)):
         XERTZ.append(("limb", (_x, 15, 0, 0, 0, 0), _box, _side))
 XERTZ_ANIM = {"leg_l": (0, 0.5), "leg_r": (PI, 0.5), "arm_l": (PI, 0.22), "arm_r": (0, 0.22)}
+# Idle (10f): predatory head sway + the signature blade-arm flex (both blades roll outward).
+XERTZ_IDLE = {"head": (0, 0.06, 0), "arm_l": (0, 0, 0.05), "arm_r": (0, 0, -0.05)}
 
 MODELS = {
-    "xertz_stalker": (XERTZ, XERTZ_ANIM),
-    "quartz_crawler": (QUARTZ, QUARTZ_ANIM),
-    "greenling": (GREENLING, GREENLING_ANIM),
-    "cinder_stalker": (CINDER, CINDER_ANIM),
+    "xertz_stalker": (XERTZ, XERTZ_ANIM, XERTZ_IDLE),
+    "quartz_crawler": (QUARTZ, QUARTZ_ANIM, QUARTZ_IDLE),
+    "greenling": (GREENLING, GREENLING_ANIM, GREENLING_IDLE),
+    "cinder_stalker": (CINDER, CINDER_ANIM, CINDER_IDLE),
 }
 COLORS = {
     "xertz_stalker": {"body": (44, 124, 122), "head": (30, 78, 82), "face": (30, 78, 82),
@@ -134,11 +149,14 @@ def rot(v, rx, ry, rz):
 
 
 def walk_pose(anim):
-    return {g: math.cos(ph) * amp for g, (ph, amp) in anim.items()}
+    return {g: (math.cos(ph) * amp, 0, 0) for g, (ph, amp) in anim.items()}
 
 
 def render(name, cubes, pose, yaw=-0.55, pitch=0.12, size=520):
-    base = name[:-5] if name.endswith("_walk") else name
+    base = name
+    for suffix in ("_walk", "_idle"):
+        if base.endswith(suffix):
+            base = base[: -len(suffix)]
     colors = COLORS[base]
     light = (-0.45, -0.7, 0.55)
     ln = math.sqrt(sum(c * c for c in light)); light = tuple(c / ln for c in light)
@@ -146,14 +164,15 @@ def render(name, cubes, pose, yaw=-0.55, pitch=0.12, size=520):
 
     polys, allpts, face_quad = [], [], None
     for kind, (ox, oy, oz, rx, ry, rz), (bx, by, bz, bw, bh, bd), group in cubes:
-        rxa = rx + pose.get(group, 0.0)
+        dx, dy, dz = pose.get(group, (0.0, 0.0, 0.0))
+        rxa, rya, rza = rx + dx, ry + dy, rz + dz
         verts = []
         for cx, cy, cz in CORNERS:
-            wv = rot((bx + cx * bw, by + cy * bh, bz + cz * bd), rxa, ry, rz)
+            wv = rot((bx + cx * bw, by + cy * bh, bz + cz * bd), rxa, rya, rza)
             wv = (wv[0] + ox, wv[1] + oy, wv[2] + oz)
             verts.append(wv); allpts.append(wv)
         for fi, (idx, normal) in enumerate(FACES):
-            n = rot(normal, rxa, ry, rz)
+            n = rot(normal, rxa, rya, rza)
             polys.append(([verts[i] for i in idx], n, colors[kind], kind == "face" and fi == 0))
 
     cx = sum(p[0] for p in allpts) / len(allpts)
@@ -215,17 +234,15 @@ def render(name, cubes, pose, yaw=-0.55, pitch=0.12, size=520):
 if __name__ == "__main__":
     order = ["xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker"]
     for n in order:
-        cubes, anim = MODELS[n]
+        cubes, anim, idle = MODELS[n]
         render(n, cubes, None)
         render(n + "_walk", cubes, walk_pose(anim))
+        render(n + "_idle", cubes, idle)
         print("wrote", n)
-    sheet = Image.new("RGBA", (520 * 2, 520 * 2), (20, 22, 26, 255))
-    for i, n in enumerate(order):
-        sheet.paste(Image.open(os.path.join(OUT, n + ".png")), ((i % 2) * 520, (i // 2) * 520))
-    sheet.save(os.path.join(OUT, "_contact_sheet.png"))
-    walk = Image.new("RGBA", (520 * 2, 520 * 2), (20, 22, 26, 255))
-    for i, n in enumerate(order):
-        walk.paste(Image.open(os.path.join(OUT, n + "_walk.png")), ((i % 2) * 520, (i // 2) * 520))
-    walk.save(os.path.join(OUT, "_walk_sheet.png"))
-    print("wrote contact + walk sheets")
+    for suffix, out in (("", "_contact_sheet"), ("_walk", "_walk_sheet"), ("_idle", "_idle_sheet")):
+        sheet = Image.new("RGBA", (520 * 2, 520 * 2), (20, 22, 26, 255))
+        for i, n in enumerate(order):
+            sheet.paste(Image.open(os.path.join(OUT, n + suffix + ".png")), ((i % 2) * 520, (i // 2) * 520))
+        sheet.save(os.path.join(OUT, out + ".png"))
+    print("wrote contact + walk + idle sheets")
 # end

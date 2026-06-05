@@ -18,6 +18,8 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -78,6 +80,24 @@ public class NerospaceClient {
     static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(
                 Identifier.fromNamespaceAndPath(Nerospace.MODID, "oxygen_hud"), new OxygenHudLayer());
+    }
+
+    /**
+     * The bespoke {@link OxygenHudLayer} is the oxygen readout on airless dimensions, so hide the
+     * vanilla air-bubble row there — the server still mirrors oxygen onto the air supply (that
+     * mirror IS the client sync the gauge reads), it just no longer double-renders as bubbles.
+     */
+    @SubscribeEvent
+    static void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
+        if (!event.getName().equals(VanillaGuiLayers.AIR_LEVEL)) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null
+                && za.co.neroland.nerospace.world.OxygenFieldEvents.FIELD_DIMENSIONS
+                        .contains(mc.player.level().dimension())) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent

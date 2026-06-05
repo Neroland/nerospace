@@ -7,6 +7,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
@@ -15,6 +16,8 @@ import za.co.neroland.nerospace.Nerospace;
 /**
  * Greenling — "Sprout" (Phase 10d). A small grounded biped: chubby body, oversized cheeky head, a
  * leaf crest, little arms and two stubby legs. The legs toddle and the arms swing as it walks.
+ * Idle (10f): a curious head sway (cheeks track the head) and its signature — the three-frond leaf
+ * crest wiggles, each frond out of phase, like leaves in a light breeze.
  */
 public class GreenlingModel extends GreenxertzMobModel {
 
@@ -28,6 +31,13 @@ public class GreenlingModel extends GreenxertzMobModel {
         swingLimb("leg_right", Mth.PI, 0.5F);
         swingLimb("arm_left", Mth.PI, 0.3F);
         swingLimb("arm_right", 0F, 0.3F);
+        // Idle: curious head sway (the cheek band tracks the head)…
+        ambient("head", Direction.Axis.Y, 0.06F, 0F, 0.07F);
+        ambient("cheeks", Direction.Axis.Y, 0.06F, 0F, 0.07F);
+        // …and the signature leaf-crest wiggle: three fronds swaying out of phase.
+        ambient("frond_mid", Direction.Axis.Z, 0.14F, 0F, 0.09F);
+        ambient("frond_left", Direction.Axis.Z, 0.14F, 0.9F, 0.09F);
+        ambient("frond_right", Direction.Axis.Z, 0.14F, 1.8F, 0.09F);
     }
 
     public static LayerDefinition createBodyLayer() {

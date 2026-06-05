@@ -7,6 +7,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
@@ -15,6 +16,8 @@ import za.co.neroland.nerospace.Nerospace;
 /**
  * Cinder Stalker — "Magma Hulk" (Phase 10d). Grounded volcanic quadruped with a layered body, big
  * browed head, horns, an obsidian back-ridge, and four hip-pivoted legs that trot diagonally.
+ * Idle (10f): its signature is slow, heavy breathing — a deep bob at roughly half the default rate —
+ * under a ponderous side-to-side sweep of the big browed head.
  */
 public class CinderStalkerModel extends GreenxertzMobModel {
 
@@ -28,6 +31,12 @@ public class CinderStalkerModel extends GreenxertzMobModel {
         swingLimb("leg_br", 0F, 0.6F);
         swingLimb("leg_fr", Mth.PI, 0.6F);
         swingLimb("leg_bl", Mth.PI, 0.6F);
+        // Signature idle: slow, HEAVY breathing — half the default rate, nearly double the depth.
+        breathing(0.045F, 0.9F);
+        // Ponderous head sweep (brow + jaw track the head).
+        ambient("head", Direction.Axis.Y, 0.04F, 0F, 0.05F);
+        ambient("brow", Direction.Axis.Y, 0.04F, 0F, 0.05F);
+        ambient("jaw", Direction.Axis.Y, 0.04F, 0F, 0.05F);
     }
 
     public static LayerDefinition createBodyLayer() {

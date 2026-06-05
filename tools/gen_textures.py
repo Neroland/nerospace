@@ -1225,8 +1225,43 @@ def gen_oxygen_suit_t2():
                   os.path.join(equip, layer, "oxygen_suit_t2.png"))
 
 
+def gen_oxygen_hud_icon():
+    """16x16 HUD icon for the bespoke oxygen gauge (OxygenHudLayer): a chunky air bubble with two
+    trailing bubblets, inked outline, cyan body matching the gauge fill (0xFF3CC8E6). GUI texture
+    only — no model/datagen entry needed."""
+    INK = (5, 8, 13, 255)          # matches OxygenHudLayer.INK
+    O2 = (60, 200, 230, 255)       # matches the gauge fill
+    O2_D = (32, 132, 168, 255)     # shaded lower-right
+    O2_HI = (210, 245, 255, 255)   # specular highlight
+    img = new_img()
+    px = img.load()
+    cx, cy, r = 6.4, 7.4, 4.6
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+            if d <= r:
+                # body, shaded toward the lower-right
+                px[x, y] = O2_D if (x - cx) + (y - cy) > 2.2 else O2
+            elif d <= r + 1.0:
+                px[x, y] = INK
+    # specular highlight (upper-left)
+    for (hx, hy) in ((5, 5), (6, 5), (5, 6)):
+        px[hx, hy] = O2_HI
+    # two trailing bubblets, rising to the upper-right
+    for (bx, by, br) in ((12, 4, 1), (14, 2, 0)):
+        for y in range(max(0, by - br - 1), min(S, by + br + 2)):
+            for x in range(max(0, bx - br - 1), min(S, bx + br + 2)):
+                d = ((x - bx) ** 2 + (y - by) ** 2) ** 0.5
+                if d <= br:
+                    px[x, y] = O2
+                elif d <= br + 1.0:
+                    px[x, y] = INK
+    save(img, os.path.join(GUI_DIR, "oxygen_hud_icon.png"))
+
+
 if __name__ == "__main__":
     gen_oxygen_particle()
+    gen_oxygen_hud_icon()
     gen_terraformer()
     # Creature base textures (additive; (re)render only under the creature-scoped --creatures flag).
     gen_creatures()

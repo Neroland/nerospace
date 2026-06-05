@@ -198,6 +198,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("subtitles.nerospace.cinder_stalker.ambient", "Cinder Stalker smoulders");
         add("subtitles.nerospace.cinder_stalker.hurt", "Cinder Stalker roars");
         add("subtitles.nerospace.cinder_stalker.death", "Cinder Stalker cools");
+        // Machine sounds (placeholder vanilla aliases in sounds.json, same pattern as the creatures).
+        add("subtitles.nerospace.fuel_tank.pump", "Fuel Tank pumps");
 
         // Join / work-in-progress notice.
         add("message.nerospace.welcome.wip",

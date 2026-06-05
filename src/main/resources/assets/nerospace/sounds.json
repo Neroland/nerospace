@@ -1,4 +1,9 @@
 {
+  "block.fuel_tank.pump": {
+    "subtitle": "subtitles.nerospace.fuel_tank.pump",
+    "sounds": [{ "name": "block.brewing_stand.brew", "type": "event" }]
+  },
+
   "entity.xertz_stalker.ambient": {
     "subtitle": "subtitles.nerospace.xertz_stalker.ambient",
     "sounds": [{ "name": "entity.spider.ambient", "type": "event" }]

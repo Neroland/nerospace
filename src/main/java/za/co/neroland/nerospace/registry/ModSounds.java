@@ -40,6 +40,10 @@ public final class ModSounds {
     public static final Supplier<SoundEvent> GREENLING_HURT = register("entity.greenling.hurt");
     public static final Supplier<SoundEvent> GREENLING_DEATH = register("entity.greenling.death");
 
+    // --- Machines ------------------------------------------------------------
+    /** Fuel Tank actively pumping fuel into a rocket (soft interval gurgle; aliased to vanilla). */
+    public static final Supplier<SoundEvent> FUEL_TANK_PUMP = register("block.fuel_tank.pump");
+
     // --- Cinder Stalker (Cindara, hostile volcanic hulk) --------------------
     public static final Supplier<SoundEvent> CINDER_STALKER_AMBIENT = register("entity.cinder_stalker.ambient");
     public static final Supplier<SoundEvent> CINDER_STALKER_HURT = register("entity.cinder_stalker.hurt");

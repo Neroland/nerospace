@@ -3,7 +3,11 @@ package za.co.neroland.nerospace.machine;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -21,6 +25,7 @@ import za.co.neroland.nerospace.fluid.RocketFuelTank;
 import za.co.neroland.nerospace.rocket.LaunchPadMultiblock;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
  * Block entity for the {@link FuelTankBlock} (Phase 8a). It stores a large buffer of
@@ -40,6 +45,14 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
     public static final int PUMP_RATE_FULL_PAD = 160;
     /** One bucket / canister of fuel, in millibuckets. */
     public static final int CONTAINER_MB = 1_000;
+
+    /** Pumping FX cadence: vapour puffs along the hose line every N server ticks. */
+    private static final int FX_PARTICLE_INTERVAL = 8;
+    /** Pumping FX cadence: the soft pump gurgle every N server ticks (~1.2 s). */
+    private static final int FX_SOUND_INTERVAL = 24;
+
+    /** Counts ticks the tank is ACTIVELY pumping, to stagger the FX. Transient — not persisted. */
+    private int fxTick;
 
     @SuppressWarnings("this-escape") // change-callback wiring, used only after construction
     private final RocketFuelTank tank = new RocketFuelTank(CAPACITY, this::setChanged);
@@ -159,6 +172,45 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
         if (overflow > 0) {
             // The rocket was already topped up; return the unused fuel to the tank.
             this.tank.fill(overflow);
+        }
+        if (drained - overflow > 0 && level instanceof ServerLevel serverLevel) {
+            pumpingFx(serverLevel, pos, rocket);
+        }
+    }
+
+    /**
+     * Client-visible feedback while fuel is actually flowing (roadmap: "pumping particles / sound"):
+     * sparse vapour puffs strung between the tank top and the rocket's intake plus an orange flicker
+     * at the intake, and a soft interval gurgle ({@link ModSounds#FUEL_TANK_PUMP}, a vanilla
+     * brewing-stand alias until real audio ships). Vanilla particles only — the 26.1 custom particle
+     * API is a known trap. Server-side via {@code sendParticles}/{@code playSound}, so nothing here
+     * needs a client tick or extra sync; intervals keep it cheap and un-spammy.
+     */
+    private void pumpingFx(ServerLevel level, BlockPos pos, RocketEntity rocket) {
+        this.fxTick++;
+        double sx = pos.getX() + 0.5D;
+        double sy = pos.getY() + 1.0D;
+        double sz = pos.getZ() + 0.5D;
+        double ex = rocket.getX();
+        double ey = rocket.getY() + 0.5D;
+        double ez = rocket.getZ();
+
+        if (this.fxTick % FX_PARTICLE_INTERVAL == 0) {
+            // A few puffs along the tank → rocket line, reading as fuel vapour in the hose.
+            for (double t = 0.15D; t < 1.0D; t += 0.3D) {
+                level.sendParticles(ParticleTypes.CLOUD,
+                        Mth.lerp(t, sx, ex), Mth.lerp(t, sy, ey), Mth.lerp(t, sz, ez),
+                        1, 0.05D, 0.05D, 0.05D, 0.0D);
+            }
+            // An orange flicker right at the intake, marking where the fuel lands.
+            level.sendParticles(ParticleTypes.SMALL_FLAME, ex, ey, ez, 1, 0.15D, 0.1D, 0.15D, 0.0D);
+        }
+
+        if (this.fxTick % FX_SOUND_INTERVAL == 0) {
+            level.playSound(null,
+                    (sx + ex) / 2.0D, (sy + ey) / 2.0D, (sz + ez) / 2.0D,
+                    ModSounds.FUEL_TANK_PUMP.get(), SoundSource.BLOCKS,
+                    0.35F, 0.85F + level.getRandom().nextFloat() * 0.25F);
         }
     }
 
