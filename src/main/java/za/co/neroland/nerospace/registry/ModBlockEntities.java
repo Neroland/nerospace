@@ -10,6 +10,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
+import za.co.neroland.nerospace.machine.HydrationModuleBlockEntity;
+import za.co.neroland.nerospace.machine.TerraformMonitorBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
@@ -60,6 +62,22 @@ public final class ModBlockEntities {
                     TerraformerBlockEntity::new,
                     false,
                     ModBlocks.TERRAFORMER.get()));
+
+    // Hydration Module (DEEPER_TERRAFORM_DESIGN.md §3.1).
+    public static final Supplier<BlockEntityType<HydrationModuleBlockEntity>> HYDRATION_MODULE =
+            BLOCK_ENTITY_TYPES.register("hydration_module",
+                    () -> new BlockEntityType<>(
+                            HydrationModuleBlockEntity::new,
+                            false,
+                            ModBlocks.HYDRATION_MODULE.get()));
+
+    // Terraform Monitor (DEEPER_TERRAFORM_DESIGN.md §6).
+    public static final Supplier<BlockEntityType<TerraformMonitorBlockEntity>> TERRAFORM_MONITOR =
+            BLOCK_ENTITY_TYPES.register("terraform_monitor",
+                    () -> new BlockEntityType<>(
+                            TerraformMonitorBlockEntity::new,
+                            false,
+                            ModBlocks.TERRAFORM_MONITOR.get()));
 
     public static final Supplier<BlockEntityType<UniversalPipeBlockEntity>> UNIVERSAL_PIPE = BLOCK_ENTITY_TYPES.register(
             "universal_pipe",

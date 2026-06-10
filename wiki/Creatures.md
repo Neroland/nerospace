@@ -51,6 +51,37 @@ the dark.
 **Sounds:** smoulders while idle, roars when hurt, cools on death. *(Placeholder aliases vanilla blaze
 sounds.)*
 
+## Glacira
+
+### Frost Strider — "Ice Stilt-Walker" (hostile)
+A tall, gangly predator stalking the frozen moon on four stilt legs, with a long low-slung neck and a
+row of ice-shard back spines. Freeze-immune; slightly faster but more fragile than the Cinder Stalker.
+
+**Look:** pale glacial plates over a deep-blue hide; the shard spines and eyes glow a cold frost-white.
+
+**Sounds:** creaks while idle, splinters when hurt, shatters on death. *(Placeholder aliases vanilla
+stray sounds.)*
+
+## Terraformed worlds — livestock
+
+Mature ("Living") terraformed ground wakes a breedable livestock species per planet — the seeded
+ecosystem of deeper terraforming. All three are peaceful, follow their breed food, panic from damage,
+and spawn naturally on Living ground (the [Terraformer](Terraformer) also seeds starter herds).
+
+### Meadow Loper (Greenxertz — cow-analogue)
+A placid bulk grazer: a deep barrel body on sturdy legs, broad low head, small horn nubs, lazy
+swishing tail. **Breeds with wheat; drops Loper Haunch** (hearty food).
+
+### Ember Strutter (Cindara — chicken-analogue)
+A skittish little ground bird with ember-orange feathers, a comb and quick two-legged strut.
+Fire-proof, like everything that survives Cindara. **Breeds with seeds; drops Strutter Drumstick**
+(food). Its ember flecks glow faintly in the dark.
+
+### Woolly Drift (Glacira — sheep-analogue)
+A shaggy snowdrift of a grazer: one big rounded fleece ridged with wind-packed tufts over stubby
+legs. Cold-proof (no freeze build-up). **Breeds with wheat; drops Drift Fleece** (crafts into 4
+string).
+
 ---
 
 ## Sound notes

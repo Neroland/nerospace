@@ -12,6 +12,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.CombustionGeneratorMenu;
 import za.co.neroland.nerospace.machine.FuelTankMenu;
+import za.co.neroland.nerospace.machine.HydrationModuleMenu;
+import za.co.neroland.nerospace.machine.TerraformMonitorMenu;
 import za.co.neroland.nerospace.machine.NerosiumGrinderMenu;
 import za.co.neroland.nerospace.machine.OxygenGeneratorMenu;
 import za.co.neroland.nerospace.machine.PassiveGeneratorMenu;
@@ -41,6 +43,16 @@ public final class ModMenuTypes {
     public static final Supplier<MenuType<TerraformerMenu>> TERRAFORMER = MENU_TYPES.register(
             "terraformer",
             () -> new MenuType<>(TerraformerMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
+    // Hydration Module (DEEPER_TERRAFORM_DESIGN.md §3.1).
+    public static final Supplier<MenuType<HydrationModuleMenu>> HYDRATION_MODULE = MENU_TYPES.register(
+            "hydration_module",
+            () -> new MenuType<>(HydrationModuleMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
+    // Terraform Monitor (DEEPER_TERRAFORM_DESIGN.md §6) — pure readout, no slots.
+    public static final Supplier<MenuType<TerraformMonitorMenu>> TERRAFORM_MONITOR = MENU_TYPES.register(
+            "terraform_monitor",
+            () -> new MenuType<>(TerraformMonitorMenu::new, FeatureFlags.DEFAULT_FLAGS));
 
     public static final Supplier<MenuType<CombustionGeneratorMenu>> COMBUSTION_GENERATOR = MENU_TYPES.register(
             "combustion_generator",

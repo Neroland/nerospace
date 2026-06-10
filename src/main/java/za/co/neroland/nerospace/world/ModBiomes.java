@@ -40,10 +40,27 @@ public final class ModBiomes {
     /**
      * Terraformed biome (terraform design): applied to columns the Terraformer converts, so livable
      * ground reads unmistakably as "terraformed" — a vibrant neon emerald/turquoise palette (lush, but
-     * with an alien neon glow) that stands apart from the dead planet around it.
+     * with an alien neon glow) that stands apart from the dead planet around it. With deeper
+     * terraforming (DEEPER_TERRAFORM_DESIGN.md §1) this is the INTERMEDIATE look (stages 1–2, "raw
+     * terraforming chemistry"); stage 3 settles into the mature per-planet biomes below.
      */
     public static final ResourceKey<Biome> TERRAFORMED = ResourceKey.create(
             Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "terraformed"));
+
+    // Mature stage-3 biomes (DEEPER_TERRAFORM_DESIGN.md §4) — natural per-planet palettes with REAL
+    // weather: the visible "this planet has an atmosphere now" payoff.
+
+    /** Greenxertz matures into a natural lush meadow (the neon settles down); rain. */
+    public static final ResourceKey<Biome> TERRAFORMED_MEADOW = ResourceKey.create(
+            Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "terraformed_meadow"));
+
+    /** Cindara matures into a warm gold-green savanna with a scorched-earth memory; rare-feel rain. */
+    public static final ResourceKey<Biome> TERRAFORMED_SAVANNA = ResourceKey.create(
+            Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "terraformed_savanna"));
+
+    /** Glacira matures into a cold sage-green tundra; SNOW accumulates (and lakes refreeze). */
+    public static final ResourceKey<Biome> TERRAFORMED_TUNDRA = ResourceKey.create(
+            Registries.BIOME, Identifier.fromNamespaceAndPath(Nerospace.MODID, "terraformed_tundra"));
 
     private ModBiomes() {
     }
@@ -53,6 +70,49 @@ public final class ModBiomes {
         cindara(context);
         glacira(context);
         terraformed(context);
+        matureBiome(context, TERRAFORMED_MEADOW, 0.8F, 0.8F,
+                0x3F76E4, 0x59C93C, 0x3FB04A, ModEntities.MEADOW_LOPER.get());
+        matureBiome(context, TERRAFORMED_SAVANNA, 1.2F, 0.3F,
+                0x4C8FBF, 0xBFB755, 0xAEA42A, ModEntities.EMBER_STRUTTER.get());
+        matureBiome(context, TERRAFORMED_TUNDRA, -0.3F, 0.5F,
+                0x3D57D6, 0x80B497, 0x60A17B, ModEntities.WOOLLY_DRIFT.get());
+    }
+
+    /**
+     * A mature stage-3 biome (DEEPER_TERRAFORM_DESIGN.md §4): runtime-written like
+     * {@link #terraformed}, so no generation features — palette + precipitation carry the payoff.
+     * The planet's livestock species spawns here as the long-term backstop behind the active
+     * herd seeding (§5).
+     */
+    private static void matureBiome(BootstrapContext<Biome> context, ResourceKey<Biome> key,
+            float temperature, float downfall, int waterColor, int grassColor, int foliageColor,
+            net.minecraft.world.entity.EntityType<?> livestock) {
+        HolderGetter<PlacedFeature> placedFeatures = context.lookup(Registries.PLACED_FEATURE);
+        HolderGetter<ConfiguredWorldCarver<?>> carvers = context.lookup(Registries.CONFIGURED_CARVER);
+        BiomeGenerationSettings.Builder generation = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
+
+        BiomeSpecialEffects effects = new BiomeSpecialEffects.Builder()
+                .waterColor(waterColor)
+                .grassColorOverride(grassColor)
+                .foliageColorOverride(foliageColor)
+                .dryFoliageColorOverride(foliageColor)
+                .build();
+
+        MobSpawnSettings spawns = new MobSpawnSettings.Builder()
+                .addSpawn(MobCategory.CREATURE, 10,
+                        new MobSpawnSettings.SpawnerData(livestock, 2, 4))
+                .build();
+
+        Biome biome = new Biome.BiomeBuilder()
+                .hasPrecipitation(true)
+                .temperature(temperature)
+                .downfall(downfall)
+                .specialEffects(effects)
+                .mobSpawnSettings(spawns)
+                .generationSettings(generation.build())
+                .build();
+
+        context.register(key, biome);
     }
 
     private static void terraformed(BootstrapContext<Biome> context) {

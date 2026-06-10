@@ -649,7 +649,7 @@
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\cinder_stalker.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\cinder_stalker.png",
       "name": "cinder_stalker.png",
       "folder": "entity",
       "namespace": "nerospace",

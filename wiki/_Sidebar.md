@@ -20,6 +20,8 @@
 - [Oxygen Generator](Oxygen-Generator)
 - [Fuel Tank](Fuel-Tank)
 - [Terraformer](Terraformer)
+- [Hydration Module](Hydration-Module)
+- [Terraform Monitor](Terraform-Monitor)
 
 **Logistics**
 - [Universal Pipe](Universal-Pipe)

@@ -53,6 +53,19 @@ public final class ModAttachments {
                     .serialize(Codec.BOOL.fieldOf("terraformed"))
                     .build());
 
+    /**
+     * Per-{@code LevelChunk} terraform stage (DEEPER_TERRAFORM_DESIGN.md §2.2): the highest stage
+     * (1 = Rooted, 2 = Hydrated, 3 = Living) any column in the chunk has completed. ADDITIVE next to
+     * {@link #TERRAFORMED} (which stays the untouched breathability contract): legacy chunks carry the
+     * boolean but no stage, so the effective stage is {@code max(stage, terraformed ? 1 : 0)} — see
+     * {@code TerraformConversion.effectiveStage}.
+     */
+    public static final Supplier<AttachmentType<Integer>> TERRAFORM_STAGE = ATTACHMENT_TYPES.register(
+            "terraform_stage",
+            () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("stage"))
+                    .build());
+
     private ModAttachments() {
     }
 

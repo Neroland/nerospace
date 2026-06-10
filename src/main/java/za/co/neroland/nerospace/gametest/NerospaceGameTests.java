@@ -29,6 +29,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -115,6 +116,13 @@ public final class NerospaceGameTests {
         functions.put("grinder_cap_feed_and_extract", NerospaceGameTests::testGrinderCapFeedAndExtract);
         functions.put("item_store_cap_roundtrip", NerospaceGameTests::testItemStoreCapRoundtrip);
         functions.put("terraformer_cap_upgrade_feed", NerospaceGameTests::testTerraformerCapUpgradeFeed);
+        // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md): stage engine + water cycle.
+        functions.put("hydration_module_feeds_terraformer", NerospaceGameTests::testHydrationModuleFeedsTerraformer);
+        functions.put("terraform_water_table_fill", NerospaceGameTests::testTerraformWaterTableFill);
+        functions.put("terraform_stage_progression", NerospaceGameTests::testTerraformStageProgression);
+        functions.put("terraform_legacy_save_compat", NerospaceGameTests::testTerraformLegacySaveCompat);
+        functions.put("terraform_creature_breeding", NerospaceGameTests::testTerraformCreatureBreeding);
+        functions.put("terraform_monitor_readout", NerospaceGameTests::testTerraformMonitorReadout);
         // Oxygen field boundary classification: doors/trapdoors seal when closed and flow when
         // open, glass seals (full collision cube fallback), panes/fences hold-but-leak.
         functions.put("oxygen_sealing_boundaries", NerospaceGameTests::testOxygenSealingBoundaries);
@@ -494,6 +502,301 @@ public final class NerospaceGameTests {
         }
         helper.assertTrue(terraformer.getItem(0).is(ModItems.NEROSTEEL_INGOT.get()),
                 "the capability-inserted upgrade must be visible in the machine's own slot");
+        helper.succeed();
+    }
+
+    // --- Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md) ------------------------
+
+    /**
+     * The Hydration Module melts glacite into a TOUCHING Terraformer's hydration buffer (§3.1):
+     * one item per pulse, glacite = 16 units, and a module with a one-block gap feeds nothing
+     * (sign-off: strict adjacency).
+     */
+    private static void testHydrationModuleFeedsTerraformer(GameTestHelper helper) {
+        BlockPos terraformerPos = new BlockPos(2, 1, 2);
+        BlockPos modulePos = new BlockPos(3, 1, 2);
+        helper.setBlock(terraformerPos, ModBlocks.TERRAFORMER.get());
+        helper.setBlock(modulePos, ModBlocks.HYDRATION_MODULE.get());
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(terraformerPos))
+                instanceof za.co.neroland.nerospace.machine.TerraformerBlockEntity terraformer)
+                || !(helper.getLevel().getBlockEntity(helper.absolutePos(modulePos))
+                instanceof za.co.neroland.nerospace.machine.HydrationModuleBlockEntity module)) {
+            helper.fail("expected Terraformer + Hydration Module block entities");
+            return;
+        }
+
+        module.setItem(0, new ItemStack(ModItems.GLACITE.get(), 2));
+        module.meltPulse(helper.getLevel(), helper.absolutePos(modulePos));
+        helper.assertTrue(terraformer.getHydration() == za.co.neroland.nerospace.Tuning.HYDRATION_PER_GLACITE,
+                "one melt pulse must convert exactly one glacite into 16 hydration units");
+        module.meltPulse(helper.getLevel(), helper.absolutePos(modulePos));
+        helper.assertTrue(terraformer.getHydration() == 2 * za.co.neroland.nerospace.Tuning.HYDRATION_PER_GLACITE,
+                "the second pulse must melt the second glacite");
+        helper.assertTrue(module.getItem(0).isEmpty(), "both glacite must have been consumed");
+
+        // A module that does not TOUCH the Terraformer (one-block gap) feeds nothing.
+        BlockPos gappedPos = new BlockPos(5, 1, 2);
+        helper.setBlock(gappedPos, ModBlocks.HYDRATION_MODULE.get());
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(gappedPos))
+                instanceof za.co.neroland.nerospace.machine.HydrationModuleBlockEntity gapped)) {
+            helper.fail("expected the gapped Hydration Module block entity");
+            return;
+        }
+        gapped.setItem(0, new ItemStack(ModItems.GLACITE.get()));
+        gapped.meltPulse(helper.getLevel(), helper.absolutePos(gappedPos));
+        helper.assertTrue(!gapped.getItem(0).isEmpty(),
+                "a non-touching module must not melt (strict adjacency per sign-off)");
+        helper.succeed();
+    }
+
+    /**
+     * Stage-2 water-table fill (§3.2): a basin below the table fills (one hydration unit per
+     * source), terrain at the table stays dry, the fill is idempotent (re-run costs nothing) and an
+     * empty sink stalls the column instead of part-filling it for free.
+     */
+    private static void testTerraformWaterTableFill(GameTestHelper helper) {
+        // A 5x5 two-layer stone plate; the water table sits at the plate's top surface.
+        for (int x = 1; x <= 5; x++) {
+            for (int z = 1; z <= 5; z++) {
+                helper.setBlock(new BlockPos(x, 1, z), Blocks.STONE);
+                helper.setBlock(new BlockPos(x, 2, z), Blocks.STONE);
+            }
+        }
+        helper.setBlock(new BlockPos(3, 2, 3), Blocks.AIR); // a 1-deep basin
+        helper.setBlock(new BlockPos(4, 2, 4), Blocks.AIR); // a second basin, for the stall case
+        int tableY = helper.absolutePos(new BlockPos(0, 2, 0)).getY();
+        ServerLevel level = helper.getLevel();
+
+        int[] units = {10};
+        za.co.neroland.nerospace.machine.TerraformConversion.HydrationSink sink = want -> {
+            int granted = Math.min(want, units[0]);
+            units[0] -= granted;
+            return granted;
+        };
+
+        BlockPos basin = helper.absolutePos(new BlockPos(3, 2, 3));
+        boolean done = za.co.neroland.nerospace.machine.TerraformConversion.hydrateColumn(
+                level, basin.getX(), basin.getZ(), tableY, sink);
+        helper.assertTrue(done, "a funded basin column must hydrate fully");
+        helper.assertTrue(level.getBlockState(basin).is(Blocks.WATER),
+                "the basin cell below the table must fill with water");
+        helper.assertTrue(units[0] == 9, "filling one cell must cost exactly one hydration unit");
+
+        // Idempotent: re-running the same column costs nothing.
+        done = za.co.neroland.nerospace.machine.TerraformConversion.hydrateColumn(
+                level, basin.getX(), basin.getZ(), tableY, sink);
+        helper.assertTrue(done && units[0] == 9, "re-hydrating a filled column must be a free no-op");
+
+        // Terrain at the table stays dry (and costs nothing).
+        BlockPos dry = helper.absolutePos(new BlockPos(2, 2, 2));
+        done = za.co.neroland.nerospace.machine.TerraformConversion.hydrateColumn(
+                level, dry.getX(), dry.getZ(), tableY, sink);
+        helper.assertTrue(done && units[0] == 9, "a column at/above the table must stay dry for free");
+        helper.assertTrue(level.getBlockState(dry).is(Blocks.STONE), "dry ground must be untouched");
+
+        // An empty sink stalls the column: no water, not done.
+        BlockPos stalled = helper.absolutePos(new BlockPos(4, 2, 4));
+        done = za.co.neroland.nerospace.machine.TerraformConversion.hydrateColumn(
+                level, stalled.getX(), stalled.getZ(), tableY, want -> 0);
+        helper.assertFalse(done, "an unfunded basin column must report a stall");
+        helper.assertTrue(level.getBlockState(stalled).isAir(),
+                "a stalled column must not receive water");
+        helper.succeed();
+    }
+
+    /**
+     * Stage progression (§2.2): convert → hydrate → vivify walks the chunk's effective stage
+     * 1 → 2 → 3 while the legacy {@code TERRAFORMED} breathability flag stays set throughout.
+     */
+    private static void testTerraformStageProgression(GameTestHelper helper) {
+        // A free-standing stone column that owns the local heightmap.
+        for (int y = 1; y <= 4; y++) {
+            helper.setBlock(new BlockPos(2, y, 2), Blocks.STONE);
+        }
+        ServerLevel level = helper.getLevel();
+        BlockPos col = helper.absolutePos(new BlockPos(2, 4, 2));
+        LevelChunk chunk = level.getChunkAt(col);
+        // Own the chunk state outright — arenas can share chunks with other tests.
+        chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORMED, Boolean.FALSE);
+        chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORM_STAGE, 0);
+        helper.assertTrue(
+                za.co.neroland.nerospace.machine.TerraformConversion.effectiveStage(chunk) == 0,
+                "a reset chunk must read stage 0");
+
+        // The arena sits inside the framework's barrier shell, so the heightmap points at the
+        // barrier lid — inject the real surface (one above our stone top) through the test seam.
+        int surfaceY = col.getY() + 1;
+
+        java.util.Set<LevelChunk> biomeChanged = new java.util.HashSet<>();
+        za.co.neroland.nerospace.machine.TerraformConversion.convertColumn(
+                level, col.getX(), col.getZ(), surfaceY, 1, biomeChanged);
+        helper.assertTrue(level.getBlockState(new BlockPos(col.getX(), surfaceY - 1, col.getZ())).is(Blocks.GRASS_BLOCK),
+                "stage 1 must grass the surface");
+        helper.assertTrue(Boolean.TRUE.equals(chunk.getData(
+                        za.co.neroland.nerospace.registry.ModAttachments.TERRAFORMED)),
+                "stage 1 must set the breathability flag");
+        helper.assertTrue(
+                za.co.neroland.nerospace.machine.TerraformConversion.effectiveStage(chunk) == 1,
+                "after conversion the chunk must read stage 1");
+        helper.assertTrue(chunk.getNoiseBiome(col.getX() >> 2, col.getY() >> 2, col.getZ() >> 2).is(za.co.neroland.nerospace.world.ModBiomes.TERRAFORMED),
+                "stage 1 must write the intermediate neon terraformed biome");
+
+        za.co.neroland.nerospace.machine.TerraformConversion.hydrateColumn(
+                level, col.getX(), col.getZ(), surfaceY - 1, null);
+        helper.assertTrue(
+                za.co.neroland.nerospace.machine.TerraformConversion.effectiveStage(chunk) == 2,
+                "after hydration the chunk must read stage 2");
+
+        za.co.neroland.nerospace.machine.TerraformConversion.vivifyColumn(
+                level, col.getX(), col.getZ(), biomeChanged);
+        helper.assertTrue(
+                za.co.neroland.nerospace.machine.TerraformConversion.effectiveStage(chunk) == 3,
+                "after vivification the chunk must read stage 3");
+        helper.assertTrue(chunk.getNoiseBiome(col.getX() >> 2, col.getY() >> 2, col.getZ() >> 2).is(za.co.neroland.nerospace.world.ModBiomes.TERRAFORMED_MEADOW),
+                "stage 3 must settle the mature biome (unknown dimensions default to meadow)");
+        // Idempotent: a second vivify pass must leave the stage and biome settled.
+        za.co.neroland.nerospace.machine.TerraformConversion.vivifyColumn(
+                level, col.getX(), col.getZ(), biomeChanged);
+        helper.assertTrue(
+                za.co.neroland.nerospace.machine.TerraformConversion.effectiveStage(chunk) == 3
+                        && chunk.getNoiseBiome(col.getX() >> 2, col.getY() >> 2, col.getZ() >> 2).is(za.co.neroland.nerospace.world.ModBiomes.TERRAFORMED_MEADOW),
+                "re-running stage 3 must be a settled no-op");
+        helper.assertTrue(Boolean.TRUE.equals(chunk.getData(
+                        za.co.neroland.nerospace.registry.ModAttachments.TERRAFORMED)),
+                "the legacy breathability flag must survive every stage");
+        helper.succeed();
+    }
+
+    /**
+     * The no-break contract (§9): a legacy chunk (flag set, no stage data) reads as stage 1 and
+     * upgrades in place, and a pre-stage {@code TerraformManager} payload (no stage-radius lists)
+     * decodes with the trailing frontiers at 0.
+     */
+    private static void testTerraformLegacySaveCompat(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos pos = helper.absolutePos(new BlockPos(2, 1, 2));
+        LevelChunk chunk = level.getChunkAt(pos);
+
+        // Legacy chunk state: TERRAFORMED true, stage attachment absent (default 0).
+        chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORM_STAGE, 0);
+        chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORMED, Boolean.TRUE);
+        helper.assertTrue(
+                za.co.neroland.nerospace.machine.TerraformConversion.effectiveStage(chunk) == 1,
+                "a legacy chunk (flag only) must read as stage 1");
+
+        // It upgrades in place without re-paying stage 1.
+        helper.setBlock(new BlockPos(2, 1, 2), Blocks.STONE);
+        za.co.neroland.nerospace.machine.TerraformConversion.hydrateColumn(
+                level, pos.getX(), pos.getZ(), pos.getY(), null);
+        helper.assertTrue(
+                za.co.neroland.nerospace.machine.TerraformConversion.effectiveStage(chunk) == 2,
+                "a legacy chunk must upgrade straight to stage 2");
+        helper.assertTrue(Boolean.TRUE.equals(chunk.getData(
+                        za.co.neroland.nerospace.registry.ModAttachments.TERRAFORMED)),
+                "upgrading must never clear the breathability flag");
+
+        // A pre-stage SavedData payload (positions/radii/tiers only) decodes unchanged.
+        net.minecraft.nbt.CompoundTag legacy = new net.minecraft.nbt.CompoundTag();
+        BlockPos machine = new BlockPos(100, 64, -200);
+        legacy.putLongArray("positions", new long[] {machine.asLong()});
+        legacy.putIntArray("radii", new int[] {7});
+        legacy.putIntArray("tiers", new int[] {2});
+        za.co.neroland.nerospace.world.TerraformManager decoded =
+                za.co.neroland.nerospace.world.TerraformManager.codec()
+                        .parse(net.minecraft.nbt.NbtOps.INSTANCE, legacy)
+                        .result().orElse(null);
+        if (decoded == null) {
+            helper.fail("a legacy terraformers.dat payload must decode");
+            return;
+        }
+        helper.assertTrue(decoded.stageRadius(machine, 1) == 7,
+                "the legacy stage-1 radius must survive the decode");
+        helper.assertTrue(decoded.stageRadius(machine, 2) == 0 && decoded.stageRadius(machine, 3) == 0,
+                "absent stage radii must default to 0 (frontiers start sweeping from the centre)");
+        helper.succeed();
+    }
+
+    /**
+     * The Terraform Monitor (§6) reports the LOCAL column's effective stage on its comparator
+     * (0/5/10/15) and reads the nearest registered Terraformer's stage radii.
+     */
+    private static void testTerraformMonitorReadout(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos rel = new BlockPos(2, 1, 2);
+        BlockPos abs = helper.absolutePos(rel);
+        helper.setBlock(rel, ModBlocks.TERRAFORM_MONITOR.get());
+        if (!(level.getBlockEntity(abs)
+                instanceof za.co.neroland.nerospace.machine.TerraformMonitorBlockEntity monitor)) {
+            helper.fail("expected a TerraformMonitorBlockEntity");
+            return;
+        }
+        LevelChunk chunk = level.getChunkAt(abs);
+        chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORMED, Boolean.FALSE);
+
+        chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORM_STAGE, 2);
+        monitor.refresh(level, abs);
+        helper.assertTrue(monitor.comparatorSignal() == 10,
+                "a Hydrated (stage 2) column must read comparator 10");
+        helper.assertTrue(level.getBlockState(abs).getAnalogOutputSignal(level, abs, Direction.NORTH) == 10,
+                "the block's analog output must surface the monitor's signal");
+
+        chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORM_STAGE, 3);
+        monitor.refresh(level, abs);
+        helper.assertTrue(monitor.comparatorSignal() == 15,
+                "a Living (stage 3) column must read comparator 15");
+
+        // Nearest-terraformer link: register a machine in the manager and re-read.
+        BlockPos machine = abs.offset(5, 0, 0);
+        za.co.neroland.nerospace.world.TerraformManager.get(level).update(machine, 9, 4, 2, 1);
+        monitor.refresh(level, abs);
+        helper.assertTrue(monitor.getDataAccess().get(0) == 1,
+                "the monitor must link to a machine in range");
+        helper.assertTrue(monitor.getDataAccess().get(1) == 9
+                        && monitor.getDataAccess().get(2) == 4
+                        && monitor.getDataAccess().get(3) == 2,
+                "the monitor must surface the machine's stage radii");
+        // Clean up the registry entry so no other arena links to this phantom machine.
+        za.co.neroland.nerospace.world.TerraformManager.get(level).remove(machine);
+        chunk.setData(za.co.neroland.nerospace.registry.ModAttachments.TERRAFORM_STAGE, 0);
+        helper.succeed();
+    }
+
+    /**
+     * The terraform livestock breed like vanilla animals (§5): species recognise their breed food
+     * and {@code spawnChildFromBreeding} produces a baby of the same species.
+     */
+    private static void testTerraformCreatureBreeding(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        helper.setBlock(new BlockPos(2, 1, 2), Blocks.GRASS_BLOCK);
+        helper.setBlock(new BlockPos(3, 1, 2), Blocks.GRASS_BLOCK);
+
+        // Food recognition per species (wheat / seeds / wheat — design §5).
+        za.co.neroland.nerospace.entity.MeadowLoper loperA =
+                helper.spawn(ModEntities.MEADOW_LOPER.get(), new BlockPos(2, 2, 2));
+        za.co.neroland.nerospace.entity.MeadowLoper loperB =
+                helper.spawn(ModEntities.MEADOW_LOPER.get(), new BlockPos(3, 2, 2));
+        helper.assertTrue(loperA.isFood(new ItemStack(net.minecraft.world.item.Items.WHEAT)),
+                "the Meadow Loper must breed with wheat");
+        za.co.neroland.nerospace.entity.EmberStrutter strutter =
+                helper.spawn(ModEntities.EMBER_STRUTTER.get(), new BlockPos(4, 2, 2));
+        helper.assertTrue(strutter.isFood(new ItemStack(net.minecraft.world.item.Items.WHEAT_SEEDS))
+                        && !strutter.isFood(new ItemStack(net.minecraft.world.item.Items.WHEAT)),
+                "the Ember Strutter must breed with seeds, not wheat");
+        za.co.neroland.nerospace.entity.WoollyDrift drift =
+                helper.spawn(ModEntities.WOOLLY_DRIFT.get(), new BlockPos(5, 2, 2));
+        helper.assertTrue(drift.isFood(new ItemStack(net.minecraft.world.item.Items.WHEAT)),
+                "the Woolly Drift must breed with wheat");
+        helper.assertTrue(!drift.canFreeze(), "the Woolly Drift's cold coat must block freezing");
+
+        // Deterministic breeding: both in love, then breed directly (fires BredAnimalsTrigger too).
+        loperA.setInLove(null);
+        loperB.setInLove(null);
+        loperA.spawnChildFromBreeding(level, loperB);
+        long babies = level.getEntities(ModEntities.MEADOW_LOPER.get(),
+                        new net.minecraft.world.phys.AABB(helper.absolutePos(new BlockPos(2, 2, 2))).inflate(8.0D),
+                        e -> e.isAlive() && e.isBaby())
+                .size();
+        helper.assertTrue(babies >= 1, "breeding two Meadow Lopers must produce a baby Loper");
         helper.succeed();
     }
 

@@ -66,6 +66,8 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.FUEL_TANK.get());
                         output.accept(ModBlocks.OXYGEN_GENERATOR.get());
                         output.accept(ModBlocks.TERRAFORMER.get());
+                        output.accept(ModBlocks.HYDRATION_MODULE.get());
+                        output.accept(ModBlocks.TERRAFORM_MONITOR.get());
                         output.accept(ModBlocks.COMBUSTION_GENERATOR.get());
                         output.accept(ModBlocks.PASSIVE_GENERATOR.get());
                         output.accept(ModBlocks.UNIVERSAL_PIPE.get());
@@ -116,6 +118,14 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.GREENLING_SPAWN_EGG.get());
                         output.accept(ModItems.CINDER_STALKER_SPAWN_EGG.get());
                         output.accept(ModItems.FROST_STRIDER_SPAWN_EGG.get());
+                        output.accept(ModItems.MEADOW_LOPER_SPAWN_EGG.get());
+                        output.accept(ModItems.EMBER_STRUTTER_SPAWN_EGG.get());
+                        output.accept(ModItems.WOOLLY_DRIFT_SPAWN_EGG.get());
+
+                        // Terraform livestock drops (DEEPER_TERRAFORM_DESIGN.md §5).
+                        output.accept(ModItems.LOPER_HAUNCH.get());
+                        output.accept(ModItems.STRUTTER_DRUMSTICK.get());
+                        output.accept(ModItems.DRIFT_FLEECE.get());
 
                         // Creative-only travel devices (no survival recipe).
                         output.accept(ModItems.GREENXERTZ_NAVIGATOR.get());

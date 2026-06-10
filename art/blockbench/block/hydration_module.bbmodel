@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "hydration_module",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "hydration_module",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "f1b0472e-25cf-46fe-8506-92f16a3ec78d"
+    }
+  ],
+  "outliner": [
+    "f1b0472e-25cf-46fe-8506-92f16a3ec78d"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\hydration_module.png",
+      "name": "hydration_module.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "3f1aeb97-2a08-4c81-953d-f0f67799fd9b",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/hydration_module.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABrklEQVR4nKWTMUsjURDHf0qa7D08i7BZUkiIQRZLm3yAa6467CwOewvZKoj4AVQOC5EU9wkOrgtXXZE0KQJpQiBwBNlbFouwCSK6TjalFut7G0GCxw0ss7z/m//Mf+bNyrF3+sR/WA6g023hFEsARJOxARfPnGIJEUEpRRD6VMpVBsM+q/ry1uY2AOrDmvmC0EdESOYJIoLMYoLQ5/OnL4hIVkEyT+h0W+h/ALV3yXevBkD9qofqNUyC3+1fVMpVgKwCp1gyJau9Sy68Gq4CV8GFV2NaO0wxpbALDkHoZwR2wUFECEIfK2+ZYG2G5DYCQGYxVt7KCGQWG1BXscycYslIXV0M0qXVr3qMJAsYSdoHrVtEsAvO6x5o0C442L2GIdHBVvvcECqlkFmcTUHPValUeBD6WJMTDn4mRut0njC9zRJpCTmdfeuswe7GR5o3Dxy9+N0l/tvXfQbDfkoQTcZ06z9oujvcj/rv8tsvcnK6iXebKbjuvs9Hd+OFMYr8U/C6u2MaunLsnT5d//1jFmVxmXSjKuWq2QV9buUtommUShgM+0sfzlt4/JiSPQNpyf7BSAuA1QAAAABJRU5ErkJggg=="
+    }
+  ]
+}

@@ -44,6 +44,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.FUEL_TANK.get(),
                         ModBlocks.OXYGEN_GENERATOR.get(),
                         ModBlocks.TERRAFORMER.get(),
+                        ModBlocks.HYDRATION_MODULE.get(),
+                        ModBlocks.TERRAFORM_MONITOR.get(),
                         ModBlocks.UNIVERSAL_PIPE.get(),
                         ModBlocks.COMBUSTION_GENERATOR.get(),
                         ModBlocks.PASSIVE_GENERATOR.get(),
@@ -73,6 +75,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.FUEL_TANK.get(),
                         ModBlocks.OXYGEN_GENERATOR.get(),
                         ModBlocks.TERRAFORMER.get(),
+                        ModBlocks.HYDRATION_MODULE.get(),
+                        ModBlocks.TERRAFORM_MONITOR.get(),
                         ModBlocks.UNIVERSAL_PIPE.get(),
                         ModBlocks.COMBUSTION_GENERATOR.get(),
                         ModBlocks.PASSIVE_GENERATOR.get());

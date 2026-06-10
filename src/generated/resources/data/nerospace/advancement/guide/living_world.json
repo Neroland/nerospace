@@ -1,0 +1,22 @@
+{
+  "parent": "nerospace:guide/hydration_module",
+  "criteria": {
+    "living_ground": {
+      "trigger": "nerospace:living_ground"
+    }
+  },
+  "display": {
+    "description": "Stand on land your Terraformer brought fully to life",
+    "frame": "challenge",
+    "icon": {
+      "id": "nerospace:meadow_loper_spawn_egg"
+    },
+    "title": "World Awake"
+  },
+  "requirements": [
+    [
+      "living_ground"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -54,6 +54,17 @@ public final class ModSounds {
     public static final Supplier<SoundEvent> FROST_STRIDER_HURT = register("entity.frost_strider.hurt");
     public static final Supplier<SoundEvent> FROST_STRIDER_DEATH = register("entity.frost_strider.death");
 
+    // --- Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5) ----------------
+    public static final Supplier<SoundEvent> MEADOW_LOPER_AMBIENT = register("entity.meadow_loper.ambient");
+    public static final Supplier<SoundEvent> MEADOW_LOPER_HURT = register("entity.meadow_loper.hurt");
+    public static final Supplier<SoundEvent> MEADOW_LOPER_DEATH = register("entity.meadow_loper.death");
+    public static final Supplier<SoundEvent> EMBER_STRUTTER_AMBIENT = register("entity.ember_strutter.ambient");
+    public static final Supplier<SoundEvent> EMBER_STRUTTER_HURT = register("entity.ember_strutter.hurt");
+    public static final Supplier<SoundEvent> EMBER_STRUTTER_DEATH = register("entity.ember_strutter.death");
+    public static final Supplier<SoundEvent> WOOLLY_DRIFT_AMBIENT = register("entity.woolly_drift.ambient");
+    public static final Supplier<SoundEvent> WOOLLY_DRIFT_HURT = register("entity.woolly_drift.hurt");
+    public static final Supplier<SoundEvent> WOOLLY_DRIFT_DEATH = register("entity.woolly_drift.death");
+
     private static Supplier<SoundEvent> register(String path) {
         Identifier id = Identifier.fromNamespaceAndPath(Nerospace.MODID, path);
         return SOUND_EVENTS.register(path, () -> SoundEvent.createVariableRangeEvent(id));

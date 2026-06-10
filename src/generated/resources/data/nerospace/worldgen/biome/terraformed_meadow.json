@@ -1,0 +1,31 @@
+{
+  "carvers": [],
+  "downfall": 0.8,
+  "effects": {
+    "dry_foliage_color": "#3fb04a",
+    "foliage_color": "#3fb04a",
+    "grass_color": "#59c93c",
+    "water_color": "#3f76e4"
+  },
+  "features": [],
+  "has_precipitation": true,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [
+      {
+        "type": "nerospace:meadow_loper",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 10
+      }
+    ],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.8
+}

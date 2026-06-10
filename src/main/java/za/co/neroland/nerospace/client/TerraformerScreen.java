@@ -35,11 +35,19 @@ public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> 
         hGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
 
         label(g, Component.translatable("gui.nerospace.terraformer.tier", this.menu.getTier()), 8, 48, ACCENT);
-        label(g, Component.translatable("gui.nerospace.terraformer.radius", this.menu.getRadius()), 8, 60, 0xFFB7E8C2);
+        label(g, Component.translatable("gui.nerospace.terraformer.stages", this.menu.getRadius(),
+                this.menu.getHydrationRadius(), this.menu.getLifeRadius()), 8, 60, 0xFFB7E8C2);
 
         boolean active = this.menu.isActive();
         label(g, Component.translatable(active
                 ? "gui.nerospace.terraformer.working"
                 : "gui.nerospace.terraformer.idle"), 116, 20, active ? 0xFF9CF0C0 : 0xFF7E8EA0);
+
+        // Hydration buffer (DEEPER_TERRAFORM_DESIGN.md §3.1): glacite units + the stall reason.
+        label(g, Component.translatable("gui.nerospace.terraformer.hydration",
+                this.menu.getHydration()), 116, 48, 0xFF78D2F0);
+        if (this.menu.isHydrationStalled()) {
+            label(g, Component.translatable("gui.nerospace.terraformer.needs_glacite"), 116, 60, 0xFFFF6A5E);
+        }
     }
 }

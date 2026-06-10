@@ -109,6 +109,12 @@ public final class ModCapabilities {
                 ModBlockEntities.TERRAFORMER.get(),
                 (blockEntity, side) -> blockEntity.getUpgradeHandler());
 
+        // Hydration Module input (DEEPER_TERRAFORM_DESIGN.md §3.1): hopper/pipe-feedable glacite.
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.HYDRATION_MODULE.get(),
+                (blockEntity, side) -> blockEntity.getInputHandler());
+
         // Fluid: expose the rocket's tank and the Fuel Tank machine so pipes/automation can fill them.
         event.registerEntity(
                 Capabilities.Fluid.ENTITY,

@@ -357,6 +357,32 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_oxygen_generator", this.has(ModBlocks.OXYGEN_GENERATOR.get()))
                 .save(this.output);
 
+        // Hydration Module (DEEPER_TERRAFORM_DESIGN.md §3.1): glacite corners + nerosteel frame
+        // around a Fluid Tank — the Terraformer's water-stage intake (glacite gates the trip).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.HYDRATION_MODULE.get())
+                .pattern("GNG")
+                .pattern("NFN")
+                .pattern("GNG")
+                .define('G', ModItems.GLACITE)
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('F', ModBlocks.FLUID_TANK.get())
+                .unlockedBy("has_glacite", this.has(ModItems.GLACITE))
+                .save(this.output);
+
+        // Terraform Monitor (DEEPER_TERRAFORM_DESIGN.md §6): a quartz-eyed nerosteel readout panel.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.TERRAFORM_MONITOR.get())
+                .pattern("NGN")
+                .pattern("QRQ")
+                .pattern("NNN")
+                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('G', Items.GLASS)
+                .define('Q', ModItems.XERTZ_QUARTZ)
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_terraformer", this.has(ModBlocks.TERRAFORMER.get()))
+                .save(this.output);
+
         // Power grid: Universal Pipe — a nerosteel sheath around a glass core (yields 8).
         ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModBlocks.UNIVERSAL_PIPE.get(), 8)
@@ -585,6 +611,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModBlocks.GLACITE_BLOCK.get())
                 .unlockedBy("has_glacite_block", this.has(ModBlocks.GLACITE_BLOCK.get()))
                 .save(this.output, "glacite_from_glacite_block");
+
+        // Drift Fleece unravels into string (DEEPER_TERRAFORM_DESIGN.md §5).
+        ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, Items.STRING, 4)
+                .requires(ModItems.DRIFT_FLEECE.get())
+                .unlockedBy("has_drift_fleece", this.has(ModItems.DRIFT_FLEECE.get()))
+                .save(this.output, "string_from_drift_fleece");
 
         // Station Charter (MULTI_STATION_DESIGN.md): 8x Station Wall ring around a Station Floor.
         // Rename it in an anvil to name the station it will found.

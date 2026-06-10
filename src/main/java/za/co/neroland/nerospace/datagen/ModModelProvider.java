@@ -81,6 +81,10 @@ public class ModModelProvider extends ModelProvider {
         // Terraform design — terraformer machine.
         blockModels.createTrivialCube(ModBlocks.TERRAFORMER.get());
 
+        // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md §3.1/§6) — hydration module + monitor.
+        blockModels.createTrivialCube(ModBlocks.HYDRATION_MODULE.get());
+        blockModels.createTrivialCube(ModBlocks.TERRAFORM_MONITOR.get());
+
         // Power grid — connection-aware translucent pipe (multipart: core + one arm per connected
         // face; translucency comes from the texture's alpha) + generators.
         registerUniversalPipe(blockModels);
@@ -194,6 +198,14 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.GREENLING_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CINDER_STALKER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FROST_STRIDER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
+
+        // Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5): eggs + drops.
+        itemModels.generateFlatItem(ModItems.MEADOW_LOPER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.EMBER_STRUTTER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.WOOLLY_DRIFT_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.LOPER_HAUNCH.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.STRUTTER_DRUMSTICK.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.DRIFT_FLEECE.get(), ModelTemplates.FLAT_ITEM);
     }
 
     /**

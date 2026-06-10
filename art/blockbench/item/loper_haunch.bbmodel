@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "loper_haunch",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "loper_haunch",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        7.5
+      ],
+      "to": [
+        16,
+        16,
+        8.5
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            0
+          ],
+          "texture": null
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            0
+          ],
+          "texture": null
+        }
+      },
+      "type": "cube",
+      "uuid": "31db025c-ff8d-4d32-8cfe-0973522d49fa"
+    }
+  ],
+  "outliner": [
+    "31db025c-ff8d-4d32-8cfe-0973522d49fa"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\loper_haunch.png",
+      "name": "loper_haunch.png",
+      "folder": "item",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "327b09c4-dfd6-4669-80a8-95fca4775b39",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/loper_haunch.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAlklEQVR4nGNgGJLgxaNz/wfOkBePzv3ft2MRXDMLqTZeu3YFRRyrAQ1manAbGk7dYkTW6OQRx4islhFdo46UEAMDAwODmoYCw60bDxgYGBgYrjx7BzcIHTAhc2Ca0QEucRQDYM5W01BgYGBggNsOE0P2Fk4XoGvEJ4bpAix+hLkGlzyGC648e4fVZnRxZIDVVGzROHgBAFcVQwO8IAurAAAAAElFTkSuQmCC"
+    }
+  ]
+}

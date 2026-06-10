@@ -9,9 +9,12 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.entity.CinderStalker;
+import za.co.neroland.nerospace.entity.EmberStrutter;
 import za.co.neroland.nerospace.entity.FrostStrider;
 import za.co.neroland.nerospace.entity.Greenling;
+import za.co.neroland.nerospace.entity.MeadowLoper;
 import za.co.neroland.nerospace.entity.QuartzCrawler;
+import za.co.neroland.nerospace.entity.WoollyDrift;
 import za.co.neroland.nerospace.entity.XertzStalker;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 
@@ -74,6 +77,29 @@ public final class ModEntities {
             FrostStrider::new,
             MobCategory.MONSTER,
             builder -> builder.sized(0.8F, 2.4F).eyeHeight(2.1F).clientTrackingRange(8));
+
+    // --- Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5) -----------------
+
+    /** Placid cow-analogue grazer of mature terraformed Greenxertz. */
+    public static final Supplier<EntityType<MeadowLoper>> MEADOW_LOPER = ENTITY_TYPES.registerEntityType(
+            "meadow_loper",
+            MeadowLoper::new,
+            MobCategory.CREATURE,
+            builder -> builder.sized(1.1F, 1.3F).eyeHeight(1.1F).clientTrackingRange(8));
+
+    /** Skittish chicken-analogue of mature terraformed Cindara (fire-proof like its homeworld). */
+    public static final Supplier<EntityType<EmberStrutter>> EMBER_STRUTTER = ENTITY_TYPES.registerEntityType(
+            "ember_strutter",
+            EmberStrutter::new,
+            MobCategory.CREATURE,
+            builder -> builder.sized(0.5F, 0.9F).eyeHeight(0.7F).fireImmune().clientTrackingRange(8));
+
+    /** Shaggy sheep-analogue of mature terraformed Glacira; cold-proof via {@code canFreeze()}. */
+    public static final Supplier<EntityType<WoollyDrift>> WOOLLY_DRIFT = ENTITY_TYPES.registerEntityType(
+            "woolly_drift",
+            WoollyDrift::new,
+            MobCategory.CREATURE,
+            builder -> builder.sized(0.9F, 1.2F).eyeHeight(1.0F).clientTrackingRange(8));
 
     private ModEntities() {
     }

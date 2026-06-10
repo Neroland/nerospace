@@ -67,5 +67,44 @@
   "entity.frost_strider.death": {
     "subtitle": "subtitles.nerospace.frost_strider.death",
     "sounds": [{ "name": "entity.stray.death", "type": "event" }]
+  },
+
+  "entity.meadow_loper.ambient": {
+    "subtitle": "subtitles.nerospace.meadow_loper.ambient",
+    "sounds": [{ "name": "entity.cow.ambient", "type": "event" }]
+  },
+  "entity.meadow_loper.hurt": {
+    "subtitle": "subtitles.nerospace.meadow_loper.hurt",
+    "sounds": [{ "name": "entity.cow.hurt", "type": "event" }]
+  },
+  "entity.meadow_loper.death": {
+    "subtitle": "subtitles.nerospace.meadow_loper.death",
+    "sounds": [{ "name": "entity.cow.death", "type": "event" }]
+  },
+
+  "entity.ember_strutter.ambient": {
+    "subtitle": "subtitles.nerospace.ember_strutter.ambient",
+    "sounds": [{ "name": "entity.chicken.ambient", "type": "event" }]
+  },
+  "entity.ember_strutter.hurt": {
+    "subtitle": "subtitles.nerospace.ember_strutter.hurt",
+    "sounds": [{ "name": "entity.chicken.hurt", "type": "event" }]
+  },
+  "entity.ember_strutter.death": {
+    "subtitle": "subtitles.nerospace.ember_strutter.death",
+    "sounds": [{ "name": "entity.chicken.death", "type": "event" }]
+  },
+
+  "entity.woolly_drift.ambient": {
+    "subtitle": "subtitles.nerospace.woolly_drift.ambient",
+    "sounds": [{ "name": "entity.sheep.ambient", "type": "event" }]
+  },
+  "entity.woolly_drift.hurt": {
+    "subtitle": "subtitles.nerospace.woolly_drift.hurt",
+    "sounds": [{ "name": "entity.sheep.hurt", "type": "event" }]
+  },
+  "entity.woolly_drift.death": {
+    "subtitle": "subtitles.nerospace.woolly_drift.death",
+    "sounds": [{ "name": "entity.sheep.death", "type": "event" }]
   }
 }

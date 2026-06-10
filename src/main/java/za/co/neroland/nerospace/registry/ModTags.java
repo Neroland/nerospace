@@ -88,5 +88,13 @@ public final class ModTags {
         // Glacira materials (NEW_DESTINATION_DESIGN.md).
         /** Glacite crystals (future cold-suit repair / terraforming water-cycle feedstock). */
         public static final TagKey<Item> GEMS_GLACITE = itemTag("c", "gems/glacite");
+
+        // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md §3.1).
+        /**
+         * Items the Hydration Module melts into hydration units for the Terraformer's water stage.
+         * Glacite-only by default (vanilla ice would bypass the Glacira gate) — the tag lets packs
+         * widen it.
+         */
+        public static final TagKey<Item> HYDRATION_INPUT = itemTag("nerospace", "hydration_input");
     }
 }

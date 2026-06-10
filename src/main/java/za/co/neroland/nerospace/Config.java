@@ -161,8 +161,27 @@ public class Config {
             .define("terraformPlantsEnabled", true);
 
     public static final ModConfigSpec.BooleanValue TERRAFORM_WATER_ENABLED = BUILDER
-            .comment("Whether terraforming fills low/exposed cells with water.")
+            .comment("Whether the Hydrated terraform stage fills basins below the water table with water.")
             .define("terraformWaterEnabled", true);
+
+    public static final ModConfigSpec.IntValue TERRAFORM_WATER_MAX_DEPTH = BUILDER
+            .comment("Deepest basin (blocks below the water table) the Hydrated stage will fill; "
+                    + "deeper chasms are skipped entirely.")
+            .defineInRange("terraformWaterMaxDepth", 8, 1, 32);
+
+    public static final ModConfigSpec.BooleanValue TERRAFORM_DRIFT_ENABLED = BUILDER
+            .comment("Cosmetic drift: settled terraformed land keeps sprouting sparse ground cover "
+                    + "even while the machine idles (pure garnish, budgeted; no gameplay effect).")
+            .define("terraformDriftEnabled", true);
+
+    public static final ModConfigSpec.IntValue TERRAFORM_DRIFT_PER_SECOND = BUILDER
+            .comment("Cosmetic-drift placement budget per second per level (0 also disables).")
+            .defineInRange("terraformDriftPerSecond", 4, 0, 64);
+
+    public static final ModConfigSpec.BooleanValue TERRAFORM_FAUNA_ENABLED = BUILDER
+            .comment("Whether the Living terraform stage seeds starter herds of the planet's "
+                    + "livestock species (biome spawn settings still apply either way).")
+            .define("terraformFaunaEnabled", true);
 
     public static final ModConfigSpec.BooleanValue TERRAFORM_RESOURCES_ENABLED = BUILDER
             .comment("Whether a Tier-3 Terraformer seeds ores into the converted subsurface (low rate).")

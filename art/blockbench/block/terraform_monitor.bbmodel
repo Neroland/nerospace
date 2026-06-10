@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "terraform_monitor",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "terraform_monitor",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "1937c1bc-dde5-4144-b1c0-0c25d86a17ad"
+    }
+  ],
+  "outliner": [
+    "1937c1bc-dde5-4144-b1c0-0c25d86a17ad"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\terraform_monitor.png",
+      "name": "terraform_monitor.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "d5cddad3-a48d-4ece-8dca-aa20a52abc05",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/terraform_monitor.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABYklEQVR4nKWTsUrDUBSGP0uXJoe4SBuKg9Ti4CKIOLm5OHXyEZylo0/g7AP0ETp1dpLiICIIIhJaW7CUtHRpPL0ZdUh709KKFs+Sc3PP/e/3/yQbV5fXX/yjsgBB+xVVRUSWnuGgb4fF9dBJhIkN+S2fVicgM9s8PDgmHPTRSbRwWFwPExvE9RARTGw4O62gkygleO+2UFWegocfUd8+XmxfapcR1wPChKC0U17b+4wgYwmmL36q+rhBfdxIDqviF4qpwLoEOolsuBmAcNDHxGZpsNrsUW32VookGUwFxPXWovALRYajMBWAxBfAUa3CUa3yZ7EM8GuAq8rJOanA7Av7a6mqzSwLICLW0+NFww7enGzb/nwztZXMkwoAnJ1WyD/7DEch+S0/uWlKNU9oYsPe7j7v3VZqQVUJ2q+ICE7OQUTS2+b+AXE9nJzD3f2t3c8CtDrBgsdwGM6vbBd9Luf0DbvVnksHaYGBAAAAAElFTkSuQmCC"
+    }
+  ]
+}

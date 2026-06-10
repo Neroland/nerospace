@@ -24,6 +24,13 @@ public final class ModCriteria {
     public static final Supplier<PlayerTrigger> TERRAFORMED_GROUND =
             TRIGGER_TYPES.register("terraformed_ground", PlayerTrigger::new);
 
+    /**
+     * Fired from the same throttled atmosphere check when the ground underfoot has reached the
+     * Living terraform stage (DEEPER_TERRAFORM_DESIGN.md §11 — "World Awake").
+     */
+    public static final Supplier<PlayerTrigger> LIVING_GROUND =
+            TRIGGER_TYPES.register("living_ground", PlayerTrigger::new);
+
     /** Fired from the rocket's founding flow when a player founds a new station. */
     public static final Supplier<PlayerTrigger> FOUNDED_STATION =
             TRIGGER_TYPES.register("founded_station", PlayerTrigger::new);

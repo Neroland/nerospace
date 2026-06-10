@@ -181,6 +181,11 @@ public final class GreenxertzAtmosphere {
             // Star Guide / advancements: "stand on terraformed ground" (throttled by CHECK_INTERVAL).
             if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                 za.co.neroland.nerospace.registry.ModCriteria.TERRAFORMED_GROUND.get().trigger(serverPlayer);
+                // Deeper terraforming (§11): "World Awake" once the ground reaches the Living stage.
+                if (za.co.neroland.nerospace.machine.TerraformConversion.effectiveStage(
+                        level.getChunkAt(player.blockPosition())) >= 3) {
+                    za.co.neroland.nerospace.registry.ModCriteria.LIVING_GROUND.get().trigger(serverPlayer);
+                }
             }
             return true;
         }

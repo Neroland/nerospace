@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "drift_fleece",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "drift_fleece",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        7.5
+      ],
+      "to": [
+        16,
+        16,
+        8.5
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            0
+          ],
+          "texture": null
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            0
+          ],
+          "texture": null
+        }
+      },
+      "type": "cube",
+      "uuid": "54be939f-b93c-4e6a-9223-c88120c8b06c"
+    }
+  ],
+  "outliner": [
+    "54be939f-b93c-4e6a-9223-c88120c8b06c"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\drift_fleece.png",
+      "name": "drift_fleece.png",
+      "folder": "item",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "28e74766-f893-46e2-8630-0d1d01fefba7",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/drift_fleece.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABRElEQVR4nO2Sy07CUBCGP0/PoZbSQmlVJPEaFy7cmOgT+N4u3BkXLjRxZRSixBoKrVzL5Rx3JCg8gImznPn+L5PJwH9trBtc37+Yk8Maz42YatnFthWn9cov/lfj5qFpjDHUtwPidsZMa8Jyic/OF5bYIAo8zvbDRU78FESBh2MXiJOMVnWLndBHKQvXsRFCMM6nS/yS4Om9a5K0h1QWtpJcqhnjfIolBE2/SsUvEgUez589s1KgtWGvFtLNBkSBx91U0h/mFJTkeJAyGk9Ie0Oy3nD1BknaRwjB3m7IW9zhQs1QUjDKJyglaXhVOmkfJeX6IzaSoRmMcuZaU3Js5lrTaCVshz6uY2MJwUFYXOTkT8FtLojaKZYQxO0M17Hx3E3KXpG3j4SK5y7xa//gsZmY2VzjlxyMMby+t7k6P1rL/+H6Br4peLEOto0bAAAAAElFTkSuQmCC"
+    }
+  ]
+}

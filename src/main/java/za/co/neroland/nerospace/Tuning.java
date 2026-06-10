@@ -113,6 +113,29 @@ public final class Tuning {
     public static final double TERRAFORM_RESOURCE_CHANCE = 0.015D;
 
     // ------------------------------------------------------------------
+    // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md)
+    // ------------------------------------------------------------------
+
+    /** Hydration units one glacite gem melts into (§3.1; the storage block yields 9x). */
+    public static final int HYDRATION_PER_GLACITE = 16;
+    /** Hydration units a Block of Glacite melts into. */
+    public static final int HYDRATION_PER_GLACITE_BLOCK = 9 * HYDRATION_PER_GLACITE;
+    /** Terraformer hydration-unit buffer cap (item-derived units, deliberately not multiplied). */
+    public static final int TERRAFORM_HYDRATION_CAP = 1_024;
+    /** Stage-2 (Hydrated) column energy cost factor over the base per-block cost (§2.1). */
+    public static final int TERRAFORM_STAGE2_ENERGY_FACTOR = 2;
+    /** Stage-3 (Living) column energy cost factor — the expensive finale (§2.1). */
+    public static final int TERRAFORM_STAGE3_ENERGY_FACTOR = 4;
+    /** Per-Living-column chance to place a grown tree (§4; vanilla features, sparse). */
+    public static final double TERRAFORM_TREE_CHANCE = 0.03D;
+    /** Per-Living-column chance to seed a starter pair of the planet's livestock (§5). */
+    public static final double TERRAFORM_HERD_CHANCE = 0.02D;
+    /** Herd cap: no seeding when this many of the species are already within the seed radius. */
+    public static final int TERRAFORM_HERD_CAP = 8;
+    /** Radius (blocks) of the herd-cap entity count. */
+    public static final int TERRAFORM_HERD_RADIUS = 48;
+
+    // ------------------------------------------------------------------
     // Scaling helpers
     // ------------------------------------------------------------------
 
@@ -249,6 +272,16 @@ public final class Tuning {
 
     public static int terraformEnergyPerBlock() {
         return scale(BASE_TERRAFORM_ENERGY_PER_BLOCK, Config.FUEL_COST_MULTIPLIER.get());
+    }
+
+    /** Stage-2 (Hydrated) column energy cost (DEEPER_TERRAFORM_DESIGN.md §2.1). */
+    public static int terraformStage2EnergyPerBlock() {
+        return terraformEnergyPerBlock() * TERRAFORM_STAGE2_ENERGY_FACTOR;
+    }
+
+    /** Stage-3 (Living) column energy cost (DEEPER_TERRAFORM_DESIGN.md §2.1). */
+    public static int terraformStage3EnergyPerBlock() {
+        return terraformEnergyPerBlock() * TERRAFORM_STAGE3_ENERGY_FACTOR;
     }
 
     public static int grinderEnergyPerTick() {

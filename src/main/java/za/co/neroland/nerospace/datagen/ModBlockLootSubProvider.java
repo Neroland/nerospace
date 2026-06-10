@@ -47,6 +47,10 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         // Terraform design — terraformer.
         dropSelf(ModBlocks.TERRAFORMER.get());
 
+        // Deeper terraforming — hydration module + terraform monitor.
+        dropSelf(ModBlocks.HYDRATION_MODULE.get());
+        dropSelf(ModBlocks.TERRAFORM_MONITOR.get());
+
         // Power grid.
         dropSelf(ModBlocks.UNIVERSAL_PIPE.get());
         dropSelf(ModBlocks.COMBUSTION_GENERATOR.get());

@@ -28,14 +28,14 @@ public class TerraformerMenu extends AbstractContainerMenu {
 
     public TerraformerMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(TerraformerBlockEntity.SIZE),
-                new SimpleContainerData(4));
+                new SimpleContainerData(TerraformerBlockEntity.DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public TerraformerMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
         super(ModMenuTypes.TERRAFORMER.get(), containerId);
         checkContainerSize(container, TerraformerBlockEntity.SIZE);
-        checkContainerDataCount(data, 4);
+        checkContainerDataCount(data, TerraformerBlockEntity.DATA_COUNT);
         this.container = container;
         this.data = data;
 
@@ -97,6 +97,27 @@ public class TerraformerMenu extends AbstractContainerMenu {
 
     public int getRadius() {
         return this.data.get(3);
+    }
+
+    public int getHydration() {
+        return this.data.get(4);
+    }
+
+    public int getHydrationCap() {
+        return this.data.get(5);
+    }
+
+    public int getHydrationRadius() {
+        return this.data.get(6);
+    }
+
+    public int getLifeRadius() {
+        return this.data.get(7);
+    }
+
+    /** Stage 2 wants water but the glacite buffer ran dry (DEEPER_TERRAFORM_DESIGN.md §2.1). */
+    public boolean isHydrationStalled() {
+        return this.data.get(8) != 0;
     }
 
     public boolean isActive() {

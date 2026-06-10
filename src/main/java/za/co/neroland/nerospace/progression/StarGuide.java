@@ -91,7 +91,11 @@ public final class StarGuide {
                     step("cryo_suit", () -> ModItems.OXYGEN_SUIT_COLD_HELMET.get(), "guide/cryo_suit"))),
             new Chapter("terraforming", List.of(
                     step("terraformer", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformer"),
-                    step("terraformed_ground", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformed_ground"))));
+                    step("terraformed_ground", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformed_ground"),
+                    // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md §11): the staged finale.
+                    step("hydration_module", () -> ModBlocks.HYDRATION_MODULE.get(), "guide/hydration_module"),
+                    step("living_world", () -> ModItems.MEADOW_LOPER_SPAWN_EGG.get(), "guide/living_world"),
+                    step("new_life", () -> ModItems.LOPER_HAUNCH.get(), "guide/new_life"))));
 
     public static final int CHAPTER_COUNT = CHAPTERS.size();
 

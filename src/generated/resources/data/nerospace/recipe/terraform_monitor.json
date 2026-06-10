@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:glass",
+    "N": "nerospace:nerosteel_ingot",
+    "Q": "nerospace:xertz_quartz",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "NGN",
+    "QRQ",
+    "NNN"
+  ],
+  "result": {
+    "id": "nerospace:terraform_monitor"
+  }
+}

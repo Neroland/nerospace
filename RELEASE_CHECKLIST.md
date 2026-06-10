@@ -70,8 +70,22 @@ box only after the gradle-MCP build + gametests are green AND the in-game check 
       reworked rocket UI layout + an actual founding flight in runClient
 
 ### Deeper terraforming
-- [ ] Design pass: what "deeper" means (stages? biomes? water cycle?)
-- [ ] Implement chosen scope; keep existing Terraformer saves working
+- [x] Design pass: what "deeper" means (stages? biomes? water cycle?) —
+      `DEEPER_TERRAFORM_DESIGN.md`, signed off 2026-06-10: staged maturation (Rooted → Hydrated →
+      Living), glacite-fed water cycle via the Hydration Module (must touch), per-planet mature
+      biomes with real weather, three breedable livestock species, Terraform Monitor readout
+- [x] Implement chosen scope; keep existing Terraformer saves working — trailing stage frontiers
+      (additive NBT/SavedData/attachment only; legacy land = stage 1, locked by the
+      `terraform_legacy_save_compat` gametest), water-table fill + Hydration Module,
+      3 mature biomes + runtime trees + precipitation, Meadow Loper / Ember Strutter / Woolly
+      Drift (first `Animal`s: breeding, drops, herd seeding, biome spawns), Terraform Monitor
+      (comparator = local stage), Star Guide terraforming chapter 2→5 steps + 3 advancements
+      (tree 28→31). Build + ecjCheck green, gametests **36/36** (new:
+      `hydration_module_feeds_terraformer`, `terraform_water_table_fill`,
+      `terraform_stage_progression`, `terraform_legacy_save_compat`,
+      `terraform_creature_breeding`, `terraform_monitor_readout`). Verify in runClient: water
+      fill look, mature palettes + rain/snow, livestock models/animations, the two new GUIs,
+      milestone toasts
 
 ### Space-suit hazard variants
 - [x] Heat-resistant suit variant (Cindara/volcanic) — **Thermal Suit** (`SUIT_HAZARD_DESIGN.md`,

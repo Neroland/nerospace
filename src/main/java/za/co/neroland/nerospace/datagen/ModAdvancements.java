@@ -19,6 +19,7 @@ import net.minecraft.world.level.ItemLike;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModCriteria;
 import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
@@ -223,7 +224,7 @@ public class ModAdvancements implements AdvancementSubProvider {
                 ModBlocks.TERRAFORMER.get(),
                 "World Engine", "Build a Terraformer");
 
-        Advancement.Builder.advancement()
+        AdvancementHolder terraformedGround = Advancement.Builder.advancement()
                 .parent(terraformer)
                 .display(ModBlocks.TERRAFORMER.get(),
                         Component.literal("Green Again"),
@@ -233,6 +234,44 @@ public class ModAdvancements implements AdvancementSubProvider {
                         ModCriteria.TERRAFORMED_GROUND.get(),
                         new PlayerTrigger.TriggerInstance(Optional.empty())))
                 .save(saver, "nerospace:guide/terraformed_ground");
+
+        // --- Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md §11) ------------------------------
+        AdvancementHolder hydrationModule = item(saver, terraformedGround, "guide/hydration_module",
+                ModBlocks.HYDRATION_MODULE.get(),
+                "Meltwater", "Build a Hydration Module and feed your Terraformer glacite");
+
+        AdvancementHolder livingWorld = Advancement.Builder.advancement()
+                .parent(hydrationModule)
+                .display(ModItems.MEADOW_LOPER_SPAWN_EGG.get(),
+                        Component.literal("World Awake"),
+                        Component.literal("Stand on land your Terraformer brought fully to life"),
+                        null, AdvancementType.CHALLENGE, true, true, false)
+                .addCriterion("living_ground", new Criterion<>(
+                        ModCriteria.LIVING_GROUND.get(),
+                        new PlayerTrigger.TriggerInstance(Optional.empty())))
+                .save(saver, "nerospace:guide/living_world");
+
+        // Any of the three livestock species satisfies "New Life" (OR requirements).
+        Advancement.Builder.advancement()
+                .parent(livingWorld)
+                .display(ModItems.LOPER_HAUNCH.get(),
+                        Component.literal("New Life"),
+                        Component.literal("Breed a creature born of a terraformed world"),
+                        null, AdvancementType.GOAL, true, true, false)
+                .addCriterion("bred_meadow_loper", bredLivestock(registries, ModEntities.MEADOW_LOPER.get()))
+                .addCriterion("bred_ember_strutter", bredLivestock(registries, ModEntities.EMBER_STRUTTER.get()))
+                .addCriterion("bred_woolly_drift", bredLivestock(registries, ModEntities.WOOLLY_DRIFT.get()))
+                .requirements(net.minecraft.advancements.AdvancementRequirements.Strategy.OR)
+                .save(saver, "nerospace:guide/new_life");
+    }
+
+    /** A bred-animals criterion matching one of the terraform livestock species as a parent. */
+    private static Criterion<?> bredLivestock(HolderLookup.Provider registries,
+            net.minecraft.world.entity.EntityType<?> type) {
+        return net.minecraft.advancements.criterion.BredAnimalsTrigger.TriggerInstance.bredAnimals(
+                net.minecraft.advancements.criterion.EntityPredicate.Builder.entity().of(
+                        registries.lookupOrThrow(net.minecraft.core.registries.Registries.ENTITY_TYPE),
+                        type));
     }
 
     /** A simple has-item TASK advancement under {@code nerospace:<path>}. */

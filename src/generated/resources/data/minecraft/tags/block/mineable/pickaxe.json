@@ -18,6 +18,8 @@
     "nerospace:fuel_tank",
     "nerospace:oxygen_generator",
     "nerospace:terraformer",
+    "nerospace:hydration_module",
+    "nerospace:terraform_monitor",
     "nerospace:universal_pipe",
     "nerospace:combustion_generator",
     "nerospace:passive_generator",

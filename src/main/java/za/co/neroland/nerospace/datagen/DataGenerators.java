@@ -58,8 +58,12 @@ public final class DataGenerators {
                 output,
                 Set.of(),
                 List.of(new LootTableProvider.SubProviderEntry(
-                        ModBlockLootSubProvider::new,
-                        LootContextParamSets.BLOCK)),
+                                ModBlockLootSubProvider::new,
+                                LootContextParamSets.BLOCK),
+                        // Terraform livestock drops (DEEPER_TERRAFORM_DESIGN.md §5).
+                        new LootTableProvider.SubProviderEntry(
+                                ModEntityLootSubProvider::new,
+                                LootContextParamSets.ENTITY)),
                 registries));
 
         // Block + item tags (item provider is wired to the block provider's contents).

@@ -47,6 +47,10 @@ public class ModLanguageProvider extends LanguageProvider {
         // Terraform design — terraformer.
         add(ModBlocks.TERRAFORMER.get(), "Terraformer");
 
+        // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md) — hydration module + monitor.
+        add(ModBlocks.HYDRATION_MODULE.get(), "Hydration Module");
+        add(ModBlocks.TERRAFORM_MONITOR.get(), "Terraform Monitor");
+
         // Power grid.
         add(ModBlocks.UNIVERSAL_PIPE.get(), "Universal Pipe");
         add(ModBlocks.COMBUSTION_GENERATOR.get(), "Combustion Generator");
@@ -210,6 +214,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.GREENLING_SPAWN_EGG.get(), "Greenling Spawn Egg");
         add(ModItems.CINDER_STALKER_SPAWN_EGG.get(), "Cinder Stalker Spawn Egg");
         add(ModItems.FROST_STRIDER_SPAWN_EGG.get(), "Frost Strider Spawn Egg");
+        add(ModItems.MEADOW_LOPER_SPAWN_EGG.get(), "Meadow Loper Spawn Egg");
+        add(ModItems.EMBER_STRUTTER_SPAWN_EGG.get(), "Ember Strutter Spawn Egg");
+        add(ModItems.WOOLLY_DRIFT_SPAWN_EGG.get(), "Woolly Drift Spawn Egg");
+
+        // Terraform livestock drops (DEEPER_TERRAFORM_DESIGN.md §5).
+        add(ModItems.LOPER_HAUNCH.get(), "Loper Haunch");
+        add(ModItems.STRUTTER_DRUMSTICK.get(), "Strutter Drumstick");
+        add(ModItems.DRIFT_FLEECE.get(), "Drift Fleece");
 
         // Entities.
         add("entity.nerospace.rocket", "Rocket");
@@ -218,6 +230,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("entity.nerospace.greenling", "Greenling");
         add("entity.nerospace.cinder_stalker", "Cinder Stalker");
         add("entity.nerospace.frost_strider", "Frost Strider");
+        add("entity.nerospace.meadow_loper", "Meadow Loper");
+        add("entity.nerospace.ember_strutter", "Ember Strutter");
+        add("entity.nerospace.woolly_drift", "Woolly Drift");
 
         // Creature sound subtitles (Phase 10 ambience). The sounds.json placeholders alias vanilla
         // audio for now; these subtitles describe the creature, so they stay correct when real audio
@@ -237,6 +252,15 @@ public class ModLanguageProvider extends LanguageProvider {
         add("subtitles.nerospace.frost_strider.ambient", "Frost Strider creaks");
         add("subtitles.nerospace.frost_strider.hurt", "Frost Strider splinters");
         add("subtitles.nerospace.frost_strider.death", "Frost Strider shatters");
+        add("subtitles.nerospace.meadow_loper.ambient", "Meadow Loper lows");
+        add("subtitles.nerospace.meadow_loper.hurt", "Meadow Loper bellows");
+        add("subtitles.nerospace.meadow_loper.death", "Meadow Loper falls");
+        add("subtitles.nerospace.ember_strutter.ambient", "Ember Strutter clucks");
+        add("subtitles.nerospace.ember_strutter.hurt", "Ember Strutter squawks");
+        add("subtitles.nerospace.ember_strutter.death", "Ember Strutter goes quiet");
+        add("subtitles.nerospace.woolly_drift.ambient", "Woolly Drift bleats");
+        add("subtitles.nerospace.woolly_drift.hurt", "Woolly Drift cries");
+        add("subtitles.nerospace.woolly_drift.death", "Woolly Drift falls still");
         // Machine sounds (placeholder vanilla aliases in sounds.json, same pattern as the creatures).
         add("subtitles.nerospace.fuel_tank.pump", "Fuel Tank pumps");
 
@@ -267,8 +291,27 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.terraformer.power", "Power: %s%%");
         add("gui.nerospace.terraformer.tier", "Tier %s");
         add("gui.nerospace.terraformer.radius", "Radius: %s");
+        add("gui.nerospace.terraformer.stages", "Radii: %s / %s / %s");
+        add("gui.nerospace.terraformer.hydration", "Water: %s");
+        add("gui.nerospace.terraformer.needs_glacite", "Needs glacite");
         add("gui.nerospace.terraformer.working", "Terraforming");
         add("gui.nerospace.terraformer.idle", "Idle");
+
+        // Hydration Module GUI (DEEPER_TERRAFORM_DESIGN.md §3.1).
+        add("container.nerospace.hydration_module", "Hydration Module");
+        add("gui.nerospace.hydration_module.buffer", "Hydration: %s / %s");
+        add("gui.nerospace.hydration_module.linked", "Feeding Terraformer");
+        add("gui.nerospace.hydration_module.no_link", "No Terraformer touching");
+
+        // Terraform Monitor GUI (DEEPER_TERRAFORM_DESIGN.md §6).
+        add("container.nerospace.terraform_monitor", "Terraform Monitor");
+        add("gui.nerospace.terraform_monitor.stage.0", "This ground: Dead");
+        add("gui.nerospace.terraform_monitor.stage.1", "This ground: Rooted");
+        add("gui.nerospace.terraform_monitor.stage.2", "This ground: Hydrated");
+        add("gui.nerospace.terraform_monitor.stage.3", "This ground: Living");
+        add("gui.nerospace.terraform_monitor.radii", "Radii: %s / %s / %s");
+        add("gui.nerospace.terraform_monitor.hydration", "Water: %s");
+        add("gui.nerospace.terraform_monitor.no_link", "No Terraformer within 32 blocks");
 
         // Containers / GUI.
         add("container.nerospace.nerosium_grinder", "Nerosium Grinder");
@@ -430,6 +473,19 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.star_guide.step.terraformed_ground.text",
                 "Terraformed ground is permanently breathable. Stand on land your machine "
                         + "reclaimed and breathe without a suit — the end of the beginning.");
+        add("gui.nerospace.star_guide.step.hydration_module", "Meltwater");
+        add("gui.nerospace.star_guide.step.hydration_module.text",
+                "A Hydration Module touching your Terraformer melts glacite into water for the "
+                        + "Hydrated stage — basins fill into lakes behind the green frontier.");
+        add("gui.nerospace.star_guide.step.living_world", "World Awake");
+        add("gui.nerospace.star_guide.step.living_world.text",
+                "Behind the water, the land matures: natural colour, trees, rain — and the first "
+                        + "herds. Stand on Living ground and watch a world breathe on its own.");
+        add("gui.nerospace.star_guide.step.new_life", "New Life");
+        add("gui.nerospace.star_guide.step.new_life.text",
+                "Each planet wakes its own livestock: the Meadow Loper, the Ember Strutter, the "
+                        + "Woolly Drift. Feed a pair their favourite crop and breed the first "
+                        + "generation born off Earth.");
 
         // Rocket action feedback.
         add("item.nerospace.rocket.deployed", "Rocket deployed on the launch pad");

@@ -1046,6 +1046,93 @@ def _fs_detail(x, y, rng):
     return base
 
 
+# --- Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5) -------------------
+
+# Meadow Loper — placid tan-green grazer of mature terraformed Greenxertz: warm hide with darker
+# patches, a pale muzzle and bone-white horn nubs. Friendly: nothing crosses the glow threshold.
+ML_DARK  = (62, 74, 46, 255)
+ML_BODY  = (126, 148, 90, 255)
+ML_LITE  = (168, 192, 126, 255)
+ML_PATCH = (98, 116, 70, 255)
+ML_HORN  = (200, 202, 186, 255)
+
+# Ember Strutter — ember-feathered ground bird of terraformed Cindara: rust body, hot orange
+# feather tips and a few bright ember flecks (the flecks alone glow, like banked coals).
+ES_DARK  = (46, 22, 16, 255)
+ES_BODY  = (152, 62, 30, 255)
+ES_FEATH = (200, 100, 38, 255)
+ES_EMBER = (248, 168, 70, 255)
+ES_BEAK  = (200, 170, 80, 255)
+
+# Woolly Drift — pale shaggy fleece of terraformed Glacira with frost glints (only the sparse ice
+# glints exceed the glow threshold) and a darker bare face.
+WD_WOOL   = (228, 240, 248, 255)
+WD_WOOL_D = (188, 206, 222, 255)
+WD_FACE   = (96, 114, 134, 255)
+WD_FACE_L = (128, 148, 168, 255)
+WD_ICE    = (170, 230, 248, 255)
+
+
+def _ml_body(x, y, rng):
+    base = _mix(ML_BODY, ML_LITE, ((x + y) % 10) / 10.0)
+    if (x // 6 + y // 5) % 3 == 0 and rng.random() < 0.5:
+        base = ML_PATCH
+    return base
+
+
+def _ml_head(x, y, rng):
+    return _mix(ML_BODY, ML_DARK, (y % 8) / 8.0)
+
+
+def _ml_detail(x, y, rng):
+    # horns/tail/legs strip: horn bone at the top rows, hide below
+    if y < 6:
+        return ML_HORN
+    return _mix(ML_DARK, ML_BODY, (y % 6) / 6.0)
+
+
+def _es_body(x, y, rng):
+    base = _mix(ES_BODY, ES_FEATH, ((x + 2 * y) % 9) / 9.0)
+    if rng.random() < 0.04:
+        base = ES_EMBER
+    return base
+
+
+def _es_head(x, y, rng):
+    base = _mix(ES_FEATH, ES_BODY, (y % 6) / 6.0)
+    if rng.random() < 0.03:
+        base = ES_EMBER
+    return base
+
+
+def _es_detail(x, y, rng):
+    # beak/comb/wings/legs strip: beak gold at the top, feather shafts below
+    if y < 4:
+        return ES_BEAK
+    base = _mix(ES_DARK, ES_FEATH, (y % 7) / 7.0)
+    if (x + y) % 8 == 0:
+        base = ES_EMBER
+    return base
+
+
+def _wd_body(x, y, rng):
+    base = _mix(WD_WOOL_D, WD_WOOL, rng.random())
+    if rng.random() < 0.03:
+        base = WD_ICE
+    return base
+
+
+def _wd_head(x, y, rng):
+    return _mix(WD_FACE, WD_FACE_L, (y % 6) / 6.0)
+
+
+def _wd_detail(x, y, rng):
+    # tufts/ears/legs strip: wool above, bare skin below
+    if y < 32:
+        return _mix(WD_WOOL_D, WD_WOOL, rng.random())
+    return _mix(WD_FACE, WD_FACE_L, (y % 5) / 5.0)
+
+
 def gen_creatures():
     # head_w / head_d are the model head's width & depth (for front-face eye placement).
     _gen_creature("xertz_stalker", _xs_body, _xs_head, _xs_detail,
@@ -1059,6 +1146,13 @@ def gen_creatures():
                   head_w=8, head_d=8, eye=CS_EMBER, socket=CS_OBS, seed=504, glint=CS_GLOW_EYE)
     _gen_creature("frost_strider", _fs_body, _fs_head, _fs_detail,
                   head_w=5, head_d=7, eye=FS_GLOW, socket=FS_DEEP, seed=505, glint=FS_GLOW)
+    # Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5): friendly, mostly non-emissive.
+    _gen_creature("meadow_loper", _ml_body, _ml_head, _ml_detail,
+                  head_w=6, head_d=6, eye=(38, 34, 26, 255), socket=ML_DARK, seed=506, big_eyes=True)
+    _gen_creature("ember_strutter", _es_body, _es_head, _es_detail,
+                  head_w=4, head_d=4, eye=(30, 16, 12, 255), socket=ES_DARK, seed=507)
+    _gen_creature("woolly_drift", _wd_body, _wd_head, _wd_detail,
+                  head_w=5, head_d=5, eye=(30, 36, 48, 255), socket=WD_FACE, seed=508, big_eyes=True)
 
 
 # Egg silhouette mask (per-row x range) for a 16x16 vanilla-style spawn egg: pointed top, round
@@ -1102,6 +1196,70 @@ def gen_spawn_eggs():
     gen_spawn_egg("greenling", GL_BODY, GL_LITE, GL_DARK, 613)
     gen_spawn_egg("cinder_stalker", CS_ROCK2, CS_ORANGE, CS_OBS, 614)
     gen_spawn_egg("frost_strider", FS_BODY, FS_PLATE, FS_DEEP, 615)
+    gen_spawn_egg("meadow_loper", ML_BODY, ML_LITE, ML_DARK, 616)
+    gen_spawn_egg("ember_strutter", ES_BODY, ES_EMBER, ES_DARK, 617)
+    gen_spawn_egg("woolly_drift", WD_WOOL, WD_ICE, WD_FACE, 618)
+
+
+def gen_loper_haunch():
+    """Item: a hearty haunch — red-brown meat on a bone end (Meadow Loper drop)."""
+    MEAT = (172, 80, 56, 255)
+    MEAT_D = (128, 54, 38, 255)
+    MEAT_HI = (210, 120, 88, 255)
+    BONE = (232, 226, 206, 255)
+    BONE_D = (190, 184, 162, 255)
+    img = new_img()
+    px = img.load()
+    rng = random.Random(701)
+    # meat mass (diagonal oval, lower-left)
+    for y in range(5, 14):
+        for x in range(2, 11):
+            d = ((x - 6) ** 2 / 18.0 + (y - 9.5) ** 2 / 14.0)
+            if d <= 1.0:
+                px[x, y] = MEAT_D if d > 0.7 else (MEAT_HI if rng.random() < 0.15 else MEAT)
+    # bone sticking out top-right
+    for i in range(4):
+        px[10 + i, 5 - i // 2] = BONE if i < 3 else BONE_D
+        px[10 + i, 6 - i // 2] = BONE_D
+    px[14, 3] = BONE
+    px[13, 2] = BONE
+    save(img, os.path.join(ITEM_DIR, "loper_haunch.png"))
+
+
+def gen_strutter_drumstick():
+    """Item: a lean drumstick — ember-bird meat on a thin bone (Ember Strutter drop)."""
+    MEAT = (196, 110, 60, 255)
+    MEAT_D = (150, 78, 42, 255)
+    BONE = (232, 226, 206, 255)
+    img = new_img()
+    px = img.load()
+    rng = random.Random(702)
+    for y in range(3, 10):
+        for x in range(3, 10):
+            d = ((x - 6) ** 2 + (y - 6) ** 2) ** 0.5
+            if d <= 3.4:
+                px[x, y] = MEAT_D if d > 2.4 else (MEAT if rng.random() > 0.1 else MEAT_D)
+    for i in range(5):  # the bone shaft to the lower-right
+        px[9 + i // 2, 9 + i] = BONE
+    px[11, 14] = BONE
+    px[12, 14] = BONE
+    save(img, os.path.join(ITEM_DIR, "strutter_drumstick.png"))
+
+
+def gen_drift_fleece():
+    """Item: a tuft of insulating fleece — pale wool with frost glints (Woolly Drift drop)."""
+    img = new_img()
+    px = img.load()
+    rng = random.Random(703)
+    for y in range(3, 13):
+        for x in range(2, 14):
+            d = ((x - 8) ** 2 / 30.0 + (y - 8) ** 2 / 20.0)
+            if d <= 1.0:
+                base = _mix(WD_WOOL_D, WD_WOOL, rng.random())
+                if rng.random() < 0.06:
+                    base = WD_ICE
+                px[x, y] = base
+    save(img, os.path.join(ITEM_DIR, "drift_fleece.png"))
 
 
 def gen_entity_rocket():
@@ -1179,6 +1337,124 @@ def gen_terraformer():
     for (rx, ry) in [(2, 2), (13, 2)]:
         px[rx, ry] = METAL_L
     save(img, os.path.join(BLOCK_DIR, "terraformer.png"))
+
+
+def gen_hydration_module():
+    """Metal machine face with a glacite-cyan melt core and a water band (deeper terraform §3.1)."""
+    rng = random.Random(821)
+    img = new_img()
+    noise_fill(img, METAL, rng)
+    px = img.load()
+    bevel(img, METAL_L, METAL_D)
+    # water band across the lower third (the melt output)
+    WATER = (40, 110, 200, 255)
+    WATER_D = (24, 70, 150, 255)
+    for y in range(11, 14):
+        for x in range(2, 14):
+            px[x, y] = WATER if (x + y) % 2 == 0 else WATER_D
+    # frost crown on the band (glacite going in)
+    for x in range(2, 14):
+        px[x, 10] = I_CYAN if x % 2 == 0 else I_FROST
+    # central glowing glacite core
+    cx, cy = 8, 6
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx + 0.5) ** 2 + (y - cy + 0.5) ** 2) ** 0.5
+            if d <= 1.6:
+                px[x, y] = I_WHITE
+            elif d <= 2.6:
+                px[x, y] = I_FROST
+            elif d <= 3.4:
+                px[x, y] = I_BLUE
+    # corner rivets
+    for (rx, ry) in [(2, 2), (13, 2)]:
+        px[rx, ry] = METAL_L
+    save(img, os.path.join(BLOCK_DIR, "hydration_module.png"))
+
+
+def gen_terraform_monitor():
+    """Metal readout block: dark screen face with a green stage-bar chart (deeper terraform §6)."""
+    rng = random.Random(822)
+    img = new_img()
+    noise_fill(img, METAL, rng)
+    px = img.load()
+    bevel(img, METAL_L, METAL_D)
+    # dark inset screen
+    SCREEN = (8, 14, 12, 255)
+    for y in range(3, 13):
+        for x in range(3, 13):
+            px[x, y] = SCREEN
+    # three rising stage bars: rooted green, hydrated cyan, living bright
+    for (bx, h, col) in ((4, 3, G_GREEN), (7, 5, I_CYAN), (10, 7, G_GLOW)):
+        for y in range(12 - h, 12):
+            for x in range(bx, bx + 2):
+                px[x, y] = col
+    # corner rivets
+    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        px[rx, ry] = METAL_L
+    save(img, os.path.join(BLOCK_DIR, "terraform_monitor.png"))
+
+
+def gen_gui_machine_panel(name, accent, accent_d, slots=((80, 46),)):
+    """A standard 176x166 machine-screen hull in a 256x256 sheet (TexturedContainerScreen):
+    sci-fi hull noise, accent frame, recessed readout zone and 18x18 slot sockets for the
+    machine slots + the standard player inventory at (8,84)/(8,142)."""
+    W, H = 176, 166
+    img = Image.new("RGBA", (256, 256), CLEAR)
+    px = img.load()
+    rng = random.Random(hash(name) & 0xFFFF)
+    INK = (5, 8, 13, 255)
+    HULL = [(13, 17, 25, 255), (15, 20, 29, 255), (11, 15, 22, 255)]
+    PANEL = (8, 11, 17, 255)
+    SOCKET = (20, 26, 36, 255)
+    SOCKET_HI = (44, 56, 74, 255)
+    for y in range(H):
+        for x in range(W):
+            px[x, y] = rng.choice(HULL)
+    for i in range(W):  # outer frame
+        px[i, 0] = accent
+        px[i, H - 1] = accent_d
+    for i in range(H):
+        px[0, i] = accent
+        px[W - 1, i] = accent_d
+    for y in range(1, H - 1):  # inset shadow line
+        px[1, y] = INK
+        px[W - 2, y] = INK
+    for x in range(1, W - 1):
+        px[x, 1] = INK
+        px[x, H - 2] = INK
+
+    def recess(x0, y0, x1, y1):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                px[x, y] = PANEL
+        for x in range(x0, x1):
+            px[x, y0] = INK
+            px[x, y1 - 1] = (30, 40, 56, 255)
+        for y in range(y0, y1):
+            px[x0, y] = INK
+            px[x1 - 1, y] = (30, 40, 56, 255)
+
+    def socket(sx, sy):  # an 18x18 vanilla-style slot at slot coords (item drawn at sx+1, sy+1)
+        for y in range(sy - 1, sy + 17):
+            for x in range(sx - 1, sx + 17):
+                px[x, y] = SOCKET
+        for x in range(sx - 1, sx + 17):
+            px[x, sy - 1] = INK
+            px[x, sy + 16] = SOCKET_HI
+        for y in range(sy - 1, sy + 17):
+            px[sx - 1, y] = INK
+            px[sx + 16, y] = SOCKET_HI
+
+    recess(6, 16, 170, 80)  # readout zone above the inventory
+    for (sx, sy) in slots:
+        socket(sx, sy)
+    for row in range(3):  # player inventory
+        for col in range(9):
+            socket(8 + col * 18, 84 + row * 18)
+    for col in range(9):  # hotbar
+        socket(8 + col * 18, 142)
+    save(img, os.path.join(GUI_DIR, name + ".png"))
 
 
 def gen_entity_glow(name, threshold=205):
@@ -1692,10 +1968,19 @@ if __name__ == "__main__":
     gen_oxygen_particle()
     gen_oxygen_hud_icon()
     gen_terraformer()
+    # Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md).
+    gen_hydration_module()
+    gen_gui_machine_panel("hydration_module", (120, 210, 240, 255), (40, 90, 130, 255))
+    gen_terraform_monitor()
+    gen_gui_machine_panel("terraform_monitor", (84, 212, 106, 255), (30, 90, 44, 255), slots=())
     # Creature base textures (additive; (re)render only under the creature-scoped --creatures flag).
     gen_creatures()
     gen_spawn_eggs()
-    for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker", "frost_strider"):
+    gen_loper_haunch()
+    gen_strutter_drumstick()
+    gen_drift_fleece()
+    for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker", "frost_strider",
+                  "meadow_loper", "ember_strutter", "woolly_drift"):
         gen_entity_glow(_name)
     gen_ore(STONE, "nerosium_ore")
     gen_ore(DEEP, "deepslate_nerosium_ore")

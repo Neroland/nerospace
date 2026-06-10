@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "nerospace:item/ember_strutter_spawn_egg"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_drift_fleece": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:drift_fleece"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:string_from_drift_fleece"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_drift_fleece"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:string_from_drift_fleece"
+    ]
+  }
+}

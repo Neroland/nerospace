@@ -322,6 +322,14 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> TERRAFORMER_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.TERRAFORMER);
 
+    // Hydration Module block item (DEEPER_TERRAFORM_DESIGN.md §3.1).
+    public static final DeferredItem<BlockItem> HYDRATION_MODULE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.HYDRATION_MODULE);
+
+    // Terraform Monitor block item (DEEPER_TERRAFORM_DESIGN.md §6).
+    public static final DeferredItem<BlockItem> TERRAFORM_MONITOR_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.TERRAFORM_MONITOR);
+
     // Power grid block items.
     public static final DeferredItem<BlockItem> UNIVERSAL_PIPE_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.UNIVERSAL_PIPE);
@@ -379,6 +387,25 @@ public final class ModItems {
             "cinder_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.CINDER_STALKER));
     public static final DeferredItem<Item> FROST_STRIDER_SPAWN_EGG = ITEMS.registerItem(
             "frost_strider_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.FROST_STRIDER));
+
+    // --- Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5) ----------------
+    public static final DeferredItem<Item> MEADOW_LOPER_SPAWN_EGG = ITEMS.registerItem(
+            "meadow_loper_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.MEADOW_LOPER));
+    public static final DeferredItem<Item> EMBER_STRUTTER_SPAWN_EGG = ITEMS.registerItem(
+            "ember_strutter_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.EMBER_STRUTTER));
+    public static final DeferredItem<Item> WOOLLY_DRIFT_SPAWN_EGG = ITEMS.registerItem(
+            "woolly_drift_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.WOOLLY_DRIFT));
+
+    /** Meadow Loper drop: a hearty haunch (no cooked variant in slice 1 — design §13). */
+    public static final DeferredItem<Item> LOPER_HAUNCH = ITEMS.registerItem(
+            "loper_haunch", props -> new Item(props.food(new net.minecraft.world.food.FoodProperties.Builder()
+                    .nutrition(8).saturationModifier(0.8F).build())));
+    /** Ember Strutter drop: a lean drumstick. */
+    public static final DeferredItem<Item> STRUTTER_DRUMSTICK = ITEMS.registerItem(
+            "strutter_drumstick", props -> new Item(props.food(new net.minecraft.world.food.FoodProperties.Builder()
+                    .nutrition(6).saturationModifier(0.6F).build())));
+    /** Woolly Drift drop: insulating fleece — crafts into string (design §5). */
+    public static final DeferredItem<Item> DRIFT_FLEECE = ITEMS.registerSimpleItem("drift_fleece");
 
     private ModItems() {
     }

@@ -72,6 +72,10 @@ public class NerospaceClient {
         event.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
         event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
         event.register(ModMenuTypes.TERRAFORMER.get(), TerraformerScreen::new);
+        event.register(ModMenuTypes.HYDRATION_MODULE.get(),
+                za.co.neroland.nerospace.client.HydrationModuleScreen::new);
+        event.register(ModMenuTypes.TERRAFORM_MONITOR.get(),
+                za.co.neroland.nerospace.client.TerraformMonitorScreen::new);
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
         event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
@@ -126,6 +130,22 @@ public class NerospaceClient {
                 context -> new GreenxertzCreatureRenderer(context,
                         new FrostStriderModel(context.bakeLayer(FrostStriderModel.LAYER)),
                         entityTexture("frost_strider"), 1.0F, 1.0F, 1.0F, 0.5F, entityGlow("frost_strider")));
+        // Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5).
+        event.registerEntityRenderer(ModEntities.MEADOW_LOPER.get(),
+                context -> new GreenxertzCreatureRenderer(context,
+                        new za.co.neroland.nerospace.client.MeadowLoperModel(
+                                context.bakeLayer(za.co.neroland.nerospace.client.MeadowLoperModel.LAYER)),
+                        entityTexture("meadow_loper"), 1.0F, 1.0F, 1.0F, 0.6F, entityGlow("meadow_loper")));
+        event.registerEntityRenderer(ModEntities.EMBER_STRUTTER.get(),
+                context -> new GreenxertzCreatureRenderer(context,
+                        new za.co.neroland.nerospace.client.EmberStrutterModel(
+                                context.bakeLayer(za.co.neroland.nerospace.client.EmberStrutterModel.LAYER)),
+                        entityTexture("ember_strutter"), 1.0F, 1.0F, 1.0F, 0.3F, entityGlow("ember_strutter")));
+        event.registerEntityRenderer(ModEntities.WOOLLY_DRIFT.get(),
+                context -> new GreenxertzCreatureRenderer(context,
+                        new za.co.neroland.nerospace.client.WoollyDriftModel(
+                                context.bakeLayer(za.co.neroland.nerospace.client.WoollyDriftModel.LAYER)),
+                        entityTexture("woolly_drift"), 1.0F, 1.0F, 1.0F, 0.5F, entityGlow("woolly_drift")));
 
         // Universal Pipe: streams + travelling items (the tube itself is the multipart block model).
         event.registerBlockEntityRenderer(
@@ -146,6 +166,12 @@ public class NerospaceClient {
         event.registerLayerDefinition(GreenlingModel.LAYER, GreenlingModel::createBodyLayer);
         event.registerLayerDefinition(CinderStalkerModel.LAYER, CinderStalkerModel::createBodyLayer);
         event.registerLayerDefinition(FrostStriderModel.LAYER, FrostStriderModel::createBodyLayer);
+        event.registerLayerDefinition(za.co.neroland.nerospace.client.MeadowLoperModel.LAYER,
+                za.co.neroland.nerospace.client.MeadowLoperModel::createBodyLayer);
+        event.registerLayerDefinition(za.co.neroland.nerospace.client.EmberStrutterModel.LAYER,
+                za.co.neroland.nerospace.client.EmberStrutterModel::createBodyLayer);
+        event.registerLayerDefinition(za.co.neroland.nerospace.client.WoollyDriftModel.LAYER,
+                za.co.neroland.nerospace.client.WoollyDriftModel::createBodyLayer);
         event.registerLayerDefinition(RocketModel.LAYER, RocketModel::createBodyLayer);
     }
 

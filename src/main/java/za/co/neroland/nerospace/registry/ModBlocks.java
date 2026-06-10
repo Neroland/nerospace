@@ -12,6 +12,8 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlock;
 import za.co.neroland.nerospace.machine.FuelTankBlock;
+import za.co.neroland.nerospace.machine.HydrationModuleBlock;
+import za.co.neroland.nerospace.machine.TerraformMonitorBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlock;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
@@ -249,6 +251,34 @@ public final class ModBlocks {
     public static final DeferredBlock<TerraformerBlock> TERRAFORMER = BLOCKS.registerBlock(
             "terraformer",
             TerraformerBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    /**
+     * Hydration Module (DEEPER_TERRAFORM_DESIGN.md §3.1): melts glacite into hydration units for a
+     * TOUCHING Terraformer's water stage. Backed by
+     * {@link za.co.neroland.nerospace.machine.HydrationModuleBlockEntity}.
+     */
+    public static final DeferredBlock<HydrationModuleBlock> HYDRATION_MODULE = BLOCKS.registerBlock(
+            "hydration_module",
+            HydrationModuleBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
+
+    /**
+     * Terraform Monitor (DEEPER_TERRAFORM_DESIGN.md §6): stage/radii/stall readout; comparator =
+     * local terraform stage. Backed by
+     * {@link za.co.neroland.nerospace.machine.TerraformMonitorBlockEntity}.
+     */
+    public static final DeferredBlock<TerraformMonitorBlock> TERRAFORM_MONITOR = BLOCKS.registerBlock(
+            "terraform_monitor",
+            TerraformMonitorBlock::new,
             props -> props
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)

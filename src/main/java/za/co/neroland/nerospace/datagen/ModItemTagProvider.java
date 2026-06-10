@@ -74,5 +74,10 @@ public class ModItemTagProvider extends ItemTagsProvider {
         // Glacite is a gem-style drop (future cold-suit / terraforming feedstock).
         this.tag(Tags.Items.GEMS).add(ModItems.GLACITE.get());
         this.tag(ModTags.Items.GEMS_GLACITE).add(ModItems.GLACITE.get());
+
+        // Hydration Module feedstock (DEEPER_TERRAFORM_DESIGN.md §3.1): glacite-only by default —
+        // vanilla ice would bypass the Glacira gate; packs can widen the tag.
+        this.tag(ModTags.Items.HYDRATION_INPUT)
+                .add(ModItems.GLACITE.get(), ModItems.GLACITE_BLOCK_ITEM.get());
     }
 }

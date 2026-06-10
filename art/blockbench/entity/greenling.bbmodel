@@ -649,7 +649,7 @@
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\greenling.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\greenling.png",
       "name": "greenling.png",
       "folder": "entity",
       "namespace": "nerospace",
