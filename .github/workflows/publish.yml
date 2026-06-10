@@ -1,14 +1,20 @@
 name: Publish
 
-# Builds and publishes the mod whenever mod_version is bumped in gradle.properties
-# on the main branch. The detect job compares the current mod_version against the
-# previous commit and only proceeds when it actually changed, so ordinary commits
-# that touch gradle.properties for other reasons do not trigger a release.
+# Builds and publishes the mod whenever the mod_version in gradle.properties has no
+# published release yet. The detect job checks for the release tag (v<mod_version>)
+# that every publish creates — NOT the previous commit — so a version bumped two (or
+# twenty) commits ago still publishes on the next push, and re-running the workflow
+# is always safe (already-released versions are skipped by their tag).
+#
+# Escape hatches: `workflow_dispatch` runs the same check manually (catches up a
+# missed release without a dummy commit); if a publish half-failed AFTER its tag was
+# created, delete the v<version> tag/release and re-run.
 on:
   push:
     branches: [main]
     paths:
       - gradle.properties
+  workflow_dispatch:
 
 # Allow the workflow to create GitHub Releases.
 permissions:
@@ -16,7 +22,7 @@ permissions:
 
 jobs:
   detect:
-    name: Detect version bump
+    name: Detect unreleased version
     runs-on: ubuntu-latest
     outputs:
       changed: ${{ steps.check.outputs.changed }}
@@ -25,30 +31,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          # Need the previous commit to diff mod_version.
-          fetch-depth: 2
+          # Tags are the release ledger — fetch them all for the existence check.
+          fetch-depth: 1
+          fetch-tags: true
 
-      - name: Compare mod_version against previous commit
+      - name: Check whether mod_version already has a release tag
         id: check
         run: |
           read_version() { grep -E '^mod_version=' "$1" | head -n1 | cut -d= -f2 | tr -d '[:space:]'; }
 
           CURRENT="$(read_version gradle.properties)"
-          PREVIOUS="$(git show HEAD~1:gradle.properties 2>/dev/null | grep -E '^mod_version=' | head -n1 | cut -d= -f2 | tr -d '[:space:]' || true)"
-
-          echo "current=$CURRENT previous=$PREVIOUS"
+          echo "current=$CURRENT"
 
           if [ -z "$CURRENT" ]; then
             echo "::error::Could not read mod_version from gradle.properties"
             exit 1
           fi
 
-          if [ "$CURRENT" != "$PREVIOUS" ]; then
-            echo "mod_version changed: ${PREVIOUS:-<none>} -> $CURRENT"
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "mod_version unchanged ($CURRENT); skipping release."
+          if git rev-parse -q --verify "refs/tags/v$CURRENT" >/dev/null; then
+            echo "v$CURRENT is already released (tag exists); skipping."
             echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "v$CURRENT has no release tag yet; publishing."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
           echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
 

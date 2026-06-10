@@ -192,7 +192,10 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    // Shaped model (art overhaul §3): without this the renderer culls the
+                    // faces of blocks behind the model's gaps and you see through the world.
+                    .noOcclusion());
 
     // --- Rockets (Phase 4) --------------------------------------------------
 
@@ -204,7 +207,8 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    .noOcclusion());   // 3px plate model — don't cull neighbours' faces
 
     /**
      * Launch Gantry module (LAUNCH_PAD_DESIGN.md): on a 5x5 pad's border ring it forms the Heavy
@@ -216,7 +220,8 @@ public final class ModBlocks {
                             .mapColor(MapColor.METAL)
                             .strength(3.5F, 6.0F)
                             .requiresCorrectToolForDrops()
-                            .sound(SoundType.METAL));
+                            .sound(SoundType.METAL)
+                            .noOcclusion()); // open tower model (art overhaul §3)
 
     /**
      * Fuel Tank (Phase 8a): a fuel-storage machine that auto-fuels a rocket on an adjacent launch
@@ -229,7 +234,8 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()); // frame-and-core tank model (art overhaul §3)
 
     /**
      * Oxygen Generator (Phase 8c): a machine that projects a breathable bubble while powered. Backed
@@ -242,7 +248,8 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()); // domed model (art overhaul §3)
 
     /**
      * Terraformer (terraform design §2): a machine that advances an expanding terrain-conversion
@@ -255,7 +262,8 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()); // tray-and-body model (art overhaul §3)
 
     /**
      * Hydration Module (DEEPER_TERRAFORM_DESIGN.md §3.1): melts glacite into hydration units for a
@@ -269,7 +277,8 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()); // windowed model (art overhaul §3)
 
     /**
      * Terraform Monitor (DEEPER_TERRAFORM_DESIGN.md §6): stage/radii/stall readout; comparator =
@@ -283,7 +292,8 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()); // pedestal-screen model (art overhaul §3)
 
     // --- Power grid (Universal Pipe + generators) ---------------------------
 
@@ -306,7 +316,8 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()); // chimney model (art overhaul §3)
 
     /** Passive Generator: trickles energy from a nerosium core. */
     public static final DeferredBlock<PassiveGeneratorBlock> PASSIVE_GENERATOR = BLOCKS.registerBlock(
@@ -316,44 +327,47 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()); // pedestal-and-panel model (art overhaul §3)
 
     // --- Storage endpoints (battery / tanks / item store + creative sources) ---
 
+    // All storage endpoints carry shaped models (art overhaul §3) — noOcclusion stops the renderer
+    // culling the world behind their frames/caps.
     public static final DeferredBlock<za.co.neroland.nerospace.storage.BatteryBlock> BATTERY =
             BLOCKS.registerBlock("battery", za.co.neroland.nerospace.storage.BatteryBlock::new,
                     props -> props.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
-                            .requiresCorrectToolForDrops().sound(SoundType.METAL));
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion());
 
     public static final DeferredBlock<za.co.neroland.nerospace.storage.CreativeBatteryBlock> CREATIVE_BATTERY =
             BLOCKS.registerBlock("creative_battery", za.co.neroland.nerospace.storage.CreativeBatteryBlock::new,
                     props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
-                            .sound(SoundType.METAL));
+                            .sound(SoundType.METAL).noOcclusion());
 
     public static final DeferredBlock<za.co.neroland.nerospace.storage.FluidTankBlock> FLUID_TANK =
             BLOCKS.registerBlock("fluid_tank", za.co.neroland.nerospace.storage.FluidTankBlock::new,
                     props -> props.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
-                            .requiresCorrectToolForDrops().sound(SoundType.METAL));
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion());
 
     public static final DeferredBlock<za.co.neroland.nerospace.storage.CreativeFluidTankBlock> CREATIVE_FLUID_TANK =
             BLOCKS.registerBlock("creative_fluid_tank", za.co.neroland.nerospace.storage.CreativeFluidTankBlock::new,
                     props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
-                            .sound(SoundType.METAL));
+                            .sound(SoundType.METAL).noOcclusion());
 
     public static final DeferredBlock<za.co.neroland.nerospace.storage.GasTankBlock> GAS_TANK =
             BLOCKS.registerBlock("gas_tank", za.co.neroland.nerospace.storage.GasTankBlock::new,
                     props -> props.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
-                            .requiresCorrectToolForDrops().sound(SoundType.METAL));
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion());
 
     public static final DeferredBlock<za.co.neroland.nerospace.storage.CreativeGasTankBlock> CREATIVE_GAS_TANK =
             BLOCKS.registerBlock("creative_gas_tank", za.co.neroland.nerospace.storage.CreativeGasTankBlock::new,
                     props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
-                            .sound(SoundType.METAL));
+                            .sound(SoundType.METAL).noOcclusion());
 
     public static final DeferredBlock<za.co.neroland.nerospace.storage.ItemStoreBlock> ITEM_STORE =
             BLOCKS.registerBlock("item_store", za.co.neroland.nerospace.storage.ItemStoreBlock::new,
                     props -> props.mapColor(MapColor.METAL).strength(3.0F, 6.0F)
-                            .requiresCorrectToolForDrops().sound(SoundType.METAL));
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion());
 
     public static final DeferredBlock<za.co.neroland.nerospace.storage.CreativeItemStoreBlock> CREATIVE_ITEM_STORE =
             BLOCKS.registerBlock("creative_item_store", za.co.neroland.nerospace.storage.CreativeItemStoreBlock::new,
@@ -371,7 +385,8 @@ public final class ModBlocks {
                     props -> props
                             .mapColor(MapColor.COLOR_PURPLE)
                             .strength(1.5F, 6.0F)
-                            .sound(SoundType.STONE));
+                            .sound(SoundType.STONE)
+                            .noOcclusion()); // pedestal model (art overhaul §3)
 
     // --- Rocket Fuel liquid block (Phase 7b) --------------------------------
 
