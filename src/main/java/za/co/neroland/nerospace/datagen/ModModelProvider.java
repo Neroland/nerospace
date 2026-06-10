@@ -5,6 +5,7 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.blockstates.ConditionBuilder;
 import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
@@ -41,9 +42,10 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get());
         blockModels.createTrivialCube(ModBlocks.NEROSIUM_BLOCK.get());
         blockModels.createTrivialCube(ModBlocks.RAW_NEROSIUM_BLOCK.get());
-        // Grinder uses a trivial cube for now (single variant applies to all facings); a directional
-        // oriented model can be layered on later without changing the block.
-        blockModels.createTrivialCube(ModBlocks.NEROSIUM_GRINDER.get());
+        // Art overhaul §3: every machine is a shaped, element-built model (visual only — collision
+        // stays the full cube, which is the oxygen-sealing contract). FACING machines dispatch the
+        // model on the blockstate so the front follows the placer.
+        registerShapedMachines(blockModels);
 
         // Phase 3 — Greenxertz ores + storage block.
         blockModels.createTrivialCube(ModBlocks.NEROSTEEL_ORE.get());
@@ -70,36 +72,12 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(
                 BlockModelGenerators.createSimpleBlock(pad, BlockModelGenerators.plainVariant(padModel)));
 
-        blockModels.createTrivialCube(ModBlocks.LAUNCH_GANTRY.get());
-
-        // Phase 8a — fuel tank machine (auto-fuels a rocket on an adjacent pad).
-        blockModels.createTrivialCube(ModBlocks.FUEL_TANK.get());
-
-        // Phase 8c — oxygen generator machine.
-        blockModels.createTrivialCube(ModBlocks.OXYGEN_GENERATOR.get());
-
-        // Terraform design — terraformer machine.
-        blockModels.createTrivialCube(ModBlocks.TERRAFORMER.get());
-
-        // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md §3.1/§6) — hydration module + monitor.
-        blockModels.createTrivialCube(ModBlocks.HYDRATION_MODULE.get());
-        blockModels.createTrivialCube(ModBlocks.TERRAFORM_MONITOR.get());
+        // Launch Gantry — shaped tower in registerShapedMachines (art overhaul §3).
 
         // Power grid — connection-aware translucent pipe (multipart: core + one arm per connected
-        // face; translucency comes from the texture's alpha) + generators.
+        // face; translucency comes from the texture's alpha). Machines + storage endpoints are
+        // shaped in registerShapedMachines (art overhaul §3).
         registerUniversalPipe(blockModels);
-        blockModels.createTrivialCube(ModBlocks.COMBUSTION_GENERATOR.get());
-        blockModels.createTrivialCube(ModBlocks.PASSIVE_GENERATOR.get());
-
-        // Storage endpoints + creative sources.
-        blockModels.createTrivialCube(ModBlocks.BATTERY.get());
-        blockModels.createTrivialCube(ModBlocks.CREATIVE_BATTERY.get());
-        blockModels.createTrivialCube(ModBlocks.FLUID_TANK.get());
-        blockModels.createTrivialCube(ModBlocks.CREATIVE_FLUID_TANK.get());
-        blockModels.createTrivialCube(ModBlocks.GAS_TANK.get());
-        blockModels.createTrivialCube(ModBlocks.CREATIVE_GAS_TANK.get());
-        blockModels.createTrivialCube(ModBlocks.ITEM_STORE.get());
-        blockModels.createTrivialCube(ModBlocks.CREATIVE_ITEM_STORE.get());
 
         // Phase 7 — Cindara ore + storage block.
         blockModels.createTrivialCube(ModBlocks.CINDRITE_ORE.get());
@@ -120,8 +98,7 @@ public class ModModelProvider extends ModelProvider {
         // drawn by the FluidType render, not a block model).
         blockModels.createParticleOnlyBlock(ModBlocks.ROCKET_FUEL_BLOCK.get());
 
-        // Star Guide pedestal (bespoke model is an art-pass item; trivial cube for now).
-        blockModels.createTrivialCube(ModBlocks.STAR_GUIDE.get());
+        // Star Guide pedestal — shaped in registerShapedMachines (art overhaul §3).
 
         // Flat (item/generated) item models.
         itemModels.generateFlatItem(ModItems.RAW_NEROSIUM.get(), ModelTemplates.FLAT_ITEM);
@@ -206,6 +183,203 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.LOPER_HAUNCH.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.STRUTTER_DRUMSTICK.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.DRIFT_FLEECE.get(), ModelTemplates.FLAT_ITEM);
+    }
+
+    // --- Art overhaul §3: shaped machines (element-built; visual only, collision untouched) -----
+
+    /** The tank-content core texture slot ({@code fluid/gas/fuel_tank_core.png}). */
+    private static final TextureSlot CORE = TextureSlot.create("core");
+
+    /** side (= the block's own texture) + particle; optional {@code _front} / {@code _top}. */
+    private TextureMapping machineMapping(Block block, boolean front, boolean top) {
+        var side = TextureMapping.getBlockTexture(block);
+        TextureMapping mapping = new TextureMapping()
+                .put(TextureSlot.SIDE, side)
+                .put(TextureSlot.PARTICLE, side);
+        if (front) {
+            mapping.put(TextureSlot.FRONT, TextureMapping.getBlockTexture(block, "_front"));
+        }
+        if (top) {
+            mapping.put(TextureSlot.TOP, TextureMapping.getBlockTexture(block, "_top"));
+        }
+        return mapping;
+    }
+
+    /** Creates the block's default-location model and wires the blockstate (rotating if facing). */
+    private void shapedBlock(BlockModelGenerators blockModels, Block block,
+            ExtendedModelTemplate template, TextureMapping mapping, boolean facing) {
+        Identifier model = template.create(
+                ModelLocationUtils.getModelLocation(block), mapping, blockModels.modelOutput);
+        if (facing) {
+            blockModels.blockStateOutput.accept(
+                    MultiVariantGenerator.dispatch(block, BlockModelGenerators.plainVariant(model))
+                            .with(BlockModelGenerators.ROTATION_HORIZONTAL_FACING));
+        } else {
+            blockModels.blockStateOutput.accept(
+                    BlockModelGenerators.createSimpleBlock(block, BlockModelGenerators.plainVariant(model)));
+        }
+    }
+
+    /** A template builder with the standard machine slots pre-declared. */
+    private static ExtendedModelTemplateBuilder machineTemplate(boolean front, boolean top) {
+        ExtendedModelTemplateBuilder builder = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.SIDE)
+                .requiredTextureSlot(TextureSlot.PARTICLE);
+        if (front) {
+            builder.requiredTextureSlot(TextureSlot.FRONT);
+        }
+        if (top) {
+            builder.requiredTextureSlot(TextureSlot.TOP);
+        }
+        return builder;
+    }
+
+    /** All faces of the element take {@code slot}, except {@code north} -> FRONT when given. */
+    private static void faces(net.neoforged.neoforge.client.model.generators.template.ElementBuilder e,
+            TextureSlot slot, TextureSlot north) {
+        e.allFaces((dir, face) -> face.texture(
+                north != null && dir == net.minecraft.core.Direction.NORTH ? north : slot));
+    }
+
+    private void registerShapedMachines(BlockModelGenerators blockModels) {
+        // Nerosium Grinder (FACING): body + hopper-mouth rim; teeth painted into the front texture.
+        shapedBlock(blockModels, ModBlocks.NEROSIUM_GRINDER.get(), machineTemplate(true, true)
+                .element(e -> { e.from(0, 0, 0).to(16, 14, 16); faces(e, TextureSlot.SIDE, TextureSlot.FRONT);
+                    e.face(net.minecraft.core.Direction.UP, f -> f.texture(TextureSlot.TOP)); })
+                .element(e -> { e.from(0, 14, 0).to(16, 16, 2); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(0, 14, 14).to(16, 16, 16); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(0, 14, 2).to(2, 16, 14); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(14, 14, 2).to(16, 16, 14); faces(e, TextureSlot.SIDE, null); })
+                .build(), machineMapping(ModBlocks.NEROSIUM_GRINDER.get(), true, true), true);
+
+        // Combustion Generator (FACING): body + offset chimney stub; firebox front.
+        shapedBlock(blockModels, ModBlocks.COMBUSTION_GENERATOR.get(), machineTemplate(true, true)
+                .element(e -> { e.from(0, 0, 0).to(16, 13, 16); faces(e, TextureSlot.SIDE, TextureSlot.FRONT);
+                    e.face(net.minecraft.core.Direction.UP, f -> f.texture(TextureSlot.TOP)); })
+                .element(e -> { e.from(9, 13, 9).to(14, 16, 14); faces(e, TextureSlot.SIDE, null); })
+                .build(), machineMapping(ModBlocks.COMBUSTION_GENERATOR.get(), true, true), true);
+
+        // Passive Generator: pedestal under a floating collector panel.
+        shapedBlock(blockModels, ModBlocks.PASSIVE_GENERATOR.get(), machineTemplate(false, true)
+                .element(e -> { e.from(3, 0, 3).to(13, 7, 13); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(0, 7, 0).to(16, 11, 16); faces(e, TextureSlot.SIDE, null);
+                    e.face(net.minecraft.core.Direction.UP, f -> f.texture(TextureSlot.TOP)); })
+                .build(), machineMapping(ModBlocks.PASSIVE_GENERATOR.get(), false, true), false);
+
+        // Oxygen Generator: body + two-step electrolysis dome (dome faces use the top texture).
+        shapedBlock(blockModels, ModBlocks.OXYGEN_GENERATOR.get(), machineTemplate(false, true)
+                .element(e -> { e.from(0, 0, 0).to(16, 11, 16); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(3, 11, 3).to(13, 14, 13); faces(e, TextureSlot.TOP, null); })
+                .element(e -> { e.from(5, 14, 5).to(11, 16, 11); faces(e, TextureSlot.TOP, null); })
+                .build(), machineMapping(ModBlocks.OXYGEN_GENERATOR.get(), false, true), false);
+
+        // Terraformer (FACING): soil tray under the machine body; core lens on the front texture.
+        shapedBlock(blockModels, ModBlocks.TERRAFORMER.get(), machineTemplate(true, true)
+                .element(e -> { e.from(0, 0, 0).to(16, 4, 16); faces(e, TextureSlot.TOP, null); })
+                .element(e -> { e.from(1, 4, 1).to(15, 16, 15); faces(e, TextureSlot.SIDE, TextureSlot.FRONT); })
+                .build(), machineMapping(ModBlocks.TERRAFORMER.get(), true, true), true);
+
+        // Hydration Module (FACING): body + front melt-window plate + top tank ridge.
+        shapedBlock(blockModels, ModBlocks.HYDRATION_MODULE.get(), machineTemplate(true, true)
+                .element(e -> { e.from(0, 0, 1).to(16, 15, 16); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(2, 2, 0).to(14, 13, 1); faces(e, TextureSlot.FRONT, null); })
+                .element(e -> { e.from(3, 15, 4).to(13, 16, 12); faces(e, TextureSlot.TOP, null); })
+                .build(), machineMapping(ModBlocks.HYDRATION_MODULE.get(), true, true), true);
+
+        // Terraform Monitor (FACING): foot + pillar + tilted screen (front = the display).
+        shapedBlock(blockModels, ModBlocks.TERRAFORM_MONITOR.get(), machineTemplate(true, false)
+                .element(e -> { e.from(4, 0, 4).to(12, 2, 12); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(6, 2, 6).to(10, 6, 10); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(1, 5, 6).to(15, 14, 8); faces(e, TextureSlot.SIDE, TextureSlot.FRONT);
+                    e.rotation(r -> r.origin(8, 6, 7).singleAxis(net.minecraft.core.Direction.Axis.X, -22.5F)); })
+                .build(), machineMapping(ModBlocks.TERRAFORM_MONITOR.get(), true, false), true);
+
+        // Battery: body + twin terminal caps.
+        shapedBlock(blockModels, ModBlocks.BATTERY.get(), machineTemplate(false, true)
+                .element(e -> { e.from(1, 0, 1).to(15, 14, 15); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(3, 14, 3).to(7, 16, 7); faces(e, TextureSlot.TOP, null); })
+                .element(e -> { e.from(9, 14, 9).to(13, 16, 13); faces(e, TextureSlot.TOP, null); })
+                .build(), machineMapping(ModBlocks.BATTERY.get(), false, true), false);
+        shapedBlock(blockModels, ModBlocks.CREATIVE_BATTERY.get(), machineTemplate(false, true)
+                .element(e -> { e.from(1, 0, 1).to(15, 14, 15); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(3, 14, 3).to(7, 16, 7); faces(e, TextureSlot.TOP, null); })
+                .element(e -> { e.from(9, 14, 9).to(13, 16, 13); faces(e, TextureSlot.TOP, null); })
+                .build(), machineMapping(ModBlocks.CREATIVE_BATTERY.get(), false, true), false);
+
+        // Item Store (FACING): body + drawer-front plate (handle painted into the front texture).
+        shapedBlock(blockModels, ModBlocks.ITEM_STORE.get(), machineTemplate(true, true)
+                .element(e -> { e.from(0, 0, 1).to(16, 16, 16); faces(e, TextureSlot.SIDE, null);
+                    e.face(net.minecraft.core.Direction.UP, f -> f.texture(TextureSlot.TOP)); })
+                .element(e -> { e.from(1, 1, 0).to(15, 15, 1); faces(e, TextureSlot.FRONT, null); })
+                .build(), machineMapping(ModBlocks.ITEM_STORE.get(), true, true), true);
+        // Creative Item Store keeps the plain cube (no drawer — it conjures items, not stores them).
+        blockModels.createTrivialCube(ModBlocks.CREATIVE_ITEM_STORE.get());
+
+        // Tanks: a corner-beam frame around a visible content core (real depth, no cutout needed).
+        registerTank(blockModels, ModBlocks.FLUID_TANK.get());
+        registerTank(blockModels, ModBlocks.CREATIVE_FLUID_TANK.get());
+        registerTank(blockModels, ModBlocks.GAS_TANK.get());
+        registerTank(blockModels, ModBlocks.CREATIVE_GAS_TANK.get());
+        registerTank(blockModels, ModBlocks.FUEL_TANK.get());
+
+        // Launch Gantry: open service tower — four corner posts, a mid brace, a top platform.
+        ExtendedModelTemplateBuilder gantry = machineTemplate(false, true);
+        for (int[] c : new int[][] {{0, 0}, {13, 0}, {0, 13}, {13, 13}}) {
+            int x = c[0];
+            int z = c[1];
+            gantry.element(e -> { e.from(x, 0, z).to(x + 3, 14, z + 3); faces(e, TextureSlot.SIDE, null); });
+        }
+        shapedBlock(blockModels, ModBlocks.LAUNCH_GANTRY.get(), gantry
+                .element(e -> { e.from(3, 7, 3).to(13, 9, 13); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(0, 14, 0).to(16, 16, 16); faces(e, TextureSlot.SIDE, null);
+                    e.face(net.minecraft.core.Direction.UP, f -> f.texture(TextureSlot.TOP)); })
+                .build(), machineMapping(ModBlocks.LAUNCH_GANTRY.get(), false, true), false);
+
+        // Star Guide: pedestal — base slab, column, star-faced crown (single texture).
+        var starTexture = TextureMapping.getBlockTexture(ModBlocks.STAR_GUIDE.get());
+        TextureMapping starMapping = new TextureMapping()
+                .put(TextureSlot.ALL, starTexture).put(TextureSlot.PARTICLE, starTexture);
+        ExtendedModelTemplate starTemplate = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.ALL)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .element(e -> e.from(1, 0, 1).to(15, 3, 15)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .element(e -> e.from(5, 3, 5).to(11, 10, 11)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .element(e -> e.from(2, 10, 2).to(14, 13, 14)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .build();
+        shapedBlock(blockModels, ModBlocks.STAR_GUIDE.get(), starTemplate, starMapping, false);
+    }
+
+    /** A tank: 12 frame beams (the block's own texture) around a {@code <name>_core} content core. */
+    private void registerTank(BlockModelGenerators blockModels, Block block) {
+        var frame = TextureMapping.getBlockTexture(block);
+        TextureMapping mapping = new TextureMapping()
+                .put(TextureSlot.SIDE, frame)
+                .put(TextureSlot.PARTICLE, frame)
+                .put(CORE, TextureMapping.getBlockTexture(block, "_core"));
+        ExtendedModelTemplateBuilder builder = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.SIDE)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .requiredTextureSlot(CORE)
+                // content core, visible between the beams
+                .element(e -> { e.from(2, 2, 2).to(14, 14, 14); faces(e, CORE, null); });
+        // four vertical corner posts
+        for (int[] c : new int[][] {{0, 0}, {14, 0}, {0, 14}, {14, 14}}) {
+            int x = c[0];
+            int z = c[1];
+            builder.element(e -> { e.from(x, 0, z).to(x + 2, 16, z + 2); faces(e, TextureSlot.SIDE, null); });
+        }
+        // horizontal rails, bottom + top, both axes
+        for (int y : new int[] {0, 14}) {
+            int yy = y;
+            builder.element(e -> { e.from(2, yy, 0).to(14, yy + 2, 2); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(2, yy, 14).to(14, yy + 2, 16); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(0, yy, 2).to(2, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(14, yy, 2).to(16, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
+        }
+        shapedBlock(blockModels, block, builder.build(), mapping, false);
     }
 
     /**

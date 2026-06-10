@@ -10,7 +10,7 @@ import net.minecraft.util.StringRepresentable;
 public enum PipeResourceType implements StringRepresentable {
     ENERGY("energy", 0xFFE0506A),  // red — FE
     FLUID("fluid", 0xFF3C78F0),    // blue
-    GAS("gas", 0xFF54D46A),        // green
+    GAS("gas", 0xFF78D2F0),        // O₂ cyan (art overhaul A4: gas reads as oxygen everywhere)
     ITEM("item", 0xFFE8E8F4);      // white — items render as themselves
 
     public static final PipeResourceType[] VALUES = values();

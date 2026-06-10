@@ -1,1 +1,136 @@
-{"meta":{"format_version":"5.0","model_format":"java_block","box_uv":false},"name":"nerosium_grinder","parent":"","java_block_version":"1.21.11","ambientocclusion":true,"front_gui_light":false,"visible_box":[1,1,0],"variable_placeholders":"","multi_file_ruleset":"","variable_placeholder_buttons":[],"unhandled_root_fields":{},"resolution":{"width":16,"height":16},"elements":[{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[1,0,1],"to":[3,4,3],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,12,16,16],"texture":0},"east":{"uv":[12,12,16,16],"texture":0},"south":{"uv":[0,12,4,16],"texture":0},"west":{"uv":[0,12,4,16],"texture":0},"up":{"uv":[0,0,4,4],"texture":0},"down":{"uv":[0,12,4,16],"texture":0}},"type":"cube","uuid":"819b4881-3728-466f-ba7e-681b3cd04369"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[1,12,1],"to":[3,16,3],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,0,16,4],"texture":0},"east":{"uv":[12,0,16,4],"texture":0},"south":{"uv":[0,0,4,4],"texture":0},"west":{"uv":[0,0,4,4],"texture":0},"up":{"uv":[0,0,4,4],"texture":0},"down":{"uv":[0,12,4,16],"texture":0}},"type":"cube","uuid":"a509d0d4-52db-ecd7-2a59-0a8602fc6cd9"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[4,0,0],"to":[12,4,16],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[4,12,12,16],"texture":0},"east":{"uv":[0,12,16,16],"texture":0},"south":{"uv":[4,12,12,16],"texture":0},"west":{"uv":[0,12,16,16],"texture":0},"up":{"uv":[4,0,12,16],"texture":0},"down":{"uv":[4,0,12,16],"texture":0}},"type":"cube","uuid":"a5a25477-49b1-fc12-379b-1f079e153214"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[5,5,0],"to":[11,11,16],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[4,4,12,12],"texture":0},"east":{"uv":[0,4,16,12],"texture":0},"south":{"uv":[4,4,12,12],"texture":0},"west":{"uv":[0,4,16,12],"texture":0},"up":{"uv":[4,0,12,16],"texture":0},"down":{"uv":[4,0,12,16],"texture":0}},"type":"cube","uuid":"9feade82-31b6-f1ef-8a1c-927a8216d5c0"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[12,4,0],"to":[12,12,16],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[4,4,4,12],"texture":0},"east":{"uv":[0,4,16,12],"texture":0},"south":{"uv":[12,4,12,12],"texture":0},"west":{"uv":[0,4,16,12],"texture":0},"up":{"uv":[12,0,12,16],"texture":0},"down":{"uv":[12,0,12,16],"texture":0}},"type":"cube","uuid":"4e060f60-44d3-8a5f-4c8c-c78f664d8a1f"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[4,12,0],"to":[12,16,16],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[4,0,12,4],"texture":0},"east":{"uv":[0,0,16,4],"texture":0},"south":{"uv":[4,0,12,4],"texture":0},"west":{"uv":[0,0,16,4],"texture":0},"up":{"uv":[4,0,12,16],"texture":0},"down":{"uv":[4,0,12,16],"texture":0}},"type":"cube","uuid":"eab16f8d-7e8a-6cf1-fc5d-4c2f13c54934"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[13,12,1],"to":[15,16,3],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,0,4,4],"texture":0},"east":{"uv":[12,0,16,4],"texture":0},"south":{"uv":[12,0,16,4],"texture":0},"west":{"uv":[0,0,4,4],"texture":0},"up":{"uv":[12,0,16,4],"texture":0},"down":{"uv":[12,12,16,16],"texture":0}},"type":"cube","uuid":"33d4be9b-d23a-6263-d3c8-43daf4afc7f7"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[12,4,0],"to":[16,12,4],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,4,4,12],"texture":0},"east":{"uv":[12,4,16,12],"texture":0},"south":{"uv":[12,4,16,12],"texture":0},"west":{"uv":[0,4,4,12],"texture":0},"up":{"uv":[12,0,16,4],"texture":0},"down":{"uv":[12,12,16,16],"texture":0}},"type":"cube","uuid":"814ccba6-817a-1eb3-8c9b-cebfa88865ac"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[13,0,1],"to":[15,4,3],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,12,4,16],"texture":0},"east":{"uv":[12,12,16,16],"texture":0},"south":{"uv":[12,12,16,16],"texture":0},"west":{"uv":[0,12,4,16],"texture":0},"up":{"uv":[12,0,16,4],"texture":0},"down":{"uv":[12,12,16,16],"texture":0}},"type":"cube","uuid":"fe13017e-ca3b-3af3-ce3d-59c15d94a4ed"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[4,0,0],"to":[4,12,16],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,4,12,16],"texture":0},"east":{"uv":[0,4,16,16],"texture":0},"south":{"uv":[4,4,4,16],"texture":0},"west":{"uv":[0,4,16,16],"texture":0},"up":{"uv":[4,0,4,16],"texture":0},"down":{"uv":[4,0,4,16],"texture":0}},"type":"cube","uuid":"d157bbd8-7dc2-e77e-812e-9c63cec5c12d"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[0,4,0],"to":[4,12,4],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,4,16,12],"texture":0},"east":{"uv":[12,4,16,12],"texture":0},"south":{"uv":[0,4,4,12],"texture":0},"west":{"uv":[0,4,4,12],"texture":0},"up":{"uv":[0,0,4,4],"texture":0},"down":{"uv":[0,12,4,16],"texture":0}},"type":"cube","uuid":"759ac4c1-a15a-743a-fec2-3606a0a44135"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[12,4,12],"to":[16,12,16],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,4,4,12],"texture":0},"east":{"uv":[0,4,4,12],"texture":0},"south":{"uv":[12,4,16,12],"texture":0},"west":{"uv":[12,4,16,12],"texture":0},"up":{"uv":[12,12,16,16],"texture":0},"down":{"uv":[12,0,16,4],"texture":0}},"type":"cube","uuid":"313392c5-3625-0c21-37d6-b112a952369f"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[12,6,6],"to":[16,10,10],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,4,4,12],"texture":0},"east":{"uv":[4,4,12,12],"texture":0},"south":{"uv":[12,4,16,12],"texture":0},"west":{"uv":[4,4,12,12],"texture":0},"up":{"uv":[12,4,16,12],"texture":0},"down":{"uv":[12,4,16,12],"texture":0}},"type":"cube","uuid":"b8d92ee7-4bc9-3026-747b-2f4080e5f64e"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[12,0,4],"to":[16,4,12],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,12,4,16],"texture":0},"east":{"uv":[4,12,12,16],"texture":0},"south":{"uv":[12,12,16,16],"texture":0},"west":{"uv":[4,12,12,16],"texture":0},"up":{"uv":[12,4,16,12],"texture":0},"down":{"uv":[12,4,16,12],"texture":0}},"type":"cube","uuid":"0625f61b-dc7d-2f44-00b1-d22b5a819333"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[13,0,13],"to":[15,4,15],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,12,4,16],"texture":0},"east":{"uv":[0,12,4,16],"texture":0},"south":{"uv":[12,12,16,16],"texture":0},"west":{"uv":[12,12,16,16],"texture":0},"up":{"uv":[12,12,16,16],"texture":0},"down":{"uv":[12,0,16,4],"texture":0}},"type":"cube","uuid":"e6349f7b-2c9b-c656-86d1-0c7ef694ced9"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[12,4,12],"to":[16,12,12],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,4,4,12],"texture":0},"east":{"uv":[4,4,4,12],"texture":0},"south":{"uv":[12,4,16,12],"texture":0},"west":{"uv":[12,4,12,12],"texture":0},"up":{"uv":[12,12,16,12],"texture":0},"down":{"uv":[12,4,16,4],"texture":0}},"type":"cube","uuid":"f0e12c5f-c54e-c123-25c6-7f6cdc3e4631"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[13,12,13],"to":[15,16,15],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,0,4,4],"texture":0},"east":{"uv":[0,0,4,4],"texture":0},"south":{"uv":[12,0,16,4],"texture":0},"west":{"uv":[12,0,16,4],"texture":0},"up":{"uv":[12,12,16,16],"texture":0},"down":{"uv":[12,0,16,4],"texture":0}},"type":"cube","uuid":"bac655d6-fccb-8311-1ba0-521290c03673"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[12,12,4],"to":[16,16,12],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[0,0,4,4],"texture":0},"east":{"uv":[4,0,12,4],"texture":0},"south":{"uv":[12,0,16,4],"texture":0},"west":{"uv":[4,0,12,4],"texture":0},"up":{"uv":[12,4,16,12],"texture":0},"down":{"uv":[12,4,16,12],"texture":0}},"type":"cube","uuid":"fa1c9284-618c-6be4-4e9c-c14f8b773eaa"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[0,12,4],"to":[4,16,12],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,0,16,4],"texture":0},"east":{"uv":[4,0,12,4],"texture":0},"south":{"uv":[0,0,4,4],"texture":0},"west":{"uv":[4,0,12,4],"texture":0},"up":{"uv":[0,4,4,12],"texture":0},"down":{"uv":[0,4,4,12],"texture":0}},"type":"cube","uuid":"ec5ad865-4468-5072-9477-6ac42586c5c1"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[1,12,13],"to":[3,16,15],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,0,16,4],"texture":0},"east":{"uv":[0,0,4,4],"texture":0},"south":{"uv":[0,0,4,4],"texture":0},"west":{"uv":[12,0,16,4],"texture":0},"up":{"uv":[0,12,4,16],"texture":0},"down":{"uv":[0,0,4,4],"texture":0}},"type":"cube","uuid":"cb20d6e4-6ccb-bfe7-b8db-4c83ffeca790"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[0,4,12],"to":[4,12,12],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,4,16,12],"texture":0},"east":{"uv":[4,4,4,12],"texture":0},"south":{"uv":[0,4,4,12],"texture":0},"west":{"uv":[12,4,12,12],"texture":0},"up":{"uv":[0,12,4,12],"texture":0},"down":{"uv":[0,4,4,4],"texture":0}},"type":"cube","uuid":"77134a57-f031-0234-9f24-5c39537a6b8d"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[0,0,4],"to":[4,4,12],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,12,16,16],"texture":0},"east":{"uv":[4,12,12,16],"texture":0},"south":{"uv":[0,12,4,16],"texture":0},"west":{"uv":[4,12,12,16],"texture":0},"up":{"uv":[0,4,4,12],"texture":0},"down":{"uv":[0,4,4,12],"texture":0}},"type":"cube","uuid":"1ec71f1e-a3f3-4663-fc38-39f9a68c9856"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[0,12,0],"to":[4,12,12],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,4,16,4],"texture":0},"east":{"uv":[4,4,16,4],"texture":0},"south":{"uv":[0,4,4,4],"texture":0},"west":{"uv":[0,4,12,4],"texture":0},"up":{"uv":[0,0,4,12],"texture":0},"down":{"uv":[0,4,4,16],"texture":0}},"type":"cube","uuid":"149384c4-2ee2-2cc9-56ec-b84519ebe478"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[0,4,12],"to":[4,12,16],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,4,16,12],"texture":0},"east":{"uv":[0,4,4,12],"texture":0},"south":{"uv":[0,4,4,12],"texture":0},"west":{"uv":[12,4,16,12],"texture":0},"up":{"uv":[0,12,4,16],"texture":0},"down":{"uv":[0,0,4,4],"texture":0}},"type":"cube","uuid":"c300f7da-9c36-2510-bb63-7a6d569d4918"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[1,0,13],"to":[3,4,15],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,12,16,16],"texture":0},"east":{"uv":[0,12,4,16],"texture":0},"south":{"uv":[0,12,4,16],"texture":0},"west":{"uv":[12,12,16,16],"texture":0},"up":{"uv":[0,12,4,16],"texture":0},"down":{"uv":[0,0,4,4],"texture":0}},"type":"cube","uuid":"234aa27f-1d3a-ca1e-a6a5-3f1993196572"},{"name":"nerosium_grinder","box_uv":false,"render_order":"default","rescale":false,"locked":false,"shade":true,"light_emission":0,"export":true,"scope":0,"allow_mirror_modeling":true,"from":[0,6,6],"to":[4,10,10],"autouv":0,"color":0,"origin":[8,8,8],"faces":{"north":{"uv":[12,4,16,12],"texture":0},"east":{"uv":[4,4,12,12],"texture":0},"south":{"uv":[0,4,4,12],"texture":0},"west":{"uv":[4,4,12,12],"texture":0},"up":{"uv":[0,4,4,12],"texture":0},"down":{"uv":[0,4,4,12],"texture":0}},"type":"cube","uuid":"cc2b9b69-103f-ceec-03bc-f465e3462e30"}],"groups":[],"outliner":["819b4881-3728-466f-ba7e-681b3cd04369","759ac4c1-a15a-743a-fec2-3606a0a44135","cc2b9b69-103f-ceec-03bc-f465e3462e30","1ec71f1e-a3f3-4663-fc38-39f9a68c9856","234aa27f-1d3a-ca1e-a6a5-3f1993196572","149384c4-2ee2-2cc9-56ec-b84519ebe478","77134a57-f031-0234-9f24-5c39537a6b8d","c300f7da-9c36-2510-bb63-7a6d569d4918","d157bbd8-7dc2-e77e-812e-9c63cec5c12d","a5a25477-49b1-fc12-379b-1f079e153214","fe13017e-ca3b-3af3-ce3d-59c15d94a4ed","0625f61b-dc7d-2f44-00b1-d22b5a819333","9feade82-31b6-f1ef-8a1c-927a8216d5c0","4e060f60-44d3-8a5f-4c8c-c78f664d8a1f","814ccba6-817a-1eb3-8c9b-cebfa88865ac","b8d92ee7-4bc9-3026-747b-2f4080e5f64e","313392c5-3625-0c21-37d6-b112a952369f","e6349f7b-2c9b-c656-86d1-0c7ef694ced9","a509d0d4-52db-ecd7-2a59-0a8602fc6cd9","ec5ad865-4468-5072-9477-6ac42586c5c1","cb20d6e4-6ccb-bfe7-b8db-4c83ffeca790","eab16f8d-7e8a-6cf1-fc5d-4c2f13c54934","33d4be9b-d23a-6263-d3c8-43daf4afc7f7","fa1c9284-618c-6be4-4e9c-c14f8b773eaa","bac655d6-fccb-8311-1ba0-521290c03673","f0e12c5f-c54e-c123-25c6-7f6cdc3e4631"],"textures":[{"name":"nerosium_grinder.png","relative_path":"../../../src/main/resources/assets/nerospace/textures/block/nerosium_grinder.png","folder":"block","namespace":"nerospace","id":"0","group":"","scope":0,"width":16,"height":16,"uv_width":16,"uv_height":16,"particle":true,"use_as_default":false,"layers_enabled":false,"sync_to_project":"","file_format":"png","render_mode":"default","render_sides":"auto","wrap_mode":"limited","pbr_channel":"color","fps":7,"frame_time":1,"frame_order_type":"loop","frame_order":"","frame_interpolate":false,"visible":true,"internal":true,"saved":true,"uuid":"d0f36f21-308f-436c-9db3-6f90f405cdc2","source":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABhklEQVR4AaSTvUoDURCFj+mMa7CQuKjgD8GHsLBQixQi4iOkDViKT2BhnzaVlYUEsUihFhYWFkERLEL8A5U1WEhcYxn3uzA3JLHLwuTcmblz5uxkNrW3s98ZxlIa4jmqHKqHoHZ7rer5iS6vzlR/uJf5IDGQOD05g57AAunRtMKpaUUf74p/WtxxFoxl1PyMFMexa2A5T0CSm1Ez0s1dTSDW+m6p8VR3xjkIAtcAQiWPJ1icz7kOSUwXsxPKjxQGkJxTlqiACN8TkCCAHbxta3fmWP1Irv3bFvIfnxu43SGaJKJWXCpuaG6r7MnI2YxQjO8V4JhZ5/98azSgAFmwU2QKXioFFUunPQoYNsXZyZCrva9g7KagH11F8oN8iJJjl4CATbbaKWv19Uv9SAHFoJmfAfKRlltYUpgNBZrhY5nxjLiDGZEnWFleF0FU8CoOk6VBGX8dMeuaX9u0Y/cV+AaIws5AQQxSBgYhKvFZe1aa+04BXxVrygqDtsKcibHKIHEQH4PgDwAA//8mQjNeAAAABklEQVQDADNXHMKuEvrVAAAAAElFTkSuQmCC"}]}
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "nerosium_grinder",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "nerosium_grinder",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "cf6e26ba-e51e-4deb-a81a-71ce5579a450"
+    }
+  ],
+  "outliner": [
+    "cf6e26ba-e51e-4deb-a81a-71ce5579a450"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\nerosium_grinder.png",
+      "name": "nerosium_grinder.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "1a31edac-d8cf-4712-aa75-fbc254aa6116",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/nerosium_grinder.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABc0lEQVR4nKWSv0vDQBTHP4oolCNkCJJBOmXI4JTByb/ByamIOIhzcdGhSJEOukhn6VBEnJ38C5wcMjgFySCHwxGChBACutRB75prwEHf8u49eN8f797S9P55xj9i+T/Dg36PlWbjdjImUxIhHPyNgLLIyZRk3e9SVwUd4eK4Hju7e9xOxgBzAN3Qw+ottdg6wiVTEoDr8dD0DYBmkq8vyNcXa/g9V+YdhBGO61EWOdDYQRBGhiH1PXqfp60MoN5SyiLHcT0boCn5TB5y3p20MkBVldRVQZrENkBHuAZAD10Otlnbn5q6uaMgjGyAZjQZF2tN1FJQVwVCOJaCj5sDTkaPloJMSdIkZt3vti1o9N92sLhw6xu1r7vVC+4UsJh/hpthAIRwSJOYcHPLXF3THnz/gPYehBFPjw9zC0f9oTkSfbKO65EpSVWVFuDx4Kqt4Gp0TBBGpEmMEI7xGISROZy6KvA3AnP2AEvT++fZoN/jr/EFW+e9Kyl9fksAAAAASUVORK5CYII="
+    }
+  ]
+}

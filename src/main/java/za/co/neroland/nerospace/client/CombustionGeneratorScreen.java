@@ -30,7 +30,7 @@ public class CombustionGeneratorScreen extends TexturedContainerScreen<Combustio
         float frac = max == 0 ? 0f : (float) energy / max;
 
         label(g, Component.translatable("gui.nerospace.generator.output", pct), 8, 20, 0xFFFFE0B0);
-        hGauge(g, 8, 31, 160, 6, frac, ACCENT);
+        segGauge(g, 8, 31, 160, 6, frac, ACCENT);
 
         boolean burning = this.menu.isBurning();
         label(g, Component.translatable(burning

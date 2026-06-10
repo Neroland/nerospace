@@ -45,41 +45,39 @@ public class MeadowLoperModel extends GreenxertzMobModel {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
-        // Deep barrel body riding on sturdy legs (ground = y 24).
+        // model_sync:begin
         root.addOrReplaceChild("body",
                 CubeListBuilder.create().texOffs(0, 0).addBox(-5F, 8F, -8F, 10F, 9F, 16F),
-                PartPose.offset(0F, 0F, 0F));
-        // Broad head held low and forward, with a wide muzzle.
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("head",
                 CubeListBuilder.create().texOffs(0, 28).addBox(-3F, 6F, -13F, 6F, 6F, 6F),
-                PartPose.offset(0F, 0F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("muzzle",
                 CubeListBuilder.create().texOffs(0, 28).addBox(-2F, 9F, -16F, 4F, 3F, 3F),
-                PartPose.offset(0F, 0F, 0F));
-        // Small horn nubs.
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("horn_l",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-4F, 4F, -11F, 1F, 2F, 1F),
-                PartPose.offset(0F, 0F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("horn_r",
                 CubeListBuilder.create().texOffs(44, 0).addBox(3F, 4F, -11F, 1F, 2F, 1F),
-                PartPose.offset(0F, 0F, 0F));
-        // Swishing tail off the rump.
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("tail",
-                CubeListBuilder.create().texOffs(44, 0).addBox(-0.5F, 0F, 0F, 1F, 7F, 1F),
-                PartPose.offset(0F, 9F, 8F));
-
-        // Four sturdy hip-pivoted legs.
-        leg(root, "leg_fl", -3.5F, -5.5F);
-        leg(root, "leg_fr", 3.5F, -5.5F);
-        leg(root, "leg_bl", -3.5F, 5.5F);
-        leg(root, "leg_br", 3.5F, 5.5F);
+                CubeListBuilder.create().texOffs(44, 0).addBox(-0.5F, 9F, 8F, 1F, 7F, 1F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_fl",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-5F, 17F, -7F, 3F, 7F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_fr",
+                CubeListBuilder.create().texOffs(44, 0).addBox(2F, 17F, -7F, 3F, 7F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_bl",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-5F, 17F, 4F, 3F, 7F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_br",
+                CubeListBuilder.create().texOffs(44, 0).addBox(2F, 17F, 4F, 3F, 7F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        // model_sync:end
 
         return LayerDefinition.create(mesh, 64, 64);
-    }
-
-    private static void leg(PartDefinition root, String name, float x, float z) {
-        root.addOrReplaceChild(name, CubeListBuilder.create()
-                        .texOffs(44, 0).addBox(-1.5F, 0F, -1.5F, 3F, 7F, 3F),
-                PartPose.offset(x, 17F, z));
     }
 }

@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "eac403aa-935e-4469-811b-f07e7436e11a"
+      "uuid": "04e122e0-b0ba-42a6-a058-e96a44ea9dc2"
     }
   ],
   "outliner": [
-    "eac403aa-935e-4469-811b-f07e7436e11a"
+    "04e122e0-b0ba-42a6-a058-e96a44ea9dc2"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\item_store.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\item_store.png",
       "name": "item_store.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "20461422-7ae8-4d9c-ba23-963cc15978ec",
+      "uuid": "8b10247a-d42a-4ccf-9288-81d69cdfd343",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/item_store.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA6UlEQVR4nKWTMY7DQAhFXyyXHGAOukVkuZgisrZwEeWUHIB+t4g+Yuy4yjQMBj4f5vvmHn98cWaApa9ExBBoreHumBlmBpB+RGBmbP3BVAtaa0Nyay0BVQSkBd4A6q4OVyciMld2qnSrrUmVgWKy83E2gOXnfuq+9BUzO+XOQqv0ALb9N5O3/jjFhx24e36o9F/7M3dSl1yBZl3qcwlg6Wv6aiIQ+ZcjvPbnie5RDwmgQtGTsJR0vKth7qDOpWBlJdqfNDIIKSIGHci6e4Id1ZgjVNkKRAWViZYngKkWXRXX56uNAG7f/s7/zbLL9/ibiWgAAAAASUVORK5CYII="
     }

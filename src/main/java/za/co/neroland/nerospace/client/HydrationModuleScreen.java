@@ -32,7 +32,7 @@ public class HydrationModuleScreen extends TexturedContainerScreen<HydrationModu
 
         label(g, Component.translatable("gui.nerospace.hydration_module.buffer", hydration, cap),
                 8, 20, 0xFFCFE7FF);
-        hGauge(g, 8, 31, 160, 6, frac, ACCENT);
+        fluidGauge(g, 8, 31, 160, 6, frac, ACCENT);
 
         boolean linked = this.menu.isLinked();
         label(g, Component.translatable(linked

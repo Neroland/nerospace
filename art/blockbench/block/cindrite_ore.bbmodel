@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "2ecd5122-5e85-4efb-9a78-4d46f60301c4"
+      "uuid": "9a7fbc0b-d6ee-4c6d-b4e4-f5fb3c33f930"
     }
   ],
   "outliner": [
-    "2ecd5122-5e85-4efb-9a78-4d46f60301c4"
+    "9a7fbc0b-d6ee-4c6d-b4e4-f5fb3c33f930"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\cindrite_ore.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\cindrite_ore.png",
       "name": "cindrite_ore.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "3bff737c-81f2-4c0d-8a9f-148c0c779fc1",
+      "uuid": "56183476-6b77-41e6-b143-a230908e88c3",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/cindrite_ore.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABuUlEQVR4nHWTMYhUMRCGPx9XhGmEMGWwFiu50sJKZCs55AoRK3lYCodgI8g2dntoLVuKWMhxWB2HlWwpV8rVS8oQ2GZIpRbLhPcEp8ljMsn87/snN1ar1Z+cMyKCiBBCACDnDEBKiWnUWgEwM1JKDJ7w5P+itUatdVbTWmPwLr7hnf/tWkohxthzfmYQEWqtXWpKidYaKSVUtV+oqtRaEZHeyMwYzKx39/XN80jOmVJKz5sZIkKMsfNSVYYYIymlDsfX9w9+8eTHGaqKqgIQQiDnTAgBMyOEwOASnerr32dwdc5us2Xz9OVMxavbl4gIOef+qzMGH5Zvub40Tq8fstaxF7oiDo94d+9nZxBC2LtgZuScOR5f8G3xjJxzB+n7u82W08/79ev6Y3fjwK2ZWjS1z6m7onUaOR5z5za01mYHfCqn7nj4Zc4hxsiBE/Vw4gDLcMHNu7fYbbasGXvdVO3gH1M3/D0s2wIOj1i2xUyZW91a278FM0NV+7B4gYjA1Tmq2g97nZlRStnbqKqUUkgpzWb+0cUnTr7f6dKdgap2hwZn4J1FhNYaIsKX+49JKRFj7DVTuCLCX2HUJ6048RsEAAAAAElFTkSuQmCC"
     }

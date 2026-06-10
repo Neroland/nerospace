@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "02802c27-d478-4acd-9d61-f04fc2f426dc"
+      "uuid": "e9be5dfb-12fd-41c4-9971-e05865cd231f"
     }
   ],
   "outliner": [
-    "02802c27-d478-4acd-9d61-f04fc2f426dc"
+    "e9be5dfb-12fd-41c4-9971-e05865cd231f"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\passive_generator.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\passive_generator.png",
       "name": "passive_generator.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "8475f6af-f4ef-462a-b591-31dc53d7c015",
+      "uuid": "6e358d81-4363-44ab-85fe-ac6b9b7d08b6",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/passive_generator.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABTklEQVR4nKWSv0rDUBTGf4YOHe4gmSSBTJJC3EppoUP3QsGlb9CXcPIJfAXfwFHo7iBYSrdeTHAKJDhJhzu46aDn5KYGHTwQuJx85/u+8+fk6vrmg39ED2C33WjCGEORW6I4wRiDc07zEs45xQWSHI7GCojihLoqKXKrxUJU5LaF7anqs1VgXZXqwFd0zpEOMnbbDXVVNgSiBJAOMgDO940KwOvEtsgkguPCIrfMDkvm/bD1nT1lquoLBtKzkEgxwGI1ZbGaAjDvh8wOS3y8Ekh/Migp7nobY6irUh0HYkns/RX+Nn604JPc3z52vn11+N6CT/ISb1jvx8z7Yatw/f7Gw+mdupBb6R2zFrmFC1h3rDEl0zsRvDqQnoTZTJqT/pJtWojiRGehM1hcLvX6pEjJvMOJ4oThaNy+xLoq1Zbv5NidH60ZdAF/W6v/7xP4hrve73zLRwAAAABJRU5ErkJggg=="
     }

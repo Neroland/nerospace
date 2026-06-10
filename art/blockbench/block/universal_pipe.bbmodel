@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "0c3c54f9-e414-4d4c-9f2c-e9a54267bfe5"
+      "uuid": "16bf33c5-51c2-458a-8157-e38e275ae969"
     }
   ],
   "outliner": [
-    "0c3c54f9-e414-4d4c-9f2c-e9a54267bfe5"
+    "16bf33c5-51c2-458a-8157-e38e275ae969"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\universal_pipe.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\universal_pipe.png",
       "name": "universal_pipe.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "8cf93a9e-2c30-451e-b704-954aa60bed42",
+      "uuid": "10f179fd-b44b-40de-afdb-8bb581f488ef",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/universal_pipe.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQklEQVR4nHWTPW6DQBCFny3Kd4HsSltCxBk4RUpfIH3SpPIJUqTKETiCT5DCsiyXyFAisW5dTE+KZEa7CYw0QixPb7/5YfO2f5+xEuHlFe31hubQrklQAMDlfLIDkhj6Ds4HfF1v0O8kTSMiptsuuTofEKcRu8cHMxURAMDQd5lZoYLUPU4jnA9ofwn0RhFBWdWmAfBDMPSdpZqlBGmomYaVUFa1IZZVnRHEacxuHfouN3A+/DMhmRGkt6oeAPB5n+fmGOelp+ba9+YY501zjKt7oARaylIUzaHF5Xyy+sqqtj1o9x8AgPvzk52nmqyJzgc4H2xUKYGOTkNErA9b7TJJkLSOk8zQSdp0VJ8R6B6oICUQEUtdMiUq/o6FpL0rQbrKzgf7D7ISFGvoOytDCfRMM+1BkY4k3bA4javj0xIB4BskuwZVaYLSFQAAAABJRU5ErkJggg=="
     }

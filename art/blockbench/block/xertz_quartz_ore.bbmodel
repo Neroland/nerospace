@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "7405e4ca-5dee-4fda-a670-17d7129898c5"
+      "uuid": "e207f2ba-c286-4c7a-9df8-2a4f91c0380d"
     }
   ],
   "outliner": [
-    "7405e4ca-5dee-4fda-a670-17d7129898c5"
+    "e207f2ba-c286-4c7a-9df8-2a4f91c0380d"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/xertz_quartz_ore.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\xertz_quartz_ore.png",
       "name": "xertz_quartz_ore.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "40746378-efca-47a5-b953-e2d8adc92e26",
+      "uuid": "2b167131-bb6b-4539-832b-3011661eacc0",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/xertz_quartz_ore.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsUlEQVR4nFWTrW5cQQyFv1ytopFRZA2qBgf0GfIEBVFhVfUJAqqCgIKiauE+QRUcBVYLCqp9joIqcEDBaFRkWasqKdjY2ZjMvZ45/jk+PtlsNo/uzhgDgNYaYXNOAMws/fG21grA4u4AiAitNdyd8IXVWnF3eu+UUhCRDLyYWTrnnJRSGGPg7pgZqkopJZP03hGRvFsCOMZAVbmXPwCUUmitMefMzFFNJOy9s5RSMDMAHi6ELx8+ZYmRTUR4uBCuPl9RSsmEAMuck1orIsJ+90yau1NrxcwQEf5uexI72z4xSwBUFYC7b3dJXlQW9mvcIyJoP837k/V6/RgPZ9sf+v/9L0GttWwlQPEtIgcO4kf7KW2evQC7e7IeieIcY7CKmccDVU2me+8ZKFrsved0gIMOgumwAF9/vebVu/MMNOdMvajqoQURyZFEEHfnzce3AOx3MzOqKmeXLbkyM1ZRwRgjxeHnK+zmJz/se+5AaOH960tu2eJPI1+pKsc81FphQtGCqr6cwNa4ZZt6AQ46GGPkxkU70UprLQOoKvvd877A0zbWWnPjjmUcZ7QZEj7e1v8l2yac8ECxVwAAAABJRU5ErkJggg=="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsklEQVR4nFWToU+cQRDFf3w5sZlUkMmaks2ppqlEV2PqMPAH1KDbVFQ0pOJUcwqHaUjOoSr4QxAIcpJsUJtN1WYcFV9n7hiz9+3tmzfvzczBer1+MTNaawCUUvDovQMwxoh7f5tzBmAyMwBEhFIKZobfeeScMTNqraSUEJFIPI0x4rL3TkqJ1hpmxhgDVSWlFCS1VkQk/psc2FpDVXl4UwFIKVFKofcezF6NE9ZamVJKjDFmhrMl68+XUaKziQhytuTrz2+klIIQYOq9k3OeJWy2oc3MyDkzxpjZru/D2OflCMzkAFUF4Obqd5jnlXk89EdEhKOnnYkHq9XqxR8+L+fz8HEHKqWEFAf5bxGZPfCPoyfhXcuvwGYWrjuRn601Ft5zf6Cq4XStNRK5xFprdAeY58Cd9nDwj1+XvP/yMRL13mNeVHWWICLREk9iZpx+P59Bm20wqirl4ji8GmOw8ApaazEcfz/AuLrjz7iNHfBZOH97Ap+Ili9UlX0fcs7kBkkTqvq6A9f33F7swMA8B6212DiX41JKKZFAVembbewL/N/GnHNs3P4Y++kyfYT3t/UfxBIg7aI6nTkAAAAASUVORK5CYII="
     }
   ]
 }

@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "33ff2292-7033-456a-9fc9-565ef25e43e1"
+      "uuid": "5c9abe12-5ed4-43b4-8b93-4f37815b0cc1"
     }
   ],
   "outliner": [
-    "33ff2292-7033-456a-9fc9-565ef25e43e1"
+    "5c9abe12-5ed4-43b4-8b93-4f37815b0cc1"
   ],
   "textures": [
     {
-      "path": "/sessions/funny-youthful-faraday/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/fuel_tank.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\fuel_tank.png",
       "name": "fuel_tank.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "83e2b3ee-1901-4cb8-9751-c4df049f2856",
+      "uuid": "e65369b2-d923-44b4-90c5-52fb9994c1b3",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/fuel_tank.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABpUlEQVR4nKWTsW4TQRCGPyw3t94cjXVeuYgsx6KgQaJACCEqniWios4T8AARJTUPkCpNGjpcnGKlQEInc7LAWltWBOu5s3ADxeXGOYdU/NWeduefb+bXPTh5++4P/6E2wPnFGSYyALheHxHRB9ZaPfvFHNfrAyAiZN++0gIYDka8evEagGmeIUXAWsty5RERRIRpnmnxo6PHatyu3dLJWB9cXqVc/7wGYPYjB2C73SrJ+cWZnlsAy5VXxNv4+6pJAJKu2xHUqgnuNSgCw8FIm6nBcDC6cXY625dPx43io+fvcb0+0zzDRIZyUzZ3YCKDtVYRf52e7vVvISLaLOk6wjrsRig3JdM8YzgYcXmV8vDlYbP+43dtYCKDFGFHUC8RUAJm5Z0d1Hf1KBXXjZKuw0RGt/svJV1H0nU6SmOJItJI4fOH2V65xVqrMdcpKMHty/vkF3Md904KT588I52M8Ys58UHMm99xlUwnRopAfFDien38Yq5vwzpUBFIE0smY5cpjO7HuodyU1X/RqczqMdPJWKnaAH7pgQotrEMDu/quU/Ls6y+aldUulyICyQAAAABJRU5ErkJggg=="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABmklEQVR4nKWSsWrjQBCGvxgXISyLMEJs4VOlwqR0FfIEV6VKFVwerk2eIIXLI7i6yoQr/ABX3ROkcuHiSDhxiBCMC2GEWZbFVSApnB1HSlLdD4KVZmfm+2d08PPXn2f+Q22A6/ElSmkATDfD2Uou6CiWc7kqMN0MAGcr8rs5LYCs12c4ugKgyBdsvUVHMetyibMVzlYU+UKSz84HUrgdqs2mE7kwv/3NZvUAwOqVxj89Ccn1+FLOLYB1uRTEt/hNBRKAxKR7gqBA8Jm23pL1+tJMCmS9vlQO3v7OR7XkL/3vmG5GkS9QSuO9q89AKY2OYinEj3Gj/yHOVtIsMSmbqtzNAMB7R5EvBJHTXv15pQsEW2/3BGGIwJ4gt+9mEGLBCrAnSEyKUlqm+5ESk5KYVKzUhuhsVdvC/c1DI72DjmJZc9iCELwNfqZyVYjdsIUW7LZwdj6QS53YcMExQ3XCyHxlqE7oxAbTzVBKM/g2Eqst2P0gs+mEdbnkSEUS9N6x9ZYjFaGUFpuz6USo2gDLx3/yYVOVNezme1MvU+jAmBk30XsAAAAASUVORK5CYII="
     }
   ]
 }

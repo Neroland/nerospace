@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "253a7358-c351-4dea-a9e6-c52f841ea952"
+      "uuid": "b00df8e8-759f-49ef-9b75-5fc46c45ae42"
     }
   ],
   "outliner": [
-    "253a7358-c351-4dea-a9e6-c52f841ea952"
+    "b00df8e8-759f-49ef-9b75-5fc46c45ae42"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/nerosteel_ore.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\nerosteel_ore.png",
       "name": "nerosteel_ore.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "b294568d-a5a9-468c-8812-a536677f37a8",
+      "uuid": "8249312c-4d4d-40f0-9c8f-d8fcc542757f",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/nerosteel_ore.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABt0lEQVR4nGWTMYsUQRCFP4cJimYDGQq5gw4MDDYwEDFaNjQSMTDwB+yPuOTSTf0LFxoYGIgYGS5GspHBIhfI0igcTXPBUnSmwVjtjFYydE+/qvdev76z3W5/mRkAwzDgVUoBwMyIMZJSQlUBEBFSSgB0IkIIgRDCDOjrEAKlFGKM5JwBSCkRYySEQDedlFLC2UzLzKi1zhg5rneAmRFC4IfdcJsO3GXRGqhqm+4y/ds7faf8INzn0eWKw+t9mzJtVGvFzNrAzhdep400L6b/VJXr/J33nz62YQC9GyUilFJYXMFus2fxh5WItMNnF0uudwbfRoyZ0ccYqbXOrmlxVWfTbzlxdrFkff4Y1iBHyDmjqvROFf5uOivXicFut0ePoMDbD+948fQZZkY3DY+HxGlPmzz5fI+v6QDAq+cvMTOGYRgZxBibce68Nw4htCt8GJezEJVS6IDmgQOGYaCUgohw2ghfVje4V34+5zwymN6pB8ol1FpZn6/QI/955JnoVBVVnYXJGwHsfu7bnksVEXLOiMgYJDfOH5bLERH0zfh4nP6/1TtVd1VEml4HqWrLhctVVUop/AYltRPrwVNpTAAAAABJRU5ErkJggg=="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABu0lEQVR4nGWTMYsUQRCFP4dBir7FYCg26kCMFn/AYWBwbCgiBgb+jM2FizYVLvQnGBiIiJFsJLJcsIjBcZEYdCBL08FxFo0IGqzVzmglQ/f0q3rv9esb6/X6l5kBMAwDXqUUAMyMGCMpJVQVABEhpQRAJyKEEAghTIC+DiFQSiHGSM4ZgJQSMUZCCHTjSSklnM24zIxa64SR43oHmBkhBL793HOxv+TWj1lroKptusv0b+/0nfIdbnP87ITPz7dtyrhRrRUzawM7X3hdr6R5Mf6nqny5+srrzds2DKB3o0SEUgqzM9istsz+sBKRdni+WsB5hY8HjJnRxxiptU6uaXZWJ9Ovbl4zP12wPLoHxyA7yDmjqvROFf5uOivXicH780/oDhR4+e4Vj5cPMTO6cXg8JE573OT+G+VifwnA0wdPMDOGYTgwiDE249x5bxxCaFd4d76YhKiUQgc0DxwwDAOlFESE65Xw4VHGvfLzOecDg/GdeqBcQq2V5dEJuuM/jzwTnaqiqpMweSOAzfdt23OpIkLOGRE5BMmN84flckQEfXF4PE7/3+qdqrsqIk2vg1S15cLlqiqlFH4DcMsToWiYP+MAAAAASUVORK5CYII="
     }
   ]
 }

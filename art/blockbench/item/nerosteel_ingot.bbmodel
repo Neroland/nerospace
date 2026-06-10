@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "bce8ebbc-980e-4da5-9e05-b34fe18544cb"
+      "uuid": "a00c1862-be6e-4f73-86f3-a3739d997594"
     }
   ],
   "outliner": [
-    "bce8ebbc-980e-4da5-9e05-b34fe18544cb"
+    "a00c1862-be6e-4f73-86f3-a3739d997594"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosteel_ingot.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\nerosteel_ingot.png",
       "name": "nerosteel_ingot.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "b379be03-5859-405e-a9fe-04ec39635408",
+      "uuid": "325c57c6-b9a1-41db-8559-cd8d7a55ec1c",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosteel_ingot.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAaUlEQVR4nGNgGAUUA0Z0gS3/9/3Hp8GH0QlFDwsyZ9qqaf/XFC5jYGBgYLhj9Y1B5RgXXA7GF9CQ+f/hxhO4IUzYbMGlGRvAMIAUzVgNwKf5jtU3DAMwAnHaqmn/q+racNqI7P9RQCUAAEJPK6XfnJSiAAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAk0lEQVR4nGNgGAUUA0Z0gV3/j/zHp8GN0QZFDwsyZ962Wf9XlC9gcHNzY+hh2sSgt4MDLnfJ4weD3g4OBj4dmf+frjyBG8KEzZYepk0MJf/8MDRjAxgGwBTv2rWLwc3NDa9mrAYgK8bmDXSAEYjzts36X1DWhNNGZP9jNYCBgYFBRESqB6cJDAwMb948K8EnP9IAADXXMegOm+H2AAAAAElFTkSuQmCC"
     }
   ]
 }

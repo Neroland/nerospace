@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "nerospace:block/item_store",
+      "y": 90
+    },
+    "facing=north": {
       "model": "nerospace:block/item_store"
+    },
+    "facing=south": {
+      "model": "nerospace:block/item_store",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "nerospace:block/item_store",
+      "y": 270
     }
   }
 }

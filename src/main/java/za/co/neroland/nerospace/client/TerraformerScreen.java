@@ -32,7 +32,7 @@ public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> 
         float energyFrac = max == 0 ? 0f : (float) energy / max;
 
         label(g, Component.translatable("gui.nerospace.terraformer.power", pct), 8, 20, 0xFFCFE7FF);
-        hGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
+        segGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
 
         label(g, Component.translatable("gui.nerospace.terraformer.tier", this.menu.getTier()), 8, 48, ACCENT);
         label(g, Component.translatable("gui.nerospace.terraformer.stages", this.menu.getRadius(),

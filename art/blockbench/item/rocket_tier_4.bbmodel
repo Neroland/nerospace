@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "6b4c280b-6f91-40f9-a275-a1d7275eb01c"
+      "uuid": "00a13683-1b61-4e3b-b82f-e2661b51e7f5"
     }
   ],
   "outliner": [
-    "6b4c280b-6f91-40f9-a275-a1d7275eb01c"
+    "00a13683-1b61-4e3b-b82f-e2661b51e7f5"
   ],
   "textures": [
     {
-      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/rocket_tier_4.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\rocket_tier_4.png",
       "name": "rocket_tier_4.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "f247e834-51b4-49a5-9aa7-8cb1d3fa39bd",
+      "uuid": "82f6f1fe-87b9-4942-8cee-6c3f46eeb0d7",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/rocket_tier_4.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAyUlEQVR4nGNgoCU48eH//xMf/v/Hp4aJUktwGoBsMz5XMOKS+PAHVZMACyNWtSy4DPjx5ivDui/cEM6ulbiUYXph2rQVKDYfOXIZpxxWA5BBEM9Xhj4PJXxKcHshZNYVJJ4C6QasSdOBs9et28JwBIc6rF6ouPQBw6/YxPC6IC4uCYVvZOOBVR2GAY+gCnftWoUS70YMs/4/wmIIzoT0f5rGfwaHAAjnwAYGxqwbONXiBP+nafz/P00Db2bCGQYMDAwMJ4+9IWgJAJGGRhWXqsAWAAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAwUlEQVR4nGNgoCU48un//yOf/v/Hp4aJUktwGoBsMz5XMOKS+PQHVRMfCyNWtSy4DPj35TfDnA+sDAwMDAxCB7biUobphXkLtqDYfO7AZZxyWA1ABikCvxmmBWjgU4LbCw6zniHxdEg34ECaFJy9bsMuhiQc6rB6Ie/OHwy/YhPD6wK/gCgUvoGNBy6lmDbhcgE2cZwJ6f88lf8MDjEQzoElDIxJd3CqxQn+z1P5/3+eCt7MhDMMGBgYGC4fekPQEgDrskynmBPTAwAAAABJRU5ErkJggg=="
     }
   ]
 }

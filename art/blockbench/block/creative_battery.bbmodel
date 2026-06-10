@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "67f253ee-7cac-45ce-b341-89c4f2901c6a"
+      "uuid": "3ffde230-7175-48a7-8238-cae9e7f1c0c4"
     }
   ],
   "outliner": [
-    "67f253ee-7cac-45ce-b341-89c4f2901c6a"
+    "3ffde230-7175-48a7-8238-cae9e7f1c0c4"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\creative_battery.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\creative_battery.png",
       "name": "creative_battery.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "da20b4e1-bfb7-450f-b5c4-836af7f05b88",
+      "uuid": "05364af3-0612-4903-a1a8-6389b1a7d97b",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/creative_battery.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA9UlEQVR4nKWTIW4DQQxFX6IFCwYUzpF6jICiHKCwoIcIzgFygByghzEoCDAIqNSC6k/+OGH50mpHa8/3t7938/329csTWADelxMArTUAMpPMpPdOZo5YZk7vj8srWzHpktB7JyLGBUdmEhEA/wRilILW2kjwqk6u3MWrCQr23sc3xSvZoqAnAxzWHVzg8+V8p9Cx9YoRQURMFVyZt6WcQaCB1SqHdfdwRjoPF2SZAvvrkRrzZ5pB9X2o+Lkp8eq6w2oE3qOStGAZt2VSq5MC76na9Wgu3sLkggL1XZ1xwrGJSvD9r9Uc2ps7Apevc3XBsXn2d/4DGG7Dr9CbppcAAAAASUVORK5CYII="
     }

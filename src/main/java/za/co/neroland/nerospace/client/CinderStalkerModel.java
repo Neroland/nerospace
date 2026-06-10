@@ -43,18 +43,38 @@ public class CinderStalkerModel extends GreenxertzMobModel {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
+        // model_sync:begin
         root.addOrReplaceChild("body",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-6F, 8F, -6F, 12F, 9F, 11F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-6F, 8F, -6F, 12F, 9F, 11F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("shoulders",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-5F, 5F, -5F, 10F, 4F, 8F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-5F, 5F, -5F, 10F, 4F, 8F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("belly",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-5F, 16F, -5F, 10F, 3F, 9F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-5F, 16F, -5F, 10F, 3F, 9F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("head",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-4F, 9F, -13F, 8F, 8F, 8F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-4F, 9F, -13F, 8F, 8F, 8F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("brow",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-4.5F, 8F, -11F, 9F, 2F, 6F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-4.5F, 8F, -11F, 9F, 2F, 6F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("jaw",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-3.5F, 15F, -13F, 7F, 2F, 8F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-3.5F, 15F, -13F, 7F, 2F, 8F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_fl",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-6F, 16F, -5F, 4F, 8F, 4F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_fr",
+                CubeListBuilder.create().texOffs(44, 0).addBox(2F, 16F, -5F, 4F, 8F, 4F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_bl",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-6F, 16F, 1F, 4F, 8F, 4F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_br",
+                CubeListBuilder.create().texOffs(44, 0).addBox(2F, 16F, 1F, 4F, 8F, 4F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        // model_sync:end (horns + back plates are rotated — Java-authoritative)
         root.addOrReplaceChild("horn_left",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-1F, -4F, -1F, 2F, 5F, 2F),
                 PartPose.offsetAndRotation(-3F, 9F, -9F, -0.5F, 0F, 0.25F));
@@ -68,18 +88,6 @@ public class CinderStalkerModel extends GreenxertzMobModel {
                     PartPose.offsetAndRotation(0F, 6F, plateZ[i], -0.35F, 0F, 0F));
         }
 
-        // Hip-pivoted legs (pivot at the joint, cube hangs to the floor).
-        leg(root, "leg_fl", -4F, -3F);
-        leg(root, "leg_fr", 4F, -3F);
-        leg(root, "leg_bl", -4F, 3F);
-        leg(root, "leg_br", 4F, 3F);
-
         return LayerDefinition.create(mesh, 64, 64);
-    }
-
-    private static void leg(PartDefinition root, String name, float x, float z) {
-        root.addOrReplaceChild(name,
-                CubeListBuilder.create().texOffs(44, 0).addBox(-2F, 0F, -2F, 4F, 8F, 4F),
-                PartPose.offset(x, 16F, z));
     }
 }

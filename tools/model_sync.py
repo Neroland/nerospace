@@ -48,23 +48,33 @@ GROUND = 24  # java y of the model's ground contact; bb_y = GROUND - java_y
 
 # Each entry: the Java model class <-> its authoritative .bbmodel, plus geometry-mirror .bbmodels
 # (same shape, different texture) that follow the authoritative geometry but keep their own texture.
-REGISTRY = [
-    {
-        "java": "src/main/java/za/co/neroland/nerospace/client/GreenxertzCreatureModel.java",
-        "bbmodel": "art/blockbench/entity/xertz_stalker.bbmodel",
-        "mirrors": [
-            "art/blockbench/entity/quartz_crawler.bbmodel",
-            "art/blockbench/entity/greenling.bbmodel",
-            "art/blockbench/entity/cinder_stalker.bbmodel",
-        ],
-        "texture": "xertz_stalker",
-    },
-    {
-        "java": "src/main/java/za/co/neroland/nerospace/client/RocketModel.java",
-        "bbmodel": "art/blockbench/entity/rocket.bbmodel",
+#
+# Art overhaul A3 (ART_OVERHAUL_DESIGN.md §4.1): every creature and rocket tier has its OWN source
+# now — the legacy shared GreenxertzCreatureModel and its geometry mirrors are retired. Models with
+# rotated or multi-cube parts keep those parts OUTSIDE their marker block (Java-authoritative); the
+# bbmodel carries the syncable core only.
+def _entry(java_class, name, texture=None):
+    return {
+        "java": "src/main/java/za/co/neroland/nerospace/client/" + java_class + ".java",
+        "bbmodel": "art/blockbench/entity/" + name + ".bbmodel",
         "mirrors": [],
-        "texture": "rocket",
-    },
+        "texture": texture or name,
+    }
+
+
+REGISTRY = [
+    _entry("XertzStalkerModel", "xertz_stalker"),
+    _entry("QuartzCrawlerModel", "quartz_crawler"),
+    _entry("GreenlingModel", "greenling"),
+    _entry("CinderStalkerModel", "cinder_stalker"),
+    _entry("FrostStriderModel", "frost_strider"),
+    _entry("MeadowLoperModel", "meadow_loper"),
+    _entry("EmberStrutterModel", "ember_strutter"),
+    _entry("WoollyDriftModel", "woolly_drift"),
+    _entry("RocketModel", "rocket_t1"),
+    _entry("RocketT2Model", "rocket_t2"),
+    _entry("RocketT3Model", "rocket_t3"),
+    _entry("RocketT4Model", "rocket_t4"),
 ]
 
 # A part = dict(name, uv=[u,v], box=[x,y,z,w,h,d])  (box in ABSOLUTE java coords)

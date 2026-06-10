@@ -29,11 +29,17 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
     };
     private static final int FULL_BRIGHT = 0x00F000F0;
 
-    private final RocketModel model;
+    /** Per-tier geometry (ART_OVERHAUL_DESIGN.md §4.2): T1 classic, T2 boosters, T3 ring, T4 heavy. */
+    private final RocketModel[] models;
 
     public RocketRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.model = new RocketModel(context.bakeLayer(RocketModel.LAYER));
+        this.models = new RocketModel[] {
+                new RocketModel(context.bakeLayer(RocketModel.LAYER)),
+                new RocketModel(context.bakeLayer(RocketT2Model.LAYER)),
+                new RocketModel(context.bakeLayer(RocketT3Model.LAYER)),
+                new RocketModel(context.bakeLayer(RocketT4Model.LAYER)),
+        };
     }
 
     @Override
@@ -45,7 +51,8 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
     public void extractRenderState(RocketEntity rocket, RocketRenderState state, float partialTick) {
         super.extractRenderState(rocket, state, partialTick);
         state.scale = rocket.visualScale();
-        state.texture = TEXTURES[Math.min(TEXTURES.length - 1, rocket.getTier().ordinal())];
+        state.tier = Math.min(TEXTURES.length - 1, rocket.getTier().ordinal());
+        state.texture = TEXTURES[state.tier];
     }
 
     @Override
@@ -59,13 +66,14 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
         poseStack.scale(-s, -s, s);
         poseStack.translate(0.0F, -1.5F, 0.0F);
 
-        this.model.setupAnim(state);
+        RocketModel model = this.models[Math.min(this.models.length - 1, state.tier)];
+        model.setupAnim(state);
         // Replicate LivingEntityRenderer EXACTLY (the path the textured Greenxertz mobs use):
         // renderType = model.renderType(texture) (the default EntityModel function = entityCutout,
         // which binds the texture AND discards the window band's transparent pixels — the cockpit
         // cutout), submitted via the full 10-arg overload.
-        RenderType renderType = this.model.renderType(state.texture);
-        collector.order(0).submitModel(this.model, state, poseStack, renderType,
+        RenderType renderType = model.renderType(state.texture);
+        collector.order(0).submitModel(model, state, poseStack, renderType,
                 FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1, null, 0, null);
 
         poseStack.popPose();

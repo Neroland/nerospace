@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "c5498096-36cd-44e8-8ab1-2bd3b148e251"
+      "uuid": "18198a83-6380-4981-b67b-8485d12bcc43"
     }
   ],
   "outliner": [
-    "c5498096-36cd-44e8-8ab1-2bd3b148e251"
+    "18198a83-6380-4981-b67b-8485d12bcc43"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/greenxertz_navigator.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\greenxertz_navigator.png",
       "name": "greenxertz_navigator.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "c5b36f8d-1c27-4f66-a296-702b7ea1fe93",
+      "uuid": "ead69033-1b6b-49b6-9682-14f6a281d0c0",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/greenxertz_navigator.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA0klEQVR4nGNgGGjAiE1QSU7rPzbxe4+uYahHEYBpDAuIYWBgYGBYsG0Gg0qbDYPNER0GBgYGhlUblmAYhGFAWEAMw4JtMzBsTziUx8DQ8Yth1YYlKAYwEaN5zu0FDDaSRgwLts1gCAuIQfEiE4ZqHCBFNQGrONwpSnJa/7+xfcFqO7pmrl88cG+guEClzQbDAIPPagz41KAYAAttZPDHI4wBnxq8YXBCTIbB4tUTfEoQBtx7dI1x1YYlDAleGTgVJ3hlYEQjdRMSukHoAFtSHngAAI//VaH3ru00AAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAwElEQVR4nGNgGGjAiE1QRkHnPzbxJw+uYKhHEYBpbJmwjIGBgYGhosSHQWaWHUPOpzIGBgYGhpqCKJwGwQ1YsOHSfwkVOQxc8aXn/4INl/7jch1ezbv+H/m/6/+R/xIqchiGMGE1DQuIU43CKg73i4yCzv8/LJ8wFCy6vQxDM8sfPng4oLhAZpYdhgFGv7UY8KlBMQAW2siAxy6IAZ8avGHwQESJQeHNPXxKUAF6TPywcECJDWzRSHFCojgpDzwAACZScIxpDkodAAAAAElFTkSuQmCC"
     }
   ]
 }

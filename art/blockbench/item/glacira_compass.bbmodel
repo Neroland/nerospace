@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "eee12470-f816-4a65-9e75-bdf20a9595fd"
+      "uuid": "4f205a96-9b37-405a-8325-0a47cdef8d7b"
     }
   ],
   "outliner": [
-    "eee12470-f816-4a65-9e75-bdf20a9595fd"
+    "4f205a96-9b37-405a-8325-0a47cdef8d7b"
   ],
   "textures": [
     {
-      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/glacira_compass.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\glacira_compass.png",
       "name": "glacira_compass.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "e2af7768-3497-4413-a696-3946f1352a2a",
+      "uuid": "62a97446-d91e-440b-9984-c1a096e3ab9b",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/glacira_compass.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAo0lEQVR4nGNgoBAwYhNUktP6j0383qNrGOoxBGCawwJiUMRXbViC1RAUjpKc1n+Yxg171qEYEOASBDcI2RBGdM0YGlfsYdgQ4YJiELIhTMjORgcBK/ag0Ni8ygQTwGY7zGZkF2zYsw4lfJgYCABkzdgAQQO2bNpEmQE8PHzEGbBqwxJ4VOEDsFhAMQBbCiMEYHqol5CQDWFgIDMpoxuCy9lUBQBKLFSgl8XhAwAAAABJRU5ErkJggg=="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAs0lEQVR4nGNgoBAwYhOUUdD5j038yYMrGOoxBGCaWyYsQxGvKYjCaggLumaYxo6qJBQDYOI1BVH/sbmEQUZB5/+CDZf+a2iZoOC8O39Q+As2XPqP7EUmfH5223QChcbmVSZkJ6I7e5efBQoN8xpy+DAxEADImrEBggZs2bSJMgNERESIM6CmIIqhom0eIfMYKtrmwdME3ACs8UoAwPSgaMSXkGCuqymIQrGQ4qRMcWaiGAAAQ/9fwXSl2PMAAAAASUVORK5CYII="
     }
   ]
 }

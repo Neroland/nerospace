@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "bf70530f-b1b7-407f-a699-bac52d055c83"
+      "uuid": "78492ce9-55ee-47ee-ab84-227f6ae9816c"
     }
   ],
   "outliner": [
-    "bf70530f-b1b7-407f-a699-bac52d055c83"
+    "78492ce9-55ee-47ee-ab84-227f6ae9816c"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\station_wall.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\station_wall.png",
       "name": "station_wall.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "0004499e-69f5-44f1-b0dd-c5352aec01e6",
+      "uuid": "f9fcf77c-e49a-42f7-a32b-5f72ace45c43",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/station_wall.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABFUlEQVR4nK2SIY7DMBBFX6uAwMgo8jkW9ABFUZBRVWAQmAMFLugBIoOVUQ5gkIMEWQHlXdAdy9ksaneI/1gTz7w/OSzL/cEbUQCEMHM6faQTwPsJpSoAYlyTzuus7TjKpbVd+jiEmaY5p1x0jCsAwzAQwgzwfCCEmdvtE++nTRfvp92jUitxWJb7Yxy/XuJ3bnx6oHVNjCtNc078onM/cn5BKKRIqSohiGGSi5GCl+dFnuRdJPJJJEKYU5O3PTgClGWJMe3mzLXWNVrXOw0/a5SxZFylqjSiYInJgiu1xV/s+UZiXBNz/p+I/h8PjGlxbkxswvrbF2NatK5xbtx64P1E3/e70fMQTwAul+t2jdZ2LyEAfAOvvKyHdg8htQAAAABJRU5ErkJggg=="
     }

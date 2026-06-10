@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "64209fde-6ca7-4e40-bf15-ba8a164e8ed7"
+      "uuid": "41abc94e-5e79-4d3d-a5f0-68d0cd35bc68"
     }
   ],
   "outliner": [
-    "64209fde-6ca7-4e40-bf15-ba8a164e8ed7"
+    "41abc94e-5e79-4d3d-a5f0-68d0cd35bc68"
   ],
   "textures": [
     {
-      "path": "/sessions/nice-vigilant-mendel/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/star_guide_book.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\star_guide_book.png",
       "name": "star_guide_book.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "f076541a-f3e3-4128-9a2b-8d0081297194",
+      "uuid": "68504f9d-e6d1-492f-9ce0-1c2c34471abf",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/star_guide_book.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAg0lEQVR4nGNgGGjAiMzR5rX6T4ymq5+PwfWxoEvaCwXh1Nh03IuBgYGBQURKCy7GRIyN+ABeA6Zm+1BmADEAIwxQbHaTYJjKAGFnT93CwMDAwNDTsYFBSU7r/71H1xgZGLDEAnIgTs32gWtkYEAJRLg+2gYisu1kGUCxC4gBFCflgQcAmzoeq2LVn6sAAAAASUVORK5CYII="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAhElEQVR4nGNgGGjAiMyR49D7T4ymRz8uwfWxoEtGCJXh1Fh2xoiBgYGBQURKCy7GRIyN+ABeAzprbCgzgBiAEQYoNjuIMHQyQNjlLUcYGBgYGLac+sMgo6Dz/8mDK4w4DYAp7mSwgbNhwMeMhSEBqpmBgdaBiG47yQZQ7AJiAMVJeeABAKxiHzrv5743AAAAAElFTkSuQmCC"
     }
   ]
 }

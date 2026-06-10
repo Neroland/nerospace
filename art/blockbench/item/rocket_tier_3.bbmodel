@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "c6f703a6-b355-4a6c-8b22-18d145b9b2a1"
+      "uuid": "a67e5b47-e501-4379-b129-bb8229f00307"
     }
   ],
   "outliner": [
-    "c6f703a6-b355-4a6c-8b22-18d145b9b2a1"
+    "a67e5b47-e501-4379-b129-bb8229f00307"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/rocket_tier_3.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\rocket_tier_3.png",
       "name": "rocket_tier_3.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "4b48af93-7e97-4e03-bb53-792805e3b8dd",
+      "uuid": "42e77f43-f2f8-4a9f-81b7-ace4c9974c8d",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/rocket_tier_3.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA10lEQVR4nGNgoCX4cCLg/4cTAf/xqWGi1BKcBiDbjM8VjLgktvzfh6LJh9EJq1oWXAaYvDRjWPeFG8LZtRKXMkwvTJu2AsXmI0cu45TDagAyCOL5ytDnoYRPCW4vcDyIgbOjjBgYskg14IfCEjh73botDAwMG7Cqw+qFimc9GH7FJobXBXFxSSh8owAzrOowDHgU8ISBgYGBYdeuVSjxbsRg9v9RwBOMwMCZkP5P0/jP4BAA4RzYwMCYdQOnWpzg/zSN//+naeDNTDjDgIGBgeHksTcELQEAwFVDXR0btgEAAAAASUVORK5CYII="
     }

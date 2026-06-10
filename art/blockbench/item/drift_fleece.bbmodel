@@ -105,11 +105,11 @@
         }
       },
       "type": "cube",
-      "uuid": "54be939f-b93c-4e6a-9223-c88120c8b06c"
+      "uuid": "b0b1edd6-4679-46a4-912c-2f724f875a9a"
     }
   ],
   "outliner": [
-    "54be939f-b93c-4e6a-9223-c88120c8b06c"
+    "b0b1edd6-4679-46a4-912c-2f724f875a9a"
   ],
   "textures": [
     {
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "28e74766-f893-46e2-8630-0d1d01fefba7",
+      "uuid": "ba06ee89-8fb4-49c4-8b28-2c479f64e678",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/drift_fleece.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABRElEQVR4nO2Sy07CUBCGP0/PoZbSQmlVJPEaFy7cmOgT+N4u3BkXLjRxZRSixBoKrVzL5Rx3JCg8gImznPn+L5PJwH9trBtc37+Yk8Maz42YatnFthWn9cov/lfj5qFpjDHUtwPidsZMa8Jyic/OF5bYIAo8zvbDRU78FESBh2MXiJOMVnWLndBHKQvXsRFCMM6nS/yS4Om9a5K0h1QWtpJcqhnjfIolBE2/SsUvEgUez589s1KgtWGvFtLNBkSBx91U0h/mFJTkeJAyGk9Ie0Oy3nD1BknaRwjB3m7IW9zhQs1QUjDKJyglaXhVOmkfJeX6IzaSoRmMcuZaU3Js5lrTaCVshz6uY2MJwUFYXOTkT8FtLojaKZYQxO0M17Hx3E3KXpG3j4SK5y7xa//gsZmY2VzjlxyMMby+t7k6P1rL/+H6Br4peLEOto0bAAAAAElFTkSuQmCC"
     }

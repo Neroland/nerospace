@@ -68,6 +68,67 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
         }
     }
 
+    /**
+     * A segmented gauge (art overhaul §5): the hGauge trough divided into ticked cells with an
+     * animated leading edge — energy buffers read at a glance, exact values stay on the labels.
+     */
+    protected void segGauge(GuiGraphicsExtractor g, int dx, int dy, int w, int h, float frac, int fill) {
+        int x = this.leftPos + dx;
+        int y = this.topPos + dy;
+        g.fill(x - 1, y - 1, x + w + 1, y + h + 1, INK);
+        g.fill(x, y, x + w, y + h, TROUGH);
+        int segments = Math.max(4, w / 10);
+        int segW = w / segments;
+        int fw = Math.max(0, Math.min(w, Math.round(w * frac)));
+        for (int s = 0; s < segments; s++) {
+            int sx = x + s * segW;
+            int sw = (s == segments - 1) ? (x + w - sx) : segW - 1; // 1px tick gap between cells
+            int lit = Math.max(0, Math.min(sw, fw - s * segW));
+            if (lit > 0) {
+                g.fill(sx, y, sx + lit, y + h, fill);
+                g.fill(sx, y, sx + lit, y + 1, 0x55FFFFFF);
+            }
+        }
+        // Animated leading edge: a bright pulse on the fill frontier.
+        if (fw > 0 && fw < w) {
+            long time = System.currentTimeMillis() / 250L;
+            if ((time & 1L) == 0L) {
+                g.fill(x + fw - 1, y, x + fw, y + h, 0xAAFFFFFF);
+            }
+        }
+    }
+
+    /**
+     * A liquid gauge (art overhaul §5): two-tone wave fill so tank contents read as FLUID, not
+     * paint — pass the content colour (fuel amber, O₂ cyan, water blue, meltwater frost).
+     */
+    protected void fluidGauge(GuiGraphicsExtractor g, int dx, int dy, int w, int h, float frac, int fill) {
+        int x = this.leftPos + dx;
+        int y = this.topPos + dy;
+        g.fill(x - 1, y - 1, x + w + 1, y + h + 1, INK);
+        g.fill(x, y, x + w, y + h, TROUGH);
+        int fw = Math.max(0, Math.min(w, Math.round(w * frac)));
+        if (fw <= 0) {
+            return;
+        }
+        int dark = darken(fill);
+        long t = System.currentTimeMillis() / 200L;
+        for (int px = 0; px < fw; px++) {
+            // a slow two-tone wave drifting along the fill
+            boolean crest = ((px + t) / 3L) % 2L == 0L;
+            g.fill(x + px, y, x + px + 1, y + h, crest ? fill : dark);
+        }
+        g.fill(x, y, x + fw, y + 1, 0x66FFFFFF);           // meniscus sheen
+        g.fill(x + fw - 1, y, x + fw, y + h, 0x88FFFFFF);  // surface line
+    }
+
+    private static int darken(int argb) {
+        int r = (int) (((argb >> 16) & 0xFF) * 0.72F);
+        int gg = (int) (((argb >> 8) & 0xFF) * 0.72F);
+        int b = (int) ((argb & 0xFF) * 0.72F);
+        return (argb & 0xFF000000) | (r << 16) | (gg << 8) | b;
+    }
+
     /** Left-aligned label text at a panel-relative position. */
     protected void label(GuiGraphicsExtractor g, Component text, int dx, int dy, int color) {
         g.text(this.font, text, this.leftPos + dx, this.topPos + dy, color, false);

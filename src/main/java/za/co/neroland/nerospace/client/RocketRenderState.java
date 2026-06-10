@@ -13,4 +13,6 @@ public class RocketRenderState extends EntityRenderState {
     /** Per-tier hull texture. */
     public Identifier texture =
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/rocket_t1.png");
+    /** Tier ordinal — picks the per-tier geometry (ART_OVERHAUL_DESIGN.md §4.2). */
+    public int tier;
 }

@@ -53,32 +53,9 @@ ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "station_compass", "greenxertz_compass", "cindara_compass", "glacira_compass",
          "star_guide_book", "station_charter"]
 
-# Entity cube lists — keep in sync with the Java LayerDefinitions. Each cube is
-# (part_name, from[x,y,z], to[x,y,z], uv_offset[u,v]).  64x64 sheets.
-CREATURE_CUBES = [  # GreenxertzCreatureModel (shared by the three mobs)
-    ("body",            [-4, 8, -3], [4, 16, 3],   [0, 0]),
-    ("head",            [-3, 6, -7], [3, 12, -1],  [0, 14]),
-    ("leg_front_left",  [-4, 16, -3], [-2, 24, -1], [28, 0]),
-    ("leg_front_right", [2, 16, -3], [4, 24, -1],  [28, 0]),
-    ("leg_back_left",   [-4, 16, 1], [-2, 24, 3],  [28, 0]),
-    ("leg_back_right",  [2, 16, 1],  [4, 24, 3],   [28, 0]),
-]
-ROCKET_CUBES = [  # RocketModel
-    ("body",      [-4, -16, -4], [4, 20, 4],  [0, 0]),
-    ("nose",      [-3, -24, -3], [3, -16, 3], [0, 46]),
-    ("fin_north", [-1, 14, -8],  [1, 24, -4], [40, 0]),
-    ("fin_south", [-1, 14, 4],   [1, 24, 8],  [40, 0]),
-    ("fin_west",  [-8, 14, -1],  [-4, 24, 1], [40, 0]),
-    ("fin_east",  [4, 14, -1],   [8, 24, 1],  [40, 0]),
-]
-# entity bbmodel name -> (entity texture name, cube list)
-ENTITIES = {
-    "xertz_stalker": ("xertz_stalker", CREATURE_CUBES),
-    "quartz_crawler": ("quartz_crawler", CREATURE_CUBES),
-    "greenling": ("greenling", CREATURE_CUBES),
-    "cinder_stalker": ("cinder_stalker", CREATURE_CUBES),
-    "rocket": ("rocket", ROCKET_CUBES),
-}
+# Entity bbmodels are NOT generated here any more (art overhaul A3): `tools/model_sync.py` owns
+# every entity source bidirectionally from the per-model Java geometry. Generating them here too
+# was the mtime footgun that let a stale generated bbmodel overwrite Java geometry via syncModels.
 
 
 def data_url(png_path):
@@ -215,6 +192,4 @@ if __name__ == "__main__":
         make_bbmodel(n, "block", "block")
     for n in ITEMS:
         make_bbmodel(n, "item", "item")
-    for name, (texname, cubes) in ENTITIES.items():
-        make_entity_bbmodel(name, texname, cubes)
     print("done")

@@ -34,14 +34,14 @@ public class OxygenGeneratorScreen extends TexturedContainerScreen<OxygenGenerat
         float energyFrac = maxEnergy == 0 ? 0f : (float) energy / maxEnergy;
 
         label(g, Component.translatable("gui.nerospace.oxygen_generator.power", pct), 8, 20, 0xFFCFE7FF);
-        hGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
+        segGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
 
         int oxygen = this.menu.getOxygen();
         int maxOxygen = this.menu.getMaxOxygen();
         float o2Frac = maxOxygen == 0 ? 0f : (float) oxygen / maxOxygen;
 
         label(g, Component.translatable("gui.nerospace.oxygen_generator.oxygen", oxygen, maxOxygen), 8, 46, 0xFFC8F0D2);
-        hGauge(g, 8, 57, 160, 6, o2Frac, OXYGEN);
+        fluidGauge(g, 8, 57, 160, 6, o2Frac, OXYGEN);
 
         boolean producing = this.menu.isProducing();
         label(g, Component.translatable(producing

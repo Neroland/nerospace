@@ -38,69 +38,73 @@ S = 16  # texture size
 ES = 64  # entity texture size (matches the GreenxertzCreatureModel LayerDefinition 64x64)
 
 # ---- Palette (RGBA) ----
+# ART_OVERHAUL_DESIGN.md §2 (A1): every family ramp retuned in place — deeper shadows, hotter
+# highlights, more chroma in the mids. These constants are the single source of truth: every
+# painter below samples them, so the whole mod re-skins coherently on a --force regen.
 CLEAR = (0, 0, 0, 0)
-# nerosium ramp: dark core -> purple -> magenta -> red -> bright glow
-N_DARK   = (43, 13, 58, 255)
-N_PURPLE = (106, 31, 140, 255)
-N_MAG    = (179, 39, 158, 255)
-N_RED    = (224, 58, 58, 255)
-N_REDHI  = (255, 90, 96, 255)
-N_GLOW   = (255, 138, 216, 255)
-N_BRIGHT = (255, 208, 240, 255)
+# nerosium ramp v2: deeper dark core -> electric purple -> hot magenta -> signal red -> pink glow
+N_DARK   = (30, 8, 46, 255)
+N_PURPLE = (118, 26, 164, 255)
+N_MAG    = (208, 36, 176, 255)
+N_RED    = (248, 56, 64, 255)
+N_REDHI  = (255, 102, 108, 255)
+N_GLOW   = (255, 150, 224, 255)
+N_BRIGHT = (255, 214, 244, 255)
 NEROS = [N_DARK, N_PURPLE, N_MAG, N_RED, N_REDHI, N_GLOW]
 
-# stone / deepslate / metal bases
+# stone / deepslate / metal bases. METAL v2: the old grey-purple mud becomes a cooler blued
+# steel with a real highlight range — the single biggest dullness fix (§2 table).
 STONE   = [(122,122,122,255),(132,132,132,255),(112,112,112,255),(140,140,140,255)]
 DEEP    = [(71,71,74,255),(80,80,84,255),(63,63,66,255),(88,88,92,255)]
-METAL   = [(58,52,66,255),(70,63,80,255),(48,43,56,255),(82,75,92,255)]
-METAL_L = (120, 110, 134, 255)
-METAL_D = (34, 30, 42, 255)
+METAL   = [(58,64,82,255),(68,76,98,255),(46,52,68,255),(82,92,118,255)]
+METAL_L = (160, 176, 210, 255)
+METAL_D = (28, 32, 44, 255)
 WOOD    = [(92,62,38,255),(78,52,32,255),(104,72,46,255)]
 WOOD_D  = (54, 36, 22, 255)
 
-# Greenxertz (Phase 3) palette — green / steel.
-G_DARK    = (16, 40, 28, 255)
-G_STEEL_D = (54, 64, 58, 255)
-G_STEEL   = (96, 112, 100, 255)
-G_STEEL_L = (150, 170, 150, 255)
-G_GREEN   = (60, 170, 90, 255)
-G_GREEN_L = (120, 230, 140, 255)
-G_GLOW    = (180, 255, 190, 255)
+# Greenxertz palette v2 — greens up (more chroma), steel keeps its olive but +1 contrast step.
+G_DARK    = (14, 44, 28, 255)
+G_STEEL_D = (52, 66, 56, 255)
+G_STEEL   = (98, 118, 100, 255)
+G_STEEL_L = (158, 182, 154, 255)
+G_GREEN   = (52, 190, 92, 255)
+G_GREEN_L = (120, 244, 140, 255)
+G_GLOW    = (186, 255, 196, 255)
 STEEL_RAMP = [G_STEEL_D, G_STEEL, G_GREEN, G_GREEN_L, G_GLOW]
-# Xertz quartz — pale green/white crystal
-Q_WHITE  = (228, 242, 228, 255)
-Q_PALE   = (186, 222, 192, 255)
-Q_GREEN  = (138, 200, 150, 255)
-Q_SHADOW = (104, 150, 116, 255)
+# Xertz quartz v2 — stays pale but gains a mint mid so the facets read.
+Q_WHITE  = (236, 250, 238, 255)
+Q_PALE   = (192, 232, 198, 255)
+Q_GREEN  = (150, 225, 170, 255)
+Q_SHADOW = (96, 152, 112, 255)
 QUARTZ_RAMP = [Q_SHADOW, Q_GREEN, Q_PALE, Q_WHITE]
 
-# Rocket / Phase 4 palette
-FUEL     = (255, 150, 40, 255)
-FUEL_D   = (200, 92, 20, 255)
-FUEL_HI  = (255, 214, 120, 255)
-R_WHITE  = (232, 232, 244, 255)
-R_GRAY   = (150, 150, 168, 255)
-R_DARK   = (70, 70, 86, 255)
-R_WINDOW = (150, 220, 255, 255)
-GOLD     = (240, 200, 80, 255)
-HAZ_Y    = (250, 200, 50, 255)
-HAZ_K    = (28, 28, 34, 255)
+# Rocket palette v2 — warmer hull white, visible panel-line grey, hotter fuel amber.
+FUEL     = (255, 158, 36, 255)
+FUEL_D   = (210, 96, 16, 255)
+FUEL_HI  = (255, 222, 128, 255)
+R_WHITE  = (240, 240, 250, 255)
+R_GRAY   = (158, 160, 180, 255)
+R_DARK   = (62, 64, 84, 255)
+R_WINDOW = (140, 224, 255, 255)
+GOLD     = (252, 208, 72, 255)
+HAZ_Y    = (255, 206, 44, 255)
+HAZ_K    = (24, 24, 30, 255)
 
-# Cindara / Phase 7 palette — charred volcanic ash + ember.
-C_DARK   = (28, 12, 10, 255)
-C_ASH    = (60, 50, 48, 255)
-C_RED    = (200, 50, 30, 255)
-C_ORANGE = (240, 120, 40, 255)
-C_EMBER  = (255, 180, 70, 255)
-C_GLOW   = (255, 230, 150, 255)
+# Cindara ember v2 — darker char, hotter orange.
+C_DARK   = (20, 8, 6, 255)
+C_ASH    = (62, 50, 46, 255)
+C_RED    = (212, 52, 26, 255)
+C_ORANGE = (255, 132, 36, 255)
+C_EMBER  = (255, 190, 76, 255)
+C_GLOW   = (255, 238, 160, 255)
 EMBER_RAMP = [C_DARK, C_RED, C_ORANGE, C_EMBER, C_GLOW]
 
-# Glacira palette (NEW_DESTINATION_DESIGN.md) — frozen ice moon: deep glacial blue -> frost white.
-I_DEEP  = (10, 30, 55, 255)
-I_BLUE  = (60, 130, 200, 255)
-I_CYAN  = (120, 210, 240, 255)
-I_FROST = (200, 240, 255, 255)
-I_WHITE = (240, 252, 255, 255)
+# Glacira frost v2 — small chroma push on the blue/cyan mids.
+I_DEEP  = (8, 30, 60, 255)
+I_BLUE  = (48, 138, 224, 255)
+I_CYAN  = (110, 220, 252, 255)
+I_FROST = (196, 242, 255, 255)
+I_WHITE = (242, 252, 255, 255)
 FROST_RAMP = [I_DEEP, I_BLUE, I_CYAN, I_FROST, I_WHITE]
 
 
@@ -226,6 +230,7 @@ def gen_ingot():
                 px[x, y] = N_MAG
     for x in range(4, 12):
         px[x, 5] = N_BRIGHT
+    _ingot_polish(px, rows)
     save(img, os.path.join(ITEM_DIR, "nerosium_ingot.png"))
 
 
@@ -380,7 +385,37 @@ def gen_nerosteel_ingot():
                 px[x, y] = G_STEEL
     for x in range(4, 12):
         px[x, 5] = G_GLOW
+    _ingot_polish(px, rows)
     save(img, os.path.join(ITEM_DIR, "nerosteel_ingot.png"))
+
+
+def _ingot_polish(px, rows):
+    """Item quality pass (A1): a diagonal reflection streak + a grounded underside shadow, so
+    ingots read as polished bars instead of flat lozenges."""
+    for (rx, ry) in [(5, 6), (6, 7), (7, 8)]:   # reflection streak across the face
+        r, g, b, a = px[rx, ry]
+        px[rx, ry] = (min(255, r + 70), min(255, g + 70), min(255, b + 70), 255)
+    bottom = max(rows)
+    x0, x1 = rows[bottom]
+    for x in range(x0 + 1, x1 + 1):             # contact shadow under the bar
+        px[min(x, S - 1), min(bottom + 1, S - 1)] = (20, 20, 26, 140)
+
+
+def _gem_facets(px, shape, light, dark):
+    """Item quality pass (A1): cut facet lines into the shared gem diamond — a left-leaning
+    facet seam, a sparkle at the crown, and a settled shadow on the lower-right girdle."""
+    for y, (x0, x1) in shape.items():           # facet seam, one px left of centre
+        mid = (x0 + x1) // 2
+        if y % 2 == 0 and x0 < mid - 1:
+            px[mid - 1, y] = light
+    for y, (x0, x1) in shape.items():           # lower-right girdle shadow
+        if y >= 9:
+            px[x1 - 1, y] = dark
+    top = min(shape)
+    cx = sum(shape[top]) // 2
+    px[cx, top] = (255, 255, 255, 255)          # crown sparkle
+    if top + 1 in shape:
+        px[cx - 1, top + 1] = light
 
 
 def gen_xertz_quartz():
@@ -402,9 +437,7 @@ def gen_xertz_quartz():
                 px[x, y] = Q_GREEN
     for x in range(7, 9):
         px[x, 3] = Q_WHITE
-    for y, (x0, x1) in shape.items():
-        if y >= 10:
-            px[x1 - 1, y] = Q_SHADOW
+    _gem_facets(px, shape, Q_WHITE, Q_SHADOW)
     save(img, os.path.join(ITEM_DIR, "xertz_quartz.png"))
 
 
@@ -715,6 +748,7 @@ def gen_cindrite():
                 px[x, y] = C_RED
     for x in range(7, 9):
         px[x, 3] = C_EMBER
+    _gem_facets(px, shape, C_EMBER, C_DARK)
     save(img, os.path.join(ITEM_DIR, "cindrite.png"))
 
 
@@ -764,6 +798,7 @@ def gen_glacite():
                 px[x, y] = I_BLUE
     for x in range(7, 9):
         px[x, 3] = I_FROST
+    _gem_facets(px, shape, I_FROST, I_DEEP)
     save(img, os.path.join(ITEM_DIR, "glacite.png"))
 
 
@@ -816,7 +851,10 @@ def gen_station_wall():
 # only (re)render when invoked with the deliberate, creature-scoped --creatures flag, so they
 # never trample the rest of the committed textures the way a global --force would.
 
-FORCE_CREATURES = "--creatures" in sys.argv or "--force" in sys.argv
+# Creature sheets are deliberately DECOUPLED from --force (art overhaul A1): the global palette
+# regen must not wipe entity skins with the old painters — they re-render in the entity phase
+# (A3) under their own scoped flag.
+FORCE_CREATURES = "--creatures" in sys.argv
 
 
 def _mix(a, b, t):
@@ -1133,26 +1171,193 @@ def _wd_detail(x, y, rng):
     return _mix(WD_FACE, WD_FACE_L, (y % 5) / 5.0)
 
 
+# ---- Anatomy-aware creature painting (ART_OVERHAUL_DESIGN.md §4.1, art overhaul A3) -----------
+# Each creature's skin is painted onto its REAL box-UV layout: the cube list is parsed straight out
+# of the model's `model_sync` marker block, so every part gets directional shading (lit top, dark
+# belly) plus a per-creature pattern. Parts outside the marker block (rotated shards, multi-cube
+# limbs) sample the base noise fill, which uses the same ramp — they still match.
+
+import model_sync as _ms  # same tools/ dir; shares the Java cube parser
+
+
+def _java_cubes(java_class):
+    path = os.path.join(ROOT, "src/main/java/za/co/neroland/nerospace/client", java_class + ".java")
+    with open(path, encoding="utf-8") as fh:
+        src = fh.read()
+    if _ms.BEGIN in src:
+        src = src.split(_ms.BEGIN)[1].split(_ms.END)[0]
+    cubes = []
+    for m in _ms._CUBE_RE.finditer(src):
+        name, u, v = m.group(1), int(m.group(2)), int(m.group(3))
+        w, h, d = (max(1, int(round(float(m.group(i))))) for i in (7, 8, 9))
+        cubes.append((name, u, v, w, h, d))
+    return cubes
+
+
+def _paint_face(px, x0, y0, fw, fh, ramp, level, rng, pattern, part, face, bounds=(ES, ES)):
+    hi = len(ramp) - 1
+    for yy in range(fh):
+        for xx in range(fw):
+            x, y = x0 + xx, y0 + yy
+            if not (0 <= x < bounds[0] and 0 <= y < bounds[1]):
+                continue
+            idx = max(0, min(hi, level + (1 if rng.random() < 0.18 else 0)
+                             - (1 if rng.random() < 0.18 else 0)))
+            color = ramp[idx]
+            if pattern is not None:
+                pat = pattern(part, face, xx / max(1, fw - 1) if fw > 1 else 0.5,
+                              yy / max(1, fh - 1) if fh > 1 else 0.5, rng)
+                if pat is not None:
+                    color = pat
+            px[x, y] = color
+
+
+def _paint_box_uv(px, u, v, w, h, d, ramp, rng, pattern, part, bounds=(ES, ES)):
+    """Box-UV faces with directional light: lit top, dark belly, mid sides, dimmer back."""
+    mid = (len(ramp) - 1) // 2 + 1
+    _paint_face(px, u + d, v, w, d, ramp, len(ramp) - 2, rng, pattern, part, "top", bounds)
+    _paint_face(px, u + d + w, v, w, d, ramp, 0, rng, pattern, part, "bottom", bounds)
+    _paint_face(px, u, v + d, d, h, ramp, mid - 1, rng, pattern, part, "west", bounds)
+    _paint_face(px, u + d, v + d, w, h, ramp, mid, rng, pattern, part, "north", bounds)
+    _paint_face(px, u + d + w, v + d, d, h, ramp, mid - 1, rng, pattern, part, "east", bounds)
+    _paint_face(px, u + d + w + d, v + d, w, h, ramp, max(0, mid - 2), rng, pattern, part, "south", bounds)
+
+
+def _eyes_on_head(px, head, eye, socket, glint=None, big=False):
+    """Eyes on the parsed head cube's FRONT face (replaces the old hardcoded texOffs(0,28) math)."""
+    _name, u, v, w, _h, d = head
+    fx, fy = u + d, v + d
+    cx = fx + w / 2.0
+    ey = int(fy + (3 if big else 2))
+    off = max(1, int(w * (0.28 if big else 0.22)))
+    ew = 2 if big else 1
+    for sgn in (-1, 1):
+        ex = int(round(cx + sgn * off)) - (ew // 2)
+        for dx in range(ew):
+            for dy in range(ew):
+                px[ex + dx, ey + dy] = socket
+        px[ex, ey] = eye
+        if ew > 1:
+            px[ex + 1, ey] = eye
+        if glint is not None:
+            px[ex, ey] = glint
+
+
+def _gen_creature_v2(name, java_class, ramp, seed, pattern=None, part_ramps=None,
+                     eye=(20, 20, 24, 255), socket=(0, 0, 0, 255), glint=None, big_eyes=False):
+    path = os.path.join(ENTITY_DIR, name + ".png")
+    if os.path.exists(path) and not FORCE_CREATURES:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+        return
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (ES, ES), CLEAR)
+    px = img.load()
+    # Base fill: dim ramp noise so non-marker parts (rotated shards, multi-cube limbs) match.
+    for y in range(ES):
+        for x in range(ES):
+            px[x, y] = ramp[0] if rng.random() < 0.55 else ramp[1]
+    head = None
+    for cube in _java_cubes(java_class):
+        part, u, v, w, h, d = cube
+        part_ramp = ramp
+        if part_ramps:
+            for prefix, override in part_ramps.items():
+                if part.startswith(prefix):
+                    part_ramp = override
+                    break
+        _paint_box_uv(px, u, v, w, h, d, part_ramp, rng, pattern, part)
+        if part == "head":
+            head = cube
+    if head is not None:
+        _eyes_on_head(px, head, eye, socket, glint, big_eyes)
+    img.save(path)
+    print("wrote", os.path.relpath(path, ROOT))
+
+
+# Per-creature patterns: return a colour to stamp, or None to keep the shaded ramp pixel.
+def _pat_facets(part, face, nx, ny, rng):
+    if part in ("torso", "pelvis", "chest") and (nx + ny) % 0.34 < 0.08:
+        return XS_FACET
+    return XS_MID if rng.random() < 0.04 else None
+
+
+def _pat_plates(part, face, nx, ny, rng):
+    if part in ("dome", "shell", "rim") and (nx in (0.0, 1.0) or ny in (0.0, 1.0)):
+        return QC_SEAM
+    return QC_ROSE if rng.random() < 0.03 else None
+
+
+def _pat_spots(part, face, nx, ny, rng):
+    return GL_SPOT if rng.random() < 0.06 else None
+
+
+def _pat_cracks(part, face, nx, ny, rng):
+    if part in ("body", "shoulders", "belly") and rng.random() < 0.07:
+        return C_ORANGE if rng.random() < 0.7 else C_GLOW
+    return None
+
+
+def _pat_frost(part, face, nx, ny, rng):
+    if face == "top" and ny < 0.34:
+        return FS_ICE
+    return FS_GLOW if rng.random() < 0.02 else None
+
+
+def _pat_hide(part, face, nx, ny, rng):
+    if part == "body" and rng.random() < 0.10:
+        return ML_PATCH
+    return None
+
+
+def _pat_feathers(part, face, nx, ny, rng):
+    if part in ("body", "wing_l", "wing_r", "tail_fan") and int(ny * 6) % 2 == 1:
+        return ES_DARK if rng.random() < 0.5 else None
+    return ES_EMBER if rng.random() < 0.03 else None
+
+
+def _pat_wool(part, face, nx, ny, rng):
+    if part.startswith(("body", "tuft")) and rng.random() < 0.12:
+        return WD_ICE if rng.random() < 0.12 else WD_WOOL_D
+    return None
+
+
 def gen_creatures():
-    # head_w / head_d are the model head's width & depth (for front-face eye placement).
-    _gen_creature("xertz_stalker", _xs_body, _xs_head, _xs_detail,
-                  head_w=6, head_d=7, eye=XS_GLOW, socket=XS_DARK, seed=501, glint=XS_GLOW)
-    _gen_creature("quartz_crawler", _qc_body, _qc_head, _qc_detail,
-                  head_w=6, head_d=4, eye=QC_CRY, socket=QC_SEAM, seed=502, glint=(220, 255, 235, 255))
-    _gen_creature("greenling", _gl_body, _gl_head, _gl_detail,
-                  head_w=8, head_d=8, eye=(20, 40, 24, 255), socket=GL_DARK, seed=503,
-                  glint=(235, 255, 235, 255), big_eyes=True)
-    _gen_creature("cinder_stalker", _cs_body, _cs_head, _cs_detail,
-                  head_w=8, head_d=8, eye=CS_EMBER, socket=CS_OBS, seed=504, glint=CS_GLOW_EYE)
-    _gen_creature("frost_strider", _fs_body, _fs_head, _fs_detail,
-                  head_w=5, head_d=7, eye=FS_GLOW, socket=FS_DEEP, seed=505, glint=FS_GLOW)
+    _gen_creature_v2("xertz_stalker", "XertzStalkerModel",
+                     [XS_DARK, XS_BODY, XS_MID, XS_FACET, XS_GLOW], 501,
+                     pattern=_pat_facets, eye=XS_GLOW, socket=XS_DARK, glint=XS_GLOW)
+    _gen_creature_v2("quartz_crawler", "QuartzCrawlerModel",
+                     [QC_SEAM, QC_PLATE, QC_HI, (224, 226, 234, 255), QC_CRY], 502,
+                     pattern=_pat_plates, eye=QC_CRY, socket=QC_SEAM, glint=(220, 255, 235, 255))
+    _gen_creature_v2("greenling", "GreenlingModel",
+                     [GL_DARK, GL_SPOT, GL_BODY, GL_LEAF, GL_LITE], 503,
+                     pattern=_pat_spots, part_ramps={"belly": [GL_BODY, GL_LITE, GL_LITE,
+                                                              (200, 235, 190, 255), (220, 245, 210, 255)]},
+                     eye=(20, 40, 24, 255), socket=GL_DARK, glint=(235, 255, 235, 255), big_eyes=True)
+    _gen_creature_v2("cinder_stalker", "CinderStalkerModel",
+                     [CS_OBS, CS_ROCK, CS_ROCK2, CS_RED, CS_ORANGE], 504,
+                     pattern=_pat_cracks, eye=CS_EMBER, socket=CS_OBS, glint=CS_GLOW_EYE)
+    _gen_creature_v2("frost_strider", "FrostStriderModel",
+                     [FS_DEEP, FS_BODY, FS_PLATE, FS_ICE, FS_GLOW], 505,
+                     pattern=_pat_frost, eye=FS_GLOW, socket=FS_DEEP, glint=FS_GLOW)
     # Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5): friendly, mostly non-emissive.
-    _gen_creature("meadow_loper", _ml_body, _ml_head, _ml_detail,
-                  head_w=6, head_d=6, eye=(38, 34, 26, 255), socket=ML_DARK, seed=506, big_eyes=True)
-    _gen_creature("ember_strutter", _es_body, _es_head, _es_detail,
-                  head_w=4, head_d=4, eye=(30, 16, 12, 255), socket=ES_DARK, seed=507)
-    _gen_creature("woolly_drift", _wd_body, _wd_head, _wd_detail,
-                  head_w=5, head_d=5, eye=(30, 36, 48, 255), socket=WD_FACE, seed=508, big_eyes=True)
+    _gen_creature_v2("meadow_loper", "MeadowLoperModel",
+                     [ML_DARK, ML_PATCH, ML_BODY, ML_LITE, (196, 214, 156, 255)], 506,
+                     pattern=_pat_hide, part_ramps={"muzzle": [ML_BODY, ML_LITE, ML_LITE,
+                                                               (200, 216, 170, 255), (214, 226, 188, 255)],
+                                                    "horn": [ML_HORN, ML_HORN, ML_HORN, ML_HORN, ML_HORN]},
+                     eye=(38, 34, 26, 255), socket=ML_DARK, big_eyes=True)
+    _gen_creature_v2("ember_strutter", "EmberStrutterModel",
+                     [ES_DARK, ES_BODY, ES_FEATH, ES_EMBER, (255, 214, 120, 255)], 507,
+                     pattern=_pat_feathers, part_ramps={"beak": [ES_BEAK] * 5,
+                                                        "comb": [(200, 60, 40, 255)] * 5},
+                     eye=(30, 16, 12, 255), socket=ES_DARK)
+    _gen_creature_v2("woolly_drift", "WoollyDriftModel",
+                     [WD_WOOL_D, WD_WOOL_D, WD_WOOL, WD_WOOL, (240, 248, 252, 255)], 508,
+                     pattern=_pat_wool, part_ramps={"head": [WD_FACE, WD_FACE, WD_FACE_L,
+                                                             WD_FACE_L, (150, 170, 190, 255)],
+                                                    "leg": [WD_FACE, WD_FACE, WD_FACE_L,
+                                                            WD_FACE_L, WD_FACE_L]},
+                     eye=(30, 36, 48, 255), socket=WD_FACE, big_eyes=True)
 
 
 # Egg silhouette mask (per-row x range) for a 16x16 vanilla-style spawn egg: pointed top, round
@@ -1287,6 +1492,55 @@ def gen_entity_rocket():
 
 # ---------------- OXYGEN / TERRAFORM (particles + machine) ----------------
 
+def gen_rocket_fuel_block():
+    """The rocket_fuel fluid's block/particle tile: a viscous amber liquid with slick highlights.
+    (Found missing by check_assets — the fluid block model always referenced it. The A4 fluid pass
+    layers animated still/flow strips on top; this tile stays as the particle texture.)"""
+    rng = random.Random(940)
+    img = new_img()
+    px = img.load()
+    for y in range(S):
+        for x in range(S):
+            t = ((x * 3 + y * 5) % 13) / 13.0
+            px[x, y] = _mix(FUEL_D, FUEL, t * 0.8)
+    for (cx, cy) in [(4, 3), (11, 7), (6, 12), (13, 13)]:   # slick highlights
+        px[cx, cy] = FUEL_HI
+        px[min(S - 1, cx + 1), cy] = FUEL_HI
+    for i in range(0, S, 4):                                  # lazy surface swirls
+        px[(i + 5) % S, (i * 2 + 3) % S] = _mix(FUEL, FUEL_HI, 0.5)
+    save(img, os.path.join(BLOCK_DIR, "rocket_fuel.png"))
+
+
+def gen_rocket_fuel_fluid():
+    """Animated still/flow strips for the rocket_fuel FluidType (art overhaul A4): four 16x16
+    frames of drifting amber swirl + the .png.mcmeta animation metadata (texture metadata, not
+    model JSON — datagen still owns all models/blockstates)."""
+    import json as _json
+    for (name, frametime, drift) in (("rocket_fuel_still", 12, 1), ("rocket_fuel_flow", 6, 3)):
+        path = os.path.join(BLOCK_DIR, name + ".png")
+        if os.path.exists(path) and "--force" not in sys.argv:
+            print("skip (exists)", os.path.relpath(path, ROOT))
+        else:
+            img = Image.new("RGBA", (S, S * 4), CLEAR)
+            px = img.load()
+            for frame in range(4):
+                oy = frame * S
+                shift = frame * drift
+                for y in range(S):
+                    for x in range(S):
+                        t = (((x + shift) * 3 + (y + shift) * 5) % 13) / 13.0
+                        px[x, oy + y] = _mix(FUEL_D, FUEL, t * 0.85)
+                for (cx, cy) in [(4, 3), (11, 7), (6, 12), (13, 13)]:
+                    px[(cx + shift) % S, oy + cy] = FUEL_HI
+            img.save(path)
+            print("wrote", os.path.relpath(path, ROOT))
+        meta = path + ".mcmeta"
+        if not os.path.exists(meta) or "--force" in sys.argv:
+            with open(meta, "w") as fh:
+                _json.dump({"animation": {"frametime": frametime}}, fh, indent=2)
+            print("wrote", os.path.relpath(meta, ROOT))
+
+
 def gen_oxygen_particle():
     """8x8 soft white radial dot (tinted in code: cyan for O2, green for terraform)."""
     path = os.path.join(PARTICLE_DIR, "oxygen.png")
@@ -1373,26 +1627,219 @@ def gen_hydration_module():
 
 
 def gen_terraform_monitor():
-    """Metal readout block: dark screen face with a green stage-bar chart (deeper terraform §6)."""
-    rng = random.Random(822)
+    """Terraform Monitor (art overhaul A2 split): the SIDE texture is plain trimmed steel (foot/
+    pillar/screen edges); the screen face moved to terraform_monitor_front (gen_machine_faces)."""
+    img = _steel_face_img(822, accent=G_GREEN)
+    save(img, os.path.join(BLOCK_DIR, "terraform_monitor.png"))
+
+
+# ---- Art overhaul A2: per-face machine textures (ART_OVERHAUL_DESIGN.md §3) -------------------
+# Every shaped machine keeps its block texture as the SIDE and gains _front/_top faces. The
+# painters share one trimmed-steel base so the family identity comes from the accents.
+
+def _steel_face_img(seed, accent=None):
+    """The shared machine face: blued-steel noise, bevel, optional accent trim lines."""
+    rng = random.Random(seed)
     img = new_img()
     noise_fill(img, METAL, rng)
-    px = img.load()
     bevel(img, METAL_L, METAL_D)
-    # dark inset screen
-    SCREEN = (8, 14, 12, 255)
+    px = img.load()
+    if accent:
+        for x in range(2, 14):
+            px[x, 1] = accent
+            px[x, 14] = accent
+    return img
+
+
+def _save_block(img, name):
+    save(img, os.path.join(BLOCK_DIR, name + ".png"))
+
+
+def gen_machine_faces():
+    # Nerosium Grinder — front: toothed intake; top: the hopper pit between the rim walls.
+    img = _steel_face_img(830, accent=N_RED)
+    px = img.load()
+    for y in range(4, 12):
+        for x in range(3, 13):
+            px[x, y] = METAL_D
+    for x in range(3, 13):                       # interlocking crusher teeth
+        px[x, 6 if x % 2 == 0 else 7] = N_RED
+        px[x, 9 if x % 2 == 0 else 8] = N_GLOW if x % 4 == 0 else N_MAG
+    _save_block(img, "nerosium_grinder_front")
+    img = _steel_face_img(831)
+    px = img.load()
+    for y in range(2, 14):
+        for x in range(2, 14):
+            px[x, y] = METAL_D
+    for y in range(3, 13, 3):                    # crusher slats seen from above
+        for x in range(3, 13):
+            px[x, y] = N_RED if x % 2 == 0 else N_PURPLE
+    _save_block(img, "nerosium_grinder_top")
+
+    # Combustion Generator — front: ember grill; top: vent ring around the chimney base.
+    img = _steel_face_img(832, accent=FUEL)
+    px = img.load()
+    for y in range(5, 13):
+        for x in range(3, 13):
+            px[x, y] = HAZ_K
+    for y in range(6, 12, 2):                    # glowing grill slits
+        for x in range(4, 12):
+            px[x, y] = C_GLOW if (x + y) % 5 == 0 else C_ORANGE
+    _save_block(img, "combustion_generator_front")
+    img = _steel_face_img(833)
+    px = img.load()
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 8) ** 2 + (y - 8) ** 2) ** 0.5
+            if 3.0 <= d <= 4.5:
+                px[x, y] = C_ORANGE if (x + y) % 2 == 0 else C_RED
+            elif d < 3.0:
+                px[x, y] = HAZ_K
+    _save_block(img, "combustion_generator_top")
+
+    # Passive Generator — top: the ambient collector panel (green cell grid).
+    img = _steel_face_img(834)
+    px = img.load()
+    for y in range(2, 14):
+        for x in range(2, 14):
+            if x % 4 == 1 or y % 4 == 1:
+                px[x, y] = METAL_D
+            else:
+                px[x, y] = G_GREEN if (x // 4 + y // 4) % 2 == 0 else G_GREEN_L
+    _save_block(img, "passive_generator_top")
+
+    # Oxygen Generator — top: the electrolysis dome plate (concentric cyan rings).
+    img = _steel_face_img(835)
+    px = img.load()
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 8) ** 2 + (y - 8) ** 2) ** 0.5
+            if d <= 2.0:
+                px[x, y] = I_WHITE
+            elif d <= 4.0:
+                px[x, y] = I_CYAN
+            elif d <= 6.0:
+                px[x, y] = I_BLUE
+    _save_block(img, "oxygen_generator_top")
+
+    # Terraformer — front: the green core lens; top: the soil tray seen from above.
+    img = _steel_face_img(836, accent=G_GREEN)
+    px = img.load()
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 8) ** 2 + (y - 8) ** 2) ** 0.5
+            if d <= 2.0:
+                px[x, y] = G_GLOW
+            elif d <= 3.4:
+                px[x, y] = G_GREEN_L
+            elif d <= 4.6:
+                px[x, y] = G_GREEN
+            elif d <= 5.4:
+                px[x, y] = METAL_D
+    _save_block(img, "terraformer_front")
+    rng = random.Random(837)
+    img = new_img()
+    DIRT = (98, 70, 46, 255)
+    DIRT_D = (70, 49, 32, 255)
+    noise_fill(img, [DIRT, DIRT_D, (84, 60, 40, 255)], rng)
+    px = img.load()
+    for _ in range(14):                          # fresh green shoots in the tray
+        x, y = rng.randint(1, 14), rng.randint(1, 14)
+        px[x, y] = G_GREEN if rng.random() < 0.6 else G_GREEN_L
+    bevel(img, (120, 90, 60, 255), DIRT_D)
+    _save_block(img, "terraformer_top")
+
+    # Hydration Module — front: the melt window (meltwater behind glass); top: cyan ridge slats.
+    img = _steel_face_img(838, accent=I_CYAN)
+    px = img.load()
     for y in range(3, 13):
         for x in range(3, 13):
+            t = (12 - y) / 9.0
+            px[x, y] = _mix(I_DEEP, I_BLUE, max(0.0, 1.0 - t))
+    for x in range(3, 13):                       # meniscus line
+        px[x, 6] = I_FROST
+    _save_block(img, "hydration_module_front")
+    img = _steel_face_img(839)
+    px = img.load()
+    for y in range(4, 12, 3):
+        for x in range(2, 14):
+            px[x, y] = I_CYAN if x % 2 == 0 else I_BLUE
+    _save_block(img, "hydration_module_top")
+
+    # Terraform Monitor — front: the dark stage-bar display (the old block face).
+    img = _steel_face_img(840, accent=G_GREEN)
+    px = img.load()
+    SCREEN = (8, 14, 12, 255)
+    for y in range(3, 13):
+        for x in range(2, 14):
             px[x, y] = SCREEN
-    # three rising stage bars: rooted green, hydrated cyan, living bright
     for (bx, h, col) in ((4, 3, G_GREEN), (7, 5, I_CYAN), (10, 7, G_GLOW)):
         for y in range(12 - h, 12):
             for x in range(bx, bx + 2):
                 px[x, y] = col
-    # corner rivets
-    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
-        px[rx, ry] = METAL_L
-    save(img, os.path.join(BLOCK_DIR, "terraform_monitor.png"))
+    _save_block(img, "terraform_monitor_front")
+
+    # Battery — top: twin terminal pads (energy gold + signal red). The creative variant gets the
+    # gold-trim treatment (ART_OVERHAUL_DESIGN.md sign-off Q3 extends gold trim to all creatives).
+    for (name, accent) in (("battery_top", None), ("creative_battery_top", GOLD)):
+        img = _steel_face_img(841, accent=accent)
+        px = img.load()
+        for y in range(3, 7):
+            for x in range(3, 7):
+                px[x, y] = GOLD
+            for x in range(9, 13):
+                px[x, y + 6] = N_RED
+        _save_block(img, name)
+
+    # Item Store — front: the drawer plate with a steel handle; top: cross slats.
+    img = _steel_face_img(842, accent=METAL_L)
+    px = img.load()
+    for y in range(3, 13):
+        px[3, y] = METAL_D
+        px[12, y] = METAL_D
+    for x in range(3, 13):
+        px[x, 3] = METAL_D
+        px[x, 12] = METAL_D
+    for x in range(6, 10):                       # handle bar
+        px[x, 7] = METAL_L
+        px[x, 8] = METAL_D
+    _save_block(img, "item_store_front")
+    img = _steel_face_img(843)
+    px = img.load()
+    for i in range(2, 14):
+        px[i, 8] = METAL_D
+        px[8, i] = METAL_D
+    _save_block(img, "item_store_top")
+
+    # Tank content cores: what shows between the frame beams (per block name — the datagen maps
+    # `<block>_core`; the creative variants share their parent's look).
+    for (name, dark, mid, hi, seed) in (
+            ("fluid_tank_core", (16, 52, 120, 255), (44, 110, 210, 255), (130, 190, 250, 255), 844),
+            ("creative_fluid_tank_core", (16, 52, 120, 255), (44, 110, 210, 255), (130, 190, 250, 255), 844),
+            ("gas_tank_core", I_DEEP, I_BLUE, I_CYAN, 845),
+            ("creative_gas_tank_core", I_DEEP, I_BLUE, I_CYAN, 845),
+            ("fuel_tank_core", FUEL_D, FUEL, FUEL_HI, 846)):
+        rng = random.Random(seed)
+        img = new_img()
+        px = img.load()
+        for y in range(S):
+            for x in range(S):
+                t = ((x * 3 + y * 5) % 13) / 13.0
+                px[x, y] = _mix(dark, mid, t * 0.85)
+        for (cx, cy) in [(4, 3), (11, 7), (6, 12), (13, 13)]:
+            px[cx, cy] = hi
+        _save_block(img, name)
+
+    # Launch Gantry — top: the boarding platform with a hazard-striped rim.
+    img = _steel_face_img(847)
+    px = img.load()
+    for i in range(S):                           # hazard rim
+        for (x, y) in ((i, 0), (i, S - 1), (0, i), (S - 1, i)):
+            px[x, y] = HAZ_Y if (x + y) % 4 < 2 else HAZ_K
+    for y in range(3, 13, 3):                    # grating
+        for x in range(2, 14):
+            px[x, y] = METAL_D
+    _save_block(img, "launch_gantry_top")
 
 
 def gen_gui_machine_panel(name, accent, accent_d, slots=((80, 46),)):
@@ -1541,6 +1988,144 @@ def gen_storage_endpoints():
     gen_panel_block("creative_gas_tank", pink, SYM_GAS)
     gen_panel_block("item_store", (232, 232, 244, 255), SYM_BOX)
     gen_panel_block("creative_item_store", pink, SYM_BOX)
+
+
+# ---- Tier 1 Oxygen Suit — full generator redo (ART_OVERHAUL_DESIGN.md §4.3) -------------------
+# The worn layers are painted onto the REAL vanilla humanoid armor layout, so the suit reads as a
+# suit on the player: cyan visor glass, chest console, twin backpack tank, accent cuff seals. The
+# T2/Thermal/Cryo variants keep deriving from this art via the recolor chain below, so repainting
+# T1 re-skins the whole family.
+
+SUIT_SHELL = [(70, 76, 92, 255), (110, 118, 138, 255), (150, 158, 180, 255),
+              (190, 198, 218, 255), (224, 230, 244, 255)]
+SUIT_ACCENT = (224, 70, 70, 255)        # T1 signal red (family rule: T1 = steel + red)
+SUIT_VISOR = (16, 22, 30, 255)
+SUIT_GLASS = (120, 214, 248, 255)
+
+
+def gen_oxygen_suit_t1():
+    rng = random.Random(990)
+    equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
+
+    def out(layer):
+        folder = os.path.join(equip, layer)
+        os.makedirs(folder, exist_ok=True)
+        return os.path.join(folder, "oxygen_suit.png")
+
+    bounds = (64, 32)
+    # humanoid layer: helmet + chest/arms + boots.
+    path = out("humanoid")
+    if not (os.path.exists(path) and "--force" not in sys.argv):
+        img = Image.new("RGBA", (64, 32), CLEAR)
+        px = img.load()
+        _paint_box_uv(px, 0, 0, 8, 8, 8, SUIT_SHELL, rng, None, "helmet", bounds)   # helmet
+        _paint_box_uv(px, 16, 16, 8, 12, 4, SUIT_SHELL, rng, None, "chest", bounds)  # body
+        _paint_box_uv(px, 40, 16, 4, 12, 4, SUIT_SHELL, rng, None, "arm", bounds)    # arms
+        _paint_box_uv(px, 0, 16, 4, 12, 4, SUIT_SHELL, rng, None, "boot", bounds)    # boots
+        # Visor: dark glass band with a cyan reflection across the helmet FRONT (u 8..16, v 8..16).
+        for y in range(10, 14):
+            for x in range(9, 15):
+                px[x, y] = SUIT_VISOR
+        for x in range(9, 13):
+            px[x, 10] = SUIT_GLASS
+        px[9, 11] = SUIT_GLASS
+        # Chest console on the body front (u 20..28, v 20..32): a small status cluster.
+        for i, c in enumerate(((88, 224, 128, 255), (255, 196, 64, 255), SUIT_GLASS, SUIT_ACCENT)):
+            px[21 + i, 22] = c
+        for x in range(21, 27):
+            px[x, 24] = SUIT_VISOR
+        # Backpack tank on the body BACK (u 32..40): twin cylinders.
+        for y in range(21, 30):
+            for x in (33, 34):
+                px[x, y] = SUIT_SHELL[4]
+            for x in (37, 38):
+                px[x, y] = SUIT_SHELL[3]
+        for x in (33, 34, 37, 38):
+            px[x, 20] = SUIT_ACCENT
+        # Accent cuff seals: helmet rim, arm wrists, boot tops.
+        for x in range(8, 16):
+            px[x, 15] = SUIT_ACCENT
+        for x in range(40, 52):
+            px[x, 27] = SUIT_ACCENT
+        for x in range(0, 12):
+            px[x, 20] = SUIT_ACCENT
+        img.save(path)
+        print("wrote", os.path.relpath(path, ROOT))
+    else:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+
+    # humanoid_leggings layer: legs + belt.
+    path = out("humanoid_leggings")
+    if not (os.path.exists(path) and "--force" not in sys.argv):
+        img = Image.new("RGBA", (64, 32), CLEAR)
+        px = img.load()
+        _paint_box_uv(px, 0, 16, 4, 12, 4, SUIT_SHELL, rng, None, "leg", bounds)      # legs
+        _paint_box_uv(px, 16, 16, 8, 12, 4, SUIT_SHELL, rng, None, "belt", bounds)    # belt body
+        for x in range(16, 40):                                                       # belt seal
+            px[x, 21] = SUIT_ACCENT
+        for x in range(0, 12):                                                        # knee seals
+            px[x, 25] = SUIT_ACCENT
+        img.save(path)
+        print("wrote", os.path.relpath(path, ROOT))
+    else:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+
+    # Matching item icons: helmet dome+visor, chest shell+console, layered legs, boot pair.
+    def icon(name, draw):
+        ipath = os.path.join(ITEM_DIR, "oxygen_suit_%s.png" % name)
+        if os.path.exists(ipath) and "--force" not in sys.argv:
+            print("skip (exists)", os.path.relpath(ipath, ROOT))
+            return
+        img = new_img()
+        draw(img.load())
+        save(img, ipath)
+
+    def _shell(px, x0, y0, x1, y1):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                t = (y - y0) / max(1, y1 - 1 - y0)
+                px[x, y] = SUIT_SHELL[3 - min(3, int(t * 3))]
+
+    def helmet(px):
+        _shell(px, 3, 3, 13, 12)
+        for x in range(4, 12):
+            px[x, 2] = SUIT_SHELL[4]
+        for y in range(6, 10):
+            for x in range(4, 12):
+                px[x, y] = SUIT_VISOR
+        for x in range(4, 8):
+            px[x, 6] = SUIT_GLASS
+        for x in range(3, 13):
+            px[x, 12] = SUIT_ACCENT
+
+    def chestplate(px):
+        _shell(px, 3, 2, 13, 13)
+        for y in range(2, 6):    # shoulder cut
+            for x in range(6, 10):
+                px[x, y] = CLEAR
+        for i, c in enumerate(((88, 224, 128, 255), (255, 196, 64, 255), SUIT_GLASS)):
+            px[6 + i, 8] = c
+        for x in range(3, 13):
+            px[x, 12] = SUIT_ACCENT
+
+    def leggings(px):
+        _shell(px, 3, 3, 13, 6)
+        _shell(px, 3, 6, 7, 14)
+        _shell(px, 9, 6, 13, 14)
+        for x in range(3, 13):
+            px[x, 5] = SUIT_ACCENT
+
+    def boots(px):
+        _shell(px, 2, 8, 7, 13)
+        _shell(px, 9, 8, 14, 13)
+        for x in list(range(2, 7)) + list(range(9, 14)):
+            px[x, 8] = SUIT_ACCENT
+            px[x, 13] = SUIT_VISOR
+
+    icon("helmet", helmet)
+    icon("chestplate", chestplate)
+    icon("leggings", leggings)
+    icon("boots", boots)
 
 
 # ---- Tier 2 (cindrite-upgraded) Oxygen Suit -------------------------------
@@ -1785,6 +2370,14 @@ def gen_rocket_tier_entity(name, spec):
 
     plate(12, 0, 36, 12)
     plate(0, 12, 48, 48)
+    # Panel lines (art overhaul §4.2): vertical hull seams + rivet rows so the hull reads plated.
+    for x in range(0, 48, 6):
+        for y in range(13, 47):
+            if rng.random() < 0.8:
+                px[x, y] = (174, 176, 194, 255)
+    for y in (16, 36):
+        for x in range(1, 48, 3):
+            px[x, y] = dark
     for u0 in (0, 12, 24, 36):
         for x in range(u0, u0 + 12):
             for y in range(28, 33):
@@ -1967,12 +2560,24 @@ if __name__ == "__main__":
     gen_gui_star_guide()
     gen_oxygen_particle()
     gen_oxygen_hud_icon()
+    gen_rocket_fuel_block()
+    gen_rocket_fuel_fluid()
     gen_terraformer()
     # Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md).
     gen_hydration_module()
     gen_gui_machine_panel("hydration_module", (120, 210, 240, 255), (40, 90, 130, 255))
     gen_terraform_monitor()
     gen_gui_machine_panel("terraform_monitor", (84, 212, 106, 255), (30, 90, 44, 255), slots=())
+    # Art overhaul A2: per-face machine textures + tank cores + gantry platform.
+    gen_machine_faces()
+    # Art overhaul A4 (sign-off Q6): every standard machine GUI on the shared hull generator.
+    gen_gui_machine_panel("nerosium_grinder", (248, 56, 64, 255), (90, 22, 28, 255),
+                          slots=((56, 35), (116, 35)))
+    gen_gui_machine_panel("combustion_generator", (255, 158, 36, 255), (110, 62, 14, 255))
+    gen_gui_machine_panel("passive_generator", (84, 212, 106, 255), (30, 90, 44, 255))
+    gen_gui_machine_panel("terraformer", (84, 212, 106, 255), (30, 90, 44, 255))
+    gen_gui_machine_panel("oxygen_generator", (120, 210, 240, 255), (40, 90, 130, 255), slots=())
+    gen_gui_machine_panel("fuel_tank", (255, 158, 36, 255), (110, 62, 14, 255), slots=())
     # Creature base textures (additive; (re)render only under the creature-scoped --creatures flag).
     gen_creatures()
     gen_spawn_eggs()
@@ -2007,6 +2612,7 @@ if __name__ == "__main__":
     # Universal pipe translucent tube.
     gen_universal_pipe_glass()
     # Suit-and-station integration — Tier 2 (cindrite-upgraded) oxygen suit, derived from Tier 1 art.
+    gen_oxygen_suit_t1()
     gen_oxygen_suit_t2()
     # Glacira (NEW_DESTINATION_DESIGN.md): glacite chain, Tier 4 rocket icon, compass.
     gen_glacite_ore()

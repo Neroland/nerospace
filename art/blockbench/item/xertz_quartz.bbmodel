@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "ff94605a-c2f1-4fa9-8539-88dcc20027bf"
+      "uuid": "9203d751-2214-41ad-8a98-06f6324d3357"
     }
   ],
   "outliner": [
-    "ff94605a-c2f1-4fa9-8539-88dcc20027bf"
+    "9203d751-2214-41ad-8a98-06f6324d3357"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/xertz_quartz.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\xertz_quartz.png",
       "name": "xertz_quartz.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "15b82f70-22fe-45f6-ab4c-a12332477b3f",
+      "uuid": "22e086d2-882d-4185-b27f-e07fe05d3bd4",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/xertz_quartz.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAbUlEQVR4nGNgGN7gyacn/598evIfnxomXBK77h34f+3NHQYGBgaGrhPTcBqC1YBd9w5gaMBlCIYB2DTjMwSnF4gF1DfATcmBEZfiMossDDmsLkA35N65e1g1EwS77h34nzGtBG86wAso0jx0AAAIUysgslgJYAAAAABJRU5ErkJggg=="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAiklEQVR4nGNgGN7gza93//////8fnxomXBIHXhz7z8DAwPD293uGaQ9X4TQEqwEwzVfe3YCL4TIEwwCYZgYGBgYdIQ0UOWyG4PQCugtwAbwGoLuAKAMcJKwYsbng1PZjDFnyYYzo6nGCAy+O/X/z693/N7/e/U+YUYA3KvEaQrZmBgYGBoo0Dx0AAP0HQGNCf/D0AAAAAElFTkSuQmCC"
     }
   ]
 }

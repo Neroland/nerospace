@@ -32,7 +32,6 @@ import za.co.neroland.nerospace.client.OxygenHudLayer;
 import za.co.neroland.nerospace.client.CinderStalkerModel;
 import za.co.neroland.nerospace.client.FrostStriderModel;
 import za.co.neroland.nerospace.client.GreenlingModel;
-import za.co.neroland.nerospace.client.GreenxertzCreatureModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureRenderer;
 import za.co.neroland.nerospace.client.QuartzCrawlerModel;
 import za.co.neroland.nerospace.client.XertzStalkerModel;
@@ -64,6 +63,25 @@ public class NerospaceClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         Nerospace.LOGGER.info("Nerospace client setup complete.");
+    }
+
+    /**
+     * Fluid client visuals (ART_OVERHAUL_DESIGN.md §5): rocket_fuel finally renders as itself in
+     * the world — animated amber still/flow strips instead of the default missing art. 26.1 routes
+     * fluid sprites through {@code RegisterFluidModelsEvent} + {@code FluidModel.Unbaked} (the old
+     * {@code IClientFluidTypeExtensions} texture hooks are gone — javap-confirmed).
+     */
+    @SubscribeEvent
+    static void onRegisterFluidModels(net.neoforged.neoforge.client.event.RegisterFluidModelsEvent event) {
+        var still = new net.minecraft.client.resources.model.sprite.Material(
+                Identifier.fromNamespaceAndPath(Nerospace.MODID, "block/rocket_fuel_still"));
+        var flow = new net.minecraft.client.resources.model.sprite.Material(
+                Identifier.fromNamespaceAndPath(Nerospace.MODID, "block/rocket_fuel_flow"));
+        event.register(new net.minecraft.client.renderer.block.FluidModel.Unbaked(
+                        still, flow, still,
+                        net.neoforged.neoforge.client.fluid.FluidTintSources.constant(0xFFFFFFFF)),
+                za.co.neroland.nerospace.fluid.ModFluids.ROCKET_FUEL,
+                za.co.neroland.nerospace.fluid.ModFluids.ROCKET_FUEL_FLOWING);
     }
 
     @SubscribeEvent
@@ -160,7 +178,6 @@ public class NerospaceClient {
 
     @SubscribeEvent
     static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(GreenxertzCreatureModel.LAYER, GreenxertzCreatureModel::createBodyLayer);
         event.registerLayerDefinition(XertzStalkerModel.LAYER, XertzStalkerModel::createBodyLayer);
         event.registerLayerDefinition(QuartzCrawlerModel.LAYER, QuartzCrawlerModel::createBodyLayer);
         event.registerLayerDefinition(GreenlingModel.LAYER, GreenlingModel::createBodyLayer);
@@ -173,6 +190,13 @@ public class NerospaceClient {
         event.registerLayerDefinition(za.co.neroland.nerospace.client.WoollyDriftModel.LAYER,
                 za.co.neroland.nerospace.client.WoollyDriftModel::createBodyLayer);
         event.registerLayerDefinition(RocketModel.LAYER, RocketModel::createBodyLayer);
+        // Per-tier rocket geometry (ART_OVERHAUL_DESIGN.md §4.2).
+        event.registerLayerDefinition(za.co.neroland.nerospace.client.RocketT2Model.LAYER,
+                za.co.neroland.nerospace.client.RocketT2Model::createBodyLayer);
+        event.registerLayerDefinition(za.co.neroland.nerospace.client.RocketT3Model.LAYER,
+                za.co.neroland.nerospace.client.RocketT3Model::createBodyLayer);
+        event.registerLayerDefinition(za.co.neroland.nerospace.client.RocketT4Model.LAYER,
+                za.co.neroland.nerospace.client.RocketT4Model::createBodyLayer);
     }
 
     /** Tracks whether the local player was in breathable air last tick (for the boundary sound). */

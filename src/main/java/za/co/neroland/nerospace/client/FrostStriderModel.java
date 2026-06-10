@@ -50,20 +50,26 @@ public class FrostStriderModel extends GreenxertzMobModel {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
-        // Slim raised body, high off the ground — the stilt legs carry it (ground = y 24).
+        // model_sync:begin
         root.addOrReplaceChild("body",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-4F, 2F, -7F, 8F, 5F, 14F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-4F, 2F, -7F, 8F, 5F, 14F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("haunch",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-3.5F, 0F, 3F, 7F, 3F, 5F), PartPose.offset(0F, 0F, 0F));
-        // Long neck reaching forward and slightly down to a low-slung angular head.
+                CubeListBuilder.create().texOffs(0, 0).addBox(-3.5F, 0F, 3F, 7F, 3F, 5F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("neck",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, -3F, -11F, 3F, 6F, 5F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, -3F, -11F, 3F, 6F, 5F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("head",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-2.5F, -6F, -17F, 5F, 4F, 7F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-2.5F, -6F, -17F, 5F, 4F, 7F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("brow",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-3F, -7F, -15F, 6F, 1F, 4F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-3F, -7F, -15F, 6F, 1F, 4F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("jaw",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-2F, -2F, -16F, 4F, 1F, 6F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-2F, -2F, -16F, 4F, 1F, 6F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        // model_sync:end (raked shards are rotated; the stilt legs are two-cube — Java-authoritative)
         // A row of ice-shard spines along the spine, raked back like wind-blown icicles.
         float[] shardZ = {-4F, 0F, 4F};
         float[] shardH = {6F, 7F, 5F};

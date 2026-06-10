@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "1d0cdb16-cacf-440d-8a8a-64291ecb2b44"
+      "uuid": "a920e29b-0ce6-49ef-a2b4-e8c70c7a3601"
     }
   ],
   "outliner": [
-    "1d0cdb16-cacf-440d-8a8a-64291ecb2b44"
+    "a920e29b-0ce6-49ef-a2b4-e8c70c7a3601"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\cindara_compass.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\cindara_compass.png",
       "name": "cindara_compass.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "d19738a3-cb9c-459a-81b6-c5f88766e932",
+      "uuid": "09a4f790-59af-4ba3-a622-f208968b6f5a",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/cindara_compass.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAApElEQVR4nGNgoBAwYhNUktP6j0383qNrGOoxBGCawwJiUMRXbViC1RAUjpKc1n+Yxg171qEYEOASBDcI2RBGdM3oGk/4fWGw2MSDYhCyIUzIzkYHJ/y+oNDYvMoEE8BmO8xmZBds2LMOJXyYGAgAZM3YAEEDtmzaRJkBPDx8xBmwasMSeFThA7BYQDEAWwojBGB6qJeQkA1hYCAzKaMbgsvZVAUAvcdUSmpDSKsAAAAASUVORK5CYII="
     }

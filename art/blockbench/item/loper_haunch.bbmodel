@@ -105,11 +105,11 @@
         }
       },
       "type": "cube",
-      "uuid": "31db025c-ff8d-4d32-8cfe-0973522d49fa"
+      "uuid": "17e8c9c8-fce4-4d27-84c1-324e36463b3d"
     }
   ],
   "outliner": [
-    "31db025c-ff8d-4d32-8cfe-0973522d49fa"
+    "17e8c9c8-fce4-4d27-84c1-324e36463b3d"
   ],
   "textures": [
     {
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "327b09c4-dfd6-4669-80a8-95fca4775b39",
+      "uuid": "9c8d922f-45a0-48f9-8d4f-883dca81e083",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/loper_haunch.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAlklEQVR4nGNgGJLgxaNz/wfOkBePzv3ft2MRXDMLqTZeu3YFRRyrAQ1manAbGk7dYkTW6OQRx4islhFdo46UEAMDAwODmoYCw60bDxgYGBgYrjx7BzcIHTAhc2Ca0QEucRQDYM5W01BgYGBggNsOE0P2Fk4XoGvEJ4bpAix+hLkGlzyGC648e4fVZnRxZIDVVGzROHgBAFcVQwO8IAurAAAAAElFTkSuQmCC"
     }

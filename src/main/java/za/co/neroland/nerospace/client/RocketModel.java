@@ -42,6 +42,9 @@ public class RocketModel extends EntityModel<EntityRenderState> {
         root.addOrReplaceChild("console",
                 CubeListBuilder.create().texOffs(32, 48).addBox(-4F, -1.5F, -5.5F, 8F, 5F, 1F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("bell",
+                CubeListBuilder.create().texOffs(0, 48).addBox(-4F, 20F, -4F, 8F, 3F, 8F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_north",
                 CubeListBuilder.create().texOffs(48, 0).addBox(-1F, 14F, -10F, 2F, 10F, 4F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));

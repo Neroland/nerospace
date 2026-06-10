@@ -44,16 +44,29 @@ public class GreenlingModel extends GreenxertzMobModel {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
+        // model_sync:begin
         root.addOrReplaceChild("body",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-3.5F, 15F, -3F, 7F, 6F, 6F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-3.5F, 15F, -3F, 7F, 6F, 6F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("belly",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-3F, 19F, -2.5F, 6F, 3F, 5F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-3F, 19F, -2.5F, 6F, 3F, 5F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("head",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-4F, 7F, -4F, 8F, 8F, 8F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-4F, 7F, -4F, 8F, 8F, 8F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("cheeks",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-4.5F, 10F, -3.5F, 9F, 3F, 7F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-4.5F, 10F, -3.5F, 9F, 3F, 7F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("frond_mid",
-                CubeListBuilder.create().texOffs(44, 0).addBox(-0.5F, -6F, -0.5F, 1F, 6F, 1F), PartPose.offset(0F, 7F, 0F));
+                CubeListBuilder.create().texOffs(44, 0).addBox(-0.5F, 1F, -0.5F, 1F, 6F, 1F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_left",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-2.5F, 21F, -1.5F, 2.5F, 3F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_right",
+                CubeListBuilder.create().texOffs(44, 0).addBox(0F, 21F, -1.5F, 2.5F, 3F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        // model_sync:end (side fronds + arms are rotated — Java-authoritative)
         root.addOrReplaceChild("frond_left",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-0.5F, -5F, -0.5F, 1F, 5F, 1F),
                 PartPose.offsetAndRotation(-1.5F, 7F, 0F, 0F, 0F, 0.5F));
@@ -68,12 +81,6 @@ public class GreenlingModel extends GreenxertzMobModel {
         root.addOrReplaceChild("arm_right",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-0.5F, 0F, -1F, 2F, 5F, 2F),
                 PartPose.offsetAndRotation(3.5F, 15.5F, 0F, 0F, 0F, -0.15F));
-        root.addOrReplaceChild("leg_left",
-                CubeListBuilder.create().texOffs(44, 0).addBox(-1.25F, 0F, -1.5F, 2.5F, 3F, 3F),
-                PartPose.offset(-1.25F, 21F, 0F));
-        root.addOrReplaceChild("leg_right",
-                CubeListBuilder.create().texOffs(44, 0).addBox(-1.25F, 0F, -1.5F, 2.5F, 3F, 3F),
-                PartPose.offset(1.25F, 21F, 0F));
 
         return LayerDefinition.create(mesh, 64, 64);
     }

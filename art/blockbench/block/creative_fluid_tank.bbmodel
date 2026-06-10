@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "9207868f-7e1d-4948-9682-044eec257b98"
+      "uuid": "6459d103-728f-44cf-a201-07e128cb4299"
     }
   ],
   "outliner": [
-    "9207868f-7e1d-4948-9682-044eec257b98"
+    "6459d103-728f-44cf-a201-07e128cb4299"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\creative_fluid_tank.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\creative_fluid_tank.png",
       "name": "creative_fluid_tank.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "2375fa28-22ec-401e-8667-4025bb2e5b17",
+      "uuid": "32b77a48-837f-4a44-b265-23d58e8cfdb2",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/creative_fluid_tank.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA8ElEQVR4nKWTIRrCMAyF3/pNTERM5kgcYAdAoDgEYnIHQHOMHYDDRCAQFYh9HwhIeSlDraZr+/L6J+ma2+H6xIbRAsDxcQEAiAhyzlDVIsg5h1lEytm0DG8DFrsJf3OgiMDMyrqtXZnChXxe6wOBU6wR+Jop0AGJb+XZc1TVQrFGk9jdzEoBz90eAHC67wKdmYU0Up2XmWFahnALm9QjpFAXiEfdYtcHAj8c+zkEj/28Ggx8uuB5McHYz999ixQ/Bl5dbpl/q2oICHsLdYFF/16d65i41IBN+E34i+TcudDJkbyIfJuj+lyTAECz9Xd+AVanuqXSyKtOAAAAAElFTkSuQmCC"
     }

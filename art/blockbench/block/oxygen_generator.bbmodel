@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "8422f3ad-c844-4f2e-8926-626f39dce842"
+      "uuid": "1d4f61be-31d7-4e5d-b78d-e84eafe54ac2"
     }
   ],
   "outliner": [
-    "8422f3ad-c844-4f2e-8926-626f39dce842"
+    "1d4f61be-31d7-4e5d-b78d-e84eafe54ac2"
   ],
   "textures": [
     {
-      "path": "/sessions/busy-loving-shannon/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/oxygen_generator.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\oxygen_generator.png",
       "name": "oxygen_generator.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "62f3a0c0-ca94-4329-8ce1-24f5d2c5d340",
+      "uuid": "b190b0d2-19ce-42e4-b2d7-380acc833860",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/oxygen_generator.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB5klEQVR4nKWSsYvTYBjGf4Y7uKThcEjaUIqUs4h0DE4SJHBFOpWbD8E/QHEqkqGLy9Eho5PbwdE/wMmhQpHi4FAUIZTjTkSO8CXXQSSXCEJ1yOVrcycuvsv3JbzP873P87w3vGcHv/mP2gB4934sf6RZCkDVsNB1HQARhaRZiqZqskdTNUQsUArgg/sd0iylalh/Be80W5K8u9tDr2wD5AR6ZZvj04CqYZE+8YgXgsn5GZPzM+bKkm+VLTmh8vyA2acPxAuxklC8llz84JFjM6hs0e4PS1onvofbbNFxbMaHOvFizYMkSWTjYO8h7f6QfccuEYwYMvE9RK8rx5cSinHmyrIEdoxNHGMTgH3Hpt0fMleWAOw0WysCTdWkjKIK4NX7umQpwarVEVEICgS+x8DnnyWiEKtWXxGIKMx1Zd+vSQCYLn7lPkxnBL4n45QSIE/ANRsEvsdoOpPAq+AinS9fT1YTQL5d8eOnuIcvmfgeI8oxBr7HPfUme47N+NLAj59nOUGxaR3H5tWLE+6qGoHvlQhcs4GIQo563dJaK5BHcud2m6NeF03VsGp1XLPBrYufuGYD12yQJInMv7vbu+7Bm7evpbMiCkmSRGYtohDI9yXNUo5PA0m2UWhZPy/Dolyr7/W+P9oqzQK4A/X6AAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB1klEQVR4nKWSMWjbQBiFv5hkCYcwxRgNxkMRwnjUoEmDhtAxlNDBiNAxQ6dgTNGgIUMHE4TJWEqHDMJThuChU4YMnjp4yCBMEaUYDcKYYIQwhZamg6pTlZpS6D8d4t7Te/93O5fXdw/8x+wCvLs4kx+yLAWgqbZR6g0Akjgiy1KEUOQdIRQWXz5RK4Qnp2dkWUpTbW8Vax1Dmve9EfuiXibYF3UmVwFNtc3Xlyek5x6z5ecyZw204vjqNcH7C5bJojQo/rbJ1hxbBp7/ne5gWOl667vYHZMDy+Bm0qgapOuVvOg9f0Z3MMSxjIrBmCG3vkvi9GT8X+GQbvPNfUVsNfawGnsAOJZBdzBkvrkHQOsYpYEQiqxRTCF8fP69sqygtjSSOAIg9F08n79OEkeoLa00SOIo77WlAsB09S3fw3RG6LsSp6wAOQFbNwl9l/F0JoWPxQWdaD4rE0D+upaHR9iTHNmYKsbQdzGaTzmyDG4mecKP0w+5QfHSDiyDt+ceHfGE0HcrBrZuksQRgdOrPOsa5EgOXxwTOD2EUFBbGrZu0vqxi62b2LpJul5J/n1v9OcORm/6crNJHJGuV5J1QWiZLMiylMlVIM12Lq/vHrxTZzuvf5ifIlTGY5w+GRQAAAAASUVORK5CYII="
     }
   ]
 }

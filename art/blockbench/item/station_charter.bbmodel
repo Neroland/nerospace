@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "9c332858-7a38-4667-b666-daeb72b924d7"
+      "uuid": "c631ec1a-4800-47dc-88f7-189bd442e94e"
     }
   ],
   "outliner": [
-    "9c332858-7a38-4667-b666-daeb72b924d7"
+    "c631ec1a-4800-47dc-88f7-189bd442e94e"
   ],
   "textures": [
     {
-      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/station_charter.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\station_charter.png",
       "name": "station_charter.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "eb962a7d-2d59-4378-9a8a-99a59b3319b7",
+      "uuid": "5083ee03-766c-42cf-b1e1-87c2a4a4325f",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/station_charter.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAm0lEQVR4nGNgGGjAiMxxcwv7HxAQhFfDhg3rGHbtWgXXx4iuYM+Rc/81VBQYGBgYGG7cecAAY8P4LjZGKHqYcNmErhkXwGoANs037jwg3gCYZpOKLoKuwekFk4ouBpW4FIaIa+/wegWnAWc6ylAMI9mAG3ceMKzQEmK4s2gOimHoAGs0MjAw4AxEoqIRm2aSA5EYzQwMVEjKAw8AQl9Bt17dtpUAAAAASUVORK5CYII="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAtElEQVR4nGNgGGjAiMyxcwj5n5CQgFfDggULGA4dWAPXx4iuYM+Rc/81VBQYGBgYGG7cecAAY8P4LjZGKHqYcNmErhkXwGoANs037jwg3gCYZpOKLoKuwekFk4ouBpW4FIaIa+/wegWnAWc6ylAMI9mAG3ceMKzQEmK4s2gOimHoAGs0MjAw4AxEoqIRm2aSA5EYzQwMDAwsyBw7h5D/j+48Y3h05xmKImS+nUPIf+SkPPAAALRxSHf2imIgAAAAAElFTkSuQmCC"
     }
   ]
 }

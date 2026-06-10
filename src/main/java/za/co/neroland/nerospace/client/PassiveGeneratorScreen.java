@@ -30,7 +30,7 @@ public class PassiveGeneratorScreen extends TexturedContainerScreen<PassiveGener
         float frac = max == 0 ? 0f : (float) energy / max;
 
         label(g, Component.translatable("gui.nerospace.generator.output", pct), 8, 20, 0xFFF0CFEA);
-        hGauge(g, 8, 31, 160, 6, frac, ACCENT);
+        segGauge(g, 8, 31, 160, 6, frac, ACCENT);
 
         boolean active = this.menu.hasCore();
         label(g, Component.translatable(active

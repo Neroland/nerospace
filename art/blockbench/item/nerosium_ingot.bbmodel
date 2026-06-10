@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "6e00ec3f-6e28-4582-a732-974fa2ecae8f"
+      "uuid": "fc514e39-0a5f-42e6-acc8-63ca125dc762"
     }
   ],
   "outliner": [
-    "6e00ec3f-6e28-4582-a732-974fa2ecae8f"
+    "fc514e39-0a5f-42e6-acc8-63ca125dc762"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_ingot.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\nerosium_ingot.png",
       "name": "nerosium_ingot.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "0b2b57cc-b10f-4d20-ae51-14ee88cc6691",
+      "uuid": "fbdbddb9-5a0a-41e3-8bb2-42e1176e5f33",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_ingot.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAaklEQVR4nGNgGAUUA0Z0gf8XPvzHq8FAAEUPC4rmrhv/t4SvY2BgYGDQFZ7DcPltCgZbm9fq/9XPx+CGMGGzBZdmXeE5GGoxDMCnGcbGawApmhkYsAVi143/Os1JWBUzMDAwIPt/FFAJAACfEjImVdCm4wAAAABJRU5ErkJggg=="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAm0lEQVR4nGNgGAUUA0Z0gf/XvvzHq0GLB0UPC4rmaQ/+X/Tbw6Dv5sbw85wXw403BQwMDAwMGiIT4Gw5Dr3/j35cghvChM2Wn+e8GNiNtmFo1hCZgKEWwwCYhou7djHoR13D6gq8BiBruLhMC69mBgZsgTjtwX/5Ij+sihkYGBiQ/Y/VAAYGBgYREakenCYwMDC8efOsBJ/8SAMA31A6ojH4u98AAAAASUVORK5CYII="
     }
   ]
 }

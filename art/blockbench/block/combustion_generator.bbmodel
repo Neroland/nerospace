@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "981e966e-23f8-4ffb-a52f-fdd4f59f672a"
+      "uuid": "2cc74218-3911-414b-b27a-9009abb92155"
     }
   ],
   "outliner": [
-    "981e966e-23f8-4ffb-a52f-fdd4f59f672a"
+    "2cc74218-3911-414b-b27a-9009abb92155"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\combustion_generator.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\combustion_generator.png",
       "name": "combustion_generator.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "89a94100-017c-4dc1-80be-07b93ebe5843",
+      "uuid": "48e019ac-547b-424d-8961-88be8cdb27e6",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/combustion_generator.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABUElEQVR4nKWSIW8CQRCFvxLkEgzqLjlFIEFeCOpUdUMR/R3VqGpEFT+A39D0B6BOEYLc9C6oS+5UTWF9a5hhl5IiOmqz++bNe2/nbv7y+s0/qg2w2270whhDWViiOMEYg3NO76Wcc4pryWU6niggihOauqIsrDYLUVnYANvWqR9WgU1dqQJ/onOOwXDEbruhqaszgUwCGAxHADwf1nA4e12ZaUAWKJDGsrCUhWXR2ZNlvTCt/J35sU8UJ8HAlngWEr+5O0vpzlIAsqzHorPHxyuB+JOgpPna2RhDU1dqtSUZSCi3yv+NXxZ8kq+33dWzPx28EIVkSQL5mizrBY15/sn82FcVsivtS9aysCzje8jXgfRVNGVwavbxqkA8CfNqONWVPo1VC1GcaBaawcPjk26fNAmZvzhRnJCOJ+EmNnWlsnwll+r8CjK4BvzrW/23H886vZcoNYVuAAAAAElFTkSuQmCC"
     }

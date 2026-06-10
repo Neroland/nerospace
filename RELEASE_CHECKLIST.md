@@ -119,19 +119,37 @@ Goal: bespoke models for **all blocks / items / entities / fluids / gasses**, an
 palette** (current art reads dull). Keep family identities (nerosium red/purple, Greenxertz
 green/steel, rocket tiers steel + accent) but raise saturation/contrast.
 
-- [ ] Palette pass in `tools/gen_textures.py` — brighter, more saturated families; regenerate
-      with `--force` only on deliberately re-rendered assets
-- [ ] Custom (non-trivial-cube) block models where it matters: machines, pad, pipes, tanks,
-      Star Guide
-- [ ] Custom item models / improved icons
-- [ ] Worn suit armour art for both tiers (replace placeholders) + hazard variants
-- [ ] Per-creature Blockbench sources; retire legacy shared `GreenxertzCreatureModel` + `.bbmodel`s
-- [ ] Nicer per-creature textures (beyond the script repaint)
-- [ ] Rocket entity model (true model, not the tuned-blind transform) — confirm pad stance + rider seat
-- [ ] Fluid visuals: `IClientFluidTypeExtensions` for `rocket_fuel` (still/flow) + particle texture
-- [ ] Gas visuals (O₂ in pipes/tanks)
-- [ ] Animated/segmented machine gauges, real fluid render in GUIs, tooltips
-- [ ] Every model resolves in-game — zero missing-texture placeholders
+- [x] Palette pass in `tools/gen_textures.py` — every family ramp retuned (`ART_OVERHAUL_DESIGN.md`
+      §2, signed off 2026-06-10) + full deliberate `--force` regen; creature sheets decoupled from
+      `--force` (own `--creatures` scope); confirm the brighter read in runClient
+- [x] Custom (non-trivial-cube) block models — ALL machines shaped + FACING (element-built datagen
+      templates, collision untouched = oxygen sealing intact), tank frames with visible content
+      cores, gantry tower, Star Guide pedestal, monitor wedge; gametested
+      (`machine_facing_placement`); confirm shapes in runClient
+- [x] Custom item models / improved icons — gem facets + crown sparkle, ingot polish, fresh suit
+      icons, new drop-item art
+- [x] Worn suit armour art for both tiers + hazard variants — T1 painted onto the real humanoid
+      layers (visor/tank/console/seals), T2/Thermal/Cryo re-derive from it; confirm worn look in
+      runClient
+- [x] Per-creature Blockbench sources; legacy shared `GreenxertzCreatureModel` + mirrors RETIRED —
+      model_sync registry now 12 entries (8 creatures + 4 rocket tiers), `render_models.py`'s
+      hand mirrors replaced by parser-driven `render_entity_previews.py`
+- [x] Nicer per-creature textures — anatomy-aware painters (per-part box-UV shading + per-creature
+      patterns, parsed from the Java cube lists); confirm skins in runClient
+- [x] Rocket entity model — per-tier GEOMETRY (T1 classic+bell / T2 boosters / T3 ring skirt /
+      T4 heavy quad), per-tier hull textures with panel lines; stance numbers untouched — confirm
+      pad stance + rider seat in runClient
+- [x] Fluid visuals — rocket_fuel renders via `RegisterFluidModelsEvent` + animated still/flow
+      strips (+ particle texture, found missing by `check_assets.py`); confirm placed fluid in
+      runClient (26.1 note: `IClientFluidTypeExtensions` no longer carries textures)
+- [x] Gas visuals — pipe gas streams now O₂ cyan; Gas Tank shows its cyan content core through the
+      new frame model
+- [x] Animated/segmented machine gauges + fluid render in GUIs — `segGauge` (ticked cells, pulsing
+      edge) on every energy bar, `fluidGauge` (two-tone wave + meniscus) on fuel/O₂/hydration;
+      exact values stay on inline labels (deliberate deviation: no hover tooltips — values are
+      always visible instead); all standard machine GUI panels unified on the shared generator
+- [x] Every model resolves — automated by `tools/check_assets.py` (model↔texture↔blockstate
+      cross-check, green); the in-game half stays a runClient check
 
 ## 3. Audio
 

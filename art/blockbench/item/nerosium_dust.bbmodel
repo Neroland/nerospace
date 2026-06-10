@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "a04dec6a-0274-4bea-a274-b5c4df607a08"
+      "uuid": "f68318a7-d8f2-451b-989a-3e029e24f919"
     }
   ],
   "outliner": [
-    "a04dec6a-0274-4bea-a274-b5c4df607a08"
+    "f68318a7-d8f2-451b-989a-3e029e24f919"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_dust.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\nerosium_dust.png",
       "name": "nerosium_dust.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "4e2e97d4-feb4-42e8-b393-30c68e97dbf7",
+      "uuid": "102753cf-caa0-48fd-882a-f78eee75ff72",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_dust.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAdUlEQVR4nGNgGP7gf9eN//TRRBNDN6vP+/8/KgFFI0GDcGkgyQVkh8Fm9Xn/kWl08MDKirDBD6ys/mfJ9/z/33Xjf5Z8D9z56F7DCbLke+AaYQCm+X9Uwn+yvYdLIwu67dMeljAyMEC8Iq+ghpC80EGWxbQHAENpTyiL+LPLAAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAdklEQVR4nGNgGP7g/7QH/+mjiSaGXlDZ8P9/Wg6KRoIG4dJAkgvIDoMLKhv+I9Po4IeFA2GDf1g4/C+TWvL//7QH/8uklsCdj+41nKBMaglcIwzANP9Py/lPtvdwaWRBt73rWQwjAwPEK+x6OgjJCz1kWUx7AADLjFHQPspCWQAAAABJRU5ErkJggg=="
     }
   ]
 }

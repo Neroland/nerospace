@@ -32,7 +32,7 @@ public class NerosiumGrinderScreen extends TexturedContainerScreen<NerosiumGrind
         float energyFrac = max == 0 ? 0f : (float) energy / max;
 
         label(g, Component.literal("Power: " + pct + "%"), 8, 18, 0xFFE9C2DC);
-        hGauge(g, 8, 28, 160, 4, energyFrac, ACCENT);
+        segGauge(g, 8, 28, 160, 4, energyFrac, ACCENT);
 
         // Grind progress arrow between input (56,35) and output (116,35).
         hGauge(g, 78, 40, 22, 6, this.menu.getScaledProgress(1000) / 1000f, 0xFF9CF06A);

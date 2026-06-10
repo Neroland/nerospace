@@ -105,11 +105,11 @@
         }
       },
       "type": "cube",
-      "uuid": "0940f547-95cb-425f-99e5-ef9d5ece77fb"
+      "uuid": "1874a4d0-9525-4f8a-b648-442f5bb96050"
     }
   ],
   "outliner": [
-    "0940f547-95cb-425f-99e5-ef9d5ece77fb"
+    "1874a4d0-9525-4f8a-b648-442f5bb96050"
   ],
   "textures": [
     {
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "fb6bd1d2-2e58-403f-a5f0-46ecb85e1e91",
+      "uuid": "01df340b-6d02-482d-9b25-df18de5b1167",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/strutter_drumstick.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAdUlEQVR4nGNgGPKAEZvgND+t/zB21qZrWNXgNGCan9Z/PQUhOP/Sg3d4DWHCp5mBgYFBT0EIxUV4DUAHlx68wydN2AB012ADWMMAWTOhMCAqFl48OvdfQs4Ib2zgBS8encMZiBQbgjcQqQ6wuYJkF1AlPJABAEZ+MEVlfkHhAAAAAElFTkSuQmCC"
     }

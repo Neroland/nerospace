@@ -30,7 +30,7 @@ public class FuelTankScreen extends TexturedContainerScreen<FuelTankMenu> {
         float frac = pct / 100f;
 
         label(g, Component.literal("Fuel: " + pct + "%"), 8, 20, 0xFFFFD9A0);
-        hGauge(g, 8, 31, 160, 12, frac, ACCENT);
+        fluidGauge(g, 8, 31, 160, 12, frac, ACCENT);
         label(g, Component.literal(this.menu.getFuel() + " / " + this.menu.getCapacity() + " mB"), 8, 50, 0xFFB9C6D4);
     }
 }

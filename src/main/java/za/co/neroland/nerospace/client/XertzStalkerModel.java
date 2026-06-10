@@ -45,22 +45,32 @@ public class XertzStalkerModel extends GreenxertzMobModel {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
+        // model_sync:begin
         root.addOrReplaceChild("pelvis",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-3F, 12F, -2.5F, 6F, 4F, 5F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-3F, 12F, -2.5F, 6F, 4F, 5F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("torso",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-3.5F, 4F, -3F, 7F, 9F, 6F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-3.5F, 4F, -3F, 7F, 9F, 6F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("chest",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-2.5F, 5F, -4F, 5F, 5F, 2F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-2.5F, 5F, -4F, 5F, 5F, 2F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("shoulder_left",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-6F, 4F, -2.5F, 3F, 4F, 5F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-6F, 4F, -2.5F, 3F, 4F, 5F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("shoulder_right",
-                CubeListBuilder.create().texOffs(0, 0).addBox(3F, 4F, -2.5F, 3F, 4F, 5F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(3F, 4F, -2.5F, 3F, 4F, 5F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("neck",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-2F, 1F, -2F, 4F, 4F, 4F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-2F, 1F, -2F, 4F, 4F, 4F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("head",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-3F, -3F, -6F, 6F, 5F, 7F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-3F, -3F, -6F, 6F, 5F, 7F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("jaw",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-2.5F, 2F, -6F, 5F, 2F, 6F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-2.5F, 2F, -6F, 5F, 2F, 6F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        // model_sync:end (crest/fins are rotated and the limbs are multi-cube — Java-authoritative)
         root.addOrReplaceChild("crest",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-1F, -7F, -1F, 2F, 6F, 3F),
                 PartPose.offsetAndRotation(0F, -2F, 1F, -0.4F, 0F, 0F));

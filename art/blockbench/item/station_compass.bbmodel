@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "99a392da-219c-4c6a-b6a9-31e6363e83ef"
+      "uuid": "70e45528-9f18-4fb2-802f-4ca048b453ab"
     }
   ],
   "outliner": [
-    "99a392da-219c-4c6a-b6a9-31e6363e83ef"
+    "70e45528-9f18-4fb2-802f-4ca048b453ab"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\station_compass.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\station_compass.png",
       "name": "station_compass.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "69e1aacd-6ade-4bd8-9b8d-217136eeeb97",
+      "uuid": "ec88b48f-723f-4dea-b5a5-74e9d24448e6",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/station_compass.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAApElEQVR4nGNgoBAwYhNUktP6j0383qNrGOoxBGCawwJiUMRXbViC1RAUjpKc1n+Yxg171qEYEOASBDcI2RBGdM3oGvNyShgmTelBMQjZECZkZ6ODvJwSFBqbV5lgAthsh9mM7IINe9ahhA8TAwGArBkbIGjAlk2bKDOAh4ePOANWbVgCjyp8ABYLKAZgS2GEAEwP9RISsiEMDGQmZXRDcDmbqgAA7+xVBoIYFIIAAAAASUVORK5CYII="
     }

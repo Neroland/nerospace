@@ -100,7 +100,7 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
 
     @SuppressWarnings("unchecked")
     private static List<int[]>[] newRingCache() {
-        return new List[3];
+        return (List<int[]>[]) new List<?>[3];
     }
 
     /**

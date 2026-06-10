@@ -46,40 +46,42 @@ public class WoollyDriftModel extends GreenxertzMobModel {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
-        // One big rounded fleece block riding low on stubby legs (ground = y 24).
+        // model_sync:begin
         root.addOrReplaceChild("body",
                 CubeListBuilder.create().texOffs(0, 0).addBox(-5F, 8F, -7F, 10F, 9F, 14F),
-                PartPose.offset(0F, 0F, 0F));
-        // Wind-packed snow tufts ridging the back.
-        float[] tuftZ = {-4F, 0F, 4F};
-        for (int i = 0; i < tuftZ.length; i++) {
-            root.addOrReplaceChild("tuft_" + i,
-                    CubeListBuilder.create().texOffs(44, 0).addBox(-3F, -2F, -1.5F, 6F, 2F, 3F),
-                    PartPose.offset(0F, 10F, tuftZ[i]));
-        }
-        // Small bare face poking out of the fleece, with drooped ears.
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("tuft_0",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-3F, 8F, -5.5F, 6F, 2F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("tuft_1",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-3F, 8F, -1.5F, 6F, 2F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("tuft_2",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-3F, 8F, 2.5F, 6F, 2F, 3F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("head",
                 CubeListBuilder.create().texOffs(0, 28).addBox(-2.5F, 7F, -11F, 5F, 5F, 5F),
-                PartPose.offset(0F, 0F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("ear_l",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-4F, 8F, -9F, 1.5F, 3F, 1F),
-                PartPose.offset(0F, 0F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("ear_r",
                 CubeListBuilder.create().texOffs(44, 0).addBox(2.5F, 8F, -9F, 1.5F, 3F, 1F),
-                PartPose.offset(0F, 0F, 0F));
-
-        // Four stubby hip-pivoted legs.
-        leg(root, "leg_fl", -3F, -4.5F);
-        leg(root, "leg_fr", 3F, -4.5F);
-        leg(root, "leg_bl", -3F, 4.5F);
-        leg(root, "leg_br", 3F, 4.5F);
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_fl",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-4F, 17F, -5.5F, 2F, 7F, 2F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_fr",
+                CubeListBuilder.create().texOffs(44, 0).addBox(2F, 17F, -5.5F, 2F, 7F, 2F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_bl",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-4F, 17F, 3.5F, 2F, 7F, 2F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_br",
+                CubeListBuilder.create().texOffs(44, 0).addBox(2F, 17F, 3.5F, 2F, 7F, 2F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        // model_sync:end
 
         return LayerDefinition.create(mesh, 64, 64);
-    }
-
-    private static void leg(PartDefinition root, String name, float x, float z) {
-        root.addOrReplaceChild(name, CubeListBuilder.create()
-                        .texOffs(44, 0).addBox(-1F, 0F, -1F, 2F, 7F, 2F),
-                PartPose.offset(x, 17F, z));
     }
 }

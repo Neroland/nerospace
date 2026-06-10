@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "40762f34-acb6-44d3-8eef-3915ae720fea"
+      "uuid": "df87014f-d37e-435c-800f-8c0852999418"
     }
   ],
   "outliner": [
-    "40762f34-acb6-44d3-8eef-3915ae720fea"
+    "df87014f-d37e-435c-800f-8c0852999418"
   ],
   "textures": [
     {
-      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/glacite_block.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\glacite_block.png",
       "name": "glacite_block.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "c487a7a9-8b9a-4406-8f67-1986c6a32466",
+      "uuid": "cbda8db2-5afa-4756-a6cd-22b8c005ae3a",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/glacite_block.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABO0lEQVR4nKVTq27DQBAcR8aOsWWZ2aCg0CouCXBAPsEgKuoHlIS0f2AFRQH5hJDQYiuwKLKZZRlfT+VXEM1m3Rdoluzd3nlmdvbs1cY5XBE+AJTLF3THA5K8GOUgSlFu1tg9PAIAwjiD6RvYoZU7EyIFUQoAcgAAdmglh3EGfdf0zUUBg6xfQXnGWhhnsvcBwPTNNwa9T/JiBGL6BkGUwg7tuQU7tCPZlM4a10leSDsk8DWL6ZsRm15rj3RMtClkJtBuu8IimeL1rUa5WYtxWp1XG+f23Tt+i6ebKU4fwE93qvns3EI1n4lEOkypi+1KPtg/V2L4aAp6XOyTIGTmY9ImC4AuUAW9ILMeK9fyEqmAWbdAIILpkYsCIv6Vu+NBlHLkAC7/gh1aKepxca9V6pfr1ca5+9s7/Dc+AYAKx/P7HL9ZAAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABPklEQVR4nKVTq27DQBAcJ/4Ao4LI4JBRsVmlKKr8CUYFVdWPKAlq1Y+IqiggKJ9gldUosCoyOmAZFJ0MyqorsGe91xdol+zt3XlmdvYc1b33+EfEAHB9dQt7rGDyIsjJwqDc73C4uAQAJGkG1zZwnZU7MyIlCwMAcgAArrOSkzSDvuvaZlLAIOtnUJ5xL0kzqWMAcG3zhUHXJi8CENc2g4rODi24zgayKZ17XJu8kHZIEGsW1zYBm15rj3TMtCli2gj0sF2jPJnj8eUJ5X4nxml1Ud17f3h9x09xZ+Z4fgO+u7NZLYcWNqulSKTDlFpu1/JBdXMvhgdT0ONinwQhMx+TNlkA9AZV0AsyB2Me1/ISRf6YdQsEIpge+dTCiPhbtsdKlHLkAKZ/wXV2YlHjYq1V6pcb1b3356dn+Gt8AHYKx+jIYrrOAAAAAElFTkSuQmCC"
     }
   ]
 }

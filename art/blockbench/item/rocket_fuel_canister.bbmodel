@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "22c7ed5f-c6ff-4387-bd32-921e9a28edeb"
+      "uuid": "d43a7b73-0e74-4856-98dd-fbc525e64242"
     }
   ],
   "outliner": [
-    "22c7ed5f-c6ff-4387-bd32-921e9a28edeb"
+    "d43a7b73-0e74-4856-98dd-fbc525e64242"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/rocket_fuel_canister.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\rocket_fuel_canister.png",
       "name": "rocket_fuel_canister.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "efedb2e0-149b-4c87-833a-fe8aa2445e7b",
+      "uuid": "efc83ddf-926e-42d5-ac1f-0e713b551af8",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/rocket_fuel_canister.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAqUlEQVR4nGNgGGjAiEvCzS3sP4y9a9cqnOqIAtOmrfiPSw7D5BcvvuBUHBeXhOEaFmwKhR7YMcw5V4YilmLUxcDAoIKhFqsBc86VMWQ6XIBwDmxgOHnsDcMchikMDAzrMNQy4XLuybY5cM3mViK4lOE2wNxKBK755LE3pBuArJkyF1SlUOiCtjl4XYA1FhgYGBjOWU1hOMfAwMBgxQChiTUgLi4Jj/LBCAA/hj5RxRuCTwAAAABJRU5ErkJggg=="
     }

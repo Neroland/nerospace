@@ -87,7 +87,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         int pct = this.menu.getFuelPercent();
         label(g, Component.literal("Fuel: " + pct + "%   " + this.menu.getFuel() + " / " + this.menu.getCapacity() + " mB"),
                 8, 17, 0xFFFFC9B0);
-        hGauge(g, 8, 27, 130, 5, pct / 100f, FUEL);
+        fluidGauge(g, 8, 27, 130, 5, pct / 100f, FUEL);
         label(g, Component.literal("PAD >"), 8, 39, 0xFF9FB4C8);
 
         // Reflect live selection / launch-readiness onto the widgets.

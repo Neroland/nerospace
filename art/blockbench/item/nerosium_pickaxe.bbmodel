@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+      "uuid": "b7ef9f2a-c398-41cc-bd04-b20c80301720"
     }
   ],
   "outliner": [
-    "f706c8b2-e36a-44cc-8b2f-424d4626fc9a"
+    "b7ef9f2a-c398-41cc-bd04-b20c80301720"
   ],
   "textures": [
     {
-      "path": "/sessions/clever-busy-lamport/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\nerosium_pickaxe.png",
       "name": "nerosium_pickaxe.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "672ad055-5ecc-4b53-89e0-b0fb0944bed2",
+      "uuid": "92ac23ca-5599-439b-a5b9-587072490003",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/nerosium_pickaxe.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAj0lEQVR4nGNgGHTgf9eN//+7bvwnVpwRmaPNa/V/qy6Cr3DsGCMDAwPDAysruEbvywwMVz8fY8RqALJBHVIpKGIVz+agaCQKZMn3/M+S78FwNkkgxk7tv5+JAk5DmAgZcOvZBwY+LjYGXIYQNODUnVeM+AwhaAAhQ4gyAJ8hRBsAM4QU9ViBmYoYZdE6+AAAs/9DhB05fkMAAAAASUVORK5CYII="
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAfElEQVR4nGNgoAb4P+3B///THvwnJIYNMDIwMDD8T8v5//PSFQYGBgYGjhMHGH9YOPxnYGBgYNfTYWCcNYWRoAEMDAwMF1Q2oNhmcCcAr0asoExqyf8yqSUEnY0XyHHo/Zfj0KPMEAYGBoYYO7X/ZipilBk0ashgNmRwAQBRYjohMncb1wAAAABJRU5ErkJggg=="
     }
   ]
 }

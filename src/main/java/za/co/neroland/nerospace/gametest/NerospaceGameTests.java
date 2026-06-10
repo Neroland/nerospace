@@ -123,6 +123,8 @@ public final class NerospaceGameTests {
         functions.put("terraform_legacy_save_compat", NerospaceGameTests::testTerraformLegacySaveCompat);
         functions.put("terraform_creature_breeding", NerospaceGameTests::testTerraformCreatureBreeding);
         functions.put("terraform_monitor_readout", NerospaceGameTests::testTerraformMonitorReadout);
+        // Art overhaul (ART_OVERHAUL_DESIGN.md §3): machines face the placer.
+        functions.put("machine_facing_placement", NerospaceGameTests::testMachineFacingPlacement);
         // Oxygen field boundary classification: doors/trapdoors seal when closed and flow when
         // open, glass seals (full collision cube fallback), panes/fences hold-but-leak.
         functions.put("oxygen_sealing_boundaries", NerospaceGameTests::testOxygenSealingBoundaries);
@@ -713,6 +715,41 @@ public final class NerospaceGameTests {
                 "the legacy stage-1 radius must survive the decode");
         helper.assertTrue(decoded.stageRadius(machine, 2) == 0 && decoded.stageRadius(machine, 3) == 0,
                 "absent stage radii must default to 0 (frontiers start sweeping from the centre)");
+        helper.succeed();
+    }
+
+    /**
+     * Art overhaul (ART_OVERHAUL_DESIGN.md §3): FACING machines place with their front toward the
+     * placer (visual only — old saved machines default north). Exercises the placement override on
+     * the Terraformer and the Grinder (the same pattern all six FACING machines share).
+     */
+    private static void testMachineFacingPlacement(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        Direction expected = player.getDirection().getOpposite();
+
+        helper.setBlock(new BlockPos(2, 1, 2), Blocks.STONE);
+        BlockPos floorAbs = helper.absolutePos(new BlockPos(2, 1, 2));
+        ItemStack stack = new ItemStack(ModItems.TERRAFORMER_ITEM.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        stack.getItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(floorAbs), Direction.UP, floorAbs, false)));
+        BlockState placed = helper.getLevel().getBlockState(helper.absolutePos(new BlockPos(2, 2, 2)));
+        helper.assertTrue(placed.is(ModBlocks.TERRAFORMER.get()), "the terraformer must place");
+        helper.assertTrue(placed.getValue(
+                        za.co.neroland.nerospace.machine.TerraformerBlock.FACING) == expected,
+                "the terraformer's core lens must face the placer");
+
+        helper.setBlock(new BlockPos(4, 1, 2), Blocks.STONE);
+        BlockPos floor2Abs = helper.absolutePos(new BlockPos(4, 1, 2));
+        ItemStack grinder = new ItemStack(ModBlocks.NEROSIUM_GRINDER.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, grinder);
+        grinder.getItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(floor2Abs), Direction.UP, floor2Abs, false)));
+        BlockState placedGrinder = helper.getLevel().getBlockState(helper.absolutePos(new BlockPos(4, 2, 2)));
+        helper.assertTrue(placedGrinder.is(ModBlocks.NEROSIUM_GRINDER.get()), "the grinder must place");
+        helper.assertTrue(placedGrinder.getValue(
+                        za.co.neroland.nerospace.machine.NerosiumGrinderBlock.FACING) == expected,
+                "the grinder's intake must face the placer");
         helper.succeed();
     }
 

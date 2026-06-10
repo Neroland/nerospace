@@ -42,14 +42,20 @@ public class QuartzCrawlerModel extends GreenxertzMobModel {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
+        // model_sync:begin
         root.addOrReplaceChild("dome",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-4F, 12F, -4F, 8F, 3F, 8F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-4F, 12F, -4F, 8F, 3F, 8F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("shell",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-5F, 15F, -5F, 10F, 4F, 10F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-5F, 15F, -5F, 10F, 4F, 10F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("rim",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-5.5F, 17F, -5.5F, 11F, 2F, 11F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-5.5F, 17F, -5.5F, 11F, 2F, 11F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("head",
-                CubeListBuilder.create().texOffs(0, 28).addBox(-3F, 15F, -9F, 6F, 4F, 4F), PartPose.offset(0F, 0F, 0F));
+                CubeListBuilder.create().texOffs(0, 28).addBox(-3F, 15F, -9F, 6F, 4F, 4F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        // model_sync:end (crystals + splayed legs are rotated — Java-authoritative)
         root.addOrReplaceChild("crystal_a",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-1F, -4F, -1F, 2F, 5F, 2F),
                 PartPose.offsetAndRotation(-1.5F, 12F, 0F, -0.2F, 0F, 0.3F));

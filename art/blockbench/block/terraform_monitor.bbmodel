@@ -105,11 +105,11 @@
         }
       },
       "type": "cube",
-      "uuid": "1937c1bc-dde5-4144-b1c0-0c25d86a17ad"
+      "uuid": "46c27495-527e-4bd3-814d-f36808c05f8c"
     }
   ],
   "outliner": [
-    "1937c1bc-dde5-4144-b1c0-0c25d86a17ad"
+    "46c27495-527e-4bd3-814d-f36808c05f8c"
   ],
   "textures": [
     {
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "d5cddad3-a48d-4ece-8dca-aa20a52abc05",
+      "uuid": "45351728-bca9-4b9e-a1bf-780ca4aec720",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/terraform_monitor.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABYklEQVR4nKWTsUrDUBSGP0uXJoe4SBuKg9Ti4CKIOLm5OHXyEZylo0/g7AP0ETp1dpLiICIIIhJaW7CUtHRpPL0ZdUh709KKFs+Sc3PP/e/3/yQbV5fXX/yjsgBB+xVVRUSWnuGgb4fF9dBJhIkN+S2fVicgM9s8PDgmHPTRSbRwWFwPExvE9RARTGw4O62gkygleO+2UFWegocfUd8+XmxfapcR1wPChKC0U17b+4wgYwmmL36q+rhBfdxIDqviF4qpwLoEOolsuBmAcNDHxGZpsNrsUW32VookGUwFxPXWovALRYajMBWAxBfAUa3CUa3yZ7EM8GuAq8rJOanA7Av7a6mqzSwLICLW0+NFww7enGzb/nwztZXMkwoAnJ1WyD/7DEch+S0/uWlKNU9oYsPe7j7v3VZqQVUJ2q+ICE7OQUTS2+b+AXE9nJzD3f2t3c8CtDrBgsdwGM6vbBd9Luf0DbvVnksHaYGBAAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABWUlEQVR4nKWTIW8CMRTHfyOoS3OruJATBIWYQPEppghiErmgFzRiYpqgCWLiJIKcIvsEC+LEgiDkxEIQF3JZStNgN0GuBwEy2J7py+u/r7//S3vzOv745h9RBAhHAVqluNI7WpNVbMWOkGyNwhhNya8wn00pZJutxyeSVczWqIPDjpAYo3GExJUexmg63R5bo3KCeB4RDFOi6O0s6mLxbvNwFOAICbAjqN7Vr/aeERQygqxwLsLNhHAzAUCrFL9c/TvB1ig73AJAsooxRh8J25GiHZ0mO5iBI+RVFH65yjpZ5g1g5wugNm5SGzcvblYAfh3gqRDCzRtkL+zS0Cq1MysCuNKznmbNsRUO6tLmjdt7m+/ri1mx0+0RDPuskyUlvwLk1vYJjdE0Hlr0XqLcglYp4SjAlR5CuLjSs7ft/wFHSIRwGfSf7X4RYD6bHnhcfi5Oev9Kk6PaDxocnm5E4F39AAAAAElFTkSuQmCC"
     }
   ]
 }

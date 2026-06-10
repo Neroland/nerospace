@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "fb1034da-9ca1-4896-acb5-97e88afad1e1"
+      "uuid": "b7e52b2d-439b-40b4-adcf-157469c08434"
     }
   ],
   "outliner": [
-    "fb1034da-9ca1-4896-acb5-97e88afad1e1"
+    "b7e52b2d-439b-40b4-adcf-157469c08434"
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\greenxertz_compass.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\greenxertz_compass.png",
       "name": "greenxertz_compass.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,7 +128,7 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "44f61179-3692-4384-9b7e-b0d9eaec19fb",
+      "uuid": "1db65ab5-1569-4438-82c8-150166b63c6a",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/greenxertz_compass.png",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAo0lEQVR4nGNgoBAwYhNUktP6j0383qNrGOoxBGCawwJiUMRXbViC1RAUjpKc1n+Yxg171qEYEOASBDcI2RBGdM0YGvdEMGxwWYFiELIhTMjORgcBeyJQaGxeZYIJYLMdZjOyCzbsWYcSPkwMBACyZmyAoAFbNm2izAAeHj7iDFi1YQk8qvABWCygGIAthRECMD3US0jIhjAwkJmU0Q3B5WyqAgDMGFTwWX42uAAAAABJRU5ErkJggg=="
     }

@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "8ed4bd07-3abe-419d-a4f3-18ce162e82ba"
+      "uuid": "c37079ff-3478-494b-8b8f-a9b6bd4837d8"
     }
   ],
   "outliner": [
-    "8ed4bd07-3abe-419d-a4f3-18ce162e82ba"
+    "c37079ff-3478-494b-8b8f-a9b6bd4837d8"
   ],
   "textures": [
     {
-      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/station_core.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\station_core.png",
       "name": "station_core.png",
       "folder": "block",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "1dc0df55-ba15-498a-9bc4-3c858462fc16",
+      "uuid": "c4ad54a4-31ee-4645-9324-65744f9fa480",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/station_core.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABX0lEQVR4nKWSr2/CQBTHPyPIE81pUjMkCoVCT06SCRTqxNQUfwB/AOIygUIsBLUs/BFTU0jE0jRN1aVZTlQ02QS8o7e67Wua3r33/fHe3ZSl/+Yf6APs968opdA6IctyANJ0gHMVdV3TNA0ASikAvPek6QBrLT0p3u1eQqNA6yQ0ts8PhzecqwDOBM5VGGPCIRCciKJzFVonaJ1gjMF7f42gdRIKsiyP1MRVluWhrjMDgVw6V+G9Z/VxBGA1nYSZSKzIgTS0lZVSDOeLc/HxPTRmWR6GGUUQe6I8nC94HN8CsAZO2w3L8SgSCARFUV4Z+1GqOO/lrq7r2EHTNJGt5XiE+jyyvvw/feW46QRx20avbUcKZBan7YbTdtNx0l5xtEbvfbTS5/s7iqLsrK4zRCGR1chX4L3vuIxeIoC1NthL00FE+JvUWhv+A8Fs9hDevHNVZFvURdkYE0cQ9b/gB8Z9ut6dJ580AAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABaklEQVR4nKWSMUsDQRCFv4QrFzm2DtdomSqVVWorSS0SLCyDhGCVH2AZQkhhkUIOKxHxZ1hZpUwhx9XLEqYKYizO2WQ9BcHXLLsz896bmW14v9nyDyQAef6AMQZrU4qiBCDLWjjnoZkgaw+AMQYAESHLWkymc5qafJffh0KFtWko3H9/fHquyKEicM4zGg7CIxCcqKJzHmtTrE0ZDQeIyK4Fa9OQUBRlpKauiqIMebUZKDTonEdEuHldAnDTPQ4z0bYiB1qwr2yM4ah/WSUvX0JhUZRhmFELak+Vj/qXXHUOAZgBq3zBuNOOBHYOfGWHZoI5SPkNP8USAFn7yNa408a8LZl93a/XJa57DB/voRVFc9+OtqOzWOULVvmiprq/4miNIhKt9LZ3gvNSW11tiEqiq9Gz8pggIjWX0U8EmEznwV6WtSLC76ST6TzcA8FF/zz8eed8ZFvVVXk0HIRYw/vN9rR3VhvUX/EJxyW6UvbFUloAAAAASUVORK5CYII="
     }
   ]
 }

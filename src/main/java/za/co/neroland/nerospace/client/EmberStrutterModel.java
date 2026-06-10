@@ -44,42 +44,38 @@ public class EmberStrutterModel extends GreenxertzMobModel {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
-        // Plump little body carried on two quick legs (ground = y 24).
+        // model_sync:begin
         root.addOrReplaceChild("body",
                 CubeListBuilder.create().texOffs(0, 0).addBox(-3F, 14F, -4F, 6F, 6F, 8F),
-                PartPose.offset(0F, 0F, 0F));
-        // Upright neck to a small head with comb + beak.
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("neck",
                 CubeListBuilder.create().texOffs(0, 28).addBox(-1.5F, 9F, -5F, 3F, 5F, 3F),
-                PartPose.offset(0F, 0F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("head",
                 CubeListBuilder.create().texOffs(0, 28).addBox(-2F, 5F, -6F, 4F, 4F, 4F),
-                PartPose.offset(0F, 0F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("beak",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-1F, 7F, -8F, 2F, 1F, 2F),
-                PartPose.offset(0F, 0F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("comb",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-0.5F, 3F, -5F, 1F, 2F, 3F),
-                PartPose.offset(0F, 0F, 0F));
-        // Stubby wing slabs.
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("wing_l",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-4F, 14F, -3F, 1F, 4F, 6F),
-                PartPose.offset(0F, 0F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("wing_r",
                 CubeListBuilder.create().texOffs(44, 0).addBox(3F, 14F, -3F, 1F, 4F, 6F),
-                PartPose.offset(0F, 0F, 0F));
-        // Raked little tail fan.
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("tail_fan",
                 CubeListBuilder.create().texOffs(44, 0).addBox(-2F, 12F, 3.5F, 4F, 3F, 2F),
-                PartPose.offset(0F, 0F, 0F));
-
-        // Two quick hip-pivoted legs.
-        root.addOrReplaceChild("leg_l", CubeListBuilder.create()
-                        .texOffs(44, 0).addBox(-0.5F, 0F, -0.5F, 1F, 4F, 1F),
-                PartPose.offset(-1.5F, 20F, 0F));
-        root.addOrReplaceChild("leg_r", CubeListBuilder.create()
-                        .texOffs(44, 0).addBox(-0.5F, 0F, -0.5F, 1F, 4F, 1F),
-                PartPose.offset(1.5F, 20F, 0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_l",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-2F, 20F, -0.5F, 1F, 4F, 1F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("leg_r",
+                CubeListBuilder.create().texOffs(44, 0).addBox(1F, 20F, -0.5F, 1F, 4F, 1F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        // model_sync:end
 
         return LayerDefinition.create(mesh, 64, 64);
     }

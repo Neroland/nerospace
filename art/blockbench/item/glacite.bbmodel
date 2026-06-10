@@ -105,15 +105,15 @@
         }
       },
       "type": "cube",
-      "uuid": "2d57b3da-51dd-4663-9df2-a1d0eaaed372"
+      "uuid": "c8843f58-8c21-43f5-b06e-86ebe3dc0188"
     }
   ],
   "outliner": [
-    "2d57b3da-51dd-4663-9df2-a1d0eaaed372"
+    "c8843f58-8c21-43f5-b06e-86ebe3dc0188"
   ],
   "textures": [
     {
-      "path": "/sessions/cool-affectionate-cray/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/glacite.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\item\\glacite.png",
       "name": "glacite.png",
       "folder": "item",
       "namespace": "nerospace",
@@ -128,9 +128,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "21fde3c9-3c2a-4f56-b924-9dff260c87d4",
+      "uuid": "4a8a7625-d6df-4ba5-8dfc-77516c409a4e",
       "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/glacite.png",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4nGNgGN7gxIf//098+P8fnxomXBIVlz783/DoI4MGDwODTdMJnIZgNaDi0gcMDbgMwTAAm2Z8huD0ArGA+gZ06Akw4lJ8pM4CQw6rC7AZgk0zQVBx6cP/D3/wp4NRwMAAAJ+3JxNNSzm0AAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAiUlEQVR4nGNgGN7gyKf///////8fnxomXBJ5d/78Z2BgYPj8l4HBoOsBTkOwGgDTvOrVX7gYLkMwDIBpZmBgYAgTY0aRw2YITi+guwAXwGsAuguIMmCSCgsjNhfcmBLDcKFMgRFdPU6Qd+fP/yOf/v//9Of/fw45G7xRidcQsjUzMDAwUKR56AAA1hs6D0bEEp4AAAAASUVORK5CYII="
     }
   ]
 }
