@@ -1,6 +1,7 @@
 # Oxygen Suit
 
-Four-piece armour that doubles as personal life support on airless worlds. Two tiers.
+Four-piece armour that doubles as personal life support on airless worlds. Two tiers, plus two
+Tier-2-class **hazard variants** for the extreme worlds.
 
 ## Overview
 Wearing the **full set** (all four pieces) keeps you breathing off-world by draining a finite air
@@ -17,6 +18,29 @@ terraformed ground, launch-pad safe zone) — and, since the suit-and-station in
 
 A **mixed** T1/T2 set still works as life support but counts as **Tier 1** for tank size and refill
 speed. Any missing piece = no life support.
+
+## Hazard variants — Thermal & Cryo Suits
+
+Cindara is **hot** and Glacira is **cold**: unprotected, the planetary hazard makes your suit work
+overtime — oxygen drains at **4×** the normal rate (there's no separate damage; running dry is still
+the danger). The HUD badge warns with a red **HEAT!** / **COLD!** while you're exposed, with ember
+puffs (Cindara) or a creeping frost vignette (Glacira) as feedback.
+
+| | **Thermal Suit** | **Cryo Suit** |
+|---|---|---|
+| Shields against | Cindara heat | Glacira cold |
+| Craft (per piece) | Tier 2 piece + 4 **Cindrite** | Tier 2 piece + 4 **Glacite** |
+| Repair material | Cindrite | Glacite |
+| Class | Tier 2 (tank 600, fast refill) | Tier 2 (tank 600, fast refill) |
+
+The shield engages only when **all four pieces match** the hazard; the HUD badge then shows
+**SUIT HEAT** / **SUIT COLD** and oxygen drains at the normal 1× rate. Mixing variant pieces with
+other Tier 2 pieces keeps Tier-2 capacity — you just lose the hazard shield.
+
+## Progression note
+Cindrite (Thermal) is mined on Cindara itself, so the usual loop is: dash in a plain Tier 2 suit,
+mine your first cindrite, then craft the Thermal Suit for serious expeditions. The same applies to
+glacite and the Cryo Suit on Glacira.
 
 ## Airlock refill
 Within a few blocks (default **3**, `oxygenAirlockRadius`) of a [Gas Tank](Gas-Tank) or
@@ -41,7 +65,8 @@ Cindrite only mines on **Cindara** (Tier 3 rocket, itself gated on
 rocket.
 
 ## Details
-- IDs: `nerospace:oxygen_suit_{helmet,chestplate,leggings,boots}` and
-  `nerospace:oxygen_suit_t2_{helmet,chestplate,leggings,boots}`
+- IDs: `nerospace:oxygen_suit_{helmet,chestplate,leggings,boots}`,
+  `nerospace:oxygen_suit_t2_{...}`, `nerospace:oxygen_suit_heat_{...}` (Thermal),
+  `nerospace:oxygen_suit_cold_{...}` (Cryo)
 - Config: `oxygenMax`, `oxygenSuitT2Max`, `oxygenSuitDrain`, `oxygenAirlockRadius`,
   `oxygenAirlockRefillPerCheck`, `oxygenAirlockMbPerAir`

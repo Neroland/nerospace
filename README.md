@@ -5,63 +5,56 @@
 <h1 align="center">Nerospace</h1>
 
 <p align="center">
-  <em>Mine alien ore, power up your machines, and build rockets to leave the planet behind.</em>
+  <em>Mine alien ore, power up your machines, build rockets — then terraform a dead world until it rains.</em>
 </p>
 
 <p align="center">
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-26.1.2-62B47A">
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge-F16436">
   <img alt="Java" src="https://img.shields.io/badge/Java-25-007396">
-  <img alt="Version" src="https://img.shields.io/badge/version-0.0.2%20beta-blue">
-  <img alt="Status" src="https://img.shields.io/badge/status-work%20in%20progress-orange">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue">
 </p>
 
-> ## 🚧 Work In Progress
->
-> **Nerospace is in early, active development — nothing here is final.** Features, recipes, balance,
-> blocks, dimensions, and art are all placeholder-to-evolving and **may change or be removed at any
-> time** between versions. Saves are **not** guaranteed to survive updates. Expect rough edges, and
-> please report anything broken — see [Contributing & feedback](#contributing--feedback).
+<p align="center">
+  <a href="https://www.curseforge.com/minecraft/mc-mods/nerospace">CurseForge</a> ·
+  <a href="https://github.com/Neroland/nerospace/wiki">Wiki</a> ·
+  <a href="https://discord.gg/ArPXvYUzJG">Discord</a> ·
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
 
 ---
 
 ## About
 
-Nerospace is a space-exploration and tech-progression mod for Minecraft (Java Edition). It takes the familiar loop of mining and crafting and points it at the sky: dig up a new ore, refine it with machines you build, forge the parts for a rocket, and launch to a whole new world with resources of its own. Every step forward is a step further from the overworld.
+Nerospace is a complete, standalone space-progression mod for Minecraft (Java Edition). One ore in the overworld starts a chain that ends with you breeding alien livestock on a moon you personally made breathable: machines, an all-in-one pipe network, four rocket tiers, four destinations, player-founded space stations, oxygen survival with hazard suits, and a staged terraforming endgame — all guided in-game by the **Star Guide**.
 
-The mod is built **standalone** — it requires no other mods — but uses conventional tags and NeoForge capabilities so it's designed to play nicely alongside the wider tech-mod ecosystem.
+The mod is built **standalone** — it requires no other mods — but uses conventional `c:` tags and NeoForge capabilities throughout, so it slots cleanly alongside the wider tech-mod ecosystem.
 
 ## The gameplay loop
 
-1. **Find nerosium** — a new ore that generates in the overworld in stone and deepslate variants.
-2. **Refine it** — smelt raw nerosium into ingots, or run ore and raw material through the **Nerosium Grinder**, a powered machine that grinds ore into dust for a better yield.
-3. **Gear up** — craft the **nerosium pickaxe** (tuned between iron and diamond) and store materials in nerosium / raw-nerosium blocks.
-4. **Travel** — work toward leaving the overworld and reach **Greenxertz**, a new planet-dimension.
-5. **Explore Greenxertz** — mine **nerosteel** and **xertz quartz**, the planet's own resources, each with its own material chain.
-6. **Go bigger** — progress through **tiered rockets** (Tier 1 → 2 → 3), keep them fueled, and set down a launch pad as your departure point.
+1. **Nerosium** — mine the new overworld ore; smelt it, or double your yield with the powered **Nerosium Grinder**.
+2. **Power & pipes** — build generators and the **Universal Pipe**, which carries energy, fluids, gas, *and* items in one tube with per-face modes, filters, and upgrades.
+3. **First launch** — craft a Tier 1 rocket, lay a 3×3 launch pad, and fly to the **Orbital Station**.
+4. **New worlds** — tiered rockets reach **Greenxertz** (green planet), **Cindara** (volcanic moon), and **Glacira** (frozen moon), each with its own ores, creatures, and hazards.
+5. **Survive** — every world out there is airless: seal rooms, pipe oxygen, refill your **Oxygen Suit** at airlocks, and wear the **Thermal**/**Cryo Suit** where heat or cold quadruples O₂ drain.
+6. **Found stations** — rename a **Station Charter** in an anvil and found your own named orbital station, selectable as a rocket destination.
+7. **Go heavy** — build the 5×5 **Heavy Launch Complex** + gantry, refine rocket fuel in the **Fuel Refinery**, and launch the Tier 4 heavy rocket.
+8. **Terraform** — mature dead ground through **Rooted → Hydrated → Living** stages, complete with a glacite-fed water cycle, weather, vibrant biomes, and three breedable livestock species.
 
-## Features
-
-- New overworld ore (nerosium + deepslate variant) with worldgen, drops, and tool requirements
-- Full material chain: raw material → ingot, dust, and storage blocks
-- The **Nerosium Grinder** — an energy-powered processing machine with its own interface
-- The **nerosium pickaxe** tool
-- A new dimension, **Greenxertz**, with its own ores (**nerosteel**, **xertz quartz**)
-- Tiered rockets, a refuelable fuel canister, a launch pad, and an early travel device
-- Common tagging (`c:ores/...`, `c:ingots/...`, `c:dusts/...`) for recipe-viewer and cross-mod compatibility
+In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree — 7 chapters, 31 steps, synced to a full advancement tree. In a creative world, `/nerospace gallery` builds a live showcase of everything in the mod.
 
 ## Requirements
 
 | | |
 | --- | --- |
 | Minecraft | 26.1.2 |
-| Mod loader | NeoForge (`26.1.2.70-beta`) |
+| Mod loader | NeoForge `26.1.2.75`+ |
 | Java | JDK 25 (64-bit) |
 
 ## Installing
 
 1. Install the matching **NeoForge** version for Minecraft 26.1.2.
-2. Download the Nerospace `.jar` for your version from the Releases page (or CurseForge).
+2. Download the Nerospace `.jar` from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace) or the [Releases page](https://github.com/Neroland/nerospace/releases).
 3. Drop the `.jar` into your `mods/` folder and launch.
 
 ## Building from source
@@ -86,29 +79,38 @@ This project uses the Gradle wrapper (ModDevGradle); no separate Gradle install 
 
 ```bash
 src/main/java/za/co/neroland/nerospace/
-  registry/   central DeferredRegister setups (blocks, items, etc.)
-  machine/    the Nerosium Grinder block-entity, menu, and screen
-  world/      worldgen features and placement
-  item/       custom items (e.g. the travel device)
+  registry/   central DeferredRegister setups (blocks, items, entities, ...)
+  machine/    machine block-entities, menus, and screens
+  rocket/     rockets, launch pads, stations
+  oxygen/     the oxygen field, suits, and HUD
+  terraform/  the Terraformer and staged maturation
+  world/      dimensions, worldgen, creatures
   datagen/    data providers for all generated JSON
 tools/        texture / Blockbench / logo generators
 art/          logo and editable Blockbench model sources
+wiki/         source of the GitHub wiki
 ```
 
-## Roadmap
+## Privacy
 
-Nerospace is actively in development. Planned additions include more planets and rocket tiers, additional machines, custom creatures and atmosphere mechanics, and deeper progression. Issues and feedback are welcome and directly shape what comes next.
+Nerospace ships **optional, anonymous** crash reporting (Sentry, EU servers) so mod bugs get found and fixed — never IPs, usernames, UUIDs, or world data. Opt out any time with `telemetryEnabled = false` in `config/nerospace-common.toml`. Full disclosure: [PRIVACY.md](PRIVACY.md).
 
 ## Contributing & feedback
 
-Because the mod is a **work in progress**, feedback genuinely shapes what gets built next. Bug reports and suggestions are very welcome via the **Issues** tab — there are ready-made forms for [🐞 Bug Reports](.github/ISSUE_TEMPLATE/bug_report.yml) and [✨ Feature Requests](.github/ISSUE_TEMPLATE/feature_request.yml). If you'd like to contribute code, please open an issue first to discuss the change; a [pull request template](.github/PULL_REQUEST_TEMPLATE.md) is provided. Just keep in mind that, this early, anything may change or be reworked.
+Bug reports and suggestions are very welcome via the **Issues** tab — there are ready-made forms for [🐞 Bug Reports](.github/ISSUE_TEMPLATE/bug_report.yml) and [✨ Feature Requests](.github/ISSUE_TEMPLATE/feature_request.yml) — or join the [Discord](https://discord.gg/ArPXvYUzJG). If you'd like to contribute code, please open an issue first to discuss the change; a [pull request template](.github/PULL_REQUEST_TEMPLATE.md) is provided.
 
 ## License
 
-Code and original assets are **All Rights Reserved** (© Neroland) unless stated otherwise. Please don't redistribute or republish builds without permission. If you'd like to use part of this project, open an issue to ask.
+Nerospace uses custom **source-available** terms — see [LICENSE](LICENSE). The short version:
+
+- ✅ **Play it anywhere**, including monetised servers, videos, and streams.
+- ✅ **Modpacks are allowed and encouraged** — any platform, no need to ask. Use the official files and credit *Nerospace by Neroland* with links to [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace) and this repository.
+- ✅ **Read the source, fork on GitHub, and modify for private use**; pull requests welcome.
+- ❌ **No re-uploading builds** (original or modified) outside the official channels, and no publishing forked builds under any name.
+- ❌ **No reusing code/textures/models in other projects** without written permission.
 
 ## Credits
 
 Created by **Neroland**.
 
-> The project logo and some starter block/item textures were created with the help of AI image tools as placeholder art, and are being refined over time.
+> The project logo was made with the help of AI image tools; in-game art is generated by the project's own tooling and refined by hand.

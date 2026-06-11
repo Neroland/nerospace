@@ -272,10 +272,10 @@ public class ModLanguageProvider extends LanguageProvider {
         // Machine sounds (placeholder vanilla aliases in sounds.json, same pattern as the creatures).
         add("subtitles.nerospace.fuel_tank.pump", "Fuel Tank pumps");
 
-        // Join / work-in-progress notice.
-        add("message.nerospace.welcome.wip",
-                "Nerospace is an early work in progress — features, balance, and art may all still change.");
-        add("message.nerospace.welcome.link", "View the mod or report issues: ");
+        // Join notice.
+        add("message.nerospace.welcome.intro",
+                "Welcome! Craft a Star Guide Book (book + raw nerosium) to chart your journey to the stars.");
+        add("message.nerospace.welcome.link", "Feedback and bug reports are welcome: ");
 
         // Planet atmosphere.
         add("message.nerospace.greenxertz.no_air", "You are out of oxygen — reach a launch pad or an Oxygen Generator!");

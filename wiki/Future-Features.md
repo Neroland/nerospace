@@ -1,41 +1,40 @@
 # Future Features
 
-A longer-term wish list — ideas under consideration, not commitments. Feedback is welcome (open an
-issue on GitHub). Grouped by theme.
+A longer-term wish list — ideas under consideration after 1.0, not commitments. Feedback is welcome
+(open a GitHub issue or post in the [Discord](https://discord.gg/ArPXvYUzJG)). Grouped by theme.
 
 ## Space & travel
-- **Massive multiblock launch pad** — larger footprint with modules. (Rockets are now keyed to a
-  formed 3×3 pad, with a Station Wall ring gating Tier 3; the "massive" version is the follow-up.)
-- **Multiple stations** — let players build and register their own orbital platforms (currently one
-  shared station platform).
-- More **destinations** — additional planets/moons, each with its own materials, hazards and biomes.
-- ~~Rocket fuel automation~~ — **done**: pipes/hoppers feed rockets through the pad blocks. A proper
-  fluid render is still open.
+- More **destinations** — an asteroid field, gas giant moons… each with its own materials, hazards
+  and biomes.
+- **Deeper station building** — more station modules and reasons to expand a founded station beyond
+  its landing platform.
 
 ## Survival & atmosphere
-- ~~Oxygen Suit tiers & upgrades~~ — **done**: the Tier 2 (cindrite) suit has a bigger tank and
-  faster airlock refill; see [Oxygen Suit](Oxygen-Suit). Further tiers/upgrades remain possible.
-- **Hazard suits** — heat protection for Cindara, radiation, etc.
+- A **radiation hazard + suit variant** — deliberately deferred from 1.0 until a destination exists
+  that justifies it (the asteroid field is the leading candidate).
 - **Smarter oxygen visuals** — fog/haze tuning, boundary shimmer, optional top-down "fill" effect.
 
 ## Terraforming & worlds
-- **Deeper terraform passes** — water/ice placement, tree growth, richer flora, configurable biomes.
-- **Active (away-from-player) terraforming** — opt-in bounded chunk-loading so terraforming continues
-  while you're elsewhere (off by default — a performance footgun).
-- **Per-planet atmospheres & skies** — custom sky art if/when the engine exposes it again.
+- **More late-game terraforming toys** — richer flora control, configurable target biomes, more
+  livestock interactions (shearing, milking analogues).
+- **Active (away-from-player) terraforming** — opt-in bounded chunk-loading so terraforming
+  continues while you're elsewhere (off by default — a performance footgun).
 
 ## Machines & tech
-- **Power generation & transfer** — generators, cables, and machines that consume external power
-  (today machines self-charge or burn fuel).
-- **More processing** — ore washing/smelting tiers, alloys, and an expanded material tree.
-- **Data-driven grinder recipes** — move grinding to a datapack `RecipeType`.
+- **More processing** — ore washing/smelting tiers, alloys, an expanded material tree.
+- **Data-driven grinder recipes** — move grinding to a datapack `RecipeType` so packs can add their
+  own.
 
 ## Content & polish
-- **Bespoke audio** — real rocket-launch and ambient `.ogg` sounds (placeholders today).
-- **Mob behaviour & art** — idle/ambient animations, per-creature models, drops and loot.
-- **Advancements & guidebook** — in-game progression hints and an integrated guide.
-- **Cross-mod integration** — e.g. Mekanism, once those mods port to Minecraft 26.1.
+- **Bespoke audio** — real rocket-launch, machine, ambience and creature `.ogg` sounds (the 1.0
+  sound events alias fitting vanilla audio as placeholders; swapping in real files is a pure
+  resource change).
+- **JEI/EMI integration** — as soon as they reach 26.1 (most of it already works via standard
+  recipes/tags).
+- **Modrinth listing** — alongside CurseForge.
+- **Cross-mod integration** — e.g. Mekanism, once the big tech mods port to Minecraft 26.1.
 
 ---
 
-> Want something on this list prioritised, or have an idea that isn't here? Open a GitHub issue.
+> Want something on this list prioritised, or have an idea that isn't here? Open a GitHub issue or
+> say so in the Discord.

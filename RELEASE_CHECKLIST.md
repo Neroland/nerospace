@@ -244,26 +244,52 @@ Audit in `BALANCE_COMPAT_AUDIT.md` §5; slice 1 applied + verified.
 
 ## 9. Distribution & legal
 
-- [ ] License file matching the chosen posture: **open source, forks allowed, no redistribution**
-      (custom licence — review wording carefully; consider having it checked)
-- [ ] License consistent in `LICENSE`, `neoforge.mods.toml`, CurseForge/GitHub metadata
-- [ ] Explicit **modpack permission statement** (allowed? CurseForge-distributed packs only?)
+- [x] License file matching the chosen posture (Q&A 2026-06-11: source-available, private forks,
+      modpacks allowed/encouraged on any platform, commercial use of legit copies OK, derivatives
+      ask-first, attribution = CF + GitHub) — `LICENSE` drafted as custom ARR-with-permissions;
+      **not lawyer-reviewed** (flagged clauses in the session notes; have it checked if in doubt)
+- [x] License consistent in `LICENSE`, `neoforge.mods.toml` (via `mod_license` in
+      gradle.properties) — *CurseForge/GitHub metadata fields are a human step:
+      `RELEASE_RUNBOOK.md` §2–3*
+- [x] Explicit **modpack permission statement** — LICENSE §1(b) + README License section +
+      CurseForge description ("allowed and encouraged, any platform, official files, credit +
+      links")
 - [ ] `PRIVACY.md` current; Sentry opt-out documented and POPIA/GDPR scrubbing re-verified on the
-      release build
-- [ ] Version set to 1.0.0; `publish.yml` release flow tested end-to-end (CurseForge upload)
+      release build — *doc updated (sentry_test disclosure + policy-change note) and every claim
+      code-audited against `NerospaceTelemetry` 2026-06-11; REMAINING: the end-to-end release-jar
+      Sentry test (`RELEASE_RUNBOOK.md` §4)*
+- [ ] Version set to 1.0.0; `publish.yml` release flow tested end-to-end (CurseForge upload) —
+      *version bumped, workflow fixed (release-type from version suffix, CHANGELOG release notes,
+      secret docs) and validated; REMAINING: add missing secrets `CURSE_FORGE_API_TOKEN` +
+      `SENTRY_ORG`, then the publish itself IS the end-to-end test (`RELEASE_RUNBOOK.md` §1, §5 —
+      ⚠️ pushing the gradle.properties bump with secrets in place publishes 1.0.0)*
 - [ ] *(post-1.0)* Modrinth listing + publish.yml target
 
 ## 10. Marketing & community
 
-- [ ] Screenshot/gallery set: rockets, launches, planets, machines, creatures, terraforming
-- [ ] Trailer/showcase video (launch + planets + terraforming)
-- [ ] Final pass on `art/curseforge_description.md`; link the wiki
-- [ ] Wiki completeness pass — every block/item/creature/system has a current page; new 1.0
-      features documented
-- [ ] GitHub issue templates (bug report + feature request)
-- [ ] Discord server created and linked from CurseForge/GitHub/README
-- [ ] `CHANGELOG.md` (Keep-a-Changelog) starting at 1.0.0
-- [ ] README/ROADMAP refreshed to reflect 1.0 (drop "early WIP" framing)
+- [ ] Screenshot/gallery set: rockets, launches, planets, machines, creatures, terraforming —
+      *human-only; 10-shot list + specs in `RELEASE_RUNBOOK.md` §6*
+- [ ] Trailer/showcase video (launch + planets + terraforming) — *human-only; 9-beat script +
+      tooling (OBS + DaVinci Resolve) in `RELEASE_RUNBOOK.md` §7*
+- [x] Final pass on `art/curseforge_description.md`; link the wiki — rewritten for 1.0 (features +
+      Star Guide + `/nerospace gallery` per Q&A; wiki/Discord/issues links, modpack permission,
+      telemetry blurb)
+- [x] Wiki completeness pass — inventory audit vs registries 2026-06-11: 6 new pages (Glacite Ore,
+      Block of Glacite, Launch Gantry, Station Charter, Station Core, Star Guide) + 11 pages
+      updated (Home, Sidebar, Items, Oxygen-Suit, Rocket-Launch-Pad, Fuel-Tank, Creatures,
+      Station-Wall, Roadmap, Future-Features) — *pushing `wiki/` to the GitHub wiki repo is a
+      human step: `RELEASE_RUNBOOK.md` §3*
+- [x] GitHub issue templates (bug report + feature request) — audited + refreshed for 1.0 (WIP
+      framing dropped, current version placeholders, Discord contact link, new feature areas)
+- [ ] Discord server created and linked from CurseForge/GitHub/README — *server EXISTS
+      (discord.gg/ArPXvYUzJG) and is linked from README/ROADMAP/description/wiki/issue templates;
+      REMAINING: the CurseForge + GitHub About fields (`RELEASE_RUNBOOK.md` §2, §8)*
+- [x] `CHANGELOG.md` (Keep-a-Changelog) starting at 1.0.0 — created; publish.yml now extracts the
+      version's section as CurseForge/GitHub release notes (update the date if release day ≠
+      2026-06-11)
+- [x] README/ROADMAP refreshed to reflect 1.0 (drop "early WIP" framing) — both rewritten; in-game
+      `welcome.wip` join message replaced with a toned-down `welcome.intro` (Star Guide pointer)
+      per Q&A; runData + build green 2026-06-11
 
 ## 11. Pre-launch
 

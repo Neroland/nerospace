@@ -1,6 +1,7 @@
 ### Nerospace
 
 - [Home](Home)
+- [Star Guide](Star-Guide)
 
 **Blocks — Ores**
 - [Nerosium Ore](Nerosium-Ore)
@@ -8,12 +9,14 @@
 - [Nerosteel Ore](Nerosteel-Ore)
 - [Xertz Quartz Ore](Xertz-Quartz-Ore)
 - [Cindrite Ore](Cindrite-Ore)
+- [Glacite Ore](Glacite-Ore)
 
 **Blocks — Material Storage**
 - [Block of Nerosium](Block-of-Nerosium)
 - [Block of Raw Nerosium](Block-of-Raw-Nerosium)
 - [Block of Nerosteel](Block-of-Nerosteel)
 - [Block of Cindrite](Block-of-Cindrite)
+- [Block of Glacite](Block-of-Glacite)
 
 **Blocks — Machines**
 - [Nerosium Grinder](Nerosium-Grinder)
@@ -38,12 +41,16 @@
 
 **Blocks — Structures**
 - [Rocket Launch Pad](Rocket-Launch-Pad)
+- [Launch Gantry](Launch-Gantry)
 - [Station Floor](Station-Floor)
 - [Station Wall](Station-Wall)
+- [Station Core](Station-Core)
 
 **More**
 - [Items](Items)
 - [Oxygen Suit](Oxygen-Suit)
+- [Station Charter](Station-Charter)
 - [Creatures](Creatures)
+- [Configuration](Configuration)
 - [Roadmap](Roadmap)
 - [Future Features](Future-Features)

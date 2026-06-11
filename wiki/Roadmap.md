@@ -1,65 +1,55 @@
 # Roadmap
 
-A public, high-level view of where Nerospace is and where it's going. Nerospace is an early work in
-progress — order and scope may change. (Developer-facing detail lives in `FUTURE_WORK.md` in the repo.)
+A public, high-level view of where Nerospace is and where it's going. **1.0.0 is the first full
+release** — the complete progression from the first nerosium ore to a terraformed planet ships in it.
+(Release notes live in the repo's `CHANGELOG.md`.)
 
-## ✅ Done
+## ✅ Shipped in 1.0.0
 
 **Materials & machines**
 - Nerosium material chain (ore → raw → ingot → dust) and the **Nerosium Grinder** (double ore yield).
-- Greenxertz metals: **Nerosteel** and **Xertz Quartz**; Cindara's **Cindrite**.
-- Storage blocks, **Station Floor/Wall**, and machine GUIs with a sci-fi look + comparator output.
-- Capability automation (hoppers/pipes feed machines; fluid pipes fill tanks).
+- Planetary materials: **Nerosteel** + **Xertz Quartz** (Greenxertz), **Cindrite** (Cindara),
+  **Glacite** (Glacira).
+- The **Fuel Refinery** (coal + blaze powder + power → pipeable rocket fuel), storage blocks,
+  station blocks, themed machine GUIs with animated gauges + comparator output.
+- Common `c:` tags and tag-based recipes throughout, capability automation on every machine face.
 
 **Space travel**
-- **Rockets** (Tier 1/2/3) with an interactive in-rocket UI, selectable destinations, and a launch flow.
-- **Rocket Launch Pad multiblock**: deploying requires a formed **3×3 pad**; a Tier 3 rocket needs the
-  pad **ringed with Station Wall**; checks re-run at launch.
-- Auto-fuelling **Fuel Tank** (faster on the full 3×3) and **hands-free fuel feeding** — pad blocks
-  proxy the rocket's intake slot, so hoppers and item pipes deliver buckets/canisters.
-- Dimensions: **Greenxertz**, **Cindara**, and the **Orbital Station**.
+- **Rockets Tier 1–4** with bespoke per-tier models and an interactive in-rocket UI.
+- The **3×3 Launch Pad** and the **Heavy Launch Complex** (5×5 + Launch Gantry) with formation
+  reports; Tier 3 takes the Station Wall ring **or** the Heavy complex, Tier 4 needs the Heavy
+  complex.
+- Auto-fuelling **Fuel Tanks** (up to 480 mB/t) and hands-free fuel feeding through pad blocks.
+- Destinations: **Orbital Station**, **Greenxertz**, **Cindara**, **Glacira** — plus
+  **player-founded stations** via the Station Charter (up to 64 per world).
 
 **Survival & atmosphere**
-- Airless dimensions with an **oxygen system**: per-block oxygen field, sealed-room fill, leak/evaporate.
-- **Oxygen Generator** (fuelled) and the four-piece **Oxygen Suit** (portable life support) — now in
-  **two tiers** (the cindrite Tier 2 doubles the air tank) with **airlock refilling** from any nearby
-  oxygen-holding Gas Tank or Oxygen Generator.
-- Bespoke **O₂ HUD bar**.
+- Airless dimensions with a per-block **oxygen field** (sealed rooms, leaks, doors/glass as
+  boundaries), the grid-powered electrolysis **Oxygen Generator**, airlock refills, and an O₂ HUD.
+- The **Oxygen Suit** in two tiers plus **Thermal** and **Cryo** hazard variants (Cindara heat /
+  Glacira cold = ×4 drain unprotected).
 
-**Worlds & life**
-- Custom skies: **space starfield** on Cindara & the Station, day/night + sun on Greenxertz.
-- Four bespoke **creatures** with walk animations and emissive glow.
-- **Terraformer**: expanding terrain conversion + permanent breathability + a vibrant **terraformed biome**.
+**Terraforming & life**
+- The **Terraformer** with staged maturation — **Rooted → Hydrated → Living** — a glacite-fed water
+  cycle (Hydration Module), mature per-planet biomes with real weather, and the Terraform Monitor.
+- Eight bespoke **creatures**: five natives + three breedable livestock species on Living ground.
 
-**Logistics (the big pipe update)**
-- The **Universal Pipe**: one translucent, connection-aware tube carrying **energy, fluids, gases and
-  items at the same time**, with per-face × per-layer I/O modes.
-- **Items travel visibly** through pipes (round-robin routing, reroute-or-wait, never spilled);
-  coloured streams show energy/fluid/gas flow.
-- **Configurator** tool + full 6×4 configuration panel; **Pipe Filters** and **Speed/Capacity
-  Upgrades**.
-- Generators (**Combustion**, **Passive**), **Battery**, **Fluid Tank**, **Gas Tank**, **Item Store**
-  — plus creative endless-source variants of all four.
-- A dedicated **gas system** (Oxygen first): the Oxygen Generator is now a grid-powered electrolysis
-  machine producing pipeable O₂; the Terraformer is grid-powered too.
+**Progression & tooling**
+- The **Star Guide** interactive progression tree (7 chapters / 31 steps) backed by a full
+  advancement tree; the creative `/nerospace gallery` showcase; a 36+-test gametest suite.
 
-**Tooling**
-- Creative `/nerospace gallery` showcase command with live pipe demonstrations per resource layer.
-- A **gametest suite** (`runGameTestServer`): pad gating, Tier 3 ring, intake automation, airlock
-  refill, suit tiers, a registry-sync regression test, and per-machine hopper/pipe feeding tests
-  (grinder, both generators, terraformer, item store).
+## 🛠️ Next up (first post-1.0 updates)
 
-## 🛠️ In progress / next
-
-- **Polish** — animated machine gauges, rocket-fuel fluid render, per-creature texture art.
-- **Bigger multiblock pad** — grow beyond the 3×3 (modules, size-keyed rockets).
+- **JEI/EMI integration** as soon as they reach 26.1.
+- **Modrinth listing** alongside CurseForge.
+- **Balance tuning from player feedback** — the config multipliers make this cheap.
+- **Bespoke audio** to replace the vanilla-alias placeholders.
 
 ## 🔭 Planned / exploring
 
-See **[Future Features](Future-Features)** for the longer-term wish list.
+See **[Future Features](Future-Features)**.
 
 ## ⏳ Deferred
 
-- **Cross-mod integration** (e.g. Mekanism) is deferred until those mods port to Minecraft 26.1. The
-  mod is being built **standalone**; we prefer tags + NeoForge capabilities so integration is mostly
-  free later.
+- **Cross-mod integration** (e.g. Mekanism) waits until those mods port to Minecraft 26.1. Nerospace
+  is standalone by design — tags + NeoForge capabilities mean most integration comes free later.

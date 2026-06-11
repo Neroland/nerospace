@@ -1,52 +1,52 @@
 # Nerospace
 
-**Mine alien ore, power up your machines, and build rockets to leave the planet behind.**
+**Mine alien ore, power up your machines, build rockets — then terraform a dead world until it rains.**
 
-Nerospace is a space-exploration and tech-progression mod. It takes the familiar loop of mining and crafting and points it at the sky: dig up a new ore, refine it with machines you build, forge the parts for a rocket, and launch to a whole new world with resources of its own. Every step forward is a step further from the overworld.
-
----
-
-## What you'll do
-
-1. **Find nerosium.** A new ore generates in the overworld in both stone and deepslate variants. Mine it (iron-tier pickaxe or better) for raw nerosium.
-2. **Refine it.** Smelt raw nerosium into ingots, or feed ore and raw material into the **Nerosium Grinder** — a powered processing machine that grinds ore into dust so you get more ingots per ore.
-3. **Gear up.** Craft the **nerosium pickaxe** (sits between iron and diamond — higher durability and a faster mining edge) and store your wealth in nerosium and raw-nerosium storage blocks.
-4. **Travel.** Build toward leaving the overworld and reach **Greenxertz**, a new planet-dimension.
-5. **Explore Greenxertz.** Mine the planet's own resources — **nerosteel** (smelted from its ore into ingots and storage blocks) and **xertz quartz**, a gem dropped straight from its ore.
-6. **Go bigger.** Progress through **tiered rockets** (Tier 1 → 2 → 3), keep your tank topped up with fuel canisters, and set down a launch pad as your departure point.
+Nerospace is a complete, standalone space-progression mod. One ore in the overworld starts a chain that ends with you breeding alien livestock on a moon you personally made breathable: machines, an all-in-one pipe network, four rocket tiers, four destinations, player-founded space stations, oxygen survival with hazard suits, and a staged terraforming endgame — all guided in-game by the **Star Guide**.
 
 ---
 
-## Features
+## The journey
 
-- **New overworld ore:** nerosium ore + deepslate nerosium ore, with proper world generation, drops, and tool requirements.
-- **Full material chain:** raw nerosium → ingot, nerosium dust, and storage blocks for compact storage.
-- **A processing machine:** the Nerosium Grinder — a block with its own interface that turns ore into dust over time and runs on stored energy.
-- **A new tool:** the nerosium pickaxe, tuned to sit between iron and diamond.
-- **A new dimension — Greenxertz:** a planet with its own ores, **nerosteel** and **xertz quartz**, and matching material chains.
-- **Rockets & travel:** three rocket tiers, a refuelable fuel canister, a launch pad, and an early travel device to reach the planet while you work toward rockets.
-- **Sensible tagging:** ores, ingots, dusts, and storage blocks use the common conventions (`c:ores/...`, `c:ingots/...`, and so on) so recipe-lookup mods recognize them out of the box.
+1. **Nerosium.** A new overworld ore. Smelt it, or double your yield with the powered **Nerosium Grinder**.
+2. **Power & pipes.** Build generators and the **Universal Pipe** — energy, fluids, gas, *and* items in one translucent tube, with per-face modes, filters, and visible travelling items.
+3. **First launch.** Craft a Tier 1 rocket, lay a 3×3 launch pad, and fly to the **Orbital Station**.
+4. **New worlds.** Tiered rockets take you further: green **Greenxertz**, volcanic **Cindara**, frozen **Glacira** — each with its own ores, creatures, and hazards.
+5. **Survive.** Every world out there is airless. Seal rooms, pipe oxygen from electrolysis generators, refill your **Oxygen Suit** at airlocks — and bring the **Thermal** or **Cryo Suit** where heat or cold quadruples your O₂ drain.
+6. **Found stations.** Rename a **Station Charter** in an anvil and found your own named orbital station, anchored by its Station Core and selectable as a rocket destination.
+7. **Go heavy.** Build the 5×5 **Heavy Launch Complex** with its boarding gantry, refine your own rocket fuel from coal and blaze powder, and launch the Tier 4 heavy rocket.
+8. **Terraform.** The endgame: an expanding terraformer matures dead ground through **Rooted → Hydrated → Living** stages — a glacite-fed water cycle, real weather, vibrant mature biomes, and three breedable livestock species that move in when the land can hold them.
+
+## The quirks you'll remember
+
+- 🐾 **Eight bespoke creatures** — glowing stalkers and crawlers native to each world, plus the Meadow Loper, Ember Strutter, and Woolly Drift, which only live on land *you* terraformed.
+- ⭐ **The Star Guide** — a pedestal + guidebook that opens a live, interactive progression tree (7 chapters, 31 steps, synced to a full advancement tree), with a hologram showing your next goal.
+- 🛰️ **Stations are yours** — found up to 64 named stations per world; the rocket UI lists them all.
+- 🔧 **One pipe to rule them all** — no four parallel cable networks; the Universal Pipe carries everything at once.
+- 🌧️ **It actually rains** on a fully matured planet.
+
+Want to see everything at once? In a creative world, run **`/nerospace gallery`** — it builds a live showcase of every block, machine, creature, and pipe demo in the mod.
+
+## Compatibility & modpacks
+
+- **Standalone** — requires only NeoForge. No other mod needed.
+- Plays well with others: conventional `c:` tags on every material and NeoForge capabilities on every machine face, so hoppers, pipes, and recipe viewers Just Work as the 26.1 ecosystem fills in.
+- **Modpacks are allowed and encouraged** — any platform, no need to ask. Just use the official files and credit *Nerospace by Neroland* with links to this page and the [GitHub repository](https://github.com/Neroland/nerospace). Full terms: [LICENSE](https://github.com/Neroland/nerospace/blob/main/LICENSE).
+- Five clamped config multipliers (oxygen drain/capacity, energy rate, fuel cost, machine speed) make pack-tuning painless.
+
+## Links
+
+- 📖 **[Wiki](https://github.com/Neroland/nerospace/wiki)** — every block, item, creature, and system documented.
+- 💬 **[Discord](https://discord.gg/ArPXvYUzJG)** — chat, help, and sneak peeks.
+- 🐞 **[Issues](https://github.com/Neroland/nerospace/issues)** — bug reports and feature requests.
+- 🗒️ **[Changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md)**
+
+> **Telemetry notice:** Nerospace sends anonymous error reports (stack trace + mod/game
+> versions only — never IPs, usernames, UUIDs, or world data) to the developers via
+> Sentry (EU servers) so crashes can be fixed. Opt out any time by setting
+> `telemetryEnabled = false` in `config/nerospace-common.toml`. Full details:
+> [PRIVACY.md](https://github.com/Neroland/nerospace/blob/main/PRIVACY.md).
 
 ---
 
-## Getting started
-
-Look for nerosium while mining at typical ore depths, smelt or grind it into ingots, and craft a nerosium pickaxe. From there, work through the material and machine chain toward your first trip to Greenxertz. Recipes show up in standard recipe-viewer mods.
-
----
-
-## Compatibility
-
-Nerospace is built **standalone** for modern Minecraft on the **NeoForge** loader — it does not require any other mod. It uses conventional item/block tags and NeoForge capabilities (energy), so it's designed to slot cleanly alongside other tech mods as that ecosystem updates, without depending on any of them.
-
-Always match the mod's file to your Minecraft and NeoForge versions (see the Files tab for supported versions).
-
----
-
-## Roadmap
-
-Nerospace is actively being built out. Planned additions include more planets and rocket tiers, additional machines, custom creatures and atmosphere mechanics on the planets, and deeper progression. Feedback and bug reports are very welcome — they directly shape what comes next.
-
----
-
-> **Note on artwork:** the project logo and some starter block/item textures were created with the help of AI image tools. They reflect the mod's real blocks and items but are stylized placeholder art that will be refined over time. In-game screenshots in the gallery show the actual content.
+*Created by Neroland. The project logo was made with the help of AI image tools; in-game art is generated by the project's own tooling and refined by hand.*

@@ -86,21 +86,43 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      # Register the release in Sentry so error reports group per mod version.
-      # The release name and environment must match what the SDK sends
-      # (NerospaceTelemetry: release "nerospace@<mod_version>", environment derived
-      # from the version's channel suffix: -alpha -> alpha, -beta -> beta, else production).
-      # Requires repository secrets: SENTRY_AUTH_TOKEN, SENTRY_ORG, SENTRY_PROJECT.
+      # Derive the release channel from the version suffix once, for both Sentry and
+      # the publish targets (NerospaceTelemetry derives its environment the same way:
+      # -alpha -> alpha, -beta -> beta, else production; CurseForge release types map
+      # to alpha/beta/release).
       # Privacy (POPIA/GDPR): this step logs only the version string - no personal data.
-      - name: Determine Sentry environment
-        id: sentry_env
+      - name: Determine release channel
+        id: channel
         run: |
           case "${{ needs.detect.outputs.version }}" in
-            *-alpha*) echo "environment=alpha" >> "$GITHUB_OUTPUT" ;;
-            *-beta*)  echo "environment=beta"  >> "$GITHUB_OUTPUT" ;;
-            *)        echo "environment=production" >> "$GITHUB_OUTPUT" ;;
+            *-alpha*) echo "environment=alpha"      >> "$GITHUB_OUTPUT"
+                      echo "version_type=alpha"     >> "$GITHUB_OUTPUT" ;;
+            *-beta*)  echo "environment=beta"       >> "$GITHUB_OUTPUT"
+                      echo "version_type=beta"      >> "$GITHUB_OUTPUT" ;;
+            *)        echo "environment=production" >> "$GITHUB_OUTPUT"
+                      echo "version_type=release"   >> "$GITHUB_OUTPUT" ;;
           esac
 
+      # Pull this version's section out of CHANGELOG.md (Keep-a-Changelog headings)
+      # so the CurseForge file and the GitHub Release carry real release notes.
+      - name: Extract changelog section
+        run: |
+          VERSION="${{ needs.detect.outputs.version }}"
+          awk -v ver="$VERSION" '
+            $0 ~ ("^## \\[" ver "\\]") { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > RELEASE_NOTES.md
+          if [ ! -s RELEASE_NOTES.md ]; then
+            echo "::warning::No CHANGELOG.md section for $VERSION; using a placeholder."
+            echo "See CHANGELOG.md for details." > RELEASE_NOTES.md
+          fi
+          cat RELEASE_NOTES.md
+
+      # Register the release in Sentry so error reports group per mod version.
+      # The release name must match what the SDK sends (NerospaceTelemetry:
+      # release "nerospace@<mod_version>").
+      # Requires repository secrets: SENTRY_AUTH_TOKEN, SENTRY_ORG, SENTRY_PROJECT.
       - name: Create Sentry release
         uses: getsentry/action-release@v3
         env:
@@ -109,14 +131,15 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           release: nerospace@${{ needs.detect.outputs.version }}
-          environment: ${{ steps.sentry_env.outputs.environment }}
+          environment: ${{ steps.channel.outputs.environment }}
 
       - name: Publish to CurseForge and GitHub Release
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           # --- CurseForge ---
-          # Set CURSEFORGE_PROJECT_ID as a repository variable (Settings -> Secrets and
-          # variables -> Actions -> Variables) and CURSE_FORGE_API_TOKEN as a repository secret.
+          # Both are repository secrets (Settings -> Secrets and variables -> Actions):
+          # CURSEFORGE_PROJECT_ID (the numeric id from the project page's About section)
+          # and CURSE_FORGE_API_TOKEN (from https://legacy.curseforge.com/account/api-tokens).
           curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
           curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
 
@@ -131,7 +154,9 @@ jobs:
           # --- Release metadata ---
           name: Nerospace ${{ needs.detect.outputs.version }}
           version: ${{ needs.detect.outputs.version }}
-          version-type: beta
+          # alpha/beta/release, derived from the version suffix (1.0.0 -> release).
+          version-type: ${{ steps.channel.outputs.version_type }}
+          changelog-file: RELEASE_NOTES.md
           files: build/libs/nerospace-!(*-sources|*-dev|*-shadow|*-javadoc).jar
           loaders: neoforge
           game-versions: ${{ env.minecraft_version }}
