@@ -137,6 +137,13 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.STATION_FLOOR.get(), "Station Floor");
         add(ModBlocks.STATION_WALL.get(), "Station Wall");
 
+        // Developer diagnostics — Sentry test block (hidden; /give nerospace:sentry_test).
+        add(ModBlocks.SENTRY_TEST.get(), "Sentry Test Block");
+        add("message.nerospace.sentry_test.sent",
+                "Sentry test event dispatched — check your Sentry dashboard.");
+        add("message.nerospace.sentry_test.disabled",
+                "Telemetry is disabled (telemetryEnabled=false) — nothing sent.");
+
         // Multiple stations (MULTI_STATION_DESIGN.md).
         add(ModBlocks.STATION_CORE.get(), "Station Core");
         add(ModItems.STATION_CHARTER.get(), "Station Charter");

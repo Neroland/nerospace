@@ -1,6 +1,7 @@
 {
   "//": "Generic, committable run configs for Nerospace. Paths use ${workspaceFolder} so they work on any machine, and each config\u0027s preLaunchTask (see tasks.json) regenerates build/moddev/\u003crun\u003eArgs.txt before launch so it never fails after a clean. ModDevGradle no longer overwrites this file: build.gradle sets disableIdeRun() on every run, so this file is the source of truth.",
   "version": "0.2.0",
+  "//classPaths": "Each config launches from build/moddev/devlaunchClasspath.jar, a gradle-generated pathing jar whose MANIFEST Class-Path lists the exact NeoForge/Minecraft/DevLaunch dev jars for the version in gradle.properties (built by the devLaunchPathingJar task, which finalizes every prepare*Run preLaunchTask). With no $Auto entry, classPaths REPLACES the IDE-resolved runtime classpath, so a neo_version bump can never again launch a stale NeoForge and crash FML with \u0027version is null\u0027. projectName is kept only for source/breakpoint mapping; the mod loads via -Dfml.modFolders, not the classpath. Verified end-to-end: launching with only this jar boots GameTestServer and passes all gametests.",
   "configurations": [
     {
       "type": "java",
@@ -11,6 +12,9 @@
         "order": 0
       },
       "projectName": "nerospace",
+      "classPaths": [
+        "${workspaceFolder}/build/moddev/devlaunchClasspath.jar"
+      ],
       "mainClass": "net.neoforged.devlaunch.Main",
       "preLaunchTask": "prepareClientRun",
       "args": [
@@ -34,6 +38,9 @@
         "order": 1
       },
       "projectName": "nerospace",
+      "classPaths": [
+        "${workspaceFolder}/build/moddev/devlaunchClasspath.jar"
+      ],
       "mainClass": "net.neoforged.devlaunch.Main",
       "preLaunchTask": "prepareDataRun",
       "args": [
@@ -57,6 +64,9 @@
         "order": 2
       },
       "projectName": "nerospace",
+      "classPaths": [
+        "${workspaceFolder}/build/moddev/devlaunchClasspath.jar"
+      ],
       "mainClass": "net.neoforged.devlaunch.Main",
       "preLaunchTask": "prepareGameTestServerRun",
       "args": [
@@ -80,6 +90,9 @@
         "order": 3
       },
       "projectName": "nerospace",
+      "classPaths": [
+        "${workspaceFolder}/build/moddev/devlaunchClasspath.jar"
+      ],
       "mainClass": "net.neoforged.devlaunch.Main",
       "preLaunchTask": "prepareServerRun",
       "args": [

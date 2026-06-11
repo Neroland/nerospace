@@ -91,6 +91,9 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.STATION_FLOOR.get());
         blockModels.createTrivialCube(ModBlocks.STATION_WALL.get());
 
+        // Developer diagnostics — Sentry test block (hidden; /give only).
+        blockModels.createTrivialCube(ModBlocks.SENTRY_TEST.get());
+
         // Station Core (MULTI_STATION_DESIGN.md; founding-only, but the model/blockstate still gen).
         blockModels.createTrivialCube(ModBlocks.STATION_CORE.get());
 

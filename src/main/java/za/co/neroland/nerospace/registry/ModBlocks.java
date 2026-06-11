@@ -417,6 +417,21 @@ public final class ModBlocks {
                     .strength(100.0F)
                     .noLootTable());
 
+    // --- Developer diagnostics ----------------------------------------------
+
+    /**
+     * Sentry test block: a hidden diagnostic, deliberately kept OUT of the creative menu (no
+     * {@code displayItems} entry) so it is only obtainable via {@code /give nerospace:sentry_test}.
+     * Placing it fires one synthetic Sentry event to verify error reporting end to end. Backed by
+     * {@link za.co.neroland.nerospace.telemetry.SentryTestBlock}.
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.telemetry.SentryTestBlock> SENTRY_TEST =
+            BLOCKS.registerBlock("sentry_test", za.co.neroland.nerospace.telemetry.SentryTestBlock::new,
+                    props -> props
+                            .mapColor(MapColor.COLOR_RED)
+                            .strength(1.0F, 1.0F)
+                            .sound(SoundType.METAL));
+
     private ModBlocks() {
     }
 

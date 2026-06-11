@@ -90,6 +90,9 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         // Phase 7c — station blocks.
         dropSelf(ModBlocks.STATION_FLOOR.get());
         dropSelf(ModBlocks.STATION_WALL.get());
+
+        // Developer diagnostics — Sentry test block (drops itself so it is reusable).
+        dropSelf(ModBlocks.SENTRY_TEST.get());
     }
 
     @Override

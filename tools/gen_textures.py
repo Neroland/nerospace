@@ -1979,6 +1979,8 @@ SYM_BOLT = [(0, 1, 1, 0, 0), (0, 1, 1, 0, 0), (0, 1, 1, 1, 0), (0, 0, 1, 1, 0), 
 SYM_DROP = [(0, 0, 1, 0, 0), (0, 1, 1, 1, 0), (1, 1, 1, 1, 1), (1, 1, 1, 1, 1), (0, 1, 1, 1, 0)]
 SYM_GAS = [(0, 1, 0, 1, 0), (1, 0, 1, 0, 1), (0, 1, 0, 1, 0), (1, 0, 1, 0, 1), (0, 1, 0, 1, 0)]
 SYM_BOX = [(1, 1, 1, 1, 1), (1, 0, 0, 0, 1), (1, 0, 1, 0, 1), (1, 0, 0, 0, 1), (1, 1, 1, 1, 1)]
+# Exclamation mark — the warning glyph for the hidden Sentry test block.
+SYM_BANG = [(0, 0, 1, 0, 0), (0, 0, 1, 0, 0), (0, 0, 1, 0, 0), (0, 0, 0, 0, 0), (0, 0, 1, 0, 0)]
 
 
 def gen_universal_pipe_glass():
@@ -2654,3 +2656,5 @@ if __name__ == "__main__":
     # Multiple stations (MULTI_STATION_DESIGN.md).
     gen_station_core()
     gen_station_charter()
+    # Developer diagnostics — hidden Sentry test block: a steel panel with a red warning glyph.
+    gen_panel_block("sentry_test", N_RED, SYM_BANG)

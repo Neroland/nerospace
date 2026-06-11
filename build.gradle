@@ -198,6 +198,52 @@ tasks.named('clean') {
     finalizedBy('prepareClientRun', 'prepareServerRun', 'prepareGameTestServerRun', 'prepareDataRun')
 }
 
+// ---------------------------------------------------------------------------
+// Bulletproof IDE launch classpath (pathing jars).
+//
+// VS Code's Java extension assembles each launch's classpath from its OWN project
+// model, which goes stale after a `neo_version` bump until a manual "Clean Java
+// Language Server Workspace" — the symptom being FML booting the OLD neoforge jar and
+// crashing with `NullPointerException: ... "version" is null` (the dev classpath no
+// longer carries the patched Minecraft, so version detection returns null). The
+// prepare<Run> tasks already pin the launch `--version`, but the CLASSPATH was left to
+// the IDE. To make launches immune, emit the EXACT classpath ModDevGradle uses for each
+// run as a single "pathing jar" (a jar whose MANIFEST `Class-Path` lists every run jar,
+// as absolute file: URIs) and point .vscode/launch.json at it via `classPaths` instead
+// of the IDE-derived `projectName` classpath. All dev run types (client/server/data/
+// gameTestServer) share the same dev classpath — the patched Minecraft, NeoForge, DevLaunch
+// and the MC libraries from `runtimeClasspath` — so one shared pathing jar serves them all
+// (run type + `--version` come from the prepare<Run> argfiles; the mod itself loads via
+// -Dfml.modFolders). The mod's own output is excluded so it is never double-loaded. The jar
+// is rebuilt by every prepare<Run> preLaunchTask, on Gradle/IDE sync, and after `clean`, so
+// it always matches gradle.properties — a `neo_version` bump can no longer leave a launch on
+// a stale classpath. MDG's RunGameTask populates its own `classpath` only in an execution-time
+// doFirst (unreadable here), so we source the equivalent set from `runtimeClasspath`.
+def modOutputDirs = sourceSets.main.output.files
+def devLaunchPathingJar = tasks.register('devLaunchPathingJar', Jar) {
+    notCompatibleWithConfigurationCache('resolves the runtime classpath at execution time')
+    archiveFileName = 'devlaunchClasspath.jar'
+    destinationDirectory = layout.buildDirectory.dir('moddev')
+    // Always regenerate: the manifest is computed from runtimeClasspath at execution and is NOT a
+    // declared task input, so without this Gradle would cache the jar UP-TO-DATE and a later
+    // neo_version bump would leave a stale classpath — the exact bug this jar exists to prevent. The
+    // jar is manifest-only (sub-second), so unconditional rebuilds are free.
+    outputs.upToDateWhen { false }
+    manifest {
+        attributes('Class-Path': provider {
+            sourceSets.main.runtimeClasspath.files
+                    .findAll { it.exists() && !(it in modOutputDirs) }
+                    .collect { it.toURI().toString() }
+                    .join(' ')
+        })
+    }
+}
+['prepareClientRun', 'prepareServerRun', 'prepareGameTestServerRun', 'prepareDataRun'].each { p ->
+    tasks.named(p) { finalizedBy devLaunchPathingJar }
+}
+neoForge.ideSyncTask devLaunchPathingJar
+tasks.named('clean') { finalizedBy devLaunchPathingJar }
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {

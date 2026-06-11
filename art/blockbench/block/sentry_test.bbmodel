@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "sentry_test",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "sentry_test",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "981eb9e9-9f22-4ffb-bba2-5b0f4bb5d274"
+    }
+  ],
+  "outliner": [
+    "981eb9e9-9f22-4ffb-bba2-5b0f4bb5d274"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\sentry_test.png",
+      "name": "sentry_test.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "fc45cb05-77f2-4040-b94e-af41afd5a03b",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/sentry_test.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA20lEQVR4nKVTuxHDMAh99rlkAMZQmTLzeBQPkIk0gMdggFekS4oEDsvkLndWYwnD+yA0PW/3Fy6sBQDW1kASACAisVdVAIgzyYgBwNb7ByAnO4iZgWQJ5rFQkFmzEi80M5jZbwtmBhGJIv9mRU6S2QFgzgmZhSS23ktVIhKW5lygqgc7rk5VTyAHC6OssQd5jUDLWEQyfq6tgUXzsqLZA97tzPTY97A1KvnLwtoa8O181ciThWrysrW8XO3hGqti34/gpQVPHGfe2VxJ7lWMsgfzLVTnUcl09Tm/Aat0qXGDK5lgAAAAAElFTkSuQmCC"
+    }
+  ]
+}

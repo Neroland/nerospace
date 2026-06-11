@@ -411,6 +411,10 @@ public final class ModItems {
     /** Woolly Drift drop: insulating fleece — crafts into string (design §5). */
     public static final DeferredItem<Item> DRIFT_FLEECE = ITEMS.registerSimpleItem("drift_fleece");
 
+    // Developer diagnostics — Sentry test block (NOT added to the creative tab; /give only).
+    public static final DeferredItem<BlockItem> SENTRY_TEST_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.SENTRY_TEST);
+
     private ModItems() {
     }
 

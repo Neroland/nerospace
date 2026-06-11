@@ -184,6 +184,29 @@ public final class NerospaceTelemetry {
         Sentry.captureException(t);
     }
 
+    /**
+     * Diagnostic hook for the in-game {@code sentry_test} block (a hidden, creative-menu-excluded
+     * block obtained with {@code /give}). Captures one synthetic, clearly-labelled exception so a
+     * developer can confirm the whole telemetry pipeline reaches the Sentry dashboard. The exception
+     * is created here, so its stack trace touches {@code za.co.neroland.nerospace} and passes the
+     * package-only {@code beforeSend} filter.
+     *
+     * @param origin a short human label for where the test fired (woven into the event message only;
+     *               the per-session de-duplication keys on the exception type + Nerospace stack, so
+     *               repeat placements in one session collapse to a single Sentry event — that is the
+     *               normal de-dup behaviour and itself part of what this confirms).
+     * @return {@code true} if telemetry is active and the event was dispatched; {@code false} if the
+     *         player has opted out ({@code telemetryEnabled=false}), in which case nothing was sent.
+     */
+    public static boolean sendTestEvent(String origin) {
+        if (!active) {
+            return false;
+        }
+        capture(new IllegalStateException(
+                "Nerospace Sentry test block (" + origin + ") — synthetic event, safe to ignore"));
+        return true;
+    }
+
     /** Capture a (scrubbed, truncated) FATAL log line that names Nerospace without a throwable. */
     static void captureMessage(String message) {
         if (!active) {
