@@ -11,6 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.CombustionGeneratorMenu;
+import za.co.neroland.nerospace.machine.FuelRefineryMenu;
 import za.co.neroland.nerospace.machine.FuelTankMenu;
 import za.co.neroland.nerospace.machine.HydrationModuleMenu;
 import za.co.neroland.nerospace.machine.TerraformMonitorMenu;
@@ -39,6 +40,10 @@ public final class ModMenuTypes {
     public static final Supplier<MenuType<FuelTankMenu>> FUEL_TANK = MENU_TYPES.register(
             "fuel_tank",
             () -> new MenuType<>(FuelTankMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
+    public static final Supplier<MenuType<FuelRefineryMenu>> FUEL_REFINERY = MENU_TYPES.register(
+            "fuel_refinery",
+            () -> new MenuType<>(FuelRefineryMenu::new, FeatureFlags.DEFAULT_FLAGS));
 
     public static final Supplier<MenuType<TerraformerMenu>> TERRAFORMER = MENU_TYPES.register(
             "terraformer",

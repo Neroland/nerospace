@@ -41,6 +41,10 @@ public final class ModTags {
         public static final TagKey<Block> ORES_XERTZ_QUARTZ = blockTag("c", "ores/xertz_quartz");
         public static final TagKey<Block> STORAGE_BLOCKS_NEROSTEEL = blockTag("c", "storage_blocks/nerosteel");
 
+        // Cindara ore (BALANCE_COMPAT_AUDIT.md §5.1 — was missing its per-material subtag).
+        public static final TagKey<Block> ORES_CINDRITE = blockTag("c", "ores/cindrite");
+        public static final TagKey<Block> STORAGE_BLOCKS_CINDRITE = blockTag("c", "storage_blocks/cindrite");
+
         // Glacira ore (NEW_DESTINATION_DESIGN.md).
         public static final TagKey<Block> ORES_GLACITE = blockTag("c", "ores/glacite");
         public static final TagKey<Block> STORAGE_BLOCKS_GLACITE = blockTag("c", "storage_blocks/glacite");
@@ -84,10 +88,16 @@ public final class ModTags {
         // Phase 7a — Cindara materials.
         /** Cindrite shards (repair material of the Tier 2 Oxygen Suit). */
         public static final TagKey<Item> GEMS_CINDRITE = itemTag("c", "gems/cindrite");
+        /** Cindara ore item (BALANCE_COMPAT_AUDIT.md §5.1 — per-material subtag for tech-mod discovery). */
+        public static final TagKey<Item> ORES_CINDRITE = itemTag("c", "ores/cindrite");
+        public static final TagKey<Item> STORAGE_BLOCKS_CINDRITE = itemTag("c", "storage_blocks/cindrite");
 
         // Glacira materials (NEW_DESTINATION_DESIGN.md).
         /** Glacite crystals (future cold-suit repair / terraforming water-cycle feedstock). */
         public static final TagKey<Item> GEMS_GLACITE = itemTag("c", "gems/glacite");
+        /** Glacira ore + storage block items (BALANCE_COMPAT_AUDIT.md §5.1 — block subtags existed). */
+        public static final TagKey<Item> ORES_GLACITE = itemTag("c", "ores/glacite");
+        public static final TagKey<Item> STORAGE_BLOCKS_GLACITE = itemTag("c", "storage_blocks/glacite");
 
         // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md §3.1).
         /**

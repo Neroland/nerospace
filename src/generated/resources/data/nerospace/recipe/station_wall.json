@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": "nerospace:nerosteel_ingot",
-    "I": "minecraft:iron_ingot"
+    "#": "#c:ingots/nerosteel",
+    "I": "#c:ingots/iron"
   },
   "pattern": [
     "###",

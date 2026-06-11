@@ -3,8 +3,8 @@
   "category": "misc",
   "key": {
     "F": "minecraft:furnace",
-    "N": "nerospace:nerosteel_ingot",
-    "R": "minecraft:redstone"
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     "NNN",

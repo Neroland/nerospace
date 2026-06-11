@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": "nerospace:nerosium_ingot",
-    "N": "nerospace:nerosteel_ingot",
-    "R": "minecraft:redstone"
+    "I": "#c:ingots/nerosium",
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     "NRN",

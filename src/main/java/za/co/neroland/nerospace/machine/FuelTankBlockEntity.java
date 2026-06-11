@@ -21,11 +21,16 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+
 import za.co.neroland.nerospace.Tuning;
 import za.co.neroland.nerospace.fluid.RocketFuelTank;
 import za.co.neroland.nerospace.rocket.LaunchPadMultiblock;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
@@ -50,8 +55,22 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
     /** Counts ticks the tank is ACTIVELY pumping, to stagger the FX. Transient — not persisted. */
     private int fxTick;
 
+    /** Internal canister-intake slot (index 0). */
+    public static final int CANISTER_SLOT = 0;
+
     @SuppressWarnings("this-escape") // change-callback wiring, used only after construction
     private final RocketFuelTank tank = new RocketFuelTank(Tuning.fuelTankCapacity(), this::setChanged);
+
+    /**
+     * Hopper/pipe-feedable canister intake (BALANCE_COMPAT_AUDIT.md §3): exposed via
+     * {@code Capabilities.Item.BLOCK} so the logistics layer can automate fuelling — each inserted
+     * Rocket Fuel Canister is converted to {@link #CONTAINER_MB} of liquid fuel on tick (mirroring
+     * the rocket's own intake slot). Buckets stay a hand-only interaction (empty-bucket return makes
+     * them awkward to automate).
+     */
+    @SuppressWarnings("this-escape")
+    private final MachineItemHandler canisterInput = new MachineItemHandler(1, this::setChanged,
+            (index, resource) -> resource.getItem() == ModItems.ROCKET_FUEL_CANISTER.get());
 
     /** Synced to the open menu: [0]=fuel, [1]=capacity. */
     private final ContainerData dataAccess = new ContainerData() {
@@ -99,6 +118,11 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
         return this.tank;
     }
 
+    /** Canister intake, for {@code Capabilities.Item.BLOCK} (hopper/pipe auto-fuelling). */
+    public ResourceHandler<ItemResource> getCanisterHandler() {
+        return this.canisterInput;
+    }
+
     public int getFluidAmount() {
         return this.tank.getAmount();
     }
@@ -142,7 +166,15 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
     // --- Ticking ------------------------------------------------------------
 
     public void tick(Level level, BlockPos pos, BlockState state) {
-        if (level.isClientSide() || this.tank.isEmpty()) {
+        if (level.isClientSide()) {
+            return;
+        }
+
+        // Convert a piped/hopper-fed canister into liquid fuel whenever the tank has room — runs even
+        // when the tank is empty, so this is the head of the auto-fuelling chain.
+        drawFromCanister();
+
+        if (this.tank.isEmpty()) {
             return;
         }
 
@@ -171,6 +203,20 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
         if (drained - overflow > 0 && level instanceof ServerLevel serverLevel) {
             pumpingFx(serverLevel, pos, rocket);
         }
+    }
+
+    /** Consume one buffered canister into {@link #CONTAINER_MB} of fuel if the whole lot fits. */
+    private void drawFromCanister() {
+        ItemStack canister = this.canisterInput.getStack(CANISTER_SLOT);
+        if (canister.isEmpty()) {
+            return;
+        }
+        if (this.tank.getCapacity() - this.tank.getAmount() < CONTAINER_MB) {
+            return;
+        }
+        this.tank.fill(CONTAINER_MB);
+        canister.shrink(1);
+        this.canisterInput.setStack(CANISTER_SLOT, canister.isEmpty() ? ItemStack.EMPTY : canister);
     }
 
     /**
@@ -228,11 +274,14 @@ public class FuelTankBlockEntity extends BlockEntity implements MenuProvider {
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         this.tank.serialize(output.child("FuelTank"));
+        output.store("Canister", ItemStack.OPTIONAL_CODEC, this.canisterInput.getStack(CANISTER_SLOT));
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.tank.deserialize(input.childOrEmpty("FuelTank"));
+        this.canisterInput.setStack(CANISTER_SLOT,
+                input.read("Canister", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
     }
 }

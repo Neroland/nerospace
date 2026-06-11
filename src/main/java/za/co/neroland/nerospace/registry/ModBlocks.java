@@ -11,6 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlock;
+import za.co.neroland.nerospace.machine.FuelRefineryBlock;
 import za.co.neroland.nerospace.machine.FuelTankBlock;
 import za.co.neroland.nerospace.machine.HydrationModuleBlock;
 import za.co.neroland.nerospace.machine.TerraformMonitorBlock;
@@ -236,6 +237,21 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.METAL)
                     .noOcclusion()); // frame-and-core tank model (art overhaul §3)
+
+    /**
+     * Fuel Refinery (BALANCE_COMPAT_AUDIT.md §3): refines coal + blaze powder + grid energy into
+     * pipeable liquid rocket fuel — the logistics-grade fuel source. Backed by
+     * {@link za.co.neroland.nerospace.machine.FuelRefineryBlockEntity}.
+     */
+    public static final DeferredBlock<FuelRefineryBlock> FUEL_REFINERY = BLOCKS.registerBlock(
+            "fuel_refinery",
+            FuelRefineryBlock::new,
+            props -> props
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL)
+                    .noOcclusion()); // shaped body model
 
     /**
      * Oxygen Generator (Phase 8c): a machine that projects a breathable bubble while powered. Backed

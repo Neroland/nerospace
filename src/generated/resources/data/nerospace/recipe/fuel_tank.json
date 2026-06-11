@@ -3,8 +3,8 @@
   "category": "misc",
   "key": {
     "C": "nerospace:rocket_fuel_canister",
-    "G": "minecraft:glass",
-    "N": "nerospace:nerosteel_ingot"
+    "G": "#c:glass_blocks/colorless",
+    "N": "#c:ingots/nerosteel"
   },
   "pattern": [
     "NGN",

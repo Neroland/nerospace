@@ -37,6 +37,21 @@ public final class ModCapabilities {
                 ModBlockEntities.TERRAFORMER.get(),
                 (blockEntity, side) -> blockEntity.getEnergyHandler());
 
+        // Fuel Refinery (BALANCE_COMPAT_AUDIT.md §3): grid power in, coal/blaze in, liquid fuel out —
+        // a fully pipeable fuel production chain.
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.FUEL_REFINERY.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.FUEL_REFINERY.get(),
+                (blockEntity, side) -> blockEntity.getInputHandler());
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                ModBlockEntities.FUEL_REFINERY.get(),
+                (blockEntity, side) -> blockEntity.getTank());
+
         // Power grid: the pipe (network buffer) + both generators expose the energy capability so the
         // network, machines and other mods' cables interoperate.
         event.registerBlockEntity(
@@ -146,6 +161,13 @@ public final class ModCapabilities {
                 Capabilities.Fluid.BLOCK,
                 ModBlockEntities.FUEL_TANK.get(),
                 (blockEntity, side) -> blockEntity.getTank());
+
+        // Fuel Tank canister intake (BALANCE_COMPAT_AUDIT.md §3): hoppers/pipes feed canisters that
+        // the tank converts to liquid fuel, making rocket fuelling automatable.
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.FUEL_TANK.get(),
+                (blockEntity, side) -> blockEntity.getCanisterHandler());
 
         // Oxygen Generator (gas rework) — pipes can carry its oxygen away (or bottle it in Gas Tanks).
         event.registerBlockEntity(

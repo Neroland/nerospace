@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "N": "nerospace:nerosteel_ingot",
+    "N": "#c:ingots/nerosteel",
     "T": "nerospace:fluid_tank"
   },
   "pattern": [

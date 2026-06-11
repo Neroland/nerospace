@@ -45,6 +45,11 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 .add(ModItems.NEROSTEEL_ORE_ITEM.get());
         this.tag(ModTags.Items.ORES_XERTZ_QUARTZ)
                 .add(ModItems.XERTZ_QUARTZ_ORE_ITEM.get());
+        // Per-material ore item subtags for cindrite/glacite (BALANCE_COMPAT_AUDIT.md §5.1).
+        this.tag(ModTags.Items.ORES_CINDRITE)
+                .add(ModItems.CINDRITE_ORE_ITEM.get());
+        this.tag(ModTags.Items.ORES_GLACITE)
+                .add(ModItems.GLACITE_ORE_ITEM.get());
 
         this.tag(Tags.Items.STORAGE_BLOCKS)
                 .add(ModItems.NEROSIUM_BLOCK_ITEM.get(), ModItems.RAW_NEROSIUM_BLOCK_ITEM.get(),
@@ -56,6 +61,11 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 .add(ModItems.RAW_NEROSIUM_BLOCK_ITEM.get());
         this.tag(ModTags.Items.STORAGE_BLOCKS_NEROSTEEL)
                 .add(ModItems.NEROSTEEL_BLOCK_ITEM.get());
+        // Per-material storage-block item subtags for cindrite/glacite (BALANCE_COMPAT_AUDIT.md §5.1).
+        this.tag(ModTags.Items.STORAGE_BLOCKS_CINDRITE)
+                .add(ModItems.CINDRITE_BLOCK_ITEM.get());
+        this.tag(ModTags.Items.STORAGE_BLOCKS_GLACITE)
+                .add(ModItems.GLACITE_BLOCK_ITEM.get());
 
         // Nerosteel material tags.
         this.tag(Tags.Items.INGOTS).add(ModItems.NEROSTEEL_INGOT.get());
@@ -63,9 +73,13 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(Tags.Items.RAW_MATERIALS).add(ModItems.RAW_NEROSTEEL.get());
         this.tag(ModTags.Items.RAW_MATERIALS_NEROSTEEL).add(ModItems.RAW_NEROSTEEL.get());
 
-        // Xertz quartz is a gem-style drop.
+        // Xertz quartz is a gem-style drop. Output-side cross-mod compat (BALANCE_COMPAT_AUDIT.md §5.1):
+        // also publish it under c:gems/quartz so quartz-consuming recipes in OTHER mods accept it. This
+        // is safe — it only widens what others can use; our own recipes never INPUT via c:gems/quartz,
+        // so the Greenxertz gate on xertz quartz still holds.
         this.tag(Tags.Items.GEMS).add(ModItems.XERTZ_QUARTZ.get());
         this.tag(ModTags.Items.GEMS_XERTZ_QUARTZ).add(ModItems.XERTZ_QUARTZ.get());
+        this.tag(Tags.Items.GEMS_QUARTZ).add(ModItems.XERTZ_QUARTZ.get());
 
         // Cindrite is a gem-style drop (and the Tier 2 Oxygen Suit's repair material).
         this.tag(Tags.Items.GEMS).add(ModItems.CINDRITE.get());

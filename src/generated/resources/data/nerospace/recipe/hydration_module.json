@@ -3,8 +3,8 @@
   "category": "misc",
   "key": {
     "F": "nerospace:fluid_tank",
-    "G": "nerospace:glacite",
-    "N": "nerospace:nerosteel_ingot"
+    "G": "#c:gems/glacite",
+    "N": "#c:ingots/nerosteel"
   },
   "pattern": [
     "GNG",

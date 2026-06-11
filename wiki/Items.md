@@ -10,7 +10,7 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 | **Nerosium Dust** | Output of the [Nerosium Grinder](Nerosium-Grinder); smelts into an ingot (doubles ore yield). |
 | **Raw Nerosteel** | Mined from [Nerosteel Ore](Nerosteel-Ore) on Greenxertz; smelt into a Nerosteel Ingot. |
 | **Nerosteel Ingot** | Mid-game backbone metal: rockets, suit, machines, station blocks. |
-| **Xertz Quartz** | Gem dropped by [Xertz Quartz Ore](Xertz-Quartz-Ore); used in fuel canisters. |
+| **Xertz Quartz** | Gem dropped by [Xertz Quartz Ore](Xertz-Quartz-Ore); used in upgrades and the Terraform Monitor. |
 | **Cindrite** | Gem from [Cindrite Ore](Cindrite-Ore) on Cindara; Tier-3 Terraformer upgrade. |
 
 ## Tools
@@ -35,7 +35,10 @@ for the full page.
 
 ## Rockets & Fuel
 - **Rocket Fuel Canister** — a stackable fuel unit. Craft (shapeless): Blaze Powder + Coal +
-  Xertz Quartz + Iron Ingot → 2 canisters. Used to fuel rockets/machines and as a crafting core.
+  Iron Ingot → 2 canisters. Used to fuel rockets/machines and as a crafting core. (Reachable before
+  your first launch — no off-world materials needed.)
+- **[Fuel Refinery](Fuel-Refinery)** — automates fuel: coal + blaze powder + grid power → pipeable
+  liquid rocket fuel, the logistics-grade alternative to hand-crafting canisters.
 - **Rocket Fuel Bucket** — a bucket of the `rocket_fuel` fluid; pour it into a rocket or [Fuel Tank](Fuel-Tank).
 - **Rockets (Tier 1 / 2 / 3)** — deploy onto a [Rocket Launch Pad](Rocket-Launch-Pad), fuel up, board,
   pick a destination, and launch:

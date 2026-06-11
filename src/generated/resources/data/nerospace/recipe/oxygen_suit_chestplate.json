@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "C": "nerospace:rocket_fuel_canister",
-    "N": "nerospace:nerosteel_ingot"
+    "N": "#c:ingots/nerosteel"
   },
   "pattern": [
     "N N",

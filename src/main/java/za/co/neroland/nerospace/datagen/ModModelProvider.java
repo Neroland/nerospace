@@ -259,6 +259,12 @@ public class ModModelProvider extends ModelProvider {
                 .element(e -> { e.from(9, 13, 9).to(14, 16, 14); faces(e, TextureSlot.SIDE, null); })
                 .build(), machineMapping(ModBlocks.COMBUSTION_GENERATOR.get(), true, true), true);
 
+        // Fuel Refinery (no FACING): a body under a central refining stack (single side texture).
+        shapedBlock(blockModels, ModBlocks.FUEL_REFINERY.get(), machineTemplate(false, false)
+                .element(e -> { e.from(0, 0, 0).to(16, 13, 16); faces(e, TextureSlot.SIDE, null); })
+                .element(e -> { e.from(5, 13, 5).to(11, 16, 11); faces(e, TextureSlot.SIDE, null); })
+                .build(), machineMapping(ModBlocks.FUEL_REFINERY.get(), false, false), false);
+
         // Passive Generator: pedestal under a floating collector panel.
         shapedBlock(blockModels, ModBlocks.PASSIVE_GENERATOR.get(), machineTemplate(false, true)
                 .element(e -> { e.from(3, 0, 3).to(13, 7, 13); faces(e, TextureSlot.SIDE, null); })

@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "I": "minecraft:iron_bars",
-    "N": "nerospace:nerosteel_ingot"
+    "N": "#c:ingots/nerosteel"
   },
   "pattern": [
     "NIN",

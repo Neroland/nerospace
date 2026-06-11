@@ -24,6 +24,8 @@ import za.co.neroland.nerospace.Nerospace;
 public final class ModBiomeModifiers {
 
     public static final ResourceKey<BiomeModifier> ADD_NEROSIUM_ORE = registerKey("add_nerosium_ore");
+    /** Rare, deep overworld nerosteel (BALANCE_COMPAT_AUDIT.md §0) — breaks the circular gate. */
+    public static final ResourceKey<BiomeModifier> ADD_NEROSTEEL_ORE = registerKey("add_nerosteel_ore");
 
     private ModBiomeModifiers() {
     }
@@ -35,6 +37,11 @@ public final class ModBiomeModifiers {
         context.register(ADD_NEROSIUM_ORE, new AddFeaturesBiomeModifier(
                 biomes.getOrThrow(Tags.Biomes.IS_OVERWORLD),
                 HolderSet.direct(placedFeatures.getOrThrow(ModPlacedFeatures.NEROSIUM_ORE_PLACED)),
+                GenerationStep.Decoration.UNDERGROUND_ORES));
+
+        context.register(ADD_NEROSTEEL_ORE, new AddFeaturesBiomeModifier(
+                biomes.getOrThrow(Tags.Biomes.IS_OVERWORLD),
+                HolderSet.direct(placedFeatures.getOrThrow(ModPlacedFeatures.NEROSTEEL_ORE_OVERWORLD_PLACED)),
                 GenerationStep.Decoration.UNDERGROUND_ORES));
     }
 

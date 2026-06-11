@@ -27,6 +27,14 @@ public final class ModPlacedFeatures {
     public static final ResourceKey<PlacedFeature> NEROSIUM_ORE_PLACED = registerKey("nerosium_ore_placed");
     // Phase 3 — Greenxertz dimension ores.
     public static final ResourceKey<PlacedFeature> NEROSTEEL_ORE_PLACED = registerKey("nerosteel_ore_placed");
+    /**
+     * Overworld nerosteel (BALANCE_COMPAT_AUDIT.md §0): a rare, deep seam so the metal that gates the
+     * power grid + first rocket is reachable BEFORE Greenxertz (which would otherwise be circular —
+     * nerosteel gated Greenxertz, and Greenxertz held all the nerosteel). Deliberately scarcer and
+     * deeper than the Greenxertz placement, which stays the abundant source.
+     */
+    public static final ResourceKey<PlacedFeature> NEROSTEEL_ORE_OVERWORLD_PLACED =
+            registerKey("nerosteel_ore_overworld_placed");
     public static final ResourceKey<PlacedFeature> XERTZ_QUARTZ_ORE_PLACED = registerKey("xertz_quartz_ore_placed");
     // Phase 7 — Cindara dimension ore.
     public static final ResourceKey<PlacedFeature> CINDRITE_ORE_PLACED = registerKey("cindrite_ore_placed");
@@ -54,6 +62,16 @@ public final class ModPlacedFeatures {
                         CountPlacement.of(10),
                         InSquarePlacement.spread(),
                         HeightRangePlacement.triangle(VerticalAnchor.absolute(-32), VerticalAnchor.absolute(72)),
+                        BiomeFilter.biome())));
+
+        // Overworld nerosteel: rare and deep — a quarter the Greenxertz frequency, peaking below 0 so
+        // it reads as a deep-dig "tier-2 alloy" rather than a surface metal (BALANCE_COMPAT_AUDIT.md §0).
+        context.register(NEROSTEEL_ORE_OVERWORLD_PLACED, new PlacedFeature(
+                configuredFeatures.getOrThrow(ModConfiguredFeatures.NEROSTEEL_ORE),
+                List.of(
+                        CountPlacement.of(4),
+                        InSquarePlacement.spread(),
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-56), VerticalAnchor.absolute(16)),
                         BiomeFilter.biome())));
 
         // Xertz quartz: plentiful like nether quartz, spread through the upper-to-mid range.

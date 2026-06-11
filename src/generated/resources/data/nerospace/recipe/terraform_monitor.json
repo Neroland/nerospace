@@ -2,10 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "G": "minecraft:glass",
-    "N": "nerospace:nerosteel_ingot",
-    "Q": "nerospace:xertz_quartz",
-    "R": "minecraft:redstone"
+    "G": "#c:glass_blocks/colorless",
+    "N": "#c:ingots/nerosteel",
+    "Q": "#c:gems/xertz_quartz",
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     "NGN",

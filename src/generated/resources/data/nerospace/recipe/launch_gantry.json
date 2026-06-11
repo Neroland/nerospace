@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "I": "minecraft:iron_bars",
-    "N": "nerospace:nerosteel_ingot",
+    "N": "#c:ingots/nerosteel",
     "S": "nerospace:station_wall"
   },
   "pattern": [

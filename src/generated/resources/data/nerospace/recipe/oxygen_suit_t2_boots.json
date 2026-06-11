@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "C": "nerospace:cindrite",
+    "C": "#c:gems/cindrite",
     "H": "nerospace:oxygen_suit_boots"
   },
   "pattern": [

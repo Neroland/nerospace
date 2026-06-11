@@ -4,8 +4,7 @@
   "ingredients": [
     "minecraft:blaze_powder",
     "minecraft:coal",
-    "nerospace:xertz_quartz",
-    "minecraft:iron_ingot"
+    "#c:ingots/iron"
   ],
   "result": {
     "count": 2,

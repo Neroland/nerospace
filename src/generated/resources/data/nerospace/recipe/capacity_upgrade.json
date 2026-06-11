@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "C": "minecraft:chest",
-    "N": "nerospace:nerosteel_ingot",
-    "Q": "nerospace:xertz_quartz"
+    "C": "#c:chests/wooden",
+    "N": "#c:ingots/nerosteel",
+    "Q": "#c:gems/xertz_quartz"
   },
   "pattern": [
     "NQN",

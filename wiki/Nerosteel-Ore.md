@@ -3,13 +3,18 @@
 The primary metal of the **Greenxertz** planet.
 
 ## Overview
-Nerosteel is an iron-class metal mined off-world. It is the backbone of mid-game crafting — rockets,
-the Oxygen Suit, machines and station blocks are all built from **Nerosteel Ingots**.
+Nerosteel is an iron-class metal and the backbone of mid-game crafting — rockets, the Oxygen Suit,
+machines and station blocks are all built from **Nerosteel Ingots**. **Greenxertz** is its home and
+its abundant source, but a small, deep seam also occurs on the **Overworld** so the metal that gates
+your first rocket is reachable before you ever leave home.
 
 ## Obtaining
 - **Mining:** requires an **iron-tier pickaxe** or better. Drops **Raw Nerosteel** (Fortune-affected).
-- **Generation:** spawns throughout the **Greenxertz** dimension, in a triangular band roughly
-  **y −32 to y 72** (peaking mid-depth) — fairly common.
+- **Generation:**
+  - **Overworld:** a **rare, deep** seam — roughly **y −56 to y 16** (peaking below sea level), about a
+    quarter the frequency of Greenxertz. Enough to bootstrap the power grid and a first rocket.
+  - **Greenxertz:** common throughout the dimension, in a triangular band roughly **y −32 to y 72** —
+    the place to mine it in bulk once you arrive.
 
 ## Use
 - Smelt or blast **Raw Nerosteel** (or the ore) into a **Nerosteel Ingot**.
@@ -18,5 +23,5 @@ the Oxygen Suit, machines and station blocks are all built from **Nerosteel Ingo
   Oxygen Suit, and the rockets themselves.
 
 ## Details
-- ID: `nerospace:nerosteel_ore` · Dimension: Greenxertz
+- ID: `nerospace:nerosteel_ore` · Dimensions: Overworld (rare, deep) + Greenxertz (common)
 - Tool: pickaxe, iron tier · Drops: Raw Nerosteel

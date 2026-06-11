@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
 import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
 import za.co.neroland.nerospace.machine.HydrationModuleBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformMonitorBlockEntity;
@@ -48,6 +49,13 @@ public final class ModBlockEntities {
                     FuelTankBlockEntity::new,
                     false,
                     ModBlocks.FUEL_TANK.get()));
+
+    public static final Supplier<BlockEntityType<FuelRefineryBlockEntity>> FUEL_REFINERY = BLOCK_ENTITY_TYPES.register(
+            "fuel_refinery",
+            () -> new BlockEntityType<>(
+                    FuelRefineryBlockEntity::new,
+                    false,
+                    ModBlocks.FUEL_REFINERY.get()));
 
     public static final Supplier<BlockEntityType<OxygenGeneratorBlockEntity>> OXYGEN_GENERATOR = BLOCK_ENTITY_TYPES.register(
             "oxygen_generator",

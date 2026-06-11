@@ -14,9 +14,11 @@ import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.Tags;
 
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.registry.ModTags;
 
 /**
  * Recipes for the nerosium material chain: smelting/blasting raw and ore into ingots, 3x3
@@ -68,7 +70,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern("###")
                 .pattern("###")
-                .define('#', ModItems.NEROSIUM_INGOT)
+                .define('#', ModTags.Items.INGOTS_NEROSIUM)
                 .unlockedBy("has_nerosium_ingot", this.has(ModItems.NEROSIUM_INGOT))
                 .save(this.output);
 
@@ -83,7 +85,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern("###")
                 .pattern("###")
-                .define('#', ModItems.RAW_NEROSIUM)
+                .define('#', ModTags.Items.RAW_MATERIALS_NEROSIUM)
                 .unlockedBy("has_raw_nerosium", this.has(ModItems.RAW_NEROSIUM))
                 .save(this.output);
 
@@ -106,9 +108,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern(" R ")
                 .pattern(" P ")
                 .pattern("SSS")
-                .define('R', ModItems.RAW_NEROSIUM)
+                .define('R', ModTags.Items.RAW_MATERIALS_NEROSIUM)
                 .define('P', net.minecraft.tags.ItemTags.PLANKS)
-                .define('S', Items.COBBLESTONE)
+                .define('S', Tags.Items.COBBLESTONES)
                 .unlockedBy("has_raw_nerosium", this.has(ModItems.RAW_NEROSIUM))
                 .save(this.output);
 
@@ -118,8 +120,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern(" | ")
                 .pattern(" | ")
-                .define('#', ModItems.NEROSIUM_INGOT)
-                .define('|', Items.STICK)
+                .define('#', ModTags.Items.INGOTS_NEROSIUM)
+                .define('|', Tags.Items.RODS_WOODEN)
                 .unlockedBy("has_nerosium_ingot", this.has(ModItems.NEROSIUM_INGOT))
                 .save(this.output);
 
@@ -129,9 +131,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("III")
                 .pattern("IFI")
                 .pattern("CCC")
-                .define('I', ModItems.NEROSIUM_INGOT)
+                .define('I', ModTags.Items.INGOTS_NEROSIUM)
                 .define('F', Items.FURNACE)
-                .define('C', Items.COBBLESTONE)
+                .define('C', Tags.Items.COBBLESTONES)
                 .unlockedBy("has_nerosium_ingot", this.has(ModItems.NEROSIUM_INGOT))
                 .save(this.output);
 
@@ -175,7 +177,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern("###")
                 .pattern("###")
-                .define('#', ModItems.NEROSTEEL_INGOT)
+                .define('#', ModTags.Items.INGOTS_NEROSTEEL)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -202,8 +204,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NNN")
                 .pattern("NBN")
                 .pattern("NNN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('B', ModBlocks.NEROSIUM_BLOCK.get())
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('B', ModTags.Items.STORAGE_BLOCKS_NEROSIUM)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -213,7 +215,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("N N")
                 .pattern("NIN")
                 .pattern("NSN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('I', Items.IRON_BARS)
                 .define('S', ModBlocks.STATION_WALL.get())
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
@@ -225,10 +227,24 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NGN")
                 .pattern("GCG")
                 .pattern("NGN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('G', Items.GLASS)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('G', Tags.Items.GLASS_BLOCKS_COLORLESS)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
                 .unlockedBy("has_rocket_fuel_canister", this.has(ModItems.ROCKET_FUEL_CANISTER))
+                .save(this.output);
+
+        // Fuel Refinery (BALANCE_COMPAT_AUDIT.md §3): a nerosteel furnace-cored still that refines
+        // coal + blaze powder + grid energy into pipeable liquid fuel. Pre-launch buildable (no xertz).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.FUEL_REFINERY.get())
+                .pattern("NGN")
+                .pattern("NFN")
+                .pattern("NRN")
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('G', Tags.Items.GLASS_BLOCKS_COLORLESS)
+                .define('F', Items.FURNACE)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
         // Oxygen Suit: nerosteel armour with a glass visor on the helmet (sealed life support).
@@ -236,8 +252,8 @@ public class ModRecipeProvider extends RecipeProvider {
                         RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_HELMET.get())
                 .pattern("NNN")
                 .pattern("NGN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('G', Items.GLASS)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('G', Tags.Items.GLASS_BLOCKS_COLORLESS)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -246,7 +262,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("N N")
                 .pattern("NCN")
                 .pattern("NNN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
@@ -256,7 +272,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NNN")
                 .pattern("N N")
                 .pattern("N N")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -264,7 +280,7 @@ public class ModRecipeProvider extends RecipeProvider {
                         RecipeCategory.COMBAT, ModItems.OXYGEN_SUIT_BOOTS.get())
                 .pattern("N N")
                 .pattern("N N")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -276,7 +292,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern(" C ")
                 .pattern("CHC")
                 .pattern(" C ")
-                .define('C', ModItems.CINDRITE)
+                .define('C', ModTags.Items.GEMS_CINDRITE)
                 .define('H', ModItems.OXYGEN_SUIT_HELMET)
                 .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
                 .save(this.output);
@@ -286,7 +302,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern(" C ")
                 .pattern("CHC")
                 .pattern(" C ")
-                .define('C', ModItems.CINDRITE)
+                .define('C', ModTags.Items.GEMS_CINDRITE)
                 .define('H', ModItems.OXYGEN_SUIT_CHESTPLATE)
                 .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
                 .save(this.output);
@@ -296,7 +312,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern(" C ")
                 .pattern("CHC")
                 .pattern(" C ")
-                .define('C', ModItems.CINDRITE)
+                .define('C', ModTags.Items.GEMS_CINDRITE)
                 .define('H', ModItems.OXYGEN_SUIT_LEGGINGS)
                 .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
                 .save(this.output);
@@ -306,7 +322,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern(" C ")
                 .pattern("CHC")
                 .pattern(" C ")
-                .define('C', ModItems.CINDRITE)
+                .define('C', ModTags.Items.GEMS_CINDRITE)
                 .define('H', ModItems.OXYGEN_SUIT_BOOTS)
                 .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
                 .save(this.output);
@@ -337,9 +353,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NGN")
                 .pattern("RCR")
                 .pattern("NNN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('G', Items.GLASS)
-                .define('R', Items.REDSTONE)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('G', Tags.Items.GLASS_BLOCKS_COLORLESS)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
@@ -350,10 +366,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NDN")
                 .pattern("DOD")
                 .pattern("NBN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('D', Items.DIRT)
                 .define('O', ModBlocks.OXYGEN_GENERATOR.get())
-                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .define('B', ModTags.Items.STORAGE_BLOCKS_NEROSTEEL)
                 .unlockedBy("has_oxygen_generator", this.has(ModBlocks.OXYGEN_GENERATOR.get()))
                 .save(this.output);
 
@@ -364,8 +380,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("GNG")
                 .pattern("NFN")
                 .pattern("GNG")
-                .define('G', ModItems.GLACITE)
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('G', ModTags.Items.GEMS_GLACITE)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('F', ModBlocks.FLUID_TANK.get())
                 .unlockedBy("has_glacite", this.has(ModItems.GLACITE))
                 .save(this.output);
@@ -376,10 +392,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NGN")
                 .pattern("QRQ")
                 .pattern("NNN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('G', Items.GLASS)
-                .define('Q', ModItems.XERTZ_QUARTZ)
-                .define('R', Items.REDSTONE)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('G', Tags.Items.GLASS_BLOCKS_COLORLESS)
+                .define('Q', ModTags.Items.GEMS_XERTZ_QUARTZ)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
                 .unlockedBy("has_terraformer", this.has(ModBlocks.TERRAFORMER.get()))
                 .save(this.output);
 
@@ -389,8 +405,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NNN")
                 .pattern("NGN")
                 .pattern("NNN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('G', Items.GLASS)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('G', Tags.Items.GLASS_BLOCKS_COLORLESS)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -400,9 +416,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NNN")
                 .pattern("NFN")
                 .pattern("NRN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('F', Items.FURNACE)
-                .define('R', Items.REDSTONE)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -412,9 +428,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NNN")
                 .pattern("NBN")
                 .pattern("NRN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('B', ModBlocks.NEROSIUM_BLOCK.get())
-                .define('R', Items.REDSTONE)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('B', ModTags.Items.STORAGE_BLOCKS_NEROSIUM)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
                 .unlockedBy("has_nerosium_block", this.has(ModBlocks.NEROSIUM_BLOCK.get()))
                 .save(this.output);
 
@@ -424,9 +440,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NRN")
                 .pattern("RIR")
                 .pattern("NRN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('R', Items.REDSTONE)
-                .define('I', ModItems.NEROSIUM_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
+                .define('I', ModTags.Items.INGOTS_NEROSIUM)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -436,8 +452,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NGN")
                 .pattern("G G")
                 .pattern("NGN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('G', Items.GLASS)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('G', Tags.Items.GLASS_BLOCKS_COLORLESS)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -447,7 +463,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NNN")
                 .pattern("NTN")
                 .pattern("NNN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('T', ModBlocks.FLUID_TANK.get())
                 .unlockedBy("has_fluid_tank", this.has(ModBlocks.FLUID_TANK.get()))
                 .save(this.output);
@@ -458,8 +474,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NNN")
                 .pattern("NCN")
                 .pattern("NNN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('C', Items.CHEST)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('C', Tags.Items.CHESTS_WOODEN)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -469,7 +485,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NIN")
                 .pattern("I I")
                 .pattern("NIN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('I', Items.IRON_BARS)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
@@ -480,9 +496,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NRN")
                 .pattern("RGR")
                 .pattern("NRN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('R', Items.REDSTONE)
-                .define('G', Items.GOLD_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
+                .define('G', Tags.Items.INGOTS_GOLD)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -492,9 +508,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NQN")
                 .pattern("QCQ")
                 .pattern("NQN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('Q', ModItems.XERTZ_QUARTZ)
-                .define('C', Items.CHEST)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('Q', ModTags.Items.GEMS_XERTZ_QUARTZ)
+                .define('C', Tags.Items.CHESTS_WOODEN)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -504,19 +520,21 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("N")
                 .pattern("N")
                 .pattern("R")
-                .define('N', ModItems.NEROSTEEL_INGOT)
-                .define('R', Items.REDSTONE)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
-        // Rocket fuel canister: blaze powder + coal + xertz quartz in an iron shell (yields 2).
+        // Rocket fuel canister: blaze powder + coal in an iron shell (yields 2). Xertz quartz was
+        // dropped (BALANCE_COMPAT_AUDIT.md §0/§3) so fuel is craftable BEFORE Greenxertz — the canister
+        // was the only pre-Greenxertz xertz consumer, and that made every rocket unfuellable until the
+        // second planet. Blaze powder keeps it behind a nether trip, which is the intended mid-game beat.
         ShapelessRecipeBuilder.shapeless(this.registries.lookupOrThrow(Registries.ITEM),
                         RecipeCategory.MISC, ModItems.ROCKET_FUEL_CANISTER, 2)
                 .requires(Items.BLAZE_POWDER)
                 .requires(Items.COAL)
-                .requires(ModItems.XERTZ_QUARTZ)
-                .requires(Items.IRON_INGOT)
-                .unlockedBy("has_xertz_quartz", this.has(ModItems.XERTZ_QUARTZ))
+                .requires(Tags.Items.INGOTS_IRON)
+                .unlockedBy("has_blaze_powder", this.has(Items.BLAZE_POWDER))
                 .save(this.output);
 
         // Tier 1 rocket: nerosteel hull + nerosium-grade core, a fuel canister, and a nerosteel engine.
@@ -525,9 +543,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern(" N ")
                 .pattern("NCN")
                 .pattern("NBN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
-                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .define('B', ModTags.Items.STORAGE_BLOCKS_NEROSTEEL)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -537,10 +555,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NTN")
                 .pattern("NCN")
                 .pattern("NBN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('T', ModItems.ROCKET_TIER_1)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
-                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .define('B', ModTags.Items.STORAGE_BLOCKS_NEROSTEEL)
                 .unlockedBy("has_rocket_tier_1", this.has(ModItems.ROCKET_TIER_1))
                 .save(this.output);
 
@@ -552,11 +570,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NTN")
                 .pattern("DCD")
                 .pattern("NBN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('T', ModItems.ROCKET_TIER_2)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
                 .define('D', ModBlocks.STATION_WALL.get())
-                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .define('B', ModTags.Items.STORAGE_BLOCKS_NEROSTEEL)
                 .unlockedBy("has_station_wall", this.has(ModBlocks.STATION_WALL.get()))
                 .save(this.output);
 
@@ -568,11 +586,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("NTN")
                 .pattern("GCG")
                 .pattern("NBN")
-                .define('N', ModItems.NEROSTEEL_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
                 .define('T', ModItems.ROCKET_TIER_3)
                 .define('C', ModItems.ROCKET_FUEL_CANISTER)
-                .define('G', ModItems.CINDRITE)
-                .define('B', ModBlocks.NEROSTEEL_BLOCK.get())
+                .define('G', ModTags.Items.GEMS_CINDRITE)
+                .define('B', ModTags.Items.STORAGE_BLOCKS_NEROSTEEL)
                 .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
                 .save(this.output);
 
@@ -584,7 +602,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern("###")
                 .pattern("###")
-                .define('#', ModItems.CINDRITE)
+                .define('#', ModTags.Items.GEMS_CINDRITE)
                 .unlockedBy("has_cindrite", this.has(ModItems.CINDRITE))
                 .save(this.output);
 
@@ -602,7 +620,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern("###")
                 .pattern("###")
-                .define('#', ModItems.GLACITE)
+                .define('#', ModTags.Items.GEMS_GLACITE)
                 .unlockedBy("has_glacite", this.has(ModItems.GLACITE))
                 .save(this.output);
 
@@ -637,7 +655,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern("# #")
                 .pattern("###")
-                .define('#', ModItems.NEROSTEEL_INGOT)
+                .define('#', ModTags.Items.INGOTS_NEROSTEEL)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
 
@@ -646,8 +664,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern("#I#")
                 .pattern("###")
-                .define('#', ModItems.NEROSTEEL_INGOT)
-                .define('I', Items.IRON_INGOT)
+                .define('#', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('I', Tags.Items.INGOTS_IRON)
                 .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
                 .save(this.output);
     }

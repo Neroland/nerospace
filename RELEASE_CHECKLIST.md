@@ -171,10 +171,21 @@ Goal: shrink the config file while keeping modpack flexibility — **base number
 
 ## 5. Balance
 
-- [ ] Recipe cost audit across the whole progression (pacing nerosium → T3 rocket → terraform)
-- [ ] Oxygen drain/tank/refill rate tuning from playthrough feel
-- [ ] Energy economy audit: generator output vs machine consumption at each game stage
-- [ ] Fuel economy: costs per launch per tier feel right
+Full desk audit in `BALANCE_COMPAT_AUDIT.md` (signed off 2026-06-11); slice 1 applied + verified
+(runData/check_assets/build/ecjCheck/39 gametests all green).
+
+- [x] Recipe cost audit across the whole progression (pacing nerosium → T3 rocket → terraform) —
+      `BALANCE_COMPAT_AUDIT.md` §0–§1. **Fixed the circular-gate BLOCKER** (nerosteel + xertz were
+      Greenxertz-only yet gated everything before Greenxertz): rare/deep overworld nerosteel added,
+      xertz dropped from the fuel canister. Final pacing *feel* confirms in the §6 survival run.
+- [ ] Oxygen drain/tank/refill rate tuning from playthrough feel — *play-feel, deferred to §6.*
+      Numbers audited (`§4`): T1-suit 2.5 min flagged as borderline; lever is capacity, not drain.
+- [x] Energy economy audit: generator output vs machine consumption at each game stage —
+      `BALANCE_COMPAT_AUDIT.md` §2. Sound; late-game Terraformer (≈288 FE/t) is intended energy/
+      logistics tension. New Fuel Refinery ties fuel to the grid (≈2 FE/mB).
+- [ ] Fuel economy: costs per launch per tier feel right — per-launch mB + 1:3 ratio kept (good);
+      the *delivery* was the problem and is fixed (Fuel Tank canister auto-feed + **Fuel Refinery** +
+      canister decoupled from xertz). Final "feel" confirms in §6.
 - [ ] Post-release: keep tuning from player feedback (multipliers make this cheap)
 
 ## 6. Verification & testing
@@ -212,11 +223,24 @@ Goal: shrink the config file while keeping modpack flexibility — **base number
 
 ## 8. Compatibility (standalone, plays well with others)
 
-- [ ] Common ore/material tags (`c:` conventions) on all ores/ingots/raw materials
-- [ ] Conditional recipes / tag-based inputs where another mod's materials could substitute
-- [ ] Capabilities exposed everywhere sensible (already the convention — audit for gaps)
+Audit in `BALANCE_COMPAT_AUDIT.md` §5; slice 1 applied + verified.
+
+- [x] Common ore/material tags (`c:` conventions) on all ores/ingots/raw materials — completeness
+      pass: added the missing `c:ores/cindrite`, `c:ores/glacite`, `c:storage_blocks/{cindrite,glacite}`
+      subtags + published xertz quartz under `c:gems/quartz` (output-side).
+- [x] Conditional recipes / tag-based inputs where another mod's materials could substitute —
+      aggressive tag-input pass: vanilla commodities (iron/gold/redstone/glass/cobblestone/chest/
+      sticks) routed through broad `c:` tags; our own materials through our narrow `c:` subtags so the
+      future renewable source slots in for free **and the planet-ore gates still hold** (a narrow
+      subtag holds only our item — no other mod's gem can satisfy a Cindara/Glacira/Greenxertz recipe).
+- [x] Capabilities exposed everywhere sensible (already the convention — audit for gaps) — §5.3
+      sweep: added the **Fuel Tank** canister Item cap + the **Fuel Refinery**'s Energy/Item/Fluid
+      caps. Terraformer/Hydration *fluid* caps were deliberately **not** added — a water-fluid intake
+      would bypass the Glacira/glacite gate (documented in the audit; revisit only if that gate is
+      consciously weakened).
 - [ ] JEI/EMI integration *(when they reach 26.1 — otherwise first post-1.0 patch)*
-- [ ] No hard dependencies on any other mod (verify mods.toml)
+- [x] No hard dependencies on any other mod (verify mods.toml) — only `neoforge` + `minecraft`
+      required, `ordering="NONE"`; verified clean.
 
 ## 9. Distribution & legal
 

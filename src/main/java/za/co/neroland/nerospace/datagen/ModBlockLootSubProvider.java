@@ -41,6 +41,9 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         // Phase 8a — fuel tank.
         dropSelf(ModBlocks.FUEL_TANK.get());
 
+        // Fuel Refinery (BALANCE_COMPAT_AUDIT.md §3).
+        dropSelf(ModBlocks.FUEL_REFINERY.get());
+
         // Phase 8c — oxygen generator.
         dropSelf(ModBlocks.OXYGEN_GENERATOR.get());
 

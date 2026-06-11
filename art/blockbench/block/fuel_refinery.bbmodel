@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "fuel_refinery",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "fuel_refinery",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "090b0652-34d0-477c-b987-047498acce8a"
+    }
+  ],
+  "outliner": [
+    "090b0652-34d0-477c-b987-047498acce8a"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\fuel_refinery.png",
+      "name": "fuel_refinery.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "5251fed0-68a2-46a7-a374-8091c3ad97e9",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/fuel_refinery.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABxElEQVR4nKWTsWvbUBDGfxEmQ3g8RBFBgygdNIgQWuPBlNh0UpYOXdqpZA4mU/DsoZjgqfhPKBlM8ZDBZOjSTKUtIYMJnozREIwIIogixMNDl3SQ9WTFGQL94HHvjuPed9/d2zgdTe75D1QAzs8GpWCaxPq+UAm24wIQhUHpPr+ZYeTOuw8HAATTMQDStJCmxS9/QjAdE4UBq7lKpQWDLWHSP2nT8g18xwDC5QGOOrTUV0BpVudnA4SQ/ImjrMBCJQgh6Q1naz32hp/XYvVmFdtxmd/MsgJKpQghqTffEoWBpieExHZc0iRmoRK2hMldNC/pVMkTlUrxnWtwgEyaJe08tvR3DQaXQVmD/JXe8GqN7mPwdusAhQY5nWeWjevVtOL5yFbH+hCVVaflGw8oX2fGoYSLsIo0rUJEyCbRG94+qYV6s1pmcBfNcb0akO2ENC29dWkSI02LNIl1XjAdI4QsCuTBbfs531//gD0Pfk9h7+/Seto2uoGeGlCscrvTB2D/8g37/W0aFy95/2UHjjo0upu8Gr2g0d3EdlwOjz9pBhuno8l9/6StlwaK/7D6kuvVdBt57tXPb1mBzvHHJ4n3GP4BUu/H5XW4jeAAAAAASUVORK5CYII="
+    }
+  ]
+}

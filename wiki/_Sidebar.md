@@ -19,6 +19,7 @@
 - [Nerosium Grinder](Nerosium-Grinder)
 - [Oxygen Generator](Oxygen-Generator)
 - [Fuel Tank](Fuel-Tank)
+- [Fuel Refinery](Fuel-Refinery)
 - [Terraformer](Terraformer)
 - [Hydration Module](Hydration-Module)
 - [Terraform Monitor](Terraform-Monitor)

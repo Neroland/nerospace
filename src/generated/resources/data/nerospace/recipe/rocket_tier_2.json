@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "B": "nerospace:nerosteel_block",
+    "B": "#c:storage_blocks/nerosteel",
     "C": "nerospace:rocket_fuel_canister",
-    "N": "nerospace:nerosteel_ingot",
+    "N": "#c:ingots/nerosteel",
     "T": "nerospace:rocket_tier_1"
   },
   "pattern": [

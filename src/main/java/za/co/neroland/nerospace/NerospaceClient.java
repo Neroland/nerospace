@@ -35,6 +35,7 @@ import za.co.neroland.nerospace.client.GreenlingModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureRenderer;
 import za.co.neroland.nerospace.client.QuartzCrawlerModel;
 import za.co.neroland.nerospace.client.XertzStalkerModel;
+import za.co.neroland.nerospace.client.FuelRefineryScreen;
 import za.co.neroland.nerospace.client.FuelTankScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
@@ -89,6 +90,7 @@ public class NerospaceClient {
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         event.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
         event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
+        event.register(ModMenuTypes.FUEL_REFINERY.get(), FuelRefineryScreen::new);
         event.register(ModMenuTypes.TERRAFORMER.get(), TerraformerScreen::new);
         event.register(ModMenuTypes.HYDRATION_MODULE.get(),
                 za.co.neroland.nerospace.client.HydrationModuleScreen::new);

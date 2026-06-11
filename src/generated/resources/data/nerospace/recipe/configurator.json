@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "N": "nerospace:nerosteel_ingot",
-    "R": "minecraft:redstone"
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     "N",

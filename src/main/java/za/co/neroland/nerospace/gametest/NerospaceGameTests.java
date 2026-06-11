@@ -115,6 +115,8 @@ public final class NerospaceGameTests {
         functions.put("passive_generator_cap_feed", NerospaceGameTests::testPassiveGeneratorCapFeed);
         functions.put("grinder_cap_feed_and_extract", NerospaceGameTests::testGrinderCapFeedAndExtract);
         functions.put("item_store_cap_roundtrip", NerospaceGameTests::testItemStoreCapRoundtrip);
+        functions.put("fuel_tank_canister_autofeed", NerospaceGameTests::testFuelTankCanisterAutofeed);
+        functions.put("fuel_refinery_produces_fuel", NerospaceGameTests::testFuelRefineryProducesFuel);
         functions.put("terraformer_cap_upgrade_feed", NerospaceGameTests::testTerraformerCapUpgradeFeed);
         // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md): stage engine + water cycle.
         functions.put("hydration_module_feeds_terraformer", NerospaceGameTests::testHydrationModuleFeedsTerraformer);
@@ -454,6 +456,49 @@ public final class NerospaceGameTests {
                         "capability-fed input must grind into extractable dust");
                 // Aborted: leave the dust for the assertion to re-find (test ends on success).
             }
+        });
+    }
+
+    /** A canister piped into the Fuel Tank must convert to liquid fuel (BALANCE_COMPAT_AUDIT.md §3). */
+    private static void testFuelTankCanisterAutofeed(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.FUEL_TANK.get());
+        int inserted = insertViaCap(helper, pos, Direction.UP, ModItems.ROCKET_FUEL_CANISTER.get(), 1);
+        helper.assertTrue(inserted == 1, "the fuel tank must accept a canister via the item capability");
+
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.machine.FuelTankBlockEntity tank)) {
+            helper.fail("expected a FuelTankBlockEntity");
+            return;
+        }
+        helper.succeedWhen(() -> helper.assertTrue(
+                tank.getTank().getAmount() >= za.co.neroland.nerospace.machine.FuelTankBlockEntity.CONTAINER_MB,
+                "a piped-in canister must convert to 1000 mB of fuel"));
+    }
+
+    /** The Fuel Refinery must refine coal + blaze powder + grid energy into liquid fuel. */
+    private static void testFuelRefineryProducesFuel(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.FUEL_REFINERY.get());
+        energiseViaCap(helper, pos, 20, 1000); // 20,000 FE >> one ~4,000 FE batch
+        int coal = insertViaCap(helper, pos, Direction.UP, net.minecraft.world.item.Items.COAL, 1);
+        helper.assertTrue(coal == 1, "the carbon slot must accept coal via the item capability");
+
+        if (!(helper.getLevel().getBlockEntity(helper.absolutePos(pos))
+                instanceof za.co.neroland.nerospace.machine.FuelRefineryBlockEntity refinery)) {
+            helper.fail("expected a FuelRefineryBlockEntity");
+            return;
+        }
+        // The catalyst (blaze powder) targets slot 1, which the index-0 cap helper can't reach.
+        refinery.setItem(za.co.neroland.nerospace.machine.FuelRefineryBlockEntity.CATALYST_SLOT,
+                new ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER));
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(refinery.getTank().getAmount() >= za.co.neroland.nerospace.Tuning.fuelRefineryMbPerBatch(),
+                    "coal + blaze + energy must refine into a batch of liquid fuel");
+            helper.assertTrue(
+                    refinery.getItem(za.co.neroland.nerospace.machine.FuelRefineryBlockEntity.CARBON_SLOT).isEmpty(),
+                    "the refined coal must be consumed");
         });
     }
 

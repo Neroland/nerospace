@@ -85,6 +85,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.NEROSIUM_ORE.get(), ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),
                         ModBlocks.NEROSTEEL_ORE.get(), ModBlocks.XERTZ_QUARTZ_ORE.get(),
                         ModBlocks.CINDRITE_ORE.get(), ModBlocks.GLACITE_ORE.get());
+        this.tag(ModTags.Blocks.ORES_CINDRITE)
+                .add(ModBlocks.CINDRITE_ORE.get());
         this.tag(ModTags.Blocks.ORES_GLACITE)
                 .add(ModBlocks.GLACITE_ORE.get());
         this.tag(ModTags.Blocks.ORES_NEROSIUM)
@@ -98,6 +100,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.NEROSIUM_BLOCK.get(), ModBlocks.RAW_NEROSIUM_BLOCK.get(),
                         ModBlocks.NEROSTEEL_BLOCK.get(), ModBlocks.CINDRITE_BLOCK.get(),
                         ModBlocks.GLACITE_BLOCK.get());
+        this.tag(ModTags.Blocks.STORAGE_BLOCKS_CINDRITE)
+                .add(ModBlocks.CINDRITE_BLOCK.get());
         this.tag(ModTags.Blocks.STORAGE_BLOCKS_GLACITE)
                 .add(ModBlocks.GLACITE_BLOCK.get());
         this.tag(ModTags.Blocks.STORAGE_BLOCKS_NEROSIUM)

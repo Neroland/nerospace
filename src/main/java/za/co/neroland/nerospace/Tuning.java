@@ -64,6 +64,10 @@ public final class Tuning {
     public static final int BASE_PASSIVE_GENERATOR_BUFFER = 20_000;
     public static final int BASE_GRINDER_BUFFER = 10_000;
     public static final int BASE_OXYGEN_GENERATOR_BUFFER = 10_000;
+    /** Fuel Refinery energy buffer (BALANCE_COMPAT_AUDIT.md §3 — the logistics-grade fuel source). */
+    public static final int BASE_FUEL_REFINERY_BUFFER = 40_000;
+    /** Fuel Refinery internal output tank (mB of rocket_fuel, pipeable). */
+    public static final int BASE_FUEL_REFINERY_TANK = 8_000;
     public static final int BASE_OXYGEN_GENERATOR_O2_CAPACITY = 8_000;
     public static final int BASE_TERRAFORMER_BUFFER = 100_000;
 
@@ -73,6 +77,8 @@ public final class Tuning {
 
     /** Grinder ticks per crafted item (progress target; machineSpeed shortens it). */
     public static final int BASE_GRINDER_MAX_PROGRESS = 100;
+    /** Fuel Refinery ticks per batch (progress target; machineSpeed shortens it). */
+    public static final int BASE_FUEL_REFINERY_WORK_TICKS = 100;
     /** Oxygen produced per tick at full power (mB). */
     public static final int BASE_OXYGEN_GENERATOR_MAKE_MB_PER_TICK = 5;
     /** Oxygen consumed per tick to keep the breathable field alive (mB). */
@@ -100,6 +106,10 @@ public final class Tuning {
     public static final int BASE_TERRAFORM_ENERGY_PER_BLOCK = 12;
     /** Grinder energy consumed per progress tick (FE). */
     public static final int BASE_GRINDER_ENERGY_PER_TICK = 30;
+    /** Fuel Refinery energy consumed per working tick (FE); over a batch ≈ 4,000 FE per 2,000 mB. */
+    public static final int BASE_FUEL_REFINERY_FE_PER_TICK = 40;
+    /** Rocket fuel produced per refining batch (mB) — one coal + one blaze powder = 2,000 mB. */
+    public static final int BASE_FUEL_REFINERY_MB_PER_BATCH = 2_000;
     /** Oxygen Generator energy cost per mB of oxygen produced (FE). */
     public static final int BASE_OXYGEN_GENERATOR_FE_PER_MB = 2;
 
@@ -252,6 +262,15 @@ public final class Tuning {
         return scale(BASE_TERRAFORMER_BUFFER, Config.ENERGY_RATE_MULTIPLIER.get());
     }
 
+    public static int fuelRefineryBuffer() {
+        return scale(BASE_FUEL_REFINERY_BUFFER, Config.ENERGY_RATE_MULTIPLIER.get());
+    }
+
+    /** Fuel Refinery output tank size (storage, so energyRateMultiplier). */
+    public static int fuelRefineryTankCapacity() {
+        return scale(BASE_FUEL_REFINERY_TANK, Config.ENERGY_RATE_MULTIPLIER.get());
+    }
+
     /** Rocket tank size for a tier's base capacity (storage, so energyRateMultiplier). */
     public static int rocketFuelCapacity(int baseCapacity) {
         return scale(baseCapacity, Config.ENERGY_RATE_MULTIPLIER.get());
@@ -288,6 +307,16 @@ public final class Tuning {
         return scale(BASE_GRINDER_ENERGY_PER_TICK, Config.FUEL_COST_MULTIPLIER.get());
     }
 
+    /** Fuel Refinery energy per working tick (a consumable cost, so fuelCostMultiplier). */
+    public static int fuelRefineryFePerTick() {
+        return scale(BASE_FUEL_REFINERY_FE_PER_TICK, Config.FUEL_COST_MULTIPLIER.get());
+    }
+
+    /** Rocket fuel yield per batch (mB) — a fixed output, deliberately not multiplier-scaled. */
+    public static int fuelRefineryMbPerBatch() {
+        return BASE_FUEL_REFINERY_MB_PER_BATCH;
+    }
+
     public static int oxygenGeneratorFePerMb() {
         return scale(BASE_OXYGEN_GENERATOR_FE_PER_MB, Config.FUEL_COST_MULTIPLIER.get());
     }
@@ -299,6 +328,11 @@ public final class Tuning {
     /** Grinder ticks per item (inverse: 10x speed = 10 ticks, 0.1x = 1000 ticks). */
     public static int grinderMaxProgress() {
         return scaleInverse(BASE_GRINDER_MAX_PROGRESS, Config.MACHINE_SPEED_MULTIPLIER.get());
+    }
+
+    /** Fuel Refinery ticks per batch (inverse: faster speed = fewer ticks). */
+    public static int fuelRefineryWorkTicks() {
+        return scaleInverse(BASE_FUEL_REFINERY_WORK_TICKS, Config.MACHINE_SPEED_MULTIPLIER.get());
     }
 
     public static int oxygenGeneratorMakeMbPerTick() {

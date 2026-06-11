@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": "nerospace:nerosium_ingot",
-    "|": "minecraft:stick"
+    "#": "#c:ingots/nerosium",
+    "|": "#c:rods/wooden"
   },
   "pattern": [
     "###",

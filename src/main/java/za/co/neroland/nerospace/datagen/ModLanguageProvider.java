@@ -40,6 +40,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Phase 8a blocks.
         add(ModBlocks.FUEL_TANK.get(), "Fuel Tank");
+        add(ModBlocks.FUEL_REFINERY.get(), "Fuel Refinery");
 
         // Phase 8c blocks.
         add(ModBlocks.OXYGEN_GENERATOR.get(), "Oxygen Generator");
@@ -284,6 +285,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Fuel tank GUI.
         add("container.nerospace.fuel_tank", "Fuel Tank");
+        add("container.nerospace.fuel_refinery", "Fuel Refinery");
         add("gui.nerospace.fuel_tank.level", "Fuel: %s%% (%s / %s mB)");
 
         // Terraformer GUI.

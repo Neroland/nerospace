@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": "nerospace:nerosium_block",
-    "N": "nerospace:nerosteel_ingot"
+    "B": "#c:storage_blocks/nerosium",
+    "N": "#c:ingots/nerosteel"
   },
   "pattern": [
     "NNN",

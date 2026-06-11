@@ -702,6 +702,31 @@ def gen_oxygen_generator():
     save(img, os.path.join(BLOCK_DIR, "oxygen_generator.png"))
 
 
+def gen_fuel_refinery():
+    """Steel still: a coiled refining pipe over a glowing burner, with a fuel-orange droplet."""
+    rng = random.Random(814)
+    img = new_img()
+    noise_fill(img, METAL, rng)
+    px = img.load()
+    bevel(img, METAL_L, METAL_D)
+    # Refining coil: three stacked horizontal pipe runs.
+    for cy in (4, 7, 10):
+        for x in range(3, 13):
+            px[x, cy] = METAL_D
+            px[x, cy - 1] = (150, 120, 70, 255)  # brass coil highlight
+    # Burner glow beneath the coil.
+    for x in range(4, 12):
+        px[x, 12] = C_ORANGE if (x % 2 == 0) else C_EMBER
+    px[8, 13] = C_GLOW
+    # A fuel droplet forming at the spout.
+    px[8, 2] = C_ORANGE
+    px[8, 3] = C_GLOW
+    # corner rivets
+    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        px[rx, ry] = METAL_L
+    save(img, os.path.join(BLOCK_DIR, "fuel_refinery.png"))
+
+
 # ---------------- PHASE 7: CINDARA ----------------
 
 def gen_cindrite_ore():
@@ -2578,6 +2603,8 @@ if __name__ == "__main__":
     gen_gui_machine_panel("terraformer", (84, 212, 106, 255), (30, 90, 44, 255))
     gen_gui_machine_panel("oxygen_generator", (120, 210, 240, 255), (40, 90, 130, 255), slots=())
     gen_gui_machine_panel("fuel_tank", (255, 158, 36, 255), (110, 62, 14, 255), slots=())
+    gen_gui_machine_panel("fuel_refinery", (255, 158, 36, 255), (110, 62, 14, 255),
+                          slots=((56, 35), (104, 35)))
     # Creature base textures (additive; (re)render only under the creature-scoped --creatures flag).
     gen_creatures()
     gen_spawn_eggs()
@@ -2606,6 +2633,7 @@ if __name__ == "__main__":
     # Phase 4 — rockets
     gen_rocket_launch_pad()
     gen_fuel_tank()
+    gen_fuel_refinery()
     gen_oxygen_generator()
     # Storage endpoints + creative sources.
     gen_storage_endpoints()

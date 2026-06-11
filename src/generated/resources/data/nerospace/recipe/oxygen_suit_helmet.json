@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "G": "minecraft:glass",
-    "N": "nerospace:nerosteel_ingot"
+    "G": "#c:glass_blocks/colorless",
+    "N": "#c:ingots/nerosteel"
   },
   "pattern": [
     "NNN",

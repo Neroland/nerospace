@@ -314,6 +314,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> FUEL_TANK_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.FUEL_TANK);
 
+    // Fuel Refinery (BALANCE_COMPAT_AUDIT.md §3) block item.
+    public static final DeferredItem<BlockItem> FUEL_REFINERY_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.FUEL_REFINERY);
+
     // Phase 8c block item.
     public static final DeferredItem<BlockItem> OXYGEN_GENERATOR_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.OXYGEN_GENERATOR);

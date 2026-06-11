@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": "nerospace:nerosteel_block",
+    "B": "#c:storage_blocks/nerosteel",
     "D": "minecraft:dirt",
-    "N": "nerospace:nerosteel_ingot",
+    "N": "#c:ingots/nerosteel",
     "O": "nerospace:oxygen_generator"
   },
   "pattern": [
