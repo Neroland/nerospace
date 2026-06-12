@@ -9,7 +9,7 @@ name: Sync Modrinth description
 #   MODRINTH_API_TOKEN  — a Modrinth PAT with the "Edit project details" scope
 on:
   push:
-    branches: [main]
+    branches: [main, v1.0.0]
     paths:
       - art/modrinth_description.md
       - .github/workflows/modrinth-description.yml
