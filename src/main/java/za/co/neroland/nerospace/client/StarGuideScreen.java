@@ -83,7 +83,18 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     }
 
     private int stepY(int index) {
-        return this.topPos + 26 + (index / 3) * 32;
+        return this.topPos + 26 + (index / 3) * rowSpacing();
+    }
+
+    /**
+     * Vertical pitch between node rows, compressed for long chapters so every row stays inside the
+     * step canvas (texture zone y 19..95 — a 9-step chapter at the classic 32px pitch used to spill
+     * its third row into the text panel underneath).
+     */
+    private int rowSpacing() {
+        int steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps().size();
+        int rows = Math.max(1, (steps + 2) / 3);
+        return rows <= 1 ? 32 : Math.min(32, 54 / (rows - 1));
     }
 
     private void selectStep(int step) {
@@ -150,14 +161,18 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
                 label(g, complete, tagX, 100, DONE);
             }
         }
+        // Description: wrapped to the text panel (x 80..234, bottom edge y 194). Long entries tighten
+        // the leading instead of clipping, so every guide text fits the panel whole.
+        List<FormattedCharSequence> lines = this.font.split(
+                Component.translatable(step.textKey()), 146);
+        int lineHeight = lines.size() > 8 ? 9 : 10;
         int y = 112;
-        for (FormattedCharSequence line : this.font.split(
-                Component.translatable(step.textKey()), 150)) {
-            if (y > 186) {
+        for (FormattedCharSequence line : lines) {
+            if (y + this.font.lineHeight > 193) {
                 break;
             }
             g.text(this.font, line, this.leftPos + 82, this.topPos + y, 0xFFB6C6D8, false);
-            y += 10;
+            y += lineHeight;
         }
     }
 

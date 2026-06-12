@@ -32,28 +32,28 @@ public final class RocketT4Model {
                 CubeListBuilder.create().texOffs(0, 0).addBox(-7F, -16F, -7F, 14F, 36F, 14F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("nose",
-                CubeListBuilder.create().texOffs(0, 48).addBox(-5F, -26F, -5F, 10F, 10F, 10F),
+                CubeListBuilder.create().texOffs(0, 56).addBox(-5F, -26F, -5F, 10F, 10F, 10F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("console",
-                CubeListBuilder.create().texOffs(32, 48).addBox(-4F, -1.5F, -6.5F, 8F, 5F, 1F),
+                CubeListBuilder.create().texOffs(44, 68).addBox(-4F, -1.5F, -6.5F, 8F, 5F, 1F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("bell",
-                CubeListBuilder.create().texOffs(0, 48).addBox(-5F, 20F, -5F, 10F, 3F, 10F),
+                CubeListBuilder.create().texOffs(0, 80).addBox(-5F, 20F, -5F, 10F, 3F, 10F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("booster_w",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-11F, 2F, -3F, 4F, 18F, 6F),
+                CubeListBuilder.create().texOffs(80, 0).addBox(-11F, 2F, -3F, 4F, 18F, 6F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("booster_e",
-                CubeListBuilder.create().texOffs(48, 0).addBox(7F, 2F, -3F, 4F, 18F, 6F),
+                CubeListBuilder.create().texOffs(80, 0).addBox(7F, 2F, -3F, 4F, 18F, 6F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("booster_n",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-3F, 2F, -11F, 6F, 18F, 4F),
+                CubeListBuilder.create().texOffs(104, 0).addBox(-3F, 2F, -11F, 6F, 18F, 4F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("booster_s",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-3F, 2F, 7F, 6F, 18F, 4F),
+                CubeListBuilder.create().texOffs(104, 0).addBox(-3F, 2F, 7F, 6F, 18F, 4F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         // model_sync:end
 
-        return LayerDefinition.create(mesh, 64, 64);
+        return LayerDefinition.create(mesh, 128, 128);
     }
 }

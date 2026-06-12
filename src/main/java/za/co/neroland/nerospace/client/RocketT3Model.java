@@ -31,43 +31,43 @@ public final class RocketT3Model {
                 CubeListBuilder.create().texOffs(0, 0).addBox(-6F, -16F, -6F, 12F, 36F, 12F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("nose",
-                CubeListBuilder.create().texOffs(0, 48).addBox(-4F, -30F, -4F, 8F, 14F, 8F),
+                CubeListBuilder.create().texOffs(0, 56).addBox(-4F, -30F, -4F, 8F, 14F, 8F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("tip",
-                CubeListBuilder.create().texOffs(0, 48).addBox(-2F, -34F, -2F, 4F, 4F, 4F),
+                CubeListBuilder.create().texOffs(44, 56).addBox(-2F, -34F, -2F, 4F, 4F, 4F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("console",
-                CubeListBuilder.create().texOffs(32, 48).addBox(-4F, -1.5F, -5.5F, 8F, 5F, 1F),
+                CubeListBuilder.create().texOffs(44, 68).addBox(-4F, -1.5F, -5.5F, 8F, 5F, 1F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("bell",
-                CubeListBuilder.create().texOffs(0, 48).addBox(-4F, 20F, -4F, 8F, 3F, 8F),
+                CubeListBuilder.create().texOffs(0, 80).addBox(-4F, 20F, -4F, 8F, 3F, 8F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("skirt_n",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-7F, 12F, -7F, 14F, 4F, 2F),
+                CubeListBuilder.create().texOffs(64, 32).addBox(-7F, 12F, -7F, 14F, 4F, 2F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("skirt_s",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-7F, 12F, 5F, 14F, 4F, 2F),
+                CubeListBuilder.create().texOffs(64, 32).addBox(-7F, 12F, 5F, 14F, 4F, 2F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("skirt_w",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-7F, 12F, -5F, 2F, 4F, 10F),
+                CubeListBuilder.create().texOffs(64, 48).addBox(-7F, 12F, -5F, 2F, 4F, 10F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("skirt_e",
-                CubeListBuilder.create().texOffs(48, 0).addBox(5F, 12F, -5F, 2F, 4F, 10F),
+                CubeListBuilder.create().texOffs(64, 48).addBox(5F, 12F, -5F, 2F, 4F, 10F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_north",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-1F, 14F, -10F, 2F, 10F, 4F),
+                CubeListBuilder.create().texOffs(64, 0).addBox(-1F, 14F, -10F, 2F, 10F, 4F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_south",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-1F, 14F, 6F, 2F, 10F, 4F),
+                CubeListBuilder.create().texOffs(64, 0).addBox(-1F, 14F, 6F, 2F, 10F, 4F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_west",
-                CubeListBuilder.create().texOffs(48, 0).addBox(-10F, 14F, -1F, 4F, 10F, 2F),
+                CubeListBuilder.create().texOffs(64, 0).addBox(-10F, 14F, -1F, 4F, 10F, 2F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("fin_east",
-                CubeListBuilder.create().texOffs(48, 0).addBox(6F, 14F, -1F, 4F, 10F, 2F),
+                CubeListBuilder.create().texOffs(64, 0).addBox(6F, 14F, -1F, 4F, 10F, 2F),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         // model_sync:end
 
-        return LayerDefinition.create(mesh, 64, 64);
+        return LayerDefinition.create(mesh, 128, 128);
     }
 }
