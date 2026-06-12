@@ -1,9 +1,14 @@
-name: Sync Modrinth description & icon
+name: Sync Modrinth project page
 
-# Pushes art/modrinth_description.md to the Modrinth project page (the "body" field)
-# and art/logo/nerospace_logo_400.png as the project icon whenever either changes on
-# main — Modrinth's API supports writing both, unlike CurseForge's (see
-# RELEASE_RUNBOOK.md: the CurseForge description/logo stay a manual upload).
+# Pushes the full Modrinth project page from the repo whenever the sources change —
+# Modrinth's API supports writing all of this, unlike CurseForge's (see
+# RELEASE_RUNBOOK.md: the CurseForge page stays a manual paste/upload):
+#   - description body            <- art/modrinth_description.md
+#   - title, summary, categories,
+#     client/server environments,
+#     issue/source/wiki/Discord
+#     links, license              <- pinned in the payload below
+#   - project icon                <- art/logo/nerospace_logo_400.png
 # Icon note: Modrinth caps icons at 256 KiB, so we sync the 400×400 derivative,
 # not the 1024px master (which is over the limit).
 #
@@ -16,6 +21,7 @@ on:
     paths:
       - art/modrinth_description.md
       - art/logo/nerospace_logo.png
+      - art/logo/nerospace_logo_400.png
       - .github/workflows/modrinth-description.yml
   workflow_dispatch:
 
@@ -32,7 +38,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: PATCH the Modrinth project description
+      - name: PATCH the Modrinth project metadata
         env:
           MODRINTH_PROJECT_ID: ${{ secrets.MODRINTH_PROJECT_ID }}
           MODRINTH_API_TOKEN: ${{ secrets.MODRINTH_API_TOKEN }}
@@ -42,8 +48,25 @@ jobs:
             exit 1
           fi
 
-          # jq -Rs reads the whole file as one string and JSON-escapes it safely.
-          jq -Rs '{body: .}' art/modrinth_description.md > payload.json
+          # jq -Rs reads the description file as one string and JSON-escapes it
+          # safely; everything else is pinned here so the page can't drift from the
+          # repo (a fumbled UI edit gets corrected on the next sync run).
+          # license_id "LicenseRef-Custom" + license_url is Modrinth's "Custom
+          # License" — this is the field AutoMod's "Missing License" check reads.
+          jq -Rs '{
+            body: .,
+            title: "Nerospace",
+            description: "Mine alien ore, power up your machines, build rockets — then terraform a dead world until it rains.",
+            categories: ["technology", "worldgen", "adventure"],
+            client_side: "required",
+            server_side: "required",
+            issues_url: "https://github.com/Neroland/nerospace/issues",
+            source_url: "https://github.com/Neroland/nerospace",
+            wiki_url: "https://github.com/Neroland/nerospace/wiki",
+            discord_url: "https://discord.gg/ArPXvYUzJG",
+            license_id: "LicenseRef-Custom",
+            license_url: "https://github.com/Neroland/nerospace/blob/main/LICENSE"
+          }' art/modrinth_description.md > payload.json
 
           HTTP_CODE=$(curl -sS -o response.txt -w "%{http_code}" \
             -X PATCH "https://api.modrinth.com/v2/project/${MODRINTH_PROJECT_ID}" \
@@ -57,7 +80,7 @@ jobs:
             cat response.txt
             exit 1
           fi
-          echo "Modrinth description synced (HTTP 204)."
+          echo "Modrinth project metadata synced (HTTP 204)."
 
       - name: PATCH the Modrinth project icon
         env:

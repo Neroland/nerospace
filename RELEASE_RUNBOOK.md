@@ -27,19 +27,16 @@ Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 Project: <https://modrinth.com/mod/nerospace> (created 2026-06-12; the first uploaded version
 goes through Modrinth moderation review before the page goes public).
 
-- [ ] **Description + icon:** automated — `.github/workflows/modrinth-description.yml` PATCHes
-      the project body from `art/modrinth_description.md` and the icon from
-      `art/logo/nerospace_logo_400.png` (the 1024px master is over Modrinth's 256 KiB icon cap)
-      whenever either changes on `main` (or run it manually via workflow_dispatch). Nothing to
-      paste; just make sure the secrets from §1 exist, then trigger it once.
-- [ ] **Summary / categories:** set the short summary, pick categories (technology, worldgen,
-      adventure fit).
-- [ ] **License field:** choose **Custom** and point it at
-      <https://github.com/Neroland/nerospace/blob/main/LICENSE>.
-- [ ] **Environments:** mark as required on **both client and server**.
-- [ ] **Links:** Issues → GitHub issues, Source → repo, Wiki →
-      <https://github.com/Neroland/nerospace/wiki>, Discord → `https://discord.gg/ArPXvYUzJG`.
-- [ ] **Gallery:** same screenshot set as CurseForge (section 6).
+- [ ] **Whole project page: automated** — `.github/workflows/modrinth-description.yml` PATCHes
+      everything in one run: the body (from `art/modrinth_description.md`), the icon
+      (`art/logo/nerospace_logo_400.png`; the 1024px master is over Modrinth's 256 KiB cap),
+      and the pinned metadata — title, summary, categories (technology/worldgen/adventure),
+      client+server = required, issue/source/wiki/Discord links, and the **Custom license**
+      (`LicenseRef-Custom` → the LICENSE on GitHub; this is the field AutoMod's
+      "Missing License" check reads). Runs on changes to the sources on `main` or via
+      workflow_dispatch; make sure the secrets from §1 exist, then trigger it once and
+      **resubmit for review**.
+- [ ] **Gallery:** same screenshot set as CurseForge (section 6) — the only manual page item.
 - [ ] File uploads themselves are automatic — publish.yml now targets CurseForge **and**
       Modrinth in the same run.
 
