@@ -533,5 +533,13 @@ public class ModLanguageProvider extends LanguageProvider {
         // Greenxertz Navigator action feedback.
         add("item.nerospace.greenxertz_navigator.travel", "Transported to Greenxertz");
         add("item.nerospace.greenxertz_navigator.return", "Returned to the overworld");
+
+        // JEI integration (compat/jei): category titles + stat lines.
+        add("jei.nerospace.category.grinding", "Grinding");
+        add("jei.nerospace.category.refining", "Fuel Refining");
+        add("jei.nerospace.category.combustion", "Combustion Fuel");
+        add("jei.nerospace.stat.energy_cost", "%s FE");
+        add("jei.nerospace.stat.energy_generated", "+%s FE");
+        add("jei.nerospace.stat.time", "%s s");
     }
 }

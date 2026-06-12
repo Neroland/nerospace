@@ -113,6 +113,19 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements Conta
         return 0;
     }
 
+    /**
+     * Every fuel the generator accepts, for display/integration (JEI). Burn values come from
+     * {@link #fuelValue(ItemStack)} so the displayed list can never drift from the tick logic.
+     */
+    public static java.util.List<ItemStack> knownFuels() {
+        return java.util.List.of(
+                new ItemStack(net.minecraft.world.item.Items.COAL),
+                new ItemStack(net.minecraft.world.item.Items.CHARCOAL),
+                new ItemStack(net.minecraft.world.item.Items.COAL_BLOCK),
+                new ItemStack(net.minecraft.world.item.Items.BLAZE_ROD),
+                new ItemStack(za.co.neroland.nerospace.registry.ModItems.ROCKET_FUEL_CANISTER.get()));
+    }
+
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) {
             return;

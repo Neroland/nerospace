@@ -29,8 +29,9 @@ A longer-term wish list — ideas under consideration after 1.0, not commitments
 - **Bespoke audio** — real rocket-launch, machine, ambience and creature `.ogg` sounds (the 1.0
   sound events alias fitting vanilla audio as placeholders; swapping in real files is a pure
   resource change).
-- **JEI/EMI integration** — as soon as they reach 26.1 (most of it already works via standard
-  recipes/tags).
+- **EMI integration** — as soon as it reaches 26.1. JEI is already supported: standard
+  recipes/tags work out of the box, and the Nerosium Grinder, Fuel Refinery and Combustion
+  Generator get their own JEI recipe categories.
 - **Cross-mod integration** — e.g. Mekanism, once the big tech mods port to Minecraft 26.1.
 
 ---

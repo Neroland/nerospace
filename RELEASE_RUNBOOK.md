@@ -151,6 +151,7 @@ repo/description links are already wired in. Remaining:
 
 ## 9. Deferred (post-1.0, already noted in the checklist)
 
-- JEI/EMI integration when they reach 26.1.
+- EMI integration when it reaches 26.1. (JEI reached 26.1 and its integration is now in —
+  `compat/jei` plugin, optional dependency.)
 
 (Modrinth was originally deferred but is now fully wired — see §1 and §2b.)

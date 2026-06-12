@@ -31,7 +31,9 @@ the first nerosium ore to a fully terraformed, rain-on-your-roof planet ships to
 
 ## 🛠️ Next up (first post-1.0 updates)
 
-- **JEI/EMI integration** as soon as they reach 26.1.
+- ~~JEI integration~~ **done** — with JEI installed, the grinder, fuel refinery and combustion
+  generator show their own recipe categories (standard recipes/tags already worked out of the box).
+- **EMI integration** as soon as it reaches 26.1.
 - **[Modrinth](https://modrinth.com/mod/nerospace)** — wired into the same release pipeline as
   CurseForge; the listing goes live alongside the first published version.
 - **Balance tuning from player feedback** — the config multipliers make this cheap; tell us what

@@ -38,11 +38,13 @@ release** — the complete progression from the first nerosium ore to a terrafor
 - The **Star Guide** interactive progression tree (7 chapters / 31 steps) backed by a full
   advancement tree; the creative `/nerospace gallery` showcase; a 36+-test gametest suite.
 
+  
+**JEI integration** 
+- With JEI installed, the grinder, fuel refinery and combustion generator show their own recipe categories (standard recipes/tags already worked out of the box).
+
 ## 🛠️ Next up (first post-1.0 updates)
 
-- **JEI/EMI integration** as soon as they reach 26.1.
-- **Modrinth listing** — wired into the same release pipeline as CurseForge; live alongside the
-  first published version.
+- **EMI integration** as soon as it reaches 26.1.
 - **Balance tuning from player feedback** — the config multipliers make this cheap.
 - **Bespoke audio** to replace the vanilla-alias placeholders.
 

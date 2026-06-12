@@ -238,7 +238,10 @@ Audit in `BALANCE_COMPAT_AUDIT.md` §5; slice 1 applied + verified.
       caps. Terraformer/Hydration *fluid* caps were deliberately **not** added — a water-fluid intake
       would bypass the Glacira/glacite gate (documented in the audit; revisit only if that gate is
       consciously weakened).
-- [ ] JEI/EMI integration *(when they reach 26.1 — otherwise first post-1.0 patch)*
+- [x] JEI integration (JEI 29.x reached 26.1, beta) — optional `compat/jei` plugin: grinding,
+      fuel-refining and combustion-fuel categories + crafting-station catalysts; standard
+      recipes/tags need no code. API is `compileOnly` + `localRuntime`, JEI declared `optional`
+      in mods.toml — no hard dependency. **EMI** still awaits a 26.1 port (post-1.0).
 - [x] No hard dependencies on any other mod (verify mods.toml) — only `neoforge` + `minecraft`
       required, `ordering="NONE"`; verified clean.
 

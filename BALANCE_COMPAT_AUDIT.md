@@ -404,7 +404,8 @@ ore-doubling machine deferred to a later slice**.
   and a renewable lens on planet gems). Grinder stays nerosium-only for now.
 - **Renewable, non-travel sourcing** of planet materials — explicitly a future feature; §7's
   narrow-subtag inputs are authored so it slots in without recipe churn.
-- **JEI/EMI** integration — awaiting 26.1 ports (§8, post-1.0).
+- **EMI** integration — awaiting a 26.1 port (§8). JEI integration shipped once JEI 29.x reached
+  26.1: see the `compat/jei` plugin (grinding / fuel-refining / combustion-fuel categories).
 - **§6 play-feel tunes:** T1 suit duration, terraformer late-game generator count — decide after the
   survival playthrough, cheap to adjust via multipliers/bases.
 - `mods.toml` licence/URL polish → §9.
