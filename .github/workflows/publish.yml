@@ -108,9 +108,12 @@ jobs:
       - name: Extract changelog section
         run: |
           VERSION="${{ needs.detect.outputs.version }}"
+          # Literal prefix match on the heading (no regex on the version string,
+          # so dots in "1.0.0" can't act as wildcards).
           awk -v ver="$VERSION" '
-            $0 ~ ("^## \\[" ver "\\]") { found = 1; next }
+            !found && index($0, "## [" ver "]") == 1 { found = 1; next }
             found && /^## \[/ { exit }
+            found && /^\[[^]]+\]: / { next }  # skip link-definition lines
             found { print }
           ' CHANGELOG.md > RELEASE_NOTES.md
           if [ ! -s RELEASE_NOTES.md ]; then
