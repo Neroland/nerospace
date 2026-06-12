@@ -6,23 +6,6 @@ file (or keep it as a template) after 1.0.0 ships.
 
 ---
 
-## 1. GitHub Actions secrets (publish blocker 🚨)
-
-Configured today: `CURSEFORGE_PROJECT_ID`, `MODRINTH_PROJECT_ID`, `SENTRY_AUTH_TOKEN`,
-`SENTRY_PROJECT`.
-**Missing — the publish job will fail without them:**
-
-- [ ] `CURSE_FORGE_API_TOKEN` — generate at <https://legacy.curseforge.com/account/api-tokens>,
-      add under repo Settings → Secrets and variables → Actions.
-- [ ] `MODRINTH_API_TOKEN` — a Modrinth PAT (Modrinth → Settings → PATs) with the
-      **Create versions** scope (file uploads) **and** the **Edit project details** scope (the
-      description-sync workflow). ⚠️ As of 2026-06-12 this secret is NOT in `gh secret list`
-      even though it was thought to be added — re-add it and verify.
-- [ ] `SENTRY_ORG` — the org slug from your Sentry URL (`https://<org>.sentry.io` →
-      `o4511183823241216`'s slug). Without it the "Create Sentry release" step fails.
-
-Sanity check: `gh secret list` should show all six.
-
 ## 2. CurseForge project settings
 
 Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
@@ -44,12 +27,13 @@ Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 Project: <https://modrinth.com/mod/nerospace> (created 2026-06-12; the first uploaded version
 goes through Modrinth moderation review before the page goes public).
 
-- [ ] **Description:** automated — `.github/workflows/modrinth-description.yml` PATCHes the
-      project body from `art/modrinth_description.md` on every change to that file on `main`
-      (or run it manually via workflow_dispatch). Nothing to paste; just make sure the secrets
-      from §1 exist, then trigger it once.
-- [ ] **Summary / categories / icon:** set the short summary, pick categories (technology,
-      worldgen, adventure fit), upload `art/logo/nerospace_logo.png` as the icon.
+- [ ] **Description + icon:** automated — `.github/workflows/modrinth-description.yml` PATCHes
+      the project body from `art/modrinth_description.md` and the icon from
+      `art/logo/nerospace_logo_400.png` (the 1024px master is over Modrinth's 256 KiB icon cap)
+      whenever either changes on `main` (or run it manually via workflow_dispatch). Nothing to
+      paste; just make sure the secrets from §1 exist, then trigger it once.
+- [ ] **Summary / categories:** set the short summary, pick categories (technology, worldgen,
+      adventure fit).
 - [ ] **License field:** choose **Custom** and point it at
       <https://github.com/Neroland/nerospace/blob/main/LICENSE>.
 - [ ] **Environments:** mark as required on **both client and server**.

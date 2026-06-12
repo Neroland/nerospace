@@ -1,8 +1,11 @@
-name: Sync Modrinth description
+name: Sync Modrinth description & icon
 
 # Pushes art/modrinth_description.md to the Modrinth project page (the "body" field)
-# whenever it changes on main — Modrinth's API supports writing descriptions, unlike
-# CurseForge's (see RELEASE_RUNBOOK.md: the CurseForge description stays a manual paste).
+# and art/logo/nerospace_logo_400.png as the project icon whenever either changes on
+# main — Modrinth's API supports writing both, unlike CurseForge's (see
+# RELEASE_RUNBOOK.md: the CurseForge description/logo stay a manual upload).
+# Icon note: Modrinth caps icons at 256 KiB, so we sync the 400×400 derivative,
+# not the 1024px master (which is over the limit).
 #
 # Requires repository secrets:
 #   MODRINTH_PROJECT_ID — project id (or slug) of https://modrinth.com/mod/nerospace
@@ -12,6 +15,7 @@ on:
     branches: [main, v1.0.0]
     paths:
       - art/modrinth_description.md
+      - art/logo/nerospace_logo.png
       - .github/workflows/modrinth-description.yml
   workflow_dispatch:
 
@@ -54,3 +58,32 @@ jobs:
             exit 1
           fi
           echo "Modrinth description synced (HTTP 204)."
+
+      - name: PATCH the Modrinth project icon
+        env:
+          MODRINTH_PROJECT_ID: ${{ secrets.MODRINTH_PROJECT_ID }}
+          MODRINTH_API_TOKEN: ${{ secrets.MODRINTH_API_TOKEN }}
+        run: |
+          ICON=art/logo/nerospace_logo_400.png
+
+          # Modrinth rejects icons over 256 KiB — fail with a clear message rather
+          # than an opaque API error if the regenerated logo ever outgrows the cap.
+          SIZE=$(stat -c%s "$ICON")
+          if [ "$SIZE" -gt 262144 ]; then
+            echo "::error::$ICON is ${SIZE} bytes (> 256 KiB Modrinth icon cap)."
+            exit 1
+          fi
+
+          HTTP_CODE=$(curl -sS -o response.txt -w "%{http_code}" \
+            -X PATCH "https://api.modrinth.com/v2/project/${MODRINTH_PROJECT_ID}/icon?ext=png" \
+            -H "Authorization: ${MODRINTH_API_TOKEN}" \
+            -H "Content-Type: image/png" \
+            -H "User-Agent: Neroland/nerospace-ci (dario@neroland.co.za)" \
+            --data-binary @"$ICON")
+
+          if [ "$HTTP_CODE" != "204" ]; then
+            echo "::error::Modrinth icon API returned HTTP $HTTP_CODE"
+            cat response.txt
+            exit 1
+          fi
+          echo "Modrinth icon synced (HTTP 204)."
