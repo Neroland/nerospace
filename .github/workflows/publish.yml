@@ -146,13 +146,16 @@ jobs:
           curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
           curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
 
+          # --- Modrinth ---
+          # Both are repository secrets. MODRINTH_PROJECT_ID is the project id (or slug)
+          # of https://modrinth.com/mod/nerospace; MODRINTH_API_TOKEN is a PAT from
+          # Modrinth Settings -> PATs with the "Create versions" scope.
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
+
           # --- GitHub Release ---
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-tag: v${{ needs.detect.outputs.version }}
-
-          # --- To expand to other sites later, just add the lines below ---
-          # modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
-          # modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           # --- Release metadata ---
           name: Nerospace ${{ needs.detect.outputs.version }}

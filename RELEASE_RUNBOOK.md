@@ -8,15 +8,20 @@ file (or keep it as a template) after 1.0.0 ships.
 
 ## 1. GitHub Actions secrets (publish blocker 🚨)
 
-Configured today: `CURSEFORGE_PROJECT_ID`, `SENTRY_AUTH_TOKEN`, `SENTRY_PROJECT`.
+Configured today: `CURSEFORGE_PROJECT_ID`, `MODRINTH_PROJECT_ID`, `SENTRY_AUTH_TOKEN`,
+`SENTRY_PROJECT`.
 **Missing — the publish job will fail without them:**
 
 - [ ] `CURSE_FORGE_API_TOKEN` — generate at <https://legacy.curseforge.com/account/api-tokens>,
       add under repo Settings → Secrets and variables → Actions.
+- [ ] `MODRINTH_API_TOKEN` — a Modrinth PAT (Modrinth → Settings → PATs) with the
+      **Create versions** scope (file uploads) **and** the **Edit project details** scope (the
+      description-sync workflow). ⚠️ As of 2026-06-12 this secret is NOT in `gh secret list`
+      even though it was thought to be added — re-add it and verify.
 - [ ] `SENTRY_ORG` — the org slug from your Sentry URL (`https://<org>.sentry.io` →
       `o4511183823241216`'s slug). Without it the "Create Sentry release" step fails.
 
-Sanity check: `gh secret list` should show all five.
+Sanity check: `gh secret list` should show all six.
 
 ## 2. CurseForge project settings
 
@@ -33,6 +38,26 @@ Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 - [ ] **Settings → allowed in modpacks**: ensure "Allow project to be added to modpacks" (or the
       current equivalent toggle) is ON — it must match the LICENSE text.
 - [ ] **Gallery:** upload the screenshot set (section 6).
+
+## 2b. Modrinth project settings
+
+Project: <https://modrinth.com/mod/nerospace> (created 2026-06-12; the first uploaded version
+goes through Modrinth moderation review before the page goes public).
+
+- [ ] **Description:** automated — `.github/workflows/modrinth-description.yml` PATCHes the
+      project body from `art/modrinth_description.md` on every change to that file on `main`
+      (or run it manually via workflow_dispatch). Nothing to paste; just make sure the secrets
+      from §1 exist, then trigger it once.
+- [ ] **Summary / categories / icon:** set the short summary, pick categories (technology,
+      worldgen, adventure fit), upload `art/logo/nerospace_logo.png` as the icon.
+- [ ] **License field:** choose **Custom** and point it at
+      <https://github.com/Neroland/nerospace/blob/main/LICENSE>.
+- [ ] **Environments:** mark as required on **both client and server**.
+- [ ] **Links:** Issues → GitHub issues, Source → repo, Wiki →
+      <https://github.com/Neroland/nerospace/wiki>, Discord → `https://discord.gg/ArPXvYUzJG`.
+- [ ] **Gallery:** same screenshot set as CurseForge (section 6).
+- [ ] File uploads themselves are automatic — publish.yml now targets CurseForge **and**
+      Modrinth in the same run.
 
 ## 3. GitHub repo metadata
 
@@ -74,9 +99,10 @@ change** — sequence accordingly:
 2. Add the secrets from section 1.
 3. If the release day isn't 2026-06-11, update the date in `CHANGELOG.md`'s `## [1.0.0]` heading.
 4. Commit everything; push to `main`. The workflow: builds → creates the Sentry release → uploads
-   to CurseForge (as a **release**-type file, with the changelog section as release notes) →
-   creates the GitHub release + `v1.0.0` tag.
-5. Watch the run (`gh run watch`); CurseForge files then sit in moderation for a short while.
+   to CurseForge **and Modrinth** (as **release**-type files, with the changelog section as
+   release notes) → creates the GitHub release + `v1.0.0` tag.
+5. Watch the run (`gh run watch`); CurseForge files sit in moderation for a short while, and
+   Modrinth additionally reviews the project itself on its first version.
 6. After approval: check the file page renders, then run section 4 against the *published* jar if
    you didn't already on the identical RC.
 7. If a publish half-fails **after** the tag was created: delete the `v1.0.0` tag/release and
@@ -144,6 +170,6 @@ repo/description links are already wired in. Remaining:
 
 ## 9. Deferred (post-1.0, already noted in the checklist)
 
-- Modrinth listing + `modrinth-id`/`modrinth-token` lines in publish.yml (stubs are present,
-  commented).
 - JEI/EMI integration when they reach 26.1.
+
+(Modrinth was originally deferred but is now fully wired — see §1 and §2b.)

@@ -263,7 +263,12 @@ Audit in `BALANCE_COMPAT_AUDIT.md` §5; slice 1 applied + verified.
       secret docs) and validated; REMAINING: add missing secrets `CURSE_FORGE_API_TOKEN` +
       `SENTRY_ORG`, then the publish itself IS the end-to-end test (`RELEASE_RUNBOOK.md` §1, §5 —
       ⚠️ pushing the gradle.properties bump with secrets in place publishes 1.0.0)*
-- [ ] *(post-1.0)* Modrinth listing + publish.yml target
+- [ ] Modrinth listing + publish.yml target *(pulled forward from post-1.0)* — project created
+      (slug `nerospace`, 2026-06-12); publish.yml uploads to Modrinth in the same run as
+      CurseForge, and `.github/workflows/modrinth-description.yml` auto-syncs the page body from
+      `art/modrinth_description.md`. REMAINING (human): re-add the `MODRINTH_API_TOKEN` secret
+      (it did NOT save — verify with `gh secret list`) + the page fields/gallery
+      (`RELEASE_RUNBOOK.md` §1, §2b); goes live when the first version clears Modrinth review
 
 ## 10. Marketing & community
 

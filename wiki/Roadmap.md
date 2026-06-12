@@ -41,7 +41,8 @@ release** — the complete progression from the first nerosium ore to a terrafor
 ## 🛠️ Next up (first post-1.0 updates)
 
 - **JEI/EMI integration** as soon as they reach 26.1.
-- **Modrinth listing** alongside CurseForge.
+- **Modrinth listing** — wired into the same release pipeline as CurseForge; live alongside the
+  first published version.
 - **Balance tuning from player feedback** — the config multipliers make this cheap.
 - **Bespoke audio** to replace the vanilla-alias placeholders.
 

@@ -17,6 +17,7 @@
 
 <p align="center">
   <a href="https://www.curseforge.com/minecraft/mc-mods/nerospace">CurseForge</a> ·
+  <a href="https://modrinth.com/mod/nerospace">Modrinth</a> ·
   <a href="https://github.com/Neroland/nerospace/wiki">Wiki</a> ·
   <a href="https://discord.gg/ArPXvYUzJG">Discord</a> ·
   <a href="CHANGELOG.md">Changelog</a>
@@ -54,7 +55,7 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 ## Installing
 
 1. Install the matching **NeoForge** version for Minecraft 26.1.2.
-2. Download the Nerospace `.jar` from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace) or the [Releases page](https://github.com/Neroland/nerospace/releases).
+2. Download the Nerospace `.jar` from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace), [Modrinth](https://modrinth.com/mod/nerospace), or the [Releases page](https://github.com/Neroland/nerospace/releases).
 3. Drop the `.jar` into your `mods/` folder and launch.
 
 ## Building from source
@@ -104,7 +105,7 @@ Bug reports and suggestions are very welcome via the **Issues** tab — there ar
 Nerospace uses custom **source-available** terms — see [LICENSE](LICENSE). The short version:
 
 - ✅ **Play it anywhere**, including monetised servers, videos, and streams.
-- ✅ **Modpacks are allowed and encouraged** — any platform, no need to ask. Use the official files and credit *Nerospace by Neroland* with links to [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace) and this repository.
+- ✅ **Modpacks are allowed and encouraged** — any platform, no need to ask. Use the official files (CurseForge / [Modrinth](https://modrinth.com/mod/nerospace) / GitHub releases) and credit *Nerospace by Neroland* with links to [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace) and this repository.
 - ✅ **Read the source, fork on GitHub, and modify for private use**; pull requests welcome.
 - ❌ **No re-uploading builds** (original or modified) outside the official channels, and no publishing forked builds under any name.
 - ❌ **No reusing code/textures/models in other projects** without written permission.

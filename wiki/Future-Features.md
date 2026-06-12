@@ -31,7 +31,6 @@ A longer-term wish list — ideas under consideration after 1.0, not commitments
   resource change).
 - **JEI/EMI integration** — as soon as they reach 26.1 (most of it already works via standard
   recipes/tags).
-- **Modrinth listing** — alongside CurseForge.
 - **Cross-mod integration** — e.g. Mekanism, once the big tech mods port to Minecraft 26.1.
 
 ---

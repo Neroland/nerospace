@@ -31,7 +31,7 @@ Want to see everything at once? In a creative world, run **`/nerospace gallery`*
 
 - **Standalone** — requires only NeoForge. No other mod needed.
 - Plays well with others: conventional `c:` tags on every material and NeoForge capabilities on every machine face, so hoppers, pipes, and recipe viewers Just Work as the 26.1 ecosystem fills in.
-- **Modpacks are allowed and encouraged** — any platform, no need to ask. Just use the official files and credit *Nerospace by Neroland* with links to this page and the [GitHub repository](https://github.com/Neroland/nerospace). Full terms: [LICENSE](https://github.com/Neroland/nerospace/blob/main/LICENSE).
+- **Modpacks are allowed and encouraged** — any platform, no need to ask. Just use the official files and credit *Nerospace by Neroland* with links to the [CurseForge page](https://www.curseforge.com/minecraft/mc-mods/nerospace) and the [GitHub repository](https://github.com/Neroland/nerospace). Full terms: [LICENSE](https://github.com/Neroland/nerospace/blob/main/LICENSE).
 - Five clamped config multipliers (oxygen drain/capacity, energy rate, fuel cost, machine speed) make pack-tuning painless.
 
 ## Links
@@ -40,7 +40,7 @@ Want to see everything at once? In a creative world, run **`/nerospace gallery`*
 - 💬 **[Discord](https://discord.gg/ArPXvYUzJG)** — chat, help, and sneak peeks.
 - 🐞 **[Issues](https://github.com/Neroland/nerospace/issues)** — bug reports and feature requests.
 - 🗒️ **[Changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md)**
-- 🟢 **[Also on Modrinth](https://modrinth.com/mod/nerospace)**
+- 🔥 **[Also on CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace)**
 
 > **Telemetry notice:** Nerospace sends anonymous error reports (stack trace + mod/game
 > versions only — never IPs, usernames, UUIDs, or world data) to the developers via
