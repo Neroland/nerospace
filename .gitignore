@@ -37,7 +37,12 @@ bin/
 .DS_Store
 
 ### Minecraft Modding ###
-run/
+run/*
+# Track the gallery screenshots (the capture harness writes here) so CI/listing automation can pick
+# them up. Everything else under run/ stays ignored. (Git needs each parent dir re-included.)
+!run/screenshots/
+run/screenshots/*
+!run/screenshots/nerospace/
 !**/src/**/run/
 **/src/generated/**/.cache/
 repo/

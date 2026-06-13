@@ -12,11 +12,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,6 +28,7 @@ import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -57,12 +60,16 @@ import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
  * behind an off lever so the world-changing machines only run when deliberately switched on), all
  * four rocket tiers standing on their required pad formations, every suit variant on a stand, and
  * each creature spawned twice — once with AI and once frozen (NoAI) — for inspection.
+ * {@code /nerospace gallery clear} wipes that footprint (blocks + spawned entities) so a rebuild —
+ * or the screenshot harness — doesn't stack duplicates.
  */
 @EventBusSubscriber(modid = Nerospace.MODID)
 public final class NerospaceCommands {
 
     private static final int SPACING = 3;     // blocks between display cells
     private static final int FLOAT_ABOVE = 3; // display sits this many blocks above the floor (2 air gap)
+    private static final int SUIT_SPACING = 3; // blocks between suit stands (roomier than the old 2)
+    private static final float SUIT_YAW = -10.0f; // every suit stand faces one way, angled a few degrees left
 
     private NerospaceCommands() {
     }
@@ -75,7 +82,9 @@ public final class NerospaceCommands {
                 Commands.literal("nerospace")
                         .requires(src -> src.getPlayer() != null)
                         .then(Commands.literal("gallery")
-                                .executes(ctx -> buildGallery(ctx.getSource()))));
+                                .executes(ctx -> buildGallery(ctx.getSource()))
+                                .then(Commands.literal("clear")
+                                        .executes(ctx -> clearGallery(ctx.getSource())))));
     }
 
     private static int buildGallery(CommandSourceStack source) {
@@ -101,8 +110,12 @@ public final class NerospaceCommands {
 
         int cols = (int) Math.ceil(Math.sqrt(Math.max(1, blocks.size())));
         int rows = (int) Math.ceil(blocks.size() / (double) cols);
-        int ox = origin.getX() + 4;
-        int oz = origin.getZ() + 4;
+        // ROTUNDA: each cluster sits on a ring ~48 blocks out on its own compass bearing, so a camera
+        // near the centre shoots each one outward against empty ground with no other display in frame.
+        // The /nsgallery capture harness mirrors these bearings. Bases are placed so the body centres
+        // on the ring. Tune distances together with the harness if reframing.
+        int ox = origin.getX() + 38; // block grid → EAST
+        int oz = origin.getZ() - 9;
         int fy = origin.getY();
 
         BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
@@ -128,8 +141,8 @@ public final class NerospaceCommands {
         //   C. Creative Battery → pipe → Oxygen Generator — parked behind an OFF lever.
         //   D. Creative Battery → pipe → Terraformer + touching Hydration Module (glacite) and
         //      Terraform Monitor — parked behind an OFF lever (it WILL reshape the area when on).
-        int sx = origin.getX() + 4;
-        int sz = origin.getZ() - 6;
+        int sx = origin.getX() - 13; // machine strip → SOUTH
+        int sz = origin.getZ() + 48;
         for (int dx = -1; dx <= 27; dx++) {
             for (int dz = -2; dz <= 2; dz++) {
                 level.setBlockAndUpdate(new BlockPos(sx + dx, fy, sz + dz), floor);
@@ -193,8 +206,8 @@ public final class NerospaceCommands {
         // FOUR LIVE PIPE SCENARIOS: creative source → 3 pipes → sink, one row per resource layer.
         // The source-touching face is set IN (pull-only — otherwise the pipe would void its buffer
         // back into the endless source) and the sink-touching face OUT, mirroring real Configurator use.
-        int px = origin.getX() + 4;
-        int pz = origin.getZ() - 24;
+        int px = origin.getX() - 50; // pipe scenarios → WEST (rows run north-south → broadside from the centre)
+        int pz = origin.getZ() + 5;
         Block[][] scenarioRows = {
                 {ModBlocks.CREATIVE_BATTERY.get(), ModBlocks.BATTERY.get()},
                 {ModBlocks.CREATIVE_FLUID_TANK.get(), ModBlocks.FLUID_TANK.get()},
@@ -226,26 +239,31 @@ public final class NerospaceCommands {
         }
 
         // Suit displays (every variant) + a LOADED Star Guide pedestal (book installed → hologram runs).
-        int ax = origin.getX() + 4;
-        int az = origin.getZ() - 36;
-        for (int dx = -1; dx <= 11; dx++) {
+        int ax = origin.getX() - 40; // suits + Star Guide → NORTH-WEST (well clear of the pipes spoke)
+        int az = origin.getZ() - 34;
+        int suit0 = 0;
+        int suit1 = SUIT_SPACING;
+        int suit2 = SUIT_SPACING * 2;
+        int suit3 = SUIT_SPACING * 3;
+        int guideX = SUIT_SPACING * 4;
+        for (int dx = -1; dx <= guideX + 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 level.setBlockAndUpdate(new BlockPos(ax + dx, fy, az + dz), floor);
             }
         }
-        spawnSuitStand(level, new BlockPos(ax, fy + 1, az), Component.literal("Oxygen Suit"),
+        spawnSuitStand(level, new BlockPos(ax + suit0, fy + 1, az), Component.literal("Oxygen Suit"), SUIT_YAW,
                 ModItems.OXYGEN_SUIT_HELMET.get(), ModItems.OXYGEN_SUIT_CHESTPLATE.get(),
                 ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_BOOTS.get());
-        spawnSuitStand(level, new BlockPos(ax + 2, fy + 1, az), Component.literal("Tier 2 Oxygen Suit"),
+        spawnSuitStand(level, new BlockPos(ax + suit1, fy + 1, az), Component.literal("Tier 2 Oxygen Suit"), SUIT_YAW,
                 ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
                 ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get());
-        spawnSuitStand(level, new BlockPos(ax + 4, fy + 1, az), Component.literal("Thermal Suit"),
+        spawnSuitStand(level, new BlockPos(ax + suit2, fy + 1, az), Component.literal("Thermal Suit"), SUIT_YAW,
                 ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(),
                 ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_HEAT_BOOTS.get());
-        spawnSuitStand(level, new BlockPos(ax + 6, fy + 1, az), Component.literal("Cryo Suit"),
+        spawnSuitStand(level, new BlockPos(ax + suit3, fy + 1, az), Component.literal("Cryo Suit"), SUIT_YAW,
                 ModItems.OXYGEN_SUIT_COLD_HELMET.get(), ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get(),
                 ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get(), ModItems.OXYGEN_SUIT_COLD_BOOTS.get());
-        BlockPos guidePos = new BlockPos(ax + 9, fy + 1, az);
+        BlockPos guidePos = new BlockPos(ax + guideX, fy + 1, az);
         level.setBlockAndUpdate(guidePos, ModBlocks.STAR_GUIDE.get().defaultBlockState());
         if (level.getBlockEntity(guidePos)
                 instanceof za.co.neroland.nerospace.progression.StarGuideBlockEntity guide) {
@@ -255,8 +273,8 @@ public final class NerospaceCommands {
         // ROCKET ROW: every tier on the pad formation it actually requires (RocketItem gating):
         //   T1 + T2: a full 3x3 pad.  T3: a 3x3 pad ringed with Station Wall.
         //   T4: the Heavy Launch Complex — full 5x5 pad + a Launch Gantry on its border ring.
-        int rx = origin.getX() + 4;
-        int rz0 = origin.getZ() - 48;
+        int rx = origin.getX() - 14; // rocket row → NORTH (the hero spoke)
+        int rz0 = origin.getZ() - 49;
         for (int dx = -2; dx <= 31; dx++) {
             for (int dz = -3; dz <= 5; dz++) {
                 level.setBlockAndUpdate(new BlockPos(rx + dx, fy, rz0 + dz), floor);
@@ -290,8 +308,8 @@ public final class NerospaceCommands {
         spawnRocket(level, rx + 26, fy + 1, rz0 + 1, RocketTier.TIER_4);
 
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
-        int mx = origin.getX() + 4;
-        int mz = origin.getZ() - 12;
+        int mx = origin.getX() + 18; // creatures → SOUTH-EAST
+        int mz = origin.getZ() + 33;
         for (int dx = -1; dx <= 8 * 4; dx++) {
             for (int dz = -1; dz <= 3; dz++) {
                 level.setBlockAndUpdate(new BlockPos(mx + dx, fy, mz + dz), floor);
@@ -304,9 +322,9 @@ public final class NerospaceCommands {
                 // Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5).
                 ModEntities.MEADOW_LOPER.get(), ModEntities.EMBER_STRUTTER.get(),
                 ModEntities.WOOLLY_DRIFT.get());
+        // One frozen (NoAI) row only — AI mobs wander, which breaks reproducible screenshots.
         for (int i = 0; i < creatures.size(); i++) {
-            spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz), false);     // AI
-            spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz + 2), true);  // frozen
+            spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz + 1), true);
         }
 
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
@@ -314,7 +332,68 @@ public final class NerospaceCommands {
                 + "line, oxygen generator + lever, terraformer crew + lever — flip a lever to start "
                 + "those two), 4 live pipe scenarios (energy/fluid/gas/items), all 4 suit variants, "
                 + "a loaded Star Guide pedestal, all 4 rocket tiers on their required pads (3x3, "
-                + "3x3, walled ring, Heavy Launch Complex), and 8 creatures (AI + frozen)."), false);
+                + "3x3, walled ring, Heavy Launch Complex), and 8 creatures (frozen for clean shots)."), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    /**
+     * Wipe the gallery built at the player's feet so a rebuild (or the screenshot harness) doesn't
+     * stack duplicates. Clears the whole footprint to air from the floor layer ({@code origin.y}) up,
+     * leaving the natural ground at {@code origin.y - 1} intact, and removes every non-player entity
+     * in the box (rockets, suit stands, creatures). Run it standing where you ran {@code gallery}.
+     */
+    private static int clearGallery(CommandSourceStack source) {
+        ServerPlayer player = source.getPlayer();
+        if (player == null) {
+            source.sendFailure(Component.literal("Run this as a player."));
+            return 0;
+        }
+        if (!player.getAbilities().instabuild) {
+            source.sendFailure(Component.literal("The Nerospace gallery is creative-only."));
+            return 0;
+        }
+        ServerLevel level = player.level();
+        BlockPos origin = player.blockPosition();
+        int ox = origin.getX();
+        int oy = origin.getY();
+        int oz = origin.getZ();
+
+        // Footprint of the ROTUNDA buildGallery() (clusters sit ~48 out on N/S/E/W/SE/NW bearings)
+        // plus margin, so the clear covers every cluster — else reruns stack creatures/rockets/stands.
+        // The floor sits at oy, so clearing oy..topY to air restores the original flat ground at oy-1.
+        int minX = ox - 56;
+        int maxX = ox + 62;
+        int minZ = oz - 58;
+        int maxZ = oz + 56;
+        int topY = oy + 16;
+
+        BlockState air = Blocks.AIR.defaultBlockState();
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        int cleared = 0;
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                for (int y = oy; y <= topY; y++) {
+                    cursor.set(x, y, z);
+                    if (!level.getBlockState(cursor).isAir()) {
+                        level.setBlock(cursor, air, 2); // flag 2 = notify clients, skip neighbour cascade
+                        cleared++;
+                    }
+                }
+            }
+        }
+
+        // Remove the spawned entities (rockets, armour stands, creatures) — everything but players.
+        AABB box = new AABB(minX, oy - 1, minZ, maxX + 1, topY + 4, maxZ + 1);
+        int removed = 0;
+        for (Entity entity : level.getEntitiesOfClass(Entity.class, box, e -> !(e instanceof Player))) {
+            entity.discard();
+            removed++;
+        }
+
+        int clearedBlocks = cleared;
+        int removedEntities = removed;
+        source.sendSuccess(() -> Component.literal("Cleared the Nerospace gallery: " + clearedBlocks
+                + " blocks → air, " + removedEntities + " entities removed."), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -334,7 +413,7 @@ public final class NerospaceCommands {
     }
 
     /** An invulnerable, named armor stand wearing the given four-piece suit. */
-    private static void spawnSuitStand(ServerLevel level, BlockPos pos, Component name,
+    private static void spawnSuitStand(ServerLevel level, BlockPos pos, Component name, float yaw,
             Item helmet, Item chestplate, Item leggings, Item boots) {
         ArmorStand stand = EntityType.ARMOR_STAND.spawn(level, pos, EntitySpawnReason.COMMAND);
         if (stand == null) {
@@ -347,6 +426,9 @@ public final class NerospaceCommands {
         stand.setCustomName(name);
         stand.setCustomNameVisible(true);
         stand.setInvulnerable(true);
+        stand.setYRot(yaw); // uniform facing so the row reads as a clean line, angled a few degrees off straight-on
+        stand.setYBodyRot(yaw);
+        stand.setYHeadRot(yaw);
     }
 
     /** Set one face of the pipe at {@code pos} to {@code mode} for ALL four resource layers. */
