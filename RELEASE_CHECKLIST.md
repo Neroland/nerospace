@@ -60,13 +60,12 @@ Tick a box only after the gradle-MCP build + gametests are green AND the in-game
 
 - [ ] **Release-jar Sentry test** — PRIVACY.md, opt-out, and POPIA/GDPR scrubbing are in place in
       source; what REMAINS is the end-to-end test on the **release-candidate jar** (see §9.3).
-- [ ] **Add the two missing publish secrets** — version is already set to 1.0.0 in the working tree.
-      `gh secret list` (checked 2026-06-13) still lacks `CURSE_FORGE_API_TOKEN` + `SENTRY_ORG`; add
-      both, then the publish itself IS the end-to-end test of `publish.yml`
-      (see §9.4 — ⚠️ pushing the gradle.properties bump with secrets in place publishes 1.0.0).
-- [ ] **Re-add `MODRINTH_API_TOKEN`** (human) — it still did NOT save (confirmed absent from
-      `gh secret list` on 2026-06-13). Once present, the page fields/gallery follow (see §9.1b); the
-      Modrinth listing goes live when the first version clears Modrinth review.
+- [ ] **End-to-end publish test** — version is already 1.0.0 in the working tree, and the three
+      publish tokens (`CURSE_FORGE_API_TOKEN`, `SENTRY_ORG`, `MODRINTH_API_TOKEN`) are **org-level
+      secrets that ARE available to the workflows** (confirmed 2026-06-13 — they don't show in a
+      repo-scoped `gh secret list`; use `gh secret list --org`). So the publish itself IS the
+      end-to-end test of `publish.yml`; the Modrinth listing + page fields follow once the first
+      version clears review (see §9.1b, §9.4 — ⚠️ pushing the gradle.properties bump publishes 1.0.0).
 
 ## 7. Marketing & community
 
