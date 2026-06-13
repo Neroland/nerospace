@@ -17,7 +17,7 @@ name: Sync Modrinth project page
 #   MODRINTH_API_TOKEN  — a Modrinth PAT with the "Edit project details" scope
 on:
   push:
-    branches: [main, v1.0.0]
+    branches: [main]
     paths:
       - art/modrinth_description.md
       - art/logo/nerospace_logo.png

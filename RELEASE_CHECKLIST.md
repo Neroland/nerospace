@@ -89,15 +89,9 @@ steps below are what to do, and in what order, at release time.
 
 Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 
-- [ ] **Description:** paste the rendered content of `art/curseforge_description.md` (it already
-      contains the telemetry blurb, modpack permission, wiki/Discord/issue links).
-- [ ] **License:** choose **Custom License**, name it "All Rights Reserved (modpacks allowed — see
-      LICENSE)" and point it at <https://github.com/Neroland/nerospace/blob/main/LICENSE>.
-- [ ] **External links:** Issues → GitHub issues URL, Wiki →
-      <https://github.com/Neroland/nerospace/wiki>, Source → the repo.
-- [ ] **Discord:** add `https://discord.gg/ArPXvYUzJG` (project social/Discord field).
-- [ ] **Settings → allowed in modpacks:** ensure "Allow project to be added to modpacks" is ON — it
-      must match the LICENSE text.
+> **All web-UI / manual — CurseForge exposes no project-metadata or description API** (its API only
+> does file uploads), so none of the items below can be automated.
+
 - [ ] **Gallery:** upload the screenshot set (§9.5).
 
 ### 9.1b Modrinth project settings
@@ -105,30 +99,11 @@ Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 Project: <https://modrinth.com/mod/nerospace> (created 2026-06-12; the first uploaded version goes
 through Modrinth moderation review before the page goes public).
 
-- [ ] **Whole project page: automated** — `.github/workflows/modrinth-description.yml` PATCHes
-      everything in one run: the body (from `art/modrinth_description.md`), the icon
-      (`art/logo/nerospace_logo_400.png`; the 1024px master is over Modrinth's 256 KiB cap), and the
-      pinned metadata — title, summary, categories (technology/worldgen/adventure), client+server =
-      required, issue/source/wiki/Discord links, and the **Custom license** (`LicenseRef-Custom` →
-      the LICENSE on GitHub). Make sure the §6 secrets exist, then trigger it once and
-      **resubmit for review**.
 - [ ] **Gallery:** same screenshot set as CurseForge (§9.5) — the only manual page item.
 - [ ] File uploads themselves are automatic — `publish.yml` targets CurseForge **and** Modrinth in
       the same run.
 
-### 9.2 GitHub repo metadata
-
-- [ ] Repo **About**: description ("Space-progression mod for NeoForge — rockets, oxygen survival,
-      player stations, terraforming"), website = the CurseForge page, topics (`minecraft`,
-      `neoforge`, `minecraft-mod`, `space`, `terraforming`).
-- [ ] **Publish the wiki:** the GitHub wiki is a separate git repo. From a scratch folder, clone
-      `https://github.com/Neroland/nerospace.wiki.git`, copy the repo's `wiki/*.md` over it, commit,
-      push. (`_Sidebar.md` becomes the sidebar automatically.) Re-do this whenever `wiki/` changes —
-      the in-repo `wiki/` folder is the source of truth.
-- [ ] **Discussions:** the issue templates link to GitHub Discussions — enable the feature
-      (Settings → General → Features) if it isn't already.
-
-### 9.3 Release-jar telemetry verification (§6 PRIVACY sign-off)
+### 9.2 Release-jar telemetry verification (§6 PRIVACY sign-off)
 
 On the **final release candidate jar** (not a dev run):
 
@@ -140,7 +115,7 @@ On the **final release candidate jar** (not a dev run):
    again — chat must say telemetry is disabled and **nothing** must arrive in Sentry.
 5. Re-enable telemetry, delete the block. Done — tick the §6 release-jar Sentry test box.
 
-### 9.4 Go-live order (the push that publishes)
+### 9.3 Go-live order (the push that publishes)
 
 ⚠️ `publish.yml` fires on any push to `main` that touches `gradle.properties`. The version is
 already bumped to 1.0.0 in the working tree, so **the publish happens on whatever push lands that
@@ -159,7 +134,7 @@ change** — sequence accordingly:
 7. If a publish half-fails **after** the tag was created: delete the `v1.0.0` tag/release and re-run
    the workflow (documented at the top of `publish.yml`).
 
-### 9.5 Screenshot / gallery shot list
+### 9.4 Screenshot / gallery shot list
 
 CurseForge gallery: upload **1920×1080** (16:9) PNGs; the first image becomes the card thumbnail —
 make it the money shot. Take them fullscreen 1080p+ with HUD hidden (F1) unless the HUD *is* the
@@ -184,7 +159,7 @@ subject. Suggested set (≈10):
 Cheapest route: a creative world + `/nerospace gallery` for the lineup shots, a staged terraform
 world for 9–10.
 
-### 9.6 Trailer / showcase video outline
+### 9.5 Trailer / showcase video outline
 
 Target: **60–90 s**, 1080p60, hosted on **YouTube** (link it on the CurseForge page; CF supports a
 featured video URL). Tooling: DaVinci Resolve for the edit; install **OBS Studio** (free) for
@@ -208,13 +183,11 @@ Script (each beat ≈ 6–10 s, cut on the beat of the music):
 Capture tips: F1 for clean shots, no night-vision gamma, `/gamerule doDaylightCycle false` while
 framing; record everything at 1.5× the length you need so Resolve has trim room.
 
-### 9.7 Discord wiring
+### 9.6 Discord wiring
 
 Server exists: `https://discord.gg/ArPXvYUzJG` (permanent invite, grants the Minecraft role). The
 repo/description links are already wired in. Remaining:
 
 - [ ] Add the invite to the CurseForge project (§9.1a) and the GitHub About sidebar.
-- [ ] Channels worth having before the announcement: `#announcements`, `#support`, `#bug-reports`
-      (pinned link to the GitHub issue forms), `#showcase`, `#modpack-makers`.
 - [ ] Pin the wiki + `PRIVACY.md` links in `#support`.
 - [ ] Post the 1.0.0 announcement in `#announcements` when the CurseForge file clears moderation.
