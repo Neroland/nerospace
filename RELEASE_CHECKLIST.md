@@ -12,22 +12,18 @@ Tick a box only after the gradle-MCP build + gametests are green AND the in-game
 - [ ] Advancement-triggered toasts for key milestones — confirm the three milestone toasts (first
       launch, first planet, terraformed) visually in runClient
 
-## 2. Audio
-
-- [ ] Subtitles present for every alias
-
-## 3. Config refactor
+## 2. Config refactor
 
 - [ ] Sanity-check extreme multiplier values don't break machines/atmosphere (confirm 0.1x/10x in
       runClient; code clamps scaled values to ≥1 and launch cost to tank size)
 
-## 4. Balance
+## 3. Balance
 
 - [ ] Oxygen drain/tank/refill rate tuning from playthrough feel — capacity (not drain) is the lever;
-      T1-suit 2.5 min flagged as borderline; confirm in the §5 survival run
-- [ ] Fuel economy: costs per launch per tier feel right — confirm "feel" in the §5 survival run
+      T1-suit 2.5 min flagged as borderline; confirm in the §4 survival run
+- [ ] Fuel economy: costs per launch per tier feel right — confirm "feel" in the §4 survival run
 
-## 5. Verification & testing
+## 4. Verification & testing
 
 ### Targeted runClient pass (every pending in-game item)
 - [ ] Fuel Tank auto-fuel + 3×3 speed bonus + pumping particles/sound
@@ -53,35 +49,36 @@ Tick a box only after the gradle-MCP build + gametests are green AND the in-game
 - [ ] `ecjCheck` clean
 - [ ] `runData` + `build` green via gradle MCP
 
-## 6. Performance (release gate — "it needs to be performant")
+## 5. Performance (release gate — "it needs to be performant")
 
 - [ ] Stress-test large pipe networks (hundreds of pipes/machines)
 - [ ] Stress-test oxygen field: large sealed rooms, multiple players, terraformed areas
 - [ ] Spark/profiler pass on a busy dedicated server; fix anything hot
 - [ ] Client FPS check around pipe rendering / particles / many mobs
 
-## 7. Distribution & legal
+## 6. Distribution & legal
 
-- [ ] `PRIVACY.md` current; Sentry opt-out + POPIA/GDPR scrubbing re-verified on the **release build**
-      — REMAINING: the end-to-end release-jar Sentry test (see §10.3)
-- [ ] Version set to 1.0.0; `publish.yml` release flow tested end-to-end — REMAINING: add missing
-      secrets `CURSE_FORGE_API_TOKEN` + `SENTRY_ORG`, then the publish itself IS the end-to-end test
-      (see §10.4 — ⚠️ pushing the gradle.properties bump with secrets in place publishes 1.0.0)
-- [ ] Modrinth listing + publish.yml target — REMAINING (human): re-add the `MODRINTH_API_TOKEN`
-      secret (it did NOT save — verify with `gh secret list`) + the page fields/gallery
-      (see §10.1b); goes live when the first version clears Modrinth review
+- [ ] **Release-jar Sentry test** — PRIVACY.md, opt-out, and POPIA/GDPR scrubbing are in place in
+      source; what REMAINS is the end-to-end test on the **release-candidate jar** (see §9.3).
+- [ ] **Add the two missing publish secrets** — version is already set to 1.0.0 in the working tree.
+      `gh secret list` (checked 2026-06-13) still lacks `CURSE_FORGE_API_TOKEN` + `SENTRY_ORG`; add
+      both, then the publish itself IS the end-to-end test of `publish.yml`
+      (see §9.4 — ⚠️ pushing the gradle.properties bump with secrets in place publishes 1.0.0).
+- [ ] **Re-add `MODRINTH_API_TOKEN`** (human) — it still did NOT save (confirmed absent from
+      `gh secret list` on 2026-06-13). Once present, the page fields/gallery follow (see §9.1b); the
+      Modrinth listing goes live when the first version clears Modrinth review.
 
-## 8. Marketing & community
+## 7. Marketing & community
 
 - [ ] Screenshot/gallery set: rockets, launches, planets, machines, creatures, terraforming —
-      *human-only; 10-shot list + specs in §10.5*
+      *human-only; 10-shot list + specs in §9.5*
 - [ ] Trailer/showcase video (launch + planets + terraforming) — *human-only; 9-beat script +
-      tooling (OBS + DaVinci Resolve) in §10.6*
-- [ ] Discord linked from CurseForge + GitHub About — server EXISTS (discord.gg/ArPXvYUzJG) and is
-      linked from README/roadmap/description/wiki/issue templates; REMAINING: the CurseForge +
-      GitHub About fields (see §10.1a, §10.7)
+      tooling (OBS + DaVinci Resolve) in §9.6*
+- [ ] **Discord — link from CurseForge + GitHub About** — the server, README, roadmap, description,
+      wiki, and issue templates are already wired (discord.gg/ArPXvYUzJG). What REMAINS is only the
+      CurseForge social field + the GitHub About sidebar (see §9.1a, §9.7).
 
-## 9. Pre-launch
+## 8. Pre-launch
 
 - [ ] Private playtests: a few friends on a dedicated server with the release candidate jar
 - [ ] Fix-up pass from playtest feedback
@@ -89,12 +86,12 @@ Tick a box only after the gradle-MCP build + gametests are green AND the in-game
 - [ ] Final jar built from a tagged commit; gametests + manual smoke test on THAT jar
 - [ ] Publish 1.0.0 🚀
 
-## 10. Human-only release steps (external accounts, uploads, media)
+## 9. Human-only release steps (external accounts, uploads, media)
 
 Everything here needs **Dario** — external accounts, uploads, media. The in-repo work is done; the
 steps below are what to do, and in what order, at release time.
 
-### 10.1a CurseForge project settings
+### 9.1a CurseForge project settings
 
 Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 
@@ -107,9 +104,9 @@ Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 - [ ] **Discord:** add `https://discord.gg/ArPXvYUzJG` (project social/Discord field).
 - [ ] **Settings → allowed in modpacks:** ensure "Allow project to be added to modpacks" is ON — it
       must match the LICENSE text.
-- [ ] **Gallery:** upload the screenshot set (§10.5).
+- [ ] **Gallery:** upload the screenshot set (§9.5).
 
-### 10.1b Modrinth project settings
+### 9.1b Modrinth project settings
 
 Project: <https://modrinth.com/mod/nerospace> (created 2026-06-12; the first uploaded version goes
 through Modrinth moderation review before the page goes public).
@@ -119,13 +116,13 @@ through Modrinth moderation review before the page goes public).
       (`art/logo/nerospace_logo_400.png`; the 1024px master is over Modrinth's 256 KiB cap), and the
       pinned metadata — title, summary, categories (technology/worldgen/adventure), client+server =
       required, issue/source/wiki/Discord links, and the **Custom license** (`LicenseRef-Custom` →
-      the LICENSE on GitHub). Make sure the §7 secrets exist, then trigger it once and
+      the LICENSE on GitHub). Make sure the §6 secrets exist, then trigger it once and
       **resubmit for review**.
-- [ ] **Gallery:** same screenshot set as CurseForge (§10.5) — the only manual page item.
+- [ ] **Gallery:** same screenshot set as CurseForge (§9.5) — the only manual page item.
 - [ ] File uploads themselves are automatic — `publish.yml` targets CurseForge **and** Modrinth in
       the same run.
 
-### 10.2 GitHub repo metadata
+### 9.2 GitHub repo metadata
 
 - [ ] Repo **About**: description ("Space-progression mod for NeoForge — rockets, oxygen survival,
       player stations, terraforming"), website = the CurseForge page, topics (`minecraft`,
@@ -137,7 +134,7 @@ through Modrinth moderation review before the page goes public).
 - [ ] **Discussions:** the issue templates link to GitHub Discussions — enable the feature
       (Settings → General → Features) if it isn't already.
 
-### 10.3 Release-jar telemetry verification (§7 PRIVACY sign-off)
+### 9.3 Release-jar telemetry verification (§6 PRIVACY sign-off)
 
 On the **final release candidate jar** (not a dev run):
 
@@ -147,28 +144,28 @@ On the **final release candidate jar** (not a dev run):
    synthetic "Sentry test block" event — confirm **no IP, no username, no home-dir paths**.
 4. Set `telemetryEnabled = false` in `config/nerospace-common.toml`, reload/restart, place the block
    again — chat must say telemetry is disabled and **nothing** must arrive in Sentry.
-5. Re-enable telemetry, delete the block. Done — tick the §7 PRIVACY box's "release build" clause.
+5. Re-enable telemetry, delete the block. Done — tick the §6 release-jar Sentry test box.
 
-### 10.4 Go-live order (the push that publishes)
+### 9.4 Go-live order (the push that publishes)
 
 ⚠️ `publish.yml` fires on any push to `main` that touches `gradle.properties`. The version is
 already bumped to 1.0.0 in the working tree, so **the publish happens on whatever push lands that
 change** — sequence accordingly:
 
-1. Finish §5–§6 + §9 gates (playtests, performance, final jar checks).
-2. Add the secrets from §7.
+1. Finish §4–§5 + §8 gates (playtests, performance, final jar checks).
+2. Add the secrets from §6.
 3. If release day isn't 2026-06-11, update the date in `CHANGELOG.md`'s `## [1.0.0]` heading.
 4. Commit everything; push to `main`. The workflow: builds → creates the Sentry release → uploads to
    CurseForge **and Modrinth** (as **release**-type files, changelog section as release notes) →
    creates the GitHub release + `v1.0.0` tag.
 5. Watch the run (`gh run watch`); CurseForge files sit in moderation briefly, and Modrinth also
    reviews the project itself on its first version.
-6. After approval: check the file page renders, then run §10.3 against the *published* jar if you
+6. After approval: check the file page renders, then run §9.3 against the *published* jar if you
    didn't already on the identical RC.
 7. If a publish half-fails **after** the tag was created: delete the `v1.0.0` tag/release and re-run
    the workflow (documented at the top of `publish.yml`).
 
-### 10.5 Screenshot / gallery shot list
+### 9.5 Screenshot / gallery shot list
 
 CurseForge gallery: upload **1920×1080** (16:9) PNGs; the first image becomes the card thumbnail —
 make it the money shot. Take them fullscreen 1080p+ with HUD hidden (F1) unless the HUD *is* the
@@ -193,7 +190,7 @@ subject. Suggested set (≈10):
 Cheapest route: a creative world + `/nerospace gallery` for the lineup shots, a staged terraform
 world for 9–10.
 
-### 10.6 Trailer / showcase video outline
+### 9.6 Trailer / showcase video outline
 
 Target: **60–90 s**, 1080p60, hosted on **YouTube** (link it on the CurseForge page; CF supports a
 featured video URL). Tooling: DaVinci Resolve for the edit; install **OBS Studio** (free) for
@@ -217,12 +214,12 @@ Script (each beat ≈ 6–10 s, cut on the beat of the music):
 Capture tips: F1 for clean shots, no night-vision gamma, `/gamerule doDaylightCycle false` while
 framing; record everything at 1.5× the length you need so Resolve has trim room.
 
-### 10.7 Discord wiring
+### 9.7 Discord wiring
 
 Server exists: `https://discord.gg/ArPXvYUzJG` (permanent invite, grants the Minecraft role). The
 repo/description links are already wired in. Remaining:
 
-- [ ] Add the invite to the CurseForge project (§10.1a) and the GitHub About sidebar.
+- [ ] Add the invite to the CurseForge project (§9.1a) and the GitHub About sidebar.
 - [ ] Channels worth having before the announcement: `#announcements`, `#support`, `#bug-reports`
       (pinned link to the GitHub issue forms), `#showcase`, `#modpack-makers`.
 - [ ] Pin the wiki + `PRIVACY.md` links in `#support`.
