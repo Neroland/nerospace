@@ -44,11 +44,6 @@ Tick a box only after the gradle-MCP build + gametests are green AND the in-game
 - [ ] Dedicated-server pass (`runServer` + 2 clients): oxygen sync, rocket rides, pipe networks,
       GUIs, world join (registry sync), suit HUD per player
 
-### Automated
-- [ ] Gametest suite green (`gradlew runGameTestServer`) including tests for all new 1.0 features
-- [ ] `ecjCheck` clean
-- [ ] `runData` + `build` green via gradle MCP
-
 ## 5. Performance (release gate — "it needs to be performant")
 
 - [ ] Stress-test large pipe networks (hundreds of pipes/machines)
