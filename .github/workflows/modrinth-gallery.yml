@@ -36,6 +36,14 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Set up Python (for image resizing)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Pillow
+        run: pip install --quiet Pillow
+
       - name: Mirror screenshots to the Modrinth gallery
         run: |
           set -euo pipefail
@@ -75,9 +83,9 @@ jobs:
 
           # 2. Upload each file: ordered, first one featured. Title = prettified filename.
           # Modrinth caps gallery images at 5 MiB but the raw screenshots are 6–8 MiB PNGs, so upload a
-          # web copy: cap width at 1920px and recompress to JPEG (visually lossless for screenshots, well
-          # under the cap). Uses ffmpeg (preinstalled on GitHub runners — no apt needed, unlike
-          # ImageMagick). The repo keeps the full-res PNGs for the CurseForge gallery.
+          # web copy: cap width at 1920px and recompress to JPEG q88 (visually lossless for screenshots,
+          # well under the cap). Uses Python+Pillow (installed above) — robust vs the runner missing
+          # ImageMagick/ffmpeg. The repo keeps the full-res PNGs for the CurseForge gallery.
           i=0
           for f in "${files[@]}"; do
             base=$(basename "$f" .png)
@@ -86,7 +94,7 @@ jobs:
             featured=false
             if [ "$i" -eq 0 ]; then featured=true; fi
             up="$RUNNER_TEMP/$base.jpg"
-            ffmpeg -y -loglevel error -i "$f" -vf "scale='min(1920,iw)':-2" -qscale:v 3 "$up"
+            python -c "import sys; from PIL import Image; s,d=sys.argv[1],sys.argv[2]; im=Image.open(s).convert('RGB'); w,h=im.size; im=(im.resize((1920,round(h*1920/w)),Image.LANCZOS) if w>1920 else im); im.save(d,'JPEG',quality=88,optimize=True)" "$f" "$up"
             code=$(curl -sS -o resp.txt -w "%{http_code}" -X POST \
               -H "User-Agent: $UA" -H "Authorization: $MODRINTH_API_TOKEN" -H "Content-Type: image/jpeg" \
               --data-binary @"$up" \
