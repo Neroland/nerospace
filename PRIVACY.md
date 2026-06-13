@@ -55,6 +55,13 @@ Sentry acts as a data processor; see the
 [Sentry privacy policy](https://sentry.io/privacy/) and
 [data processing addendum](https://sentry.io/legal/dpa/).
 
+## Changes to this policy
+
+If a future version of Nerospace ever collects additional data, this page will be updated
+**before** that version is released, the change will be called out in the changelog, and the
+same opt-out (`telemetryEnabled = false`) will continue to cover everything the mod sends.
+The policy shipped alongside a given mod version describes exactly what that version does.
+
 ## Developer note: verifying telemetry locally
 
 No env file or credentials are needed — the DSN is embedded. Launch a dev client with the
@@ -69,6 +76,14 @@ or add `-Dnerospace.telemetry.test=true` to the IDE run config's VM args. Check 
 "Telemetry self-test" and the event in the Sentry dashboard. Setting
 `telemetryEnabled = false` in `run/config/nerospace-common.toml` and reloading must stop
 events — that's the opt-out test.
+
+For verifying a **release jar** end-to-end, the mod also registers a hidden diagnostic block,
+`nerospace:sentry_test`. It does not appear in the creative menu and cannot be crafted — the
+only way to obtain it is the command `/give @s nerospace:sentry_test`. Placing it sends a
+single synthetic, clearly-labelled test event ("safe to ignore") through the exact same
+pipeline — and therefore the same scrubbing, opt-out gate, and session cap — as a real error
+report. If telemetry is disabled it sends nothing and says so in chat. Regular gameplay can
+never trigger it.
 
 ---
 

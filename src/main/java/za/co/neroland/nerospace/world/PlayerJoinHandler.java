@@ -13,8 +13,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import za.co.neroland.nerospace.Nerospace;
 
 /**
- * Greets a player on join with a short "work in progress" notice and a clickable link to the mod's
- * GitHub repository. Server-side only; fires once per login.
+ * Greets a player on join with a short welcome pointing at the Star Guide and a clickable link to
+ * the mod's GitHub repository. Server-side only; fires once per login.
  */
 @EventBusSubscriber(modid = Nerospace.MODID)
 public final class PlayerJoinHandler {
@@ -32,7 +32,7 @@ public final class PlayerJoinHandler {
 
         player.sendSystemMessage(Component.empty()
                 .append(Component.literal("[Nerospace] ").withStyle(ChatFormatting.LIGHT_PURPLE))
-                .append(Component.translatable("message.nerospace.welcome.wip").withStyle(ChatFormatting.GRAY)));
+                .append(Component.translatable("message.nerospace.welcome.intro").withStyle(ChatFormatting.GRAY)));
 
         Component link = Component.literal(REPO_URL).withStyle(style -> style
                 .withColor(ChatFormatting.AQUA)

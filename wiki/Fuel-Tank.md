@@ -26,7 +26,9 @@ N G N
   Pair it with a [Fuel Refinery](Fuel-Refinery) (or a canister line) for fully automated fuelling.
 - **Auto-fuelling:** when a rocket is on an adjacent launch pad, the tank pumps fuel into it. A
   complete **3×3 launch pad** pumps **4× faster** (160 vs 40 mB/tick) — and since the multiblock
-  gating pass a rocket can only deploy on a full 3×3 anyway.
+  gating pass a rocket can only deploy on a full 3×3 anyway. On a
+  **[Heavy Launch Complex](Launch-Gantry)** (5×5 + gantry) the rate rises to **480 mB/t** (12×),
+  filling a Tier 4's 24,000 mB tank in under a minute.
 - **Full automation:** the pad itself also proxies the rocket's **fuel-intake slot** as an item
   capability, so hoppers/[Universal Pipes](Universal-Pipe) can deliver Rocket Fuel Buckets and
   Canisters straight into the rocket — a Fuel Tank + an item line makes launch prep hands-free.

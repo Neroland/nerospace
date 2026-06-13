@@ -87,6 +87,14 @@ config/nerospace-common.toml. Details: PRIVACY.md in the mod repository.
     ordering="NONE"
     side="BOTH"
 
+# Optional integration: JEI (the compat/jei plugin is only classloaded when JEI is present).
+[[dependencies.${mod_id}]]
+    modId="jei"
+    type="optional"
+    versionRange="[${jei_version},)"
+    ordering="NONE"
+    side="BOTH"
+
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for example.

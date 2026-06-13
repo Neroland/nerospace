@@ -255,7 +255,9 @@ public class TerraformerBlockEntity extends BlockEntity implements Container, Me
             }
         }
 
-        if (serverLevel.getGameTime() % Tuning.terraformWorkIntervalTicks() == 0) {
+        // Redstone switch (gallery/UX): wired machines only sweep while powered (MachineRedstone).
+        if (serverLevel.getGameTime() % Tuning.terraformWorkIntervalTicks() == 0
+                && MachineRedstone.allowsRun(level, pos)) {
             work(serverLevel, pos);
         }
     }

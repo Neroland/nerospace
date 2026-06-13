@@ -57,7 +57,7 @@ bottleneck before the multiplied rate — intended, since those caps protect gri
 ### Oxygen field simulation (ADVANCED)
 
 Simulation tuning, **not** balance — wrong values can break oxygen/terraforming behaviour. Leave
-at defaults unless debugging server performance. See `OXYGEN_TERRAFORM_DESIGN.md`.
+at defaults unless debugging server performance.
 
 | Key | Default | Range | Meaning |
 |---|---|---|---|

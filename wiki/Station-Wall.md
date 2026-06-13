@@ -14,6 +14,10 @@ hull before you can craft a Tier 3 rocket.
 - Building/sealing pressurised rooms — like all full opaque blocks, it is **airtight** and counts as
   an oxygen seal (see [Oxygen Generator](Oxygen-Generator)).
 - Required in the **Tier 3 Rocket** recipe.
+- **Ringing a 3×3 [launch pad](Rocket-Launch-Pad)** (the 16-block border at pad level) is one of the
+  two ways to deploy a Tier 3 rocket — the other is the [Heavy Launch Complex](Launch-Gantry).
+- An ingredient of the **[Station Charter](Station-Charter)** and the
+  **[Launch Gantry](Launch-Gantry)**.
 
 ## Details
 - ID: `nerospace:station_wall`

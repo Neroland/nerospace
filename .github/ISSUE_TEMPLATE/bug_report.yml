@@ -8,9 +8,9 @@ body:
       value: |
         Thanks for helping improve **Nerospace**!
 
-        ⚠️ Nerospace is an early **work in progress** — features, balance, and assets may change at
-        any time, and some things are known to be unfinished. Please search existing issues first to
-        avoid duplicates.
+        Please search existing issues first to avoid duplicates. For questions or general
+        discussion, use [Discussions](https://github.com/Neroland/nerospace/discussions) or the
+        [Discord](https://discord.gg/ArPXvYUzJG) instead.
   - type: textarea
     id: what-happened
     attributes:
@@ -34,14 +34,14 @@ body:
     id: mod-version
     attributes:
       label: Nerospace version
-      placeholder: 0.0.2-beta
+      placeholder: 1.0.0
     validations:
       required: true
   - type: input
     id: loader-version
     attributes:
       label: Minecraft + NeoForge version
-      placeholder: Minecraft 26.1.2, NeoForge 26.1.2.70-beta
+      placeholder: Minecraft 26.1.2, NeoForge 26.1.2.75
     validations:
       required: true
   - type: textarea

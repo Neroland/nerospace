@@ -98,6 +98,15 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
             return;
         }
 
+        // Redstone switch (gallery/UX): a wired generator only runs while powered (MachineRedstone).
+        // Switched off it stops electrolysing AND drops its field source, collapsing the bubble.
+        if (!MachineRedstone.allowsRun(level, pos)) {
+            if (level instanceof ServerLevel serverLevel) {
+                OxygenFieldManager.get(serverLevel).removeSource(pos);
+            }
+            return;
+        }
+
         // Electrolysis: grid power -> oxygen, throttled by available energy and tank room.
         int fePerMb = Tuning.oxygenGeneratorFePerMb();
         int room = Tuning.oxygenGeneratorO2Capacity() - this.tank.getAmountAsInt(0);
