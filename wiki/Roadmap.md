@@ -56,3 +56,8 @@ See **[Future Features](Future-Features)**.
 
 - **Cross-mod integration** (e.g. Mekanism) waits until those mods port to Minecraft 26.1. Nerospace
   is standalone by design — tags + NeoForge capabilities mean most integration comes free later.
+
+## Contributing / feedback
+
+Ideas and bug reports are welcome — open a [GitHub issue](https://github.com/Neroland/nerospace/issues)
+or join the [Discord](https://discord.gg/ArPXvYUzJG).
