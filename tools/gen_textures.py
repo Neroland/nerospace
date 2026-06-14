@@ -2677,23 +2677,25 @@ def gen_quarry_landmark():
 
 
 def gen_quarry_frame():
-    # Glowing space frame rendered as a clean WIREFRAME: every pixel is either fully opaque (the
-    # glowing border beams) or fully transparent (the open centre). All-or-nothing alpha makes 26.1
-    # render it on the alpha-TESTED cutout layer (not the blended translucent layer), so a ring of
-    # these cubes reads as crisp glowing bars with no z-fighting / overdraw haze.
-    img = new_img()  # CLEAR (alpha 0) background — the see-through centre
+    # Energised strut for the 3-D OPEN frame model (corner posts + edge rails, see-through centre).
+    # The narrow beam faces only ever sample a thin UV slice of this texture, so it is built so ANY
+    # vertical or horizontal slice catches a glowing cyan rail: a dark cyan-steel base under regular
+    # bright cyan lines + rivet nodes. Emissive via the block's light level.
+    rng = random.Random(1303)
+    img = new_img()
     px = img.load()
-    # 2px opaque glowing border beam on every edge.
+    # dark cyan-steel base
+    noise_fill(img, [(18, 52, 62, 255), (22, 64, 76, 255), (14, 44, 54, 255)], rng)
+    bevel(img, (60, 170, 190, 255), (8, 26, 32, 255))
+    # bright cyan rails every 4px on both axes, so a 2px beam slice always lights up
     for i in range(S):
-        for t in (0, 1):
-            px[i, t] = I_CYAN
-            px[i, S - 1 - t] = I_CYAN
-            px[t, i] = I_CYAN
-            px[S - 1 - t, i] = I_CYAN
-    # brighter corner nodes (still fully opaque) so the lattice joints pop.
-    for (bx, by) in [(0, 0), (1, 1), (S - 1, 0), (S - 2, 1),
-                     (0, S - 1), (1, S - 2), (S - 1, S - 1), (S - 2, S - 2)]:
-        px[bx, by] = I_WHITE
+        for k in range(0, S, 4):
+            px[k, i] = I_CYAN
+            px[i, k] = I_CYAN
+    # bright weld nodes on the grid intersections
+    for y in range(0, S, 4):
+        for x in range(0, S, 4):
+            px[x, y] = I_WHITE
     save(img, os.path.join(BLOCK_DIR, "quarry_frame.png"))
 
 

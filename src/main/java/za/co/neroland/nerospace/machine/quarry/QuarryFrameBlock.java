@@ -9,8 +9,13 @@ import net.minecraft.world.level.block.Block;
  * "build frame + drill head"). Built by the controller (one {@code frame_casing} per block) and
  * removed when the controller is removed; it carries no loot table, so breaking one by hand yields
  * nothing. A dedicated class so the mining loop can recognise and skip frames — its own and other
- * quarries' ("respect claims"). The translucent/emissive look is a client render-type choice; the
- * block is registered with {@code noOcclusion()} and an emissive light level.
+ * quarries' ("respect claims").
+ *
+ * <p>Renders as a real 3-D open structural frame — four corner posts + edge rails with a see-through
+ * centre (BuildCraft-style), built by {@code ModModelProvider#registerQuarryFrame} from the same beam
+ * layout as the tanks; emissive via the strut texture + the block's light level, and {@code
+ * .noOcclusion()} so the open gaps don't cull the world behind. The controller's {@code
+ * QuarryControllerRenderer} adds only the MOVING gantry parts (drill head + bridge) on top.</p>
  */
 public class QuarryFrameBlock extends Block {
 

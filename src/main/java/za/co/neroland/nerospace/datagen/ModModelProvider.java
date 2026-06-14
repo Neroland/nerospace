@@ -91,12 +91,13 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.STATION_FLOOR.get());
         blockModels.createTrivialCube(ModBlocks.STATION_WALL.get());
 
-        // Quarry / Miner (MINER_DESIGN): controller + landmark cubes; frame is a glowing translucent
-        // cube — a full-cube element model with AO off so the sprite's alpha drives the render layer
-        // (same trick as the Universal Pipe), letting you see through the open frame.
+        // Quarry / Miner (MINER_DESIGN): controller + landmark cubes; the frame is a real 3-D open
+        // structural frame (four corner posts + edge rails, see-through centre — BuildCraft-style),
+        // built from the same beam recipe as the tanks. Emissive via the bright strut texture + the
+        // block's light level; .noOcclusion() (ModBlocks) stops the open gaps culling the world behind.
         blockModels.createTrivialCube(ModBlocks.QUARRY_CONTROLLER.get());
         blockModels.createTrivialCube(ModBlocks.QUARRY_LANDMARK.get());
-        registerTranslucentCube(blockModels, ModBlocks.QUARRY_FRAME.get());
+        registerQuarryFrame(blockModels);
 
         // Developer diagnostics — Sentry test block (hidden; /give only).
         blockModels.createTrivialCube(ModBlocks.SENTRY_TEST.get());
@@ -377,6 +378,39 @@ public class ModModelProvider extends ModelProvider {
         shapedBlock(blockModels, ModBlocks.STAR_GUIDE.get(), starTemplate, starMapping, false);
     }
 
+    /**
+     * The quarry frame: a 3-D OPEN structural frame — four 2px corner posts + top/bottom edge rails,
+     * with a see-through centre (no content core, unlike {@link #registerTank}). Reuses the tank's
+     * beam layout so the gantry reads as a matching machine. The block's own {@code quarry_frame}
+     * texture skins every strut.
+     */
+    private void registerQuarryFrame(BlockModelGenerators blockModels) {
+        Block block = ModBlocks.QUARRY_FRAME.get();
+        var beam = TextureMapping.getBlockTexture(block);
+        TextureMapping mapping = new TextureMapping()
+                .put(TextureSlot.SIDE, beam)
+                .put(TextureSlot.PARTICLE, beam);
+        ExtendedModelTemplateBuilder builder = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.SIDE)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .ambientOcclusion(false); // emissive struts read flat, no AO darkening at the joints
+        // four vertical corner posts
+        for (int[] c : new int[][] {{0, 0}, {14, 0}, {0, 14}, {14, 14}}) {
+            int x = c[0];
+            int z = c[1];
+            builder.element(e -> { e.from(x, 0, z).to(x + 2, 16, z + 2); faces(e, TextureSlot.SIDE, null); });
+        }
+        // horizontal rails, bottom + top, both axes (the centre stays open)
+        for (int y : new int[] {0, 14}) {
+            int yy = y;
+            builder.element(e -> { e.from(2, yy, 0).to(14, yy + 2, 2); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(2, yy, 14).to(14, yy + 2, 16); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(0, yy, 2).to(2, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(14, yy, 2).to(16, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
+        }
+        shapedBlock(blockModels, block, builder.build(), mapping, false);
+    }
+
     /** A tank: 12 frame beams (the block's own texture) around a {@code <name>_core} content core. */
     private void registerTank(BlockModelGenerators blockModels, Block block) {
         var frame = TextureMapping.getBlockTexture(block);
@@ -405,27 +439,6 @@ public class ModModelProvider extends ModelProvider {
             builder.element(e -> { e.from(14, yy, 2).to(16, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
         }
         shapedBlock(blockModels, block, builder.build(), mapping, false);
-    }
-
-    /**
-     * A full-cube model with ambient occlusion OFF so the sprite's alpha selects the translucent
-     * render layer (26.1 derives the chunk layer from the texture) — used for the glowing,
-     * see-through quarry frame.
-     */
-    private void registerTranslucentCube(BlockModelGenerators blockModels, Block block) {
-        var tex = TextureMapping.getBlockTexture(block);
-        TextureMapping mapping = new TextureMapping().put(TextureSlot.ALL, tex).put(TextureSlot.PARTICLE, tex);
-        ExtendedModelTemplate template = ExtendedModelTemplateBuilder.builder()
-                .requiredTextureSlot(TextureSlot.ALL)
-                .requiredTextureSlot(TextureSlot.PARTICLE)
-                .ambientOcclusion(false)
-                .element(e -> e.from(0, 0, 0).to(16, 16, 16)
-                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
-                .build();
-        Identifier model = template.create(
-                ModelLocationUtils.getModelLocation(block), mapping, blockModels.modelOutput);
-        blockModels.blockStateOutput.accept(
-                BlockModelGenerators.createSimpleBlock(block, BlockModelGenerators.plainVariant(model)));
     }
 
     /**
