@@ -2,32 +2,38 @@ package za.co.neroland.nerospace.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
 import za.co.neroland.nerospace.machine.quarry.QuarryRegion;
+import za.co.neroland.nerospace.registry.ModItems;
 
 /**
- * Draws the quarry's working machinery: glowing gantry rails around the claimed region, a moving
- * bridge rail tracking the dig column, a vertical drill shaft and a bright drill head at the cell
- * currently being mined (MINER_DESIGN — "build frame + drill head"). Geometry is emissive
- * position-colour quads via the lightning render type (same approach as the Universal Pipe streams).
- * The head position is server-synced (region + cursor + currentY) and smoothed client-side.
+ * Draws the quarry's working machinery on top of the (solid, block-based) frame ring: a moving
+ * bridge rail + drill shaft drawn as depth-tested lines, and the drill head itself rendered as a
+ * spinning item model (the proven Star-Guide-hologram path — solid, lit, depth-correct). The head
+ * position is server-synced (region + cursor + currentY) and smoothed client-side.
  */
 public class QuarryControllerRenderer
         implements BlockEntityRenderer<QuarryControllerBlockEntity, QuarryControllerRenderState> {
 
-    private static final double RAIL = 0.12;
-    private static final double SHAFT = 0.05;
-    private static final double HEAD = 0.18;
+    /** Per-vertex line width required by the lines vertex format (POSITION_COLOR_NORMAL_LINE_WIDTH). */
+    private static final float LINE_WIDTH = 3.0F;
+    /** Full-bright light so the head glows like a powered tool. */
+    private static final int FULL_BRIGHT = 0x00F000F0;
 
     @Override
     public QuarryControllerRenderState createRenderState() {
@@ -45,7 +51,7 @@ public class QuarryControllerRenderer
         BlockEntityRenderer.super.extractRenderState(be, s, partialTick, cameraPos, breakProgress);
         QuarryRegion r = be.renderRegion();
         QuarryControllerBlockEntity.State st = be.renderState();
-        if (r == null || st == QuarryControllerBlockEntity.State.IDLE) {
+        if (r == null || st == QuarryControllerBlockEntity.State.IDLE || be.getLevel() == null) {
             s.active = false;
             return;
         }
@@ -88,6 +94,13 @@ public class QuarryControllerRenderer
         s.hx = be.dispX - p.getX();
         s.hy = be.dispY - p.getY();
         s.hz = be.dispZ - p.getZ();
+
+        float now = be.getLevel().getGameTime() + partialTick;
+        s.headSpin = (now * 6.0F) % 360.0F;
+        // Render the drill head as a spinning pickaxe item (solid/lit/depth-correct).
+        Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                s.head, new ItemStack(ModItems.NEROSIUM_PICKAXE.get()), ItemDisplayContext.GROUND,
+                be.getLevel(), null, (int) p.asLong());
     }
 
     @Override
@@ -96,49 +109,51 @@ public class QuarryControllerRenderer
         if (!s.active) {
             return;
         }
-        collector.order(1).submitCustomGeometry(poseStack, RenderTypes.lightning(),
+        // Depth-tested lines for the moving bridge + drill shaft.
+        collector.order(1).submitCustomGeometry(poseStack, RenderTypes.lines(),
                 (pose, consumer) -> draw(s, pose, consumer));
+
+        // The drill head: a spinning, full-bright item model at the dig cell. Spin around the vertical
+        // axis, then flip 180° so the pickaxe head points DOWN into the dig face (was rendering upside
+        // down — GROUND context keeps the sprite head-up by default).
+        poseStack.pushPose();
+        poseStack.translate(s.hx, s.hy, s.hz);
+        poseStack.mulPose(Axis.YP.rotationDegrees(s.headSpin));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+        poseStack.scale(0.7F, 0.7F, 0.7F);
+        s.head.submit(poseStack, collector, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+        poseStack.popPose();
     }
 
     private static void draw(QuarryControllerRenderState s, PoseStack.Pose pose, VertexConsumer consumer) {
         int ar = (s.accent >> 16) & 0xFF;
         int ag = (s.accent >> 8) & 0xFF;
         int ab = s.accent & 0xFF;
-        int a = 170;
         double ty = s.topY;
 
-        // The frame BLOCKS already draw the static perimeter, so the renderer only adds the MOVING
-        // gantry parts: a bridge rail tracking the dig column, the drill shaft and the drill head.
-        // Moving bridge rail (spans Z at the head's X).
-        box(pose, consumer, s.hx - RAIL / 2, ty - RAIL, s.z0, s.hx + RAIL / 2, ty, s.z1, ar, ag, ab, a);
-
-        // Vertical drill shaft from the head up to the bridge.
-        box(pose, consumer, s.hx - SHAFT, s.hy, s.hz - SHAFT, s.hx + SHAFT, ty - RAIL, s.hz + SHAFT,
-                120, 230, 255, 150);
-
-        // Drill head.
-        box(pose, consumer, s.hx - HEAD, s.hy - HEAD, s.hz - HEAD, s.hx + HEAD, s.hy + HEAD, s.hz + HEAD,
-                200, 245, 255, 220);
+        // The frame itself is the solid frame BLOCKS — the renderer only adds the MOVING gantry parts.
+        // Moving bridge: a rail spanning Z at the head's X, along the top of the frame plane.
+        line(pose, consumer, s.hx, ty, s.z0, s.hx, ty, s.z1, ar, ag, ab, 255);
+        // Drill shaft: from the head up to the frame plane.
+        line(pose, consumer, s.hx, s.hy, s.hz, s.hx, ty - 1.0, s.hz, 120, 230, 255, 255);
     }
 
-    /** Emit the 6 faces of an axis-aligned box as position-colour quads. */
-    private static void box(PoseStack.Pose pose, VertexConsumer c, double x0, double y0, double z0,
-            double x1, double y1, double z1, int r, int g, int b, int a) {
-        quad(pose, c, x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0, r, g, b, a); // -Z
-        quad(pose, c, x1, y0, z1, x1, y1, z1, x0, y1, z1, x0, y0, z1, r, g, b, a); // +Z
-        quad(pose, c, x0, y0, z1, x0, y1, z1, x0, y1, z0, x0, y0, z0, r, g, b, a); // -X
-        quad(pose, c, x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1, r, g, b, a); // +X
-        quad(pose, c, x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0, r, g, b, a); // +Y
-        quad(pose, c, x0, y0, z1, x0, y0, z0, x1, y0, z0, x1, y0, z1, r, g, b, a); // -Y
-    }
-
-    private static void quad(PoseStack.Pose pose, VertexConsumer c,
-            double ax, double ay, double az, double bx, double by, double bz,
-            double cx, double cy, double cz, double dx, double dy, double dz,
-            int r, int g, int b, int a) {
-        c.addVertex(pose, (float) ax, (float) ay, (float) az).setColor(r, g, b, a);
-        c.addVertex(pose, (float) bx, (float) by, (float) bz).setColor(r, g, b, a);
-        c.addVertex(pose, (float) cx, (float) cy, (float) cz).setColor(r, g, b, a);
-        c.addVertex(pose, (float) dx, (float) dy, (float) dz).setColor(r, g, b, a);
+    /** A single line segment (RenderTypes.lines needs a per-vertex normal = the segment direction). */
+    private static void line(PoseStack.Pose pose, VertexConsumer c, double x1, double y1, double z1,
+            double x2, double y2, double z2, int r, int g, int b, int a) {
+        float nx = (float) (x2 - x1);
+        float ny = (float) (y2 - y1);
+        float nz = (float) (z2 - z1);
+        float len = (float) Math.sqrt(nx * nx + ny * ny + nz * nz);
+        if (len < 1.0e-5f) {
+            return;
+        }
+        nx /= len;
+        ny /= len;
+        nz /= len;
+        c.addVertex(pose, (float) x1, (float) y1, (float) z1)
+                .setColor(r, g, b, a).setNormal(pose, nx, ny, nz).setLineWidth(LINE_WIDTH);
+        c.addVertex(pose, (float) x2, (float) y2, (float) z2)
+                .setColor(r, g, b, a).setNormal(pose, nx, ny, nz).setLineWidth(LINE_WIDTH);
     }
 }

@@ -58,8 +58,10 @@ I I I
 - **Obstacles:** it **skips** bedrock and other unbreakable blocks, and **skips the entire column**
   under a tile-entity (chests, spawners, machines) so they're left intact. It also skips other
   quarries' frames.
-- **Drill head + gantry:** while it runs, a glowing gantry traces the frame and a **drill head**
-  moves to the exact block being mined, with a vertical beam down the shaft.
+- **Drill head + gantry:** while it runs, a glowing gantry traces the frame and a spinning **drill
+  head** (a glowing pickaxe bit) descends to the exact block being mined, with a beam down the shaft.
+- **The frame** is a real 3-D structure — glowing corner posts and edge rails with an open,
+  see-through centre (so you can watch the dig through it).
 - **Far edges:** a large area is force-loaded a chunk at a time while actively mining, so the dig
   keeps going as you range its edges; the tickets are released when it finishes or is removed.
 - **Reclaiming:** breaking the controller tears down its frame.

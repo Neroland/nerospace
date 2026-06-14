@@ -343,14 +343,8 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         boolean changed = false;
         while (this.frameIndex < ring.size() && placedThisTick < 8) {
             BlockPos fp = ring.get(this.frameIndex);
-            BlockState existing = level.getBlockState(fp);
-            if (existing.getBlock() instanceof QuarryFrameBlock) {
-                this.frameIndex++;
-                continue;
-            }
-            // Only draw the frame through open cells; terrain-backed perimeter cells need no casing.
-            if (!existing.isAir() && !existing.canBeReplaced()) {
-                this.frameIndex++;
+            if (level.getBlockState(fp).getBlock() instanceof QuarryFrameBlock) {
+                this.frameIndex++; // already framed
                 continue;
             }
             ItemStack casing = this.frameHandler.getStack(FRAME_SLOT);
@@ -358,6 +352,9 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
                 setPaused("need_material");
                 return;
             }
+            // Always materialise the frame at the perimeter (replacing whatever is there) so the ring
+            // is visible regardless of terrain — marking a region on flat ground used to place NO
+            // frame blocks because every perimeter cell was solid.
             level.setBlock(fp, ModBlocks.QUARRY_FRAME.get().defaultBlockState(), Block.UPDATE_CLIENTS);
             casing.shrink(1);
             placedThisTick++;
