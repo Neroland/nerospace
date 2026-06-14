@@ -43,6 +43,7 @@
 - [Pipe Filters and Upgrades](Pipe-Filters-and-Upgrades)
 - [Combustion Generator](Combustion-Generator)
 - [Passive Generator](Passive-Generator)
+- [Solar Panel](Solar-Panel)
 - [Battery](Battery)
 - [Fluid Tank](Fluid-Tank)
 - [Gas Tank](Gas-Tank)

@@ -347,6 +347,8 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.COMBUSTION_GENERATOR);
     public static final DeferredItem<BlockItem> PASSIVE_GENERATOR_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.PASSIVE_GENERATOR);
+    public static final DeferredItem<BlockItem> SOLAR_PANEL_T1_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.SOLAR_PANEL_T1);
 
     // Storage endpoints + creative sources.
     public static final DeferredItem<BlockItem> BATTERY_ITEM =

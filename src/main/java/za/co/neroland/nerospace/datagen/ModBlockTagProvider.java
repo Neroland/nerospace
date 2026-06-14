@@ -49,6 +49,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.UNIVERSAL_PIPE.get(),
                         ModBlocks.COMBUSTION_GENERATOR.get(),
                         ModBlocks.PASSIVE_GENERATOR.get(),
+                        ModBlocks.SOLAR_PANEL_T1.get(),
                         ModBlocks.BATTERY.get(),
                         ModBlocks.FLUID_TANK.get(),
                         ModBlocks.GAS_TANK.get(),
@@ -84,6 +85,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.UNIVERSAL_PIPE.get(),
                         ModBlocks.COMBUSTION_GENERATOR.get(),
                         ModBlocks.PASSIVE_GENERATOR.get(),
+                        ModBlocks.SOLAR_PANEL_T1.get(),
                         ModBlocks.QUARRY_CONTROLLER.get());
 
         this.tag(Tags.Blocks.ORES)

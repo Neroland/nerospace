@@ -72,6 +72,31 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(
                 BlockModelGenerators.createSimpleBlock(pad, BlockModelGenerators.plainVariant(padModel)));
 
+        // Solar Panel (T1): the static steel mount — a 3px housing, a central post, and a north-south
+        // cross-bar on top (a "T-pole"), all on the `_base` sprite (distinct from the PV deck). The
+        // sun-tracking photovoltaic deck pivots on the cross-bar and is drawn by the block-entity renderer.
+        Block solar = ModBlocks.SOLAR_PANEL_T1.get();
+        var solarBaseTexture = TextureMapping.getBlockTexture(solar, "_base");
+        TextureMapping solarMapping = new TextureMapping()
+                .put(TextureSlot.ALL, solarBaseTexture).put(TextureSlot.PARTICLE, solarBaseTexture);
+        ExtendedModelTemplate solarTemplate = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.ALL)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .element(e -> e.from(0, 0, 0).to(16, 3, 16)        // housing
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .element(e -> e.from(7, 3, 7).to(9, 7, 9)          // vertical post
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                // Torque tube along the N-S pivot axis, topped at 8px — JUST BELOW the deck's swing (the
+                // deck pivots at 9px and dips < 1px over the tube's 2px width at the 40deg cap), so the
+                // tube never rises through the deck; it stays tucked underneath at every tracking angle.
+                .element(e -> e.from(7, 7, 4).to(9, 8, 12)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .build();
+        Identifier solarModel = solarTemplate.create(
+                ModelLocationUtils.getModelLocation(solar), solarMapping, blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(
+                BlockModelGenerators.createSimpleBlock(solar, BlockModelGenerators.plainVariant(solarModel)));
+
         // Launch Gantry — shaped tower in registerShapedMachines (art overhaul §3).
 
         // Power grid — connection-aware translucent pipe (multipart: core + one arm per connected
