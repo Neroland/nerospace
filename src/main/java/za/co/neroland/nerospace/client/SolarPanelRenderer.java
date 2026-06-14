@@ -23,18 +23,21 @@ import za.co.neroland.nerospace.solar.SolarPanelBlockEntity;
 import za.co.neroland.nerospace.solar.SolarTier;
 
 /**
- * Draws the moving solar-panel surface above its (static) housing model: a textured deck that tilts to
- * track the sun across the day and folds flat at night. Every panel reads the SAME world time, so a
- * whole array stays in lockstep, and connected same-tier neighbours extend their decks edge-to-edge so
- * a row joins into one continuous, seamless surface.
+ * Draws the moving solar-panel deck above its static housing model: a 1px-thick photovoltaic slab
+ * hinged along its NORTH edge at the housing top. It tilts up to face the sky during the day and folds
+ * flat onto the housing at night — the hinge means it only ever rotates UP, so it never dips into the
+ * base or ground (no clipping). Every panel reads the SAME world time, so a whole array opens and folds
+ * in lockstep, and connected same-tier neighbours extend their decks edge-to-edge into one surface.
  */
 public class SolarPanelRenderer
         implements BlockEntityRenderer<SolarPanelBlockEntity, SolarPanelRenderState> {
 
-    /** Hinge height (just above the 4px housing) so the tilted deck clears the block top. */
-    private static final float PIVOT_Y = 0.27F;
-    /** Tracking tilt is clamped so the array stays low-profile (a tilting field, not standing poles). */
-    private static final float MAX_TILT = 35.0F;
+    /** Pivot height = centre of the cross-bar (the T-pole top); the deck tilts about it on the post. */
+    private static final float POLE_TOP = 9.0F / 16.0F;
+    /** Deck thickness: a real 1px slab (not a zero-width plane). */
+    private static final float THICK = 1.0F / 16.0F;
+    /** Max tracking tilt either side of flat; capped so the deck's dip stays clear of the torque tube. */
+    private static final float MAX_TILT = 40.0F;
     /** Half-extent of a deck edge that has NO neighbour (leaves a thin frame gap between arrays). */
     private static final float INSET = 0.46F;
     /** Half-extent of a deck edge that DOES touch a same-tier neighbour (meets at the block border). */
@@ -55,17 +58,20 @@ public class SolarPanelRenderer
         }
         state.tier = panel.tier().tier;
 
-        boolean space = level.dimensionTypeRegistration().is(ModDimensionTypes.SPACE);
-        if (space) {
-            // Permanent sun in orbit / on an airless moon: stay open, facing up.
-            state.angle = 0.0F;
+        // Sun tracking: the deck pitches to follow the sun's east-west arc (flat at noon, tilted toward
+        // the low sun at dawn/dusk), scaled by openness so it eases back to flat and parks at night.
+        float openness;
+        float track;
+        if (level.dimensionTypeRegistration().is(ModDimensionTypes.SPACE)) {
+            openness = 1.0F;  // permanent sun in orbit / on an airless moon
+            track = 0.0F;     // no celestial cycle: rest facing straight up
         } else {
             long tod = level.getOverworldClockTime() % 24000L; // 0 sunrise, 6000 noon, 18000 midnight
             float sun = Mth.cos((float) ((tod - 6000L) / 24000.0 * 2.0 * Math.PI)); // +1 noon, -1 midnight
-            float openness = Mth.clamp((sun + 0.02F) / 0.25F, 0.0F, 1.0F); // 0 at night -> folds flat
-            float deg = (float) ((tod - 6000L) / 24000.0) * 360.0F; // 0 noon, -90 sunrise, +90 sunset
-            state.angle = openness * Mth.clamp(deg, -MAX_TILT, MAX_TILT);
+            openness = Mth.clamp((sun + 0.05F) / 0.3F, 0.0F, 1.0F); // eases to 0 at night
+            track = (float) ((tod - 6000L) / 24000.0) * 360.0F; // -90 sunrise .. 0 noon .. +90 sunset
         }
+        state.angle = openness * Mth.clamp(track, -MAX_TILT, MAX_TILT);
 
         SolarTier tier = panel.tier();
         BlockPos pos = panel.getBlockPos();
@@ -82,48 +88,68 @@ public class SolarPanelRenderer
     @Override
     public void submit(SolarPanelRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
             CameraRenderState cameraState) {
+        float we = state.connect[3] ? EDGE : INSET; // west  (-X)
+        float ee = state.connect[1] ? EDGE : INSET; // east  (+X)
+        float no = state.connect[0] ? EDGE : INSET; // north (-Z)
+        float so = state.connect[2] ? EDGE : INSET; // south (+Z)
         Identifier texture = Identifier.fromNamespaceAndPath(
                 Nerospace.MODID, "textures/block/solar_panel_t" + state.tier + ".png");
+
         poseStack.pushPose();
-        poseStack.translate(0.5F, PIVOT_Y, 0.5F);
+        // Pivot on the cross-bar; rotating about Z pitches the deck east-west to follow the sun.
+        poseStack.translate(0.5F, POLE_TOP, 0.5F);
         poseStack.mulPose(Axis.ZP.rotationDegrees(state.angle));
-        collector.order(0).submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture),
-                (pose, consumer) -> drawDeck(state, pose, consumer));
+        float w = we;
+        float e = ee;
+        float n = no;
+        float s = so;
+        int light = state.lightCoords;
+        collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture),
+                (pose, consumer) -> drawDeck(pose, consumer, w, e, n, s, light));
         poseStack.popPose();
     }
 
-    private static void drawDeck(SolarPanelRenderState state, PoseStack.Pose pose, VertexConsumer consumer) {
-        float no = state.connect[0] ? EDGE : INSET; // north (-Z)
-        float ee = state.connect[1] ? EDGE : INSET; // east  (+X)
-        float so = state.connect[2] ? EDGE : INSET; // south (+Z)
-        float we = state.connect[3] ? EDGE : INSET; // west  (-X)
-        int light = state.lightCoords;
-
-        // Front face (normal +Y). Back face (normal -Y, reversed winding) so the steeply-tilted deck is
-        // visible from below too. The render type is no-cull, so both always draw.
-        vertex(consumer, pose, -we, -no, light, 1.0F);
-        vertex(consumer, pose, ee, -no, light, 1.0F);
-        vertex(consumer, pose, ee, so, light, 1.0F);
-        vertex(consumer, pose, -we, so, light, 1.0F);
-
-        vertex(consumer, pose, -we, so, light, -1.0F);
-        vertex(consumer, pose, ee, so, light, -1.0F);
-        vertex(consumer, pose, ee, -no, light, -1.0F);
-        vertex(consumer, pose, -we, -no, light, -1.0F);
+    /** A 1px-thick deck box centred on the pivot: x in [-w,e], z in [-n,s], y straddling 0. */
+    private static void drawDeck(PoseStack.Pose pose, VertexConsumer consumer,
+            float w, float e, float n, float s, int light) {
+        float x0 = -w;
+        float x1 = e;
+        float y0 = -THICK / 2.0F;
+        float y1 = THICK / 2.0F;
+        float z0 = -n;
+        float z1 = s;
+        // Six faces, each double-sided so the slab shows from any angle through the cutout's culling.
+        face(consumer, pose, light, x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0, 0, 1, 0);  // top
+        face(consumer, pose, light, x0, y0, z1, x0, y0, z0, x1, y0, z0, x1, y0, z1, 0, -1, 0); // bottom
+        face(consumer, pose, light, x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0, 0, 0, -1); // north
+        face(consumer, pose, light, x1, y0, z1, x1, y1, z1, x0, y1, z1, x0, y0, z1, 0, 0, 1);  // south
+        face(consumer, pose, light, x0, y0, z1, x0, y1, z1, x0, y1, z0, x0, y0, z0, -1, 0, 0); // west
+        face(consumer, pose, light, x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1, 1, 0, 0);  // east
     }
 
-    /**
-     * One deck vertex. {@code x}/{@code z} are pivot-local half-offsets (the block square is
-     * [-0.5,0.5]); UVs are derived from them so each panel shows the full sprite. {@code ny} is the
-     * face normal's Y sign.
-     */
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float z, int light,
-            float ny) {
-        consumer.addVertex(pose, x, 0.0F, z)
+    /** Emit a quad both ways (front with the given normal, back reversed) so it's visible from both sides. */
+    private static void face(VertexConsumer consumer, PoseStack.Pose pose, int light,
+            float ax, float ay, float az, float bx, float by, float bz,
+            float cx, float cy, float cz, float dx, float dy, float dz,
+            float nx, float ny, float nz) {
+        vertex(consumer, pose, ax, ay, az, light, nx, ny, nz);
+        vertex(consumer, pose, bx, by, bz, light, nx, ny, nz);
+        vertex(consumer, pose, cx, cy, cz, light, nx, ny, nz);
+        vertex(consumer, pose, dx, dy, dz, light, nx, ny, nz);
+        vertex(consumer, pose, dx, dy, dz, light, -nx, -ny, -nz);
+        vertex(consumer, pose, cx, cy, cz, light, -nx, -ny, -nz);
+        vertex(consumer, pose, bx, by, bz, light, -nx, -ny, -nz);
+        vertex(consumer, pose, ax, ay, az, light, -nx, -ny, -nz);
+    }
+
+    /** One vertex; UVs project the PV sprite onto the deck (u from x, v from z along the panel). */
+    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z,
+            int light, float nx, float ny, float nz) {
+        consumer.addVertex(pose, x, y, z)
                 .setColor(255, 255, 255, 255)
                 .setUv(x + 0.5F, z + 0.5F)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(light)
-                .setNormal(pose, 0.0F, ny, 0.0F);
+                .setNormal(pose, nx, ny, nz);
     }
 }
