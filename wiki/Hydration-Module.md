@@ -4,21 +4,26 @@ The glacite intake of deeper terraforming: melts glacite into **hydration units*
 [Terraformer](Terraformer)'s **Hydrated** stage (water).
 
 ## Overview
+
 Deeper terraforming advances in stages — Rooted → Hydrated → Living. The Hydrated stage fills
 basins below the Terraformer's water table with real water, and every water source placed costs
 **1 hydration unit**. The Hydration Module is where those units come from: it melts glacite
 (crystallised water-ice mined on [Glacira](Home)) into the Terraformer's hydration buffer.
 
 ## Obtaining
+
 **Craft** (shaped):
-```
+
+```text
 G N G
 N F N
 G N G
 ```
+
 `G` = Glacite · `N` = Nerosteel Ingot · `F` = [Fluid Tank](Fluid-Tank)
 
 ## How it works
+
 - **Must touch the Terraformer:** place it directly against any face of a Terraformer block.
   A module with even a one-block gap feeds nothing.
 - **Feed it glacite:** drop glacite (16 units each) or Blocks of Glacite (144 units) into its input
@@ -29,6 +34,7 @@ G N G
   [Terraform Monitor](Terraform-Monitor)) shows "Needs glacite" while stage 2 waits.
 
 ## Details
+
 - ID: `nerospace:hydration_module` · Tool: pickaxe, iron tier · Drops: itself
 - Input items are tag-driven (`nerospace:hydration_input`) — glacite-only by default; modpacks can
   widen it (vanilla ice is deliberately excluded so the Glacira trip stays meaningful).

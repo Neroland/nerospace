@@ -3,6 +3,7 @@
 A reference for Nerospace's non-block items. (Blocks have their own pages — see the sidebar.)
 
 ## Materials
+
 | Item | Notes |
 |---|---|
 | **Raw Nerosium** | Mined from [Nerosium Ore](Nerosium-Ore); smelt/blast into a Nerosium Ingot. |
@@ -15,6 +16,7 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 | **Glacite** | Gem from [Glacite Ore](Glacite-Ore) on Glacira; [Cryo Suit](Oxygen-Suit) pieces and the [Hydration Module](Hydration-Module)'s water cycle. |
 
 ## Tools
+
 - **Nerosium Pickaxe** — iron-tier mining, higher durability and a small attack bonus. Craft:
   3 Nerosium Ingots over two sticks (standard pickaxe pattern).
 - **[Configurator](Configurator)** — the pipe-network tool: per-face × per-layer I/O modes, with a
@@ -23,6 +25,7 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
   [Pipe Filters and Upgrades](Pipe-Filters-and-Upgrades).
 
 ## Oxygen Suit
+
 A four-piece nerosteel armour set — **Helmet, Chestplate, Leggings, Boots** — that doubles as personal
 life support. Wearing the **full set** lets you breathe off-world away from a generator/pad; it draws
 from a finite air tank that refills in any breathable zone (so it greatly extends your air rather than
@@ -39,6 +42,7 @@ Two **hazard variants** of the Tier 2 suit shield you from planetary extremes (u
 engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 ## Rockets & Fuel
+
 - **Rocket Fuel Canister** — a stackable fuel unit. Craft (shapeless): Blaze Powder + Coal +
   Iron Ingot → 2 canisters. Used to fuel rockets/machines and as a crafting core. (Reachable before
   your first launch — no off-world materials needed.)
@@ -60,20 +64,24 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
   **FOUND** node to found your own named orbital station.
 
 ## Star Guide
+
 - **Star Guide Book** — Book + Raw Nerosium (shapeless). Right-click to open the
   **[Star Guide](Star-Guide)**, the interactive 7-chapter progression tree.
 - **[Star Guide](Star-Guide)** (pedestal block) — holds the book, projects a next-goal hologram.
 
 ## Food & creature drops
+
 - **Loper Haunch** — dropped by the Meadow Loper; hearty food.
 - **Strutter Drumstick** — dropped by the Ember Strutter; food.
 - **Drift Fleece** — dropped by the Woolly Drift; crafts into 4 String.
   See **[Creatures](Creatures)** for the livestock themselves.
 
 ## Travel devices (creative)
+
 - **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira Compasses** are
   creative-only one-click travel aids for testing and building (no survival recipe — rockets are the
   survival route).
 
 ## Spawn eggs
+
 Creative spawn eggs exist for all eight creatures — see **[Creatures](Creatures)**.

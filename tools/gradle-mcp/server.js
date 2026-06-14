@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /*
  * gradle-mcp: a tiny, zero-dependency MCP server that runs Gradle builds
- * on the local machine and exposes them as async tools.
+ * on the local machine and exposes them as async tools. It also reports
+ * compiler/analyzer diagnostics from each build, and lints Markdown files
+ * (markdown_check) against a markdownlint-style rule subset.
  *
  * Why this exists: build verification (NeoForge decompile + compile) needs
  * real RAM, multiple cores, and minutes of uninterrupted runtime that a
@@ -28,7 +30,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const SERVER_NAME = 'gradle-mcp';
-const SERVER_VERSION = '1.1.0';
+const SERVER_VERSION = '1.3.0';
 const DEFAULT_PROTOCOL = '2025-06-18';
 
 // Where to run Gradle. Override per-call with the `project_dir` argument.
@@ -62,11 +64,226 @@ function tailFile(p, lines) {
   }
 }
 
-function detectOutcome(p) {
-  const txt = tailFile(p, 0);
-  if (/BUILD SUCCESSFUL/.test(txt)) return 'SUCCESSFUL';
-  if (/BUILD FAILED/.test(txt)) return 'FAILED';
+function outcomeOf(text) {
+  if (/BUILD SUCCESSFUL/.test(text)) return 'SUCCESSFUL';
+  if (/BUILD FAILED/.test(text)) return 'FAILED';
   return null;
+}
+
+/**
+ * Extract compiler / analyzer diagnostics from a build log. Handles both:
+ *  - javac (gradle_build / compileJava):  ".../Foo.java:42: error: message"
+ *  - Eclipse ecj (gradle_analyze / ecjCheck):
+ *        1. WARNING in /abs/Foo.java (at line 42)
+ *            offending source line
+ *            ^^^^^^
+ *        The actual problem description
+ *        ----------
+ * Returns a flat list of { severity, file, line, message }.
+ */
+function parseDiagnostics(text) {
+  const lines = text.split(/\r?\n/);
+  const diags = [];
+  let ecj = null; // a pending ecj block whose message arrives on a later line
+  const flush = () => {
+    if (ecj) {
+      diags.push(ecj);
+      ecj = null;
+    }
+  };
+  for (const line of lines) {
+    // An ecj block ends at its dashed separator.
+    if (/^-{5,}\s*$/.test(line)) {
+      flush();
+      continue;
+    }
+    // javac single-line diagnostic.
+    let m = line.match(/^(.*\.java):(\d+):\s*(error|warning):\s*(.*)$/);
+    if (m) {
+      flush();
+      diags.push({
+        severity: m[3].toLowerCase(),
+        file: m[1].trim(),
+        line: Number(m[2]),
+        message: m[4].trim(),
+      });
+      continue;
+    }
+    // ecj diagnostic header.
+    m = line.match(/^\s*\d+\.\s*(WARNING|ERROR)\s+in\s+(.+?\.java)\s*\(at line (\d+)\)/);
+    if (m) {
+      flush();
+      ecj = {
+        severity: m[1].toLowerCase(),
+        file: m[2].trim(),
+        line: Number(m[3]),
+        message: '',
+      };
+      continue;
+    }
+    // Inside an ecj block the description is the last non-caret, non-blank line.
+    if (ecj) {
+      const t = line.trim();
+      if (t && !/^[\^~\s]+$/.test(t)) {
+        ecj.message = t;
+      }
+    }
+  }
+  flush();
+  return diags;
+}
+
+const MAX_DIAGNOSTIC_MESSAGES = 50;
+
+// ---- Markdown linting (zero-dependency subset of markdownlint) -------------
+
+const MARKDOWN_SKIP_DIRS = new Set([
+  'node_modules', '.git', '.gradle', 'build', 'out', 'bin', '.idea', '.vscode', 'run',
+]);
+
+/** Recursively collect *.md / *.markdown files under {@code root}, skipping build/vcs dirs. */
+function findMarkdownFiles(root) {
+  const results = [];
+  const walk = (dir) => {
+    if (results.length > 5000) return;
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) {
+        if (!MARKDOWN_SKIP_DIRS.has(e.name)) walk(full);
+      } else if (/\.(md|markdown)$/i.test(e.name)) {
+        results.push(full);
+      }
+    }
+  };
+  walk(root);
+  return results;
+}
+
+/** Read the repo's .markdownlint.json (rule toggles); {} if absent/unparseable. */
+function loadMarkdownConfig(projectDir) {
+  const p = path.join(projectDir, '.markdownlint.json');
+  try {
+    if (fs.existsSync(p)) return { config: JSON.parse(fs.readFileSync(p, 'utf8')), path: p };
+  } catch {
+    /* malformed config → fall back to defaults */
+  }
+  return { config: {}, path: null };
+}
+
+/**
+ * Lint one Markdown document against a useful subset of markdownlint rules. A rule whose id is set
+ * to {@code false} in {@code config} is skipped (so the repo .markdownlint.json is honoured).
+ * Returns [{ line, rule, description }].
+ */
+function lintMarkdown(text, config) {
+  const on = (id) => config[id] !== false;
+  let lines = text.split(/\r?\n/);
+  // Drop the empty element produced by a trailing newline so it isn't seen as a blank line.
+  if (lines.length && lines[lines.length - 1] === '') lines = lines.slice(0, -1);
+
+  const v = [];
+  const add = (line, rule, description) => v.push({ line, rule, description });
+
+  let inFence = false;
+  let fenceChar = '';
+  let fenceLen = 0;
+  let blankRun = 0;
+  let h1Count = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const prev = i > 0 ? lines[i - 1] : null;
+    const next = i + 1 < lines.length ? lines[i + 1] : null;
+    const trimmed = line.trim();
+
+    const fence = line.match(/^(\s{0,3})(`{3,}|~{3,})(.*)$/);
+    if (fence) {
+      const marker = fence[2];
+      const after = fence[3].trim();
+      if (!inFence) {
+        inFence = true;
+        fenceChar = marker[0];
+        fenceLen = marker.length;
+        blankRun = 0;
+        if (on('MD031') && prev !== null && prev.trim() !== '') {
+          add(i + 1, 'MD031', 'Fenced code block should be preceded by a blank line');
+        }
+        if (on('MD040') && after === '') {
+          add(i + 1, 'MD040', 'Fenced code block should have a language specified');
+        }
+        continue;
+      }
+      if (marker[0] === fenceChar && marker.length >= fenceLen && after === '') {
+        inFence = false;
+        blankRun = 0;
+        if (on('MD031') && next !== null && next.trim() !== '') {
+          add(i + 1, 'MD031', 'Fenced code block should be followed by a blank line');
+        }
+        continue;
+      }
+    }
+    if (inFence) continue; // don't apply prose rules to code content
+
+    if (trimmed === '') {
+      blankRun++;
+      if (on('MD012') && blankRun > 1) {
+        add(i + 1, 'MD012', 'Multiple consecutive blank lines');
+      }
+      if (on('MD009') && line.length > 0) {
+        add(i + 1, 'MD009', 'Trailing spaces');
+      }
+      continue;
+    }
+    blankRun = 0;
+
+    if (on('MD010') && line.includes('\t')) {
+      add(i + 1, 'MD010', 'Hard tabs');
+    }
+    if (on('MD009')) {
+      const ws = line.match(/[ \t]+$/);
+      if (ws && (ws[0].includes('\t') || ws[0].length !== 2)) {
+        // markdownlint allows exactly 2 trailing spaces as a hard line break (br_spaces=2).
+        add(i + 1, 'MD009', 'Trailing spaces');
+      }
+    }
+
+    const h = line.match(/^(#{1,6})(\s*)(.*?)\s*$/);
+    if (h && line.startsWith('#')) {
+      const level = h[1].length;
+      if (on('MD018') && h[2] === '' && h[3] !== '') {
+        add(i + 1, 'MD018', 'No space after hash on atx style heading');
+      }
+      if (on('MD022')) {
+        if (prev !== null && prev.trim() !== '') {
+          add(i + 1, 'MD022', 'Heading should be preceded by a blank line');
+        }
+        if (next !== null && next.trim() !== '') {
+          add(i + 1, 'MD022', 'Heading should be followed by a blank line');
+        }
+      }
+      if (level === 1) {
+        h1Count++;
+        if (on('MD025') && h1Count > 1) {
+          add(i + 1, 'MD025', 'Multiple top-level (H1) headings in the same document');
+        }
+      }
+      if (on('MD026') && /[.,;:!?]$/.test(h[3])) {
+        add(i + 1, 'MD026', 'Trailing punctuation in heading');
+      }
+    }
+  }
+
+  if (on('MD047') && text.length > 0 && (!text.endsWith('\n') || text.endsWith('\n\n'))) {
+    add(lines.length, 'MD047', 'File should end with a single newline character');
+  }
+
+  return v;
 }
 
 function startBuild({ tasks, extra_args, project_dir }) {
@@ -154,18 +371,38 @@ function resolveBuild(build_id) {
 
 function summarize(rec, tailLines = 0) {
   const elapsedMs = (rec.endedAt || Date.now()) - rec.startedAt;
-  const outcome = detectOutcome(rec.logPath);
+  const full = tailFile(rec.logPath, 0); // read once; reused for outcome + diagnostics + tail
+  const diags = parseDiagnostics(full);
+  const errorCount = diags.reduce((n, d) => n + (d.severity === 'error' ? 1 : 0), 0);
+  const warningCount = diags.length - errorCount;
   const obj = {
     build_id: rec.id,
     status: rec.status, // running | succeeded | failed | stopped | error
-    outcome, // SUCCESSFUL | FAILED | null (still running / unknown)
+    outcome: outcomeOf(full), // SUCCESSFUL | FAILED | null (still running / unknown)
     exit_code: rec.exitCode,
     project_dir: rec.projectDir,
     command: `gradlew ${[...rec.tasks, ...rec.args].join(' ')}`,
     elapsed_seconds: Math.round(elapsedMs / 1000),
     log_file: rec.logPath,
+    // Compiler + ecj analyzer diagnostics, parsed straight from the log so callers
+    // see errors/warnings without a separate gradle_log grep.
+    diagnostics: {
+      errors: errorCount,
+      warnings: warningCount,
+      messages: diags
+        .slice(0, MAX_DIAGNOSTIC_MESSAGES)
+        .map(
+          (d) =>
+            `${d.severity.toUpperCase()} ${d.file}:${d.line}` +
+            (d.message ? ` — ${d.message}` : '')
+        ),
+      truncated: diags.length > MAX_DIAGNOSTIC_MESSAGES,
+    },
   };
-  if (tailLines > 0) obj.log_tail = tailFile(rec.logPath, tailLines);
+  if (tailLines > 0) {
+    const arr = full.split(/\r?\n/);
+    obj.log_tail = arr.slice(Math.max(0, arr.length - tailLines)).join('\n');
+  }
   return obj;
 }
 
@@ -217,8 +454,9 @@ const TOOLS = [
     description:
       'Convenience: start the `ecjCheck` task asynchronously — runs the Eclipse ' +
       'compiler (the same analyzer as the VS Code Problems panel, configured by ' +
-      'tools/ecj.prefs) over the main sources. Poll with gradle_status, then read ' +
-      'diagnostics with gradle_log (grep "WARNING|ERROR" for a summary).',
+      'tools/ecj.prefs) over the main sources. Poll with gradle_status — its ' +
+      '`diagnostics` field now reports the parsed analyzer errors/warnings directly ' +
+      '(use gradle_log for the full raw output).',
     inputSchema: {
       type: 'object',
       properties: {
@@ -231,7 +469,9 @@ const TOOLS = [
     name: 'gradle_status',
     description:
       'Poll a build. Returns status, outcome (BUILD SUCCESSFUL/FAILED once known), ' +
-      'exit code, elapsed time, and a tail of the log. Omit build_id for the latest build.',
+      'exit code, elapsed time, a tail of the log, and a `diagnostics` summary — ' +
+      'compiler (javac) and analyzer (ecj/ecjCheck) error/warning counts plus the ' +
+      'first matching messages, parsed straight from the log. Omit build_id for the latest build.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -256,6 +496,33 @@ const TOOLS = [
         grep: {
           type: 'string',
           description: 'Case-insensitive regex; only matching lines are returned.',
+        },
+      },
+    },
+  },
+  {
+    name: 'markdown_check',
+    description:
+      'Lint Markdown files for common markdownlint-style violations and return them immediately ' +
+      '(synchronous — no build_id/polling). Checks: MD009 trailing spaces, MD010 hard tabs, ' +
+      'MD012 multiple blank lines, MD018 missing space after #, MD022 blanks around headings, ' +
+      'MD025 multiple H1, MD026 heading trailing punctuation, MD031 blanks around fenced code, ' +
+      'MD040 fenced code language, MD047 single trailing newline. Honours the repo ' +
+      '.markdownlint.json (a rule set to false there is skipped). Scans the project for ' +
+      '*.md/*.markdown (skipping node_modules/.git/build/...) unless `paths` is given.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        paths: {
+          type: 'array',
+          items: { type: 'string' },
+          description:
+            'Specific files or directories to lint (relative to project_dir or absolute). ' +
+            'Default: scan the whole project.',
+        },
+        project_dir: {
+          type: 'string',
+          description: 'Project root (defaults to GRADLE_PROJECT_DIR).',
         },
       },
     },
@@ -328,6 +595,66 @@ function callTool(name, args) {
           .join('\n');
       }
       return { build_id: rec.id, log: text };
+    }
+    case 'markdown_check': {
+      const projectDir = args.project_dir || DEFAULT_PROJECT_DIR;
+      if (!fs.existsSync(projectDir)) {
+        throw new Error(`project_dir does not exist: ${projectDir}`);
+      }
+      const { config, path: configPath } = loadMarkdownConfig(projectDir);
+
+      let files = [];
+      if (Array.isArray(args.paths) && args.paths.length) {
+        for (const rel of args.paths) {
+          const p = path.isAbsolute(rel) ? rel : path.join(projectDir, rel);
+          try {
+            const st = fs.statSync(p);
+            if (st.isDirectory()) files.push(...findMarkdownFiles(p));
+            else if (/\.(md|markdown)$/i.test(p)) files.push(p);
+          } catch {
+            /* skip missing path */
+          }
+        }
+      } else {
+        files = findMarkdownFiles(projectDir);
+      }
+      files = [...new Set(files)];
+
+      const MAX_VIOLATIONS = 300;
+      const violations = [];
+      const countsByRule = {};
+      let truncated = false;
+      for (const f of files) {
+        let text;
+        try {
+          text = fs.readFileSync(f, 'utf8');
+        } catch {
+          continue;
+        }
+        for (const x of lintMarkdown(text, config)) {
+          countsByRule[x.rule] = (countsByRule[x.rule] || 0) + 1;
+          if (violations.length < MAX_VIOLATIONS) {
+            violations.push({
+              file: path.relative(projectDir, f) || f,
+              line: x.line,
+              rule: x.rule,
+              description: x.description,
+            });
+          } else {
+            truncated = true;
+          }
+        }
+      }
+      const total = Object.values(countsByRule).reduce((a, b) => a + b, 0);
+      return {
+        project_dir: projectDir,
+        config_file: configPath,
+        files_checked: files.length,
+        total_violations: total,
+        counts_by_rule: countsByRule,
+        violations,
+        truncated,
+      };
     }
     case 'gradle_stop': {
       const rec = resolveBuild(args.build_id);

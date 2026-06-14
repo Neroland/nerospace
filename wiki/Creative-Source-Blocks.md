@@ -14,6 +14,7 @@ All four also act as voids: anything pushed into them disappears, which makes th
 throughput testing.
 
 ## Gallery
+
 `/nerospace gallery` (creative, cheats on) builds four live demonstration rows — one per resource
 layer — each running creative source → pipes → real storage block, pre-configured with the
 recommended face modes (source face **In**, sink face **Out**).

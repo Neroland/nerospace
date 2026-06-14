@@ -3,20 +3,25 @@
 The mount a rocket is deployed onto before launch — and a safe landing zone.
 
 ## Overview
+
 Deploy a **Rocket** (right-click a launch pad with a rocket item) and it appears on the pad, ready to
 fuel and fly. The pad also acts as a small **breathable safe zone** so arrivals aren't immediately
 punished by the airless atmosphere.
 
 ## Obtaining
+
 **Craft** (shaped):
-```
+
+```text
 N N N
 N B N
 N N N
 ```
+
 `N` = Nerosteel Ingot · `B` = [Block of Nerosium](Block-of-Nerosium)
 
 ## How it works
+
 - **Deploy:** right-click the pad with a rocket item to place the rocket entity on it. **A complete,
   aligned 3×3 pad is required** — deploying on a partial pad shows a clear message instead. The same
   check re-runs at launch, so breaking pad blocks under a deployed rocket grounds it.
@@ -39,4 +44,5 @@ N N N
   land. Build an [Oxygen Generator](Oxygen-Generator) base for anything beyond the landing area.
 
 ## Details
+
 - ID: `nerospace:rocket_launch_pad` · Tool: pickaxe, iron tier · Drops: itself

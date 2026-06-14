@@ -54,7 +54,7 @@ public class RefiningCategory extends AbstractRecipeCategory<RefiningCategory.Re
         builder.addInputSlot(1, 21).setStandardSlotBackground().addItemStacks(recipe.catalyst());
         builder.addOutputSlot(66, 11).setStandardSlotBackground()
                 .setFluidRenderer(Math.max(1, mb), false, 16, 16)
-                .add(ModFluids.ROCKET_FUEL.get(), (long) mb);
+                .add(ModFluids.ROCKET_FUEL.get(), mb);
     }
 
     @Override

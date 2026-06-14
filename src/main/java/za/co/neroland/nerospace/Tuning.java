@@ -70,6 +70,10 @@ public final class Tuning {
     public static final int BASE_FUEL_REFINERY_TANK = 8_000;
     public static final int BASE_OXYGEN_GENERATOR_O2_CAPACITY = 8_000;
     public static final int BASE_TERRAFORMER_BUFFER = 100_000;
+    /** Quarry controller energy buffer (MINER_DESIGN — power-fed, throughput scales with supply). */
+    public static final int BASE_QUARRY_BUFFER = 200_000;
+    /** Quarry internal fluid buffer (mB) for sucked-up liquids before they auto-eject to a tank. */
+    public static final int BASE_QUARRY_FLUID_CAPACITY = 16_000;
 
     // ------------------------------------------------------------------
     // Base values: machine speeds / item logistics
@@ -106,6 +110,8 @@ public final class Tuning {
     public static final int BASE_TERRAFORM_ENERGY_PER_BLOCK = 12;
     /** Grinder energy consumed per progress tick (FE). */
     public static final int BASE_GRINDER_ENERGY_PER_TICK = 30;
+    /** Quarry energy consumed per mined block (FE); modules' efficiency lowers it. */
+    public static final int BASE_QUARRY_ENERGY_PER_BLOCK = 40;
     /** Fuel Refinery energy consumed per working tick (FE); over a batch ≈ 4,000 FE per 2,000 mB. */
     public static final int BASE_FUEL_REFINERY_FE_PER_TICK = 40;
     /** Rocket fuel produced per refining batch (mB) — one coal + one blaze powder = 2,000 mB. */
@@ -262,6 +268,14 @@ public final class Tuning {
         return scale(BASE_TERRAFORMER_BUFFER, Config.ENERGY_RATE_MULTIPLIER.get());
     }
 
+    public static int quarryBuffer() {
+        return scale(BASE_QUARRY_BUFFER, Config.ENERGY_RATE_MULTIPLIER.get());
+    }
+
+    public static int quarryFluidCapacity() {
+        return scale(BASE_QUARRY_FLUID_CAPACITY, Config.ENERGY_RATE_MULTIPLIER.get());
+    }
+
     public static int fuelRefineryBuffer() {
         return scale(BASE_FUEL_REFINERY_BUFFER, Config.ENERGY_RATE_MULTIPLIER.get());
     }
@@ -305,6 +319,10 @@ public final class Tuning {
 
     public static int grinderEnergyPerTick() {
         return scale(BASE_GRINDER_ENERGY_PER_TICK, Config.FUEL_COST_MULTIPLIER.get());
+    }
+
+    public static int quarryEnergyPerBlock() {
+        return scale(BASE_QUARRY_ENERGY_PER_BLOCK, Config.FUEL_COST_MULTIPLIER.get());
     }
 
     /** Fuel Refinery energy per working tick (a consumable cost, so fuelCostMultiplier). */

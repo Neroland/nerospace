@@ -1419,6 +1419,10 @@ public final class NerospaceGameTests {
     }
 
     /** Awarding a step's advancement flips its completion bit; a menu click marks it seen. */
+    // makeMockServerPlayerInLevel is deprecated-for-removal, but the only non-deprecated mock
+    // (makeMockPlayer) returns a plain Player — this test needs a ServerPlayer (advancements +
+    // attachments), so there is no drop-in replacement yet.
+    @SuppressWarnings("removal")
     private static void testStarGuideProgressAndSeen(GameTestHelper helper) {
         net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
         var manager = helper.getLevel().getServer().getAdvancements();

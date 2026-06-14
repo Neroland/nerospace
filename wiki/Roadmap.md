@@ -38,8 +38,7 @@ release** — the complete progression from the first nerosium ore to a terrafor
 - The **Star Guide** interactive progression tree (7 chapters / 31 steps) backed by a full
   advancement tree; the creative `/nerospace gallery` showcase; a 36+-test gametest suite.
 
-  
-**JEI integration** 
+**JEI integration**
 - With JEI installed, the grinder, fuel refinery and combustion generator show their own recipe categories (standard recipes/tags already worked out of the box).
 
 ## 🛠️ Next up (first post-1.0 updates)

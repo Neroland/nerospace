@@ -40,6 +40,8 @@ import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
 import za.co.neroland.nerospace.machine.HydrationModuleBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
+import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
+import za.co.neroland.nerospace.machine.quarry.QuarryRegion;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
@@ -325,6 +327,57 @@ public final class NerospaceCommands {
         // One frozen (NoAI) row only — AI mobs wander, which breaks reproducible screenshots.
         for (int i = 0; i < creatures.size(); i++) {
             spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz + 1), true);
+        }
+
+        // QUARRY (MINER_DESIGN): two NE displays.
+        //  1. Landmark-only — three landmarks in an L (shows the projected marker lasers).
+        //  2. Fully operating — a powered quarry mid-dig: frame ring, drill head, a real pit forming.
+        BlockState landmark = ModBlocks.QUARRY_LANDMARK.get().defaultBlockState();
+        int lx = origin.getX() + 28; // landmark-only display (NE, nearer the centre)
+        int lz = origin.getZ() - 40;
+        for (int dx = -1; dx <= 7; dx++) {
+            for (int dz = -1; dz <= 7; dz++) {
+                level.setBlockAndUpdate(new BlockPos(lx + dx, fy, lz + dz), floor);
+            }
+        }
+        level.setBlockAndUpdate(new BlockPos(lx, fy + 1, lz), landmark);
+        level.setBlockAndUpdate(new BlockPos(lx + 6, fy + 1, lz), landmark);
+        level.setBlockAndUpdate(new BlockPos(lx, fy + 1, lz + 6), landmark);
+
+        // Operating quarry: a 5x5 region west-fed by an endless battery, staged straight into mining.
+        int qx = origin.getX() + 42;
+        int qz = origin.getZ() - 40;
+        int refY = fy + 1;
+        for (int dx = -5; dx <= 5; dx++) {       // power pad to the west of the region
+            for (int dz = -1; dz <= 5; dz++) {
+                level.setBlockAndUpdate(new BlockPos(qx + dx, fy, qz + dz), floor);
+            }
+        }
+        QuarryRegion region = new QuarryRegion(qx, qz, qx + 4, qz + 4, refY);
+        BlockState frameBlock = ModBlocks.QUARRY_FRAME.get().defaultBlockState();
+        for (BlockPos fp : region.framePositions()) {
+            level.setBlockAndUpdate(fp, frameBlock);
+        }
+        // Pre-carve a starter pit so it reads as mid-dig the instant it's shot.
+        for (int x = qx; x <= qx + 4; x++) {
+            for (int z = qz; z <= qz + 4; z++) {
+                for (int y = refY - 1; y >= refY - 4; y--) {
+                    level.setBlockAndUpdate(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        BlockPos quarryPos = new BlockPos(qx - 2, refY, qz + 2);
+        level.setBlockAndUpdate(new BlockPos(qx - 4, refY, qz + 2),
+                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(qx - 3, refY, qz + 2),
+                ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(quarryPos, ModBlocks.QUARRY_CONTROLLER.get().defaultBlockState());
+        setAllModes(level, new BlockPos(qx - 3, refY, qz + 2), Direction.WEST, PipeIoMode.IN);
+        setAllModes(level, new BlockPos(qx - 3, refY, qz + 2), Direction.EAST, PipeIoMode.OUT);
+        if (level.getBlockEntity(quarryPos) instanceof QuarryControllerBlockEntity quarry) {
+            quarry.setItem(QuarryControllerBlockEntity.FRAME_SLOT,
+                    new ItemStack(ModItems.FRAME_CASING.get(), 64));
+            quarry.stageDisplay(region, refY - 5);
         }
 
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "

@@ -28,6 +28,10 @@
     "nerospace:gas_tank",
     "nerospace:item_store",
     "nerospace:star_guide",
-    "nerospace:launch_gantry"
+    "nerospace:launch_gantry",
+    "nerospace:quarry_controller",
+    "nerospace:quarry_landmark",
+    "nerospace:quarry_frame",
+    "nerospace:trash_can"
   ]
 }

@@ -19,6 +19,7 @@
     "nerospace:terraform_monitor",
     "nerospace:universal_pipe",
     "nerospace:combustion_generator",
-    "nerospace:passive_generator"
+    "nerospace:passive_generator",
+    "nerospace:quarry_controller"
   ]
 }

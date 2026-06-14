@@ -54,6 +54,10 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.HYDRATION_MODULE.get());
         dropSelf(ModBlocks.TERRAFORM_MONITOR.get());
 
+        // Quarry / Miner (the frame has noLootTable — drops nothing, like the rocket fuel block).
+        dropSelf(ModBlocks.QUARRY_CONTROLLER.get());
+        dropSelf(ModBlocks.QUARRY_LANDMARK.get());
+
         // Power grid.
         dropSelf(ModBlocks.UNIVERSAL_PIPE.get());
         dropSelf(ModBlocks.COMBUSTION_GENERATOR.get());
@@ -68,6 +72,7 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.CREATIVE_GAS_TANK.get());
         dropSelf(ModBlocks.ITEM_STORE.get());
         dropSelf(ModBlocks.CREATIVE_ITEM_STORE.get());
+        dropSelf(ModBlocks.TRASH_CAN.get());
 
         // Phase 3 — Greenxertz.
         dropSelf(ModBlocks.NEROSTEEL_BLOCK.get());

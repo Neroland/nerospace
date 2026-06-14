@@ -2635,7 +2635,193 @@ def gen_gui_star_guide():
     save(img, os.path.join(GUI_DIR, "star_guide.png"))
 
 
+# ---------------- MINER_DESIGN: QUARRY / MINER ----------------
+
+def gen_quarry_controller():
+    rng = random.Random(1301)
+    img = new_img()
+    px = img.load()
+    noise_fill(img, METAL, rng)
+    bevel(img, METAL_L, METAL_D)
+    # recessed core
+    for y in range(4, 12):
+        for x in range(4, 12):
+            px[x, y] = METAL_D
+    # tier-1 red drill cross
+    for i in range(4, 12):
+        px[i, 8] = N_RED
+        px[8, i] = N_RED
+    px[8, 8] = N_GLOW
+    # cyan projector corner accents
+    for (bx, by) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        px[bx, by] = I_CYAN
+    save(img, os.path.join(BLOCK_DIR, "quarry_controller.png"))
+
+
+def gen_quarry_landmark():
+    rng = random.Random(1302)
+    img = new_img()
+    px = img.load()
+    # opaque dark-steel body (rendered as a full cube)
+    noise_fill(img, [METAL[2], METAL[0], METAL_D], rng)
+    bevel(img, METAL_L, METAL_D)
+    # central purple emitter column with a bright top
+    for y in range(2, 14):
+        for x in range(6, 10):
+            px[x, y] = N_PURPLE if (x + y) % 2 else N_MAG
+    for x in range(6, 10):
+        px[x, 2] = N_GLOW
+    px[7, 1] = N_BRIGHT
+    px[8, 1] = N_BRIGHT
+    save(img, os.path.join(BLOCK_DIR, "quarry_landmark.png"))
+
+
+def gen_quarry_frame():
+    # Glowing space frame rendered as a clean WIREFRAME: every pixel is either fully opaque (the
+    # glowing border beams) or fully transparent (the open centre). All-or-nothing alpha makes 26.1
+    # render it on the alpha-TESTED cutout layer (not the blended translucent layer), so a ring of
+    # these cubes reads as crisp glowing bars with no z-fighting / overdraw haze.
+    img = new_img()  # CLEAR (alpha 0) background — the see-through centre
+    px = img.load()
+    # 2px opaque glowing border beam on every edge.
+    for i in range(S):
+        for t in (0, 1):
+            px[i, t] = I_CYAN
+            px[i, S - 1 - t] = I_CYAN
+            px[t, i] = I_CYAN
+            px[S - 1 - t, i] = I_CYAN
+    # brighter corner nodes (still fully opaque) so the lattice joints pop.
+    for (bx, by) in [(0, 0), (1, 1), (S - 1, 0), (S - 2, 1),
+                     (0, S - 1), (1, S - 2), (S - 1, S - 1), (S - 2, S - 2)]:
+        px[bx, by] = I_WHITE
+    save(img, os.path.join(BLOCK_DIR, "quarry_frame.png"))
+
+
+def gen_frame_casing():
+    img = new_img()
+    px = img.load()
+    for y in range(3, 13):
+        for x in range(3, 13):
+            if x in (3, 12) or y in (3, 12):
+                px[x, y] = METAL_L if (x + y) % 2 else METAL[1]
+    for y in range(4, 12):
+        for x in range(4, 12):
+            if x in (4, 11) or y in (4, 11):
+                px[x, y] = METAL_D
+    for (bx, by) in [(3, 3), (12, 3), (3, 12), (12, 12)]:
+        px[bx, by] = METAL_L
+    save(img, os.path.join(ITEM_DIR, "frame_casing.png"))
+
+
+def gen_quarry_module(name, accent):
+    img = new_img()
+    px = img.load()
+    for y in range(2, 14):
+        for x in range(3, 13):
+            px[x, y] = (40, 44, 54, 255)
+    for x in range(3, 13):
+        px[x, 2] = accent
+        px[x, 13] = accent
+    for y in range(2, 14):
+        px[3, y] = accent
+        px[12, y] = accent
+    for y in range(5, 9):
+        for x in range(6, 10):
+            px[x, y] = accent
+    px[7, 6] = (255, 255, 255, 255)
+    for x in range(5, 11, 2):
+        px[x, 13] = METAL_L
+    save(img, os.path.join(ITEM_DIR, name + ".png"))
+
+
+def gen_gui_quarry(accent, accent_d):
+    """A 176x210 quarry-screen hull: frame + module sockets on top, a 2x6 output grid, a readout
+    band, and the standard player inventory at (8,126)."""
+    W, H = 176, 210
+    img = Image.new("RGBA", (256, 256), CLEAR)
+    px = img.load()
+    rng = random.Random(hash("quarry") & 0xFFFF)
+    INK = (5, 8, 13, 255)
+    HULL = [(13, 17, 25, 255), (15, 20, 29, 255), (11, 15, 22, 255)]
+    PANEL = (8, 11, 17, 255)
+    SOCKET = (20, 26, 36, 255)
+    SOCKET_HI = (44, 56, 74, 255)
+    for y in range(H):
+        for x in range(W):
+            px[x, y] = rng.choice(HULL)
+    for i in range(W):
+        px[i, 0] = accent
+        px[i, H - 1] = accent_d
+    for i in range(H):
+        px[0, i] = accent
+        px[W - 1, i] = accent_d
+
+    def socket(sx, sy):
+        for y in range(sy - 1, sy + 17):
+            for x in range(sx - 1, sx + 17):
+                px[x, y] = SOCKET
+        for x in range(sx - 1, sx + 17):
+            px[x, sy - 1] = INK
+            px[x, sy + 16] = SOCKET_HI
+        for y in range(sy - 1, sy + 17):
+            px[sx - 1, y] = INK
+            px[sx + 16, y] = SOCKET_HI
+
+    def recess(x0, y0, x1, y1):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                px[x, y] = PANEL
+
+    socket(8, 20)                       # frame casing
+    for i in range(4):                  # module sockets (room for up to 4 — Tier 3)
+        socket(26 + i * 18, 20)
+    for r in range(2):                  # output grid
+        for c in range(6):
+            socket(8 + c * 18, 42 + r * 18)
+    recess(6, 78, 170, 114)             # readout band
+    for row in range(3):                # player inventory
+        for col in range(9):
+            socket(8 + col * 18, 126 + row * 18)
+    for col in range(9):                # hotbar
+        socket(8 + col * 18, 184)
+    save(img, os.path.join(GUI_DIR, "quarry.png"))
+
+
+def gen_trash_can():
+    rng = random.Random(1401)
+    img = new_img()
+    px = img.load()
+    noise_fill(img, METAL, rng)
+    bevel(img, METAL_L, METAL_D)
+    # vertical ribs
+    for x in (4, 8, 11):
+        for y in range(2, 14):
+            px[x, y] = METAL_D
+    # dark open mouth across the top
+    for x in range(2, 14):
+        px[x, 2] = (12, 12, 16, 255)
+        px[x, 3] = (20, 20, 26, 255)
+    # hazard band under the rim
+    for x in range(2, 14):
+        px[x, 4] = HAZ_Y if (x // 2) % 2 == 0 else HAZ_K
+    for (rx, ry) in [(2, 13), (13, 13)]:
+        px[rx, ry] = METAL_L
+    save(img, os.path.join(BLOCK_DIR, "trash_can.png"))
+
+
 if __name__ == "__main__":
+    # Trash Can (logistics void sink).
+    gen_trash_can()
+    # Quarry / Miner (MINER_DESIGN).
+    gen_quarry_controller()
+    gen_quarry_landmark()
+    gen_quarry_frame()
+    gen_frame_casing()
+    gen_quarry_module("speed_module", (90, 200, 255, 255))
+    gen_quarry_module("efficiency_module", (120, 230, 140, 255))
+    gen_quarry_module("fortune_module", (120, 180, 255, 255))
+    gen_quarry_module("silk_touch_module", (230, 180, 255, 255))
+    gen_gui_quarry((224, 64, 90, 255), (90, 22, 28, 255))
     # Heavy Launch Complex + cockpit rework.
     gen_launch_gantry()
     gen_rocket_tier_entities()

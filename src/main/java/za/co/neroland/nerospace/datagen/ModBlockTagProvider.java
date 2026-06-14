@@ -56,7 +56,11 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         // Star Guide pedestal: pickaxe-mineable but breaks fine by hand (no
                         // requiresCorrectToolForDrops) — it's the day-one tutorial block.
                         ModBlocks.STAR_GUIDE.get(),
-                        ModBlocks.LAUNCH_GANTRY.get());
+                        ModBlocks.LAUNCH_GANTRY.get(),
+                        ModBlocks.QUARRY_CONTROLLER.get(),
+                        ModBlocks.QUARRY_LANDMARK.get(),
+                        ModBlocks.QUARRY_FRAME.get(),
+                        ModBlocks.TRASH_CAN.get());
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.NEROSIUM_ORE.get(),
@@ -79,7 +83,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.TERRAFORM_MONITOR.get(),
                         ModBlocks.UNIVERSAL_PIPE.get(),
                         ModBlocks.COMBUSTION_GENERATOR.get(),
-                        ModBlocks.PASSIVE_GENERATOR.get());
+                        ModBlocks.PASSIVE_GENERATOR.get(),
+                        ModBlocks.QUARRY_CONTROLLER.get());
 
         this.tag(Tags.Blocks.ORES)
                 .add(ModBlocks.NEROSIUM_ORE.get(), ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),

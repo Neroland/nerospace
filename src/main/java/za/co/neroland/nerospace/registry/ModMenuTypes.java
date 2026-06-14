@@ -59,6 +59,12 @@ public final class ModMenuTypes {
             "terraform_monitor",
             () -> new MenuType<>(TerraformMonitorMenu::new, FeatureFlags.DEFAULT_FLAGS));
 
+    // Quarry / Miner (MINER_DESIGN).
+    public static final Supplier<MenuType<za.co.neroland.nerospace.machine.quarry.QuarryMenu>> QUARRY_CONTROLLER =
+            MENU_TYPES.register("quarry_controller",
+                    () -> new MenuType<>(za.co.neroland.nerospace.machine.quarry.QuarryMenu::new,
+                            FeatureFlags.DEFAULT_FLAGS));
+
     public static final Supplier<MenuType<CombustionGeneratorMenu>> COMBUSTION_GENERATOR = MENU_TYPES.register(
             "combustion_generator",
             () -> new MenuType<>(CombustionGeneratorMenu::new, FeatureFlags.DEFAULT_FLAGS));

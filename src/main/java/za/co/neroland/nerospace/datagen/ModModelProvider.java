@@ -91,6 +91,13 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.STATION_FLOOR.get());
         blockModels.createTrivialCube(ModBlocks.STATION_WALL.get());
 
+        // Quarry / Miner (MINER_DESIGN): controller + landmark cubes; frame is a glowing translucent
+        // cube — a full-cube element model with AO off so the sprite's alpha drives the render layer
+        // (same trick as the Universal Pipe), letting you see through the open frame.
+        blockModels.createTrivialCube(ModBlocks.QUARRY_CONTROLLER.get());
+        blockModels.createTrivialCube(ModBlocks.QUARRY_LANDMARK.get());
+        registerTranslucentCube(blockModels, ModBlocks.QUARRY_FRAME.get());
+
         // Developer diagnostics — Sentry test block (hidden; /give only).
         blockModels.createTrivialCube(ModBlocks.SENTRY_TEST.get());
 
@@ -143,6 +150,13 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.PIPE_FILTER.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.SPEED_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CAPACITY_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
+
+        // Quarry / Miner — frame casing + cross-machine upgrade module cards.
+        itemModels.generateFlatItem(ModItems.FRAME_CASING.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.SPEED_MODULE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.EFFICIENCY_MODULE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.FORTUNE_MODULE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.SILK_TOUCH_MODULE.get(), ModelTemplates.FLAT_ITEM);
 
         // Phase 8d — oxygen suit (inventory item models; the worn layer is the equipment asset).
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HELMET.get(), ModelTemplates.FLAT_ITEM);
@@ -323,6 +337,8 @@ public class ModModelProvider extends ModelProvider {
                 .build(), machineMapping(ModBlocks.ITEM_STORE.get(), true, true), true);
         // Creative Item Store keeps the plain cube (no drawer — it conjures items, not stores them).
         blockModels.createTrivialCube(ModBlocks.CREATIVE_ITEM_STORE.get());
+        // Trash Can — plain textured cube.
+        blockModels.createTrivialCube(ModBlocks.TRASH_CAN.get());
 
         // Tanks: a corner-beam frame around a visible content core (real depth, no cutout needed).
         registerTank(blockModels, ModBlocks.FLUID_TANK.get());
@@ -389,6 +405,27 @@ public class ModModelProvider extends ModelProvider {
             builder.element(e -> { e.from(14, yy, 2).to(16, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
         }
         shapedBlock(blockModels, block, builder.build(), mapping, false);
+    }
+
+    /**
+     * A full-cube model with ambient occlusion OFF so the sprite's alpha selects the translucent
+     * render layer (26.1 derives the chunk layer from the texture) — used for the glowing,
+     * see-through quarry frame.
+     */
+    private void registerTranslucentCube(BlockModelGenerators blockModels, Block block) {
+        var tex = TextureMapping.getBlockTexture(block);
+        TextureMapping mapping = new TextureMapping().put(TextureSlot.ALL, tex).put(TextureSlot.PARTICLE, tex);
+        ExtendedModelTemplate template = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.ALL)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .ambientOcclusion(false)
+                .element(e -> e.from(0, 0, 0).to(16, 16, 16)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .build();
+        Identifier model = template.create(
+                ModelLocationUtils.getModelLocation(block), mapping, blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(
+                BlockModelGenerators.createSimpleBlock(block, BlockModelGenerators.plainVariant(model)));
     }
 
     /**
