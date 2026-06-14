@@ -71,6 +71,7 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.TERRAFORM_MONITOR.get());
                         output.accept(ModBlocks.COMBUSTION_GENERATOR.get());
                         output.accept(ModBlocks.PASSIVE_GENERATOR.get());
+                        output.accept(ModBlocks.SOLAR_PANEL_T1.get());
                         output.accept(ModBlocks.UNIVERSAL_PIPE.get());
 
                         // Quarry / Miner (MINER_DESIGN).

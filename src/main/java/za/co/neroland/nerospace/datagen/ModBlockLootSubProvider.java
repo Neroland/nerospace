@@ -26,6 +26,9 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.RAW_NEROSIUM_BLOCK.get());
         dropSelf(ModBlocks.NEROSIUM_GRINDER.get());
 
+        // Solar panel (SOLAR_PANEL_DESIGN).
+        dropSelf(ModBlocks.SOLAR_PANEL_T1.get());
+
         add(ModBlocks.NEROSIUM_ORE.get(),
                 block -> createOreDrop(block, ModItems.RAW_NEROSIUM.get()));
         add(ModBlocks.DEEPSLATE_NEROSIUM_ORE.get(),

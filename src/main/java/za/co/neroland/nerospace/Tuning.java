@@ -50,6 +50,18 @@ public final class Tuning {
 
     public static final int BASE_COMBUSTION_GENERATOR_FE_PER_TICK = 60;
     public static final int BASE_PASSIVE_GENERATOR_FE_PER_TICK = 10;
+    /**
+     * Peak FE/tick a SINGLE solar panel adds at full sun (noon, clear sky). The "punchy per-panel"
+     * curve (SOLAR_PANEL_DESIGN): even a small array matters, big arrays are strong. An array's output
+     * is the sum across its panels; storage is the sum of their buffers (see below).
+     */
+    public static final int BASE_SOLAR_PANEL_T1_FE_PER_TICK = 20;
+    public static final int BASE_SOLAR_PANEL_T2_FE_PER_TICK = 100;
+    public static final int BASE_SOLAR_PANEL_T3_FE_PER_TICK = 400;
+    /** Per-panel FE buffer; an array's total storage scales with how many panels it contains. */
+    public static final int BASE_SOLAR_PANEL_T1_BUFFER = 50_000;
+    public static final int BASE_SOLAR_PANEL_T2_BUFFER = 250_000;
+    public static final int BASE_SOLAR_PANEL_T3_BUFFER = 1_000_000;
     public static final int BASE_ENERGY_PIPE_THROUGHPUT = 4_000;
     public static final int BASE_ENERGY_PIPE_CAPACITY = 8_000;
     public static final int BASE_FLUID_PIPE_CAPACITY = 4_000;
@@ -210,6 +222,26 @@ public final class Tuning {
 
     public static int passiveGeneratorFePerTick() {
         return scale(BASE_PASSIVE_GENERATOR_FE_PER_TICK, Config.ENERGY_RATE_MULTIPLIER.get());
+    }
+
+    /** Peak FE/tick for one solar panel of {@code tier} (1-3), config-scaled. */
+    public static int solarPanelFePerTick(int tier) {
+        int base = switch (tier) {
+            case 2 -> BASE_SOLAR_PANEL_T2_FE_PER_TICK;
+            case 3 -> BASE_SOLAR_PANEL_T3_FE_PER_TICK;
+            default -> BASE_SOLAR_PANEL_T1_FE_PER_TICK;
+        };
+        return scale(base, Config.ENERGY_RATE_MULTIPLIER.get());
+    }
+
+    /** Per-panel FE buffer for one solar panel of {@code tier} (1-3), config-scaled. */
+    public static int solarPanelBuffer(int tier) {
+        int base = switch (tier) {
+            case 2 -> BASE_SOLAR_PANEL_T2_BUFFER;
+            case 3 -> BASE_SOLAR_PANEL_T3_BUFFER;
+            default -> BASE_SOLAR_PANEL_T1_BUFFER;
+        };
+        return scale(base, Config.ENERGY_RATE_MULTIPLIER.get());
     }
 
     public static int energyPipeThroughput() {

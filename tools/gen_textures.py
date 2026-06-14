@@ -2809,7 +2809,42 @@ def gen_trash_can():
     save(img, os.path.join(BLOCK_DIR, "trash_can.png"))
 
 
+def gen_solar_panel(name, accent):
+    """A steel-framed photovoltaic panel: deep blue-teal cells in a silver grid, accent tier corners.
+    Greenxertz/steel palette (green steel housing); the tilting deck is drawn by the renderer."""
+    img = new_img()
+    px = img.load()
+    cell_d = (18, 40, 58, 255)
+    cell = (30, 70, 98, 255)
+    cell_hi = (64, 126, 158, 255)
+    for y in range(S):
+        for x in range(S):
+            px[x, y] = G_STEEL
+    bevel(img, G_STEEL_L, G_STEEL_D)
+    for i in range(S):
+        px[1, i] = G_STEEL_D
+        px[i, 1] = G_STEEL_D
+        px[S - 2, i] = G_STEEL_D
+        px[i, S - 2] = G_STEEL_D
+    # Photovoltaic cells with a silver grid wire every 4px.
+    for y in range(2, 14):
+        for x in range(2, 14):
+            if (x - 2) % 4 == 3 or (y - 2) % 4 == 3:
+                px[x, y] = G_STEEL_L
+            elif (x - 2) % 4 == 0 and (y - 2) % 4 == 0:
+                px[x, y] = cell_hi
+            else:
+                px[x, y] = cell if (x + y) % 2 == 0 else cell_d
+    # Tier accent corners + a centre glow node.
+    for (gx, gy) in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        px[gx, gy] = accent
+    px[8, 8] = G_GLOW
+    save(img, os.path.join(BLOCK_DIR, name + ".png"))
+
+
 if __name__ == "__main__":
+    # Solar panels (SOLAR_PANEL_DESIGN): T1 green accent (Greenxertz/steel family).
+    gen_solar_panel("solar_panel_t1", G_GREEN_L)
     # Trash Can (logistics void sink).
     gen_trash_can()
     # Quarry / Miner (MINER_DESIGN).

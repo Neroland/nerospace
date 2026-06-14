@@ -72,6 +72,25 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(
                 BlockModelGenerators.createSimpleBlock(pad, BlockModelGenerators.plainVariant(padModel)));
 
+        // Solar Panel (T1): a flat 2px housing under a 4px deck slab (the moving, tilting surface is
+        // drawn by the block-entity renderer above this). Single texture via the ALL slot.
+        Block solar = ModBlocks.SOLAR_PANEL_T1.get();
+        var solarTexture = TextureMapping.getBlockTexture(solar);
+        TextureMapping solarMapping = new TextureMapping()
+                .put(TextureSlot.ALL, solarTexture).put(TextureSlot.PARTICLE, solarTexture);
+        ExtendedModelTemplate solarTemplate = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.ALL)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .element(e -> e.from(0, 0, 0).to(16, 2, 16)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .element(e -> e.from(1, 2, 1).to(15, 4, 15)
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .build();
+        Identifier solarModel = solarTemplate.create(
+                ModelLocationUtils.getModelLocation(solar), solarMapping, blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(
+                BlockModelGenerators.createSimpleBlock(solar, BlockModelGenerators.plainVariant(solarModel)));
+
         // Launch Gantry — shaped tower in registerShapedMachines (art overhaul §3).
 
         // Power grid — connection-aware translucent pipe (multipart: core + one arm per connected

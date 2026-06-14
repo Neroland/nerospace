@@ -389,6 +389,22 @@ public final class ModBlocks {
                     .sound(SoundType.METAL)
                     .noOcclusion()); // pedestal-and-panel model (art overhaul §3)
 
+    /**
+     * Tier 1 Solar Panel: a sun-tracking generator that pools with adjacent same-tier panels into one
+     * array (SOLAR_PANEL_DESIGN). noOcclusion — its flat housing must not cull neighbours, and the
+     * tilting deck is renderer-drawn above the block.
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.solar.SolarPanelBlock> SOLAR_PANEL_T1 =
+            BLOCKS.registerBlock("solar_panel_t1",
+                    props -> new za.co.neroland.nerospace.solar.SolarPanelBlock(
+                            za.co.neroland.nerospace.solar.SolarTier.TIER_1, props),
+                    props -> props
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.METAL)
+                            .noOcclusion());
+
     // --- Storage endpoints (battery / tanks / item store + creative sources) ---
 
     // All storage endpoints carry shaped models (art overhaul §3) — noOcclusion stops the renderer

@@ -109,6 +109,13 @@ public final class ModCapabilities {
                 ModBlockEntities.PASSIVE_GENERATOR.get(),
                 (blockEntity, side) -> blockEntity.getEnergyHandler());
 
+        // Solar panels: the pooled array energy is extractable on every side (output ports). The
+        // buffer's external receive is 0, so this never accepts a push — only generators feed it.
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.SOLAR_PANEL.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+
         // Generators expose their fuel/core slot so hoppers and pipes can feed them.
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
