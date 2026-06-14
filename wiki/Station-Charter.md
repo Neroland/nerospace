@@ -3,6 +3,7 @@
 Found your own orbital station — name included.
 
 ## Overview
+
 The Station Charter is how players create **additional stations** beyond the shared
 [Orbital Station](Home): carry one aboard a rocket, pick the **FOUND** node in the rocket UI, and
 launch. The charter is consumed and a brand-new station platform is built in orbit, anchored by a
@@ -10,15 +11,19 @@ launch. The charter is consumed and a brand-new station platform is built in orb
 for every player and every rocket tier.
 
 ## Obtaining
+
 **Craft** (shaped):
-```
+
+```text
 W W W
 W F W
 W W W
 ```
+
 `W` = [Station Wall](Station-Wall) · `F` = [Station Floor](Station-Floor)
 
 ## How it works
+
 - **Naming:** rename the charter in an **anvil** before flying — that becomes the station's name.
   An unnamed charter founds "Station N".
 - **Founding:** board any rocket with the charter in your inventory; the rocket UI shows the
@@ -32,4 +37,5 @@ W W W
   station.
 
 ## Details
+
 - ID: `nerospace:station_charter`

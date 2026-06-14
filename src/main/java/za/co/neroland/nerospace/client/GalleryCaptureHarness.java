@@ -202,35 +202,51 @@ public final class GalleryCaptureHarness {
 
         switch (phase) {
             case MOVE -> {
-                current = QUEUE.poll();
-                if (current == null) {
+                final Shot shot = QUEUE.poll();
+                current = shot;
+                if (shot == null) {
                     finish(mc);
                     return;
                 }
-                for (String cmd : current.setup()) { // pre-warmup: teleport / gamerules / time / summon
+                for (String cmd : shot.setup()) { // pre-warmup: teleport / gamerules / time / summon
                     player.connection.sendCommand(cmd);
                 }
-                warmup = current.warmup();
+                warmup = shot.warmup();
                 phase = Phase.WARMUP;
             }
             case WARMUP -> {
+                final Shot shot = current;
+                if (shot == null) {
+                    phase = Phase.MOVE;
+                    return;
+                }
                 if (--warmup <= 0) { // teleport + chunks now loaded
-                    for (String cmd : current.build()) { // block placement needs loaded chunks (else "not loaded")
+                    for (String cmd : shot.build()) { // block placement needs loaded chunks (else "not loaded")
                         player.connection.sendCommand(cmd);
                     }
-                    applyPose(player, current);
+                    applyPose(player, shot);
                     settle = SETTLE_TICKS;
                     phase = Phase.SETTLE;
                 }
             }
             case SETTLE -> {
-                applyPose(player, current); // re-pin every tick so gravity/AI can't drift the camera
+                final Shot shot = current;
+                if (shot == null) {
+                    phase = Phase.MOVE;
+                    return;
+                }
+                applyPose(player, shot); // re-pin every tick so gravity/AI can't drift the camera
                 if (--settle <= 0) {
                     phase = Phase.SHOOT;
                 }
             }
             case SHOOT -> {
-                grab(mc, current.name());
+                final Shot shot = current;
+                if (shot == null) {
+                    phase = Phase.MOVE;
+                    return;
+                }
+                grab(mc, shot.name());
                 phase = Phase.MOVE;
             }
         }
@@ -238,11 +254,14 @@ public final class GalleryCaptureHarness {
 
     /** Snap the player (the render camera) to the shot's pose, holding it still. */
     private static void applyPose(LocalPlayer player, @Nullable Shot shot) {
-        if (shot == null || shot.camera() == null || shot.target() == null) {
-            return; // "keep current view" shot
+        if (shot == null) {
+            return;
         }
         Vec3 cam = shot.camera();
         Vec3 tgt = shot.target();
+        if (cam == null || tgt == null) {
+            return; // "keep current view" shot
+        }
         double dx = tgt.x - cam.x;
         double dy = tgt.y - cam.y;
         double dz = tgt.z - cam.z;
@@ -303,6 +322,13 @@ public final class GalleryCaptureHarness {
         // Suits (NW, row along +X, stands face ~south): close, head-on from the south.
         shots.add(new Shot("suits", none, none, 0,
                 new Vec3(ox - 33, oy + 3, oz - 26), new Vec3(ox - 34, oy + 2.5, oz - 34)));
+        // Quarry landmark-only display (NE): the L of three landmarks + their projected lasers.
+        shots.add(new Shot("quarry_landmarks", none, none, 0,
+                new Vec3(ox + 31, oy + 4, oz - 30), new Vec3(ox + 31, oy + 2, oz - 38)));
+        // Operating quarry (NE, further out): raised + angled to look INTO the pit and read the
+        // glowing frame, the moving drill head and the power hookup.
+        shots.add(new Shot("quarry_operating", none, none, 0,
+                new Vec3(ox + 44, oy + 9, oz - 28), new Vec3(ox + 42, oy - 2, oz - 39)));
         return shots;
     }
 

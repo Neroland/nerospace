@@ -175,6 +175,38 @@ public final class ModCapabilities {
                 ModBlockEntities.OXYGEN_GENERATOR.get(),
                 (blockEntity, side) -> blockEntity.getGasHandler());
 
+        // Quarry Controller (MINER_DESIGN): grid power in. ONLY the mined OUTPUTS are exposed for
+        // export — the item-output buffer (extract-only; it rejects insertion) on every side, and the
+        // sucked-up fluid buffer. The configuration slots (frame casing + upgrade modules) are NOT
+        // exposed to automation, so pipes/hoppers can never pull them out.
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.QUARRY_CONTROLLER.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.QUARRY_CONTROLLER.get(),
+                (blockEntity, side) -> blockEntity.getOutputHandler());
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                ModBlockEntities.QUARRY_CONTROLLER.get(),
+                (blockEntity, side) -> blockEntity.getFluidHandler());
+
+        // Trash Can: a void sink on every layer — accepts items, fluids and gas from any side and
+        // discards them (no extraction surface, so nothing comes back out).
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.TRASH_CAN.get(),
+                (blockEntity, side) -> blockEntity.getItemHandler());
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                ModBlockEntities.TRASH_CAN.get(),
+                (blockEntity, side) -> blockEntity.getFluidHandler());
+        event.registerBlockEntity(
+                za.co.neroland.nerospace.gas.GasCapability.BLOCK,
+                ModBlockEntities.TRASH_CAN.get(),
+                (blockEntity, side) -> blockEntity.getGasHandler());
+
         // Nerosium Grinder — sided: insert into the input from the top/sides, extract output below.
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,

@@ -73,6 +73,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.CREATIVE_GAS_TANK.get(), "Creative Gas Tank");
         add(ModBlocks.ITEM_STORE.get(), "Item Store");
         add(ModBlocks.CREATIVE_ITEM_STORE.get(), "Creative Item Store");
+        add(ModBlocks.TRASH_CAN.get(), "Trash Can");
         add("container.nerospace.item_store", "Item Store");
         add("block.nerospace.battery.readout", "Battery: %s / %s FE");
         add("block.nerospace.creative_battery.readout", "Creative Battery: endless energy");
@@ -126,6 +127,22 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.generator.idle", "Idle");
         add("gui.nerospace.generator.core_active", "Core active");
         add("gui.nerospace.generator.core_empty", "No core");
+
+        // Quarry / Miner (MINER_DESIGN).
+        add(ModBlocks.QUARRY_CONTROLLER.get(), "Quarry Controller");
+        add(ModBlocks.QUARRY_LANDMARK.get(), "Quarry Landmark");
+        add(ModBlocks.QUARRY_FRAME.get(), "Quarry Frame");
+        add(ModItems.FRAME_CASING.get(), "Frame Casing");
+        add(ModItems.SPEED_MODULE.get(), "Speed Module");
+        add(ModItems.EFFICIENCY_MODULE.get(), "Efficiency Module");
+        add(ModItems.FORTUNE_MODULE.get(), "Fortune Module");
+        add(ModItems.SILK_TOUCH_MODULE.get(), "Silk Touch Module");
+        add("container.nerospace.quarry_controller", "Quarry Controller");
+        add("gui.nerospace.quarry.state.idle", "Idle — place landmarks");
+        add("gui.nerospace.quarry.state.building_frame", "Building frame");
+        add("gui.nerospace.quarry.state.mining", "Mining");
+        add("gui.nerospace.quarry.state.done", "Finished");
+        add("gui.nerospace.quarry.state.paused", "Paused");
 
         // Phase 7 blocks.
         add(ModBlocks.CINDRITE_ORE.get(), "Cindrite Ore");

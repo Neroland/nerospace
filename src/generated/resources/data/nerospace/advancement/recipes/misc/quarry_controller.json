@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_frame_casing": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:frame_casing"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "nerospace:quarry_controller"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_frame_casing"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nerospace:quarry_controller"
+    ]
+  }
+}

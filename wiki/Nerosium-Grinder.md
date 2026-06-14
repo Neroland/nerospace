@@ -3,19 +3,24 @@
 Your first machine — grinds ore into dust to double your metal yield.
 
 ## Overview
+
 The Nerosium Grinder processes nerosium inputs into **Nerosium Dust** over time. Since each dust smelts
 back into a Nerosium Ingot, grinding ore before smelting **doubles** your ingot output.
 
 ## Obtaining
+
 **Craft** (shaped):
-```
+
+```text
 I I I
 I F I
 C C C
 ```
+
 `I` = Nerosium Ingot · `F` = Furnace · `C` = Cobblestone
 
 ## How it works
+
 - **Two slots:** an **input** (top/sides) and an **output** (bottom).
 - **Grinding recipes:**
   - Nerosium Ore / Deepslate Nerosium Ore / Raw Nerosium → **2 Nerosium Dust**
@@ -27,8 +32,10 @@ C C C
 - **GUI:** shows a power gauge and grind-progress; emits a **comparator signal** from its energy level.
 
 ## Tips
+
 Feed it raw nerosium or ore, pipe the dust into a furnace array, and you get 2 ingots per ore instead
 of 1.
 
 ## Details
+
 - ID: `nerospace:nerosium_grinder` · Tool: pickaxe, iron tier · Drops: itself

@@ -88,6 +88,8 @@ public class NerospaceClient {
     @SubscribeEvent
     static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
+        event.register(ModMenuTypes.QUARRY_CONTROLLER.get(),
+                za.co.neroland.nerospace.client.QuarryScreen::new);
         event.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
         event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
         event.register(ModMenuTypes.FUEL_REFINERY.get(), FuelRefineryScreen::new);
@@ -176,6 +178,11 @@ public class NerospaceClient {
         event.registerBlockEntityRenderer(
                 za.co.neroland.nerospace.registry.ModBlockEntities.STAR_GUIDE.get(),
                 context -> new za.co.neroland.nerospace.client.StarGuideHologramRenderer());
+
+        // Quarry controller: glowing gantry + moving drill head (MINER_DESIGN).
+        event.registerBlockEntityRenderer(
+                za.co.neroland.nerospace.registry.ModBlockEntities.QUARRY_CONTROLLER.get(),
+                context -> new za.co.neroland.nerospace.client.QuarryControllerRenderer());
     }
 
     @SubscribeEvent

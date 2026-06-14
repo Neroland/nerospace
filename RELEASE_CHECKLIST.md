@@ -26,6 +26,7 @@ Tick a box only after the gradle-MCP build + gametests are green AND the in-game
 ## 4. Verification & testing
 
 ### Targeted runClient pass (every pending in-game item)
+
 - [ ] Fuel Tank auto-fuel + 3×3 speed bonus + pumping particles/sound
 - [ ] Pad gating messages (3×3, T3 Station Wall ring) + grounding on pad break
 - [ ] Oxygen drain/refill/suffocation + sealed rooms + airlock refill
@@ -38,9 +39,11 @@ Tick a box only after the gradle-MCP build + gametests are green AND the in-game
 - [ ] Terraformer + oxygen field end-to-end
 
 ### Survival playthrough
+
 - [ ] Full start-to-terraform survival playthrough (no creative shortcuts) — log friction/balance notes
 
 ### Multiplayer
+
 - [ ] Dedicated-server pass (`runServer` + 2 clients): oxygen sync, rocket rides, pipe networks,
       GUIs, world join (registry sync), suit HUD per player
 

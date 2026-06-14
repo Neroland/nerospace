@@ -18,6 +18,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
    Station; progress to **Nerosteel** and **Xertz Quartz** on Greenxertz.
 4. Pack an **[Oxygen Suit](Oxygen-Suit)** and set up **Oxygen Generators** — every world out there
    is airless. Bring the **Thermal**/**Cryo** variants for Cindara and Glacira.
+   - Automate the digging with a **[Quarry Controller](Quarry-Controller)**: mark an area with
+     landmarks and it strip-mines the whole rectangle to bedrock on its own.
 5. Late game: build the **[Heavy Launch Complex](Launch-Gantry)**, found stations with a
    **[Station Charter](Station-Charter)**, and run a **[Terraformer](Terraformer)** until a dead
    planet grows, rains, and fills with livestock.

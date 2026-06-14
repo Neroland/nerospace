@@ -68,7 +68,7 @@ No env file or credentials are needed — the DSN is embedded. Launch a dev clie
 self-test flag and one synthetic event is sent on config load (environment matches the
 version channel, with tag `runtime=dev`):
 
-```
+```text
 ./gradlew runClient -PtelemetryTest=true
 ```
 
