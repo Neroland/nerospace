@@ -2155,26 +2155,49 @@ def gen_oxygen_suit_t1():
     icon("boots", boots)
 
 
-# ---- Tier 2 (cindrite-upgraded) Oxygen Suit -------------------------------
+# ---- Suit variants: Tier 2 / Thermal / Cryo (derived from the Tier 1 art) ---
 #
-# Derived art: the committed Tier 1 suit textures re-trimmed with cindrite embers (Cindara palette —
-# hot orange/red over dark volcanic rock) so the upgrade reads at a glance. Additive like the rest:
-# skipped when the output PNG already exists.
+# Derived art, but a FULL re-style (suits rework): the old chain only recoloured saturated trim,
+# which left the steel shell — 95% of the suit — identical across tiers, so T1/T2 read as the
+# same suit on adjacent armor stands. Now every variant remaps the WHOLE family: the grey shell
+# is value-mapped onto a per-variant plating ramp, accents and visor glass get per-variant
+# colours, and the dark visor void stays dark. Additive like the rest: skipped when the output
+# PNG already exists.
+#
+#  - Tier 2:  dark gunmetal plating + cindrite-ember trim + amber visor ("upgraded hardware").
+#  - Thermal: charred obsidian plating + furnace-bright seams + hot visor (Cindara-grade).
+#  - Cryo:    frost-blue plating + deep-blue trim + icy visor (Glacira-grade).
 
-CINDRITE_EMBER = (236, 108, 32)
-CINDRITE_DEEP = (118, 38, 18)
+SUIT_VARIANTS = {
+    "t2": {
+        "shell": [(34, 38, 48), (56, 62, 76), (82, 90, 108), (112, 122, 142), (146, 158, 180)],
+        "accent": (236, 108, 32), "glass": (255, 190, 80),
+    },
+    "heat": {
+        "shell": [(20, 14, 14), (40, 26, 22), (66, 40, 30), (94, 56, 38), (124, 76, 48)],
+        "accent": (255, 150, 60), "glass": (255, 110, 60),
+    },
+    "cold": {
+        "shell": [(96, 130, 168), (140, 176, 206), (180, 212, 234), (212, 236, 248), (238, 250, 255)],
+        "accent": (50, 110, 170), "glass": (180, 240, 255),
+    },
+}
 
 
-def _emberize(src_path, dst_path):
-    """Recolour a Tier 1 suit texture toward the cindrite palette: saturated (suit-coloured) pixels
-    blend toward ember orange, dark trim deepens toward volcanic rock. Grey/metal pixels keep their
-    read so the suit silhouette stays recognisably the same family."""
+def _suit_variant(src_path, dst_path, spec):
+    """Re-style a Tier 1 suit texture into a variant: grey shell pixels are value-mapped onto the
+    variant's plating ramp (keeping the painted shading/noise structure), saturated trim becomes
+    the variant accent, visor glass becomes the variant glass, and the near-black visor void is
+    left untouched so every helmet keeps its dark window."""
     if os.path.exists(dst_path) and "--force" not in sys.argv:
         print("skip (exists)", os.path.relpath(dst_path, ROOT))
         return
     if not os.path.exists(src_path):
         print("MISSING source", os.path.relpath(src_path, ROOT))
         return
+    shell = spec["shell"]
+    ar, ag, ab = spec["accent"]
+    gr, gg, gb = spec["glass"]
     img = Image.open(src_path).convert("RGBA")
     px = img.load()
     for y in range(img.height):
@@ -2185,84 +2208,43 @@ def _emberize(src_path, dst_path):
             mx, mn = max(r, g, b), min(r, g, b)
             sat = 0 if mx == 0 else (mx - mn) / mx
             lum = (r + g + b) / 3.0
-            if sat > 0.18:  # coloured trim -> ember
-                t = min(1.0, sat * 1.4)
-                er, eg, eb = CINDRITE_EMBER if lum > 90 else CINDRITE_DEEP
-                # keep the source's shading by scaling the ember by relative luminance
+            if lum < 40:
+                continue  # visor void / inked outlines stay dark
+            if b > 180 and g > 150 and r < 170:
+                # visor glass reflection -> variant glass, keeping the highlight shading
+                shade = max(0.7, min(1.15, lum / 200.0))
+                px[x, y] = (min(255, int(gr * shade)), min(255, int(gg * shade)),
+                            min(255, int(gb * shade)), a)
+            elif sat > 0.3:
+                # coloured trim / seals / status lights -> variant accent
                 shade = max(0.45, min(1.25, lum / 140.0))
-                r = int(r * (1 - t) + er * shade * t)
-                g = int(g * (1 - t) + eg * shade * t)
-                b = int(b * (1 - t) + eb * shade * t)
-                px[x, y] = (min(255, r), min(255, g), min(255, b), a)
+                px[x, y] = (min(255, int(ar * shade)), min(255, int(ag * shade)),
+                            min(255, int(ab * shade)), a)
+            else:
+                # grey shell -> the variant plating ramp, indexed by source luminance
+                idx = min(len(shell) - 1, int(lum / 52.0))
+                px[x, y] = (shell[idx][0], shell[idx][1], shell[idx][2], a)
     img.save(dst_path)
     print("wrote", os.path.relpath(dst_path, ROOT))
+
+
+def _gen_suit_variant(variant):
+    spec = SUIT_VARIANTS[variant]
+    for piece in ("helmet", "chestplate", "leggings", "boots"):
+        _suit_variant(os.path.join(ITEM_DIR, "oxygen_suit_%s.png" % piece),
+                      os.path.join(ITEM_DIR, "oxygen_suit_%s_%s.png" % (variant, piece)), spec)
+    equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
+    for layer in ("humanoid", "humanoid_leggings"):
+        _suit_variant(os.path.join(equip, layer, "oxygen_suit.png"),
+                      os.path.join(equip, layer, "oxygen_suit_%s.png" % variant), spec)
 
 
 def gen_oxygen_suit_t2():
-    for piece in ("helmet", "chestplate", "leggings", "boots"):
-        _emberize(os.path.join(ITEM_DIR, "oxygen_suit_%s.png" % piece),
-                  os.path.join(ITEM_DIR, "oxygen_suit_t2_%s.png" % piece))
-    equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
-    for layer in ("humanoid", "humanoid_leggings"):
-        _emberize(os.path.join(equip, layer, "oxygen_suit.png"),
-                  os.path.join(equip, layer, "oxygen_suit_t2.png"))
-
-
-# ---- Hazard suit variants (SUIT_HAZARD_DESIGN.md) ---------------------------
-#
-# Derived art like the T2 suit, same algorithm with different palettes:
-#  - Thermal (heat):  recolour the T2 art FURTHER — bright ember seams over dark obsidian
-#    plating, so it reads "furnace-grade" next to T2's warm trim.
-#  - Cryo (cold):     recolour the T1 art toward the Glacira frost palette — the clean
-#    white-cyan opposite of the ember track.
-
-HEAT_BRIGHT = (255, 150, 60)
-HEAT_DEEP = (44, 22, 26)
-COLD_BRIGHT = (160, 220, 245)
-COLD_DEEP = (40, 80, 130)
-
-
-def _retrim(src_path, dst_path, bright, deep, lum_split=90):
-    """The _emberize algorithm with a parameterised palette: saturated (suit-coloured) pixels
-    blend toward `bright` (above `lum_split` luminance) or `deep`; greys keep their read."""
-    if os.path.exists(dst_path) and "--force" not in sys.argv:
-        print("skip (exists)", os.path.relpath(dst_path, ROOT))
-        return
-    if not os.path.exists(src_path):
-        print("MISSING source", os.path.relpath(src_path, ROOT))
-        return
-    img = Image.open(src_path).convert("RGBA")
-    px = img.load()
-    for y in range(img.height):
-        for x in range(img.width):
-            r, g, b, a = px[x, y]
-            if a == 0:
-                continue
-            mx, mn = max(r, g, b), min(r, g, b)
-            sat = 0 if mx == 0 else (mx - mn) / mx
-            lum = (r + g + b) / 3.0
-            if sat > 0.18:
-                t = min(1.0, sat * 1.4)
-                er, eg, eb = bright if lum > lum_split else deep
-                shade = max(0.45, min(1.25, lum / 140.0))
-                r = int(r * (1 - t) + er * shade * t)
-                g = int(g * (1 - t) + eg * shade * t)
-                b = int(b * (1 - t) + eb * shade * t)
-                px[x, y] = (min(255, r), min(255, g), min(255, b), a)
-    img.save(dst_path)
-    print("wrote", os.path.relpath(dst_path, ROOT))
+    _gen_suit_variant("t2")
 
 
 def gen_oxygen_suit_heat():
-    equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
-    for piece in ("helmet", "chestplate", "leggings", "boots"):
-        _retrim(os.path.join(ITEM_DIR, "oxygen_suit_t2_%s.png" % piece),
-                os.path.join(ITEM_DIR, "oxygen_suit_heat_%s.png" % piece),
-                HEAT_BRIGHT, HEAT_DEEP, lum_split=120)
-    for layer in ("humanoid", "humanoid_leggings"):
-        _retrim(os.path.join(equip, layer, "oxygen_suit_t2.png"),
-                os.path.join(equip, layer, "oxygen_suit_heat.png"),
-                HEAT_BRIGHT, HEAT_DEEP, lum_split=120)
+    _gen_suit_variant("heat")
 
 
 # ---- Multiple stations (MULTI_STATION_DESIGN.md) ----------------------------
@@ -2320,15 +2302,7 @@ def gen_station_charter():
 
 
 def gen_oxygen_suit_cold():
-    equip = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity/equipment")
-    for piece in ("helmet", "chestplate", "leggings", "boots"):
-        _retrim(os.path.join(ITEM_DIR, "oxygen_suit_%s.png" % piece),
-                os.path.join(ITEM_DIR, "oxygen_suit_cold_%s.png" % piece),
-                COLD_BRIGHT, COLD_DEEP)
-    for layer in ("humanoid", "humanoid_leggings"):
-        _retrim(os.path.join(equip, layer, "oxygen_suit.png"),
-                os.path.join(equip, layer, "oxygen_suit_cold.png"),
-                COLD_BRIGHT, COLD_DEEP)
+    _gen_suit_variant("cold")
 
 
 def gen_oxygen_hud_icon():
@@ -2367,79 +2341,163 @@ def gen_oxygen_hud_icon():
 
 # ---- Per-tier rocket entity textures (cockpit rework) -----------------------
 #
-# Layout matches RocketModel (64x64): body (12,36,12)@(0,0) — sides v12..48 in four 12-px
-# columns; nose (8,8,8)@(0,48); fins @(48,0); console (8,5,1)@(32,48). Each side face gets a
-# DARK-FRAMED, fully TRANSPARENT window (entityCutout discards alpha = a real hole the standing
-# rider sees out of), an accent stripe per tier, and the console carries the interior gauge art.
+# Layout matches the Rocket*Model classes (128x128). Every part owns a DISJOINT UV region — the
+# old 64x64 sheet had the T2/T4 boosters, T3 skirts/long nose and T4 wide body sampling outside
+# the texture, which entityCutout discards as transparent = invisible "missing" parts:
+#   body @ (0,0)      nose @ (0,56)     tip @ (44,56)     console @ (44,68)   bell @ (0,80)
+#   fins @ (64,0)     boosters W/E @ (80,0)   boosters N/S @ (104,0)
+#   skirts N/S @ (64,32)   skirts W/E @ (64,48)
+# Each body side face gets a DARK-FRAMED, fully TRANSPARENT window (entityCutout discards alpha
+# = a real hole the standing rider sees out of), an accent stripe per tier, and the console
+# carries the interior gauge art. Geometry per tier (w,h,d) mirrors the Java models.
 
 ROCKET_TIER_SPECS = {
-    "rocket_t1": {"accent": (224, 58, 58, 255), "trim": (160, 36, 36, 255)},
-    "rocket_t2": {"accent": (179, 39, 158, 255), "trim": (106, 31, 140, 255)},
-    "rocket_t3": {"accent": (240, 200, 80, 255), "trim": (60, 170, 90, 255)},
+    "rocket_t1": {"accent": (224, 58, 58, 255), "trim": (160, 36, 36, 255),
+                  "nose": (8, 8, 8)},
+    "rocket_t2": {"accent": (179, 39, 158, 255), "trim": (106, 31, 140, 255),
+                  "nose": (8, 8, 8), "boosters": (4, 18, 5)},
+    "rocket_t3": {"accent": (240, 200, 80, 255), "trim": (60, 170, 90, 255),
+                  "nose": (8, 14, 8), "tip": True, "skirts": True},
     # Tier 4 — Glacira run: ice-cyan accent + glacial blue trim (palette rule: steel + per-tier accent).
-    "rocket_t4": {"accent": (120, 210, 240, 255), "trim": (60, 130, 200, 255)},
+    "rocket_t4": {"accent": (120, 210, 240, 255), "trim": (60, 130, 200, 255),
+                  "body": (14, 36, 14), "nose": (10, 10, 10), "bell": (10, 3, 10),
+                  "fins": False, "boosters": (4, 18, 6), "boosters_ns": (6, 18, 4)},
 }
 
 
 def gen_rocket_tier_entity(name, spec):
     rng = random.Random(hash(name) & 0xffffffff)
-    img = Image.new("RGBA", (64, 64), CLEAR)
+    img = Image.new("RGBA", (128, 128), CLEAR)
     px = img.load()
     whites = [(232, 232, 244, 255), (214, 214, 228, 255), (196, 196, 212, 255)]
+    steel = [(150, 150, 168, 255), (132, 132, 150, 255), (118, 118, 136, 255)]
+    bell_metal = [(70, 70, 86, 255), (56, 56, 70, 255), (44, 44, 56, 255)]
     dark = (70, 70, 86, 255)
     ink = (28, 28, 36, 255)
     accent, trim = spec["accent"], spec["trim"]
 
-    def plate(x0, y0, x1, y1):
+    def plate(x0, y0, x1, y1, ramp=whites):
         for y in range(y0, y1):
             for x in range(x0, x1):
-                px[x, y] = rng.choice(whites)
+                px[x, y] = rng.choice(ramp)
 
-    plate(12, 0, 36, 12)
-    plate(0, 12, 48, 48)
+    # --- Body @ (0,0): top/bottom caps + the four side faces (the side row is [d][w][d][w]
+    # columns; body w == d for every tier, so equal quarters).
+    bw, bh, bd = spec.get("body", (12, 36, 12))
+    side_w = 2 * (bw + bd)
+    y0, y1 = bd, bd + bh
+    plate(bd, 0, bd + 2 * bw, bd)
+    plate(0, y0, side_w, y1)
     # Panel lines (art overhaul §4.2): vertical hull seams + rivet rows so the hull reads plated.
-    for x in range(0, 48, 6):
-        for y in range(13, 47):
+    for x in range(0, side_w, 6):
+        for y in range(y0 + 1, y1 - 1):
             if rng.random() < 0.8:
                 px[x, y] = (174, 176, 194, 255)
-    for y in (16, 36):
-        for x in range(1, 48, 3):
+    for y in (y0 + 4, y0 + 24):
+        for x in range(1, side_w, 3):
             px[x, y] = dark
-    for u0 in (0, 12, 24, 36):
-        for x in range(u0, u0 + 12):
-            for y in range(28, 33):
+    for col in range(4):
+        u0 = col * side_w // 4
+        u1 = (col + 1) * side_w // 4
+        for x in range(u0, u1):
+            for y in range(y0 + 16, y0 + 21):
                 px[x, y] = accent
-            px[x, 12] = dark
-            px[x, 47] = dark
-            px[x, 44] = trim
-        # Window band at the standing rider's eye line (model y ~ -5; v = 12 + (y + 16)).
-        for y in range(20, 27):
-            for x in range(u0 + 3, u0 + 9):
+            px[x, y0] = dark
+            px[x, y1 - 1] = dark
+            px[x, y1 - 4] = trim
+        # Window band at the standing rider's eye line: dark frame, transparent glass.
+        wx0 = u0 + (u1 - u0 - 6) // 2
+        for y in range(y0 + 8, y0 + 15):
+            for x in range(wx0, wx0 + 6):
                 px[x, y] = ink
-        for y in range(21, 26):
-            for x in range(u0 + 4, u0 + 8):
+        for y in range(y0 + 9, y0 + 14):
+            for x in range(wx0 + 1, wx0 + 5):
                 px[x, y] = CLEAR
-    plate(0, 48, 32, 64)
-    for x in range(0, 32):
-        px[x, 56] = accent
-        px[x, 63] = dark
-    plate(48, 0, 60, 14)
-    for x in range(48, 60):
-        px[x, 4] = accent
-        px[x, 13] = dark
-    for y in range(48, 54):
-        for x in range(32, 50):
+
+    # --- Nose @ (0,56): accent cap ring + dark base seam; T3's long cone gets a mid trim ring
+    # and the separate tip cube @ (44,56).
+    nw, nh, nd = spec["nose"]
+    nose_w = 2 * (nw + nd)
+    plate(nd, 56, nd + 2 * nw, 56 + nd)
+    plate(0, 56 + nd, nose_w, 56 + nd + nh)
+    for x in range(0, nose_w):
+        px[x, 56 + nd] = accent
+        px[x, 56 + nd + nh - 1] = dark
+    if spec.get("tip"):
+        for x in range(0, nose_w):
+            px[x, 56 + nd + nh // 2] = trim
+        plate(48, 56, 56, 60)
+        plate(44, 60, 60, 64)
+        for x in range(44, 60):
+            px[x, 60] = accent
+
+    # --- Console @ (44,68): ink panel + the interior gauge cluster.
+    for y in range(68, 74):
+        for x in range(44, 62):
             px[x, y] = (16, 22, 30, 255)
     g = (88, 224, 128, 255)
     a = (255, 196, 64, 255)
     r = (236, 80, 80, 255)
     b = (96, 196, 255, 255)
     for i, c in enumerate((g, g, a, g, r, b, g, a)):
-        px[34 + i, 50] = c
+        px[46 + i, 70] = c
     for i in range(6):
-        px[42 + i, 52] = b if i % 2 == 0 else (40, 90, 130, 255)
+        px[54 + i, 72] = b if i % 2 == 0 else (40, 90, 130, 255)
     for i in range(4):
-        px[34 + i * 2, 52] = a
+        px[46 + i * 2, 72] = a
+
+    # --- Bell @ (0,80): dark engine metal, accent throat ring, ink nozzle lip.
+    blw, blh, bld = spec.get("bell", (8, 3, 8))
+    bell_w = 2 * (blw + bld)
+    plate(bld, 80, bld + 2 * blw, 80 + bld, ramp=bell_metal)
+    plate(0, 80 + bld, bell_w, 80 + bld + blh, ramp=bell_metal)
+    for x in range(0, bell_w):
+        px[x, 80 + bld] = accent
+        px[x, 80 + bld + blh - 1] = ink
+
+    # --- Fins @ (64,0) (T1/T2/T3 — T4 swaps them for the four boosters).
+    if spec.get("fins", True):
+        plate(64, 0, 76, 14)
+        for x in range(64, 76):
+            px[x, 4] = accent
+            px[x, 13] = dark
+
+    # --- Strap-on boosters: W/E @ (80,0) (T2 + T4), N/S @ (104,0) (T4). Accent nose cap,
+    # trim tail band, dark nozzle rows, rivet ticks.
+    def booster(u, dims):
+        w, h, d = dims
+        full = 2 * (w + d)
+        plate(u + d, 0, u + d + 2 * w, d)
+        plate(u, d, u + full, d + h)
+        for x in range(u, u + full):
+            px[x, d] = accent
+            px[x, d + 1] = accent
+            px[x, d + h - 5] = trim
+            px[x, d + h - 2] = dark
+            px[x, d + h - 1] = ink
+        for y in range(d + 4, d + h - 6, 4):
+            for x in range(u + 1, u + full, 3):
+                px[x, y] = dark
+
+    if "boosters" in spec:
+        booster(80, spec["boosters"])
+    if "boosters_ns" in spec:
+        booster(104, spec["boosters_ns"])
+
+    # --- T3 ring skirt: N/S slabs @ (64,32), W/E slabs @ (64,48) — steel with an accent crown.
+    if spec.get("skirts"):
+        def skirt(u, v, dims):
+            w, h, d = dims
+            full = 2 * (w + d)
+            plate(u + d, v, u + d + 2 * w, v + d, ramp=steel)
+            plate(u, v + d, u + full, v + d + h, ramp=steel)
+            for x in range(u, u + full):
+                px[x, v + d] = accent
+                px[x, v + d + h - 1] = dark
+
+        skirt(64, 32, (14, 4, 2))
+        skirt(64, 48, (2, 4, 10))
+
     save(img, os.path.join(ENTITY_DIR, name + ".png"))
 
 

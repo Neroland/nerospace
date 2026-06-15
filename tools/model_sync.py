@@ -210,6 +210,22 @@ def _uuid(seed):
     return "%s-%s-%s-%s-%s" % (h[0:8], h[8:12], h[12:16], h[16:20], h[20:32])
 
 
+def _png_size(texture):
+    """The texture sheet's pixel size from the PNG IHDR (the bbmodel resolution must match the
+    Java LayerDefinition sheet — rockets are 128x128 now, creatures stay 64x64)."""
+    path = os.path.join(ROOT, TEX_ENTITY, texture + ".png")
+    try:
+        with open(path, "rb") as fh:
+            head = fh.read(24)
+        if len(head) >= 24 and head[:8] == b"\x89PNG\r\n\x1a\n":
+            import struct
+            w, h = struct.unpack(">II", head[16:24])
+            return int(w), int(h)
+    except OSError:
+        pass
+    return 64, 64
+
+
 def write_bbmodel(rel, parts, texture):
     elements, outliner = [], []
     for p in parts:
@@ -227,11 +243,12 @@ def write_bbmodel(rel, parts, texture):
                          "uuid": _uuid(rel + ":bone:" + p["name"]), "export": True,
                          "isOpen": False, "visibility": True, "autouv": 0, "children": [cu]})
     name = os.path.splitext(os.path.basename(rel))[0]
+    tex_w, tex_h = _png_size(texture)
     doc = {
         "meta": {"format_version": "4.10", "model_format": "modded_entity", "box_uv": True},
         "name": name, "model_identifier": "", "visible_box": [2, 3, 0],
         "variable_placeholders": "", "variable_placeholder_buttons": [], "timeline_setups": [],
-        "unhandled_root_fields": {}, "resolution": {"width": 64, "height": 64},
+        "unhandled_root_fields": {}, "resolution": {"width": tex_w, "height": tex_h},
         "elements": elements, "outliner": outliner, "textures": [_tex_entry(texture)],
     }
     out = json.dumps(doc, indent=2)

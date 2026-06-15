@@ -11,7 +11,8 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 | **Raw Nerosteel** | Mined from [Nerosteel Ore](Nerosteel-Ore) on Greenxertz; smelt into a Nerosteel Ingot. |
 | **Nerosteel Ingot** | Mid-game backbone metal: rockets, suit, machines, station blocks. |
 | **Xertz Quartz** | Gem dropped by [Xertz Quartz Ore](Xertz-Quartz-Ore); used in upgrades and the Terraform Monitor. |
-| **Cindrite** | Gem from [Cindrite Ore](Cindrite-Ore) on Cindara; Tier-3 Terraformer upgrade. |
+| **Cindrite** | Gem from [Cindrite Ore](Cindrite-Ore) on Cindara; Tier-3 Terraformer upgrade, Tier 2 + [Thermal Suit](Oxygen-Suit) pieces, Tier 4 rocket. |
+| **Glacite** | Gem from [Glacite Ore](Glacite-Ore) on Glacira; [Cryo Suit](Oxygen-Suit) pieces and the [Hydration Module](Hydration-Module)'s water cycle. |
 
 ## Tools
 - **Nerosium Pickaxe** — iron-tier mining, higher durability and a small attack bonus. Craft:
@@ -30,8 +31,12 @@ being infinite). Diamond-class protection, repaired with nerosteel.
 The suit also refills at **airlocks**: standing within a few blocks of a [Gas Tank](Gas-Tank) or
 [Oxygen Generator](Oxygen-Generator) that holds Oxygen tops the suit up from that store (draining the
 gas). A **Tier 2 Oxygen Suit** (each piece = Tier 1 piece + 4 Cindrite) doubles the air tank (600)
-and the airlock refill speed — a mixed T1/T2 set counts as Tier 1. See **[Oxygen Suit](Oxygen-Suit)**
-for the full page.
+and the airlock refill speed — a mixed T1/T2 set counts as Tier 1.
+
+Two **hazard variants** of the Tier 2 suit shield you from planetary extremes (unprotected exposure
+**quadruples** oxygen drain): the **Thermal Suit** (T2 piece + 4 Cindrite) for Cindara's heat and the
+**Cryo Suit** (T2 piece + 4 Glacite) for Glacira's cold. All four pieces must match for the shield to
+engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 ## Rockets & Fuel
 - **Rocket Fuel Canister** — a stackable fuel unit. Craft (shapeless): Blaze Powder + Coal +
@@ -40,16 +45,35 @@ for the full page.
 - **[Fuel Refinery](Fuel-Refinery)** — automates fuel: coal + blaze powder + grid power → pipeable
   liquid rocket fuel, the logistics-grade alternative to hand-crafting canisters.
 - **Rocket Fuel Bucket** — a bucket of the `rocket_fuel` fluid; pour it into a rocket or [Fuel Tank](Fuel-Tank).
-- **Rockets (Tier 1 / 2 / 3)** — deploy onto a [Rocket Launch Pad](Rocket-Launch-Pad), fuel up, board,
-  pick a destination, and launch:
-  - **Tier 1** → the Orbital Station.
+- **Rockets (Tier 1 / 2 / 3 / 4)** — deploy onto a [Rocket Launch Pad](Rocket-Launch-Pad), fuel up,
+  board, pick a destination, and launch (destinations are cumulative):
+  - **Tier 1** → the Orbital Station (and any [founded station](Station-Charter)).
   - **Tier 2** → + Greenxertz.
-  - **Tier 3** → + Cindara. (Tier 3 is gated behind [Station Wall](Station-Wall).)
-  The in-rocket screen shows a live fuel gauge, a selectable destination trajectory, and a Launch button.
+  - **Tier 3** → + Cindara. (Needs a 3×3 pad ringed with [Station Wall](Station-Wall) **or** a
+    [Heavy Launch Complex](Launch-Gantry).)
+  - **Tier 4** → + Glacira. (Deploys **only** on the [Heavy Launch Complex](Launch-Gantry);
+    24,000 mB tank.)
+  The in-rocket screen shows a live fuel gauge, a selectable destination trajectory, a station
+  selector, and a Launch button.
+- **[Station Charter](Station-Charter)** — 8 [Station Wall](Station-Wall) around a
+  [Station Floor](Station-Floor); rename in an anvil, carry it aboard, and pick the rocket UI's
+  **FOUND** node to found your own named orbital station.
+
+## Star Guide
+- **Star Guide Book** — Book + Raw Nerosium (shapeless). Right-click to open the
+  **[Star Guide](Star-Guide)**, the interactive 7-chapter progression tree.
+- **[Star Guide](Star-Guide)** (pedestal block) — holds the book, projects a next-goal hologram.
+
+## Food & creature drops
+- **Loper Haunch** — dropped by the Meadow Loper; hearty food.
+- **Strutter Drumstick** — dropped by the Ember Strutter; food.
+- **Drift Fleece** — dropped by the Woolly Drift; crafts into 4 String.
+  See **[Creatures](Creatures)** for the livestock themselves.
 
 ## Travel devices (creative)
-- **Greenxertz Navigator** and the **Station / Greenxertz / Cindara Compasses** are creative-only
-  one-click travel aids for testing and building (no survival recipe — rockets are the survival route).
+- **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira Compasses** are
+  creative-only one-click travel aids for testing and building (no survival recipe — rockets are the
+  survival route).
 
 ## Spawn eggs
-Creative spawn eggs exist for all four creatures — see **[Creatures](Creatures)**.
+Creative spawn eggs exist for all eight creatures — see **[Creatures](Creatures)**.

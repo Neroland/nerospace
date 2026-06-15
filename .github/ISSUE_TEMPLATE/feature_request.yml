@@ -8,9 +8,8 @@ body:
       value: |
         Thanks for the idea! 🚀
 
-        ⚠️ Nerospace is an early **work in progress** and the roadmap shifts often, so suggestions
-        directly shape what comes next — but nothing is final and not every idea will fit. Please
-        search existing issues first.
+        Suggestions directly shape what comes next — though not every idea will fit the mod's
+        direction. Please search existing issues first.
   - type: textarea
     id: problem
     attributes:
@@ -37,9 +36,11 @@ body:
       description: Which part of the mod does this touch?
       options:
         - Machines / automation
-        - Rockets / dimensions
+        - Rockets / dimensions / stations
         - Oxygen / space suits
-        - Mobs
+        - Terraforming
+        - Mobs / creatures
+        - Star Guide / progression
         - World generation
         - UI / visuals
         - Other
