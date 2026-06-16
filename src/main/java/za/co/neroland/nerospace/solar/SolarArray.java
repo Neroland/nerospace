@@ -28,14 +28,12 @@ public final class SolarArray {
     private final SolarTier tier;
     /** Member <b>anchor</b> positions (one per unit). */
     private final List<BlockPos> anchors;
-    private final LongOpenHashSet anchorSet;
     private boolean valid = true;
     private long lastTick = -1L;
 
-    private SolarArray(SolarTier tier, List<BlockPos> anchors, LongOpenHashSet anchorSet) {
+    private SolarArray(SolarTier tier, List<BlockPos> anchors) {
         this.tier = tier;
         this.anchors = anchors;
-        this.anchorSet = anchorSet;
     }
 
     public boolean isValid() {
@@ -81,7 +79,7 @@ public final class SolarArray {
             }
         }
 
-        SolarArray array = new SolarArray(tier, anchors, anchorSet);
+        SolarArray array = new SolarArray(tier, anchors);
         for (BlockPos anchor : anchors) {
             if (level.getBlockEntity(anchor) instanceof SolarPanelBlockEntity a) {
                 a.adopt(array);

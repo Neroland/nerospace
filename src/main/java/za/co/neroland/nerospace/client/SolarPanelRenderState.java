@@ -15,6 +15,9 @@ public class SolarPanelRenderState extends BlockEntityRenderState {
     /** Same-tier neighbour present, indexed N=0, E=1, S=2, W=3 (drives edge-to-edge seam joining). */
     public final boolean[] connect = new boolean[4];
 
+    /** Energy hookup (cable/machine, any mod) present on a face, indexed N=0, E=1, S=2, W=3. */
+    public final boolean[] connector = new boolean[4];
+
     /** 1-based tier (selects the surface texture). */
     public int tier = 1;
 

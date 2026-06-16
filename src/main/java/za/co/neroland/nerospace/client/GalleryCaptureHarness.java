@@ -329,6 +329,10 @@ public final class GalleryCaptureHarness {
         // glowing frame, the moving drill head and the power hookup.
         shots.add(new Shot("quarry_operating", none, none, 0,
                 new Vec3(ox + 44, oy + 9, oz - 28), new Vec3(ox + 42, oy - 2, oz - 39)));
+        // Solar arrays (SW): raised, looking south down the cluster so the front-row single units AND
+        // the seam-joined multi-unit fields behind them (plus the cabled connector) read together.
+        shots.add(new Shot("solar", none, none, 0,
+                new Vec3(ox - 42, oy + 9, oz + 28), new Vec3(ox - 42, oy + 1, oz + 42)));
         return shots;
     }
 
