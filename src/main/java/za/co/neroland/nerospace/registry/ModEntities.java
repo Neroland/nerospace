@@ -101,6 +101,18 @@ public final class ModEntities {
             MobCategory.CREATURE,
             builder -> builder.sized(0.9F, 1.2F).eyeHeight(1.0F).clientTrackingRange(8));
 
+    // --- Meteor events (meteor-events-design.md) ----------------------------
+
+    /** The falling meteor: a non-living projectile (like the rocket) that craters on impact. */
+    public static final Supplier<EntityType<za.co.neroland.nerospace.meteor.FallingMeteorEntity>> FALLING_METEOR =
+            ENTITY_TYPES.registerEntityType(
+                    "falling_meteor",
+                    za.co.neroland.nerospace.meteor.FallingMeteorEntity::new,
+                    MobCategory.MISC,
+                    builder -> builder.sized(1.4F, 1.4F).eyeHeight(0.7F)
+                            // It spawns ~150 blocks up, so a generous tracking range lets players see it fall.
+                            .clientTrackingRange(12).updateInterval(2));
+
     private ModEntities() {
     }
 

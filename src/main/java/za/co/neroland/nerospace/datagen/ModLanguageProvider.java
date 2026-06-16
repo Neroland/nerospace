@@ -252,6 +252,22 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.STRUTTER_DRUMSTICK.get(), "Strutter Drumstick");
         add(ModItems.DRIFT_FLEECE.get(), "Drift Fleece");
 
+        // Meteor events (meteor-events-design.md).
+        add(ModBlocks.METEOR_ROCK.get(), "Meteor Rock");
+        add(ModBlocks.METEOR_CORE.get(), "Meteor Core");
+        add(ModItems.ALIEN_FRAGMENT.get(), "Alien Fragment");
+        add(ModItems.ALIEN_TECH_SCRAP.get(), "Alien Tech Scrap");
+        add(ModItems.ALIEN_CORE.get(), "Alien Core");
+        add(ModItems.METEOR_TRACKER.get(), "Meteor Tracker");
+        add(ModItems.METEOR_CALLER.get(), "Meteor Caller");
+        add("entity.nerospace.falling_meteor", "Meteor");
+        add("item.nerospace.meteor_caller.called", "A meteor streaks down from the sky...");
+        add("item.nerospace.meteor_caller.creative_only", "The Meteor Caller only works in Creative mode");
+        add("item.nerospace.meteor_tracker.none", "Meteor Tracker: no meteors detected");
+        add("item.nerospace.meteor_tracker.incoming", "Incoming");
+        add("item.nerospace.meteor_tracker.landed", "Landed");
+        add("item.nerospace.meteor_tracker.readout", "☄ Meteor %s — %s, %sm");
+
         // Entities.
         add("entity.nerospace.rocket", "Rocket");
         add("entity.nerospace.xertz_stalker", "Xertz Stalker");

@@ -142,6 +142,15 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.STRUTTER_DRUMSTICK.get());
                         output.accept(ModItems.DRIFT_FLEECE.get());
 
+                        // Meteor events (meteor-events-design.md).
+                        output.accept(ModItems.ALIEN_FRAGMENT.get());
+                        output.accept(ModItems.ALIEN_TECH_SCRAP.get());
+                        output.accept(ModItems.ALIEN_CORE.get());
+                        output.accept(ModBlocks.METEOR_ROCK.get());
+                        output.accept(ModBlocks.METEOR_CORE.get());
+                        output.accept(ModItems.METEOR_TRACKER.get());
+                        output.accept(ModItems.METEOR_CALLER.get());
+
                         // Creative-only travel devices (no survival recipe).
                         output.accept(ModItems.GREENXERTZ_NAVIGATOR.get());
                         output.accept(ModItems.STATION_COMPASS.get());

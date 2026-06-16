@@ -506,6 +506,36 @@ public final class ModBlocks {
                     .strength(100.0F)
                     .noLootTable());
 
+    // --- Meteor events (meteor-events-design.md) ----------------------------
+
+    /**
+     * Meteor Rock: the charred crater body left by an impact. A mineable space-rock building block
+     * (any pickaxe), faintly glowing with alien heat. Drops itself.
+     */
+    public static final DeferredBlock<Block> METEOR_ROCK = BLOCKS.registerSimpleBlock(
+            "meteor_rock",
+            props -> props
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(3.0F, 4.0F)
+                    .requiresCorrectToolForDrops()
+                    .lightLevel(state -> 3)
+                    .sound(SoundType.STONE));
+
+    /**
+     * Meteor Core: the loot-bearing block at a crater's centre (meteor-events design §5). Backed by
+     * {@link za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity}; break-to-loot, so it has no loot
+     * table — the rolled contents spill from the block entity on removal.
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.meteor.MeteorCoreBlock> METEOR_CORE =
+            BLOCKS.registerBlock("meteor_core", za.co.neroland.nerospace.meteor.MeteorCoreBlock::new,
+                    props -> props
+                            .mapColor(MapColor.COLOR_CYAN)
+                            .strength(4.0F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .lightLevel(state -> 10)
+                            .sound(SoundType.METAL)
+                            .noLootTable());
+
     // --- Developer diagnostics ----------------------------------------------
 
     /**

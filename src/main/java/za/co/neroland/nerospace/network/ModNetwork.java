@@ -5,6 +5,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.client.ClientMeteorTracker;
 import za.co.neroland.nerospace.client.ClientOxygenField;
 
 /**
@@ -25,6 +26,10 @@ public final class ModNetwork {
                 .playToClient(
                         OxygenFieldSyncPayload.TYPE,
                         OxygenFieldSyncPayload.STREAM_CODEC,
-                        (payload, context) -> context.enqueueWork(() -> ClientOxygenField.accept(payload)));
+                        (payload, context) -> context.enqueueWork(() -> ClientOxygenField.accept(payload)))
+                .playToClient(
+                        MeteorSyncPayload.TYPE,
+                        MeteorSyncPayload.STREAM_CODEC,
+                        (payload, context) -> context.enqueueWork(() -> ClientMeteorTracker.accept(payload)));
     }
 }

@@ -106,5 +106,9 @@ public final class ModTags {
          * widen it.
          */
         public static final TagKey<Item> HYDRATION_INPUT = itemTag("nerospace", "hydration_input");
+
+        // Meteor events (meteor-events-design.md): the tiered "alien" loot, grouped for the future
+        // scanner/upgrade system so recipes can accept the family.
+        public static final TagKey<Item> ALIEN_MATERIALS = itemTag("nerospace", "alien_materials");
     }
 }

@@ -47,7 +47,8 @@ BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
           "quarry_controller", "quarry_landmark", "quarry_frame", "trash_can",
           "solar_panel_t1", "solar_panel_t1_base",
           "solar_panel_t2", "solar_panel_t2_base",
-          "solar_panel_t3", "solar_panel_t3_base"]
+          "solar_panel_t3", "solar_panel_t3_base",
+          "meteor_rock", "meteor_core"]
 ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "raw_nerosteel", "nerosteel_ingot", "xertz_quartz", "greenxertz_navigator",
          "rocket_fuel_canister", "rocket_tier_1", "rocket_tier_2", "rocket_tier_3",
@@ -56,7 +57,8 @@ ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "loper_haunch", "strutter_drumstick", "drift_fleece",
          "station_compass", "greenxertz_compass", "cindara_compass", "glacira_compass",
          "star_guide_book", "station_charter",
-         "frame_casing", "speed_module", "efficiency_module", "fortune_module", "silk_touch_module"]
+         "frame_casing", "speed_module", "efficiency_module", "fortune_module", "silk_touch_module",
+         "alien_fragment", "alien_tech_scrap", "alien_core", "meteor_tracker", "meteor_caller"]
 
 # Entity bbmodels are NOT generated here any more (art overhaul A3): `tools/model_sync.py` owns
 # every entity source bidirectionally from the per-model Java geometry. Generating them here too

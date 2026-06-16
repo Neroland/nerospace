@@ -63,7 +63,9 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         ModBlocks.QUARRY_CONTROLLER.get(),
                         ModBlocks.QUARRY_LANDMARK.get(),
                         ModBlocks.QUARRY_FRAME.get(),
-                        ModBlocks.TRASH_CAN.get());
+                        ModBlocks.TRASH_CAN.get(),
+                        ModBlocks.METEOR_ROCK.get(),
+                        ModBlocks.METEOR_CORE.get());
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.NEROSIUM_ORE.get(),

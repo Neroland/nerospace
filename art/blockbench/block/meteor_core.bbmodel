@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "meteor_core",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "meteor_core",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "a8025f2e-56a9-4b8a-8e12-3cd4a1f22250"
+    }
+  ],
+  "outliner": [
+    "a8025f2e-56a9-4b8a-8e12-3cd4a1f22250"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/serene-clever-noether/mnt/nerospace/src/main/resources/assets/nerospace/textures/block/meteor_core.png",
+      "name": "meteor_core.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "63753f54-3fc0-46c8-abd6-1e0f12a10ba4",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/meteor_core.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABxElEQVR4nG2TvYrbQBSFPwtDygxiEBMXWyxDkGEK1WHSqEhtQqoUYas8wrKPsPgR9gHSpMkTuNIDqBBYhQipvMIMYlKmcgrnDtKSU12ke879mXNX5dvqAuBcRdMc8L6m61q0LhiGHmtLhqFHqZwYJ6wtCeFMjBPe16w+fby78A/jeALAmA1Nc8DaUn4xDD0ASuXpm9YFWdMc6Lo2EYXsfZ1Ic6LWBVoXOFcBXDsYxxMhnJFRgCQa4wSA9zXjeFqIAqwBQjjjXEXXtXRdi3MVx72S2gC8358SScRCOLPuupYYpzR/jBPfv/xiax4XlY73D2zvIy+RaV1gbYkxG2KceH66TeRdWbErryNtzSPHvcL7mqY5pGKZMRuGoU8zC3ZlxefXr1IskE5DOGNtSTaOJ5TKkU7m+Pb7TxIRiDckzoahT5s2ZpMSf/RtEpEYrs8p4wKsTHFzka2KyH+XOD7w5utPgIU7V/7dh4tYc97a89PtQmB7HxdWFuuvTHFz4QXmuwjhjNZFElYqT2RrSzLva7yvUSpPRLG0VBqGfrGfufUzeZoYp5QkCVJJqXxhNOeqdLVrUZp7XOsinbT39WK8+bE5V/EX3If3A13KBkAAAAAASUVORK5CYII="
+    }
+  ]
+}

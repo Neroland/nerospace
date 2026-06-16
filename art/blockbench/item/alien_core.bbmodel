@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "alien_core",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "alien_core",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        7.5
+      ],
+      "to": [
+        16,
+        16,
+        8.5
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            0
+          ],
+          "texture": null
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            0
+          ],
+          "texture": null
+        }
+      },
+      "type": "cube",
+      "uuid": "cca8d6e6-717f-4122-9442-1df0fc7a5060"
+    }
+  ],
+  "outliner": [
+    "cca8d6e6-717f-4122-9442-1df0fc7a5060"
+  ],
+  "textures": [
+    {
+      "path": "/sessions/serene-clever-noether/mnt/nerospace/src/main/resources/assets/nerospace/textures/item/alien_core.png",
+      "name": "alien_core.png",
+      "folder": "item",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "b6677917-5311-46ee-b73a-d61e47ff5760",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/item/alien_core.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAqUlEQVR4nGNgoBAwYhOUEJP7j038xatHGOoxBGCan89SQhGXTLuH1RAmYjQji6G7DsU0CTG5/zCFlQ47UAxoP+ABdwmyK1AM+L/B4T82zeiGMAYcgOtjQXc+DETxs6NoXvbxJ4pLYa5ACQNywMAbAA8DiJ+U4OGA7Gd0gBwLKC6AJRZYaCMD5GhEBhjpgIEBe0JC1ozTBTAJdFtwacZwAbpL0AG2zEQxAAACHExZBxfQawAAAABJRU5ErkJggg=="
+    }
+  ]
+}
