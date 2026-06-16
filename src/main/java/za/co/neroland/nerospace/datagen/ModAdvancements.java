@@ -286,6 +286,18 @@ public class ModAdvancements implements AdvancementSubProvider {
                 .addCriterion("bred_woolly_drift", bredLivestock(registries, ModEntities.WOOLLY_DRIFT.get()))
                 .requirements(net.minecraft.advancements.AdvancementRequirements.Strategy.OR)
                 .save(saver, "nerospace:guide/new_life");
+
+        // --- Meteor events (meteor-events-design.md): an early parallel branch off root ---------
+        // Meteors crash on the Overworld too, so this chain is reachable without a rocket.
+        AdvancementHolder alienFragment = item(saver, root, "guide/alien_fragment",
+                ModItems.ALIEN_FRAGMENT.get(),
+                "Visitor from Beyond", "Loot a fallen meteor for an Alien Fragment");
+        AdvancementHolder alienTech = item(saver, alienFragment, "guide/alien_tech_scrap",
+                ModItems.ALIEN_TECH_SCRAP.get(),
+                "Salvaged Tech", "Recover Alien Tech Scrap from a meteor");
+        item(saver, alienTech, "guide/alien_core",
+                ModItems.ALIEN_CORE.get(),
+                "Alien Core", "Find the rare Alien Core inside a meteor");
     }
 
     /** A bred-animals criterion matching one of the terraform livestock species as a parent. */

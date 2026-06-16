@@ -32,6 +32,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
   the Star Guide.
 - **[Creatures](Creatures)** — the native mobs of Greenxertz, Cindara, and Glacira, plus the
   terraform livestock.
+- **[Meteor Events](Meteor-Events)** — rare meteor crashes that seed the world with alien materials
+  and off-world ores; track them with the Meteor Tracker.
 - **[Star Guide](Star-Guide)** — the in-game progression guide.
 - **[Configuration](Configuration)** — the five multiplier keys for server/modpack tuning.
 - **[Roadmap](Roadmap)** — what shipped in 1.0 and what's next.

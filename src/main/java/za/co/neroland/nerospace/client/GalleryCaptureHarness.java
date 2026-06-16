@@ -329,6 +329,10 @@ public final class GalleryCaptureHarness {
         // glowing frame, the moving drill head and the power hookup.
         shots.add(new Shot("quarry_operating", none, none, 0,
                 new Vec3(ox + 44, oy + 9, oz - 28), new Vec3(ox + 42, oy - 2, oz - 39)));
+        // Meteor crash site (SW, mirrors buildMeteorSite at ox-28, oz+30): low angle so the crater +
+        // glowing core read, with the hovering meteor (fy+11) and its trail filling the upper frame.
+        shots.add(new Shot("meteor_site", none, none, 0,
+                new Vec3(ox - 20, oy + 4, oz + 24), new Vec3(ox - 28, oy + 4, oz + 30)));
         return shots;
     }
 

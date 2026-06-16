@@ -100,7 +100,13 @@ public final class StarGuide {
                     // Deeper terraforming (DEEPER_TERRAFORM_DESIGN.md §11): the staged finale.
                     step("hydration_module", () -> ModBlocks.HYDRATION_MODULE.get(), "guide/hydration_module"),
                     step("living_world", () -> ModItems.MEADOW_LOPER_SPAWN_EGG.get(), "guide/living_world"),
-                    step("new_life", () -> ModItems.LOPER_HAUNCH.get(), "guide/new_life"))));
+                    step("new_life", () -> ModItems.LOPER_HAUNCH.get(), "guide/new_life"))),
+            // Meteor events (meteor-events-design.md): a parallel branch — meteors seed alien
+            // materials on the Overworld and the planets, no rocket required for the first taste.
+            new Chapter("meteor_events", List.of(
+                    step("meteor_site", () -> ModItems.ALIEN_FRAGMENT.get(), "guide/alien_fragment"),
+                    step("alien_tech", () -> ModItems.ALIEN_TECH_SCRAP.get(), "guide/alien_tech_scrap"),
+                    step("alien_core", () -> ModItems.ALIEN_CORE.get(), "guide/alien_core"))));
 
     public static final int CHAPTER_COUNT = CHAPTERS.size();
 

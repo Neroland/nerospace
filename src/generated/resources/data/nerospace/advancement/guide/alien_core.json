@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/alien_tech_scrap",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:alien_core"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Find the rare Alien Core inside a meteor",
+    "icon": {
+      "id": "nerospace:alien_core"
+    },
+    "title": "Alien Core"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

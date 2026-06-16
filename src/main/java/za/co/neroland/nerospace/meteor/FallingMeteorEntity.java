@@ -42,6 +42,8 @@ public class FallingMeteorEntity extends Entity {
     private int targetY;
     private int targetZ;
     private long lootSeed;
+    /** Gallery/showcase only: hover in place (spin + trail) instead of falling. Not persisted. */
+    private boolean frozen;
 
     private final InterpolationHandler interpolation = new InterpolationHandler(this);
 
@@ -74,6 +76,15 @@ public class FallingMeteorEntity extends Entity {
         return meteor;
     }
 
+    /** Spawns a non-falling meteor that hovers + spins + trails — for the gallery/showcase only. */
+    public static FallingMeteorEntity spawnFrozen(ServerLevel level, double x, double y, double z) {
+        FallingMeteorEntity meteor = new FallingMeteorEntity(ModEntities.FALLING_METEOR.get(), level);
+        meteor.frozen = true;
+        meteor.setPos(x, y, z);
+        level.addFreshEntity(meteor);
+        return meteor;
+    }
+
     @Override
     protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
         // No synced data: the client renders from the tracked position + spins on tickCount.
@@ -98,6 +109,10 @@ public class FallingMeteorEntity extends Entity {
             }
             spawnTrail();
             return;
+        }
+
+        if (this.frozen) {
+            return; // gallery/showcase: hover in place
         }
 
         Vec3 pos = position();

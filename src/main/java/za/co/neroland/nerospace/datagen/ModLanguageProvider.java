@@ -385,6 +385,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.star_guide.chapter.mining", "Mining");
         add("gui.nerospace.star_guide.chapter.vacuum", "Vacuum");
         add("gui.nerospace.star_guide.chapter.terraforming", "Terraforming");
+        add("gui.nerospace.star_guide.chapter.meteor_events", "Meteor Events");
 
         add("gui.nerospace.star_guide.step.raw_nerosium", "Strange Red Rock");
         add("gui.nerospace.star_guide.step.raw_nerosium.text",
@@ -553,6 +554,21 @@ public class ModLanguageProvider extends LanguageProvider {
                 "Each planet wakes its own livestock: the Meadow Loper, the Ember Strutter, the "
                         + "Woolly Drift. Feed a pair their favourite crop and breed the first "
                         + "generation born off Earth.");
+
+        // Meteor events chapter (meteor-events-design.md).
+        add("gui.nerospace.star_guide.step.meteor_site", "Visitor from Beyond");
+        add("gui.nerospace.star_guide.step.meteor_site.text",
+                "Meteors crash on the Overworld and the planets, leaving a small crater around a "
+                        + "glowing Meteor Core. Break the core to claim Alien Fragments and a jump-start "
+                        + "of off-world ores — hold a Meteor Tracker to find the way.");
+        add("gui.nerospace.star_guide.step.alien_tech", "Salvaged Tech");
+        add("gui.nerospace.star_guide.step.alien_tech.text",
+                "Rarer meteors carry Alien Tech Scrap — the raw material of the scanners and upgrades "
+                        + "to come. Hoard it.");
+        add("gui.nerospace.star_guide.step.alien_core", "Alien Core");
+        add("gui.nerospace.star_guide.step.alien_core.text",
+                "The rarest meteor prize. An intact Alien Core is the key to the deepest alien "
+                        + "technology — the heart of a future upgrade tree.");
 
         // Rocket action feedback.
         add("item.nerospace.rocket.deployed", "Rocket deployed on the launch pad");
