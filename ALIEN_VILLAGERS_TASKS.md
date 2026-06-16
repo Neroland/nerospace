@@ -60,14 +60,18 @@ Chose a robust custom **worldgen Feature** over the heavier jigsaw/Structure mac
 
 > Deferred to Phase 7 (megastructures): true jigsaw template pools, structure_set spacing, and the bigger ruin/city layouts. Per-village reputation aggregation onto the Village Core comes with Phase 4.
 
-## Phase 4 — Teach-and-grow loop
+## Phase 4 — Teach-and-grow loop ✅ DONE
 
-- [ ] `village_blueprint` item (one per building)
-- [ ] `foundation_marker` block + build preview/progress
-- [ ] `construction_stockpile` block + BE
-- [ ] `village/ConstructionManager` — staged timed placement of building templates, material consumption
-- [ ] Reputation-gated building catalogs + materials manifests
-- [ ] **Build-verify → BUILD SUCCESSFUL**
+For robustness the blueprint/foundation/stockpile concepts were folded into the Village Core itself (one controller, no fragile multi-file registry edits): feed it materials, then teach it to raise the next building.
+
+- [x] `village/VillageBuildings` — procedural building catalogue (HUT @T2 / WORKSHOP @T3) with reputation gate, nerosteel cost, and a box-structure placement generator (bottom-up, door gap, roof, interior light)
+- [x] `VillageCoreBlockEntity` — nerosteel **stockpile** (deposit by right-clicking with nerosteel), rep-gated **build jobs**, and **staged block-by-block placement over time** via `serverTick` (a block every few ticks, happy-villager particles)
+- [x] Reputation gate: the core reads the player's standing as the **max trust tier among nearby villagers** (bridges Phase 2's per-villager rep to the village until full aggregation)
+- [x] `VillageCoreBlock` — block ticker + interactions: deposit nerosteel, and (as owner) teach/raise the next building or read construction progress
+- [x] Persistence: stockpile, built count, and active job (type/progress/plot) saved to NBT
+- [x] **Build-verify: full `build` ✅ + `ecjCheck` ✅ (0 errors; my code 0 warnings) via pyenv**
+
+> Simplifications vs the design (cleanup later): separate `village_blueprint` item + `foundation_marker`/`construction_stockpile` blocks folded into the core; status messages use literal text (move to lang). Buildings are shells now — Phase 5 makes them functional (farms/workshops/labs) and adds quests + raids.
 
 ## Phase 5 — Functional buildings & quests
 
@@ -107,3 +111,4 @@ Chose a robust custom **worldgen Feature** over the heavier jigsaw/Structure mac
 - 2026-06-16: **Phase 1 complete & build-verified.** Custom renderer gives every villager a unique green/steel shade (seed-clamped `getModelTint`) and a per-biome skin (meadow accessory set), with the emissive eye/crystal glow retained. Generified `GreenxertzMobModel<S>` + `GlowEyesLayer<S>` (12 files); `ecjCheck` clean. Full `build` + `ecjCheck` SUCCESSFUL via pyenv. Next: Phase 2 (trading & reputation core).
 - 2026-06-16: **Phase 2 complete & build-verified.** Alien Villagers are now wary merchants: earn trust via gifts/trades to climb 6 reputation tiers, unlocking a tier-gated trade catalogue (nerospace materials + universal goods) shown in the vanilla trading screen; the render tint warms with trust. `build` + `ecjCheck` SUCCESSFUL via pyenv. Confirmed the 26.1 Merchant/MerchantOffer/ItemCost API via javap first. Next: Phase 3 (small jigsaw structures + claimable Village Core).
 - 2026-06-16: **Phase 3 complete & build-verified.** Added the claimable **Village Core** block (full content pipeline) and a rare **hamlet** worldgen feature that builds a small nerosteel outpost with a Village Core in the greenxertz biome. Used a custom Feature (robust) instead of jigsaw; confirmed the 26.1 Feature/placement API via javap first. `build` + `ecjCheck` + `runData` all SUCCESSFUL via pyenv. Recovered several registry files from the git commit object after the mount served stale/truncated reads mid-edit. Next: Phase 4 (teach-and-grow loop).
+- 2026-06-16: **Phase 4 complete & build-verified.** The Village Core is now a teach-and-grow engine: feed it Nerosteel, and once the nearby villagers trust you enough it raises the next catalogue building (Hut @T2, Workshop @T3) block-by-block over time. Implemented entirely within the 3 village files (heredoc-written) to dodge the flaky multi-file edits. `build` + `ecjCheck` SUCCESSFUL via pyenv. Next: Phase 5 (functional buildings + quests + raids).
