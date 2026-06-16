@@ -51,6 +51,7 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.NEROSTEEL_ORE.get());
         blockModels.createTrivialCube(ModBlocks.XERTZ_QUARTZ_ORE.get());
         blockModels.createTrivialCube(ModBlocks.NEROSTEEL_BLOCK.get());
+        blockModels.createTrivialCube(ModBlocks.VILLAGE_CORE.get());
 
         // Phase 4 — launch pad: textured full cube (proper flat/raised shape comes with the planned
         // 3x3 multiblock pad). A hand-authored flat slab model caused missing-texture at runtime, so

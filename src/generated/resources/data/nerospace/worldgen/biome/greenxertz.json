@@ -15,7 +15,9 @@
     [],
     [],
     [],
-    [],
+    [
+      "nerospace:hamlet_placed"
+    ],
     [],
     [
       "nerospace:nerosteel_ore_placed",

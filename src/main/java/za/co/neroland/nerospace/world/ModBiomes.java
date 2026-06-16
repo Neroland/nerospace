@@ -159,6 +159,9 @@ public final class ModBiomes {
                 placedFeatures.getOrThrow(ModPlacedFeatures.NEROSTEEL_ORE_PLACED));
         generation.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES,
                 placedFeatures.getOrThrow(ModPlacedFeatures.XERTZ_QUARTZ_ORE_PLACED));
+        // Alien hamlet outposts dot the surface (ALIEN_VILLAGERS_DESIGN.md §5, Phase 3).
+        generation.addFeature(GenerationStep.Decoration.SURFACE_STRUCTURES,
+                placedFeatures.getOrThrow(ModPlacedFeatures.HAMLET_PLACED));
 
         // MC 26.1 trimmed BiomeSpecialEffects.Builder to water + grass/foliage colors; fog/sky/water-fog
         // colors are no longer set here. The green surface palette comes from the grass/foliage overrides.

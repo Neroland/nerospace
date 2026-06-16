@@ -493,6 +493,15 @@ public final class ModBlocks {
                             .sound(SoundType.STONE)
                             .noOcclusion()); // pedestal model (art overhaul §3)
 
+    /** The Village Core: controller block of an alien village (claimed by right-click). */
+    public static final DeferredBlock<za.co.neroland.nerospace.village.VillageCoreBlock> VILLAGE_CORE =
+            BLOCKS.registerBlock("village_core", za.co.neroland.nerospace.village.VillageCoreBlock::new,
+                    props -> props
+                            .mapColor(MapColor.COLOR_GREEN)
+                            .strength(2.0F, 8.0F)
+                            .sound(SoundType.STONE)
+                            .requiresCorrectToolForDrops());
+
     // --- Rocket Fuel liquid block (Phase 7b) --------------------------------
 
     /** The world block for the {@code rocket_fuel} fluid (placed by its bucket). */

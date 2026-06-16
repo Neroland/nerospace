@@ -34,6 +34,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.NEROSTEEL_ORE.get(), "Nerosteel Ore");
         add(ModBlocks.XERTZ_QUARTZ_ORE.get(), "Xertz Quartz Ore");
         add(ModBlocks.NEROSTEEL_BLOCK.get(), "Block of Nerosteel");
+        add(ModBlocks.VILLAGE_CORE.get(), "Village Core");
+        add("message.nerospace.village_core.claimed", "You claim this Village Core. The aliens take note.");
+        add("message.nerospace.village_core.status_self", "This is your Village Core.");
+        add("message.nerospace.village_core.owned", "This Village Core belongs to %s.");
 
         // Phase 4 blocks.
         add(ModBlocks.ROCKET_LAUNCH_PAD.get(), "Rocket Launch Pad");

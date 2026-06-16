@@ -40,6 +40,8 @@ public final class ModPlacedFeatures {
     public static final ResourceKey<PlacedFeature> CINDRITE_ORE_PLACED = registerKey("cindrite_ore_placed");
     // Glacira dimension ore (NEW_DESTINATION_DESIGN.md).
     public static final ResourceKey<PlacedFeature> GLACITE_ORE_PLACED = registerKey("glacite_ore_placed");
+    /** Rare surface alien hamlet (Phase 3). */
+    public static final ResourceKey<PlacedFeature> HAMLET_PLACED = registerKey("hamlet_placed");
 
     private ModPlacedFeatures() {
     }
@@ -99,6 +101,15 @@ public final class ModPlacedFeatures {
                         CountPlacement.of(7),
                         InSquarePlacement.spread(),
                         HeightRangePlacement.triangle(VerticalAnchor.absolute(-48), VerticalAnchor.absolute(48)),
+                        BiomeFilter.biome())));
+
+        context.register(HAMLET_PLACED, new PlacedFeature(
+                configuredFeatures.getOrThrow(ModConfiguredFeatures.HAMLET),
+                List.of(
+                        net.minecraft.world.level.levelgen.placement.RarityFilter.onAverageOnceEvery(40),
+                        InSquarePlacement.spread(),
+                        net.minecraft.world.level.levelgen.placement.HeightmapPlacement.onHeightmap(
+                                net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG),
                         BiomeFilter.biome())));
     }
 

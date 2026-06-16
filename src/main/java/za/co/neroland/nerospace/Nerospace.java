@@ -44,6 +44,7 @@ public final class Nerospace {
         // and blocks before items (block items reference block holders).
         ModFluids.register(modEventBus);
         ModBlocks.register(modEventBus);
+        za.co.neroland.nerospace.registry.ModFeatures.register(modEventBus);
         ModItems.register(modEventBus);
         ModDataComponents.register(modEventBus);
         ModBlockEntities.register(modEventBus);

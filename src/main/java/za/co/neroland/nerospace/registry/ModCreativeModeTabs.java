@@ -125,6 +125,7 @@ public final class ModCreativeModeTabs {
 
                         // Star Guide (progression block, 1.0).
                         output.accept(ModBlocks.STAR_GUIDE.get());
+                        output.accept(ModBlocks.VILLAGE_CORE.get());
                         output.accept(ModItems.STAR_GUIDE_BOOK.get());
 
                         // Spawn eggs.

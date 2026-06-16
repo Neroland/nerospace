@@ -433,6 +433,8 @@ public final class ModItems {
     // --- Star Guide (progression block, 1.0) ---------------------------------
     public static final DeferredItem<BlockItem> STAR_GUIDE_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.STAR_GUIDE);
+    public static final DeferredItem<BlockItem> VILLAGE_CORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.VILLAGE_CORE);
     public static final DeferredItem<Item> STAR_GUIDE_BOOK = ITEMS.registerItem(
             "star_guide_book", props -> new za.co.neroland.nerospace.item.StarGuideBookItem(props.stacksTo(1)));
 

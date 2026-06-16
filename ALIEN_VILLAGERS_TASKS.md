@@ -47,14 +47,18 @@ Build rule (CLAUDE.md): after each content add → datagen entry + texture (`gen
 
 > Notes: per-**profession** trade pools (unlocked by buildings) are deferred to Phase 5; **defense** reputation needs raids (Phase 5). Phase 2 ships the baseline "Quartz Trader" catalogue, gifting and trade-volume rep. The truncation gremlin hit the Write/Edit tools again (3 files); re-emitted them via bash heredoc — now the reliable write path.
 
-## Phase 3 — Small structures via jigsaw
+## Phase 3 — Small structures + Village Core ✅ DONE
 
-- [ ] `data/nerospace/worldgen/{structure,template_pool,structure_set,processor_list}` scaffolding
-- [ ] Outpost + hamlet template pools (Greenxertz palette)
-- [ ] `ModStructures` / `ModStructureSets` bootstrap via `DataGenerators` RegistrySetBuilder
-- [ ] Hamlet contains a claimable Village Core
-- [ ] Spacing/biome rules (structure_set separation)
-- [ ] **Build-verify → BUILD SUCCESSFUL**
+Chose a robust custom **worldgen Feature** over the heavier jigsaw/Structure machinery (which needs NBT pieces) — delivers "find a small village" now; the full jigsaw/megastructure work stays in Phase 7.
+
+- [x] `village/VillageCoreBlock` + `VillageCoreBlockEntity` — claimable controller (right-click to claim; owner stored + status messages). Block/BE/item/model/loot/tags/lang/creative + texture all wired & datagen-generated
+- [x] `world/HamletFeature` — small Greenxertz outpost: levelled nerosteel platform, low wall, four lit corner pillars, a Village Core at centre
+- [x] `registry/ModFeatures` (Registries.FEATURE) + registered in `Nerospace`
+- [x] `ModConfiguredFeatures.HAMLET` + `ModPlacedFeatures.HAMLET_PLACED` (rare: `onAverageOnceEvery(40)`, surface heightmap, biome filter)
+- [x] Added to the greenxertz biome generation (SURFACE_STRUCTURES step)
+- [x] **Build-verify: `compileJava` ✅, full `build` ✅, `ecjCheck` ✅ (0 errors; my code 0 warnings), `runData` ✅ — all via pyenv**
+
+> Deferred to Phase 7 (megastructures): true jigsaw template pools, structure_set spacing, and the bigger ruin/city layouts. Per-village reputation aggregation onto the Village Core comes with Phase 4.
 
 ## Phase 4 — Teach-and-grow loop
 
@@ -102,3 +106,4 @@ Build rule (CLAUDE.md): after each content add → datagen entry + texture (`gen
 - 2026-06-16: **Phase 0 complete & build-verified.** Alien Villager wanders the Greenxertz surface (wary-neutral), spawns naturally + via egg, carries a per-individual variant. `compileJava` + `runData` both BUILD SUCCESSFUL. Fixed `ResourceKey.location()` -> `identifier()` (26.1 rename) along the way.
 - 2026-06-16: **Phase 1 complete & build-verified.** Custom renderer gives every villager a unique green/steel shade (seed-clamped `getModelTint`) and a per-biome skin (meadow accessory set), with the emissive eye/crystal glow retained. Generified `GreenxertzMobModel<S>` + `GlowEyesLayer<S>` (12 files); `ecjCheck` clean. Full `build` + `ecjCheck` SUCCESSFUL via pyenv. Next: Phase 2 (trading & reputation core).
 - 2026-06-16: **Phase 2 complete & build-verified.** Alien Villagers are now wary merchants: earn trust via gifts/trades to climb 6 reputation tiers, unlocking a tier-gated trade catalogue (nerospace materials + universal goods) shown in the vanilla trading screen; the render tint warms with trust. `build` + `ecjCheck` SUCCESSFUL via pyenv. Confirmed the 26.1 Merchant/MerchantOffer/ItemCost API via javap first. Next: Phase 3 (small jigsaw structures + claimable Village Core).
+- 2026-06-16: **Phase 3 complete & build-verified.** Added the claimable **Village Core** block (full content pipeline) and a rare **hamlet** worldgen feature that builds a small nerosteel outpost with a Village Core in the greenxertz biome. Used a custom Feature (robust) instead of jigsaw; confirmed the 26.1 Feature/placement API via javap first. `build` + `ecjCheck` + `runData` all SUCCESSFUL via pyenv. Recovered several registry files from the git commit object after the mount served stale/truncated reads mid-edit. Next: Phase 4 (teach-and-grow loop).

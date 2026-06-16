@@ -59,6 +59,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                         // Star Guide pedestal: pickaxe-mineable but breaks fine by hand (no
                         // requiresCorrectToolForDrops) — it's the day-one tutorial block.
                         ModBlocks.STAR_GUIDE.get(),
+                        ModBlocks.VILLAGE_CORE.get(),
                         ModBlocks.LAUNCH_GANTRY.get(),
                         ModBlocks.QUARRY_CONTROLLER.get(),
                         ModBlocks.QUARRY_LANDMARK.get(),
