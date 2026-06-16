@@ -449,4 +449,3 @@ public final class GalleryCaptureHarness {
         return new Shot(name, setup, builds, PLANET_WARMUP_TICKS, cam, tgt);
     }
 }
-                                                     
