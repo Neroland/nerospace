@@ -32,6 +32,7 @@ import za.co.neroland.nerospace.client.ClientOxygenField;
 import za.co.neroland.nerospace.client.OxygenHudLayer;
 
 import za.co.neroland.nerospace.client.AlienVillagerModel;
+import za.co.neroland.nerospace.client.AlienVillagerRenderer;
 import za.co.neroland.nerospace.client.CinderStalkerModel;
 import za.co.neroland.nerospace.client.FrostStriderModel;
 import za.co.neroland.nerospace.client.GreenlingModel;
@@ -154,10 +155,8 @@ public class NerospaceClient {
                 context -> new GreenxertzCreatureRenderer(context,
                         new GreenlingModel(context.bakeLayer(GreenlingModel.LAYER)),
                         entityTexture("greenling"), 1.0F, 1.0F, 1.0F, 0.3F, entityGlow("greenling")));
-        event.registerEntityRenderer(ModEntities.ALIEN_VILLAGER.get(),
-                context -> new GreenxertzCreatureRenderer(context,
-                        new AlienVillagerModel(context.bakeLayer(AlienVillagerModel.LAYER)),
-                        entityTexture("alien_villager"), 1.0F, 1.0F, 1.0F, 0.4F, entityGlow("alien_villager")));
+        // Alien Villager uses its own renderer (Phase 1): per-individual palette tint + per-biome skin.
+        event.registerEntityRenderer(ModEntities.ALIEN_VILLAGER.get(), AlienVillagerRenderer::new);
         event.registerEntityRenderer(ModEntities.CINDER_STALKER.get(),
                 context -> new GreenxertzCreatureRenderer(context,
                         new CinderStalkerModel(context.bakeLayer(CinderStalkerModel.LAYER)),

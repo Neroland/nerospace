@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -19,7 +20,7 @@ import za.co.neroland.nerospace.Nerospace;
  * swishing tail. Silhouette: heavy and horizontal, nothing like the existing predators. Idle: slow,
  * deep grazing breaths with the head dipping toward the grass and the tail swatting.
  */
-public class MeadowLoperModel extends GreenxertzMobModel {
+public class MeadowLoperModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "meadow_loper"), "main");

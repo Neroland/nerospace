@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -19,7 +20,7 @@ import za.co.neroland.nerospace.Nerospace;
  * sensor-head scans side to side and its signature — the six legs keep a faint front-to-back ripple
  * even at rest, like an insect that never quite settles.
  */
-public class QuartzCrawlerModel extends GreenxertzMobModel {
+public class QuartzCrawlerModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "quartz_crawler"), "main");

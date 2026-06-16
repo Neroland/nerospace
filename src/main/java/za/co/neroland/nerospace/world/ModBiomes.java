@@ -98,10 +98,15 @@ public final class ModBiomes {
                 .dryFoliageColorOverride(foliageColor)
                 .build();
 
-        MobSpawnSettings spawns = new MobSpawnSettings.Builder()
+        MobSpawnSettings.Builder spawnBuilder = new MobSpawnSettings.Builder()
                 .addSpawn(MobCategory.CREATURE, 10,
-                        new MobSpawnSettings.SpawnerData(livestock, 2, 4))
-                .build();
+                        new MobSpawnSettings.SpawnerData(livestock, 2, 4));
+        // Greenxertz alien villagers persist into the mature meadow (Phase 1: lighter accessory set).
+        if (key == TERRAFORMED_MEADOW) {
+            spawnBuilder.addSpawn(MobCategory.CREATURE, 5,
+                    new MobSpawnSettings.SpawnerData(ModEntities.ALIEN_VILLAGER.get(), 1, 2));
+        }
+        MobSpawnSettings spawns = spawnBuilder.build();
 
         Biome biome = new Biome.BiomeBuilder()
                 .hasPrecipitation(true)

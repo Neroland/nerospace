@@ -23,7 +23,7 @@ import za.co.neroland.nerospace.Nerospace;
  * pivoted limbs sit OUTSIDE the block (Java-authoritative) because their pivots are at the joint,
  * which the marker form can't express.
  */
-public class AlienVillagerModel extends GreenxertzMobModel {
+public class AlienVillagerModel extends GreenxertzMobModel<AlienVillagerRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "alien_villager"), "main");

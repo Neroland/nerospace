@@ -22,23 +22,30 @@ Build rule (CLAUDE.md): after each content add → datagen entry + texture (`gen
 
 > ⚠️ Build note: the `syncModels` Gradle task fails under the gradle MCP with "no Python found" — Python isn't on that task's PATH. This is a **pre-existing environment issue** (every build runs `model_sync.py`), not specific to this feature. The `alien_villager.bbmodel` is already generated and committed, so builds were verified with `-x syncModels`. To build normally, set `-PpythonCmd=<path-to-python>` or put Python on PATH. (Also fixed a truncated tail in `tools/model_sync.py` discovered en route.)
 
-## Phase 1 — Appearance system
+## Phase 1 — Appearance system ✅ DONE
 
-- [ ] Variant assignment on spawn from biome
-- [ ] Palette tint render layer (seed-clamped to Greenxertz green/steel)
-- [ ] Biome accessory render layer (greenxertz / terraformed_meadow sets)
-- [ ] Glow-eyes + mood/disposition overlay (reuse `GlowEyesLayer`)
-- [ ] **Build-verify → BUILD SUCCESSFUL**
+- [x] Variant assignment on spawn from biome (Phase 0 lazy assign; consumed by the renderer now)
+- [x] `AlienVillagerRenderState` (colorSeed, biomeId, planet) + `AlienVillagerRenderer` (custom)
+- [x] Palette tint via `getModelTint` — seed-clamped green/steel jitter (near-infinite individuals)
+- [x] Biome accessory via `getTextureLocation` — greenxertz base vs `terraformed_meadow` (lighter `alien_villager_meadow.png`); villagers also spawn in the mature meadow
+- [x] Glow-eyes overlay kept (generified `GlowEyesLayer<S>`; emissive eyes/crystals)
+- [x] Generified `GreenxertzMobModel<S>` + 8 sibling models so the tinted villager model can carry the subclassed render state (clean, no raw types)
+- [x] **Build-verify: `compileJava` ✅, full `build` ✅, `ecjCheck` ✅ (0 errors; my code 0 warnings) — all via pyenv `syncModels`**
 
-## Phase 2 — Trading & reputation core
+> 🔧 Resolved the build's Python issue: `syncModels` now runs with `-PpythonCmd=C:\Users\dario\.pyenv\pyenv-win\versions\3.12.10\python.exe`. Full builds (incl. syncModels) pass.
+> ⚠️ Editor truncation recurred (the sandbox mount served stale/short reads, which got written back, lopping the tails off `NerospaceClient.java` & `ModBiomes.java`). Recovered both intact from the latest git commit object + re-applied edits, then verified by compiling. Mitigation going forward: prefer whole-file writes from a trusted source over in-place read-modify-write.
 
-- [ ] `village/Profession.java` + profession registry
-- [ ] Tier-gated trade offers (universal materials + nerospace progression first)
-- [ ] `village/VillageCoreBlockEntity.java` — per-village reputation map (player UUID → 0..100, 6 tiers)
-- [ ] Gift / trade-volume / defense reputation gains
-- [ ] Trading screen + menu (reuse `ModMenuTypes` patterns)
-- [ ] Mood overlay reacts to reputation tier
-- [ ] **Build-verify → BUILD SUCCESSFUL**
+## Phase 2 — Trading & reputation core ✅ DONE
+
+- [x] `village/Reputation.java` — 0..100 score → 6 tiers (T0 Stranger … T5 Kin)
+- [x] `village/AlienTrades.java` — tier-gated cumulative `MerchantOffers` (universal materials: iron/diamond/bread; nerospace progression: nerosium/nerosteel ingots, rocket fuel; rare: alien core), emerald currency
+- [x] `AlienVillager` implements `Merchant` — opens the **vanilla trading screen** (no custom GUI) via `MerchantMenu` + `sendMerchantOffers`
+- [x] Reputation store: per-player UUID→score map on the entity (NBT via `Codec.unboundedMap`); **interim per-villager** until the Village Core aggregates per-village in Phase 3/4
+- [x] Gift handling (right-click palette goods → +rep, happy particles) + trade-volume rep gain; T0 villagers refuse (head-shake)
+- [x] Mood overlay: synced `displayTier` warms the render tint as trust rises
+- [x] **Build-verify: `compileJava` ✅, full `build` ✅, `ecjCheck` ✅ (0 errors; my code 0 warnings) via pyenv**
+
+> Notes: per-**profession** trade pools (unlocked by buildings) are deferred to Phase 5; **defense** reputation needs raids (Phase 5). Phase 2 ships the baseline "Quartz Trader" catalogue, gifting and trade-volume rep. The truncation gremlin hit the Write/Edit tools again (3 files); re-emitted them via bash heredoc — now the reliable write path.
 
 ## Phase 3 — Small structures via jigsaw
 
@@ -92,4 +99,6 @@ Build rule (CLAUDE.md): after each content add → datagen entry + texture (`gen
 
 ### Progress log
 - 2026-06-16: Design doc + task tracker created. Open questions resolved. Starting Phase 0.
-- 2026-06-16: **Phase 0 complete & build-verified.** Alien Villager wanders the Greenxertz surface (wary-neutral), spawns naturally + via egg, carries a per-individual variant. `compileJava` + `runData` both BUILD SUCCESSFUL. Fixed `ResourceKey.location()` → `identifier()` (26.1 rename) along the way. Next: Phase 1 (palette/accessory render layers).
+- 2026-06-16: **Phase 0 complete & build-verified.** Alien Villager wanders the Greenxertz surface (wary-neutral), spawns naturally + via egg, carries a per-individual variant. `compileJava` + `runData` both BUILD SUCCESSFUL. Fixed `ResourceKey.location()` -> `identifier()` (26.1 rename) along the way.
+- 2026-06-16: **Phase 1 complete & build-verified.** Custom renderer gives every villager a unique green/steel shade (seed-clamped `getModelTint`) and a per-biome skin (meadow accessory set), with the emissive eye/crystal glow retained. Generified `GreenxertzMobModel<S>` + `GlowEyesLayer<S>` (12 files); `ecjCheck` clean. Full `build` + `ecjCheck` SUCCESSFUL via pyenv. Next: Phase 2 (trading & reputation core).
+- 2026-06-16: **Phase 2 complete & build-verified.** Alien Villagers are now wary merchants: earn trust via gifts/trades to climb 6 reputation tiers, unlocking a tier-gated trade catalogue (nerospace materials + universal goods) shown in the vanilla trading screen; the render tint warms with trust. `build` + `ecjCheck` SUCCESSFUL via pyenv. Confirmed the 26.1 Merchant/MerchantOffer/ItemCost API via javap first. Next: Phase 3 (small jigsaw structures + claimable Village Core).

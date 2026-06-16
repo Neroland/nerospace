@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -19,7 +20,7 @@ import za.co.neroland.nerospace.Nerospace;
  * and drooped ears. Idle: slow huddled breathing, ear twitches and a gentle ripple through the
  * fleece tufts like wind over a snowdrift.
  */
-public class WoollyDriftModel extends GreenxertzMobModel {
+public class WoollyDriftModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "woolly_drift"), "main");

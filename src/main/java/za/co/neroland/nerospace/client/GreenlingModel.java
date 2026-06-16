@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -19,7 +20,7 @@ import za.co.neroland.nerospace.Nerospace;
  * Idle (10f): a curious head sway (cheeks track the head) and its signature — the three-frond leaf
  * crest wiggles, each frond out of phase, like leaves in a light breeze.
  */
-public class GreenlingModel extends GreenxertzMobModel {
+public class GreenlingModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "greenling"), "main");

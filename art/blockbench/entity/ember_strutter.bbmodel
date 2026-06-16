@@ -1065,7 +1065,7 @@
   ],
   "textures": [
     {
-      "path": "/sessions/zen-dazzling-fermi/mnt/nerospace/src/main/resources/assets/nerospace/textures/entity/ember_strutter.png",
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\ember_strutter.png",
       "name": "ember_strutter.png",
       "folder": "entity",
       "namespace": "nerospace",

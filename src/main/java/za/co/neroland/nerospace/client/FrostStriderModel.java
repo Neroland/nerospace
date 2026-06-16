@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -21,7 +22,7 @@ import za.co.neroland.nerospace.Nerospace;
  * heavy quadruped): this one is all legs. Idle: a quick, shallow, bird-like breath under a wary
  * side-to-side head scan, with a faint shimmer-tremble in the back shards.
  */
-public class FrostStriderModel extends GreenxertzMobModel {
+public class FrostStriderModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "frost_strider"), "main");
