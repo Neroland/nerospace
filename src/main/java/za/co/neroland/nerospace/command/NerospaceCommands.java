@@ -428,12 +428,12 @@ public final class NerospaceCommands {
     }
 
     /**
-     * Solar showcase (SW). Front row: one of each tier as a single unit. Behind it: a multi-unit field
-     * per tier — nine T1 panels (3x3), four T2 units (a 4x4 field) and two T3 units (a 6x3 field) — so
-     * the per-cell trackers seam-joining into one continuous, lockstep-tracking surface is visible. A
-     * Creative Battery → Universal Pipe → T1 panel line shows the dynamic power connector (the panel
-     * grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX, baseZ)},
-     * extending east (+X) and south (+Z); panels sit on the floor with the tracking deck drawn above.
+     * Solar showcase (SW). Front row: one of each tier as a single unit — a 1×1 T1, a 2×2 T2 (one big
+     * panel) and a 3×3 T3 (one big panel). Behind it: several units of each tier side by side — nine T1
+     * panels (a seam-joined 3×3 field), four T2 units and two T3 units — so multiple arrays tiling is
+     * visible. A Creative Battery → Universal Pipe → T1 panel line shows the dynamic power connector (the
+     * panel grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX,
+     * baseZ)}, extending east (+X) and south (+Z); panels sit on the floor with the tracking deck above.
      */
     private static void buildSolarArrays(ServerLevel level, BlockState floor, int baseX, int baseZ, int fy) {
         int sy = fy + 1;

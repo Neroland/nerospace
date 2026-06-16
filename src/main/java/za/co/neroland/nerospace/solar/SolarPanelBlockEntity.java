@@ -150,7 +150,9 @@ public class SolarPanelBlockEntity extends BlockEntity {
             if (!level.canSeeSky(above)) {
                 return 0.0F; // roofed over — no sun reaches the panel
             }
-            long tod = level.getOverworldClockTime() % 24000L; // 0 sunrise, 6000 noon, 18000 midnight
+            // This dimension's own clock (matches the renderer's fold + the sky the player sees); in the
+            // overworld this is identical to the overworld clock, so survival balance is unchanged.
+            long tod = level.getDefaultClockTime() % 24000L; // 0 sunrise, 6000 noon, 18000 midnight
             float sun = Mth.cos((float) ((tod - 6000L) / 24000.0 * 2.0 * Math.PI)); // +1 noon, -1 midnight
             daylight = Math.max(0.0F, sun);
         }

@@ -23,29 +23,34 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.registry.ModDimensionTypes;
 import za.co.neroland.nerospace.solar.SolarPanelBlock;
 import za.co.neroland.nerospace.solar.SolarPanelBlockEntity;
-import za.co.neroland.nerospace.solar.SolarTier;
 
 /**
  * Draws the moving solar-panel deck above its static housing model. EVERY tier uses the SAME animation:
- * a deck that pivots on its T-pole and pitches east-west to track the sun. Tier 1 is a single 1×1
- * tracker; Tier 2/3 are N×N multiblocks where each cell renders its own identical tracker, and the
- * edge-to-edge seam joining ({@link SolarPanelRenderState#connect}) merges them into one continuous,
- * lockstep-moving tracking field (all cells read the same world time). On faces touching a power cable
- * or any other energy block (this or another mod), a small connector stub is drawn so the hookup butts
- * up against the cable arm with no blank gap ({@link SolarPanelRenderState#connector}).
+ * a deck that pivots on a T-pole and pitches east-west to track the sun. Tier 1 is a single 1×1 tracker
+ * on its model's pole, with seam joining ({@link SolarPanelRenderState#connect}) so adjacent T1 units
+ * read as one field. Tier 2/3 are N×N multiblocks drawn as ONE big panel: only the anchor (min-corner)
+ * cell renders, drawing a single N×N deck on a central mast that pitches east-west like Tier 1 (the
+ * tilt is scaled down as the footprint grows so the wider deck's descending edge never dips below the
+ * housings). All panels read the same world time, so an array moves in lockstep. On faces touching a
+ * power cable or any other energy block (this or another mod), a connector stub is drawn so the hookup
+ * butts up against the cable arm with no blank gap ({@link SolarPanelRenderState#connector}).
  */
 public class SolarPanelRenderer
         implements BlockEntityRenderer<SolarPanelBlockEntity, SolarPanelRenderState> {
 
     /** Pivot height = the cross-bar top (the T-pole). */
     private static final float POLE_TOP = 9.0F / 16.0F;
+    /** Static housing top (3px) — the floor the deck must stay clear of when tilted. */
+    private static final float HOUSING_TOP = 3.0F / 16.0F;
     /** Deck thickness: a real 1px slab. */
     private static final float THICK = 1.0F / 16.0F;
     /** Max east-west tracking tilt; capped so the deck clears the torque tube. */
     private static final float MAX_TILT = 40.0F;
-    /** Half-extent of a deck edge with no neighbour (thin frame gap) / touching a neighbour. */
-    private static final float INSET = 0.46F;
-    private static final float EDGE = 0.5F;
+    /** Central-mast dimensions for the multiblock deck (post 3..7px, N-S torque tube 7..8px). */
+    private static final float MAST_HALF = 1.0F / 16.0F;
+    private static final float POST_TOP = 7.0F / 16.0F;
+    private static final float TUBE_TOP = 8.0F / 16.0F;
+    private static final float TUBE_HALF = 4.0F / 16.0F;
     /** Connector stub cross-section (4..12px) — matches the cable arm so the joint reads as continuous. */
     private static final float CONN_LO = 4.0F / 16.0F;
     private static final float CONN_HI = 12.0F / 16.0F;
@@ -76,31 +81,26 @@ public class SolarPanelRenderer
             openness = 1.0F;  // permanent sun in orbit / on an airless moon
             track = 0.0F;
         } else {
-            long tod = level.getOverworldClockTime() % 24000L; // 0 sunrise, 6000 noon, 18000 midnight
+            // Use this dimension's OWN clock (getDefaultClockTime), not the overworld's: the deck must
+            // fold to match the sky the player actually sees. getOverworldClockTime() reads the overworld
+            // clock, so a panel in another dimension (e.g. the gallery's capture dim) stayed at its last
+            // overworld-daytime angle and never folded when the local sky went dark.
+            long tod = level.getDefaultClockTime() % 24000L; // 0 sunrise, 6000 noon, 18000 midnight
             float sun = Mth.cos((float) ((tod - 6000L) / 24000.0 * 2.0 * Math.PI)); // +1 noon, -1 midnight
-            openness = Mth.clamp((sun + 0.05F) / 0.3F, 0.0F, 1.0F); // eases to 0 at night
+            openness = Mth.clamp((sun + 0.05F) / 0.3F, 0.0F, 1.0F); // eases to 0 at night → folds flat
             track = (float) ((tod - 6000L) / 24000.0) * 360.0F; // -90 sunrise .. 0 noon .. +90 sunset
         }
-        // East-west sun tracking for ALL tiers; cells move in lockstep on the same clock.
+        // East-west sun tracking for ALL tiers; cells move in lockstep on the same clock and fold flat
+        // (angle → 0) at night because openness eases to 0.
         state.angle = openness * Mth.clamp(track, -MAX_TILT, MAX_TILT);
 
-        SolarTier tier = panel.tier();
         BlockPos pos = panel.getBlockPos();
-        state.connect[0] = sameTier(level, pos.relative(Direction.NORTH), tier);
-        state.connect[1] = sameTier(level, pos.relative(Direction.EAST), tier);
-        state.connect[2] = sameTier(level, pos.relative(Direction.SOUTH), tier);
-        state.connect[3] = sameTier(level, pos.relative(Direction.WEST), tier);
-
         // Connector stubs: any horizontal neighbour exposing an energy capability that ISN'T another
         // solar panel — a Nerospace universal cable, a battery/machine, or any other mod's power cable.
         state.connector[0] = energyHookup(level, pos.relative(Direction.NORTH), Direction.NORTH);
         state.connector[1] = energyHookup(level, pos.relative(Direction.EAST), Direction.EAST);
         state.connector[2] = energyHookup(level, pos.relative(Direction.SOUTH), Direction.SOUTH);
         state.connector[3] = energyHookup(level, pos.relative(Direction.WEST), Direction.WEST);
-    }
-
-    private static boolean sameTier(Level level, BlockPos pos, SolarTier tier) {
-        return level.getBlockEntity(pos) instanceof SolarPanelBlockEntity neighbour && neighbour.tier() == tier;
     }
 
     /**
@@ -119,41 +119,106 @@ public class SolarPanelRenderer
     public void submit(SolarPanelRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
             CameraRenderState cameraState) {
         int light = state.lightCoords;
+
+        // Power connector stubs are per-cell (each cell meets cables on its own faces) — drawn for EVERY
+        // cell, including the filler cells of a multiblock whose perimeter touches a cable.
+        drawConnectors(state, poseStack, collector, light);
+
         Identifier texture = Identifier.fromNamespaceAndPath(
                 Nerospace.MODID, "textures/block/solar_panel_t" + state.tier + ".png");
 
-        // A centred deck on the T-pole, pitching east-west to follow the sun. Every cell (T1 and each
-        // cell of a T2/T3 multiblock) draws this identically; the seam insets join neighbours edge-to-edge.
-        float we = state.connect[3] ? EDGE : INSET;
-        float ee = state.connect[1] ? EDGE : INSET;
-        float no = state.connect[0] ? EDGE : INSET;
-        float so = state.connect[2] ? EDGE : INSET;
+        if (state.footprint > 1) {
+            if (!state.anchor) {
+                return; // one big panel per multiblock — only the anchor (min-corner) draws the deck
+            }
+            submitMultiblockDeck(state, poseStack, collector, light, texture);
+            return;
+        }
+
+        // Tier 1: a centred 1×1 deck on the model's T-pole, pitching east-west to follow the sun. The
+        // deck fills the full block edge-to-edge (pixel-perfect — the tier-coloured ring sits in the
+        // texture's outer pixels, with no geometry padding) and maps the whole sprite.
         poseStack.pushPose();
         poseStack.translate(0.5F, POLE_TOP, 0.5F);
         poseStack.mulPose(Axis.ZP.rotationDegrees(state.angle));
         collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture),
                 (pose, consumer) -> box(consumer, pose, light,
-                        -we, -THICK / 2.0F, -no, ee, THICK / 2.0F, so,
-                        -we + 0.5F, -no + 0.5F, ee + 0.5F, so + 0.5F));
+                        -0.5F, -THICK / 2.0F, -0.5F, 0.5F, THICK / 2.0F, 0.5F,
+                        0.0F, 0.0F, 1.0F, 1.0F));
         poseStack.popPose();
+    }
 
-        // Power connector stubs (drawn in block space, no deck rotation) on the `_base` housing sprite.
-        if (state.connector[0] || state.connector[1] || state.connector[2] || state.connector[3]) {
-            Identifier baseTexture = Identifier.fromNamespaceAndPath(
-                    Nerospace.MODID, "textures/block/solar_panel_t" + state.tier + "_base.png");
-            var rt = RenderTypes.entityCutout(baseTexture);
-            if (state.connector[0]) { // NORTH (−Z)
-                connector(collector, poseStack, rt, light, CONN_LO, CONN_LO, 0.0F, CONN_HI, CONN_HI, CONN_REACH);
-            }
-            if (state.connector[2]) { // SOUTH (+Z)
-                connector(collector, poseStack, rt, light, CONN_LO, CONN_LO, 1.0F - CONN_REACH, CONN_HI, CONN_HI, 1.0F);
-            }
-            if (state.connector[1]) { // EAST (+X)
-                connector(collector, poseStack, rt, light, 1.0F - CONN_REACH, CONN_LO, CONN_LO, 1.0F, CONN_HI, CONN_HI);
-            }
-            if (state.connector[3]) { // WEST (−X)
-                connector(collector, poseStack, rt, light, 0.0F, CONN_LO, CONN_LO, CONN_REACH, CONN_HI, CONN_HI);
-            }
+    /**
+     * Tier 2/3: ONE big N×N photovoltaic deck on a central mast, pitching east-west to track the sun —
+     * the same animation as Tier 1, just a single panel instead of many. Drawn in the anchor's
+     * (min-corner) space, so the deck and mast centre on the footprint. The tilt is reduced as the
+     * footprint grows ({@link #maxTiltFor}) so the wider deck's descending edge clears the housings.
+     */
+    private void submitMultiblockDeck(SolarPanelRenderState state, PoseStack poseStack,
+            SubmitNodeCollector collector, int light, Identifier texture) {
+        int n = state.footprint;
+        float centre = n / 2.0F;
+        float cap = maxTiltFor(n);
+        float angle = Mth.clamp(state.angle, -cap, cap);
+
+        // Central mast (post + N-S torque tube) on the `_base` sprite, supporting the deck at the centre.
+        Identifier baseTexture = Identifier.fromNamespaceAndPath(
+                Nerospace.MODID, "textures/block/solar_panel_t" + state.tier + "_base.png");
+        var baseRt = RenderTypes.entityCutout(baseTexture);
+        collector.order(1).submitCustomGeometry(poseStack, baseRt, (pose, consumer) -> {
+            box(consumer, pose, light, centre - MAST_HALF, HOUSING_TOP, centre - MAST_HALF,
+                    centre + MAST_HALF, POST_TOP, centre + MAST_HALF, 0.25F, 0.25F, 0.75F, 0.75F);
+            box(consumer, pose, light, centre - MAST_HALF, POST_TOP, centre - TUBE_HALF,
+                    centre + MAST_HALF, TUBE_TOP, centre + TUBE_HALF, 0.25F, 0.25F, 0.75F, 0.75F);
+        });
+
+        // The single deck, pivoting east-west about the central mast; fills the footprint edge-to-edge
+        // (pixel-perfect — the tier-coloured ring lives in the texture's outer pixels, no geometry gap).
+        float half = centre;
+        poseStack.pushPose();
+        poseStack.translate(centre, POLE_TOP, centre);
+        poseStack.mulPose(Axis.ZP.rotationDegrees(angle));
+        collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture),
+                (pose, consumer) -> box(consumer, pose, light,
+                        -half, -THICK / 2.0F, -half, half, THICK / 2.0F, half,
+                        0.0F, 0.0F, 1.0F, 1.0F));
+        poseStack.popPose();
+    }
+
+    /**
+     * The east-west tilt cap for a footprint. Tier 1 gets the full {@link #MAX_TILT}; wider multiblock
+     * decks are capped so the descending edge's underside never drops below the housing top (a bigger
+     * panel physically can't swing as far before hitting the ground).
+     */
+    private static float maxTiltFor(int footprint) {
+        if (footprint <= 1) {
+            return MAX_TILT;
+        }
+        double half = footprint / 2.0;
+        double sin = (POLE_TOP - HOUSING_TOP - THICK / 2.0F) / half;
+        return (float) Math.toDegrees(Math.asin(Math.min(1.0, sin)));
+    }
+
+    /** Draw the per-cell power connector stubs (block space, no deck rotation) on the `_base` sprite. */
+    private void drawConnectors(SolarPanelRenderState state, PoseStack poseStack,
+            SubmitNodeCollector collector, int light) {
+        if (!(state.connector[0] || state.connector[1] || state.connector[2] || state.connector[3])) {
+            return;
+        }
+        Identifier baseTexture = Identifier.fromNamespaceAndPath(
+                Nerospace.MODID, "textures/block/solar_panel_t" + state.tier + "_base.png");
+        var rt = RenderTypes.entityCutout(baseTexture);
+        if (state.connector[0]) { // NORTH (−Z)
+            connector(collector, poseStack, rt, light, CONN_LO, CONN_LO, 0.0F, CONN_HI, CONN_HI, CONN_REACH);
+        }
+        if (state.connector[2]) { // SOUTH (+Z)
+            connector(collector, poseStack, rt, light, CONN_LO, CONN_LO, 1.0F - CONN_REACH, CONN_HI, CONN_HI, 1.0F);
+        }
+        if (state.connector[1]) { // EAST (+X)
+            connector(collector, poseStack, rt, light, 1.0F - CONN_REACH, CONN_LO, CONN_LO, 1.0F, CONN_HI, CONN_HI);
+        }
+        if (state.connector[3]) { // WEST (−X)
+            connector(collector, poseStack, rt, light, 0.0F, CONN_LO, CONN_LO, CONN_REACH, CONN_HI, CONN_HI);
         }
     }
 

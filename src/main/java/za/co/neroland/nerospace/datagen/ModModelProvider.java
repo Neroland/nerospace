@@ -72,14 +72,27 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(
                 BlockModelGenerators.createSimpleBlock(pad, BlockModelGenerators.plainVariant(padModel)));
 
-        // Solar Panels (ALL tiers): the static steel mount — a 3px housing, a central post, and a
-        // north-south cross-bar on top (a "T-pole"), all on each block's own `_base` sprite (distinct
-        // from the PV deck). The sun-tracking photovoltaic deck pivots on the cross-bar and is drawn by
-        // the block-entity renderer. T2/T3 are N×N multiblocks where every cell carries this same mount,
-        // so each cell renders its own tracker and they seam-join into one field.
-        for (Block solar : new Block[] {ModBlocks.SOLAR_PANEL_T1.get(),
-                ModBlocks.SOLAR_PANEL_T2.get(), ModBlocks.SOLAR_PANEL_T3.get()}) {
-            registerSolarHousing(blockModels, solar);
+        // Solar Panel (T1): the static steel mount — a 3px housing, a central post and a N-S cross-bar
+        // (the "T-pole") on its `_base` sprite. The sun-tracking PV deck pivots on it (renderer-drawn).
+        registerSolarHousing(blockModels, ModBlocks.SOLAR_PANEL_T1.get());
+
+        // Tier 2/3 Solar Panels: each cell is just a flat 3px housing on its own `_base` sprite. The
+        // single big N×N tilting deck (ONE panel) and its central support mast are drawn by the anchor's
+        // renderer. The "" variant covers both ANCHOR states.
+        for (Block multi : new Block[] {ModBlocks.SOLAR_PANEL_T2.get(), ModBlocks.SOLAR_PANEL_T3.get()}) {
+            var baseTex = TextureMapping.getBlockTexture(multi, "_base");
+            TextureMapping mapping = new TextureMapping()
+                    .put(TextureSlot.ALL, baseTex).put(TextureSlot.PARTICLE, baseTex);
+            ExtendedModelTemplate template = ExtendedModelTemplateBuilder.builder()
+                    .requiredTextureSlot(TextureSlot.ALL)
+                    .requiredTextureSlot(TextureSlot.PARTICLE)
+                    .element(e -> e.from(0, 0, 0).to(16, 3, 16)
+                            .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                    .build();
+            Identifier model = template.create(
+                    ModelLocationUtils.getModelLocation(multi), mapping, blockModels.modelOutput);
+            blockModels.blockStateOutput.accept(
+                    BlockModelGenerators.createSimpleBlock(multi, BlockModelGenerators.plainVariant(model)));
         }
 
         // Launch Gantry — shaped tower in registerShapedMachines (art overhaul §3).
