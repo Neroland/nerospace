@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -37,9 +36,12 @@ import za.co.neroland.nerospace.machine.quarry.QuarryRegion;
 public class QuarryControllerRenderer
         implements BlockEntityRenderer<QuarryControllerBlockEntity, QuarryControllerRenderState> {
 
-    /** The frame texture, reused so the gantry + bit match the frame ring exactly. */
-    private static final Identifier TEX =
-            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/block/quarry_frame.png");
+    /** Purple strut texture for the moving gantry (bridge / trucks / carriage / shaft). */
+    private static final Identifier GANTRY_TEX =
+            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/block/quarry_gantry.png");
+    /** Red/steel strut texture for the drill head (kept its original colour). */
+    private static final Identifier DRILL_TEX =
+            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/block/quarry_drill.png");
     /** Full-bright light (the frame is emissive); per-face lighting still shades by normal. */
     private static final int FULL_BRIGHT = 0x00F000F0;
     /** Top of the bit (chuck collar top, local Y) — the support shaft meets it here. */
@@ -145,14 +147,15 @@ public class QuarryControllerRenderer
         if (!s.active) {
             return;
         }
-        RenderType rt = RenderTypes.entityCutout(TEX);
-        // Gantry: world-relative, at the base pose.
-        collector.order(1).submitCustomGeometry(poseStack, rt, (pose, c) -> drawGantry(s, pose, c));
-        // Drill head: spun around the vertical axis at the dig cell.
+        // Gantry (purple): world-relative, at the base pose.
+        collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(GANTRY_TEX),
+                (pose, c) -> drawGantry(s, pose, c));
+        // Drill head (red): spun around the vertical axis at the dig cell.
         poseStack.pushPose();
         poseStack.translate(s.hx, s.hy, s.hz);
         poseStack.mulPose(Axis.YP.rotationDegrees(s.headSpin));
-        collector.order(1).submitCustomGeometry(poseStack, rt, (pose, c) -> drawBit(pose, c));
+        collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(DRILL_TEX),
+                (pose, c) -> drawBit(pose, c));
         poseStack.popPose();
     }
 

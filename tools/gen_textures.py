@@ -2676,27 +2676,39 @@ def gen_quarry_landmark():
     save(img, os.path.join(BLOCK_DIR, "quarry_landmark.png"))
 
 
-def gen_quarry_frame():
-    # Energised strut for the 3-D OPEN frame model (corner posts + edge rails, see-through centre).
-    # Themed to the nerosium machine family (steel body + red energy rails + pink glow nodes) so it
-    # matches the quarry controller rather than reading as a stray cyan block. The narrow beam faces
-    # only sample a thin UV slice, so a glowing rail sits every 4px on both axes so any slice lights up.
-    rng = random.Random(1303)
+def _gen_quarry_strut(name, rail, node, seed):
+    # Energised strut texture: steel body + coloured energy rails + glow weld nodes. Shared shape for
+    # the quarry frame block model AND (via entity render types) the moving gantry + drill head, each
+    # in its own colour. Narrow beam faces sample a thin UV slice, so a rail sits every 4px on both
+    # axes so any slice lights up.
+    rng = random.Random(seed)
     img = new_img()
     px = img.load()
-    # steel body (shared machine base)
     noise_fill(img, METAL, rng)
     bevel(img, METAL_L, METAL_D)
-    # nerosium-red energy rails every 4px on both axes
     for i in range(S):
         for k in range(0, S, 4):
-            px[k, i] = N_RED
-            px[i, k] = N_RED
-    # glowing weld nodes on the grid intersections
+            px[k, i] = rail
+            px[i, k] = rail
     for y in range(0, S, 4):
         for x in range(0, S, 4):
-            px[x, y] = N_GLOW
-    save(img, os.path.join(BLOCK_DIR, "quarry_frame.png"))
+            px[x, y] = node
+    save(img, os.path.join(BLOCK_DIR, name + ".png"))
+
+
+def gen_quarry_frame():
+    # Frame ring — BLUE.
+    _gen_quarry_strut("quarry_frame", (52, 120, 246, 255), (150, 198, 255, 255), 1303)
+
+
+def gen_quarry_gantry():
+    # Moving gantry (bridge / carriage / support shaft) — PURPLE.
+    _gen_quarry_strut("quarry_gantry", N_PURPLE, (200, 130, 255, 255), 1304)
+
+
+def gen_quarry_drill():
+    # Drill head — keeps the original red/steel look.
+    _gen_quarry_strut("quarry_drill", N_RED, N_GLOW, 1305)
 
 
 def gen_frame_casing():
@@ -2877,6 +2889,8 @@ if __name__ == "__main__":
     gen_quarry_controller()
     gen_quarry_landmark()
     gen_quarry_frame()
+    gen_quarry_gantry()
+    gen_quarry_drill()
     gen_frame_casing()
     gen_quarry_module("speed_module", (90, 200, 255, 255))
     gen_quarry_module("efficiency_module", (120, 230, 140, 255))
