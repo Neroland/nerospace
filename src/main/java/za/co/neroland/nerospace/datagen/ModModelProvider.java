@@ -227,6 +227,8 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GREENLING_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ALIEN_VILLAGER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.GRAV_STRIDERS.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.XERTZ_RESONATOR.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CINDER_STALKER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FROST_STRIDER_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
 

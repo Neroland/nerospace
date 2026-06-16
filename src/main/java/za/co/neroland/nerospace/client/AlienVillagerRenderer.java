@@ -11,20 +11,22 @@ import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.entity.AlienVillager;
 
 /**
- * Renderer for the Alien Villager (Phase 1 appearance + Phase 2 mood). On top of the shared creature
- * animation it adds a per-individual palette tint (getModelTint), a per-biome accessory texture
- * (getTextureLocation), and a mood warmth that brightens the tint as the villager's trust rises. The
- * emissive eye/crystal glow rides along via GlowEyesLayer.
+ * Renderer for the Alien Villager. Per-individual palette tint (getModelTint), per-planet + per-biome
+ * skin (getTextureLocation: Greenxertz green/steel with a lighter meadow set, Cindara ember/red,
+ * Glacira frost/pale), a trust-warmed mood tint, and the emissive eye/crystal glow.
  */
 public class AlienVillagerRenderer
         extends MobRenderer<AlienVillager, AlienVillagerRenderState, EntityModel<AlienVillagerRenderState>> {
 
-    private static final Identifier BASE =
-            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/alien_villager.png");
-    private static final Identifier MEADOW =
-            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/alien_villager_meadow.png");
-    private static final Identifier GLOW =
-            Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/alien_villager_glow.png");
+    private static Identifier tex(String n) {
+        return Identifier.fromNamespaceAndPath(Nerospace.MODID, "textures/entity/" + n + ".png");
+    }
+
+    private static final Identifier BASE = tex("alien_villager");
+    private static final Identifier MEADOW = tex("alien_villager_meadow");
+    private static final Identifier CINDARA = tex("alien_villager_cindara");
+    private static final Identifier GLACIRA = tex("alien_villager_glacira");
+    private static final Identifier GLOW = tex("alien_villager_glow");
 
     @SuppressWarnings("this-escape")
     public AlienVillagerRenderer(EntityRendererProvider.Context context) {
@@ -48,10 +50,11 @@ public class AlienVillagerRenderer
 
     @Override
     public Identifier getTextureLocation(AlienVillagerRenderState state) {
-        if (state.biomeId != null && state.biomeId.contains("meadow")) {
-            return MEADOW;
-        }
-        return BASE;
+        return switch (state.planet) {
+            case CINDARA -> CINDARA;
+            case GLACIRA -> GLACIRA;
+            case GREENXERTZ -> (state.biomeId != null && state.biomeId.contains("meadow")) ? MEADOW : BASE;
+        };
     }
 
     @Override

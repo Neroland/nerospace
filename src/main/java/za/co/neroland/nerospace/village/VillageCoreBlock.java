@@ -21,9 +21,10 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 
 /**
- * Village Core (ALIEN_VILLAGERS_DESIGN.md §4.1). Right-click to claim; feed it Nerosteel to stock its
- * construction store; right-click (as owner) to teach + raise the next building once the nearby
- * villagers trust you enough. It ticks construction via {@link VillageCoreBlockEntity#serverTick}.
+ * Village Core (ALIEN_VILLAGERS_DESIGN.md §4.1). Right-click to claim / teach the next building;
+ * right-click with Nerosteel to stock materials, or with a quest item to hand it in; sneak-right-click
+ * to collect produced goods and read the village's current task. It ticks construction, production
+ * and raids via {@link VillageCoreBlockEntity#serverTick}.
  */
 public class VillageCoreBlock extends BaseEntityBlock {
 
@@ -61,20 +62,26 @@ public class VillageCoreBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
-        // Feed Nerosteel into the construction stockpile.
-        if (stack.is(ModBlocks.NEROSTEEL_BLOCK.get().asItem())
-                && level.getBlockEntity(pos) instanceof VillageCoreBlockEntity core) {
-            if (!level.isClientSide()) {
-                if (core.isClaimed() && !core.isOwner(player)) {
-                    player.sendSystemMessage(Component.translatable(
-                            "message.nerospace.village_core.owned", core.getOwnerName()));
-                } else {
-                    if (!core.isClaimed()) {
-                        core.claim(player);
-                    }
-                    core.deposit(player, stack);
+        if (!(level.getBlockEntity(pos) instanceof VillageCoreBlockEntity core)) {
+            return super.useItemOn(stack, state, level, pos, player, hand, hit);
+        }
+        // Consume the interaction on the client (server is authoritative for deposits / quest hand-ins).
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        if (stack.is(ModBlocks.NEROSTEEL_BLOCK.get().asItem())) {
+            if (core.isClaimed() && !core.isOwner(player)) {
+                player.sendSystemMessage(Component.translatable(
+                        "message.nerospace.village_core.owned", core.getOwnerName()));
+            } else {
+                if (!core.isClaimed()) {
+                    core.claim(player);
                 }
+                core.deposit(player, stack);
             }
+            return InteractionResult.SUCCESS;
+        }
+        if (core.tryCompleteQuest(player, stack)) {
             return InteractionResult.SUCCESS;
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hit);
@@ -87,6 +94,10 @@ public class VillageCoreBlock extends BaseEntityBlock {
             return InteractionResult.PASS;
         }
         if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        if (player.isShiftKeyDown()) {
+            core.collectAndStatus(player);
             return InteractionResult.SUCCESS;
         }
         if (!core.isClaimed()) {

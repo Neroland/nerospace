@@ -38,6 +38,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.nerospace.village_core.claimed", "You claim this Village Core. The aliens take note.");
         add("message.nerospace.village_core.status_self", "This is your Village Core.");
         add("message.nerospace.village_core.owned", "This Village Core belongs to %s.");
+        add(ModItems.GRAV_STRIDERS.get(), "Grav Striders");
+        add(ModItems.XERTZ_RESONATOR.get(), "Xertz Resonator");
 
         // Phase 4 blocks.
         add(ModBlocks.ROCKET_LAUNCH_PAD.get(), "Rocket Launch Pad");

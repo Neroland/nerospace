@@ -10,9 +10,11 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.world.HamletFeature;
+import za.co.neroland.nerospace.world.RuinFeature;
 
 /**
  * Custom worldgen features for Nerospace. Phase 3: the {@link HamletFeature} alien outpost.
+ * Phase 7: the {@link RuinFeature} ancient ruin.
  */
 public final class ModFeatures {
 
@@ -21,6 +23,9 @@ public final class ModFeatures {
 
     public static final Supplier<Feature<NoneFeatureConfiguration>> HAMLET =
             FEATURES.register("hamlet", () -> new HamletFeature(NoneFeatureConfiguration.CODEC));
+
+    public static final Supplier<Feature<NoneFeatureConfiguration>> RUIN =
+            FEATURES.register("ruin", () -> new RuinFeature(NoneFeatureConfiguration.CODEC));
 
     private ModFeatures() {
     }

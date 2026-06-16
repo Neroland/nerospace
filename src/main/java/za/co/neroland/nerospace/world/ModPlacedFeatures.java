@@ -42,6 +42,7 @@ public final class ModPlacedFeatures {
     public static final ResourceKey<PlacedFeature> GLACITE_ORE_PLACED = registerKey("glacite_ore_placed");
     /** Rare surface alien hamlet (Phase 3). */
     public static final ResourceKey<PlacedFeature> HAMLET_PLACED = registerKey("hamlet_placed");
+    public static final ResourceKey<PlacedFeature> RUIN_PLACED = registerKey("ruin_placed");
 
     private ModPlacedFeatures() {
     }
@@ -107,6 +108,15 @@ public final class ModPlacedFeatures {
                 configuredFeatures.getOrThrow(ModConfiguredFeatures.HAMLET),
                 List.of(
                         net.minecraft.world.level.levelgen.placement.RarityFilter.onAverageOnceEvery(40),
+                        InSquarePlacement.spread(),
+                        net.minecraft.world.level.levelgen.placement.HeightmapPlacement.onHeightmap(
+                                net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG),
+                        BiomeFilter.biome())));
+
+        context.register(RUIN_PLACED, new PlacedFeature(
+                configuredFeatures.getOrThrow(ModConfiguredFeatures.RUIN),
+                List.of(
+                        net.minecraft.world.level.levelgen.placement.RarityFilter.onAverageOnceEvery(120),
                         InSquarePlacement.spread(),
                         net.minecraft.world.level.levelgen.placement.HeightmapPlacement.onHeightmap(
                                 net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG),

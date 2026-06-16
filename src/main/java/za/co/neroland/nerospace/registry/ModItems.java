@@ -435,6 +435,11 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.STAR_GUIDE);
     public static final DeferredItem<BlockItem> VILLAGE_CORE_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.VILLAGE_CORE);
+
+    // Exclusive Artificer gear (ALIEN_VILLAGERS_DESIGN.md §6.1) — trade-only.
+    public static final DeferredItem<Item> GRAV_STRIDERS = ITEMS.registerSimpleItem("grav_striders");
+    public static final DeferredItem<Item> XERTZ_RESONATOR = ITEMS.registerItem(
+            "xertz_resonator", props -> new za.co.neroland.nerospace.gear.XertzResonatorItem(props));
     public static final DeferredItem<Item> STAR_GUIDE_BOOK = ITEMS.registerItem(
             "star_guide_book", props -> new za.co.neroland.nerospace.item.StarGuideBookItem(props.stacksTo(1)));
 

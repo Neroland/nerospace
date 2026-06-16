@@ -162,6 +162,8 @@ public final class ModBiomes {
         // Alien hamlet outposts dot the surface (ALIEN_VILLAGERS_DESIGN.md §5, Phase 3).
         generation.addFeature(GenerationStep.Decoration.SURFACE_STRUCTURES,
                 placedFeatures.getOrThrow(ModPlacedFeatures.HAMLET_PLACED));
+        generation.addFeature(GenerationStep.Decoration.SURFACE_STRUCTURES,
+                placedFeatures.getOrThrow(ModPlacedFeatures.RUIN_PLACED));
 
         // MC 26.1 trimmed BiomeSpecialEffects.Builder to water + grass/foliage colors; fog/sky/water-fog
         // colors are no longer set here. The green surface palette comes from the grass/foliage overrides.
@@ -218,6 +220,8 @@ public final class ModBiomes {
         MobSpawnSettings spawns = new MobSpawnSettings.Builder()
                 .addSpawn(MobCategory.MONSTER, 14,
                         new MobSpawnSettings.SpawnerData(ModEntities.CINDER_STALKER.get(), 1, 2))
+                .addSpawn(MobCategory.CREATURE, 3,
+                        new MobSpawnSettings.SpawnerData(ModEntities.ALIEN_VILLAGER.get(), 1, 2))
                 .build();
 
         Biome biome = new Biome.BiomeBuilder()
@@ -255,6 +259,8 @@ public final class ModBiomes {
         MobSpawnSettings spawns = new MobSpawnSettings.Builder()
                 .addSpawn(MobCategory.MONSTER, 14,
                         new MobSpawnSettings.SpawnerData(ModEntities.FROST_STRIDER.get(), 1, 2))
+                .addSpawn(MobCategory.CREATURE, 3,
+                        new MobSpawnSettings.SpawnerData(ModEntities.ALIEN_VILLAGER.get(), 1, 2))
                 .build();
 
         Biome biome = new Biome.BiomeBuilder()

@@ -26,6 +26,11 @@ public class Config {
                     "immediately on config reload). Full details: PRIVACY.md in the mod repository.")
             .define("telemetryEnabled", true);
 
+    /** Alien village raids: periodic hostile attacks on claimed villages at night. Opt-out here. */
+    public static final ModConfigSpec.BooleanValue ALIEN_RAIDS_ENABLED = BUILDER
+            .comment("Whether claimed alien villages are raided by hostile mobs at night.")
+            .define("alienRaidsEnabled", true);
+
     // --- Balance multipliers -------------------------------------------------
     //
     // The base numbers live in code (Tuning.java) and are documented in wiki/Configuration.md.

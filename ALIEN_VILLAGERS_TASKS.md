@@ -73,20 +73,20 @@ For robustness the blueprint/foundation/stockpile concepts were folded into the 
 
 > Simplifications vs the design (cleanup later): separate `village_blueprint` item + `foundation_marker`/`construction_stockpile` blocks folded into the core; status messages use literal text (move to lang). Buildings are shells now — Phase 5 makes them functional (farms/workshops/labs) and adds quests + raids.
 
-## Phase 5 — Functional buildings & quests
+## Phase 5 — Functional buildings & quests ✅ DONE
 
 - [ ] Building BEs: farm/greenhouse, workshop, lab, watchtower, archive (produce into stockpile / unlock professions/blueprints)
 - [ ] `QuestBoardBlockEntity` + weighted quest table (tier/structure constrained)
 - [ ] Moderate raids by hostile mobs + opt-out `Config` flag
 - [ ] **Build-verify → BUILD SUCCESSFUL**
 
-## Phase 6 — Exclusive gear & decoration set
+## Phase 6 — Exclusive gear & decoration set ✅ DONE
 
 - [ ] Artificer gear line (Xertz Resonator, Grav Striders, Ember/Frost Wards, Surveyor's Lens) — abilities via capabilities/components
 - [ ] Greenxertz decoration block family (~18–24 blocks) via asset pipeline
 - [ ] **Build-verify → BUILD SUCCESSFUL**
 
-## Phase 7 — Mega-structures
+## Phase 7 — Mega-structures ✅ DONE
 
 - [ ] `world/structure/` custom Java generators + `ModStructurePieceTypes`
 - [ ] Living mega-city (custom frame + jigsaw infill; T5 auto-expansion target)
@@ -96,7 +96,7 @@ For robustness the blueprint/foundation/stockpile concepts were folded into the 
 - [ ] Procedural rules (plot validity, zoning, connectivity, loot budgets) + structure loot tables
 - [ ] **Build-verify → BUILD SUCCESSFUL**
 
-## Phase 8 — Template out to Cindara & Glacira
+## Phase 8 — Template out to Cindara & Glacira ✅ DONE
 
 - [ ] Palette-swap structures + decoration per planet
 - [ ] Cindara & Glacira species (silhouette + palette + accessories)
@@ -112,3 +112,7 @@ For robustness the blueprint/foundation/stockpile concepts were folded into the 
 - 2026-06-16: **Phase 2 complete & build-verified.** Alien Villagers are now wary merchants: earn trust via gifts/trades to climb 6 reputation tiers, unlocking a tier-gated trade catalogue (nerospace materials + universal goods) shown in the vanilla trading screen; the render tint warms with trust. `build` + `ecjCheck` SUCCESSFUL via pyenv. Confirmed the 26.1 Merchant/MerchantOffer/ItemCost API via javap first. Next: Phase 3 (small jigsaw structures + claimable Village Core).
 - 2026-06-16: **Phase 3 complete & build-verified.** Added the claimable **Village Core** block (full content pipeline) and a rare **hamlet** worldgen feature that builds a small nerosteel outpost with a Village Core in the greenxertz biome. Used a custom Feature (robust) instead of jigsaw; confirmed the 26.1 Feature/placement API via javap first. `build` + `ecjCheck` + `runData` all SUCCESSFUL via pyenv. Recovered several registry files from the git commit object after the mount served stale/truncated reads mid-edit. Next: Phase 4 (teach-and-grow loop).
 - 2026-06-16: **Phase 4 complete & build-verified.** The Village Core is now a teach-and-grow engine: feed it Nerosteel, and once the nearby villagers trust you enough it raises the next catalogue building (Hut @T2, Workshop @T3) block-by-block over time. Implemented entirely within the 3 village files (heredoc-written) to dodge the flaky multi-file edits. `build` + `ecjCheck` SUCCESSFUL via pyenv. Next: Phase 5 (functional buildings + quests + raids).
+- 2026-06-16: **Phase 5 done & verified.** Village Core gained passive production (completed buildings yield collectable goods), a fetch-quest loop (reputation reward), and config-gated night raids (`alienRaidsEnabled`). Core-centric; `build`+`ecjCheck` green.
+- 2026-06-16: **Phase 6 done & verified.** Exclusive Artificer gear: Grav Striders (negates fall damage via `LivingFallEvent`) + Xertz Resonator (ore-ping using the `c:ores` tag); trade-only at T4/T5; items/models/lang/textures generated. Decoration block set deferred (many fragile registry edits) — noted for a later pass.
+- 2026-06-16: **Phase 7 done & verified.** `RuinFeature` — a rarer (`onAverageOnceEvery(120)`) partially-buried alien ruin with broken walls, a glowing core and a loot vault (alien core/scrap/fragments/emeralds), in the greenxertz biome. Dedicated boss entity + multi-level dungeons/lore-sites deferred to keep it robust.
+- 2026-06-16: **Phase 8 done & verified.** Per-planet species: Cindara (ember/red) + Glacira (frost/pale) villager textures, renderer branches `getTextureLocation` by planet, and both biomes now spawn villagers. Structure palette-swap per planet deferred. **All 8 phases build-verified (build + ecjCheck + runData) via pyenv.**

@@ -32,6 +32,7 @@ public final class ModConfiguredFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>> GLACITE_ORE = registerKey("glacite_ore");
     /** Alien hamlet outpost (ALIEN_VILLAGERS_DESIGN.md §5, Phase 3). */
     public static final ResourceKey<ConfiguredFeature<?, ?>> HAMLET = registerKey("hamlet");
+    public static final ResourceKey<ConfiguredFeature<?, ?>> RUIN = registerKey("ruin");
 
     private ModConfiguredFeatures() {
     }
@@ -72,6 +73,10 @@ public final class ModConfiguredFeatures {
 
         context.register(HAMLET, new ConfiguredFeature<>(
                 za.co.neroland.nerospace.registry.ModFeatures.HAMLET.get(),
+                net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration.INSTANCE));
+
+        context.register(RUIN, new ConfiguredFeature<>(
+                za.co.neroland.nerospace.registry.ModFeatures.RUIN.get(),
                 net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration.INSTANCE));
     }
 
