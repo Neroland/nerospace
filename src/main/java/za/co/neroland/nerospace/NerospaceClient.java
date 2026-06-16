@@ -31,6 +31,7 @@ import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import za.co.neroland.nerospace.client.ClientOxygenField;
 import za.co.neroland.nerospace.client.OxygenHudLayer;
 
+import za.co.neroland.nerospace.client.AlienVillagerModel;
 import za.co.neroland.nerospace.client.CinderStalkerModel;
 import za.co.neroland.nerospace.client.FrostStriderModel;
 import za.co.neroland.nerospace.client.GreenlingModel;
@@ -153,6 +154,10 @@ public class NerospaceClient {
                 context -> new GreenxertzCreatureRenderer(context,
                         new GreenlingModel(context.bakeLayer(GreenlingModel.LAYER)),
                         entityTexture("greenling"), 1.0F, 1.0F, 1.0F, 0.3F, entityGlow("greenling")));
+        event.registerEntityRenderer(ModEntities.ALIEN_VILLAGER.get(),
+                context -> new GreenxertzCreatureRenderer(context,
+                        new AlienVillagerModel(context.bakeLayer(AlienVillagerModel.LAYER)),
+                        entityTexture("alien_villager"), 1.0F, 1.0F, 1.0F, 0.4F, entityGlow("alien_villager")));
         event.registerEntityRenderer(ModEntities.CINDER_STALKER.get(),
                 context -> new GreenxertzCreatureRenderer(context,
                         new CinderStalkerModel(context.bakeLayer(CinderStalkerModel.LAYER)),
@@ -204,6 +209,7 @@ public class NerospaceClient {
         event.registerLayerDefinition(XertzStalkerModel.LAYER, XertzStalkerModel::createBodyLayer);
         event.registerLayerDefinition(QuartzCrawlerModel.LAYER, QuartzCrawlerModel::createBodyLayer);
         event.registerLayerDefinition(GreenlingModel.LAYER, GreenlingModel::createBodyLayer);
+        event.registerLayerDefinition(AlienVillagerModel.LAYER, AlienVillagerModel::createBodyLayer);
         event.registerLayerDefinition(CinderStalkerModel.LAYER, CinderStalkerModel::createBodyLayer);
         event.registerLayerDefinition(FrostStriderModel.LAYER, FrostStriderModel::createBodyLayer);
         event.registerLayerDefinition(za.co.neroland.nerospace.client.MeadowLoperModel.LAYER,

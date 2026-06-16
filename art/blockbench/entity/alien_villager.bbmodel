@@ -4,7 +4,7 @@
     "model_format": "modded_entity",
     "box_uv": true
   },
-  "name": "quartz_crawler",
+  "name": "alien_villager",
   "model_identifier": "",
   "visible_box": [
     2,
@@ -21,11 +21,11 @@
   },
   "elements": [
     {
-      "name": "dome",
+      "name": "head",
       "box_uv": true,
       "uv_offset": [
         0,
-        0
+        28
       ],
       "rescale": false,
       "locked": false,
@@ -33,12 +33,12 @@
       "allow_mirror_modeling": true,
       "from": [
         -4,
-        9,
+        22,
         -4
       ],
       "to": [
         4,
-        12,
+        30,
         4
       ],
       "autouv": 0,
@@ -105,10 +105,10 @@
         }
       },
       "type": "cube",
-      "uuid": "3044a366-ef23-0040-c937-f156dc37449f"
+      "uuid": "f58d9981-af6a-b620-1fec-a07e30920982"
     },
     {
-      "name": "shell",
+      "name": "body",
       "box_uv": true,
       "uv_offset": [
         0,
@@ -119,14 +119,14 @@
       "render_order": "default",
       "allow_mirror_modeling": true,
       "from": [
-        -5,
-        5,
-        -5
+        -4,
+        10,
+        -2
       ],
       "to": [
-        5,
-        9,
-        5
+        4,
+        22,
+        2
       ],
       "autouv": 0,
       "color": 0,
@@ -192,13 +192,13 @@
         }
       },
       "type": "cube",
-      "uuid": "86b059fe-9350-4443-843b-573bb55b35a2"
+      "uuid": "32954df3-4930-6399-b574-865c8ad6e8d1"
     },
     {
-      "name": "rim",
+      "name": "crystal_left",
       "box_uv": true,
       "uv_offset": [
-        0,
+        44,
         0
       ],
       "rescale": false,
@@ -206,14 +206,14 @@
       "render_order": "default",
       "allow_mirror_modeling": true,
       "from": [
-        -5.5,
-        5,
-        -5.5
+        -6,
+        19,
+        -1
       ],
       "to": [
-        5.5,
-        7,
-        5.5
+        -4,
+        24,
+        1
       ],
       "autouv": 0,
       "color": 0,
@@ -279,28 +279,28 @@
         }
       },
       "type": "cube",
-      "uuid": "d8cbe607-313f-a194-72b6-5cd14ad5e899"
+      "uuid": "e9de2c63-ad3c-164e-a750-ebce6b583368"
     },
     {
-      "name": "head",
+      "name": "crystal_right",
       "box_uv": true,
       "uv_offset": [
-        0,
-        28
+        44,
+        0
       ],
       "rescale": false,
       "locked": false,
       "render_order": "default",
       "allow_mirror_modeling": true,
       "from": [
-        -3,
-        5,
-        -9
+        4,
+        19,
+        -1
       ],
       "to": [
-        3,
-        9,
-        -5
+        6,
+        24,
+        1
       ],
       "autouv": 0,
       "color": 0,
@@ -366,62 +366,11 @@
         }
       },
       "type": "cube",
-      "uuid": "9f672ce0-4524-068d-e3a7-4eae207002bd"
+      "uuid": "188b6d53-c0d1-702d-f895-7fca705b221e"
     }
   ],
   "outliner": [
     {
-      "name": "dome",
-      "origin": [
-        0,
-        0,
-        0
-      ],
-      "color": 0,
-      "uuid": "c0ba57b7-d429-73d8-1124-a315e3f5a09f",
-      "export": true,
-      "isOpen": false,
-      "visibility": true,
-      "autouv": 0,
-      "children": [
-        "3044a366-ef23-0040-c937-f156dc37449f"
-      ]
-    },
-    {
-      "name": "shell",
-      "origin": [
-        0,
-        0,
-        0
-      ],
-      "color": 0,
-      "uuid": "54a86d1d-16fe-b4f1-acb5-dfdf1be4255b",
-      "export": true,
-      "isOpen": false,
-      "visibility": true,
-      "autouv": 0,
-      "children": [
-        "86b059fe-9350-4443-843b-573bb55b35a2"
-      ]
-    },
-    {
-      "name": "rim",
-      "origin": [
-        0,
-        0,
-        0
-      ],
-      "color": 0,
-      "uuid": "a5384c8a-c315-c416-d874-f4e36cd91181",
-      "export": true,
-      "isOpen": false,
-      "visibility": true,
-      "autouv": 0,
-      "children": [
-        "d8cbe607-313f-a194-72b6-5cd14ad5e899"
-      ]
-    },
-    {
       "name": "head",
       "origin": [
         0,
@@ -429,20 +378,71 @@
         0
       ],
       "color": 0,
-      "uuid": "0c59ba17-fe1d-6e1f-ea1a-717d2a14ba8f",
+      "uuid": "d93e82ce-5f94-900a-91c0-c203fd01151a",
       "export": true,
       "isOpen": false,
       "visibility": true,
       "autouv": 0,
       "children": [
-        "9f672ce0-4524-068d-e3a7-4eae207002bd"
+        "f58d9981-af6a-b620-1fec-a07e30920982"
+      ]
+    },
+    {
+      "name": "body",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "1cd26d0b-c520-b27d-f69f-e14771da26c7",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "32954df3-4930-6399-b574-865c8ad6e8d1"
+      ]
+    },
+    {
+      "name": "crystal_left",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "e9bf3991-2943-0f57-ce2b-fd0a24d1df09",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "e9de2c63-ad3c-164e-a750-ebce6b583368"
+      ]
+    },
+    {
+      "name": "crystal_right",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "a6c4f39d-62aa-c620-0c32-9f6d07615a8c",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "188b6d53-c0d1-702d-f895-7fca705b221e"
       ]
     }
   ],
   "textures": [
     {
-      "path": "/sessions/zen-dazzling-fermi/mnt/nerospace/src/main/resources/assets/nerospace/textures/entity/quartz_crawler.png",
-      "name": "quartz_crawler.png",
+      "path": "/sessions/zen-dazzling-fermi/mnt/nerospace/src/main/resources/assets/nerospace/textures/entity/alien_villager.png",
+      "name": "alien_villager.png",
       "folder": "entity",
       "namespace": "nerospace",
       "id": "0",
@@ -456,9 +456,9 @@
       "visible": true,
       "mode": "bitmap",
       "saved": true,
-      "uuid": "d05fad83-4ad8-0340-03f9-8a17580e8fb7",
-      "relative_path": "../../../src/main/resources/assets/nerospace/textures/entity/quartz_crawler.png",
-      "source": "data:image/png;base64,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"
+      "uuid": "ee991821-586c-796e-498a-993d6303f090",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/entity/alien_villager.png",
+      "source": "data:image/png;base64,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"
     }
   ]
 }

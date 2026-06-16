@@ -443,6 +443,8 @@ public final class ModItems {
             "quartz_crawler_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.QUARTZ_CRAWLER));
     public static final DeferredItem<Item> GREENLING_SPAWN_EGG = ITEMS.registerItem(
             "greenling_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.GREENLING));
+    public static final DeferredItem<Item> ALIEN_VILLAGER_SPAWN_EGG = ITEMS.registerItem(
+            "alien_villager_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.ALIEN_VILLAGER));
     public static final DeferredItem<Item> CINDER_STALKER_SPAWN_EGG = ITEMS.registerItem(
             "cinder_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.CINDER_STALKER));
     public static final DeferredItem<Item> FROST_STRIDER_SPAWN_EGG = ITEMS.registerItem(

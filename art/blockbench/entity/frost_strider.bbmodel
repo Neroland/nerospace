@@ -649,7 +649,7 @@
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\frost_strider.png",
+      "path": "/sessions/zen-dazzling-fermi/mnt/nerospace/src/main/resources/assets/nerospace/textures/entity/frost_strider.png",
       "name": "frost_strider.png",
       "folder": "entity",
       "namespace": "nerospace",

@@ -8,6 +8,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.entity.AlienVillager;
 import za.co.neroland.nerospace.entity.CinderStalker;
 import za.co.neroland.nerospace.entity.EmberStrutter;
 import za.co.neroland.nerospace.entity.FrostStrider;
@@ -60,6 +61,15 @@ public final class ModEntities {
             Greenling::new,
             MobCategory.AMBIENT,
             builder -> builder.sized(0.5F, 0.6F).eyeHeight(0.45F).clientTrackingRange(8));
+
+    // --- Alien Villagers (ALIEN_VILLAGERS_DESIGN.md, Phase 0) ---------------
+
+    /** Social alien NPC; wary-neutral wanderer for now (trading/reputation arrive later). */
+    public static final Supplier<EntityType<AlienVillager>> ALIEN_VILLAGER = ENTITY_TYPES.registerEntityType(
+            "alien_villager",
+            AlienVillager::new,
+            MobCategory.CREATURE,
+            builder -> builder.sized(0.6F, 1.95F).eyeHeight(1.7F).clientTrackingRange(10));
 
     // --- Cindara creatures (Phase 7) ----------------------------------------
 

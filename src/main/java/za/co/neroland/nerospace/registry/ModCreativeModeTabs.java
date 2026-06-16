@@ -131,6 +131,7 @@ public final class ModCreativeModeTabs {
                         output.accept(ModItems.XERTZ_STALKER_SPAWN_EGG.get());
                         output.accept(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get());
                         output.accept(ModItems.GREENLING_SPAWN_EGG.get());
+                        output.accept(ModItems.ALIEN_VILLAGER_SPAWN_EGG.get());
                         output.accept(ModItems.CINDER_STALKER_SPAWN_EGG.get());
                         output.accept(ModItems.FROST_STRIDER_SPAWN_EGG.get());
                         output.accept(ModItems.MEADOW_LOPER_SPAWN_EGG.get());

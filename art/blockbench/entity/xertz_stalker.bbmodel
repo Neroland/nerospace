@@ -857,7 +857,7 @@
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\xertz_stalker.png",
+      "path": "/sessions/zen-dazzling-fermi/mnt/nerospace/src/main/resources/assets/nerospace/textures/entity/xertz_stalker.png",
       "name": "xertz_stalker.png",
       "folder": "entity",
       "namespace": "nerospace",

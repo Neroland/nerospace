@@ -171,6 +171,9 @@ public final class ModBiomes {
                         new MobSpawnSettings.SpawnerData(ModEntities.QUARTZ_CRAWLER.get(), 1, 3))
                 .addSpawn(MobCategory.AMBIENT, 8,
                         new MobSpawnSettings.SpawnerData(ModEntities.GREENLING.get(), 2, 4))
+                // Alien Villagers (Phase 0): small, sparse social groups on the surface.
+                .addSpawn(MobCategory.CREATURE, 6,
+                        new MobSpawnSettings.SpawnerData(ModEntities.ALIEN_VILLAGER.get(), 1, 3))
                 .build();
 
         Biome biome = new Biome.BiomeBuilder()

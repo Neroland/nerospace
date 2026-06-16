@@ -40,6 +40,12 @@
         "maxCount": 3,
         "minCount": 1,
         "weight": 10
+      },
+      {
+        "type": "nerospace:alien_villager",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 6
       }
     ],
     "misc": [],

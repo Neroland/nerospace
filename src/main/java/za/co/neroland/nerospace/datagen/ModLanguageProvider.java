@@ -241,6 +241,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.XERTZ_STALKER_SPAWN_EGG.get(), "Xertz Stalker Spawn Egg");
         add(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get(), "Quartz Crawler Spawn Egg");
         add(ModItems.GREENLING_SPAWN_EGG.get(), "Greenling Spawn Egg");
+        add(ModItems.ALIEN_VILLAGER_SPAWN_EGG.get(), "Alien Villager Spawn Egg");
         add(ModItems.CINDER_STALKER_SPAWN_EGG.get(), "Cinder Stalker Spawn Egg");
         add(ModItems.FROST_STRIDER_SPAWN_EGG.get(), "Frost Strider Spawn Egg");
         add(ModItems.MEADOW_LOPER_SPAWN_EGG.get(), "Meadow Loper Spawn Egg");
@@ -273,6 +274,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("entity.nerospace.xertz_stalker", "Xertz Stalker");
         add("entity.nerospace.quartz_crawler", "Quartz Crawler");
         add("entity.nerospace.greenling", "Greenling");
+        add("entity.nerospace.alien_villager", "Alien Villager");
         add("entity.nerospace.cinder_stalker", "Cinder Stalker");
         add("entity.nerospace.frost_strider", "Frost Strider");
         add("entity.nerospace.meadow_loper", "Meadow Loper");
