@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:greenxertz",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:frame_casing"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft Frame Casing from nerosteel — the quarry builds its frame from these",
+    "icon": {
+      "id": "nerospace:frame_casing"
+    },
+    "title": "Frameworks"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

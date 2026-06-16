@@ -1,7 +1,7 @@
 # Quarry Controller
 
 A BuildCraft-style automated miner: mark out an area with landmarks and the controller builds a
-glowing frame and excavates the whole rectangle, layer by layer, down to bedrock.
+glowing frame and excavates the interior, layer by layer, down to bedrock.
 
 ## Overview
 
@@ -10,8 +10,9 @@ Landmarks](Quarry-Landmark)**, place the controller beside it, give it **frame m
 **power**, and it:
 
 1. **Builds a frame** — a glowing, see-through structural ring around the claimed rectangle.
-2. **Mines** the whole rectangle **layer by layer**, top to bedrock, like a 3D printer in reverse —
-   a drill head travels the gantry to each block.
+2. **Mines** the rectangle's **interior** (the columns under the frame ring are left intact) **layer
+   by layer**, top to bedrock, like a 3D printer in reverse — a drill head travels the gantry to each
+   block, one block at a time.
 3. **Buffers and auto-ejects** everything it digs: mined items into an internal inventory, and any
    liquids it hits into an internal fluid tank — both push out to adjacent storage / pipes.
 
@@ -41,7 +42,8 @@ I I I
 2. **Place the controller next to / in line with** a landmark — it scans along the axes to find the
    cluster, then **consumes the landmarks** and starts.
 3. **Put [Frame Casing](Upgrade-Modules) in the frame slot** (top-left of the GUI). The frame costs
-   **one casing per open-air perimeter cell** (cells already backed by terrain are free).
+   **one casing per perimeter cell** (the controller's own cell and any block entities on the
+   perimeter are skipped, leaving a gap rather than overwriting them).
 4. **Pipe power in** (see below). Building the frame is free, but **mining needs energy**.
 
 ## How it works
