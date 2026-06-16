@@ -97,6 +97,24 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(
                 BlockModelGenerators.createSimpleBlock(solar, BlockModelGenerators.plainVariant(solarModel)));
 
+        // Tier 2/3 Solar Panels: each cell is just a flat 3px housing on its own `_base` sprite; the big
+        // N×N tilting deck is drawn by the anchor's renderer. The "" variant covers both ANCHOR states.
+        for (Block multi : new Block[] {ModBlocks.SOLAR_PANEL_T2.get(), ModBlocks.SOLAR_PANEL_T3.get()}) {
+            var baseTex = TextureMapping.getBlockTexture(multi, "_base");
+            TextureMapping mapping = new TextureMapping()
+                    .put(TextureSlot.ALL, baseTex).put(TextureSlot.PARTICLE, baseTex);
+            ExtendedModelTemplate template = ExtendedModelTemplateBuilder.builder()
+                    .requiredTextureSlot(TextureSlot.ALL)
+                    .requiredTextureSlot(TextureSlot.PARTICLE)
+                    .element(e -> e.from(0, 0, 0).to(16, 3, 16)
+                            .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                    .build();
+            Identifier model = template.create(
+                    ModelLocationUtils.getModelLocation(multi), mapping, blockModels.modelOutput);
+            blockModels.blockStateOutput.accept(
+                    BlockModelGenerators.createSimpleBlock(multi, BlockModelGenerators.plainVariant(model)));
+        }
+
         // Launch Gantry — shaped tower in registerShapedMachines (art overhaul §3).
 
         // Power grid — connection-aware translucent pipe (multipart: core + one arm per connected

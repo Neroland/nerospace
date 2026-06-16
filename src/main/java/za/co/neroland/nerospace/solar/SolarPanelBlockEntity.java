@@ -18,22 +18,25 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModDimensionTypes;
 
 /**
- * One physical solar panel. It carries its own FE buffer and, every tick, contributes daylight-scaled
- * energy to its {@link SolarArray} — the connected run of same-tier panels that behaves as a single
- * pooled machine. The buffer is extract-only on every face (it is a generator, not a sink), which makes
- * each side an output port a pipe or machine can pull from.
+ * One cell of a solar panel. A Tier 1 panel is a single 1×1 cell; Tier 2/3 are N×N multiblocks made of
+ * one <b>anchor</b> cell (min-corner) plus filler cells that all point back to it ({@link #anchorPos}).
+ * Only the anchor ticks, generates, and holds the unit's FE buffer; filler cells forward their energy
+ * capability to the anchor, so a pipe on ANY face of the multiblock pulls from the one pooled buffer.
  *
- * <p>Generation scales with the sun's height (peaks at noon, zero at night), requires a clear view of
- * the sky, is cut by rain/thunder, and is doubled in the mod's space/airless dimensions (which have a
- * permanent sun). The night-time zero falls straight out of the daylight curve, matching the renderer
- * folding the panel flat.</p>
+ * <p>Adjacent same-tier units pool further into a {@link SolarArray}: total storage and generation are
+ * the sums across every unit's anchor. Generation scales with the sun's height (peaks at noon, zero at
+ * night), needs a clear view of the sky, is cut by rain/thunder, and is doubled in the mod's
+ * space/airless dimensions (permanent sun).</p>
  */
 public class SolarPanelBlockEntity extends BlockEntity {
 
     private final SolarTier tier;
     private final SolarEnergy energy;
 
-    /** Transient: the array this panel belongs to, lazily (re)built and shared with all members. */
+    /** This cell's unit anchor (the multiblock min-corner). Defaults to self — every T1 cell is its own. */
+    private BlockPos anchorPos;
+
+    /** Transient: the array this unit belongs to, lazily (re)built and shared with all member anchors. */
     @Nullable
     private SolarArray array;
 
@@ -41,28 +44,59 @@ public class SolarPanelBlockEntity extends BlockEntity {
         super(ModBlockEntities.SOLAR_PANEL.get(), pos, state);
         this.tier = state.getBlock() instanceof SolarPanelBlock panel ? panel.tier() : SolarTier.TIER_1;
         this.energy = new SolarEnergy(this.tier.buffer());
+        this.anchorPos = pos;
     }
 
     public SolarTier tier() {
         return this.tier;
     }
 
-    /** Exposed to {@code Capabilities.Energy.BLOCK} (every side) so pipes/machines pull the pooled power. */
+    /** The multiblock anchor (min-corner) this cell belongs to. */
+    public BlockPos anchorPos() {
+        return this.anchorPos;
+    }
+
+    /** True when this cell is its unit's anchor — the only cell that ticks, generates and renders. */
+    public boolean isAnchor() {
+        return this.anchorPos.equals(this.worldPosition);
+    }
+
+    /** Point a filler cell at its anchor (set during placement). */
+    public void setAnchor(BlockPos anchor) {
+        this.anchorPos = anchor;
+        setChanged();
+    }
+
+    /** The anchor's BE (this one if it is the anchor), or {@code null} if the anchor is gone. */
+    @Nullable
+    private SolarPanelBlockEntity anchorEntity() {
+        if (isAnchor()) {
+            return this;
+        }
+        return this.level != null && this.level.getBlockEntity(this.anchorPos) instanceof SolarPanelBlockEntity a
+                ? a : null;
+    }
+
+    /**
+     * Exposed to {@code Capabilities.Energy.BLOCK} on every face. Filler cells forward to the anchor's
+     * buffer, so the whole multiblock reads as one extract-only pool from any side.
+     */
     public EnergyHandler getEnergyHandler() {
-        return this.energy;
+        SolarPanelBlockEntity anchor = anchorEntity();
+        return anchor != null ? anchor.energy : this.energy;
     }
 
     SolarEnergy energy() {
         return this.energy;
     }
 
-    /** Number of panels in this panel's array (1 if not yet resolved). */
+    /** Number of unit anchors in this panel's array (1 if not yet resolved). */
     public int arraySize() {
         SolarArray net = this.array;
         return net == null ? 1 : net.size();
     }
 
-    /** Called by {@link SolarArray#getOrBuild} so every member shares the one array instance. */
+    /** Called by {@link SolarArray#getOrBuild} so every member anchor shares the one array instance. */
     void adopt(SolarArray net) {
         this.array = net;
     }
@@ -78,14 +112,15 @@ public class SolarPanelBlockEntity extends BlockEntity {
     }
 
     public int comparatorSignal() {
-        int cap = this.energy.getCapacityAsInt();
-        int stored = this.energy.getAmountAsInt();
+        EnergyHandler handler = getEnergyHandler();
+        int cap = handler.getCapacityAsInt();
+        int stored = handler.getAmountAsInt();
         return (cap <= 0 || stored <= 0) ? 0 : 1 + (int) (stored / (double) cap * 14.0D);
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {
-        if (!(level instanceof ServerLevel server)) {
-            return;
+        if (!(level instanceof ServerLevel server) || !isAnchor()) {
+            return; // only the anchor drives the unit; filler cells are passive forwarders
         }
         SolarArray net = this.array; // local so the null/valid check holds for the analyzer
         if (net == null || !net.isValid()) {
@@ -95,7 +130,7 @@ public class SolarPanelBlockEntity extends BlockEntity {
         net.tick(server);
     }
 
-    /** FE this panel adds this tick = peak output x the daylight/weather/dimension factor. */
+    /** FE this whole unit adds this tick = its tier's peak output x the daylight/weather/dimension factor. */
     public int generationThisTick(ServerLevel level) {
         return Math.round(this.tier.fePerTick() * solarFactor(level, this.worldPosition));
     }
@@ -137,12 +172,14 @@ public class SolarPanelBlockEntity extends BlockEntity {
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         this.energy.serialize(output.child("Energy"));
+        output.putLong("Anchor", this.anchorPos.asLong());
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.energy.deserialize(input.childOrEmpty("Energy"));
+        this.anchorPos = BlockPos.of(input.getLongOr("Anchor", this.worldPosition.asLong()));
     }
 
     /** Extract-only FE buffer (external receive = 0); {@link #generate}/{@link #setStored} are internal. */

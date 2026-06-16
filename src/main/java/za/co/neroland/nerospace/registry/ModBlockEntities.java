@@ -122,7 +122,8 @@ public final class ModBlockEntities {
     public static final Supplier<BlockEntityType<za.co.neroland.nerospace.solar.SolarPanelBlockEntity>> SOLAR_PANEL =
             BLOCK_ENTITY_TYPES.register("solar_panel",
                     () -> new BlockEntityType<>(za.co.neroland.nerospace.solar.SolarPanelBlockEntity::new,
-                            false, ModBlocks.SOLAR_PANEL_T1.get()));
+                            false, ModBlocks.SOLAR_PANEL_T1.get(),
+                            ModBlocks.SOLAR_PANEL_T2.get(), ModBlocks.SOLAR_PANEL_T3.get()));
 
     // Storage endpoints + creative sources.
     public static final Supplier<BlockEntityType<BatteryBlockEntity>> BATTERY =

@@ -11,30 +11,31 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 
 /**
- * A connected run of same-tier solar panels treated as ONE machine: total storage is the sum of every
- * member's buffer and total generation is the sum of every member's (sky-/weather-/dimension-scaled)
- * output. The pooled energy is kept balanced evenly across the members' buffers, so a pipe pulling
- * from ANY panel's output face effectively drains the whole array (every face is an output port).
+ * A connected run of same-tier solar panel <b>units</b> treated as ONE machine: total storage is the
+ * sum of every unit's buffer and total generation the sum of every unit's (sky-/weather-/dimension-
+ * scaled) output. The pooled energy is kept balanced across the unit anchors' buffers, so a pipe
+ * pulling from ANY panel face (forwarded by filler cells to their anchor) drains the whole array.
  *
- * <p>Built by flood-fill from a seed panel, exactly like {@link za.co.neroland.nerospace.pipe.PipeNetwork}:
- * membership is rebuilt lazily so placing or breaking a panel (merging/splitting arrays) needs no
- * explicit hooks. Only neighbours of the SAME {@link SolarTier} are adopted — different tiers stay
- * separate arrays.</p>
+ * <p>Built by flood-fill across all same-tier cells (anchors AND fillers, so multiblock footprints
+ * bridge), collecting the distinct <b>anchors</b> as members. Membership is rebuilt lazily so placing
+ * or breaking a panel needs no explicit hooks. Only the SAME {@link SolarTier} is adopted — different
+ * tiers stay separate arrays.</p>
  */
 public final class SolarArray {
 
-    private static final int MAX_MEMBERS = 4096;
+    private static final int MAX_CELLS = 16_384;
 
     private final SolarTier tier;
-    private final List<BlockPos> members;
-    private final LongOpenHashSet memberSet;
+    /** Member <b>anchor</b> positions (one per unit). */
+    private final List<BlockPos> anchors;
+    private final LongOpenHashSet anchorSet;
     private boolean valid = true;
     private long lastTick = -1L;
 
-    private SolarArray(SolarTier tier, List<BlockPos> members, LongOpenHashSet memberSet) {
+    private SolarArray(SolarTier tier, List<BlockPos> anchors, LongOpenHashSet anchorSet) {
         this.tier = tier;
-        this.members = members;
-        this.memberSet = memberSet;
+        this.anchors = anchors;
+        this.anchorSet = anchorSet;
     }
 
     public boolean isValid() {
@@ -45,24 +46,31 @@ public final class SolarArray {
         return this.tier;
     }
 
+    /** Number of pooled units (multiblocks) in the array. */
     public int size() {
-        return this.members.size();
+        return this.anchors.size();
     }
 
-    /** Flood-fill the connected same-tier panels from {@code seed}, build the array, adopt every member. */
+    /** Flood-fill the connected same-tier cells from {@code seed}, collect the distinct unit anchors. */
     public static SolarArray getOrBuild(ServerLevel level, BlockPos seed, SolarTier tier) {
-        List<BlockPos> members = new ArrayList<>();
+        List<BlockPos> anchors = new ArrayList<>();
+        LongOpenHashSet anchorSet = new LongOpenHashSet();
         LongOpenHashSet seen = new LongOpenHashSet();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
         queue.add(seed);
         seen.add(seed.asLong());
 
-        while (!queue.isEmpty() && members.size() < MAX_MEMBERS) {
+        int visited = 0;
+        while (!queue.isEmpty() && visited < MAX_CELLS) {
             BlockPos pos = queue.poll();
-            if (!(level.getBlockEntity(pos) instanceof SolarPanelBlockEntity panel) || panel.tier() != tier) {
+            if (!(level.getBlockEntity(pos) instanceof SolarPanelBlockEntity cell) || cell.tier() != tier) {
                 continue;
             }
-            members.add(pos);
+            visited++;
+            BlockPos anchor = cell.anchorPos();
+            if (anchorSet.add(anchor.asLong())) {
+                anchors.add(anchor);
+            }
             for (Direction dir : Direction.values()) {
                 BlockPos np = pos.relative(dir);
                 if (seen.add(np.asLong())
@@ -73,20 +81,16 @@ public final class SolarArray {
             }
         }
 
-        LongOpenHashSet memberSet = new LongOpenHashSet(members.size());
-        for (BlockPos pos : members) {
-            memberSet.add(pos.asLong());
-        }
-        SolarArray array = new SolarArray(tier, members, memberSet);
-        for (BlockPos pos : members) {
-            if (level.getBlockEntity(pos) instanceof SolarPanelBlockEntity panel) {
-                panel.adopt(array);
+        SolarArray array = new SolarArray(tier, anchors, anchorSet);
+        for (BlockPos anchor : anchors) {
+            if (level.getBlockEntity(anchor) instanceof SolarPanelBlockEntity a) {
+                a.adopt(array);
             }
         }
         return array;
     }
 
-    /** Generate this tick's pooled energy and re-balance the buffers. Runs at most once per game tick. */
+    /** Generate this tick's pooled energy and re-balance the anchors' buffers. Runs once per game tick. */
     public void tick(ServerLevel level) {
         long gameTime = level.getGameTime();
         if (gameTime == this.lastTick) {
@@ -94,32 +98,33 @@ public final class SolarArray {
         }
         this.lastTick = gameTime;
 
-        List<SolarPanelBlockEntity> panels = new ArrayList<>(this.members.size());
-        for (BlockPos pos : this.members) {
-            if (level.getBlockEntity(pos) instanceof SolarPanelBlockEntity panel && panel.tier() == this.tier) {
-                panels.add(panel);
+        List<SolarPanelBlockEntity> units = new ArrayList<>(this.anchors.size());
+        for (BlockPos anchor : this.anchors) {
+            if (level.getBlockEntity(anchor) instanceof SolarPanelBlockEntity a
+                    && a.isAnchor() && a.tier() == this.tier) {
+                units.add(a);
             } else {
-                this.valid = false; // a member vanished/changed — members rebuild next tick
+                this.valid = false; // a unit anchor vanished/changed — members rebuild next tick
                 return;
             }
         }
-        if (panels.isEmpty()) {
+        if (units.isEmpty()) {
             this.valid = false;
             return;
         }
 
-        // Each panel contributes its own daylight-scaled output (a shaded panel adds less); the sum is
-        // the array's generation. Add into the per-panel buffers, then balance them into one pool.
+        // Each unit contributes its own daylight-scaled output; the sum is the array's generation. Add
+        // into the per-unit buffers, then balance them into one pool.
         long total = 0L;
-        for (SolarPanelBlockEntity panel : panels) {
-            panel.generate(panel.generationThisTick(level));
-            total += panel.energy().getAmountAsInt();
+        for (SolarPanelBlockEntity unit : units) {
+            unit.generate(unit.generationThisTick(level));
+            total += unit.energy().getAmountAsInt();
         }
-        int n = panels.size();
+        int n = units.size();
         int base = (int) (total / n);
         int remainder = (int) (total % n);
         for (int i = 0; i < n; i++) {
-            panels.get(i).energy().setStored(base + (i < remainder ? 1 : 0));
+            units.get(i).energy().setStored(base + (i < remainder ? 1 : 0));
         }
     }
 }

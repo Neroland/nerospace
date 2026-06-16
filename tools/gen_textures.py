@@ -2856,9 +2856,10 @@ def gen_solar_panel(name, accent):
     save(img, os.path.join(BLOCK_DIR, name + ".png"))
 
 
-def gen_solar_panel_base(name):
+def gen_solar_panel_base(name, accent):
     """The steel housing the photovoltaic deck folds onto — deliberately NOT the blue PV sprite, so the
-    static base reads distinctly from the moving deck. A bevelled steel plate with a recessed bay."""
+    static base reads distinctly from the moving deck. A bevelled steel plate with a recessed bay; the
+    corner bolts take the tier accent so the bases read as distinct tiers too."""
     img = new_img()
     px = img.load()
     recess = (40, 52, 44, 255)
@@ -2870,19 +2871,24 @@ def gen_solar_panel_base(name):
     for y in range(3, 13):
         for x in range(3, 13):
             px[x, y] = G_STEEL_D if (x + y) % 2 == 0 else recess
-    # Two vent ridges + corner bolts.
+    # Two vent ridges + accent corner bolts.
     for x in range(4, 12):
         px[x, 5] = G_STEEL_L
         px[x, 10] = G_STEEL_L
     for (bx, by) in ((2, 2), (13, 2), (2, 13), (13, 13)):
-        px[bx, by] = G_STEEL_L
+        px[bx, by] = accent
     save(img, os.path.join(BLOCK_DIR, name + ".png"))
 
 
 if __name__ == "__main__":
-    # Solar panels (SOLAR_PANEL_DESIGN): T1 green accent (Greenxertz/steel family).
+    # Solar panels (SOLAR_PANEL_DESIGN): visibly distinct tier accents — T1 green (Greenxertz/steel),
+    # T2 nerosium magenta, T3 gold.
     gen_solar_panel("solar_panel_t1", G_GREEN_L)
-    gen_solar_panel_base("solar_panel_t1_base")
+    gen_solar_panel_base("solar_panel_t1_base", G_GREEN_L)
+    gen_solar_panel("solar_panel_t2", N_MAG)
+    gen_solar_panel_base("solar_panel_t2_base", N_MAG)
+    gen_solar_panel("solar_panel_t3", GOLD)
+    gen_solar_panel_base("solar_panel_t3_base", GOLD)
     # Trash Can (logistics void sink).
     gen_trash_can()
     # Quarry / Miner (MINER_DESIGN).

@@ -26,8 +26,11 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.RAW_NEROSIUM_BLOCK.get());
         dropSelf(ModBlocks.NEROSIUM_GRINDER.get());
 
-        // Solar panel (SOLAR_PANEL_DESIGN).
+        // Solar panels (SOLAR_PANEL_DESIGN). Tier 1 drops itself; the Tier 2/3 multiblocks drop nothing
+        // per cell — the block returns exactly one item for the whole unit on break (playerWillDestroy).
         dropSelf(ModBlocks.SOLAR_PANEL_T1.get());
+        add(ModBlocks.SOLAR_PANEL_T2.get(), noDrop());
+        add(ModBlocks.SOLAR_PANEL_T3.get(), noDrop());
 
         add(ModBlocks.NEROSIUM_ORE.get(),
                 block -> createOreDrop(block, ModItems.RAW_NEROSIUM.get()));

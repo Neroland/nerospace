@@ -24,6 +24,8 @@
     "nerospace:combustion_generator",
     "nerospace:passive_generator",
     "nerospace:solar_panel_t1",
+    "nerospace:solar_panel_t2",
+    "nerospace:solar_panel_t3",
     "nerospace:battery",
     "nerospace:fluid_tank",
     "nerospace:gas_tank",

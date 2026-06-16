@@ -17,4 +17,10 @@ public class SolarPanelRenderState extends BlockEntityRenderState {
 
     /** 1-based tier (selects the surface texture). */
     public int tier = 1;
+
+    /** Footprint edge length (1 = T1 pole tracker, >1 = N×N multiblock lid). */
+    public int footprint = 1;
+
+    /** Whether this cell is its unit's anchor — only the anchor draws the deck. */
+    public boolean anchor = true;
 }
