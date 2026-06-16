@@ -49,8 +49,9 @@ I I I
 - **Power:** an internal **200,000 FE** buffer, filled through the energy capability on any side —
   connect a [Universal Pipe](Universal-Pipe) from a [Combustion](Combustion-Generator)/[Passive
   Generator](Passive-Generator) or a [Battery](Battery). **Dig speed scales with the power you
-  supply**, up to the tier's per-tick ceiling × your modules' speed bonus × the planet's speed
-  factor. Base cost is **40 FE per block** (lowered by Efficiency modules).
+  supply**, up to the tier's per-cycle ceiling × your modules' speed bonus × the planet's speed
+  factor. Base cost is **40 FE per block** (lowered by Efficiency modules). The dig is **paced** (a
+  work cycle every few ticks) so even with unlimited power it mines at a steady rate, not instantly.
 - **Output buffer:** 12 internal slots for mined items; **auto-ejects** into an adjacent inventory /
   pipe. Mining **pauses** ("buffer full") when it can't fit a drop — nothing is ever voided.
 - **Fluid buffer:** source liquids (water, lava) in the dig area are **sucked up** into a
@@ -58,12 +59,18 @@ I I I
 - **Obstacles:** it **skips** bedrock and other unbreakable blocks, and **skips the entire column**
   under a tile-entity (chests, spawners, machines) so they're left intact. It also skips other
   quarries' frames.
-- **Drill head + gantry:** while it runs, a glowing gantry traces the frame and a spinning **drill
-  head** (a glowing pickaxe bit) descends to the exact block being mined, with a beam down the shaft.
+- **Interior only:** it excavates the **inside** of the rectangle and never digs the columns under
+  the frame ring, so the frame keeps its footing and the pit walls stay clean.
+- **Drill head + gantry:** while it runs, a solid 3-D **gantry** rides the frame — a bridge beam with
+  end trucks, a carriage that tracks the dig column, and a support shaft — and a spinning 3-D
+  **drill bit** (chuck, flutes, and a glowing tapered tip) descends point-down to the exact block
+  being mined.
 - **The frame** is a real 3-D structure — glowing corner posts and edge rails with an open,
   see-through centre (so you can watch the dig through it).
-- **Far edges:** a large area is force-loaded a chunk at a time while actively mining, so the dig
-  keeps going as you range its edges; the tickets are released when it finishes or is removed.
+- **Far edges:** a large area is force-loaded **one chunk at a time** while actively mining, so the
+  dig keeps going as you range its edges; each chunk is released as soon as the dig moves past it (and
+  any remainder when it finishes or is removed), so the quarry never pins the whole region — keeping
+  memory use and world-save time low.
 - **Reclaiming:** breaking the controller tears down its frame.
 
 ### GUI status lines

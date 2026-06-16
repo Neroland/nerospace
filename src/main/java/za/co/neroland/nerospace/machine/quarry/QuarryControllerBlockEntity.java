@@ -123,6 +123,17 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
     public double dispY;
     public double dispZ;
     public boolean dispInit;
+    /** The block most recently mined + the one before it, with their mine times: the drill head sweeps
+     * smoothly from the previous block to the current one over the real elapsed interval (synced). */
+    private int lastMineX;
+    private int lastMineY;
+    private int lastMineZ;
+    private int prevMineX;
+    private int prevMineY;
+    private int prevMineZ;
+    private long lastMineTime;
+    private long prevMineTime;
+    private boolean hasLastMine;
 
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -209,6 +220,42 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         return this.currentY;
     }
 
+    public boolean renderHasMine() {
+        return this.hasLastMine;
+    }
+
+    public int renderMineX() {
+        return this.lastMineX;
+    }
+
+    public int renderMineY() {
+        return this.lastMineY;
+    }
+
+    public int renderMineZ() {
+        return this.lastMineZ;
+    }
+
+    public int renderPrevMineX() {
+        return this.prevMineX;
+    }
+
+    public int renderPrevMineY() {
+        return this.prevMineY;
+    }
+
+    public int renderPrevMineZ() {
+        return this.prevMineZ;
+    }
+
+    public long renderMineTime() {
+        return this.lastMineTime;
+    }
+
+    public long renderPrevMineTime() {
+        return this.prevMineTime;
+    }
+
     /**
      * Creative/gallery helper: adopt an already-built {@code region} (frame assumed placed) and drop
      * straight into a powered MINING state from {@code startY}, so a staged display mines for real.
@@ -237,7 +284,13 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         switch (this.state) {
             case IDLE -> tryActivate(serverLevel, pos);
             case BUILDING_FRAME -> buildFrame(serverLevel);
-            case MINING -> mine(serverLevel);
+            // Throttle the dig: only work every QUARRY_MINE_INTERVAL ticks so a fully-powered quarry
+            // mines at a sane pace instead of stripping blocks as fast as the buffer allows.
+            case MINING -> {
+                if (serverLevel.getGameTime() % miningInterval(serverLevel) == 0L) {
+                    mine(serverLevel);
+                }
+            }
             case PAUSED -> resume(serverLevel, pos);
             case DONE -> { }
             default -> { }
@@ -252,7 +305,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         // Push a client update on a state change, and periodically while mining so the drill-head
         // renderer can follow the cursor.
         boolean stateChanged = this.state != before || this.state != this.lastSyncedState;
-        if (stateChanged || (this.state == State.MINING && serverLevel.getGameTime() % 5L == 0L)) {
+        if (stateChanged || this.state == State.MINING) { // every tick while mining → smooth head sweep
             this.lastSyncedState = this.state;
             serverLevel.sendBlockUpdated(pos, blockState, blockState, Block.UPDATE_CLIENTS);
         }
@@ -343,8 +396,17 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         boolean changed = false;
         while (this.frameIndex < ring.size() && placedThisTick < 8) {
             BlockPos fp = ring.get(this.frameIndex);
-            if (level.getBlockState(fp).getBlock() instanceof QuarryFrameBlock) {
+            BlockState existing = level.getBlockState(fp);
+            if (existing.getBlock() instanceof QuarryFrameBlock) {
                 this.frameIndex++; // already framed
+                continue;
+            }
+            // Never frame over the controller itself or any other block entity (chests, machines):
+            // a controller placed ON the region edge (in line with the corner landmarks — a natural
+            // placement) used to get replaced by a frame block here, which removed it and tore down
+            // its own frame. It "broke itself". Leave a gap in the ring instead.
+            if (fp.equals(this.worldPosition) || existing.hasBlockEntity()) {
+                this.frameIndex++;
                 continue;
             }
             ItemStack casing = this.frameHandler.getStack(FRAME_SLOT);
@@ -352,9 +414,8 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
                 setPaused("need_material");
                 return;
             }
-            // Always materialise the frame at the perimeter (replacing whatever is there) so the ring
-            // is visible regardless of terrain — marking a region on flat ground used to place NO
-            // frame blocks because every perimeter cell was solid.
+            // Materialise the frame at the perimeter (replacing terrain) so the ring is visible
+            // regardless of terrain — marking a region on flat ground used to place NO frame blocks.
             level.setBlock(fp, ModBlocks.QUARRY_FRAME.get().defaultBlockState(), Block.UPDATE_CLIENTS);
             casing.shrink(1);
             placedThisTick++;
@@ -380,15 +441,15 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         }
         int floor = level.getMinY();
         int energyPerBlock = quarryEnergyPerBlock();
-        int cap = blocksPerTick(level);
         ItemStack tool = miningTool(level);
         int columns = region.columns();
         boolean changed = false;
 
-        // Skips (air, caves, already-cleared cells) don't cost energy or count toward the mined cap,
-        // so bound the cells examined per tick to avoid a spike when sweeping large empty volumes.
+        // Mine exactly ONE block per work cycle (the head then sweeps onto it); skips (air, caves,
+        // already-cleared cells) are free and don't count, so bound the scan to avoid a spike when
+        // sweeping large empty volumes.
         int scanned = 0;
-        for (int processed = 0; processed < cap && scanned < SCAN_BUDGET_PER_TICK; ) {
+        for (int processed = 0; processed < 1 && scanned < SCAN_BUDGET_PER_TICK; ) {
             scanned++;
             if (this.currentY < floor) {
                 this.state = State.DONE;
@@ -404,6 +465,13 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
             BlockPos target = region.columnPos(this.cursor, this.currentY);
             int x = target.getX();
             int z = target.getZ();
+
+            // Never dig the columns under the frame ring: the frame sits on the perimeter, so only the
+            // interior is excavated. This keeps the frame's footing and leaves clean pit walls.
+            if (region.isPerimeter(x, z)) {
+                this.cursor++;
+                continue;
+            }
 
             if (isColumnSkipped(x, z)) {
                 this.cursor++;
@@ -463,6 +531,23 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
             }
             level.removeBlock(target, false);
             spawnDrillFx(level, target);
+            // The head sweeps from the previously-mined block to this one over the real elapsed time.
+            if (this.hasLastMine) {
+                this.prevMineX = this.lastMineX;
+                this.prevMineY = this.lastMineY;
+                this.prevMineZ = this.lastMineZ;
+                this.prevMineTime = this.lastMineTime;
+            } else {
+                this.prevMineX = x;
+                this.prevMineY = this.currentY;
+                this.prevMineZ = z;
+                this.prevMineTime = level.getGameTime();
+            }
+            this.lastMineX = x;
+            this.lastMineY = this.currentY;
+            this.lastMineZ = z;
+            this.lastMineTime = level.getGameTime();
+            this.hasLastMine = true;
             this.energy.consume(energyPerBlock);
             this.cursor++;
             processed++;
@@ -474,11 +559,16 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         }
     }
 
-    /** Per-tick block ceiling = tier base × module speed × planet speed, ≥ 1. */
-    private int blocksPerTick(ServerLevel level) {
+    /**
+     * Game-ticks between dig cycles (one block per cycle). Faster tier/modules/planet → shorter
+     * interval, so a higher rate means quicker single-block steps rather than multi-block bursts:
+     * {@code QUARRY_MINE_INTERVAL / (tier base × module speed × planet speed)}. Tier 1 (rate 2) on the
+     * Overworld ≈ {@code 8/2 = 4} ticks/block ≈ 5 blocks/s.
+     */
+    private long miningInterval(ServerLevel level) {
         double planet = PlanetMiningProfile.forDimension(level.dimension()).speedMultiplier();
-        double scaled = this.tier.baseBlocksPerCycle() * this.modules.speedMultiplier() * planet;
-        return Math.max(1, (int) Math.round(scaled));
+        double rate = this.tier.baseBlocksPerCycle() * this.modules.speedMultiplier() * planet;
+        return Math.max(1L, Math.round(Tuning.QUARRY_MINE_INTERVAL / Math.max(0.01, rate)));
     }
 
     private int quarryEnergyPerBlock() {
@@ -626,6 +716,22 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
 
     private void forceLoad(ServerLevel level, int cx, int cz) {
         long key = ((long) cx << 32) | (cz & 0xFFFFFFFFL);
+        // Pin ONLY the chunk we're actively digging. The dig sweeps one column (one chunk) at a time,
+        // so release every chunk we've already swept past — otherwise the forced-chunk set grows to
+        // cover the whole region, keeping it all loaded with persistent tickets and bloating every
+        // world save. forceLoad() only runs (and then breaks) for a single chunk per tick, so we never
+        // need more than the current one held.
+        if (this.forcedChunks.size() > (this.forcedChunks.contains(key) ? 1 : 0)) {
+            LongIterator it = this.forcedChunks.iterator();
+            while (it.hasNext()) {
+                long k = it.nextLong();
+                if (k != key) {
+                    QuarryChunkLoader.CONTROLLER.forceChunk(
+                            level, this.worldPosition, (int) (k >> 32), (int) k, false, false);
+                    it.remove();
+                }
+            }
+        }
         if (this.forcedChunks.add(key)) {
             QuarryChunkLoader.CONTROLLER.forceChunk(level, this.worldPosition, cx, cz, true, false);
         }
@@ -653,11 +759,24 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
 
     @Override
     public void setRemoved() {
+        // setRemoved() ALSO fires on chunk unload (e.g. quitting the world), so it must NOT tear down
+        // the frame here — doing so deleted the whole frame every time the chunk unloaded, so it never
+        // survived a relaunch. Releasing the (purely transient) chunk tickets is correct on unload;
+        // they re-pin when the quarry reloads and resumes. The frame teardown lives in
+        // preRemoveSideEffects(), which fires only when the controller is actually broken/replaced.
         if (this.level instanceof ServerLevel serverLevel) {
             releaseForcedChunks(serverLevel);
-            removeFrame(serverLevel);
         }
         super.setRemoved();
+    }
+
+    /** Only on ACTUAL removal (controller broken/replaced), not chunk unload: reclaim the frame. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level instanceof ServerLevel serverLevel) {
+            removeFrame(serverLevel);
+        }
     }
 
     /** Tear down the frame ring this controller built. */
@@ -690,6 +809,15 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         output.putInt("FrameIndex", this.frameIndex);
         output.putInt("CurrentY", this.currentY);
         output.putInt("Cursor", this.cursor);
+        output.putBoolean("HasMine", this.hasLastMine);
+        output.putInt("MineX", this.lastMineX);
+        output.putInt("MineY", this.lastMineY);
+        output.putInt("MineZ", this.lastMineZ);
+        output.putInt("PrevMineX", this.prevMineX);
+        output.putInt("PrevMineY", this.prevMineY);
+        output.putInt("PrevMineZ", this.prevMineZ);
+        output.putLong("MineTime", this.lastMineTime);
+        output.putLong("PrevMineTime", this.prevMineTime);
         QuarryRegion region = this.region;
         if (region != null) {
             output.putBoolean("HasRegion", true);
@@ -719,6 +847,15 @@ public class QuarryControllerBlockEntity extends BlockEntity implements Containe
         this.frameIndex = input.getIntOr("FrameIndex", 0);
         this.currentY = input.getIntOr("CurrentY", 0);
         this.cursor = input.getIntOr("Cursor", 0);
+        this.hasLastMine = input.getBooleanOr("HasMine", false);
+        this.lastMineX = input.getIntOr("MineX", 0);
+        this.lastMineY = input.getIntOr("MineY", 0);
+        this.lastMineZ = input.getIntOr("MineZ", 0);
+        this.prevMineX = input.getIntOr("PrevMineX", this.lastMineX);
+        this.prevMineY = input.getIntOr("PrevMineY", this.lastMineY);
+        this.prevMineZ = input.getIntOr("PrevMineZ", this.lastMineZ);
+        this.lastMineTime = input.getLongOr("MineTime", 0L);
+        this.prevMineTime = input.getLongOr("PrevMineTime", 0L);
         this.region = input.getBooleanOr("HasRegion", false)
                 ? QuarryRegion.load(input.childOrEmpty("Region")) : null;
         this.frameTotal = -1;
