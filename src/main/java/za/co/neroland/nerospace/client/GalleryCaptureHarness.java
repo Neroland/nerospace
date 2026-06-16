@@ -333,6 +333,10 @@ public final class GalleryCaptureHarness {
         // glowing core read, with the hovering meteor (fy+11) and its trail filling the upper frame.
         shots.add(new Shot("meteor_site", none, none, 0,
                 new Vec3(ox - 20, oy + 4, oz + 24), new Vec3(ox - 28, oy + 4, oz + 30)));
+        // Solar arrays (SW): raised, looking south down the cluster so the front-row single units AND
+        // the seam-joined multi-unit fields behind them (plus the cabled connector) read together.
+        shots.add(new Shot("solar", none, none, 0,
+                new Vec3(ox - 42, oy + 9, oz + 28), new Vec3(ox - 42, oy + 1, oz + 42)));
         return shots;
     }
 
@@ -445,3 +449,4 @@ public final class GalleryCaptureHarness {
         return new Shot(name, setup, builds, PLANET_WARMUP_TICKS, cam, tgt);
     }
 }
+                                                     
