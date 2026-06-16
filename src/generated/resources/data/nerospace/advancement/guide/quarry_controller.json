@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/quarry_landmark",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:quarry_controller"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Build a Quarry Controller and automate your digging",
+    "icon": {
+      "id": "nerospace:quarry_controller"
+    },
+    "title": "Strip Miner"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

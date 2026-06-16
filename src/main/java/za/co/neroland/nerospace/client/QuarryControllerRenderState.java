@@ -1,7 +1,6 @@
 package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
 
 /**
  * Render state for the quarry's gantry + drill head. All coordinates are relative to the controller
@@ -23,10 +22,8 @@ public class QuarryControllerRenderState extends BlockEntityRenderState {
     public double hx;
     public double hy;
     public double hz;
-    /** Tier accent (ARGB) for the gantry rails. */
+    /** Tier accent (ARGB) for the gantry rails + drill bit. */
     public int accent;
-    /** The drill head, rendered as a spinning item model. */
-    public final ItemStackRenderState head = new ItemStackRenderState();
-    /** Drill-head spin (degrees). */
+    /** Drill-bit spin (degrees). */
     public float headSpin;
 }

@@ -364,6 +364,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.star_guide.chapter.power_grid", "Power Grid");
         add("gui.nerospace.star_guide.chapter.rocketry", "Rocketry");
         add("gui.nerospace.star_guide.chapter.new_worlds", "New Worlds");
+        add("gui.nerospace.star_guide.chapter.mining", "Mining");
         add("gui.nerospace.star_guide.chapter.vacuum", "Vacuum");
         add("gui.nerospace.star_guide.chapter.terraforming", "Terraforming");
 
@@ -467,6 +468,26 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.star_guide.step.glacite.text",
                 "Glacite is crystallised water-ice — the key to cold-weather suits and, one day, "
                         + "to giving a terraformed world its water. Mine it from Glacira's stone.");
+
+        add("gui.nerospace.star_guide.step.quarry_landmark", "Stake a Claim");
+        add("gui.nerospace.star_guide.step.quarry_landmark.text",
+                "Place three Quarry Landmarks in an L to mark a rectangle — they project guide lines "
+                        + "along the ground. Their reference height is the top of the dig.");
+        add("gui.nerospace.star_guide.step.frame_casing", "Frameworks");
+        add("gui.nerospace.star_guide.step.frame_casing.text",
+                "Frame Casing is a hollow ring of nerosteel. The quarry spends one casing per frame "
+                        + "block as it materialises its glowing structural frame around the region.");
+        add("gui.nerospace.star_guide.step.quarry_controller", "Strip Miner");
+        add("gui.nerospace.star_guide.step.quarry_controller.text",
+                "Place the Controller beside the landmarks, load it with Frame Casing and feed it "
+                        + "power. It builds the frame, then a gantry-mounted drill excavates the "
+                        + "interior layer by layer down to bedrock — sucking up liquids, skipping "
+                        + "tile-entity columns, and auto-ejecting drops into adjacent storage or pipes.");
+        add("gui.nerospace.star_guide.step.upgrade_module", "Tune It Up");
+        add("gui.nerospace.star_guide.step.upgrade_module.text",
+                "Slot cross-machine upgrade modules into the Controller: Speed digs faster, "
+                        + "Efficiency cuts power use, and Fortune or Silk Touch change what the dig "
+                        + "drops — just like enchanting your pickaxe.");
 
         add("gui.nerospace.star_guide.step.oxygen_generator", "Something to Breathe");
         add("gui.nerospace.star_guide.step.oxygen_generator.text",

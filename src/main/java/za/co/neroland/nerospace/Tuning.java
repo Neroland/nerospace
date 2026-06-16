@@ -124,6 +124,12 @@ public final class Tuning {
     public static final int BASE_GRINDER_ENERGY_PER_TICK = 30;
     /** Quarry energy consumed per mined block (FE); modules' efficiency lowers it. */
     public static final int BASE_QUARRY_ENERGY_PER_BLOCK = 40;
+    /**
+     * Minimum game-ticks between quarry dig cycles. Throttles raw dig speed so a fully-powered quarry
+     * doesn't strip the map instantly: at the default cycle of {@code baseBlocksPerCycle} blocks every
+     * {@code QUARRY_MINE_INTERVAL} ticks, Tier 1 (2 blocks / 8 ticks) ≈ 5 blocks/s.
+     */
+    public static final int QUARRY_MINE_INTERVAL = 8;
     /** Fuel Refinery energy consumed per working tick (FE); over a batch ≈ 4,000 FE per 2,000 mB. */
     public static final int BASE_FUEL_REFINERY_FE_PER_TICK = 40;
     /** Rocket fuel produced per refining batch (mB) — one coal + one blaze powder = 2,000 mB. */
