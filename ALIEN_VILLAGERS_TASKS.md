@@ -106,6 +106,7 @@ For robustness the blueprint/foundation/stockpile concepts were folded into the 
 ---
 
 ### Progress log
+
 - 2026-06-16: Design doc + task tracker created. Open questions resolved. Starting Phase 0.
 - 2026-06-16: **Phase 0 complete & build-verified.** Alien Villager wanders the Greenxertz surface (wary-neutral), spawns naturally + via egg, carries a per-individual variant. `compileJava` + `runData` both BUILD SUCCESSFUL. Fixed `ResourceKey.location()` -> `identifier()` (26.1 rename) along the way.
 - 2026-06-16: **Phase 1 complete & build-verified.** Custom renderer gives every villager a unique green/steel shade (seed-clamped `getModelTint`) and a per-biome skin (meadow accessory set), with the emissive eye/crystal glow retained. Generified `GreenxertzMobModel<S>` + `GlowEyesLayer<S>` (12 files); `ecjCheck` clean. Full `build` + `ecjCheck` SUCCESSFUL via pyenv. Next: Phase 2 (trading & reputation core).
@@ -116,3 +117,17 @@ For robustness the blueprint/foundation/stockpile concepts were folded into the 
 - 2026-06-16: **Phase 6 done & verified.** Exclusive Artificer gear: Grav Striders (negates fall damage via `LivingFallEvent`) + Xertz Resonator (ore-ping using the `c:ores` tag); trade-only at T4/T5; items/models/lang/textures generated. Decoration block set deferred (many fragile registry edits) — noted for a later pass.
 - 2026-06-16: **Phase 7 done & verified.** `RuinFeature` — a rarer (`onAverageOnceEvery(120)`) partially-buried alien ruin with broken walls, a glowing core and a loot vault (alien core/scrap/fragments/emeralds), in the greenxertz biome. Dedicated boss entity + multi-level dungeons/lore-sites deferred to keep it robust.
 - 2026-06-16: **Phase 8 done & verified.** Per-planet species: Cindara (ember/red) + Glacira (frost/pale) villager textures, renderer branches `getTextureLocation` by planet, and both biomes now spawn villagers. Structure palette-swap per planet deferred. **All 8 phases build-verified (build + ecjCheck + runData) via pyenv.**
+
+---
+
+## Finale — Boss, mega-structures & decoration ✅ DONE
+
+The three Phase 6/7 deferrals, now delivered (all build + ecjCheck + runData verified via pyenv):
+
+- [x] **Decoration set** — 6 Greenxertz blocks (Alien Bricks, Cracked Bricks, Tile, Pillar, Lamp [light 15], Crystal Block [light 12]) wired through all 7 registry/datagen files + textures + creative tab.
+- [x] **Ruin Warden boss** — new `RuinWarden` Monster (120 HP, armoured, knockback-resistant, melee) + `RuinWardenModel` (hulking crystalline construct) + renderer/layer/textures/glow; `model_sync` generated its `.bbmodel`.
+- [x] **Mega-city** — `MegaCityFeature`: a 41×41 walled, gated city built from the decoration blocks, four district buildings, a central crystal-cored keep with the **boss** and a **grand vault** (alien cores, both gear pieces, diamonds, emeralds). Very rare (`onAverageOnceEvery(400)`).
+- [x] The **ruin** now also has a boss available; the mega-city spawns it in the keep.
+
+> Remaining design polish (optional, future): multi-level underground dungeons, lore/relic set-pieces, per-planet structure palette-swap (Cindara/Glacira), and moving the literal status messages into the lang file.
+- 2026-06-17: **Finale complete & verified.** Delivered the three deferrals — decoration block set, the Ruin Warden boss entity, and the massive walled Mega-City (keep + boss + grand vault, built from the decoration blocks). All build + ecjCheck + runData SUCCESSFUL via pyenv; recovered ModEntities/ModEntityEvents from git after a stale-read, used read-retry for the rest.

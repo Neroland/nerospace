@@ -32,6 +32,9 @@ eventually **terraform** a dead planet into livable, rained-on ground.
   the Star Guide.
 - **[Creatures](Creatures)** — the native mobs of Greenxertz, Cindara, and Glacira, plus the
   terraform livestock.
+- **[Alien Villagers](Alien-Villagers)** — wary alien NPCs you befriend to trade and grow villages,
+  with the **[Village Core](Village-Core)**, alien **[structures](Alien-Structures)**,
+  **[decoration blocks](Alien-Decoration)** and exclusive **[gear](Alien-Gear)**.
 - **[Meteor Events](Meteor-Events)** — rare meteor crashes that seed the world with alien materials
   and off-world ores; track them with the Meteor Tracker.
 - **[Star Guide](Star-Guide)** — the in-game progression guide.

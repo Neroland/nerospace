@@ -110,6 +110,12 @@ one natural meteor every 2–3 play-hours per active dimension; the Meteor Calle
 | `meteorLootBonusRolls` | `3` | 0–32 | Weighted bonus loot rolls on top of the guaranteed alien fragments. |
 | `meteorDebugLog` | `false` | — | Verbose, non-personal meteor logging (dimension + coordinates only — POPIA/GDPR). |
 
+### Alien villages
+
+| Key | Default | Meaning |
+|---|---|---|
+| `alienRaidsEnabled` | `true` | Whether claimed alien villages are raided by hostile mobs at night. Set `false` to opt out; applies on config reload. |
+
 ## Removed keys (for modpack authors migrating)
 
 Folded into multipliers: `atmosphereDamage`, `oxygenMax`, `oxygenDrainPerTick`, `oxygenSuitDrain`,

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "nerospace:cracked_alien_bricks"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "nerospace:blocks/cracked_alien_bricks"
+}

@@ -33,10 +33,12 @@ public final class ModConfiguredFeatures {
     /** Alien hamlet outpost (ALIEN_VILLAGERS_DESIGN.md §5, Phase 3). */
     public static final ResourceKey<ConfiguredFeature<?, ?>> HAMLET = registerKey("hamlet");
     public static final ResourceKey<ConfiguredFeature<?, ?>> RUIN = registerKey("ruin");
+    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CITY = registerKey("mega_city");
 
     private ModConfiguredFeatures() {
     }
 
+    @SuppressWarnings("null") // ecj null-analysis vs vanilla Feature.ORE generics
     public static void bootstrap(BootstrapContext<ConfiguredFeature<?, ?>> context) {
         RuleTest stoneReplaceables = new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES);
         RuleTest deepslateReplaceables = new TagMatchTest(BlockTags.DEEPSLATE_ORE_REPLACEABLES);
@@ -77,6 +79,10 @@ public final class ModConfiguredFeatures {
 
         context.register(RUIN, new ConfiguredFeature<>(
                 za.co.neroland.nerospace.registry.ModFeatures.RUIN.get(),
+                net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration.INSTANCE));
+
+        context.register(MEGA_CITY, new ConfiguredFeature<>(
+                za.co.neroland.nerospace.registry.ModFeatures.MEGA_CITY.get(),
                 net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration.INSTANCE));
     }
 

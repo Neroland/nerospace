@@ -71,6 +71,14 @@ public final class ModEntities {
             MobCategory.CREATURE,
             builder -> builder.sized(0.6F, 1.95F).eyeHeight(1.7F).clientTrackingRange(10));
 
+    /** Ruin Warden — boss guardian of ruins / the mega-city keep (structure-spawned). */
+    public static final Supplier<EntityType<za.co.neroland.nerospace.entity.RuinWarden>> RUIN_WARDEN =
+            ENTITY_TYPES.registerEntityType(
+                    "ruin_warden",
+                    za.co.neroland.nerospace.entity.RuinWarden::new,
+                    MobCategory.MONSTER,
+                    builder -> builder.sized(1.4F, 3.0F).eyeHeight(2.6F).clientTrackingRange(10));
+
     // --- Cindara creatures (Phase 7) ----------------------------------------
 
     public static final Supplier<EntityType<CinderStalker>> CINDER_STALKER = ENTITY_TYPES.registerEntityType(

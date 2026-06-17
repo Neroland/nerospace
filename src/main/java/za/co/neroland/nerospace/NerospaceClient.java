@@ -157,6 +157,11 @@ public class NerospaceClient {
                         entityTexture("greenling"), 1.0F, 1.0F, 1.0F, 0.3F, entityGlow("greenling")));
         // Alien Villager uses its own renderer (Phase 1): per-individual palette tint + per-biome skin.
         event.registerEntityRenderer(ModEntities.ALIEN_VILLAGER.get(), AlienVillagerRenderer::new);
+        event.registerEntityRenderer(ModEntities.RUIN_WARDEN.get(),
+                context -> new GreenxertzCreatureRenderer(context,
+                        new za.co.neroland.nerospace.client.RuinWardenModel(
+                                context.bakeLayer(za.co.neroland.nerospace.client.RuinWardenModel.LAYER)),
+                        entityTexture("ruin_warden"), 1.4F, 1.4F, 1.4F, 0.9F, entityGlow("ruin_warden")));
         event.registerEntityRenderer(ModEntities.CINDER_STALKER.get(),
                 context -> new GreenxertzCreatureRenderer(context,
                         new CinderStalkerModel(context.bakeLayer(CinderStalkerModel.LAYER)),
@@ -209,6 +214,8 @@ public class NerospaceClient {
         event.registerLayerDefinition(QuartzCrawlerModel.LAYER, QuartzCrawlerModel::createBodyLayer);
         event.registerLayerDefinition(GreenlingModel.LAYER, GreenlingModel::createBodyLayer);
         event.registerLayerDefinition(AlienVillagerModel.LAYER, AlienVillagerModel::createBodyLayer);
+        event.registerLayerDefinition(za.co.neroland.nerospace.client.RuinWardenModel.LAYER,
+                za.co.neroland.nerospace.client.RuinWardenModel::createBodyLayer);
         event.registerLayerDefinition(CinderStalkerModel.LAYER, CinderStalkerModel::createBodyLayer);
         event.registerLayerDefinition(FrostStriderModel.LAYER, FrostStriderModel::createBodyLayer);
         event.registerLayerDefinition(za.co.neroland.nerospace.client.MeadowLoperModel.LAYER,

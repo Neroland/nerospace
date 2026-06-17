@@ -43,6 +43,7 @@ public final class ModPlacedFeatures {
     /** Rare surface alien hamlet (Phase 3). */
     public static final ResourceKey<PlacedFeature> HAMLET_PLACED = registerKey("hamlet_placed");
     public static final ResourceKey<PlacedFeature> RUIN_PLACED = registerKey("ruin_placed");
+    public static final ResourceKey<PlacedFeature> MEGA_CITY_PLACED = registerKey("mega_city_placed");
 
     private ModPlacedFeatures() {
     }
@@ -107,7 +108,7 @@ public final class ModPlacedFeatures {
         context.register(HAMLET_PLACED, new PlacedFeature(
                 configuredFeatures.getOrThrow(ModConfiguredFeatures.HAMLET),
                 List.of(
-                        net.minecraft.world.level.levelgen.placement.RarityFilter.onAverageOnceEvery(40),
+                        CountPlacement.of(1),
                         InSquarePlacement.spread(),
                         net.minecraft.world.level.levelgen.placement.HeightmapPlacement.onHeightmap(
                                 net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG),
@@ -116,7 +117,16 @@ public final class ModPlacedFeatures {
         context.register(RUIN_PLACED, new PlacedFeature(
                 configuredFeatures.getOrThrow(ModConfiguredFeatures.RUIN),
                 List.of(
-                        net.minecraft.world.level.levelgen.placement.RarityFilter.onAverageOnceEvery(120),
+                        CountPlacement.of(1),
+                        InSquarePlacement.spread(),
+                        net.minecraft.world.level.levelgen.placement.HeightmapPlacement.onHeightmap(
+                                net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG),
+                        BiomeFilter.biome())));
+
+        context.register(MEGA_CITY_PLACED, new PlacedFeature(
+                configuredFeatures.getOrThrow(ModConfiguredFeatures.MEGA_CITY),
+                List.of(
+                        CountPlacement.of(1),
                         InSquarePlacement.spread(),
                         net.minecraft.world.level.levelgen.placement.HeightmapPlacement.onHeightmap(
                                 net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG),

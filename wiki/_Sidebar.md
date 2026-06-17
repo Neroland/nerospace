@@ -59,6 +59,14 @@
 - [Station Wall](Station-Wall)
 - [Station Core](Station-Core)
 
+**Alien Villages**
+
+- [Alien Villagers](Alien-Villagers)
+- [Village Core](Village-Core)
+- [Alien Structures](Alien-Structures)
+- [Alien Decoration](Alien-Decoration)
+- [Alien Gear](Alien-Gear)
+
 **World Events**
 
 - [Meteor Events](Meteor-Events)

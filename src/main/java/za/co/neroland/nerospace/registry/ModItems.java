@@ -440,6 +440,14 @@ public final class ModItems {
     public static final DeferredItem<Item> GRAV_STRIDERS = ITEMS.registerSimpleItem("grav_striders");
     public static final DeferredItem<Item> XERTZ_RESONATOR = ITEMS.registerItem(
             "xertz_resonator", props -> new za.co.neroland.nerospace.gear.XertzResonatorItem(props));
+    // Greenxertz decoration block items (§8).
+    public static final DeferredItem<BlockItem> ALIEN_BRICKS_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_BRICKS);
+    public static final DeferredItem<BlockItem> CRACKED_ALIEN_BRICKS_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.CRACKED_ALIEN_BRICKS);
+    public static final DeferredItem<BlockItem> ALIEN_TILE_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_TILE);
+    public static final DeferredItem<BlockItem> ALIEN_PILLAR_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_PILLAR);
+    public static final DeferredItem<BlockItem> ALIEN_LAMP_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_LAMP);
+    public static final DeferredItem<BlockItem> ALIEN_CRYSTAL_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_CRYSTAL_BLOCK);
+
     public static final DeferredItem<Item> STAR_GUIDE_BOOK = ITEMS.registerItem(
             "star_guide_book", props -> new za.co.neroland.nerospace.item.StarGuideBookItem(props.stacksTo(1)));
 

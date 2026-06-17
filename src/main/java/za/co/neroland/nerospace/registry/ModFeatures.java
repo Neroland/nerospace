@@ -10,12 +10,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import za.co.neroland.nerospace.Nerospace;
 import za.co.neroland.nerospace.world.HamletFeature;
+import za.co.neroland.nerospace.world.MegaCityFeature;
 import za.co.neroland.nerospace.world.RuinFeature;
 
-/**
- * Custom worldgen features for Nerospace. Phase 3: the {@link HamletFeature} alien outpost.
- * Phase 7: the {@link RuinFeature} ancient ruin.
- */
+/** Custom worldgen features: hamlet outpost (P3), ancient ruin (P7), mega-city (finale). */
 public final class ModFeatures {
 
     public static final DeferredRegister<Feature<?>> FEATURES =
@@ -26,6 +24,9 @@ public final class ModFeatures {
 
     public static final Supplier<Feature<NoneFeatureConfiguration>> RUIN =
             FEATURES.register("ruin", () -> new RuinFeature(NoneFeatureConfiguration.CODEC));
+
+    public static final Supplier<Feature<NoneFeatureConfiguration>> MEGA_CITY =
+            FEATURES.register("mega_city", () -> new MegaCityFeature(NoneFeatureConfiguration.CODEC));
 
     private ModFeatures() {
     }

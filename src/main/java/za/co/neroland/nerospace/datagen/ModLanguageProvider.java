@@ -40,6 +40,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.nerospace.village_core.owned", "This Village Core belongs to %s.");
         add(ModItems.GRAV_STRIDERS.get(), "Grav Striders");
         add(ModItems.XERTZ_RESONATOR.get(), "Xertz Resonator");
+        add(ModBlocks.ALIEN_BRICKS.get(), "Alien Bricks");
+        add(ModBlocks.CRACKED_ALIEN_BRICKS.get(), "Cracked Alien Bricks");
+        add(ModBlocks.ALIEN_TILE.get(), "Alien Tile");
+        add(ModBlocks.ALIEN_PILLAR.get(), "Alien Pillar");
+        add(ModBlocks.ALIEN_LAMP.get(), "Alien Lamp");
+        add(ModBlocks.ALIEN_CRYSTAL_BLOCK.get(), "Alien Crystal Block");
 
         // Phase 4 blocks.
         add(ModBlocks.ROCKET_LAUNCH_PAD.get(), "Rocket Launch Pad");

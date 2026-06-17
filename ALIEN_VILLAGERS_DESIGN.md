@@ -49,7 +49,7 @@ Disposition by species (your "earn trust" choice, applied uniformly for v1): all
 
 A `Variant` record stored via a **data component** (`ModDataComponents`, the 26.1 component system you already use) and synced to clients:
 
-```
+```text
 AlienVillagerVariant(
   planet:    enum GREENXERTZ | CINDARA | GLACIRA,
   biomeTag:  ResourceKey<Biome>,   // selects accessory set
@@ -309,7 +309,8 @@ This keeps the feature POPIA- and GDPR-compliant by data-minimization and purpos
 - Boss design for ancient-ruin dungeons — reuse/upgrade an existing mob, or a new entity?
 - How aggressive should **raids** be (opt-out config for peaceful players)?
 
-## Answer to open questions:
+## Answer to open questions
+
 1. Per-village, to keep the loop tight and local.
 2. No cure/conversion in v1, to keep the loop focused on the village and avoid a new mechanic.
 3. Auto-expansion, to keep the loop focused on teaching and growth rather than zoning micromanagement.

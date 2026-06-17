@@ -164,6 +164,8 @@ public final class ModBiomes {
                 placedFeatures.getOrThrow(ModPlacedFeatures.HAMLET_PLACED));
         generation.addFeature(GenerationStep.Decoration.SURFACE_STRUCTURES,
                 placedFeatures.getOrThrow(ModPlacedFeatures.RUIN_PLACED));
+        generation.addFeature(GenerationStep.Decoration.SURFACE_STRUCTURES,
+                placedFeatures.getOrThrow(ModPlacedFeatures.MEGA_CITY_PLACED));
 
         // MC 26.1 trimmed BiomeSpecialEffects.Builder to water + grass/foliage colors; fog/sky/water-fog
         // colors are no longer set here. The green surface palette comes from the grass/foliage overrides.

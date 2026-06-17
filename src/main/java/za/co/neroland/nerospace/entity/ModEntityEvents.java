@@ -27,6 +27,7 @@ public final class ModEntityEvents {
         event.put(ModEntities.QUARTZ_CRAWLER.get(), QuartzCrawler.createAttributes().build());
         event.put(ModEntities.GREENLING.get(), Greenling.createAttributes().build());
         event.put(ModEntities.ALIEN_VILLAGER.get(), AlienVillager.createAttributes().build());
+        event.put(ModEntities.RUIN_WARDEN.get(), RuinWarden.createAttributes().build());
         event.put(ModEntities.CINDER_STALKER.get(), CinderStalker.createAttributes().build());
         event.put(ModEntities.FROST_STRIDER.get(), FrostStrider.createAttributes().build());
         // Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5).

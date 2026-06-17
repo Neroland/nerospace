@@ -1,0 +1,464 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "modded_entity",
+    "box_uv": true
+  },
+  "name": "ruin_warden",
+  "model_identifier": "",
+  "visible_box": [
+    2,
+    3,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 64,
+    "height": 64
+  },
+  "elements": [
+    {
+      "name": "head",
+      "box_uv": true,
+      "uv_offset": [
+        0,
+        28
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -5,
+        24,
+        -5
+      ],
+      "to": [
+        5,
+        34,
+        5
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "bce86502-cbe2-4870-903c-b3a10da12c8d"
+    },
+    {
+      "name": "body",
+      "box_uv": true,
+      "uv_offset": [
+        0,
+        0
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -6,
+        10,
+        -3
+      ],
+      "to": [
+        6,
+        24,
+        3
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "f08620c9-2438-753e-fbce-d7e2dbe13f06"
+    },
+    {
+      "name": "crystal_left",
+      "box_uv": true,
+      "uv_offset": [
+        44,
+        0
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -9,
+        18,
+        -2
+      ],
+      "to": [
+        -6,
+        26,
+        2
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "7f7babfb-2df6-ebb8-5f23-06472d61ff0a"
+    },
+    {
+      "name": "crystal_right",
+      "box_uv": true,
+      "uv_offset": [
+        44,
+        0
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        6,
+        18,
+        -2
+      ],
+      "to": [
+        9,
+        26,
+        2
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "2292df89-52f0-af6c-3d8b-06c86a097297"
+    }
+  ],
+  "outliner": [
+    {
+      "name": "head",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "71650d50-f619-c1f2-42e1-549b68e790ae",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "bce86502-cbe2-4870-903c-b3a10da12c8d"
+      ]
+    },
+    {
+      "name": "body",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "2ae2f515-1b44-cd2e-1f01-4b950be72324",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "f08620c9-2438-753e-fbce-d7e2dbe13f06"
+      ]
+    },
+    {
+      "name": "crystal_left",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "86e6acf1-091b-8892-97c4-01e99d8bb2d3",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "7f7babfb-2df6-ebb8-5f23-06472d61ff0a"
+      ]
+    },
+    {
+      "name": "crystal_right",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "9d6eeeb9-678b-c713-7372-04d123f2c639",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "2292df89-52f0-af6c-3d8b-06c86a097297"
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\ruin_warden.png",
+      "name": "ruin_warden.png",
+      "folder": "entity",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "b60548c7-0ca7-a14f-d059-b516d01dac2e",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/entity/ruin_warden.png",
+      "source": "data:image/png;base64,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"
+    }
+  ]
+}

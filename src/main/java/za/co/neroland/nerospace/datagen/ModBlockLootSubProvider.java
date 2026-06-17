@@ -44,6 +44,12 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         // Star Guide pedestal (the installed book pops separately via the BE's remove hook).
         dropSelf(ModBlocks.STAR_GUIDE.get());
         dropSelf(ModBlocks.VILLAGE_CORE.get());
+        dropSelf(ModBlocks.ALIEN_BRICKS.get());
+        dropSelf(ModBlocks.CRACKED_ALIEN_BRICKS.get());
+        dropSelf(ModBlocks.ALIEN_TILE.get());
+        dropSelf(ModBlocks.ALIEN_PILLAR.get());
+        dropSelf(ModBlocks.ALIEN_LAMP.get());
+        dropSelf(ModBlocks.ALIEN_CRYSTAL_BLOCK.get());
 
         // Phase 8a — fuel tank.
         dropSelf(ModBlocks.FUEL_TANK.get());
