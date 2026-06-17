@@ -106,6 +106,56 @@
       "env": {},
       "console": "internalConsole",
       "shortenCommandLine": "none"
+    },
+    {
+      "//": "===== Multiloader scaffold (multiloader/) — Architectury, loom-based ====="
+    },
+    {
+      "//": "These are TEMPLATES shaped like loom's `genVsCodeRuns` output. Loom owns the exact classpath/vmArgs, so run the 'ML: Regenerate VS Code run configs (genVsCodeRuns)' task once (it also requires the 26.x toolchain to resolve) to materialize the authoritative entries. For a no-setup run, use the 'ML: Run ...' tasks in tasks.json instead. The MC version of these java launches follows whatever was last built; switch versions via the tasks (-Pminecraft_version)."
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "ML: NeoForge Client",
+      "presentation": { "group": "Multiloader (Architectury)", "order": 0 },
+      "projectName": "neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "preLaunchTask": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
+      "cwd": "${workspaceFolder}/multiloader/neoforge/run",
+      "console": "internalConsole"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "ML: NeoForge Server",
+      "presentation": { "group": "Multiloader (Architectury)", "order": 1 },
+      "projectName": "neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "preLaunchTask": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
+      "cwd": "${workspaceFolder}/multiloader/neoforge/run",
+      "console": "internalConsole"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "ML: Fabric Client",
+      "presentation": { "group": "Multiloader (Architectury)", "order": 2 },
+      "projectName": "fabric",
+      "mainClass": "net.fabricmc.devlaunchinjector.Main",
+      "preLaunchTask": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
+      "cwd": "${workspaceFolder}/multiloader/fabric/run",
+      "console": "internalConsole"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "ML: Fabric Server",
+      "presentation": { "group": "Multiloader (Architectury)", "order": 3 },
+      "projectName": "fabric",
+      "mainClass": "net.fabricmc.devlaunchinjector.Main",
+      "preLaunchTask": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
+      "cwd": "${workspaceFolder}/multiloader/fabric/run",
+      "console": "internalConsole"
     }
   ]
 }

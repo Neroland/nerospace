@@ -1,0 +1,79 @@
+name: Multiloader Build
+
+# Builds the multiloader scaffold (multiloader/) across the loader x Minecraft
+# version matrix. Independent of the root single-loader build (build.yml).
+#
+# Every combo is currently `experimental: true` (continue-on-error) because the
+# Architectury / Fabric / NeoForge toolchains for MC 26.1.2 and 26.2 are not all
+# published yet (see multiloader/gradle.properties "UPSTREAM AVAILABILITY").
+# As each combo becomes buildable, flip its `experimental` to false so a
+# regression turns the workflow red. Suggested first: neoforge @ 26.1.2.
+
+on:
+  push:
+    paths:
+      - "multiloader/**"
+      - ".github/workflows/multiloader.yml"
+  pull_request:
+    paths:
+      - "multiloader/**"
+      - ".github/workflows/multiloader.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.loader }} @ MC ${{ matrix.mc }}
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - loader: neoforge
+            mc: "26.1.2"
+            experimental: true   # flip to false once Architectury ships for 26.1.2
+          - loader: fabric
+            mc: "26.1.2"
+            experimental: true   # Fabric API for 26.1.2 pending (newest stable is 26.1.1)
+          - loader: neoforge
+            mc: "26.2"
+            experimental: true   # NeoForge 26.2 pending (MC 26.2 released 2026-06-16)
+          - loader: fabric
+            mc: "26.2"
+            experimental: true   # Fabric API for 26.2 pending
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: "25"
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build ${{ matrix.loader }} for MC ${{ matrix.mc }}
+        run: >-
+          ./gradlew -p multiloader :${{ matrix.loader }}:build
+          -Pminecraft_version=${{ matrix.mc }}
+          --stacktrace
+
+      - name: Upload ${{ matrix.loader }} ${{ matrix.mc }} jars
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nerospace-${{ matrix.loader }}-${{ matrix.mc }}
+          path: multiloader/${{ matrix.loader }}/build/libs/*.jar
+          if-no-files-found: ignore

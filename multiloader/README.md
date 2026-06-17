@@ -73,13 +73,63 @@ The scaffold is a nested Gradle build; drive it with the repo's wrapper:
 
 ```bash
 # from the repo root
-./gradlew -p multiloader build           # both loaders, active MC version
+./gradlew -p multiloader build                              # both loaders, default MC
 ./gradlew -p multiloader :fabric:build
 ./gradlew -p multiloader :neoforge:build
+
+# target a specific Minecraft version (the "configurations"):
+./gradlew -p multiloader :neoforge:build -Pminecraft_version=26.1.2
+./gradlew -p multiloader :fabric:build   -Pminecraft_version=26.2
 ```
 
-Output jars land in `multiloader/<loader>/build/libs/`. The active Minecraft
-version is `minecraft_version` in `gradle.properties`.
+Output jars land in `multiloader/<loader>/build/libs/`. The default Minecraft
+version is `minecraft_version` in `gradle.properties`; `-Pminecraft_version`
+overrides it and selects the matching `*_<mc>` dependency pins.
+
+## The version matrix (26.1 and 26.2)
+
+The "different configurations" are the cross product of loader × Minecraft
+version:
+
+| | MC 26.1.2 | MC 26.2 |
+| --- | --- | --- |
+| **NeoForge** | NeoForge `26.1.2.76` — real | pending (no 26.2 NeoForge yet) |
+| **Fabric** | pending (Fabric newest stable is 26.1.1) | pending (Fabric API for 26.2 not out) |
+
+MC 26.2 ("Chaos Cubed") released 2026-06-16, so its modding toolchains haven't
+shipped. The matrix is wired now and each cell lights up automatically when its
+`*_<mc>` pin in `gradle.properties` resolves — no structural changes needed.
+
+A build targets one version at a time (one MC version per jar — see
+[`docs/MULTILOADER.md`](../docs/MULTILOADER.md) §1). Stonecutter is only needed
+once the *source* diverges between 26.1 and 26.2 APIs; until then the
+property-driven matrix above is the version mechanism, and Stonecutter stays
+declared-and-ready (see "Finishing the version axis").
+
+## CI/CD
+
+`.github/workflows/multiloader.yml` builds the full matrix on pushes/PRs that
+touch `multiloader/**` (plus manual `workflow_dispatch`), independent of the
+root build (`build.yml`). It runs
+`./gradlew -p multiloader :<loader>:build -Pminecraft_version=<mc>` per cell and
+uploads the jars. Every cell is `experimental: true` (continue-on-error) while
+the 26.x toolchains are pending — flip a cell's `experimental` to `false` once
+it builds for real so a regression fails the workflow (start with
+NeoForge @ 26.1.2).
+
+## VS Code
+
+Run configs live in the repo-root `.vscode/` so they show up alongside the
+existing NeoForge ones:
+
+- **`tasks.json`** — `ML: …` tasks for build / runClient / runServer per loader,
+  plus `genVsCodeRuns`. They prompt for the Minecraft version (`26.1.2` / `26.2`)
+  and shell out to `gradlew -p multiloader …`. This is the no-setup way to run
+  the configurations.
+- **`launch.json`** — a "Multiloader (Architectury)" group of debug launches.
+  These are templates matching loom's `genVsCodeRuns` output; run the
+  `ML: Regenerate VS Code run configs` task once (the toolchain must resolve
+  first) to populate the authoritative classpaths/args.
 
 ## Finishing the version axis (Stonecutter)
 
