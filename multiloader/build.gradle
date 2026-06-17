@@ -1,0 +1,78 @@
+// =====================================================================
+// Nerospace multiloader scaffold — ROOT build
+// Loader axis via Architectury. Shared config for all sub-modules.
+//
+// Plugin versions are pinned here (the plugins {} block cannot read
+// gradle.properties). Keep them in sync with the *_version values in
+// gradle.properties.
+// =====================================================================
+plugins {
+    id 'architectury-plugin' version '3.4-SNAPSHOT'
+    id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
+}
+
+architectury {
+    minecraft = project.minecraft_version
+}
+
+allprojects {
+    group = rootProject.mod_group_id
+    version = rootProject.mod_version
+}
+
+subprojects {
+    apply plugin: 'dev.architectury.loom'
+    apply plugin: 'architectury-plugin'
+
+    base {
+        // produces e.g. nerospace-fabric-1.0.0-alpha.1.jar
+        archivesName = "${rootProject.mod_id}-${project.name}"
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://maven.fabricmc.net/' }
+        maven { url 'https://maven.architectury.dev/' }
+        maven { url 'https://maven.neoforged.net/releases/' }
+        maven {
+            name 'JEI'
+            url 'https://maven.blamejared.com/'
+        }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        // 26.x is de-obfuscated; use official Mojang names (matches the
+        // root project's mappings convention — no Parchment).
+        mappings loom.officialMojangMappings()
+    }
+
+    java {
+        withSourcesJar()
+        // Project targets Java 25 (see root CLAUDE.md).
+        toolchain.languageVersion = JavaLanguageVersion.of(25)
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 25
+    }
+
+    tasks.withType(ProcessResources).configureEach {
+        def expand = [
+            mod_id               : rootProject.mod_id,
+            mod_name             : rootProject.mod_name,
+            mod_version          : rootProject.mod_version,
+            mod_license          : rootProject.mod_license,
+            mod_authors          : rootProject.mod_authors,
+            mod_group_id         : rootProject.mod_group_id,
+            minecraft_version    : rootProject.minecraft_version,
+            minecraft_version_range: rootProject.minecraft_version_range,
+            fabric_loader_version: rootProject.fabric_loader_version,
+        ]
+        inputs.properties(expand)
+        filesMatching(['fabric.mod.json', 'META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
+            expand(expand)
+        }
+    }
+}

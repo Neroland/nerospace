@@ -1,0 +1,47 @@
+// neoforge: NeoForge entry point + platform service implementations.
+// Depends on :common and bundles its transformed classes into the jar.
+
+plugins {
+    id 'com.gradleup.shadow' version '8.3.5'
+}
+
+def mc = rootProject.minecraft_version
+def neoVersion = project.findProperty("neo_version_${mc}")
+def architecturyApi = project.findProperty("architectury_api_version_${mc}")
+
+architectury {
+    platformSetupLoomIde()
+    neoForge()
+}
+
+configurations {
+    common
+    shadowBundle
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentNeoForge.extendsFrom common
+}
+
+dependencies {
+    neoForge "net.neoforged:neoforge:${neoVersion}"
+
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    shadowBundle(project(path: ':common', configuration: 'transformProductionNeoForge'))
+
+    if (architecturyApi != null) {
+        modApi "dev.architectury:architectury-neoforge:${architecturyApi}"
+    }
+}
+
+processResources {
+    // mod metadata token expansion is configured in the root build.gradle
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = 'dev-shadow'
+}
+
+remapJar {
+    inputFile.set shadowJar.archiveFile
+}

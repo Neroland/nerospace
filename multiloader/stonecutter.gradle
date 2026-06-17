@@ -1,0 +1,33 @@
+// =====================================================================
+// Stonecutter controller (version axis) — SCAFFOLD STUB
+//
+// This file is only consumed once you activate Stonecutter by
+// uncommenting the `stonecutter { create(rootProject) { ... } }` block in
+// settings.gradle. Until then it is inert.
+//
+// When active, Stonecutter applies this script to the version controller
+// and exposes per-node helpers. The typical contents:
+//
+//   plugins { id 'dev.kikugie.stonecutter' }
+//
+//   stonecutter active '26.1.2'   // the version checked out in your IDE
+//
+//   // Aggregate task that builds every declared version, e.g.
+//   // ./gradlew chiseledBuild
+//   stonecutter registerChiseled tasks.register('chiseledBuild', stonecutter.chiseled) {
+//       group = 'project'
+//       ofTask 'build'
+//   }
+//
+// Preprocessor usage in source (handles signature/API drift between
+// Minecraft versions without branching):
+//
+//   //? if >=26.2 {
+//   /*newSignature();
+//   *///?} else {
+//   oldSignature();
+//   //?}
+//
+// See README.md "Finishing the version axis" for the two wiring options
+// (Stonecraft turnkey, or hand-wired Stonecutter).
+// =====================================================================

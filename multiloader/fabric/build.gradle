@@ -1,0 +1,46 @@
+// fabric: Fabric entry point + platform service implementations.
+// Depends on :common and bundles its transformed classes into the jar.
+
+plugins {
+    id 'com.gradleup.shadow' version '8.3.5'
+}
+
+def mc = rootProject.minecraft_version
+def fabricApi = project.findProperty("fabric_api_version_${mc}")
+def architecturyApi = project.findProperty("architectury_api_version_${mc}")
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+configurations {
+    common
+    shadowBundle
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    if (fabricApi != null) {
+        modApi "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+    }
+    if (architecturyApi != null) {
+        modApi "dev.architectury:architectury-fabric:${architecturyApi}"
+    }
+
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    shadowBundle(project(path: ':common', configuration: 'transformProductionFabric'))
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = 'dev-shadow'
+}
+
+remapJar {
+    inputFile.set shadowJar.archiveFile
+}
