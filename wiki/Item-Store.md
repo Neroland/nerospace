@@ -18,7 +18,9 @@ N N N
 
 - **27 slots**, chest-style GUI on right-click.
 - Universal Pipes (item layer) and hoppers can insert/extract on **every side** — unlike a chest,
+
   nothing blocks the top face.
+
 - Spills its contents when broken, like a chest.
 
 A **Creative Item Store** variant supplies an endless stream of one configured item — see

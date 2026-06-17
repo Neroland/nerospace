@@ -17,9 +17,13 @@ N R N
 ## How it works
 
 - Stores **200,000 FE** (configurable); accepts and provides power on **every side** at pipe
+
   throughput.
+
 - Generators fill it through the network; machines drain it the same way — so production hiccups
+
   don't black out your base.
+
 - Right-click for a charge readout.
 
 A **Creative Battery** variant (creative tab only) is an endless source and sink of energy for

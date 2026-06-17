@@ -372,6 +372,10 @@ public class NerospaceClient {
             return;
         }
         BlockPos target = ClientMeteorTracker.pos();
+        if (target == null) {
+            // isPresent() was true above, but pos() is @Nullable — guard the deref explicitly.
+            return;
+        }
         Vec3 p = mc.player.position();
         double dx = target.getX() + 0.5D - p.x;
         double dz = target.getZ() + 0.5D - p.z;

@@ -26,12 +26,18 @@ N R N
 ## How it works
 
 - **Inputs:** a **carbon** slot (coal or charcoal) and a **catalyst** slot (blaze powder). Hoppers and
+
   pipes feed them through the item capability — coal routes to carbon, blaze to catalyst automatically.
+
 - **Power:** grid power only (insert-capped 1,000 FE/tick). Feed it from a generator or Battery over
+
   [Universal Pipes](Universal-Pipe).
+
 - **Refining:** one batch consumes **1 coal + 1 blaze powder + ~4,000 FE** over ~100 ticks and yields
+
   **2,000 mB** of rocket fuel — the same fuel two hand-crafted canisters give, without the iron or the
   clicking.
+
 - **Output:** the internal **8,000 mB** tank exposes the fluid capability, so pipes carry the fuel away.
 - **Comparator:** emits a redstone signal scaled to its fuel level.
 

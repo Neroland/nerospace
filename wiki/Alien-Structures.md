@@ -24,6 +24,7 @@ A large, half-buried, weathered alien hall — uncommon.
 - Built from **cracked alien brick** with collapsed walls and a broken roof (sunken into the ground).
 - A dead crystal core at the centre.
 - A **loot vault** (chest) of rare alien goods: Alien Core, Alien Tech Scrap, Alien Fragments, Nerosium
+
   Ingots and emeralds.
 
 ## Mega-City
@@ -33,6 +34,7 @@ The massive end-state alien settlement — very rare, and a real expedition.
 - A pillared, lit, **crenellated curtain wall** (41×41) with four gates.
 - A tile plaza of futuristic towers around a **central keep**.
 - The keep holds a **grand vault** — Alien Cores, **both** pieces of **[Artificer gear](Alien-Gear)**,
+
   diamonds and emeralds — guarded by the **[Ruin Warden](Creatures#ruin-warden)** boss.
 
 ## Spacing & density
@@ -42,8 +44,11 @@ To stop structures clustering (and to cap how many appear in an area), all three
 
 - The world is divided into **16×16-chunk cells** (≈256 blocks).
 - Each cell gets **at most one** structure, chosen by a weighted hash: ~26% Hamlet, ~8% Ruin, ~2%
+
   Mega-City, and the rest **empty** for breathing room.
+
 - The structure sits at a deterministic anchor chunk inside the cell, kept off the edge so footprints
+
   don't straddle boundaries.
 
 The result is even spacing and a hard density cap, regardless of the placement RNG.

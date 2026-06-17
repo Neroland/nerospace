@@ -24,22 +24,36 @@ N N N
 ## How it works
 
 - **Power in:** connect a Universal Pipe carrying energy (from a Combustion/Passive Generator or a
+
   Battery). The machine stores up to 10,000 FE and cannot burn fuel directly — it is grid-only.
+
 - **Oxygen out:** while powered it produces up to 5 mB of Oxygen per tick (2 FE per mB) into an
+
   8,000 mB internal tank. Pipes connected to it can carry the gas away (green stream).
+
 - **Oxygen field:** while the tank holds gas the machine is an oxygen **source**, slowly draining
+
   (2 mB/t) to keep the air up. Air spreads outward through connected open space:
+
   - **Sealed room** (walls/roof — full blocks and glass are airtight): the **whole room fills** and
+
     stays breathable.
+
   - **Open / leaky space:** only a bubble around the generator pressurises (the air escapes toward any
+
     opening), so seal your base for full coverage. A door or gap counts as a leak.
+
   - Search/coverage reaches up to ~16 blocks of connected air from the generator (configurable).
 - **Loss:** if the tank runs dry or the machine is broken, the oxygen **evaporates over ~10 seconds**
+
   (configurable).
+
 - **HUD:** a cyan **O₂ bar** appears above the hotbar in airless dimensions (it turns red when low).
 - **Airlock:** a player wearing a full [Oxygen Suit](Oxygen-Suit) within a few blocks (default 3)
+
   refills the suit's air directly from the machine's tank, draining the gas — handy at a base door
   even when the room itself isn't breathable yet.
+
 - **Automation:** emits a **comparator signal** from its oxygen tank level.
 
 ## Tips

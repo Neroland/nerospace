@@ -10,8 +10,11 @@ and sits deeper, rewarding a trip to the most hostile world in the mod.
 ## Obtaining
 
 - **Mining:** requires an **iron-tier pickaxe** or better. Drops the **Cindrite** gem directly
+
   (Fortune-affected).
+
 - **Generation:** spawns in the **Cindara** dimension, in a triangular band roughly **y −48 to y 48** —
+
   rarer than the Greenxertz ores.
 
 ## Use

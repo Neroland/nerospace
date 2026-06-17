@@ -17,10 +17,14 @@ N R N
 ## How it works
 
 - **Fuel slot** (GUI, hand or hopper/pipe fed): coal, charcoal, coal blocks, blaze rods, or Rocket
+
   Fuel Canisters.
+
 - Burning generates **60 FE/t** (configurable) into a 50,000 FE buffer.
 - The buffer is **extract-only**: connect a Universal Pipe (energy layer) and the network pulls the
+
   power to machines and Batteries.
+
 - GUI shows the power buffer and burn progress; emits a comparator signal from its charge.
 
 ## Details

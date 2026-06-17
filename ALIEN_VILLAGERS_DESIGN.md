@@ -38,7 +38,7 @@ Why not raw runtime-generated textures: they're impossible to art-direct, hard t
 ### 2.2 Per-planet species families
 
 | Planet | Biome(s) | Silhouette concept | Palette (per CLAUDE.md families) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Greenxertz** | `greenxertz`, `terraformed_meadow` | Tall, slender, crystalline-quartz growths on shoulders; calm | Green / steel (nerosteel + xertz quartz) |
 | **Cindara** | `cindara`, `terraformed_savanna` | Stocky, ember-veined skin, ash-cloaked; heat-hardened | Red / volcanic (cindrite) |
 | **Glacira** | `glacira`, `terraformed_tundra` | Wrapped in layered furs, frost-rimed; slow, deliberate | Pale blue / white (glacite) |
@@ -68,12 +68,14 @@ Determined on spawn from the biome the villager is placed in; persisted in NBT.
 A per-player, per-village reputation score (0–100) mapped to **6 tiers** (0 Stranger → 5 Kin). Stored on a village-controller block entity (Section 4.1), keyed by player UUID.
 
 How reputation rises:
+
 - **Gifts** — give a villager an item it values (palette-appropriate materials, food). Diminishing returns per day.
 - **Quests** — villagers post tasks (Section 7.3): gather X, escort, clear a nearby ruin, defend during a raid. Largest reputation source.
 - **Defense** — killing hostile mobs near the village during attacks; healing/curing afflicted villagers.
 - **Trade volume** — every completed trade nudges reputation up slightly (vanilla-like).
 
 What tiers unlock:
+
 - T0 Stranger: villagers flee/avoid; no trades.
 - T1 Acquainted: basic trades open; can accept your first quest.
 - T2 Trusted: can be taught **Tier-1 buildings** (blueprints accepted); mid trades.
@@ -124,7 +126,7 @@ Quick orientation on the three options you weren't sure about:
 ### 5.2 Structure catalog — small to massive
 
 | Scale | Structure | Tech | Notes |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Tiny | Lone outpost / shrine / trade post | Jigsaw (1–3 pieces) | Frequent; first contact; a villager or two. |
 | Small | Hamlet | Jigsaw pool | A Village Core + a few starter buildings; the player's "starter" village to grow. |
 | Medium | Established village | Jigsaw pool | Denser, walls, multiple professions, a quest board. |
@@ -160,7 +162,7 @@ New worldgen data under `src/main/resources/data/nerospace/worldgen/` (none exis
 All four trade categories you selected, distributed across professions so each profession has a distinct, useful niche. Trades are tier-gated by reputation and by which buildings the village has.
 
 | Profession | Building required | Trades (examples) | Category |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Quartz Trader** (base) | Trade post | raw materials, gems, food, enchanted books | Universal materials |
 | **Forgewright** | Workshop (T2) | nerosium/nerosteel ingots, rocket parts, fuel canisters | Nerospace progression |
 | **Artificer** | Lab (T3) | **exclusive alien tools/gear** with special abilities (see 6.1) | Exclusive gear |
@@ -219,6 +221,7 @@ Periodic raids by the planet's hostile mobs (`xertz_stalker`, `cinder_stalker`, 
 A decoration set per planet palette, used by structures, player building, and village growth. Authored through your existing **additive** texture/model pipeline (`gen_textures.py` → `gen_bbmodels.py` → `runData`), one `gen_<id>()` + datagen entry each, no hand-painting.
 
 Per-planet families (Greenxertz first, then palette-swapped):
+
 - **Structural:** alien bricks, polished/cut variants, pillars, tiles, paneling, reinforced glass.
 - **Light:** bio-luminescent lamps/strips/lanterns (glow per palette), brazier (Cindara), frost-lamp (Glacira).
 - **Furnishing:** banners/tapestries, rugs, alien tables/benches/shelves, crystal growths, planters.
@@ -234,7 +237,7 @@ Roughly 18–24 base decoration blocks for Greenxertz, reused via palette swap f
 How each system lands in your existing structure:
 
 | System | New code (package `za.co.neroland.nerospace.…`) | Registries touched | Data/assets |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Alien villager entity | `entity/AlienVillager.java`, `entity/AlienVillagerBrain.java` | `ModEntities` | spawn eggs, lang |
 | Appearance | `client/AlienVillagerModel.java`, `client/AlienVillagerRenderer.java`, palette/accessory layers; `art/blockbench/entity/alien_villager_*.bbmodel` | renderer reg in `NerospaceClient` | layered textures under `assets/.../entity/alien_villager/` |
 | Variant data | `registry/ModDataComponents` (variant component) | `ModDataComponents` | — |

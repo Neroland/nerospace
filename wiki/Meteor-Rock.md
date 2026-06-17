@@ -11,7 +11,9 @@ visible marker of a crash site from a distance.
 ## Obtaining
 
 - **Mining:** any pickaxe; requires the correct tool to drop. Drops itself, so you can collect and
+
   build with it.
+
 - **Generation:** placed by meteor impacts — it is not found in normal world generation.
 
 ## Use

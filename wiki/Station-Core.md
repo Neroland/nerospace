@@ -17,10 +17,15 @@ station can be dissolved and re-founded elsewhere.
 ## How it works
 
 - **Anchor:** the Core binds the platform to its registry slot; it survives restarts and chunk
+
   unloads.
+
 - **Unregister:** break the Core and the station disappears from every rocket's destination list
+
   (rockets already heading there fall back gracefully).
+
 - **No ownership:** stations don't record who founded them — any player can use or dissolve any
+
   station.
 
 ## Details

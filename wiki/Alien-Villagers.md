@@ -24,11 +24,17 @@ into an engine → deeper structures (and a boss) open.*
 Every villager is visually unique without a new entity per look — a layered, seed-driven appearance:
 
 - **Per-individual tint** — a stored colour seed gives each villager a slightly different shade, so no
+
   two are identical. Deterministic: a given villager always looks the same.
+
 - **Per-planet skin** — Greenxertz green/steel, Cindara ember/red, Glacira frost/pale. Within
+
   Greenxertz, the mature meadow wears a lighter accessory set.
+
 - **Mood warmth** — as your reputation with a village rises, its villagers' tint warms, so you can read
+
   trust at a glance.
+
 - **Glowing eyes & shoulder crystals** — emissive, visible in the dark.
 
 ## Earning trust (reputation)
@@ -36,7 +42,7 @@ Every villager is visually unique without a new entity per look — a layered, s
 Each villager tracks a **per-player reputation score (0–100)** mapped to **6 tiers**:
 
 | Tier | Name | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | T0 | Stranger | nothing — refuses to trade (wary head-shake) |
 | T1 | Acquainted | basic trades |
 | T2 | Trusted | mid trades · can teach **Tier-1 buildings** |
@@ -47,9 +53,12 @@ Each villager tracks a **per-player reputation score (0–100)** mapped to **6 t
 Reputation rises through:
 
 - **Gifts** — right-click a villager while holding a valued item (**Xertz Quartz**, **Nerosium Ingot**,
+
   **Alien Fragment**, or **Emeralds**). It takes one, with happy-villager particles.
+
 - **Trade volume** — every completed trade nudges trust up.
 - **Quests** — handing a village task in to a **[Village Core](Village-Core)** bumps the trust of every
+
   nearby villager.
 
 Reputation is keyed by Minecraft player UUID only — no names or interaction logs are sent anywhere
@@ -62,7 +71,7 @@ Right-click a villager at **tier 1+** to open the **vanilla trading screen**. Of
 goods are useful in any modpack.
 
 | Tier | Sample offers |
-|---|---|
+| --- | --- |
 | T1 | sell 12 Xertz Quartz → 1 emerald · 1 emerald → 3 iron · 2 emeralds → 6 bread |
 | T2 | 4 emeralds → Nerosium Ingot · 1 emerald + 8 Raw Nerosteel → 4 Nerosteel Ingots · sell Alien Fragments |
 | T3 | 8 emeralds → diamond · 5 emeralds → Rocket Fuel Canister |

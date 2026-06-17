@@ -11,7 +11,7 @@ pickaxe-mineable, and drop themselves.
 ## Blocks
 
 | Block | ID | Notes |
-|---|---|---|
+| --- | --- | --- |
 | Alien Bricks | `nerospace:alien_bricks` | The main wall block — offset brick courses with steel mortar. |
 | Cracked Alien Bricks | `nerospace:cracked_alien_bricks` | Weathered variant used for ruins. |
 | Alien Tile | `nerospace:alien_tile` | Floor/plaza tiling with a steel grid. |

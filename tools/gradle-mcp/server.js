@@ -286,6 +286,57 @@ function lintMarkdown(text, config) {
   return v;
 }
 
+// Full markdownlint: load the real library if installed (tools/gradle-mcp needs `npm install`).
+// This runs EVERY markdownlint rule, honouring the repo .markdownlint.json (a rule set to false
+// there is skipped) — so the check matches VS Code and updates dynamically with the config.
+// markdownlint 0.34+ is ESM-only, so it is loaded via dynamic import() during startup (see main());
+// older CJS builds are picked up synchronously via require(). Until it resolves, MARKDOWNLINT is null
+// and lintText falls back to the built-in subset.
+let MARKDOWNLINT = null;
+(function tryRequireMarkdownlint() {
+  try { const m = require('markdownlint'); if (typeof m.sync === 'function') { MARKDOWNLINT = (o) => m.sync(o); } } catch { /* ESM-only or absent */ }
+})();
+async function initMarkdownlint() {
+  if (MARKDOWNLINT) return; // already loaded via require (older CJS build)
+  try {
+    const mod = await Promise.race([
+      import('markdownlint/sync'),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000)),
+    ]);
+    if (mod && typeof mod.lint === 'function') {
+      MARKDOWNLINT = (o) => mod.lint(o);
+      log('markdownlint loaded (full ruleset)');
+    }
+  } catch (e) {
+    log(`markdownlint not available, using builtin subset (${e.message})`);
+  }
+}
+
+/**
+ * Lint one document. Uses the full markdownlint ruleset when the library is installed (honouring
+ * .markdownlint.json), otherwise falls back to the built-in subset below.
+ * Returns [{ line, rule, description }].
+ */
+function lintText(text, config) {
+  if (MARKDOWNLINT) {
+    const cfg = Object.assign({}, config);
+    delete cfg.$schema; // not a rule key
+    let res;
+    try {
+      res = MARKDOWNLINT({ strings: { doc: text }, config: cfg });
+    } catch (e) {
+      return lintMarkdown(text, config);
+    }
+    const items = (res && res.doc) || [];
+    return items.map((x) => ({
+      line: x.lineNumber,
+      rule: (x.ruleNames && x.ruleNames[0]) || 'MD',
+      description: x.ruleDescription + (x.errorDetail ? `: ${x.errorDetail}` : ''),
+    }));
+  }
+  return lintMarkdown(text, config);
+}
+
 function startBuild({ tasks, extra_args, project_dir }) {
   const projectDir = project_dir || DEFAULT_PROJECT_DIR;
   const wrapper = gradlewCommand(projectDir);
@@ -503,13 +554,12 @@ const TOOLS = [
   {
     name: 'markdown_check',
     description:
-      'Lint Markdown files for common markdownlint-style violations and return them immediately ' +
-      '(synchronous — no build_id/polling). Checks: MD009 trailing spaces, MD010 hard tabs, ' +
-      'MD012 multiple blank lines, MD018 missing space after #, MD022 blanks around headings, ' +
-      'MD025 multiple H1, MD026 heading trailing punctuation, MD031 blanks around fenced code, ' +
-      'MD040 fenced code language, MD047 single trailing newline. Honours the repo ' +
-      '.markdownlint.json (a rule set to false there is skipped). Scans the project for ' +
-      '*.md/*.markdown (skipping node_modules/.git/build/...) unless `paths` is given.',
+      'Lint Markdown files and return violations immediately (synchronous — no build_id/polling). ' +
+      'Runs the FULL markdownlint ruleset via the markdownlint library, dynamically honouring the ' +
+      'repo .markdownlint.json (every rule except those set to false there) — so it matches VS Code ' +
+      'and updates automatically when .markdownlint.json changes. (If the library is not installed ' +
+      'in tools/gradle-mcp, it falls back to a built-in subset and says so in `engine`.) Scans the ' +
+      'project for *.md/*.markdown (skipping node_modules/.git/build/...) unless `paths` is given.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -631,7 +681,7 @@ function callTool(name, args) {
         } catch {
           continue;
         }
-        for (const x of lintMarkdown(text, config)) {
+        for (const x of lintText(text, config)) {
           countsByRule[x.rule] = (countsByRule[x.rule] || 0) + 1;
           if (violations.length < MAX_VIOLATIONS) {
             violations.push({
@@ -647,6 +697,7 @@ function callTool(name, args) {
       }
       const total = Object.values(countsByRule).reduce((a, b) => a + b, 0);
       return {
+        engine: MARKDOWNLINT ? 'markdownlint (full ruleset)' : 'builtin-subset (run `npm install` in tools/gradle-mcp for full rules)',
         project_dir: projectDir,
         config_file: configPath,
         files_checked: files.length,
@@ -757,7 +808,8 @@ function handleMessage(msg) {
   }
 }
 
-function main() {
+async function main() {
+  await initMarkdownlint();
   log(`starting (project dir: ${DEFAULT_PROJECT_DIR})`);
   let buffer = '';
   process.stdin.setEncoding('utf8');
@@ -781,4 +833,4 @@ function main() {
   process.stdin.on('end', () => process.exit(0));
 }
 
-main();
+main().catch((e) => { log(`fatal: ${e.message}`); process.exit(1); });

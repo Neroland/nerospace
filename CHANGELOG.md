@@ -91,4 +91,3 @@ before the stable release. Please report issues on the
   [PRIVACY.md](PRIVACY.md) and a `telemetryEnabled = false` opt-out.
 
 [1.0.0-alpha.1]: https://github.com/Neroland/nerospace/releases/tag/v1.0.0-alpha.1
-[1.0.0]: https://github.com/Neroland/nerospace/releases/tag/v1.0.0

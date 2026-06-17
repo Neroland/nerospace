@@ -38,7 +38,6 @@ public final class ModConfiguredFeatures {
     private ModConfiguredFeatures() {
     }
 
-    @SuppressWarnings("null") // ecj null-analysis vs vanilla Feature.ORE generics
     public static void bootstrap(BootstrapContext<ConfiguredFeature<?, ?>> context) {
         RuleTest stoneReplaceables = new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES);
         RuleTest deepslateReplaceables = new TagMatchTest(BlockTags.DEEPSLATE_ORE_REPLACEABLES);

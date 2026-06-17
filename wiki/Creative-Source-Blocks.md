@@ -4,7 +4,7 @@ Endless sources (and voids) for testing pipe networks — creative tab only, unb
 no recipes.
 
 | Block | Provides | Configure |
-|---|---|---|
+| --- | --- | --- |
 | **Creative Battery** | endless energy; accepts (voids) any inserted FE | — |
 | **Creative Fluid Tank** | endless fluid of your choice | right-click with a **filled bucket** to set; sneak-right-click to clear |
 | **Creative Gas Tank** | endless Oxygen | — |

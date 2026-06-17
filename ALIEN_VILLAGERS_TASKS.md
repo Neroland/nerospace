@@ -130,4 +130,5 @@ The three Phase 6/7 deferrals, now delivered (all build + ecjCheck + runData ver
 - [x] The **ruin** now also has a boss available; the mega-city spawns it in the keep.
 
 > Remaining design polish (optional, future): multi-level underground dungeons, lore/relic set-pieces, per-planet structure palette-swap (Cindara/Glacira), and moving the literal status messages into the lang file.
+
 - 2026-06-17: **Finale complete & verified.** Delivered the three deferrals — decoration block set, the Ruin Warden boss entity, and the massive walled Mega-City (keep + boss + grand vault, built from the decoration blocks). All build + ecjCheck + runData SUCCESSFUL via pyenv; recovered ModEntities/ModEntityEvents from git after a stale-read, used read-retry for the rest.

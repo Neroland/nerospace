@@ -10,8 +10,8 @@ tank instead of suffocating. The tank refills instantly in any breathable zone (
 terraformed ground, launch-pad safe zone) — and, since the suit-and-station integration, also at
 **airlocks** (below).
 
-| | Tier 1 Oxygen Suit | Tier 2 Oxygen Suit |
-|---|---|---|
+|  | Tier 1 Oxygen Suit | Tier 2 Oxygen Suit |
+| --- | --- | --- |
 | Air tank | 300 (`oxygenMax`) | **600** (`oxygenSuitT2Max`) |
 | Airlock refill | 20 air / ~0.5 s | **40 air / ~0.5 s** |
 | Protection | diamond-class | slightly tougher, +toughness |
@@ -27,8 +27,8 @@ overtime — oxygen drains at **4×** the normal rate (there's no separate damag
 the danger). The HUD badge warns with a red **HEAT!** / **COLD!** while you're exposed, with ember
 puffs (Cindara) or a creeping frost vignette (Glacira) as feedback.
 
-| | **Thermal Suit** | **Cryo Suit** |
-|---|---|---|
+|  | **Thermal Suit** | **Cryo Suit** |
+| --- | --- | --- |
 | Shields against | Cindara heat | Glacira cold |
 | Craft (per piece) | Tier 2 piece + 4 **Cindrite** | Tier 2 piece + 4 **Glacite** |
 | Repair material | Cindrite | Glacite |
@@ -73,7 +73,10 @@ rocket.
 ## Details
 
 - IDs: `nerospace:oxygen_suit_{helmet,chestplate,leggings,boots}`,
+
   `nerospace:oxygen_suit_t2_{...}`, `nerospace:oxygen_suit_heat_{...}` (Thermal),
   `nerospace:oxygen_suit_cold_{...}` (Cryo)
+
 - Config: `oxygenMax`, `oxygenSuitT2Max`, `oxygenSuitDrain`, `oxygenAirlockRadius`,
+
   `oxygenAirlockRefillPerCheck`, `oxygenAirlockMbPerAir`

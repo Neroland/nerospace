@@ -24,11 +24,17 @@ I I I
 ## How it works
 
 - **Voids every layer:** exposes the item, fluid, and gas capabilities on **all six faces**; whatever
+
   is inserted is discarded.
+
 - **Never backs up:** its internal sinks are emptied every tick, so it always has room and never
+
   rejects or returns anything.
+
 - **Input only:** there is no way to extract from it — your modules, fuel, or anything else routed
+
   past it stays safe; only what is explicitly piped *into* the Trash Can is lost.
+
 - **No energy:** it does not accept power (energy isn't "trash"); only items, fluids, and gas.
 
 ## Tips
