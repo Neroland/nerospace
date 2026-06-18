@@ -3,8 +3,7 @@
 //
 // 26.2 note: until NeoForge 26.2 is on the public Maven, self-build the 26.2.x
 // branch (`./gradlew :neoforge:publishToMavenLocal`) and set neo_version_26.2 to
-// the version it prints — mavenLocal() below resolves it. The official MultiLoader
-// -Template ships `26.2.0.1-beta` as a working default, so it may already resolve.
+// the version it prints — mavenLocal() below resolves it.
 
 plugins {
     id 'net.neoforged.moddev'
@@ -21,8 +20,30 @@ repositories {
 sourceSets.main.java.srcDir rootProject.ext.commonJava
 sourceSets.main.resources.srcDir rootProject.ext.commonResources
 
+// Expand neoforge.mods.toml from src/main/templates into a generated resources dir
+// (same pattern as the repo-root build). The template is NOT under src/main/resources,
+// so the IDE never copies a RAW (token-laden) mods.toml into bin/main;
+// neoForge.ideSyncTask runs this on IDE sync so bin/main gets the EXPANDED manifest
+// and Run & Debug works — values stay dynamic (from gradle.properties).
+def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    def props = [
+        mod_id                 : rootProject.mod_id,
+        mod_version            : rootProject.mod_version,
+        mod_name               : rootProject.mod_name,
+        mod_authors            : rootProject.mod_authors,
+        mod_license            : rootProject.mod_license,
+        minecraft_version_range: "[${mc},)",
+    ]
+    inputs.properties(props)
+    expand(props)
+    from 'src/main/templates'
+    into layout.buildDirectory.dir('generated/sources/modMetadata')
+}
+sourceSets.main.resources.srcDir generateModMetadata
+
 neoForge {
     version = neoVersion
+    ideSyncTask generateModMetadata
 
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {

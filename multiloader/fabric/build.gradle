@@ -1,9 +1,9 @@
-// fabric: Fabric Loom. On de-obfuscated 26.x the game ships official names, so
-// there is NO `mappings` line (matches the official Fabric template). Shares the
-// common module's source directly (single copy -> no drift).
+// fabric: Fabric Loom. De-obfuscated 26.x: NO `mappings` line. Shares the common
+// module's source directly (single copy -> no drift).
 
 plugins {
     id 'net.fabricmc.fabric-loom'
+    id 'eclipse'   // for eclipse.synchronizationTasks (VS Code / Buildship import hook)
 }
 
 def mc = rootProject.minecraft_version
@@ -21,6 +21,29 @@ dependencies {
         implementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
     }
 }
+
+// Expand fabric.mod.json from src/main/templates into a generated resources dir.
+// The template is NOT under src/main/resources, so the IDE never copies a RAW
+// (token-laden) fabric.mod.json into bin/main. eclipse.synchronizationTasks runs
+// this on VS Code/Buildship import, so bin/main gets the EXPANDED manifest and
+// Run & Debug works — while values stay dynamic (sourced from gradle.properties).
+def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    def props = [
+        mod_id               : rootProject.mod_id,
+        mod_version          : rootProject.mod_version,
+        mod_name             : rootProject.mod_name,
+        mod_authors          : rootProject.mod_authors,
+        mod_license          : rootProject.mod_license,
+        fabric_loader_version: rootProject.fabric_loader_version,
+        minecraft_version    : mc,
+    ]
+    inputs.properties(props)
+    expand(props)
+    from 'src/main/templates'
+    into layout.buildDirectory.dir('generated/sources/modMetadata')
+}
+sourceSets.main.resources.srcDir generateModMetadata
+eclipse.synchronizationTasks generateModMetadata
 
 loom {
     runs {

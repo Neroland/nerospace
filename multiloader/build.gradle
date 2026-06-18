@@ -29,27 +29,11 @@ subprojects {
         maven { name = 'BlameJared'; url = 'https://maven.blamejared.com/' } // JEI etc. (later)
     }
 
-    // Expand mod metadata tokens in the loader manifests. Range tracks the
-    // active MC version unless one is passed explicitly.
-    tasks.withType(ProcessResources).configureEach {
-        def mcRange = project.findProperty('minecraft_version_range')
-                ?: "[${rootProject.minecraft_version},)"
-        def props = [
-            mod_id               : rootProject.mod_id,
-            mod_name             : rootProject.mod_name,
-            mod_version          : rootProject.mod_version,
-            mod_license          : rootProject.mod_license,
-            mod_authors          : rootProject.mod_authors,
-            mod_group_id         : rootProject.mod_group_id,
-            minecraft_version    : rootProject.minecraft_version,
-            minecraft_version_range: mcRange,
-            fabric_loader_version: rootProject.fabric_loader_version,
-        ]
-        inputs.properties(props)
-        filesMatching(['fabric.mod.json', 'META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
-            expand(props)
-        }
-    }
+    // NOTE: loader manifests (fabric.mod.json / neoforge.mods.toml) are expanded
+    // per-module by each module's `generateModMetadata` task from src/main/templates
+    // (see fabric/ and neoforge/ build.gradle). They are intentionally NOT in
+    // src/main/resources, so the IDE never copies a raw, unexpanded ${...} manifest
+    // into bin/main — which is what broke Run & Debug.
 }
 
 // Resolve the shared common source directories once, for the loader modules to
