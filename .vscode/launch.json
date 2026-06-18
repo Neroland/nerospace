@@ -1,7 +1,7 @@
 {
-  "//": "Generic, committable run configs for Nerospace. Paths use ${workspaceFolder} so they work on any machine, and each config\u0027s preLaunchTask (see tasks.json) regenerates build/moddev/\u003crun\u003eArgs.txt before launch so it never fails after a clean. ModDevGradle no longer overwrites this file: build.gradle sets disableIdeRun() on every run, so this file is the source of truth.",
+  "//": "Run/debug configs for the ROOT single-loader NeoForge build (project \u0027nerospace\u0027). modFolders points at BOTH the IDE class output (bin/main) AND build/resources/main, because the generated neoforge.mods.toml lives in build/resources/main/META-INF (Gradle builds it from src/main/templates; the Java builder does NOT copy it into bin/main). Without the resources dir, FML reports \u0027bin/main is not a valid mod file\u0027. Each preLaunchTask (tasks.json) runs the matching ModDevGradle prepare* task, which regenerates the argfiles and the processed resources.",
   "version": "0.2.0",
-  "//classPaths": "Each config launches from build/moddev/devlaunchClasspath.jar, a gradle-generated pathing jar whose MANIFEST Class-Path lists the exact NeoForge/Minecraft/DevLaunch dev jars for the version in gradle.properties (built by the devLaunchPathingJar task, which finalizes every prepare*Run preLaunchTask). With no $Auto entry, classPaths REPLACES the IDE-resolved runtime classpath, so a neo_version bump can never again launch a stale NeoForge and crash FML with \u0027version is null\u0027. projectName is kept only for source/breakpoint mapping; the mod loads via -Dfml.modFolders, not the classpath. Verified end-to-end: launching with only this jar boots GameTestServer and passes all gametests.",
+  "//multiloader": "The multiloader/ build is a SEPARATE nested Gradle build, so VS Code\u0027s Java extension (which imports the repo root) does NOT know its :fabric/:neoforge projects. To RUN multiloader on either MC version use the \u0027ML: Run ...\u0027 tasks (tasks.json). To DEBUG with breakpoints, open nerospace.code-workspace, run \u0027ML: Generate Fabric VS Code run configs\u0027, and use the entries Loom writes into multiloader/.vscode/launch.json.",
   "configurations": [
     {
       "type": "java",
@@ -22,7 +22,7 @@
       ],
       "vmArgs": [
         "@${workspaceFolder}/build/moddev/clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main"
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main${pathSeparator}${workspaceFolder}/build/resources/main"
       ],
       "cwd": "${workspaceFolder}/run",
       "env": {},
@@ -48,7 +48,7 @@
       ],
       "vmArgs": [
         "@${workspaceFolder}/build/moddev/dataRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main"
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main${pathSeparator}${workspaceFolder}/build/resources/main"
       ],
       "cwd": "${workspaceFolder}/run",
       "env": {},
@@ -74,7 +74,7 @@
       ],
       "vmArgs": [
         "@${workspaceFolder}/build/moddev/gameTestServerRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main"
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main${pathSeparator}${workspaceFolder}/build/resources/main"
       ],
       "cwd": "${workspaceFolder}/run",
       "env": {},
@@ -100,74 +100,12 @@
       ],
       "vmArgs": [
         "@${workspaceFolder}/build/moddev/serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main"
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main${pathSeparator}${workspaceFolder}/build/resources/main"
       ],
       "cwd": "${workspaceFolder}/run",
       "env": {},
       "console": "internalConsole",
       "shortenCommandLine": "none"
-    },
-    {
-      "//": "\u003d\u003d\u003d\u003d\u003d Multiloader scaffold (multiloader/) — Architectury, loom-based \u003d\u003d\u003d\u003d\u003d"
-    },
-    {
-      "//": "These are TEMPLATES shaped like loom\u0027s `genVsCodeRuns` output. Loom owns the exact classpath/vmArgs, so run the \u0027ML: Regenerate VS Code run configs (genVsCodeRuns)\u0027 task once (it also requires the 26.x toolchain to resolve) to materialize the authoritative entries. For a no-setup run, use the \u0027ML: Run ...\u0027 tasks in tasks.json instead. The MC version of these java launches follows whatever was last built; switch versions via the tasks (-Pminecraft_version)."
-    },
-    {
-      "type": "java",
-      "request": "launch",
-      "name": "ML: NeoForge Client",
-      "presentation": {
-        "group": "Multiloader (Architectury)",
-        "order": 0
-      },
-      "projectName": "neoforge",
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "preLaunchTask": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
-      "cwd": "${workspaceFolder}/multiloader/neoforge/run",
-      "console": "internalConsole"
-    },
-    {
-      "type": "java",
-      "request": "launch",
-      "name": "ML: NeoForge Server",
-      "presentation": {
-        "group": "Multiloader (Architectury)",
-        "order": 1
-      },
-      "projectName": "neoforge",
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "preLaunchTask": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
-      "cwd": "${workspaceFolder}/multiloader/neoforge/run",
-      "console": "internalConsole"
-    },
-    {
-      "type": "java",
-      "request": "launch",
-      "name": "ML: Fabric Client",
-      "presentation": {
-        "group": "Multiloader (Architectury)",
-        "order": 2
-      },
-      "projectName": "fabric",
-      "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "preLaunchTask": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
-      "cwd": "${workspaceFolder}/multiloader/fabric/run",
-      "console": "internalConsole"
-    },
-    {
-      "type": "java",
-      "request": "launch",
-      "name": "ML: Fabric Server",
-      "presentation": {
-        "group": "Multiloader (Architectury)",
-        "order": 3
-      },
-      "projectName": "fabric",
-      "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "preLaunchTask": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
-      "cwd": "${workspaceFolder}/multiloader/fabric/run",
-      "console": "internalConsole"
     }
   ]
 }

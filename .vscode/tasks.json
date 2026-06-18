@@ -1,5 +1,5 @@
 {
-  "//": "preLaunchTasks for launch.json regenerate build/moddev/<run>Args.txt before launch. Cross-platform: gradlew on Linux/macOS, gradlew.bat on Windows.",
+  "//": "Root single-loader prepareRun tasks (preLaunchTasks for the root launch.json) + Multiloader (multiloader/) build/run tasks. The multiloader tasks shell out to multiloader's OWN wrapper (Gradle 9.5.1) with cwd=multiloader; they do NOT need the multiloader Gradle build to be imported by the Java extension, so they work from the repo-root window.",
   "version": "2.0.0",
   "tasks": [
     {
@@ -38,7 +38,70 @@
       "presentation": { "reveal": "silent", "panel": "shared", "clear": false },
       "problemMatcher": []
     },
-    { "//": "Multiloader scaffold: run multiloader's OWN wrapper (Gradle 9.5.1; loom 1.17 needs >=9.4) with cwd=multiloader. Pick MC via mlMcVersion input." },
+
+    { "//": "===== Multiloader: RUN both versions. Terminal -> Run Task. These launch the game directly via Gradle (no debugger). For breakpoint debugging, open nerospace.code-workspace (imports the multiloader build) and use its generated Run & Debug entries. =====" },
+    {
+      "label": "ML: Run Fabric Client - 26.2",
+      "type": "process",
+      "command": "${workspaceFolder}/multiloader/gradlew",
+      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
+      "options": { "cwd": "${workspaceFolder}/multiloader" },
+      "args": [":fabric:runClient", "-Pminecraft_version=26.2"],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "ML: Run NeoForge Client - 26.1.2",
+      "type": "process",
+      "command": "${workspaceFolder}/multiloader/gradlew",
+      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
+      "options": { "cwd": "${workspaceFolder}/multiloader" },
+      "args": [":neoforge:runClient", "-Pminecraft_version=26.1.2"],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "ML: Run Fabric Client (pick MC)",
+      "type": "process",
+      "command": "${workspaceFolder}/multiloader/gradlew",
+      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
+      "options": { "cwd": "${workspaceFolder}/multiloader" },
+      "args": [":fabric:runClient", "-Pminecraft_version=${input:mlMcVersion}"],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "ML: Run Fabric Server (pick MC)",
+      "type": "process",
+      "command": "${workspaceFolder}/multiloader/gradlew",
+      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
+      "options": { "cwd": "${workspaceFolder}/multiloader" },
+      "args": [":fabric:runServer", "-Pminecraft_version=${input:mlMcVersion}"],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "ML: Run NeoForge Client (pick MC)",
+      "type": "process",
+      "command": "${workspaceFolder}/multiloader/gradlew",
+      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
+      "options": { "cwd": "${workspaceFolder}/multiloader" },
+      "args": [":neoforge:runClient", "-Pminecraft_version=${input:mlMcVersion}"],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "ML: Run NeoForge Server (pick MC)",
+      "type": "process",
+      "command": "${workspaceFolder}/multiloader/gradlew",
+      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
+      "options": { "cwd": "${workspaceFolder}/multiloader" },
+      "args": [":neoforge:runServer", "-Pminecraft_version=${input:mlMcVersion}"],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+
+    { "//": "===== Multiloader: BUILD =====" },
     {
       "label": "ML: Build both loaders (pick MC)",
       "type": "process",
@@ -73,52 +136,13 @@
       "problemMatcher": []
     },
     {
-      "label": "ML: Run NeoForge Client (pick MC)",
+      "label": "ML: Generate Fabric VS Code run configs (pick MC)",
+      "//": "Loom's real task is 'vscode' (not genVsCodeRuns). Writes multiloader/.vscode/launch.json; use it from nerospace.code-workspace.",
       "type": "process",
       "command": "${workspaceFolder}/multiloader/gradlew",
       "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
       "options": { "cwd": "${workspaceFolder}/multiloader" },
-      "args": [":neoforge:runClient", "-Pminecraft_version=${input:mlMcVersion}"],
-      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
-      "problemMatcher": []
-    },
-    {
-      "label": "ML: Run NeoForge Server (pick MC)",
-      "type": "process",
-      "command": "${workspaceFolder}/multiloader/gradlew",
-      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
-      "options": { "cwd": "${workspaceFolder}/multiloader" },
-      "args": [":neoforge:runServer", "-Pminecraft_version=${input:mlMcVersion}"],
-      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
-      "problemMatcher": []
-    },
-    {
-      "label": "ML: Run Fabric Client (pick MC)",
-      "type": "process",
-      "command": "${workspaceFolder}/multiloader/gradlew",
-      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
-      "options": { "cwd": "${workspaceFolder}/multiloader" },
-      "args": [":fabric:runClient", "-Pminecraft_version=${input:mlMcVersion}"],
-      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
-      "problemMatcher": []
-    },
-    {
-      "label": "ML: Run Fabric Server (pick MC)",
-      "type": "process",
-      "command": "${workspaceFolder}/multiloader/gradlew",
-      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
-      "options": { "cwd": "${workspaceFolder}/multiloader" },
-      "args": [":fabric:runServer", "-Pminecraft_version=${input:mlMcVersion}"],
-      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
-      "problemMatcher": []
-    },
-    {
-      "label": "ML: Regenerate VS Code run configs (genVsCodeRuns)",
-      "type": "process",
-      "command": "${workspaceFolder}/multiloader/gradlew",
-      "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
-      "options": { "cwd": "${workspaceFolder}/multiloader" },
-      "args": ["genVsCodeRuns", "-Pminecraft_version=${input:mlMcVersion}"],
+      "args": [":fabric:vscode", "-Pminecraft_version=${input:mlMcVersion}"],
       "presentation": { "reveal": "always", "panel": "shared", "clear": true },
       "problemMatcher": []
     },
@@ -128,7 +152,7 @@
       "command": "${workspaceFolder}/multiloader/gradlew",
       "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
       "options": { "cwd": "${workspaceFolder}/multiloader" },
-      "args": [":neoforge:build", "-Pminecraft_version=${input:mlMcVersion}", "--refresh-dependencies"],
+      "args": [":fabric:build", "-Pminecraft_version=${input:mlMcVersion}", "--refresh-dependencies"],
       "presentation": { "reveal": "always", "panel": "shared", "clear": true },
       "problemMatcher": []
     }
@@ -139,7 +163,7 @@
       "type": "pickString",
       "description": "Minecraft version for the multiloader build",
       "options": ["26.1.2", "26.2"],
-      "default": "26.1.2"
+      "default": "26.2"
     }
   ]
 }

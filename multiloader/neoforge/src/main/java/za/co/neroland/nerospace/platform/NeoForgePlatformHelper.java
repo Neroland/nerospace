@@ -17,7 +17,9 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public boolean isDevelopmentEnvironment() {
-        return !FMLEnvironment.production;
+        // 26.1.x exposes these as methods (the old `FMLEnvironment.production`
+        // / `.dist` fields were removed) — matches the root project's usage.
+        return !FMLEnvironment.isProduction();
     }
 
     @Override
@@ -27,6 +29,6 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public boolean isClient() {
-        return FMLEnvironment.dist == Dist.CLIENT;
+        return FMLEnvironment.getDist() == Dist.CLIENT;
     }
 }

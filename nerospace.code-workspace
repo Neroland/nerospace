@@ -1,0 +1,10 @@
+{
+  "//": "Multi-root workspace. Adds multiloader/ as a second folder so VS Code's Gradle/Java extension imports the nested multiloader build — only then can its :fabric/:neoforge runs appear in Run & Debug. Open this file (File > Open Workspace from File) instead of the plain folder when you want to debug the multiloader. Generate the Fabric run config first with the 'ML: Generate Fabric VS Code run configs' task; it writes multiloader/.vscode/launch.json.",
+  "folders": [
+    { "name": "nerospace (root, NeoForge)", "path": "." },
+    { "name": "multiloader (Fabric + NeoForge)", "path": "multiloader" }
+  ],
+  "settings": {
+    "java.import.gradle.enabled": true
+  }
+}

@@ -1,14 +1,14 @@
 name: Multiloader Build
 
-# Builds the multiloader scaffold (multiloader/) across the loader x Minecraft
-# version matrix. Independent of the root single-loader build (build.yml).
+# Builds the multiloader scaffold (multiloader/) — MultiLoader-Template layout
+# (ModDevGradle common+neoforge, Fabric Loom fabric; no architectury-loom).
+# Independent of the root single-loader build (build.yml).
 #
-# Layout: MultiLoader-Template (ModDevGradle common+neoforge, Fabric Loom fabric)
-# — no architectury-loom (it can't do de-obf 26.x). fabric @ 26.2 is verified
-# green (Fabric Loom 1.17 + fabric-api 0.152.1+26.2, NeoForm 26.2-1). The
-# remaining combos stay `experimental: true` until their pins are confirmed /
-# NeoForge 26.2 userdev resolves (beta on Maven, or self-built to mavenLocal —
-# see multiloader/README.md). Flip a combo's `experimental` to false once green.
+# STRICT: there is no continue-on-error, so ANY matrix cell that fails to build
+# fails the whole workflow. The matrix therefore lists ONLY cells that are
+# expected to build on a clean runner (both verified green via the gradle MCP on
+# 2026-06-18). Cells that can't build on CI yet are listed (commented) below with
+# the reason — re-add them here once they're unblocked.
 
 on:
   push:
@@ -28,23 +28,18 @@ jobs:
   build:
     name: ${{ matrix.loader }} @ MC ${{ matrix.mc }}
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.experimental }}
+    # No continue-on-error: any failed cell fails the workflow.
     strategy:
-      fail-fast: false
+      fail-fast: false   # still run every cell so one failure doesn't mask others
       matrix:
         include:
           - loader: neoforge
-            mc: "26.1.2"
-            experimental: true   # ModDevGradle + NeoForge 26.1.2.76 (verify in CI, then flip)
+            mc: "26.1.2"   # ModDevGradle + NeoForge 26.1.2.76 — verified green
           - loader: fabric
-            mc: "26.1.2"
-            experimental: true   # confirm fabric_api_version_26.1.2 at fabricmc.net/develop
-          - loader: neoforge
-            mc: "26.2"
-            experimental: true   # needs NeoForge 26.2 userdev (beta on Maven or self-built)
-          - loader: fabric
-            mc: "26.2"
-            experimental: false  # VERIFIED green 2026-06-18 (Fabric Loom 1.17 + fabric-api 0.152.1+26.2)
+            mc: "26.2"     # Fabric Loom 1.17 + fabric-api 0.152.1+26.2 (de-obf, no mappings) — verified green
+          # PENDING — not buildable on a clean CI runner; re-add when unblocked:
+          #   - { loader: fabric,   mc: "26.1.2" }  # Fabric never shipped MC 26.1.2 (26.1 -> 26.1.1 -> 26.2)
+          #   - { loader: neoforge, mc: "26.2"  }   # needs NeoForge 26.2 userdev on Maven (or self-built to mavenLocal — see multiloader/README.md)
 
     steps:
       - name: Checkout repository

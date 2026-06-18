@@ -1,0 +1,5 @@
+{
+  "//": "NEUTRALIZED ON PURPOSE. Loom/ModDevGradle's generated Run & Debug entries point at bin/main (VS Code's RAW Java output, where ${mod_id}/${mod_version} are NOT expanded), which breaks token-templated manifests. Do NOT use Run & Debug for the multiloader. RUN via the 'ML: Run Fabric/NeoForge Client - <ver>' tasks (repo-root .vscode/tasks.json -> Terminal: Run Task) — those use Gradle's processed build/resources and are verified to load 'nerospace 1.0.0-alpha.1'. This file is gitignored; if 'gradlew :fabric:vscode' regenerates the bin/main entries, empty configurations again.",
+  "version": "0.2.0",
+  "configurations": []
+}
