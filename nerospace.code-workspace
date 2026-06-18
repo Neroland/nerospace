@@ -1,12 +1,17 @@
 {
-  "//": "Multi-root workspace: adds multiloader/ so VS Code imports the nested :fabric/:neoforge projects and their Run & Debug entries (multiloader/.vscode/launch.json) resolve. Open via File > Open Workspace from File to run/debug the multiloader. Configs are committed + relative; preLaunchTasks regenerate per-machine launch args; manifests expand into bin/main on Gradle/IDE sync.",
+  "//": "Multi-root workspace: adds multiloader/ so VS Code imports the nested :fabric/:neoforge projects and their Run & Debug entries resolve. Open via File > Open Workspace from File to run/debug the multiloader.",
   "folders": [
-    { "name": "nerospace (root, NeoForge)", "path": "." },
-    { "name": "multiloader (Fabric + NeoForge)", "path": "multiloader" }
+    {
+      "name": "nerospace (root, NeoForge)",
+      "path": "."
+    },
+    {
+      "name": "multiloader (Fabric + NeoForge)",
+      "path": "multiloader"
+    }
   ],
   "settings": {
     "java.import.gradle.enabled": true,
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic"
   }
 }
