@@ -1,63 +1,28 @@
 pluginManagement {
     repositories {
-        mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
         maven { url 'https://maven.fabricmc.net/' }            // Fabric Loom, Loader, API
-        maven { url 'https://maven.architectury.dev/' }        // Architectury plugin + loom + API
-        maven { url 'https://maven.neoforged.net/releases/' }  // NeoForge
-        maven { url 'https://maven.minecraftforge.net/' }      // (transitive, Loom)
-        maven { url 'https://maven.kikugie.dev/releases' }     // Stonecutter
-        maven { url 'https://maven.kikugie.dev/snapshots' }
-        maven { url 'https://maven.parchmentmc.org' }
+        maven { url 'https://maven.neoforged.net/releases/' }  // NeoForge / NeoForm / ModDevGradle
+    }
+    // Plugin versions are declared here so each module applies them by id only.
+    plugins {
+        id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+        id 'net.neoforged.moddev' version '2.0.141'      // common (NeoForm) + neoforge
+        id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT' // fabric — 1.17 handles de-obf 26.x (omit mappings)
     }
 }
 
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
-    // Stonecutter: the multi-version manager. Available to the whole build.
-    // The active version axis is configured in the `stonecutter { }` block
-    // below — see the activation notes there and in README.md.
-    id 'dev.kikugie.stonecutter' version '0.9.2'
+    id 'org.gradle.toolchains.foojay-resolver-convention'
 }
 
 rootProject.name = 'nerospace-multiloader'
 
-// =====================================================================
-// LOADER AXIS  — Architectury multiloader split (ACTIVE)
-// ---------------------------------------------------------------------
-// `common`   : vanilla-Minecraft-only code + cross-loader abstractions.
-// `fabric`   : Fabric entry point + platform service implementations.
-// `neoforge` : NeoForge entry point + platform service implementations.
-// A normal build of this scaffold produces one fabric jar and one
-// neoforge jar for the ACTIVE Minecraft version (gradle.properties ->
-// minecraft_version).
-// =====================================================================
+// MultiLoader-Template layout (no architectury-loom — it can't do de-obf 26.x):
+//   common   -> net.neoforged.moddev (NeoForm) : de-obfuscated vanilla, shared source
+//   fabric   -> net.fabricmc.fabric-loom        : de-obf-ready, omits `mappings`
+//   neoforge -> net.neoforged.moddev            : full NeoForge userdev
 include 'common'
 include 'fabric'
 include 'neoforge'
-
-// =====================================================================
-// VERSION AXIS — Stonecutter (SCAFFOLDED / READY TO ACTIVATE)
-// ---------------------------------------------------------------------
-// Combining the Architectury module split (above) with Stonecutter's
-// version nodes is the "Stonecraft" pattern. Two supported ways to
-// finish wiring the 2x2 (versions x loaders) matrix — pick one, see
-// README.md "Finishing the version axis":
-//
-//   A) Stonecraft (turnkey): replace this block + the plugin above with
-//      the `dev.meza.stonecraft` settings plugin, which wires Stonecutter
-//      to Architectury automatically from the `mc_versions` property.
-//
-//   B) Hand-wired Stonecutter: enable the block below. It declares one
-//      node per Minecraft version; each node rebuilds the common/fabric/
-//      neoforge set against that version's dependency pins.
-//
-// Left commented so the Architectury skeleton configures cleanly on its
-// own. Uncomment (and choose path A or B) when you adopt the version axis.
-//
-// stonecutter {
-//     create(rootProject) {
-//         versions '26.1.2', '26.2'   // keep in sync with gradle.properties mc_versions
-//         vcsVersion = '26.1.2'        // the version your source is authored against
-//     }
-// }

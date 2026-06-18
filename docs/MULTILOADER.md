@@ -42,7 +42,16 @@ Hard facts gathered while trying to unblock 26.2, so the next person doesn't re-
 
 - **Build-unblock ≠ mod port.** Getting a Fabric 26.2 jar to *compile* is separate from porting Nerospace's NeoForge-specific systems (capabilities/transfer, attachments, fluids, networking) to Fabric — that migration (§2) is the real effort and is unchanged by the toolchain choice.
 
-**Recommended migration when ready** (not yet applied — the scaffold still uses architectury-loom): replace the architectury-loom scaffold with the MultiLoader-Template layout above (ModDevGradle `common` on NeoForm + Fabric Loom `fabric` + ModDevGradle `neoforge`). On 26.1.x it works as-is. On 26.2 the `common` (NeoForm `26.2-snapshot-8-1`) and `fabric` (Fabric API `0.152.1+26.2`) cells build immediately; the **`neoforge` cell** is the only one waiting, and you can unblock even that by self-building NeoForge `26.2.x` to `mavenLocal()` rather than waiting for its CI to publish.
+**Status: IMPLEMENTED and verified (2026-06-18).** The `multiloader/` scaffold now
+uses the MultiLoader-Template layout (ModDevGradle `common` on NeoForm + Fabric
+Loom `fabric` + ModDevGradle `neoforge`) — architectury-loom is gone.
+`./gradlew :common:build :fabric:build -Pminecraft_version=26.2` is **BUILD
+SUCCESSFUL** on this machine: `common` against NeoForm `26.2-1`, `fabric` against
+Fabric Loom `1.17.11` + Fabric API `0.152.1+26.2` (no `mappings`). The **`neoforge`
+cell** is the only one still pending — it needs the NeoForge 26.2 userdev
+(pinned to the `26.2.0.1-beta` Maven default, or self-build `26.2.x` to
+`mavenLocal()`); swapping to the official jar when it lands is a one-line version
+change. See `multiloader/README.md` for the per-cell status and the self-build step.
 
 ### Field-notes sources
 

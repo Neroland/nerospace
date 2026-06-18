@@ -3,11 +3,12 @@ name: Multiloader Build
 # Builds the multiloader scaffold (multiloader/) across the loader x Minecraft
 # version matrix. Independent of the root single-loader build (build.yml).
 #
-# Every combo is currently `experimental: true` (continue-on-error) because the
-# Architectury / Fabric / NeoForge toolchains for MC 26.1.2 and 26.2 are not all
-# published yet (see multiloader/gradle.properties "UPSTREAM AVAILABILITY").
-# As each combo becomes buildable, flip its `experimental` to false so a
-# regression turns the workflow red. Suggested first: neoforge @ 26.1.2.
+# Layout: MultiLoader-Template (ModDevGradle common+neoforge, Fabric Loom fabric)
+# — no architectury-loom (it can't do de-obf 26.x). fabric @ 26.2 is verified
+# green (Fabric Loom 1.17 + fabric-api 0.152.1+26.2, NeoForm 26.2-1). The
+# remaining combos stay `experimental: true` until their pins are confirmed /
+# NeoForge 26.2 userdev resolves (beta on Maven, or self-built to mavenLocal —
+# see multiloader/README.md). Flip a combo's `experimental` to false once green.
 
 on:
   push:
@@ -34,16 +35,16 @@ jobs:
         include:
           - loader: neoforge
             mc: "26.1.2"
-            experimental: true   # flip to false once Architectury ships for 26.1.2
+            experimental: true   # ModDevGradle + NeoForge 26.1.2.76 (verify in CI, then flip)
           - loader: fabric
             mc: "26.1.2"
-            experimental: true   # Fabric API for 26.1.2 pending (newest stable is 26.1.1)
+            experimental: true   # confirm fabric_api_version_26.1.2 at fabricmc.net/develop
           - loader: neoforge
             mc: "26.2"
-            experimental: true   # NeoForge 26.2 pending (MC 26.2 released 2026-06-16)
+            experimental: true   # needs NeoForge 26.2 userdev (beta on Maven or self-built)
           - loader: fabric
             mc: "26.2"
-            experimental: true   # Fabric API for 26.2 pending
+            experimental: false  # VERIFIED green 2026-06-18 (Fabric Loom 1.17 + fabric-api 0.152.1+26.2)
 
     steps:
       - name: Checkout repository
@@ -62,7 +63,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       # The multiloader build uses its OWN Gradle wrapper (9.5.1), independent of
-      # the repo root's 9.2.1 — Architectury Loom 1.17.x requires Gradle >= 9.4.
+      # the repo root's 9.2.1 — Fabric Loom 1.17 requires Gradle >= 9.4.
       - name: Make Gradle wrapper executable
         run: chmod +x ./multiloader/gradlew
 

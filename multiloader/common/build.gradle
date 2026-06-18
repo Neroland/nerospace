@@ -1,23 +1,20 @@
-// common: vanilla-Minecraft-only code + cross-loader abstractions.
-// No loader (NeoForge/Fabric) APIs may be referenced here directly —
-// reach loader behaviour through the platform Services abstraction.
+// common: de-obfuscated vanilla Minecraft via NeoForm (no loader APIs here).
+// ModDevGradle in "NeoForm-only" mode (neoFormVersion without a NeoForge version)
+// gives official-named vanilla classes to compile shared code against. This
+// module's source is also pulled into :fabric and :neoforge (one copy, no drift).
 
-def mc = rootProject.minecraft_version
-def architecturyApi = project.findProperty("architectury_api_version_${mc}")
-
-architectury {
-    // Mark this as the common module shared by both platforms.
-    common('fabric', 'neoforge')
+plugins {
+    id 'net.neoforged.moddev'
 }
 
-dependencies {
-    // Fabric Loader is pulled in here only so the @Environment annotations
-    // and mixin tooling are available to shared code; it does NOT make this
-    // module Fabric-specific.
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+def mc = rootProject.minecraft_version
 
-    // Architectury API (cross-loader helpers used by common code).
-    if (architecturyApi != null) {
-        modApi "dev.architectury:architectury:${architecturyApi}"
+neoForge {
+    // De-obfuscated vanilla base; 26.2 NeoForm is published (26.2-1).
+    neoFormVersion = project.findProperty("neo_form_version_${mc}")
+
+    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.from(at.absolutePath)
     }
 }

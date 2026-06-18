@@ -3,7 +3,6 @@ package za.co.neroland.nerospace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import za.co.neroland.nerospace.platform.Services;
-import za.co.neroland.nerospace.registry.ModRegistries;
 
 /**
  * Loader-agnostic entry point.
@@ -32,8 +31,10 @@ public final class NerospaceCommon {
                 Services.PLATFORM.getPlatformName(),
                 Services.PLATFORM.isDevelopmentEnvironment());
 
-        // Cross-loader content registration lives in ModRegistries and is
-        // realised per-loader by each module's bootstrap (see register()).
-        ModRegistries.register();
+        // Content registration is wired per loader (NeoForge DeferredRegister /
+        // Fabric Registry.register) from each module's entry point. Without
+        // Architectury API there is no shared DeferredRegister; the migration
+        // (docs/MULTILOADER.md §2) introduces a small registration service on
+        // top of the platform Services seam when content is ported.
     }
 }

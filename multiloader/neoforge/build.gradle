@@ -1,47 +1,48 @@
-// neoforge: NeoForge entry point + platform service implementations.
-// Depends on :common and bundles its transformed classes into the jar.
+// neoforge: full NeoForge userdev via ModDevGradle. Shares the common module's
+// source directly (single copy -> no drift).
+//
+// 26.2 note: until NeoForge 26.2 is on the public Maven, self-build the 26.2.x
+// branch (`./gradlew :neoforge:publishToMavenLocal`) and set neo_version_26.2 to
+// the version it prints — mavenLocal() below resolves it. The official MultiLoader
+// -Template ships `26.2.0.1-beta` as a working default, so it may already resolve.
 
 plugins {
-    id 'com.gradleup.shadow' version '8.3.5'
+    id 'net.neoforged.moddev'
 }
 
 def mc = rootProject.minecraft_version
 def neoVersion = project.findProperty("neo_version_${mc}")
-def architecturyApi = project.findProperty("architectury_api_version_${mc}")
 
-architectury {
-    platformSetupLoomIde()
-    neoForge()
+repositories {
+    mavenLocal() // resolves a self-built NeoForge 26.2 until the official jar drops
 }
 
-configurations {
-    common
-    shadowBundle
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentNeoForge.extendsFrom common
-}
+// Pull in the shared common source + resources.
+sourceSets.main.java.srcDir rootProject.ext.commonJava
+sourceSets.main.resources.srcDir rootProject.ext.commonResources
 
-dependencies {
-    neoForge "net.neoforged:neoforge:${neoVersion}"
+neoForge {
+    version = neoVersion
 
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    shadowBundle(project(path: ':common', configuration: 'transformProductionNeoForge'))
-
-    if (architecturyApi != null) {
-        modApi "dev.architectury:architectury-neoforge:${architecturyApi}"
+    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.from(at.absolutePath)
     }
-}
 
-processResources {
-    // mod metadata token expansion is configured in the root build.gradle
-}
+    runs {
+        client {
+            client()
+            gameDirectory = file('runs/client')
+        }
+        server {
+            server()
+            gameDirectory = file('runs/server')
+        }
+    }
 
-shadowJar {
-    configurations = [project.configurations.shadowBundle]
-    archiveClassifier = 'dev-shadow'
-}
-
-remapJar {
-    inputFile.set shadowJar.archiveFile
+    mods {
+        "${rootProject.mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
 }
