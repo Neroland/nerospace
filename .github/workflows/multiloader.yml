@@ -61,12 +61,15 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # The multiloader build uses its OWN Gradle wrapper (9.5.1), independent of
+      # the repo root's 9.2.1 — Architectury Loom 1.17.x requires Gradle >= 9.4.
       - name: Make Gradle wrapper executable
-        run: chmod +x ./gradlew
+        run: chmod +x ./multiloader/gradlew
 
       - name: Build ${{ matrix.loader }} for MC ${{ matrix.mc }}
+        working-directory: multiloader
         run: >-
-          ./gradlew -p multiloader :${{ matrix.loader }}:build
+          ./gradlew :${{ matrix.loader }}:build
           -Pminecraft_version=${{ matrix.mc }}
           --stacktrace
 

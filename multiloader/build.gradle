@@ -8,7 +8,13 @@
 // =====================================================================
 plugins {
     id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
+    // architectury-loom 1.17.x (current line; needs Gradle >= 9.4, hence this
+    // build's own 9.5.1 wrapper). NOTE: 1.17.x does NOT yet support
+    // de-obfuscated Minecraft 26.x — see the README "Troubleshooting" for the
+    // three mappings configs tested, all of which fail. Bump this when
+    // architectury-loom ships de-obf 26.x support. Keep in sync with
+    // architectury_loom_version in gradle.properties.
+    id 'dev.architectury.loom' version '1.17.483' apply false
 }
 
 architectury {
@@ -42,8 +48,14 @@ subprojects {
 
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        // 26.x is de-obfuscated; use official Mojang names (matches the
-        // root project's mappings convention — no Parchment).
+        // Minecraft 26.x is DE-OBFUSCATED (official names, no proguard mappings /
+        // Intermediary). Fabric's OWN loom supports this by OMITTING `mappings`,
+        // but architectury-loom 1.17.x does not yet — every option fails:
+        //   * (omitted)                    -> "Configuration 'mappings' has no dependencies"
+        //   * loom.officialMojangMappings() -> "Failed to find official mojang mappings"
+        //   * loom.layered {}               -> NPE: srcNamespace is null
+        // Left as the conventional line; this whole module is blocked until
+        // architectury-loom adds de-obf 26.x support. See README "Troubleshooting".
         mappings loom.officialMojangMappings()
     }
 

@@ -6,6 +6,53 @@ Read the second question first — it changes how you structure everything.
 
 ---
 
+## 0. Architecture decision (recommended): one codebase, no drift
+
+The guiding constraint for this project is **do not let the codebase drift apart** — never end up fixing the same bug twice across copies. That rules out the tempting-but-fatal pattern of a branch per loader or per Minecraft version. The decision:
+
+- **One repository, one source tree.** Shared game logic lives exactly once in a `common` module; only the thin per-loader entry points and platform shims are loader-specific. This is the entire point of the common-module split — there is no second copy of the mechanics to drift.
+- **Stonecutter for the version axis (26.1 / 26.2).** Both versions build from the same tree, with preprocessor comments only on the handful of lines where the APIs differ. This is the purpose-built anti-drift tool; prefer it over version branches.
+- **Architectury for the loader axis — when it's ready.** Architectury is the *easiest to work in*: its API gives cross-loader `DeferredRegister`, events, networking and config, so `common` does more with less hand-written glue. Adopt it as the target once architectury-loom supports de-obfuscated Minecraft 26.x (see §2.x / Troubleshooting in the scaffold README).
+- **Until architectury-loom catches up, stay NeoForge-only on the existing single project.** It is the lowest-friction, zero-drift state today: one toolchain, one copy, already building and publishing. Bringing up Fabric now buys friction without a working Fabric build, because architectury-loom can't yet consume de-obfuscated 26.x mappings.
+- **If Fabric is needed *before* architectury-loom is ready,** use the MultiLoader-Template layout (Fabric Loom for `:fabric`, ModDevGradle for `:neoforge`) instead — each loader's native, de-obf-ready toolchain. It still shares one `common`, so it doesn't drift; it just costs more hand-written glue than Architectury. Do **not** unblock architectury-loom by hand-feeding it a synthetic mappings file — that satisfies the config check but breaks loom's remap pipeline downstream.
+
+In one line: **single repo + `common` module + Stonecutter = no drift; Architectury makes that the easiest to work in; until architectury-loom supports de-obf 26.x, stay NeoForge-only rather than splitting.**
+
+---
+
+## 0b. Field notes: how the ecosystem builds multiloader on de-obf 26.x (researched 2026-06-18)
+
+Hard facts gathered while trying to unblock 26.2, so the next person doesn't re-walk this:
+
+- **Architectury is a dead end for 26.x right now.** architectury-loom issue [#328 "26.1 Support"](https://github.com/architectury/architectury-loom/issues/328) is open (since 2026-02-01) with no fix, no PR, no assignee: it cannot consume de-obfuscated 26.x mappings. Verified directly against this repo via the gradle MCP — every mappings config fails (`officialMojangMappings()` → "Failed to find official mojang mappings"; omitted → "Configuration 'mappings' has no dependencies"; `loom.layered {}` → `NullPointerException`). Do **not** try to force it with a synthetic mappings file; that passes config but breaks loom's remap pipeline.
+
+- **What mods actually use instead: the MultiLoader-Template — no architectury-loom.** The canonical [jaredlll08/MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template) (its source comments reference NeoForge's `26.2.x` branch, so it's current) wires each module to its loader's *native* toolchain:
+  - `common`  → `net.neoforged.moddev` (ModDevGradle, via NeoForm) — no mappings step
+  - `fabric`  → `net.fabricmc.fabric-loom` (de-obf-ready; **omits** the `mappings` line, like the official Fabric template)
+  - `neoforge`→ `net.neoforged.moddev`
+  - shared code lives once in `common`; loader modules consume it through `build-logic` convention plugins (`multiloader-common` / `multiloader-loader`). No drift, no Architectury API.
+
+- **Both native toolchains support de-obf 26.x; architectury-loom is the only one that doesn't** — confirmed: the root NeoForge ModDevGradle build compiles against 26.1.2, and Fabric's official template builds 26.2.
+
+- **26.2 Maven reality (checked 2026-06-18) — what is and isn't published.** Gradle compiles against *published artifacts*, not a git branch, so what matters is which jars are on the NeoForged/Fabric Maven:
+  - **NeoForm 26.2: published** (`net.neoforged:neoform`, latest `26.2-snapshot-8-1`). NeoForm is the de-obfuscated vanilla base the MultiLoader-Template's `common` (ModDevGradle) compiles against — so **`common` builds on 26.2.**
+  - **Fabric 26.2: published** (Fabric Loader `0.19.3` + Fabric API `0.152.1+26.2`) — so **`fabric` builds on 26.2.**
+  - **NeoForge loader userdev 26.2: NOT published** (`net.neoforged:neoforge` metadata still tops out at `26.1.2.76`) — so the **`neoforge` module is the one blocked cell.**
+  - The `neoforged/NeoForge` `26.2.x` branch *exists and is buildable*, but Gradle needs its compiled userdev jar in a resolvable repo. CI hasn't pushed it to the public releases Maven yet — so either **self-build it** (clone `26.2.x` → `./gradlew publishToMavenLocal` → add `mavenLocal()` → set `neo_version_26.2` to the published version) or wait for NeoForge's CI (likely soon, given NeoForm 26.2 is already up). So 3 of 4 cells (common + both Fabric cells) build on 26.2 today; only NeoForge-26.2 needs a self-built or awaited userdev artifact.
+
+- **Build-unblock ≠ mod port.** Getting a Fabric 26.2 jar to *compile* is separate from porting Nerospace's NeoForge-specific systems (capabilities/transfer, attachments, fluids, networking) to Fabric — that migration (§2) is the real effort and is unchanged by the toolchain choice.
+
+**Recommended migration when ready** (not yet applied — the scaffold still uses architectury-loom): replace the architectury-loom scaffold with the MultiLoader-Template layout above (ModDevGradle `common` on NeoForm + Fabric Loom `fabric` + ModDevGradle `neoforge`). On 26.1.x it works as-is. On 26.2 the `common` (NeoForm `26.2-snapshot-8-1`) and `fabric` (Fabric API `0.152.1+26.2`) cells build immediately; the **`neoforge` cell** is the only one waiting, and you can unblock even that by self-building NeoForge `26.2.x` to `mavenLocal()` rather than waiting for its CI to publish.
+
+### Field-notes sources
+
+- [architectury-loom #328 — 26.1 Support](https://github.com/architectury/architectury-loom/issues/328)
+- [jaredlll08/MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template)
+- [Official Fabric example mod (de-obf, omits `mappings`)](https://github.com/FabricMC/fabric-example-mod)
+- [Mojang: removing obfuscation](https://www.minecraft.net/en-us/article/removing-obfuscation-in-java-edition) · [Fabric: removing obfuscation from Fabric](https://fabricmc.net/2025/10/31/obfuscation.html)
+
+---
+
 ## 1. Can one project support Minecraft 26.1 *and* 26.2 at the same time?
 
 **A single built jar targets exactly one Minecraft version.** You cannot produce one artifact that loads on both 26.1 and 26.2. Reasons:
