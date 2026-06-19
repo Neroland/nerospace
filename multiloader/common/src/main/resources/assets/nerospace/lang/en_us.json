@@ -25,5 +25,22 @@
   "block.nerospace.alien_pillar": "Alien Pillar",
   "block.nerospace.alien_lamp": "Alien Lamp",
   "block.nerospace.alien_crystal_block": "Alien Crystal Block",
-  "block.nerospace.meteor_rock": "Meteor Rock"
+  "block.nerospace.meteor_rock": "Meteor Rock",
+  "item.nerospace.nerosium_pickaxe": "Nerosium Pickaxe",
+  "item.nerospace.oxygen_suit_helmet": "Oxygen Suit Helmet",
+  "item.nerospace.oxygen_suit_chestplate": "Oxygen Suit Chestplate",
+  "item.nerospace.oxygen_suit_leggings": "Oxygen Suit Leggings",
+  "item.nerospace.oxygen_suit_boots": "Oxygen Suit Boots",
+  "item.nerospace.oxygen_suit_t2_helmet": "Tier 2 Oxygen Suit Helmet",
+  "item.nerospace.oxygen_suit_t2_chestplate": "Tier 2 Oxygen Suit Chestplate",
+  "item.nerospace.oxygen_suit_t2_leggings": "Tier 2 Oxygen Suit Leggings",
+  "item.nerospace.oxygen_suit_t2_boots": "Tier 2 Oxygen Suit Boots",
+  "item.nerospace.oxygen_suit_heat_helmet": "Thermal Suit Helmet",
+  "item.nerospace.oxygen_suit_heat_chestplate": "Thermal Suit Chestplate",
+  "item.nerospace.oxygen_suit_heat_leggings": "Thermal Suit Leggings",
+  "item.nerospace.oxygen_suit_heat_boots": "Thermal Suit Boots",
+  "item.nerospace.oxygen_suit_cold_helmet": "Cryo Suit Helmet",
+  "item.nerospace.oxygen_suit_cold_chestplate": "Cryo Suit Chestplate",
+  "item.nerospace.oxygen_suit_cold_leggings": "Cryo Suit Leggings",
+  "item.nerospace.oxygen_suit_cold_boots": "Cryo Suit Boots"
 }

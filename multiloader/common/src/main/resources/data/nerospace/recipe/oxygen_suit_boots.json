@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    "N N",
+    "N N"
+  ],
+  "result": {
+    "id": "nerospace:oxygen_suit_boots"
+  }
+}
