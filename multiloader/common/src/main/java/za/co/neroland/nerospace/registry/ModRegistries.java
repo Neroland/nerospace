@@ -13,5 +13,6 @@ public final class ModRegistries {
     public static void init() {
         ModBlocks.init();
         ModItems.init();
+        ModBlockEntities.init();
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.storage.ItemStoreBlock;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
 /**
@@ -65,6 +66,16 @@ public final class ModBlocks {
             p -> p.mapColor(MapColor.EMERALD).strength(1.5F, 6.0F).lightLevel(s -> 12).sound(SoundType.AMETHYST));
     public static final RegistryEntry<Block> METEOR_ROCK = block("meteor_rock",
             p -> p.mapColor(MapColor.COLOR_BLACK).strength(3.0F, 4.0F).requiresCorrectToolForDrops().lightLevel(s -> 3).sound(SoundType.STONE));
+
+    // Block entity — item storage (pilot for the block-entity + capability seam).
+    public static final RegistryEntry<ItemStoreBlock> ITEM_STORE = BLOCKS.register("item_store",
+            key -> new ItemStoreBlock(BlockBehaviour.Properties.of()
+                    .setId(key)
+                    .mapColor(MapColor.METAL)
+                    .strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
 
     private static RegistryEntry<Block> block(String name, UnaryOperator<BlockBehaviour.Properties> props) {
         return BLOCKS.register(name, key -> new Block(props.apply(BlockBehaviour.Properties.of().setId(key))));

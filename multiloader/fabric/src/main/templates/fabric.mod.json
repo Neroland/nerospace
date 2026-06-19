@@ -6,6 +6,7 @@
   "description": "Nerospace - multiloader build (Fabric).",
   "authors": ["${mod_authors}"],
   "license": "${mod_license}",
+  "accessWidener": "nerospace.accesswidener",
   "environment": "*",
   "entrypoints": {
     "main": ["za.co.neroland.nerospace.fabric.NerospaceFabric"],

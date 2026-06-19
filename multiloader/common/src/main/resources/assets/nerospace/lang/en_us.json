@@ -50,5 +50,7 @@
   "item.nerospace.rocket_fuel_canister": "Rocket Fuel Canister",
   "item.nerospace.frame_casing": "Frame Casing",
   "item.nerospace.grav_striders": "Grav Striders",
-  "item.nerospace.drift_fleece": "Drift Fleece"
+  "item.nerospace.drift_fleece": "Drift Fleece",
+  "block.nerospace.item_store": "Item Store",
+  "container.nerospace.item_store": "Item Store"
 }
