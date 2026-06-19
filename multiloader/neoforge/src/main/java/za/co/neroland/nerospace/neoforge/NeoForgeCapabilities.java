@@ -61,5 +61,16 @@ public final class NeoForgeCapabilities {
                 FLUID,
                 ModBlockEntities.FLUID_TANK.get(),
                 (be, side) -> be.getTank());
+
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.COMBUSTION_GENERATOR.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+        event.registerBlockEntity(
+                ENERGY,
+                ModBlockEntities.COMBUSTION_GENERATOR.get(),
+                (be, side) -> be.getEnergy());
     }
 }

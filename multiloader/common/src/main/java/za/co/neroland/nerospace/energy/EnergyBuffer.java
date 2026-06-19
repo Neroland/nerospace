@@ -49,6 +49,15 @@ public final class EnergyBuffer implements NerospaceEnergyStorage {
         return removed;
     }
 
+    /** Internal generation (bypasses the insert limit) — for generators. */
+    public void generate(int amount) {
+        int add = (int) Math.max(0, Math.min(amount, this.capacity - this.amount));
+        if (add > 0) {
+            this.amount += add;
+            this.onChanged.run();
+        }
+    }
+
     /** Raw accessors for NBT save/load. */
     public int getRaw() {
         return this.amount;

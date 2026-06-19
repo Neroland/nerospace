@@ -64,6 +64,13 @@ public final class NerospaceFabric implements ModInitializer {
         FLUID.registerForBlockEntity(
                 (be, direction) -> be.getTank(),
                 ModBlockEntities.FLUID_TANK.get());
+
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.COMBUSTION_GENERATOR.get());
+        ENERGY.registerForBlockEntity(
+                (be, direction) -> be.getEnergy(),
+                ModBlockEntities.COMBUSTION_GENERATOR.get());
     }
 
     private static void addOverworldOre(String placedFeatureName) {
