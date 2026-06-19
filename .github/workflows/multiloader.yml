@@ -15,10 +15,6 @@ on:
     paths:
       - "multiloader/**"
       - ".github/workflows/multiloader.yml"
-  pull_request:
-    paths:
-      - "multiloader/**"
-      - ".github/workflows/multiloader.yml"
   workflow_dispatch:
 
 permissions:
@@ -30,13 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     # No continue-on-error: any failed cell fails the workflow.
     strategy:
-      fail-fast: false   # still run every cell so one failure doesn't mask others
+      fail-fast: false # still run every cell so one failure doesn't mask others
       matrix:
         include:
           - loader: neoforge
-            mc: "26.1.2"   # ModDevGradle + NeoForge 26.1.2.76 — verified green
+            mc: "26.1.2" # ModDevGradle + NeoForge 26.1.2.76 — verified green
           - loader: fabric
-            mc: "26.2"     # Fabric Loom 1.17 + fabric-api 0.152.1+26.2 (de-obf, no mappings) — verified green
+            mc: "26.2" # Fabric Loom 1.17 + fabric-api 0.152.1+26.2 (de-obf, no mappings) — verified green
           # PENDING — not buildable on a clean CI runner; re-add when unblocked:
           #   - { loader: fabric,   mc: "26.1.2" }  # Fabric never shipped MC 26.1.2 (26.1 -> 26.1.1 -> 26.2)
           #   - { loader: neoforge, mc: "26.2"  }   # needs NeoForge 26.2 userdev on Maven (or self-built to mavenLocal — see multiloader/README.md)
