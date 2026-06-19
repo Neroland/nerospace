@@ -13,6 +13,7 @@
     "nerospace:station_floor",
     "nerospace:station_wall",
     "nerospace:item_store",
-    "nerospace:battery"
+    "nerospace:battery",
+    "nerospace:fluid_tank"
   ]
 }

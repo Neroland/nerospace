@@ -11,6 +11,7 @@ import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -29,6 +30,12 @@ public final class NeoForgeCapabilities {
             BlockCapability.createSided(
                     Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "energy"),
                     NerospaceEnergyStorage.class);
+
+    /** Mod-owned fluid capability; mirrors the Fabric {@code BlockApiLookup} of the same id. */
+    public static final BlockCapability<NerospaceFluidStorage, Direction> FLUID =
+            BlockCapability.createSided(
+                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "fluid"),
+                    NerospaceFluidStorage.class);
 
     private NeoForgeCapabilities() {
     }
@@ -49,5 +56,10 @@ public final class NeoForgeCapabilities {
                 ENERGY,
                 ModBlockEntities.BATTERY.get(),
                 (be, side) -> be.getEnergy());
+
+        event.registerBlockEntity(
+                FLUID,
+                ModBlockEntities.FLUID_TANK.get(),
+                (be, side) -> be.getTank());
     }
 }

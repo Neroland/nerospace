@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.storage.BatteryBlockEntity;
+import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
 import za.co.neroland.nerospace.storage.ItemStoreBlockEntity;
 
 /**
@@ -25,6 +26,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<BatteryBlockEntity>> BATTERY =
             BLOCK_ENTITIES.register("battery",
                     key -> new BlockEntityType<>(BatteryBlockEntity::new, java.util.Set.of(ModBlocks.BATTERY.get())));
+
+    public static final RegistryEntry<BlockEntityType<FluidTankBlockEntity>> FLUID_TANK =
+            BLOCK_ENTITIES.register("fluid_tank",
+                    key -> new BlockEntityType<>(FluidTankBlockEntity::new, java.util.Set.of(ModBlocks.FLUID_TANK.get())));
 
     private ModBlockEntities() {
     }

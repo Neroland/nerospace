@@ -16,6 +16,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -32,6 +33,12 @@ public final class NerospaceFabric implements ModInitializer {
             BlockApiLookup.get(
                     Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "energy"),
                     NerospaceEnergyStorage.class, Direction.class);
+
+    /** Mod-owned fluid lookup; mirrors the NeoForge fluid BlockCapability of the same id. */
+    public static final BlockApiLookup<NerospaceFluidStorage, Direction> FLUID =
+            BlockApiLookup.get(
+                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "fluid"),
+                    NerospaceFluidStorage.class, Direction.class);
 
     @Override
     public void onInitialize() {
@@ -53,6 +60,10 @@ public final class NerospaceFabric implements ModInitializer {
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.BATTERY.get());
+
+        FLUID.registerForBlockEntity(
+                (be, direction) -> be.getTank(),
+                ModBlockEntities.FLUID_TANK.get());
     }
 
     private static void addOverworldOre(String placedFeatureName) {

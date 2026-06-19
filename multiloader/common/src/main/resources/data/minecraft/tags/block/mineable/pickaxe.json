@@ -21,6 +21,7 @@
     "nerospace:alien_crystal_block",
     "nerospace:meteor_rock",
     "nerospace:item_store",
-    "nerospace:battery"
+    "nerospace:battery",
+    "nerospace:fluid_tank"
   ]
 }
