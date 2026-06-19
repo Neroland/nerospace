@@ -66,6 +66,14 @@ public final class ModItems {
     public static final RegistryEntry<Item> XERTZ_QUARTZ = item("xertz_quartz");
     public static final RegistryEntry<Item> CINDRITE = item("cindrite");
     public static final RegistryEntry<Item> GLACITE = item("glacite");
+    public static final RegistryEntry<Item> NEROSIUM_DUST = item("nerosium_dust");
+    public static final RegistryEntry<Item> ALIEN_FRAGMENT = item("alien_fragment");
+    public static final RegistryEntry<Item> ALIEN_TECH_SCRAP = item("alien_tech_scrap");
+    public static final RegistryEntry<Item> ALIEN_CORE = item("alien_core");
+    public static final RegistryEntry<Item> ROCKET_FUEL_CANISTER = item("rocket_fuel_canister");
+    public static final RegistryEntry<Item> FRAME_CASING = item("frame_casing");
+    public static final RegistryEntry<Item> GRAV_STRIDERS = item("grav_striders");
+    public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");
 
     // --- Tool + armor materials --------------------------------------------
     public static final ToolMaterial NEROSIUM_TOOL_MATERIAL = new ToolMaterial(
@@ -152,7 +160,9 @@ public final class ModItems {
                 CreativeModeTabs.INGREDIENTS,
                 List.<ItemLike>of(RAW_NEROSIUM.get(), NEROSIUM_INGOT.get(),
                         RAW_NEROSTEEL.get(), NEROSTEEL_INGOT.get(),
-                        XERTZ_QUARTZ.get(), CINDRITE.get(), GLACITE.get()),
+                        XERTZ_QUARTZ.get(), CINDRITE.get(), GLACITE.get(),
+                        NEROSIUM_DUST.get(), ALIEN_FRAGMENT.get(), ALIEN_TECH_SCRAP.get(), ALIEN_CORE.get(),
+                        ROCKET_FUEL_CANISTER.get(), FRAME_CASING.get(), GRAV_STRIDERS.get(), DRIFT_FLEECE.get()),
                 CreativeModeTabs.TOOLS_AND_UTILITIES,
                 List.<ItemLike>of(NEROSIUM_PICKAXE.get()),
                 CreativeModeTabs.COMBAT,
