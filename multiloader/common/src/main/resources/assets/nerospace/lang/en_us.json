@@ -1,3 +1,20 @@
 {
-  "block.nerospace.nerosium_block": "Block of Nerosium"
+  "block.nerospace.nerosium_ore": "Nerosium Ore",
+  "block.nerospace.deepslate_nerosium_ore": "Deepslate Nerosium Ore",
+  "block.nerospace.nerosium_block": "Block of Nerosium",
+  "block.nerospace.raw_nerosium_block": "Block of Raw Nerosium",
+  "item.nerospace.raw_nerosium": "Raw Nerosium",
+  "item.nerospace.nerosium_ingot": "Nerosium Ingot",
+  "block.nerospace.nerosteel_ore": "Nerosteel Ore",
+  "block.nerospace.nerosteel_block": "Block of Nerosteel",
+  "block.nerospace.xertz_quartz_ore": "Xertz Quartz Ore",
+  "block.nerospace.cindrite_ore": "Cindrite Ore",
+  "block.nerospace.cindrite_block": "Block of Cindrite",
+  "block.nerospace.glacite_ore": "Glacite Ore",
+  "block.nerospace.glacite_block": "Block of Glacite",
+  "item.nerospace.raw_nerosteel": "Raw Nerosteel",
+  "item.nerospace.nerosteel_ingot": "Nerosteel Ingot",
+  "item.nerospace.xertz_quartz": "Xertz Quartz",
+  "item.nerospace.cindrite": "Cindrite",
+  "item.nerospace.glacite": "Glacite"
 }
