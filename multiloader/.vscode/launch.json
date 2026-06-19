@@ -1,5 +1,5 @@
 {
-  "//": "Committed RELATIVE multiloader run/debug configs (no machine paths). Open nerospace.code-workspace, then pick a config in Run & Debug. preLaunchTasks regenerate per-machine launch args; manifests expand into bin/main on Gradle/IDE sync. fml.modFolders points at bin/main only (IDE compiles classes + copies the expanded manifest there); do NOT add a 2nd path with ${pathSeparator} (VS Code resolves it to the FILE separator, not the classpath separator). Today Fabric@26.2 and NeoForge@26.1.2 run; Fabric@26.1.2 (no Fabric MC 26.1.2) and NeoForge@26.2 (needs userdev) fail in preLaunch until upstream ships.",
+  "//": "Committed RELATIVE multiloader run/debug configs (no machine paths). Open nerospace.code-workspace, then pick a config in Run \u0026 Debug. preLaunchTasks regenerate per-machine launch args; manifests expand into bin/main on Gradle/IDE sync. fml.modFolders points at bin/main only (IDE compiles classes + copies the expanded manifest there); do NOT add a 2nd path with ${pathSeparator} (VS Code resolves it to the FILE separator, not the classpath separator). Today Fabric@26.2 and NeoForge@26.1.2 run; Fabric@26.1.2 (no Fabric MC 26.1.2) and NeoForge@26.2 (needs userdev) fail in preLaunch until upstream ships.",
   "version": "0.2.0",
   "configurations": [
     {
@@ -9,7 +9,7 @@
       "cwd": "${workspaceFolder}/fabric/runs/client",
       "console": "integratedTerminal",
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-Dfabric.dli.config=${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env=client -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient --sun-misc-unsafe-memory-access=allow --enable-native-access=ALL-UNNAMED",
+      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotClient --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
       "args": "",
       "projectName": "fabric",
       "preLaunchTask": "ml-prepare-fabric-26.2"
@@ -21,7 +21,7 @@
       "cwd": "${workspaceFolder}/fabric/runs/client",
       "console": "integratedTerminal",
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-Dfabric.dli.config=${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env=client -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient --sun-misc-unsafe-memory-access=allow --enable-native-access=ALL-UNNAMED",
+      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotClient --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
       "args": "",
       "projectName": "fabric",
       "preLaunchTask": "ml-prepare-fabric-26.1.2"
@@ -33,7 +33,7 @@
       "cwd": "${workspaceFolder}/fabric/runs/server",
       "console": "integratedTerminal",
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-Dfabric.dli.config=${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env=server -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotServer --sun-misc-unsafe-memory-access=allow --enable-native-access=ALL-UNNAMED",
+      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotServer --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
       "args": "nogui",
       "projectName": "fabric",
       "preLaunchTask": "ml-prepare-fabric-26.2"
@@ -45,7 +45,7 @@
       "cwd": "${workspaceFolder}/fabric/runs/server",
       "console": "integratedTerminal",
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-Dfabric.dli.config=${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env=server -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotServer --sun-misc-unsafe-memory-access=allow --enable-native-access=ALL-UNNAMED",
+      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotServer --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
       "args": "nogui",
       "projectName": "fabric",
       "preLaunchTask": "ml-prepare-fabric-26.1.2"
@@ -62,7 +62,7 @@
       ],
       "vmArgs": [
         "@${workspaceFolder}/neoforge/build/moddev/clientRunVmArgs.txt",
-        "-Dfml.modFolders=nerospace%%${workspaceFolder}/neoforge/bin/main"
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/bin/main"
       ],
       "projectName": "neoforge",
       "preLaunchTask": "ml-prepare-neoforge-client-26.1.2",
@@ -80,7 +80,7 @@
       ],
       "vmArgs": [
         "@${workspaceFolder}/neoforge/build/moddev/clientRunVmArgs.txt",
-        "-Dfml.modFolders=nerospace%%${workspaceFolder}/neoforge/bin/main"
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/bin/main"
       ],
       "projectName": "neoforge",
       "preLaunchTask": "ml-prepare-neoforge-client-26.2",
@@ -98,7 +98,7 @@
       ],
       "vmArgs": [
         "@${workspaceFolder}/neoforge/build/moddev/serverRunVmArgs.txt",
-        "-Dfml.modFolders=nerospace%%${workspaceFolder}/neoforge/bin/main"
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/bin/main"
       ],
       "projectName": "neoforge",
       "preLaunchTask": "ml-prepare-neoforge-server-26.1.2",
@@ -116,10 +116,54 @@
       ],
       "vmArgs": [
         "@${workspaceFolder}/neoforge/build/moddev/serverRunVmArgs.txt",
-        "-Dfml.modFolders=nerospace%%${workspaceFolder}/neoforge/bin/main"
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/bin/main"
       ],
       "projectName": "neoforge",
       "preLaunchTask": "ml-prepare-neoforge-server-26.2",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "neoforge - Client",
+      "presentation": {
+        "group": "Mod Development - neoforge",
+        "order": 0
+      },
+      "projectName": "neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dnerospace%%C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\neoforge\\runs\\client",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "neoforge - Server",
+      "presentation": {
+        "group": "Mod Development - neoforge",
+        "order": 1
+      },
+      "projectName": "neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\build\\moddev\\serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dnerospace%%C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\neoforge\\runs\\server",
+      "env": {},
+      "console": "internalConsole",
       "shortenCommandLine": "none"
     }
   ]

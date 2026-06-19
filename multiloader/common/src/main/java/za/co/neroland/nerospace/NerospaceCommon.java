@@ -2,20 +2,15 @@ package za.co.neroland.nerospace;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import za.co.neroland.nerospace.platform.Services;
+import za.co.neroland.nerospace.registry.ModRegistries;
 
 /**
- * Loader-agnostic entry point.
- *
- * <p>Both {@code NerospaceFabric} and {@code NerospaceNeoForge} call
- * {@link #init()} from their own loader entry points. All shared setup
- * (registration, config wiring, common event hooks) belongs here or in
- * the packages it touches — never in a loader module.
- *
- * <p>Anything that must reach loader-specific behaviour goes through
- * {@link Services} (a Java {@link java.util.ServiceLoader} abstraction),
- * keeping this module free of {@code net.neoforged.*} and
- * {@code net.fabricmc.*} imports.
+ * Loader-agnostic entry point. Both {@code NerospaceFabric} and
+ * {@code NerospaceNeoForge} call {@link #init()} during mod construction.
+ * Loader-specific behaviour is reached only through {@link Services}, keeping
+ * this module free of {@code net.neoforged.*} / {@code net.fabricmc.*} imports.
  */
 public final class NerospaceCommon {
 
@@ -31,10 +26,9 @@ public final class NerospaceCommon {
                 Services.PLATFORM.getPlatformName(),
                 Services.PLATFORM.isDevelopmentEnvironment());
 
-        // Content registration is wired per loader (NeoForge DeferredRegister /
-        // Fabric Registry.register) from each module's entry point. Without
-        // Architectury API there is no shared DeferredRegister; the migration
-        // (docs/MULTILOADER.md §2) introduces a small registration service on
-        // top of the platform Services seam when content is ported.
+        // Shared content registration via the RegistrationProvider seam. On
+        // NeoForge this builds DeferredRegisters (the loader entry point then
+        // attaches them to the mod bus); on Fabric it registers eagerly.
+        ModRegistries.init();
     }
 }

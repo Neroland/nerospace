@@ -39,9 +39,9 @@
       "problemMatcher": []
     },
 
-    { "//": "===== Multiloader: RUN both versions. Terminal -> Run Task. These launch the game directly via Gradle (no debugger). For breakpoint debugging, open nerospace.code-workspace (imports the multiloader build) and use its generated Run & Debug entries. =====" },
     {
       "label": "ML: Run Fabric Client - 26.2",
+      "detail": "Multiloader RUN tasks launch the game directly via Gradle (no debugger). For breakpoint debugging, open nerospace.code-workspace and use its Run & Debug entries.",
       "type": "process",
       "command": "${workspaceFolder}/multiloader/gradlew",
       "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
@@ -101,7 +101,6 @@
       "problemMatcher": []
     },
 
-    { "//": "===== Multiloader: BUILD =====" },
     {
       "label": "ML: Build both loaders (pick MC)",
       "type": "process",
@@ -137,7 +136,7 @@
     },
     {
       "label": "ML: Generate Fabric VS Code run configs (pick MC)",
-      "//": "Loom's real task is 'vscode' (not genVsCodeRuns). Writes multiloader/.vscode/launch.json; use it from nerospace.code-workspace.",
+      "detail": "Loom's real task is 'vscode' (not genVsCodeRuns). Writes multiloader/.vscode/launch.json; use it from nerospace.code-workspace.",
       "type": "process",
       "command": "${workspaceFolder}/multiloader/gradlew",
       "windows": { "command": "${workspaceFolder}/multiloader/gradlew.bat" },
