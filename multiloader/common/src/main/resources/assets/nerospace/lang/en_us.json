@@ -16,5 +16,14 @@
   "item.nerospace.nerosteel_ingot": "Nerosteel Ingot",
   "item.nerospace.xertz_quartz": "Xertz Quartz",
   "item.nerospace.cindrite": "Cindrite",
-  "item.nerospace.glacite": "Glacite"
+  "item.nerospace.glacite": "Glacite",
+  "block.nerospace.station_floor": "Station Floor",
+  "block.nerospace.station_wall": "Station Wall",
+  "block.nerospace.alien_bricks": "Alien Bricks",
+  "block.nerospace.cracked_alien_bricks": "Cracked Alien Bricks",
+  "block.nerospace.alien_tile": "Alien Tile",
+  "block.nerospace.alien_pillar": "Alien Pillar",
+  "block.nerospace.alien_lamp": "Alien Lamp",
+  "block.nerospace.alien_crystal_block": "Alien Crystal Block",
+  "block.nerospace.meteor_rock": "Meteor Rock"
 }

@@ -1,15 +1,10 @@
 {
   "values": [
-    "nerospace:nerosium_ore",
-    "nerospace:deepslate_nerosium_ore",
-    "nerospace:nerosium_block",
-    "nerospace:raw_nerosium_block",
-    "nerospace:nerosteel_ore",
-    "nerospace:xertz_quartz_ore",
-    "nerospace:nerosteel_block",
-    "nerospace:cindrite_ore",
-    "nerospace:cindrite_block",
-    "nerospace:glacite_ore",
-    "nerospace:glacite_block"
+    "nerospace:nerosium_ore", "nerospace:deepslate_nerosium_ore", "nerospace:nerosium_block", "nerospace:raw_nerosium_block",
+    "nerospace:nerosteel_ore", "nerospace:xertz_quartz_ore", "nerospace:nerosteel_block",
+    "nerospace:cindrite_ore", "nerospace:cindrite_block", "nerospace:glacite_ore", "nerospace:glacite_block",
+    "nerospace:station_floor", "nerospace:station_wall",
+    "nerospace:alien_bricks", "nerospace:cracked_alien_bricks", "nerospace:alien_tile", "nerospace:alien_pillar",
+    "nerospace:alien_lamp", "nerospace:alien_crystal_block", "nerospace:meteor_rock"
   ]
 }
