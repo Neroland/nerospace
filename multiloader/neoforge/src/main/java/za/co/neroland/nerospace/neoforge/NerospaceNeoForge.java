@@ -5,7 +5,9 @@ import java.util.List;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -25,6 +27,9 @@ public final class NerospaceNeoForge {
         NerospaceCommon.init();
         NeoForgeRegistrationFactory.registerAll(modEventBus);
         NeoForgeCapabilities.register(modEventBus);
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
+            NeoForgeClientSetup.init(modEventBus);
+        }
         modEventBus.addListener(this::onBuildCreativeTabs);
     }
 

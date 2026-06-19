@@ -5,8 +5,13 @@ import java.util.stream.IntStream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -20,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerospace.menu.CombustionGeneratorMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -29,7 +35,7 @@ import za.co.neroland.nerospace.registry.ModItems;
  * capability). First ticking machine: proves the item + energy seams together with a
  * {@code BlockEntityTicker}. The menu/screen comes with the menu seam.
  */
-public class CombustionGeneratorBlockEntity extends BlockEntity implements WorldlyContainer {
+public class CombustionGeneratorBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
     public static final int FUEL_SLOT = 0;
     public static final int SIZE = 1;
@@ -41,6 +47,35 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, FE_PER_TICK * 64, this::setChanged);
     private int burnTime;
     private int maxBurnTime;
+
+    /** Synced to the menu: [0]=energy [1]=capacity [2]=burnTime [3]=maxBurnTime. */
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> energy.getRaw();
+                case 1 -> CAPACITY;
+                case 2 -> burnTime;
+                case 3 -> maxBurnTime;
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            switch (index) {
+                case 0 -> energy.setRaw(value);
+                case 2 -> burnTime = value;
+                case 3 -> maxBurnTime = value;
+                default -> { }
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
+    };
 
     public CombustionGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.COMBUSTION_GENERATOR.get(), pos, state);
@@ -106,6 +141,17 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         this.burnTime = input.getIntOr("BurnTime", 0);
         this.maxBurnTime = input.getIntOr("MaxBurnTime", 0);
         this.items.set(FUEL_SLOT, input.read("Fuel", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+    }
+
+    // --- MenuProvider ---------------------------------------------------------
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("container.nerospace.combustion_generator");
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new CombustionGeneratorMenu(containerId, playerInventory, this, this.data);
     }
 
     // --- WorldlyContainer: fuel in only ---------------------------------------

@@ -1,0 +1,26 @@
+package za.co.neroland.nerospace.registry;
+
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
+
+import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.menu.CombustionGeneratorMenu;
+import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
+
+/** Menu types, shared via {@link RegistrationProvider} over the vanilla MENU registry. */
+public final class ModMenuTypes {
+
+    public static final RegistrationProvider<MenuType<?>> MENUS =
+            RegistrationProvider.get(Registries.MENU, NerospaceCommon.MOD_ID);
+
+    public static final RegistryEntry<MenuType<CombustionGeneratorMenu>> COMBUSTION_GENERATOR =
+            MENUS.register("combustion_generator",
+                    key -> new MenuType<>(CombustionGeneratorMenu::new, FeatureFlags.VANILLA_SET));
+
+    private ModMenuTypes() {
+    }
+
+    public static void init() {
+    }
+}

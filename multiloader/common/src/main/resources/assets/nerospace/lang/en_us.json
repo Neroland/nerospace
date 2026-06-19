@@ -55,5 +55,6 @@
   "container.nerospace.item_store": "Item Store",
   "block.nerospace.battery": "Battery",
   "block.nerospace.fluid_tank": "Fluid Tank",
-  "block.nerospace.combustion_generator": "Combustion Generator"
+  "block.nerospace.combustion_generator": "Combustion Generator",
+  "container.nerospace.combustion_generator": "Combustion Generator"
 }

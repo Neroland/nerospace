@@ -14,5 +14,6 @@ public final class ModRegistries {
         ModBlocks.init();
         ModItems.init();
         ModBlockEntities.init();
+        ModMenuTypes.init();
     }
 }

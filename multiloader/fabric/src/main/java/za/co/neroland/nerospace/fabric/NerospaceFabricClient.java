@@ -1,21 +1,18 @@
 package za.co.neroland.nerospace.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
-import za.co.neroland.nerospace.NerospaceCommon;
+import net.minecraft.client.gui.screens.MenuScreens;
 
-/**
- * Fabric client entry point. The equivalent of the root project's
- * {@code NerospaceClient} client-only registrations.
- *
- * <p>Migration target for: entity renderers ({@code EntityRendererRegistry}),
- * screens ({@code HandledScreens}), HUD ({@code HudLayerRegistrationCallback}),
- * and ModMenu config screen integration.
- */
+import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
+import za.co.neroland.nerospace.registry.ModMenuTypes;
+
+/** Fabric client entry point — screen registration (vanilla {@code MenuScreens}). */
 public final class NerospaceFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
         NerospaceCommon.LOGGER.info("[Nerospace] Fabric client bootstrap");
-        // TODO (migration): client-only registrations.
+        MenuScreens.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
     }
 }
