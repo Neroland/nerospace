@@ -12,6 +12,7 @@
     "nerospace:glacite_block",
     "nerospace:station_floor",
     "nerospace:station_wall",
-    "nerospace:item_store"
+    "nerospace:item_store",
+    "nerospace:battery"
   ]
 }

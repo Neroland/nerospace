@@ -52,5 +52,6 @@
   "item.nerospace.grav_striders": "Grav Striders",
   "item.nerospace.drift_fleece": "Drift Fleece",
   "block.nerospace.item_store": "Item Store",
-  "container.nerospace.item_store": "Item Store"
+  "container.nerospace.item_store": "Item Store",
+  "block.nerospace.battery": "Battery"
 }

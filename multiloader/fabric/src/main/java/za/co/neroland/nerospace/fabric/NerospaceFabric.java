@@ -4,8 +4,10 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -23,6 +26,12 @@ import za.co.neroland.nerospace.registry.ModItems;
  * NeoForge {@code biome_modifier} JSON).
  */
 public final class NerospaceFabric implements ModInitializer {
+
+    /** Mod-owned energy lookup; mirrors the NeoForge energy BlockCapability of the same id. */
+    public static final BlockApiLookup<NerospaceEnergyStorage, Direction> ENERGY =
+            BlockApiLookup.get(
+                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "energy"),
+                    NerospaceEnergyStorage.class, Direction.class);
 
     @Override
     public void onInitialize() {
@@ -40,6 +49,10 @@ public final class NerospaceFabric implements ModInitializer {
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.ITEM_STORE.get());
+
+        ENERGY.registerForBlockEntity(
+                (be, direction) -> be.getEnergy(),
+                ModBlockEntities.BATTERY.get());
     }
 
     private static void addOverworldOre(String placedFeatureName) {

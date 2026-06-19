@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.storage.BatteryBlock;
 import za.co.neroland.nerospace.storage.ItemStoreBlock;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
@@ -70,6 +71,16 @@ public final class ModBlocks {
     // Block entity — item storage (pilot for the block-entity + capability seam).
     public static final RegistryEntry<ItemStoreBlock> ITEM_STORE = BLOCKS.register("item_store",
             key -> new ItemStoreBlock(BlockBehaviour.Properties.of()
+                    .setId(key)
+                    .mapColor(MapColor.METAL)
+                    .strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
+
+
+    public static final RegistryEntry<BatteryBlock> BATTERY = BLOCKS.register("battery",
+            key -> new BatteryBlock(BlockBehaviour.Properties.of()
                     .setId(key)
                     .mapColor(MapColor.METAL)
                     .strength(3.0F, 6.0F)

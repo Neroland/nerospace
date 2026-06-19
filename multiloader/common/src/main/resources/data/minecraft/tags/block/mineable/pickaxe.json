@@ -20,6 +20,7 @@
     "nerospace:alien_lamp",
     "nerospace:alien_crystal_block",
     "nerospace:meteor_rock",
-    "nerospace:item_store"
+    "nerospace:item_store",
+    "nerospace:battery"
   ]
 }
