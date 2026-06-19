@@ -4,6 +4,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -11,6 +13,7 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
@@ -31,6 +34,12 @@ public final class NerospaceFabric implements ModInitializer {
                         .register(output -> items.forEach(output::accept)));
 
         addOverworldOre("nerosium_ore_placed");
+
+        // Item-storage capability (Fabric Transfer API) — counterpart to NeoForge
+        // Capabilities.Item.BLOCK; lets mod pipes move items in/out of the item store.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.ITEM_STORE.get());
     }
 
     private static void addOverworldOre(String placedFeatureName) {

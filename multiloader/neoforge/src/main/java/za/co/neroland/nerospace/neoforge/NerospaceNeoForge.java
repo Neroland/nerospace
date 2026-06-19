@@ -24,6 +24,7 @@ public final class NerospaceNeoForge {
         NerospaceCommon.LOGGER.info("[Nerospace] NeoForge bootstrap");
         NerospaceCommon.init();
         NeoForgeRegistrationFactory.registerAll(modEventBus);
+        NeoForgeCapabilities.register(modEventBus);
         modEventBus.addListener(this::onBuildCreativeTabs);
     }
 
