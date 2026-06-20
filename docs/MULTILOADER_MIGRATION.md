@@ -39,6 +39,15 @@ and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after e
 > end-to-end: generator → pipe → oxygen generator → pipe → gas tank. (The world oxygen-field effect +
 > HUD + the generator GUI are a deferred atmosphere subsystem.)
 >
+> **2026-06-20 (later still): ALL 10 mobs ported** — all 4 cells green. On the entity seam below, added
+> `cinder_stalker`, `frost_strider`, `ruin_warden`, the three terraform livestock (`meadow_loper`,
+> `ember_strutter`, `woolly_drift` via a shared `TerraformLivestock` base), and the **alien villager**
+> (full `Merchant` trading + per-player `Reputation` + gift loop + per-individual render tint/skin, with
+> its own renderer). Ported the `village` trade package (`Reputation`, `AlienTrades`) and a plain
+> `xertz_resonator` item (its gear behaviour deferred). The villager's per-dimension planet pick is
+> temporarily fixed to Greenxertz until `ModDimensions` lands. Natural spawning + spawn eggs remain
+> deferred (mobs are summonable; spawning waits on the planet dimensions/biomes).
+>
 > **2026-06-20 (later still): ENTITY seam + Greenxertz creatures ported** — all 4 cells green. New
 > cross-loader seam: entity types via `RegistrationProvider` over `ENTITY_TYPE` (`EntityType.Builder…
 > build(key)`); **attributes** via `ModEntityAttributes` applied per loader (NeoForge
@@ -64,12 +73,13 @@ and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after e
 > a deferred enhancement.
 >
 > Remaining, by subsystem (rough size): **dimensions** (Greenxertz/Cindara/Glacira biomes+dims+travel;
-> unblocks the planet ores' worldgen); **entities** (alien villager, xertz stalker + attributes +
-> renderers); **rockets** (items, tiers, launch logic); **quarry** (area mining); **structures**
+> unblocks the planet ores' worldgen, mob natural-spawning, and the villager's per-planet variant);
+> **rockets** (items, tiers, launch logic); **quarry** (area mining); **structures**
 > (station/village/meteor cores + events); **atmosphere/terraforming** (oxygen field, terraformer,
 > monitor, hydration); **solar panel tiers/array/BER** (single-tier base is done); **star guide**
-> (progression UI); **creative item/fluid/gas stores** (infinite-resource config — marginal).
-> Recommended order: entities → dimensions → rockets → quarry → structures → atmosphere → the rest.
+> (progression UI); **creative item/fluid/gas stores** (infinite-resource config — marginal); plus mob
+> **spawn eggs + natural-spawn rules** (deferred with dimensions). **All 10 mobs are otherwise ported.**
+> Recommended order: dimensions → rockets → quarry → structures → atmosphere → the rest.
 
 ---
 

@@ -50,6 +50,7 @@ public final class ClientEntityRenderers {
         sink.register(ModEntities.WOOLLY_DRIFT.get(), context -> new GreenxertzCreatureRenderer(context,
                 new WoollyDriftModel(WoollyDriftModel.createBodyLayer().bakeRoot()),
                 tex("woolly_drift"), 1.0F, 1.0F, 1.0F, 0.5F, glow("woolly_drift")));
+        sink.register(ModEntities.ALIEN_VILLAGER.get(), AlienVillagerRenderer::new);
     }
 
     private static Identifier tex(String name) {

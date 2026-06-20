@@ -92,6 +92,8 @@ public final class ModItems {
     public static final RegistryEntry<Item> FRAME_CASING = item("frame_casing");
     public static final RegistryEntry<Item> GRAV_STRIDERS = item("grav_striders");
     public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");
+    /** Trade-only Artificer gear; ported as a plain item (its custom gear behaviour is deferred). */
+    public static final RegistryEntry<Item> XERTZ_RESONATOR = item("xertz_resonator");
 
     // --- Tool + armor materials --------------------------------------------
     public static final ToolMaterial NEROSIUM_TOOL_MATERIAL = new ToolMaterial(
@@ -182,7 +184,7 @@ public final class ModItems {
                         NEROSIUM_DUST.get(), ALIEN_FRAGMENT.get(), ALIEN_TECH_SCRAP.get(), ALIEN_CORE.get(),
                         ROCKET_FUEL_CANISTER.get(), FRAME_CASING.get(), GRAV_STRIDERS.get(), DRIFT_FLEECE.get()),
                 CreativeModeTabs.TOOLS_AND_UTILITIES,
-                List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get()),
+                List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get(), XERTZ_RESONATOR.get()),
                 CreativeModeTabs.COMBAT,
                 List.<ItemLike>of(
                         OXYGEN_SUIT_HELMET.get(), OXYGEN_SUIT_CHESTPLATE.get(), OXYGEN_SUIT_LEGGINGS.get(), OXYGEN_SUIT_BOOTS.get(),

@@ -5,6 +5,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.entity.AlienVillager;
 import za.co.neroland.nerospace.entity.CinderStalker;
 import za.co.neroland.nerospace.entity.EmberStrutter;
 import za.co.neroland.nerospace.entity.FrostStrider;
@@ -73,6 +74,11 @@ public final class ModEntities {
             "woolly_drift",
             key -> EntityType.Builder.of(WoollyDrift::new, MobCategory.CREATURE)
                     .sized(0.9F, 1.2F).eyeHeight(1.0F).clientTrackingRange(8).build(key));
+
+    public static final RegistryEntry<EntityType<AlienVillager>> ALIEN_VILLAGER = ENTITY_TYPES.register(
+            "alien_villager",
+            key -> EntityType.Builder.of(AlienVillager::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.95F).eyeHeight(1.7F).clientTrackingRange(10).build(key));
 
     private ModEntities() {
     }

@@ -4,6 +4,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 
+import za.co.neroland.nerospace.entity.AlienVillager;
 import za.co.neroland.nerospace.entity.CinderStalker;
 import za.co.neroland.nerospace.entity.EmberStrutter;
 import za.co.neroland.nerospace.entity.FrostStrider;
@@ -37,6 +38,7 @@ public final class ModEntityAttributes {
         sink.accept(ModEntities.MEADOW_LOPER.get(), MeadowLoper.createAttributes());
         sink.accept(ModEntities.EMBER_STRUTTER.get(), EmberStrutter.createAttributes());
         sink.accept(ModEntities.WOOLLY_DRIFT.get(), WoollyDrift.createAttributes());
+        sink.accept(ModEntities.ALIEN_VILLAGER.get(), AlienVillager.createAttributes());
     }
 
     private ModEntityAttributes() {
