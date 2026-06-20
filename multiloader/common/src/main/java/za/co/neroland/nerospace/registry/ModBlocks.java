@@ -28,6 +28,9 @@ import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
+import za.co.neroland.nerospace.storage.CreativeFluidTankBlock;
+import za.co.neroland.nerospace.storage.CreativeGasTankBlock;
+import za.co.neroland.nerospace.storage.CreativeItemStoreBlock;
 import za.co.neroland.nerospace.storage.GasTankBlock;
 import za.co.neroland.nerospace.storage.TrashCanBlock;
 import za.co.neroland.nerospace.storage.BatteryBlock;
@@ -156,6 +159,21 @@ public final class ModBlocks {
 
     public static final RegistryEntry<CreativeBatteryBlock> CREATIVE_BATTERY = BLOCKS.register("creative_battery",
             key -> new CreativeBatteryBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
+                    .sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<CreativeFluidTankBlock> CREATIVE_FLUID_TANK = BLOCKS.register("creative_fluid_tank",
+            key -> new CreativeFluidTankBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
+                    .sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<CreativeGasTankBlock> CREATIVE_GAS_TANK = BLOCKS.register("creative_gas_tank",
+            key -> new CreativeGasTankBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
+                    .sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<CreativeItemStoreBlock> CREATIVE_ITEM_STORE = BLOCKS.register("creative_item_store",
+            key -> new CreativeItemStoreBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
                     .sound(SoundType.METAL).noOcclusion()));
 

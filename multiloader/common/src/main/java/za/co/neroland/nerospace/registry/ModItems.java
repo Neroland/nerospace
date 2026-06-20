@@ -32,6 +32,8 @@ import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.item.DestinationCompassItem;
 import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
 import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
+import za.co.neroland.nerospace.module.ModuleType;
+import za.co.neroland.nerospace.module.UpgradeModuleItem;
 import za.co.neroland.nerospace.rocket.RocketItem;
 import za.co.neroland.nerospace.rocket.RocketTier;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
@@ -77,6 +79,9 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> UNIVERSAL_PIPE_ITEM = blockItem("universal_pipe", ModBlocks.UNIVERSAL_PIPE);
     public static final RegistryEntry<BlockItem> TRASH_CAN_ITEM = blockItem("trash_can", ModBlocks.TRASH_CAN);
     public static final RegistryEntry<BlockItem> CREATIVE_BATTERY_ITEM = blockItem("creative_battery", ModBlocks.CREATIVE_BATTERY);
+    public static final RegistryEntry<BlockItem> CREATIVE_FLUID_TANK_ITEM = blockItem("creative_fluid_tank", ModBlocks.CREATIVE_FLUID_TANK);
+    public static final RegistryEntry<BlockItem> CREATIVE_GAS_TANK_ITEM = blockItem("creative_gas_tank", ModBlocks.CREATIVE_GAS_TANK);
+    public static final RegistryEntry<BlockItem> CREATIVE_ITEM_STORE_ITEM = blockItem("creative_item_store", ModBlocks.CREATIVE_ITEM_STORE);
     public static final RegistryEntry<BlockItem> GAS_TANK_ITEM = blockItem("gas_tank", ModBlocks.GAS_TANK);
     public static final RegistryEntry<BlockItem> OXYGEN_GENERATOR_ITEM = blockItem("oxygen_generator", ModBlocks.OXYGEN_GENERATOR);
     public static final RegistryEntry<BlockItem> SOLAR_PANEL_ITEM = blockItem("solar_panel", ModBlocks.SOLAR_PANEL);
@@ -108,6 +113,12 @@ public final class ModItems {
     public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");
     /** Trade-only Artificer gear; ported as a plain item (its custom gear behaviour is deferred). */
     public static final RegistryEntry<Item> XERTZ_RESONATOR = item("xertz_resonator");
+
+    // --- Machine upgrade modules (the quarry is the first consumer) ----------
+    public static final RegistryEntry<Item> SPEED_MODULE = module("speed_module", ModuleType.SPEED);
+    public static final RegistryEntry<Item> EFFICIENCY_MODULE = module("efficiency_module", ModuleType.EFFICIENCY);
+    public static final RegistryEntry<Item> FORTUNE_MODULE = module("fortune_module", ModuleType.FORTUNE);
+    public static final RegistryEntry<Item> SILK_TOUCH_MODULE = module("silk_touch_module", ModuleType.SILK_TOUCH);
 
     // --- Rockets (one item per tier; deploys a RocketEntity onto a launch pad) ----
     public static final RegistryEntry<RocketItem> ROCKET_TIER_1 = ITEMS.register("rocket_tier_1",
@@ -207,6 +218,10 @@ public final class ModItems {
         return ITEMS.register(name, key -> new NerospaceSpawnEggItem(new Item.Properties().setId(key), type));
     }
 
+    private static RegistryEntry<Item> module(String name, ModuleType type) {
+        return ITEMS.register(name, key -> new UpgradeModuleItem(new Item.Properties().setId(key), type));
+    }
+
     private static TagKey<Item> cTag(String path) {
         return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", path));
     }
@@ -251,7 +266,9 @@ public final class ModItems {
                         OXYGEN_SUIT_HEAT_HELMET.get(), OXYGEN_SUIT_HEAT_CHESTPLATE.get(), OXYGEN_SUIT_HEAT_LEGGINGS.get(), OXYGEN_SUIT_HEAT_BOOTS.get(),
                         OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get()),
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
-                List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), TRASH_CAN_ITEM.get(), CREATIVE_BATTERY_ITEM.get(), GAS_TANK_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get()));
+                List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), TRASH_CAN_ITEM.get(), CREATIVE_BATTERY_ITEM.get(), GAS_TANK_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(),
+                        SPEED_MODULE.get(), EFFICIENCY_MODULE.get(), FORTUNE_MODULE.get(), SILK_TOUCH_MODULE.get(),
+                        CREATIVE_FLUID_TANK_ITEM.get(), CREATIVE_GAS_TANK_ITEM.get(), CREATIVE_ITEM_STORE_ITEM.get()));
     }
 
     /**

@@ -131,6 +131,17 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.CREATIVE_BATTERY.get());
 
+        // Creative storage: endless sources/sinks for testing logistics.
+        FLUID.registerForBlockEntity(
+                (be, direction) -> be.getTank(),
+                ModBlockEntities.CREATIVE_FLUID_TANK.get());
+        GAS.registerForBlockEntity(
+                (be, direction) -> be.getTank(),
+                ModBlockEntities.CREATIVE_GAS_TANK.get());
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.CREATIVE_ITEM_STORE.get());
+
         // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
         FLUID.registerForBlockEntity(
                 (be, direction) -> be.getTank(),

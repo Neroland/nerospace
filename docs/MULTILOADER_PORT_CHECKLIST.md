@@ -1,7 +1,7 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~121 classes ported, ~143 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~134 classes ported, ~130 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
 > **2026-06-20 update — quarry ported.** All 4 cells green. Added 11 classes:
@@ -126,15 +126,22 @@ checked by a headless build).
   `PipeUpgradeItem`, `SetPipeModePayload`, `UniversalPipeRenderer` (streams + travelling-item visuals,
   per-side I/O modes, filters). Needs networking seam.
 
-### Machine modules / upgrades  (`module/` 3)
-- [ ] `MachineModules`, `ModuleType`, `UpgradeModuleItem` — speed/efficiency upgrade items for machines.
+### Machine modules / upgrades  (`module/` 3) — **DONE (4 cells green)**
+- [x] `ModuleType`, `UpgradeModuleItem` (4 items: speed / efficiency / fortune / silk-touch) + `MachineModules`
+  (rebuilt on a `NonNullList` instead of the root's `MachineItemHandler`). **Re-enabled in the quarry**:
+  module slots restored in the controller's combined `WorldlyContainer` view + `QuarryMenu`, and the
+  speed / energy / Silk-Touch / Fortune multipliers now drive the dig (the quarry's earlier `×1.0`
+  deferral is resolved). Assets + 4 lang keys copied.
 
 ### Solar — tiers/array/BER  (`solar/` 4; single-tier base **done**)
 - [~] `SolarTier`, `SolarArray` (multi-panel pooling), the root tiered block/BE + sun-tracking BER.
 
-### Creative storage variants  (`storage/Creative*`)
-- [ ] `CreativeItemStore`, `CreativeFluidTank`, `CreativeGasTank` (+ `AbstractStorageBlock`) — infinite
-  configurable sources. Marginal (creative-only).
+### Creative storage variants  (`storage/Creative*`) — **DONE (4 cells green)**
+- [x] `AbstractStorageBlock` (shared base) + `CreativeFluidTank` (endless rocket_fuel), `CreativeGasTank`
+  (endless oxygen), `CreativeItemStore` (right-click to set an endless item source). Fluid/gas mirror
+  the ported `CreativeBattery`'s infinite pattern on the cross-loader storage interfaces; the item store
+  exposes its endless source through a vanilla `Container` (no NeoForge `InfiniteResourceHandler`).
+  Fluid/Gas/Item caps wired on both loaders; assets + lang copied.
 
 ### Utility items  (`item/`) — **partly DONE (4 cells green)**
 - [x] `NerospaceSpawnEggItem` (+ **9 spawn eggs**: xertz stalker, quartz crawler, greenling, alien

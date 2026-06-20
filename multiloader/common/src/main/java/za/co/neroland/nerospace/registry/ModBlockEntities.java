@@ -16,6 +16,9 @@ import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeGasTankBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
 import za.co.neroland.nerospace.storage.GasTankBlockEntity;
 import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 import za.co.neroland.nerospace.storage.BatteryBlockEntity;
@@ -87,6 +90,18 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<FuelRefineryBlockEntity>> FUEL_REFINERY =
             BLOCK_ENTITIES.register("fuel_refinery",
                     key -> new BlockEntityType<>(FuelRefineryBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_REFINERY.get())));
+
+    public static final RegistryEntry<BlockEntityType<CreativeFluidTankBlockEntity>> CREATIVE_FLUID_TANK =
+            BLOCK_ENTITIES.register("creative_fluid_tank",
+                    key -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_FLUID_TANK.get())));
+
+    public static final RegistryEntry<BlockEntityType<CreativeGasTankBlockEntity>> CREATIVE_GAS_TANK =
+            BLOCK_ENTITIES.register("creative_gas_tank",
+                    key -> new BlockEntityType<>(CreativeGasTankBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_GAS_TANK.get())));
+
+    public static final RegistryEntry<BlockEntityType<CreativeItemStoreBlockEntity>> CREATIVE_ITEM_STORE =
+            BLOCK_ENTITIES.register("creative_item_store",
+                    key -> new BlockEntityType<>(CreativeItemStoreBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_ITEM_STORE.get())));
 
     public static final RegistryEntry<BlockEntityType<QuarryControllerBlockEntity>> QUARRY_CONTROLLER =
             BLOCK_ENTITIES.register("quarry_controller",

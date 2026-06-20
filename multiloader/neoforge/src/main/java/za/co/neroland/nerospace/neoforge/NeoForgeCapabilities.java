@@ -152,6 +152,20 @@ public final class NeoForgeCapabilities {
                 ModBlockEntities.CREATIVE_BATTERY.get(),
                 (be, side) -> be.getEnergy());
 
+        // Creative storage: endless sources/sinks for testing logistics.
+        event.registerBlockEntity(
+                FLUID,
+                ModBlockEntities.CREATIVE_FLUID_TANK.get(),
+                (be, side) -> be.getTank());
+        event.registerBlockEntity(
+                GAS,
+                ModBlockEntities.CREATIVE_GAS_TANK.get(),
+                (be, side) -> be.getTank());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.CREATIVE_ITEM_STORE.get(),
+                (be, side) -> VanillaContainerWrapper.of(be));
+
         // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
         event.registerBlockEntity(
                 FLUID,
