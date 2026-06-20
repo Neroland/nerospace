@@ -136,9 +136,14 @@ checked by a headless build).
 - [ ] `CreativeItemStore`, `CreativeFluidTank`, `CreativeGasTank` (+ `AbstractStorageBlock`) — infinite
   configurable sources. Marginal (creative-only).
 
-### Utility items  (`item/`)
-- [ ] `ConfiguratorItem`, `DestinationCompassItem`, `GreenxertzNavigatorItem`, `PipeFilterItem`,
-  `PipeUpgradeItem`, `StarGuideBookItem`, `NerospaceSpawnEggItem` (+ **spawn eggs** for all mobs).
+### Utility items  (`item/`) — **partly DONE (4 cells green)**
+- [x] `NerospaceSpawnEggItem` (+ **9 spawn eggs**: xertz stalker, quartz crawler, greenling, alien
+  villager, cinder stalker, frost strider, meadow loper, ember strutter, woolly drift — ruin warden is
+  summon-only). Lazy `EntityType` supplier (vanilla `SpawnEggItem` binds too early); SPAWN_EGGS tab.
+- [x] `DestinationCompassItem` (×4: station/greenxertz/cindara/glacira) + `GreenxertzNavigatorItem` —
+  creative-only travel devices; TOOLS_AND_UTILITIES tab. Assets + 17 lang keys copied.
+- [ ] `ConfiguratorItem`, `PipeFilterItem`, `PipeUpgradeItem` (depend on **advanced pipes**),
+  `StarGuideBookItem` (depends on **star guide**).
 - [~] `gear/XertzResonatorItem` — ported as a **plain item**; real gear behaviour + `AlienGearEvents` pending.
 
 ### Cross-cutting registries  (`registry/`)

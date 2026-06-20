@@ -16,6 +16,8 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
@@ -26,6 +28,9 @@ import net.minecraft.world.level.block.Block;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.item.DestinationCompassItem;
+import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
+import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
 import za.co.neroland.nerospace.rocket.RocketItem;
 import za.co.neroland.nerospace.rocket.RocketTier;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
@@ -113,6 +118,29 @@ public final class ModItems {
     public static final RegistryEntry<RocketItem> ROCKET_TIER_4 = ITEMS.register("rocket_tier_4",
             key -> new RocketItem(new Item.Properties().stacksTo(1).setId(key), RocketTier.TIER_4));
 
+    // --- Creative travel devices --------------------------------------------
+    public static final RegistryEntry<Item> GREENXERTZ_NAVIGATOR = ITEMS.register("greenxertz_navigator",
+            key -> new GreenxertzNavigatorItem(new Item.Properties().stacksTo(1).setId(key)));
+    public static final RegistryEntry<Item> STATION_COMPASS = ITEMS.register("station_compass",
+            key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.STATION_LEVEL));
+    public static final RegistryEntry<Item> GREENXERTZ_COMPASS = ITEMS.register("greenxertz_compass",
+            key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.GREENXERTZ_LEVEL));
+    public static final RegistryEntry<Item> CINDARA_COMPASS = ITEMS.register("cindara_compass",
+            key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.CINDARA_LEVEL));
+    public static final RegistryEntry<Item> GLACIRA_COMPASS = ITEMS.register("glacira_compass",
+            key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.GLACIRA_LEVEL));
+
+    // --- Spawn eggs (lazy entity-type supplier; ruin warden is summon-only) ----
+    public static final RegistryEntry<Item> XERTZ_STALKER_SPAWN_EGG = spawnEgg("xertz_stalker_spawn_egg", ModEntities.XERTZ_STALKER);
+    public static final RegistryEntry<Item> QUARTZ_CRAWLER_SPAWN_EGG = spawnEgg("quartz_crawler_spawn_egg", ModEntities.QUARTZ_CRAWLER);
+    public static final RegistryEntry<Item> GREENLING_SPAWN_EGG = spawnEgg("greenling_spawn_egg", ModEntities.GREENLING);
+    public static final RegistryEntry<Item> ALIEN_VILLAGER_SPAWN_EGG = spawnEgg("alien_villager_spawn_egg", ModEntities.ALIEN_VILLAGER);
+    public static final RegistryEntry<Item> CINDER_STALKER_SPAWN_EGG = spawnEgg("cinder_stalker_spawn_egg", ModEntities.CINDER_STALKER);
+    public static final RegistryEntry<Item> FROST_STRIDER_SPAWN_EGG = spawnEgg("frost_strider_spawn_egg", ModEntities.FROST_STRIDER);
+    public static final RegistryEntry<Item> MEADOW_LOPER_SPAWN_EGG = spawnEgg("meadow_loper_spawn_egg", ModEntities.MEADOW_LOPER);
+    public static final RegistryEntry<Item> EMBER_STRUTTER_SPAWN_EGG = spawnEgg("ember_strutter_spawn_egg", ModEntities.EMBER_STRUTTER);
+    public static final RegistryEntry<Item> WOOLLY_DRIFT_SPAWN_EGG = spawnEgg("woolly_drift_spawn_egg", ModEntities.WOOLLY_DRIFT);
+
     // --- Tool + armor materials --------------------------------------------
     public static final ToolMaterial NEROSIUM_TOOL_MATERIAL = new ToolMaterial(
             BlockTags.INCORRECT_FOR_IRON_TOOL, 350, 7.0F, 2.5F, 15, cTag("ingots/nerosium"));
@@ -174,6 +202,10 @@ public final class ModItems {
         return ITEMS.register(name, key -> new BlockItem(block.get(), new Item.Properties().setId(key)));
     }
 
+    private static RegistryEntry<Item> spawnEgg(String name, RegistryEntry<? extends EntityType<? extends Mob>> type) {
+        return ITEMS.register(name, key -> new NerospaceSpawnEggItem(new Item.Properties().setId(key), type));
+    }
+
     private static TagKey<Item> cTag(String path) {
         return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", path));
     }
@@ -203,7 +235,14 @@ public final class ModItems {
                         ROCKET_FUEL_CANISTER.get(), FRAME_CASING.get(), GRAV_STRIDERS.get(), DRIFT_FLEECE.get()),
                 CreativeModeTabs.TOOLS_AND_UTILITIES,
                 List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get(), XERTZ_RESONATOR.get(),
-                        ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get()),
+                        ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
+                        GREENXERTZ_NAVIGATOR.get(), STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(),
+                        CINDARA_COMPASS.get(), GLACIRA_COMPASS.get()),
+                CreativeModeTabs.SPAWN_EGGS,
+                List.<ItemLike>of(XERTZ_STALKER_SPAWN_EGG.get(), QUARTZ_CRAWLER_SPAWN_EGG.get(),
+                        GREENLING_SPAWN_EGG.get(), ALIEN_VILLAGER_SPAWN_EGG.get(), CINDER_STALKER_SPAWN_EGG.get(),
+                        FROST_STRIDER_SPAWN_EGG.get(), MEADOW_LOPER_SPAWN_EGG.get(), EMBER_STRUTTER_SPAWN_EGG.get(),
+                        WOOLLY_DRIFT_SPAWN_EGG.get()),
                 CreativeModeTabs.COMBAT,
                 List.<ItemLike>of(
                         OXYGEN_SUIT_HELMET.get(), OXYGEN_SUIT_CHESTPLATE.get(), OXYGEN_SUIT_LEGGINGS.get(), OXYGEN_SUIT_BOOTS.get(),
