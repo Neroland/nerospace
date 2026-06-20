@@ -34,24 +34,22 @@ Hard facts gathered while trying to unblock 26.2, so the next person doesn't re-
 
 - **Both native toolchains support de-obf 26.x; architectury-loom is the only one that doesn't** — confirmed: the root NeoForge ModDevGradle build compiles against 26.1.2, and Fabric's official template builds 26.2.
 
-- **26.2 Maven reality (checked 2026-06-18) — what is and isn't published.** Gradle compiles against *published artifacts*, not a git branch, so what matters is which jars are on the NeoForged/Fabric Maven:
-  - **NeoForm 26.2: published** (`net.neoforged:neoform`, latest `26.2-snapshot-8-1`). NeoForm is the de-obfuscated vanilla base the MultiLoader-Template's `common` (ModDevGradle) compiles against — so **`common` builds on 26.2.**
+- **26.2 Maven reality (checked 2026-06-20) — what is and isn't published.** Gradle compiles against *published artifacts*, not a git branch, so what matters is which jars are on the NeoForged/Fabric Maven:
+  - **NeoForm 26.2: published** (`net.neoforged:neoform`, pinned `26.2-1`). NeoForm is the de-obfuscated vanilla base the MultiLoader-Template's `common` (ModDevGradle) compiles against — so **`common` builds on 26.2.**
   - **Fabric 26.2: published** (Fabric Loader `0.19.3` + Fabric API `0.152.1+26.2`) — so **`fabric` builds on 26.2.**
-  - **NeoForge loader userdev 26.2: NOT published** (`net.neoforged:neoforge` metadata still tops out at `26.1.2.76`) — so the **`neoforge` module is the one blocked cell.**
-  - The `neoforged/NeoForge` `26.2.x` branch *exists and is buildable*, but Gradle needs its compiled userdev jar in a resolvable repo. CI hasn't pushed it to the public releases Maven yet — so either **self-build it** (clone `26.2.x` → `./gradlew publishToMavenLocal` → add `mavenLocal()` → set `neo_version_26.2` to the published version) or wait for NeoForge's CI (likely soon, given NeoForm 26.2 is already up). So 3 of 4 cells (common + both Fabric cells) build on 26.2 today; only NeoForge-26.2 needs a self-built or awaited userdev artifact.
+  - **NeoForge loader userdev 26.2: published** (`net.neoforged:neoforge`, latest `26.2.0.6-beta`) — so **`neoforge` builds on 26.2** from the public NeoForged Maven; no self-build needed.
+  - All four cells (common + both Fabric cells + NeoForge) build on 26.2 from public artifacts. (Historically NeoForge 26.2 lagged NeoForm; if a future pin ever fails to resolve, fall back to self-building the `26.2.x` branch → `./gradlew publishToMavenLocal` → `mavenLocal()` → set `neo_version_26.2`.)
 
 - **Build-unblock ≠ mod port.** Getting a Fabric 26.2 jar to *compile* is separate from porting Nerospace's NeoForge-specific systems (capabilities/transfer, attachments, fluids, networking) to Fabric — that migration (§2) is the real effort and is unchanged by the toolchain choice.
 
-**Status: IMPLEMENTED and verified (2026-06-18).** The `multiloader/` scaffold now
+**Status: IMPLEMENTED and verified (2026-06-20).** The `multiloader/` scaffold now
 uses the MultiLoader-Template layout (ModDevGradle `common` on NeoForm + Fabric
 Loom `fabric` + ModDevGradle `neoforge`) — architectury-loom is gone.
-`./gradlew :common:build :fabric:build -Pminecraft_version=26.2` is **BUILD
-SUCCESSFUL** on this machine: `common` against NeoForm `26.2-1`, `fabric` against
-Fabric Loom `1.17.11` + Fabric API `0.152.1+26.2` (no `mappings`). The **`neoforge`
-cell** is the only one still pending — it needs the NeoForge 26.2 userdev
-(pinned to the `26.2.0.1-beta` Maven default, or self-build `26.2.x` to
-`mavenLocal()`); swapping to the official jar when it lands is a one-line version
-change. See `multiloader/README.md` for the per-cell status and the self-build step.
+`./gradlew :neoforge:build :fabric:build -Pminecraft_version=26.2` is **BUILD
+SUCCESSFUL** on this machine: `common`/`neoforge` against NeoForm `26.2-1` +
+NeoForge `26.2.0.6-beta`, `fabric` against Fabric Loom `1.17.11` + Fabric API
+`0.152.1+26.2` (no `mappings`). All four loader × version cells now build from
+public artifacts. See `multiloader/README.md` for the per-cell status.
 
 ### Field-notes sources
 

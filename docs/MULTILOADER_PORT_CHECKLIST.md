@@ -1,8 +1,17 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~102 classes ported, ~162 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~110 classes ported, ~154 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-20 update — fuel machines ported.** All 4 cells green. Added 8 classes:
+> `machine/{FuelTankBlock, FuelTankBlockEntity, FuelRefineryBlock, FuelRefineryBlockEntity}` +
+> `menu/{FuelTankMenu, FuelRefineryMenu}` + `client/{FuelTankScreen, FuelRefineryScreen}`, registered
+> the 2 blocks / BEs / menus / block-items and wired Energy/Item/Fluid caps on both loaders. Rebuilt on
+> the shared `FluidTank` + `EnergyBuffer` + vanilla `WorldlyContainer` slots (no `MachineItemHandler` in
+> the multiloader); `Tuning` values inlined. Assets + 4 lang keys copied. The Fuel Tank closes the loop
+> with the rockets batch: refinery (coal + blaze powder + power → fuel) → pipe → fuel tank → auto-fuels a
+> padded rocket.
 
 > **2026-06-20 update — rockets (core) ported.** All 4 cells green. Added 17 classes:
 > `rocket/{RocketTier, Destinations, LaunchPadMultiblock, RocketLaunchPadBlock, LaunchGantryBlock,
@@ -67,9 +76,15 @@ checked by a headless build).
   `MinerTier`, `OutputFilter`, `PlanetMiningProfile`, `QuarryChunkLoader`. Risk: **high** (chunk-loading,
   fake-player-style mining, multiblock). Chunk-loading needs a cross-loader seam (NeoForge ticket API vs Fabric).
 
-### Fuel machines  (`machine/Fuel*` — depends on the ported rocket-fuel fluid)
-- [ ] `FuelTankBlock`(+BE +menu), `FuelRefineryBlock`(+BE +menu) + their screens — refine inputs → rocket fuel,
-  pump into a docked rocket. Rebuild on cross-loader `FluidTank` (root uses NeoForge transfer).
+### Fuel machines  (`machine/Fuel*` — depends on the ported rocket-fuel fluid) — **DONE (4 cells green)**
+- [x] `FuelTankBlock`(+BE +menu +screen): stores `rocket_fuel`, accepts buckets/canisters, auto-fuels a
+  rocket on an adjacent pad (4x on a full 3x3, 12x on a Heavy complex), comparator out. Rebuilt on the
+  shared `FluidTank`; canister slot is a vanilla `WorldlyContainer` (Item cap on both loaders); Fluid cap
+  exposed for pipe filling. Pump FX uses a vanilla sound (root's `ModSounds.FUEL_TANK_PUMP` alias not ported).
+- [x] `FuelRefineryBlock`(+BE +menu +screen): coal/charcoal + blaze powder + grid power → liquid
+  `rocket_fuel` over a work cycle; Energy (insert-only) + Fluid (extract) + Item caps on both loaders.
+  Rebuilt on `EnergyBuffer` + `FluidTank` + a vanilla `WorldlyContainer`; `Tuning` values inlined.
+  Assets (textures, models, blockstates, loot, recipes) + 4 lang keys copied.
 
 ### Atmosphere / terraforming  (`world/Oxygen*`, `world/Terraform*`, `machine/Terraform*`, `HydrationModule`)
 - [ ] Oxygen field (airless-dimension survival): `OxygenField`, `OxygenFieldManager`, `OxygenFieldEvents`,

@@ -6,11 +6,11 @@ name: Multiloader Build
 #
 # STRICT: there is no continue-on-error, so ANY matrix cell that fails to build
 # fails the whole workflow. All four loader x version cells are verified buildable
-# from public artifacts (gradle MCP, 2026-06-19):
+# from public artifacts (gradle MCP, 2026-06-20):
 #   - neoforge @ 26.1.2  -> NeoForge 26.1.2.76
-#   - neoforge @ 26.2    -> NeoForge 26.2.0.3-beta (now on the public NeoForged Maven)
+#   - neoforge @ 26.2    -> NeoForge 26.2.0.6-beta (now on the public NeoForged Maven)
 #   - fabric   @ 26.2    -> Fabric Loom 1.17 + fabric-api 0.152.1+26.2 (de-obf, no mappings)
-#   - fabric   @ 26.1.2  -> Fabric Loom 1.17 + fabric-api 0.150.0+26.1.2; needs the access
+#   - fabric   @ 26.1.2  -> Fabric Loom 1.17 + fabric-api 0.151.0+26.1.2; needs the access
 #                          widener (fabric/src/main/resources/nerospace.accesswidener) because
 #                          vanilla MC 26.1.2 kept BlockEntityType's constructor private
 #                          (Mojang made it public in 26.2; NeoForge widens it on both).

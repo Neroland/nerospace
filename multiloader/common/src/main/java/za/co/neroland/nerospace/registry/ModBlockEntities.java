@@ -6,6 +6,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
+import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
@@ -75,6 +77,14 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<SolarPanelBlockEntity>> SOLAR_PANEL =
             BLOCK_ENTITIES.register("solar_panel",
                     key -> new BlockEntityType<>(SolarPanelBlockEntity::new, java.util.Set.of(ModBlocks.SOLAR_PANEL.get())));
+
+    public static final RegistryEntry<BlockEntityType<FuelTankBlockEntity>> FUEL_TANK =
+            BLOCK_ENTITIES.register("fuel_tank",
+                    key -> new BlockEntityType<>(FuelTankBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_TANK.get())));
+
+    public static final RegistryEntry<BlockEntityType<FuelRefineryBlockEntity>> FUEL_REFINERY =
+            BLOCK_ENTITIES.register("fuel_refinery",
+                    key -> new BlockEntityType<>(FuelRefineryBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_REFINERY.get())));
 
     private ModBlockEntities() {
     }

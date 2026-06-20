@@ -133,6 +133,25 @@ public final class NerospaceFabric implements ModInitializer {
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.CREATIVE_BATTERY.get());
+
+        // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
+        FLUID.registerForBlockEntity(
+                (be, direction) -> be.getTank(),
+                ModBlockEntities.FUEL_TANK.get());
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.FUEL_TANK.get());
+
+        // Fuel Refinery: grid power in, refined fuel out, coal + blaze powder in.
+        ENERGY.registerForBlockEntity(
+                (be, direction) -> be.getEnergy(),
+                ModBlockEntities.FUEL_REFINERY.get());
+        FLUID.registerForBlockEntity(
+                (be, direction) -> be.getTank(),
+                ModBlockEntities.FUEL_REFINERY.get());
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.FUEL_REFINERY.get());
     }
 
     private static void addOverworldOre(String placedFeatureName) {

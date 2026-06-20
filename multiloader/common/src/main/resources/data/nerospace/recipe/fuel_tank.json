@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "nerospace:rocket_fuel_canister",
+    "G": "#c:glass_blocks/colorless",
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    "NGN",
+    "GCG",
+    "NGN"
+  ],
+  "result": {
+    "id": "nerospace:fuel_tank"
+  }
+}

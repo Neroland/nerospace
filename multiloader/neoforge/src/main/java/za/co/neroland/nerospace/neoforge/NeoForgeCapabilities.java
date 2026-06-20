@@ -151,5 +151,33 @@ public final class NeoForgeCapabilities {
                 ENERGY,
                 ModBlockEntities.CREATIVE_BATTERY.get(),
                 (be, side) -> be.getEnergy());
+
+        // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
+        event.registerBlockEntity(
+                FLUID,
+                ModBlockEntities.FUEL_TANK.get(),
+                (be, side) -> be.getTank());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.FUEL_TANK.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+
+        // Fuel Refinery: grid power in, refined fuel out, coal + blaze powder in.
+        event.registerBlockEntity(
+                ENERGY,
+                ModBlockEntities.FUEL_REFINERY.get(),
+                (be, side) -> be.getEnergy());
+        event.registerBlockEntity(
+                FLUID,
+                ModBlockEntities.FUEL_REFINERY.get(),
+                (be, side) -> be.getTank());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.FUEL_REFINERY.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
     }
 }

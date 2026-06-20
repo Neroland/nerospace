@@ -14,6 +14,8 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.fluid.RocketFuelLiquidBlock;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlock;
+import za.co.neroland.nerospace.machine.FuelRefineryBlock;
+import za.co.neroland.nerospace.machine.FuelTankBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlock;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
@@ -167,6 +169,17 @@ public final class ModBlocks {
             key -> new SolarPanelBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_BLUE).strength(2.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    // --- Fuel machines ------------------------------------------------------
+    public static final RegistryEntry<FuelTankBlock> FUEL_TANK = BLOCKS.register("fuel_tank",
+            key -> new FuelTankBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+
+    public static final RegistryEntry<FuelRefineryBlock> FUEL_REFINERY = BLOCKS.register("fuel_refinery",
+            key -> new FuelRefineryBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
 
     // --- Rockets ------------------------------------------------------------
     public static final RegistryEntry<RocketLaunchPadBlock> ROCKET_LAUNCH_PAD = BLOCKS.register("rocket_launch_pad",

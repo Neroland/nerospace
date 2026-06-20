@@ -7,15 +7,15 @@ from one shared codebase, on the **de-obfuscated Minecraft 26.x** toolchain.
 > repo root is untouched. This is a parallel scaffold you promote to the root
 > when ready. Full migration plan: [`docs/MULTILOADER.md`](../docs/MULTILOADER.md).
 
-## Status (verified 2026-06-18)
+## Status (verified 2026-06-20)
 
 Built via the gradle MCP on this machine:
 
 | Cell | Toolchain | 26.2 | 26.1.2 |
 | --- | --- | --- | --- |
 | `common` | ModDevGradle (NeoForm) | ✅ builds (`26.2-1`) | NeoForm `26.1.2-1` |
-| `fabric` | Fabric Loom `1.17.11` | ✅ **builds** (`fabric-api 0.152.1+26.2`) | ✅ builds (`fabric-api 0.150.0+26.1.2`; needs access widener — see below) |
-| `neoforge` | ModDevGradle (NeoForge) | ✅ builds (`26.2.0.3-beta`, on public NeoForged Maven) | NeoForge `26.1.2.76` |
+| `fabric` | Fabric Loom `1.17.11` | ✅ **builds** (`fabric-api 0.152.1+26.2`) | ✅ builds (`fabric-api 0.151.0+26.1.2`; needs access widener — see below) |
+| `neoforge` | ModDevGradle (NeoForge) | ✅ builds (`26.2.0.6-beta`, on public NeoForged Maven) | NeoForge `26.1.2.76` |
 
 `./gradlew :common:build :fabric:build -Pminecraft_version=26.2` → **BUILD SUCCESSFUL**.
 
@@ -66,9 +66,9 @@ Jars land in `multiloader/<loader>/build/libs/`.
 
 ## All four cells build (was: NeoForge 26.2 pending)
 
-NeoForge's own loader userdev for 26.2 may already be on Maven as a beta
-(`neo_version_26.2=26.2.0.1-beta` is pinned — the official MultiLoader-Template's
-default). If it doesn't resolve yet, **self-build it** until it publishes:
+NeoForge's own loader userdev for 26.2 is on the public Maven as a beta
+(`neo_version_26.2=26.2.0.6-beta` is pinned and resolves from the NeoForged
+Maven). If a future pin ever fails to resolve, **self-build it**:
 
 ```bash
 git clone https://github.com/neoforged/NeoForge && cd NeoForge
@@ -112,14 +112,14 @@ build. Until then the root build remains the source of truth.
 - [jaredlll08/MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template) · [official Fabric example (de-obf)](https://github.com/FabricMC/fabric-example-mod)
 - [NeoForm](https://projects.neoforged.net/neoforged/neoform) · [NeoForge](https://projects.neoforged.net/neoforged/neoforge) · [Fabric develop](https://fabricmc.net/develop)
 
-## Build matrix status (2026-06-19)
+## Build matrix status (2026-06-20)
 
 All four loader × version cells build from **public artifacts** (verified via the gradle MCP),
 and CI (`.github/workflows/multiloader.yml`) builds all four strictly (any failure fails the run):
 
 | | 26.1.2 | 26.2 |
 | --- | --- | --- |
-| **neoforge** | ✅ `26.1.2.76` | ✅ `26.2.0.3-beta` (public Maven) |
+| **neoforge** | ✅ `26.1.2.76` | ✅ `26.2.0.6-beta` (public Maven) |
 | **fabric** | ✅ (access widener) | ✅ `fabric-api 0.152.1+26.2` |
 
 Fabric @ 26.1.2 needs `fabric/src/main/resources/nerospace.accesswidener` because vanilla
