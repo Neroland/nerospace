@@ -62,6 +62,7 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> FLUID_TANK_ITEM = blockItem("fluid_tank", ModBlocks.FLUID_TANK);
     public static final RegistryEntry<BlockItem> COMBUSTION_GENERATOR_ITEM = blockItem("combustion_generator", ModBlocks.COMBUSTION_GENERATOR);
     public static final RegistryEntry<BlockItem> NEROSIUM_GRINDER_ITEM = blockItem("nerosium_grinder", ModBlocks.NEROSIUM_GRINDER);
+    public static final RegistryEntry<BlockItem> PASSIVE_GENERATOR_ITEM = blockItem("passive_generator", ModBlocks.PASSIVE_GENERATOR);
 
     // --- Materials ----------------------------------------------------------
     public static final RegistryEntry<Item> RAW_NEROSIUM = item("raw_nerosium");
@@ -177,7 +178,7 @@ public final class ModItems {
                         OXYGEN_SUIT_HEAT_HELMET.get(), OXYGEN_SUIT_HEAT_CHESTPLATE.get(), OXYGEN_SUIT_HEAT_LEGGINGS.get(), OXYGEN_SUIT_HEAT_BOOTS.get(),
                         OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get()),
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
-                List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get()));
+                List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get()));
     }
 
     private ModItems() {

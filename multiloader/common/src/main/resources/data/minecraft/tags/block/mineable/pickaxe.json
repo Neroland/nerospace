@@ -24,6 +24,7 @@
     "nerospace:battery",
     "nerospace:fluid_tank",
     "nerospace:combustion_generator",
-    "nerospace:nerosium_grinder"
+    "nerospace:nerosium_grinder",
+    "nerospace:passive_generator"
   ]
 }

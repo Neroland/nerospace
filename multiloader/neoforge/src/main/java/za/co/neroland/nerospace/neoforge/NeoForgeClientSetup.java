@@ -5,6 +5,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
+import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /** NeoForge client-only wiring (screen registration). Loaded only behind a Dist.CLIENT guard. */
@@ -20,5 +21,6 @@ public final class NeoForgeClientSetup {
     private static void onRegisterScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
+        event.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
     }
 }

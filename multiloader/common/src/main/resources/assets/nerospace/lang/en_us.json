@@ -58,5 +58,7 @@
   "block.nerospace.combustion_generator": "Combustion Generator",
   "container.nerospace.combustion_generator": "Combustion Generator",
   "block.nerospace.nerosium_grinder": "Nerosium Grinder",
-  "container.nerospace.nerosium_grinder": "Nerosium Grinder"
+  "container.nerospace.nerosium_grinder": "Nerosium Grinder",
+  "block.nerospace.passive_generator": "Passive Generator",
+  "container.nerospace.passive_generator": "Passive Generator"
 }
