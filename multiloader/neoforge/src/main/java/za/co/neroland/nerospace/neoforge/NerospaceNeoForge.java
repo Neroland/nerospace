@@ -1,20 +1,15 @@
 package za.co.neroland.nerospace.neoforge;
 
-import java.util.List;
-
-import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.platform.NeoForgeFluidFactory;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
-import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
 
 /**
@@ -34,15 +29,10 @@ public final class NerospaceNeoForge {
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             NeoForgeClientSetup.init(modEventBus);
         }
-        modEventBus.addListener(this::onBuildCreativeTabs);
+        // Creative-tab contents are defined once by the cross-loader ModCreativeTab (a dedicated
+        // Nerospace tab registered via the vanilla CREATIVE_MODE_TAB registry), so no NeoForge-specific
+        // BuildCreativeModeTabContentsEvent injection is needed.
         modEventBus.addListener(this::onCreateEntityAttributes);
-    }
-
-    private void onBuildCreativeTabs(BuildCreativeModeTabContentsEvent event) {
-        List<ItemLike> items = ModItems.creativeTabItems().get(event.getTabKey());
-        if (items != null) {
-            items.forEach(event::accept);
-        }
     }
 
     private void onCreateEntityAttributes(EntityAttributeCreationEvent event) {

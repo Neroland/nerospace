@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.registry;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -251,6 +252,26 @@ public final class ModItems {
                         OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get()),
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
                 List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), TRASH_CAN_ITEM.get(), CREATIVE_BATTERY_ITEM.get(), GAS_TANK_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get()));
+    }
+
+    /**
+     * All mod items in a defined order, for the dedicated {@link ModCreativeTab}. Flattens
+     * {@link #creativeTabItems()} (which still groups by vanilla theme) in a stable tab order.
+     */
+    public static List<ItemLike> creativeContents() {
+        Map<ResourceKey<CreativeModeTab>, List<ItemLike>> groups = creativeTabItems();
+        List<ItemLike> all = new ArrayList<>();
+        for (ResourceKey<CreativeModeTab> tab : List.of(
+                CreativeModeTabs.NATURAL_BLOCKS, CreativeModeTabs.BUILDING_BLOCKS,
+                CreativeModeTabs.INGREDIENTS, CreativeModeTabs.TOOLS_AND_UTILITIES,
+                CreativeModeTabs.COMBAT, CreativeModeTabs.FUNCTIONAL_BLOCKS,
+                CreativeModeTabs.SPAWN_EGGS)) {
+            List<ItemLike> group = groups.get(tab);
+            if (group != null) {
+                all.addAll(group);
+            }
+        }
+        return all;
     }
 
     private ModItems() {

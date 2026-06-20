@@ -3,7 +3,6 @@ package za.co.neroland.nerospace.fabric;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
-import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
@@ -21,7 +20,6 @@ import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
-import za.co.neroland.nerospace.registry.ModItems;
 
 /**
  * Fabric entry point. Shared init registers content eagerly, then Fabric-side
@@ -54,9 +52,8 @@ public final class NerospaceFabric implements ModInitializer {
         NerospaceCommon.LOGGER.info("[Nerospace] Fabric bootstrap");
         NerospaceCommon.init();
 
-        ModItems.creativeTabItems().forEach((tab, items) ->
-                CreativeModeTabEvents.modifyOutputEvent(tab)
-                        .register(output -> items.forEach(output::accept)));
+        // Creative-tab contents are defined once by the cross-loader ModCreativeTab (a dedicated
+        // Nerospace tab), so no per-loader creative-tab injection is needed here.
 
         addOverworldOre("nerosium_ore_placed");
 

@@ -150,8 +150,13 @@ checked by a headless build).
 - [ ] `ModDataComponents`, `ModAttachments` (data attachments — needs a cross-loader seam: NeoForge
   attachments vs Fabric component/attachment API), `ModCriteria` (advancement triggers), `ModTags`,
   `ModFeatures`, `ModConfiguredFeatures`/`ModPlacedFeatures`/`ModBiomes`/`ModBiomeModifiers` (datagen
-  bootstraps — mostly superseded by the copied JSON), `ModCreativeModeTabs` (a dedicated mod tab; we
-  currently inject into vanilla tabs), `ModDimensionTypes` (space type — JSON already copied).
+  bootstraps — mostly superseded by the copied JSON), `ModDimensionTypes` (space type — JSON already copied).
+- [x] `ModCreativeModeTabs` → ported as `ModCreativeTab`: a **dedicated "Nerospace" tab** registered via
+  the cross-loader `RegistrationProvider` over the vanilla `CREATIVE_MODE_TAB` registry, listing all
+  items (`ModItems.creativeContents()`). **Fixes a latent runtime bug**: the earlier per-loader injection
+  into vanilla tabs (`BuildCreativeModeTabContentsEvent` / `CreativeModeTabEvents`) never populated the
+  tabs in-game (items were searchable but absent when browsing) — replaced on both loaders. Note: vanilla
+  `CreativeModeTab.builder(Row, column)` (the no-arg overload + `withTabsBefore` are NeoForge-only).
 
 ### Networking  (`network/` 5) — **needed by oxygen HUD, meteors, pipe modes**
 - [ ] Cross-loader packet seam: NeoForge `PayloadRegistrar` vs Fabric networking API. `ModNetwork`,

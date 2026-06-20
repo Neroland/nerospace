@@ -137,5 +137,6 @@
   "item.nerospace.woolly_drift_spawn_egg": "Woolly Drift Spawn Egg",
   "item.nerospace.xertz_quartz": "Xertz Quartz",
   "item.nerospace.xertz_resonator": "Xertz Resonator",
-  "item.nerospace.xertz_stalker_spawn_egg": "Xertz Stalker Spawn Egg"
+  "item.nerospace.xertz_stalker_spawn_egg": "Xertz Stalker Spawn Egg",
+  "itemGroup.nerospace": "Nerospace"
 }
