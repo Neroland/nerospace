@@ -17,6 +17,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
+import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -39,6 +40,12 @@ public final class NerospaceFabric implements ModInitializer {
             BlockApiLookup.get(
                     Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "fluid"),
                     NerospaceFluidStorage.class, Direction.class);
+
+    /** Mod-owned gas lookup; mirrors the NeoForge gas BlockCapability of the same id. */
+    public static final BlockApiLookup<NerospaceGasStorage, Direction> GAS =
+            BlockApiLookup.get(
+                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "gas"),
+                    NerospaceGasStorage.class, Direction.class);
 
     @Override
     public void onInitialize() {
@@ -89,6 +96,24 @@ public final class NerospaceFabric implements ModInitializer {
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.UNIVERSAL_PIPE.get());
+        GAS.registerForBlockEntity(
+                (be, direction) -> be.getGas(),
+                ModBlockEntities.UNIVERSAL_PIPE.get());
+
+        GAS.registerForBlockEntity(
+                (be, direction) -> be.getTank(),
+                ModBlockEntities.GAS_TANK.get());
+
+        ENERGY.registerForBlockEntity(
+                (be, direction) -> be.getEnergy(),
+                ModBlockEntities.OXYGEN_GENERATOR.get());
+        GAS.registerForBlockEntity(
+                (be, direction) -> be.getGas(),
+                ModBlockEntities.OXYGEN_GENERATOR.get());
+
+        ENERGY.registerForBlockEntity(
+                (be, direction) -> be.getEnergy(),
+                ModBlockEntities.SOLAR_PANEL.get());
 
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),

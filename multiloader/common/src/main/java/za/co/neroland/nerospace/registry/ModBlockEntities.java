@@ -7,9 +7,12 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
+import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
+import za.co.neroland.nerospace.storage.GasTankBlockEntity;
 import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 import za.co.neroland.nerospace.storage.BatteryBlockEntity;
 import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
@@ -60,6 +63,18 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<CreativeBatteryBlockEntity>> CREATIVE_BATTERY =
             BLOCK_ENTITIES.register("creative_battery",
                     key -> new BlockEntityType<>(CreativeBatteryBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_BATTERY.get())));
+
+    public static final RegistryEntry<BlockEntityType<GasTankBlockEntity>> GAS_TANK =
+            BLOCK_ENTITIES.register("gas_tank",
+                    key -> new BlockEntityType<>(GasTankBlockEntity::new, java.util.Set.of(ModBlocks.GAS_TANK.get())));
+
+    public static final RegistryEntry<BlockEntityType<OxygenGeneratorBlockEntity>> OXYGEN_GENERATOR =
+            BLOCK_ENTITIES.register("oxygen_generator",
+                    key -> new BlockEntityType<>(OxygenGeneratorBlockEntity::new, java.util.Set.of(ModBlocks.OXYGEN_GENERATOR.get())));
+
+    public static final RegistryEntry<BlockEntityType<SolarPanelBlockEntity>> SOLAR_PANEL =
+            BLOCK_ENTITIES.register("solar_panel",
+                    key -> new BlockEntityType<>(SolarPanelBlockEntity::new, java.util.Set.of(ModBlocks.SOLAR_PANEL.get())));
 
     private ModBlockEntities() {
     }

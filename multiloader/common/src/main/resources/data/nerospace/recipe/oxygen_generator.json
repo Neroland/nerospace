@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "nerospace:rocket_fuel_canister",
+    "G": "#c:glass_blocks/colorless",
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "NGN",
+    "RCR",
+    "NNN"
+  ],
+  "result": {
+    "id": "nerospace:oxygen_generator"
+  }
+}

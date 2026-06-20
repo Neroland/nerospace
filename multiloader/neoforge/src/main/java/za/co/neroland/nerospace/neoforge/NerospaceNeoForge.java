@@ -11,6 +11,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.platform.NeoForgeFluidFactory;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
 
@@ -25,6 +26,7 @@ public final class NerospaceNeoForge {
     public NerospaceNeoForge(IEventBus modEventBus, ModContainer modContainer) {
         NerospaceCommon.LOGGER.info("[Nerospace] NeoForge bootstrap");
         NerospaceCommon.init();
+        NeoForgeFluidFactory.registerFluidTypes(modEventBus);
         NeoForgeRegistrationFactory.registerAll(modEventBus);
         NeoForgeCapabilities.register(modEventBus);
         if (FMLEnvironment.getDist() == Dist.CLIENT) {

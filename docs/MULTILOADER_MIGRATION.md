@@ -18,15 +18,34 @@ and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after e
 > (below, §3b/§3c) is **subsystem work**, not per-block batches — each is a focused effort and
 > several are runtime-verification-dependent (rendering / world / behavior can't be checked headlessly).
 >
-> Remaining, by subsystem (rough size): **rocket-fuel fluid** (hard cross-loader fluid registration —
-> NeoForge `FluidType`/`BaseFlowingFluid` vs Fabric `FlowableFluid` subclass + render handler; unblocks
-> refinery, fuel tank, bucket); **gas system** (`GasResource` + handlers; unblocks oxygen generator,
-> gas tanks); **dimensions** (Greenxertz/Cindara/Glacira biomes+dims+travel; unblocks the planet ores'
-> worldgen); **entities** (alien villager, xertz stalker + attributes + renderers); **rockets** (items,
-> tiers, launch logic); **quarry** (area mining); **structures** (station/village/meteor cores + events);
-> **atmosphere/terraforming** (terraformer, monitor, hydration); **solar panel** (tiers + multiblock +
-> BER); **star guide** (progression UI); **creative item/fluid stores** (infinite-resource config — marginal).
-> Recommended order: rocket-fuel fluid → item-pipe (item query seam) → gas → entities → dimensions → the rest.
+> **2026-06-20 (later): rocket-fuel FLUID ported** — all 4 cells green. A `FluidFactory` platform
+> seam creates the still/flowing `Fluid`: NeoForge uses `BaseFlowingFluid` backed by a registered
+> `FluidType`; Fabric uses a hand-written vanilla `FlowingFluid` subclass (`RocketFuelFluid`, override
+> set mirrors `WaterFluid`). Common registers the fluids (`ModFluids` + the seam), the `LiquidBlock`
+> (`RocketFuelLiquidBlock`, a public-ctor subclass to dodge the protected vanilla ctor cross-loader),
+> and `rocket_fuel_bucket` (`BucketItem`). `ModRegistries` now runs fluids first (eager-Fabric order).
+> In-world fluid rendering is wired on NeoForge (`RegisterFluidModelsEvent` + `FluidModel.Unbaked`, both
+> 26.1.2 & 26.2). **Known follow-up:** the Fabric client fluid-render module (`fabric-api`
+> `FluidRenderHandlerRegistry`) is not on the de-obf Loom classpath here, so on Fabric the liquid renders
+> with the default texture in-world (bucket icon, tank storage, and all behaviour still work); revisit
+> when that fabric-api module is available. This unblocks the refinery / fuel tank.
+>
+> **2026-06-20 (later still): GAS layer ported** — all 4 cells green. Self-contained cross-loader gas
+> layer mirroring the energy/fluid seams: `GasResource` (plain vanilla enum, replacing the root's
+> NeoForge-transfer `Resource`), `NerospaceGasStorage` + `GasTank`, and a `GasLookup` query seam
+> (NeoForge `BlockCapability` `nerospace:gas` + Fabric `BlockApiLookup`). Ported blocks: `gas_tank`
+> and a GUI-less `oxygen_generator` (grid-powered electrolyser: spends energy → synthesises oxygen into
+> an extract-only gas port). The **universal pipe now relays gas as well as energy**, so the network runs
+> end-to-end: generator → pipe → oxygen generator → pipe → gas tank. (The world oxygen-field effect +
+> HUD + the generator GUI are a deferred atmosphere subsystem.)
+>
+> Remaining, by subsystem (rough size): **dimensions** (Greenxertz/Cindara/Glacira biomes+dims+travel;
+> unblocks the planet ores' worldgen); **entities** (alien villager, xertz stalker + attributes +
+> renderers); **rockets** (items, tiers, launch logic); **quarry** (area mining); **structures**
+> (station/village/meteor cores + events); **atmosphere/terraforming** (oxygen field, terraformer,
+> monitor, hydration); **solar panel** (tiers + multiblock + BER); **star guide** (progression UI);
+> **item-pipe** (item query seam in the universal pipe); **creative item/fluid/gas stores**
+> (infinite-resource config — marginal). Recommended order: item-pipe → entities → dimensions → rockets → the rest.
 
 ---
 

@@ -4,16 +4,23 @@ import java.util.function.UnaryOperator;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.MapColor;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.fluid.RocketFuelLiquidBlock;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
+import za.co.neroland.nerospace.machine.OxygenGeneratorBlock;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
+import za.co.neroland.nerospace.machine.SolarPanelBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
+import za.co.neroland.nerospace.storage.GasTankBlock;
 import za.co.neroland.nerospace.storage.TrashCanBlock;
 import za.co.neroland.nerospace.storage.BatteryBlock;
 import za.co.neroland.nerospace.storage.FluidTankBlock;
@@ -143,6 +150,29 @@ public final class ModBlocks {
             key -> new CreativeBatteryBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
                     .sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<GasTankBlock> GAS_TANK = BLOCKS.register("gas_tank",
+            key -> new GasTankBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<OxygenGeneratorBlock> OXYGEN_GENERATOR = BLOCKS.register("oxygen_generator",
+            key -> new OxygenGeneratorBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+
+    public static final RegistryEntry<SolarPanelBlock> SOLAR_PANEL = BLOCKS.register("solar_panel",
+            key -> new SolarPanelBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_BLUE).strength(2.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    // Rocket fuel world block (placed by the bucket). LiquidBlock holds the source fluid, resolved
+    // lazily on NeoForge / after ModFluids.init() on Fabric — hence ModFluids registers first.
+    public static final RegistryEntry<RocketFuelLiquidBlock> ROCKET_FUEL_BLOCK = BLOCKS.register("rocket_fuel",
+            key -> new RocketFuelLiquidBlock((FlowingFluid) ModFluids.ROCKET_FUEL.get(),
+                    BlockBehaviour.Properties.of().setId(key)
+                            .mapColor(MapColor.COLOR_ORANGE).replaceable().noCollision()
+                            .strength(100.0F).noLootTable()));
 
     private static RegistryEntry<Block> block(String name, UnaryOperator<BlockBehaviour.Properties> props) {
         return BLOCKS.register(name, key -> new Block(props.apply(BlockBehaviour.Properties.of().setId(key))));
