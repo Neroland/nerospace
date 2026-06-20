@@ -59,6 +59,15 @@ neoForge {
             server()
             gameDirectory = file('runs/server')
         }
+
+        // Stop ModDevGradle from (re)generating absolute, machine-specific
+        // "neoforge - Client/Server" entries into multiloader/.vscode/launch.json
+        // on every Gradle/IDE sync. The committed relative configs
+        // (${workspaceFolder} + preLaunchTask) are the source of truth.
+        // Mirrors the root build's runs.configureEach { disableIdeRun() }.
+        configureEach {
+            disableIdeRun()
+        }
     }
 
     mods {

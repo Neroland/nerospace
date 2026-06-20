@@ -1,8 +1,23 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **85 classes ported, 179 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~102 classes ported, ~162 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-20 update — rockets (core) ported.** All 4 cells green. Added 17 classes:
+> `rocket/{RocketTier, Destinations, LaunchPadMultiblock, RocketLaunchPadBlock, LaunchGantryBlock,
+> RocketItem, RocketEntity, RocketMenu}` + `client/{RocketModel, RocketT2/T3/T4Model, RocketRenderState,
+> RocketRenderer, TexturedContainerScreen, SpaceButton, RocketScreen}`, registered the entity / menu /
+> blocks / 4 tier items, and copied the rocket assets (entity+item+block textures, GUI, item/block models,
+> blockstates, loot, recipes, 25 lang keys). **Cross-loader rewrites:** fuel store on the shared
+> `FluidTank` (not NeoForge transfer); intake is a plain `SimpleContainer(1)`; the menu is **non-extended**
+> (rocket ref server-side only, client reads synced `ContainerData`, opened via vanilla
+> `openMenu(MenuProvider)`); the renderer **bakes each tier layer directly** (no model-layer registry);
+> dropped the NeoForge-only `shouldRiderSit()` override. **Deferred** (own batches): the multi-station
+> founding system (`StationCoreBlock`+BE, `StationRegistry`, Station Charter, `founded_station` criterion —
+> needs data-attachment + criteria seams + structures) and the pipe/hopper **automation proxy** that feeds
+> fuel into a docked rocket (needs the entity item-capability seam). Runtime behaviour (travel/teleport,
+> rendering) is unverifiable headlessly — compile-verified on all 4 cells only.
 
 Legend: `[x]` done · `[~]` partial / simplified · `[ ]` not started.
 Risk = how much is loader-coupled or **runtime-only-verifiable** (rendering / world / behaviour can't be
@@ -32,15 +47,20 @@ checked by a headless build).
 
 ## 🚧 Remaining subsystems
 
-### Rockets & travel  (`rocket/` 11 + client + items) — **scoped, next**
-- [ ] `RocketTier`, `Destinations` (port; inline `Tuning` values).
-- [ ] `RocketEntity` — **rewrite, not copy**: root is NeoForge-`transfer`-coupled (`RocketFuelTank`,
-  `ItemStacksResourceHandler`) and pulls in `Tuning` + `ModCriteria`. Rebuild on the cross-loader
-  `FluidTank` + vanilla `ServerPlayer.teleportTo`. Risk: **high (travel/teleport unverifiable headlessly)**.
-- [ ] `RocketItem` ×4 tiers, `RocketMenu` + `RocketScreen` (destination selector + fuel gauge).
-- [ ] `RocketModel` (+ `RocketT2/T3/T4Model`), `RocketRenderer`, `RocketRenderState`; entity + item textures.
-- [ ] Launch pad / gantry: `RocketLaunchPadBlock`, `LaunchGantryBlock`, `LaunchPadMultiblock` (multiblock gating).
-- [ ] `StationCoreBlock`(+BE), `StationRegistry` (multi-station slots) — depends on **structures** + data attachments.
+### Rockets & travel  (`rocket/` 11 + client + items) — **core DONE (4 cells green); station-founding deferred**
+- [x] `RocketTier`, `Destinations` (ported; `Tuning` values inlined as identity-multiplier base values).
+- [~] `RocketEntity` — rebuilt on the cross-loader `FluidTank` + a plain `SimpleContainer(1)` intake +
+  vanilla `ServerPlayer.teleportTo`. **Deferred:** the NeoForge-transfer entity item-capability
+  **automation proxy** (pipe/hopper → docked rocket) and the multi-station selection. Risk: travel/teleport
+  unverifiable headlessly — compile-verified only.
+- [x] `RocketItem` ×4 tiers, `RocketMenu` + `RocketScreen` (destination selector + fuel gauge). Menu is
+  **non-extended** (no loader-divergent extended-menu API); the station/FOUND rows are deferred.
+- [x] `RocketModel` (+ `RocketT2/T3/T4Model`), `RocketRenderer` (bakes each tier layer directly — no
+  model-layer registry), `RocketRenderState`; entity + item textures copied.
+- [x] Launch pad / gantry: `RocketLaunchPadBlock`, `LaunchGantryBlock`, `LaunchPadMultiblock` (multiblock gating).
+- [ ] `StationCoreBlock`(+BE), `StationRegistry` (multi-station slots), Station Charter, `founded_station`
+  criterion — **deferred**: needs the data-attachment + criteria seams (+ structures). The Orbital Station
+  destination currently docks the rider at the shared origin platform.
 
 ### Quarry  (`machine/quarry/` 11 + client)
 - [ ] Area miner: controller block/BE + menu/screen, frame + landmark blocks/BE, `QuarryRegion`,

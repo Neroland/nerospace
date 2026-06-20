@@ -12,6 +12,7 @@ import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
+import za.co.neroland.nerospace.client.RocketScreen;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /** Fabric client entry point — screen + entity-renderer registration. */
@@ -23,6 +24,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         MenuScreens.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         MenuScreens.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         MenuScreens.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
+        MenuScreens.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
 
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
             @Override

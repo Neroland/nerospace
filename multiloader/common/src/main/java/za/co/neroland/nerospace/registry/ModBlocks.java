@@ -19,6 +19,8 @@ import za.co.neroland.nerospace.machine.OxygenGeneratorBlock;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
 import za.co.neroland.nerospace.machine.SolarPanelBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
+import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
+import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
 import za.co.neroland.nerospace.storage.GasTankBlock;
 import za.co.neroland.nerospace.storage.TrashCanBlock;
@@ -164,6 +166,17 @@ public final class ModBlocks {
     public static final RegistryEntry<SolarPanelBlock> SOLAR_PANEL = BLOCKS.register("solar_panel",
             key -> new SolarPanelBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_BLUE).strength(2.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    // --- Rockets ------------------------------------------------------------
+    public static final RegistryEntry<RocketLaunchPadBlock> ROCKET_LAUNCH_PAD = BLOCKS.register("rocket_launch_pad",
+            key -> new RocketLaunchPadBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<LaunchGantryBlock> LAUNCH_GANTRY = BLOCKS.register("launch_gantry",
+            key -> new LaunchGantryBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     // Rocket fuel world block (placed by the bucket). LiquidBlock holds the source fluid, resolved

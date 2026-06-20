@@ -121,50 +121,6 @@
       "projectName": "neoforge",
       "preLaunchTask": "ml-prepare-neoforge-server-26.2",
       "shortenCommandLine": "none"
-    },
-    {
-      "type": "java",
-      "request": "launch",
-      "name": "neoforge - Client",
-      "presentation": {
-        "group": "Mod Development - neoforge",
-        "order": 0
-      },
-      "projectName": "neoforge",
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "args": [
-        "@C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\build\\moddev\\clientRunProgramArgs.txt"
-      ],
-      "vmArgs": [
-        "@C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\build\\moddev\\clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\bin\\main"
-      ],
-      "cwd": "${workspaceFolder}\\neoforge\\runs\\client",
-      "env": {},
-      "console": "internalConsole",
-      "shortenCommandLine": "none"
-    },
-    {
-      "type": "java",
-      "request": "launch",
-      "name": "neoforge - Server",
-      "presentation": {
-        "group": "Mod Development - neoforge",
-        "order": 1
-      },
-      "projectName": "neoforge",
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "args": [
-        "@C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\build\\moddev\\serverRunProgramArgs.txt"
-      ],
-      "vmArgs": [
-        "@C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\build\\moddev\\serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%C:\\Users\\dario\\Documents\\Github\\nerospace\\multiloader\\neoforge\\bin\\main"
-      ],
-      "cwd": "${workspaceFolder}\\neoforge\\runs\\server",
-      "env": {},
-      "console": "internalConsole",
-      "shortenCommandLine": "none"
     }
   ]
 }

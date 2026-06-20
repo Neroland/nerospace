@@ -8,6 +8,20 @@ API divergences found during the port.
 Last updated: 2026-06-20. Verified build targets: all four cells — **NeoForge @ 26.1.2 / 26.2**
 and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after every batch.
 
+> **2026-06-20 (later still): ROCKETS (core) ported** — all 4 cells green. The rideable
+> `RocketEntity` (tiers, fuelling, destination selection, simulated ascent → vanilla teleport), the
+> 4 tier `RocketItem`s, the `RocketLaunchPadBlock`/`LaunchGantryBlock` multiblock (`LaunchPadMultiblock`
+> gating), the non-extended `RocketMenu`/`RocketScreen`, and the per-tier `RocketModel`/`RocketRenderer`
+> (baked directly — no model-layer registry). Cross-loader rewrites off the NeoForge transfer API: fuel
+> on the shared `FluidTank`, intake a plain `SimpleContainer(1)`, menu opened via vanilla
+> `openMenu(MenuProvider)` with the entity ref held server-side only. Dropped the NeoForge-only
+> `shouldRiderSit()` override (no vanilla/common equivalent). Assets copied (textures, item/block models,
+> blockstates, loot, recipes) + 25 lang keys. **Deferred to own batches:** the multi-station founding
+> system (StationCore/StationRegistry/charter/`founded_station` criterion → data-attachment + criteria
+> seams + structures) and the pipe/hopper auto-fuel **proxy** into a docked rocket (entity item-cap seam).
+> Recommended next: **fuel machines** (Fuel Tank + Fuel Refinery → rebuild on `FluidTank` + `EnergyBuffer`
+> + plain `SimpleContainer` slots; no `MachineItemHandler` exists in the multiloader).
+
 > **2026-06-20 progress update.** Every cross-loader **platform mechanism is now built and
 > verified**: registration; the item / energy / fluid capability seams (both *expose* and
 > *query*); block-entity tickers; and menus + screens. A working **energy network** exists

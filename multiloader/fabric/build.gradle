@@ -61,3 +61,18 @@ loom {
         }
     }
 }
+
+// Loom creates each run's `runDir` lazily on first launch, but VS Code opens the
+// debug terminal in that cwd BEFORE the program starts — so a never-yet-run config
+// fails with "Starting directory (cwd) ... does not exist". Pre-create the dirs so
+// the cwd always exists. Wired into (a) the Fabric preLaunchTask `configureLaunch`
+// (runs before each launch) and (b) eclipse.synchronizationTasks (fresh IDE import).
+def createFabricRunDirs = tasks.register('createFabricRunDirs') {
+    description = 'Pre-create Loom run directories so the IDE debug-terminal cwd exists before first launch.'
+    doLast {
+        file('runs/client').mkdirs()
+        file('runs/server').mkdirs()
+    }
+}
+eclipse.synchronizationTasks createFabricRunDirs
+tasks.matching { it.name == 'configureLaunch' }.configureEach { dependsOn createFabricRunDirs }

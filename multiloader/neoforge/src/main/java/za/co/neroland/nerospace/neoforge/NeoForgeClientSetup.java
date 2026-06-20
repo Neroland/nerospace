@@ -17,6 +17,7 @@ import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
+import za.co.neroland.nerospace.client.RocketScreen;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
@@ -45,6 +46,7 @@ public final class NeoForgeClientSetup {
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         event.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
+        event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
     }
 
     /** Rocket fuel renders as itself (amber still/flow) instead of the default missing art. */

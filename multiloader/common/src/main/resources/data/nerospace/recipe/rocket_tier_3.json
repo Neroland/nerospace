@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "#c:storage_blocks/nerosteel",
+    "C": "nerospace:rocket_fuel_canister",
+    "D": "nerospace:station_wall",
+    "N": "#c:ingots/nerosteel",
+    "T": "nerospace:rocket_tier_2"
+  },
+  "pattern": [
+    "NTN",
+    "DCD",
+    "NBN"
+  ],
+  "result": {
+    "id": "nerospace:rocket_tier_3"
+  }
+}

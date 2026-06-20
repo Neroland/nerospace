@@ -15,6 +15,7 @@ import za.co.neroland.nerospace.entity.QuartzCrawler;
 import za.co.neroland.nerospace.entity.RuinWarden;
 import za.co.neroland.nerospace.entity.WoollyDrift;
 import za.co.neroland.nerospace.entity.XertzStalker;
+import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
 /**
@@ -79,6 +80,11 @@ public final class ModEntities {
             "alien_villager",
             key -> EntityType.Builder.of(AlienVillager::new, MobCategory.CREATURE)
                     .sized(0.6F, 1.95F).eyeHeight(1.7F).clientTrackingRange(10).build(key));
+
+    public static final RegistryEntry<EntityType<RocketEntity>> ROCKET = ENTITY_TYPES.register(
+            "rocket",
+            key -> EntityType.Builder.<RocketEntity>of(RocketEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 3.0F).clientTrackingRange(10).build(key));
 
     private ModEntities() {
     }

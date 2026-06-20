@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "minecraft:iron_bars",
+    "N": "#c:ingots/nerosteel",
+    "S": "nerospace:station_wall"
+  },
+  "pattern": [
+    "N N",
+    "NIN",
+    "NSN"
+  ],
+  "result": {
+    "id": "nerospace:launch_gantry"
+  }
+}

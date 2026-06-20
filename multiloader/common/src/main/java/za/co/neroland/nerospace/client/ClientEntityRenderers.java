@@ -51,6 +51,8 @@ public final class ClientEntityRenderers {
                 new WoollyDriftModel(WoollyDriftModel.createBodyLayer().bakeRoot()),
                 tex("woolly_drift"), 1.0F, 1.0F, 1.0F, 0.5F, glow("woolly_drift")));
         sink.register(ModEntities.ALIEN_VILLAGER.get(), AlienVillagerRenderer::new);
+
+        sink.register(ModEntities.ROCKET.get(), RocketRenderer::new);
     }
 
     private static Identifier tex(String name) {
