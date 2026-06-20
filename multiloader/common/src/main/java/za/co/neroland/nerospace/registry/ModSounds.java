@@ -29,6 +29,26 @@ public final class ModSounds {
     public static final RegistryEntry<SoundEvent> GREENLING_HURT = register("entity.greenling.hurt");
     public static final RegistryEntry<SoundEvent> GREENLING_DEATH = register("entity.greenling.death");
 
+    public static final RegistryEntry<SoundEvent> CINDER_STALKER_AMBIENT = register("entity.cinder_stalker.ambient");
+    public static final RegistryEntry<SoundEvent> CINDER_STALKER_HURT = register("entity.cinder_stalker.hurt");
+    public static final RegistryEntry<SoundEvent> CINDER_STALKER_DEATH = register("entity.cinder_stalker.death");
+
+    public static final RegistryEntry<SoundEvent> FROST_STRIDER_AMBIENT = register("entity.frost_strider.ambient");
+    public static final RegistryEntry<SoundEvent> FROST_STRIDER_HURT = register("entity.frost_strider.hurt");
+    public static final RegistryEntry<SoundEvent> FROST_STRIDER_DEATH = register("entity.frost_strider.death");
+
+    public static final RegistryEntry<SoundEvent> MEADOW_LOPER_AMBIENT = register("entity.meadow_loper.ambient");
+    public static final RegistryEntry<SoundEvent> MEADOW_LOPER_HURT = register("entity.meadow_loper.hurt");
+    public static final RegistryEntry<SoundEvent> MEADOW_LOPER_DEATH = register("entity.meadow_loper.death");
+
+    public static final RegistryEntry<SoundEvent> EMBER_STRUTTER_AMBIENT = register("entity.ember_strutter.ambient");
+    public static final RegistryEntry<SoundEvent> EMBER_STRUTTER_HURT = register("entity.ember_strutter.hurt");
+    public static final RegistryEntry<SoundEvent> EMBER_STRUTTER_DEATH = register("entity.ember_strutter.death");
+
+    public static final RegistryEntry<SoundEvent> WOOLLY_DRIFT_AMBIENT = register("entity.woolly_drift.ambient");
+    public static final RegistryEntry<SoundEvent> WOOLLY_DRIFT_HURT = register("entity.woolly_drift.hurt");
+    public static final RegistryEntry<SoundEvent> WOOLLY_DRIFT_DEATH = register("entity.woolly_drift.death");
+
     private static RegistryEntry<SoundEvent> register(String path) {
         Identifier id = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path);
         return SOUND_EVENTS.register(path, key -> SoundEvent.createVariableRangeEvent(id));
