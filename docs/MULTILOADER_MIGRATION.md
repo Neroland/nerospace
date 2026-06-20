@@ -39,6 +39,19 @@ and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after e
 > end-to-end: generator → pipe → oxygen generator → pipe → gas tank. (The world oxygen-field effect +
 > HUD + the generator GUI are a deferred atmosphere subsystem.)
 >
+> **2026-06-20 (later still): PLANET DIMENSIONS ported** — all 4 cells green. In 26.x dimensions are
+> pure datapack data, which loads identically on both loaders with no Java registration: copied
+> `dimension/{greenxertz,cindara,glacira,station}.json`, the custom `dimension_type/space.json` (END
+> starfield, no sun — used by cindara/glacira/station; greenxertz keeps the vanilla overworld type),
+> the three planet `worldgen/biome/*.json`, and the ore configured/placed features they reference. The
+> planet biomes already list the **ported mobs as natural spawners** and the **ported ores as features**,
+> so the worlds populate themselves. `ModDimensions` (common) holds the `ResourceKey`s for code (rocket
+> travel, villager variant). The Greenxertz biome's structure features (hamlet/ruin/mega_city) were
+> stripped — they belong to the deferred **structures** subsystem. **Caveat (runtime, can't verify
+> headlessly):** the `space` dimension_type JSON was authored for 26.1.2; if 26.2 changed that schema the
+> space dimensions may need a 26.2 variant (greenxertz, on the vanilla type, is unaffected). Mob
+> spawn-placement rules (ground/light) remain deferred — spawning uses the biome lists + vanilla defaults.
+>
 > **2026-06-20 (later still): ALL 10 mobs ported** — all 4 cells green. On the entity seam below, added
 > `cinder_stalker`, `frost_strider`, `ruin_warden`, the three terraform livestock (`meadow_loper`,
 > `ember_strutter`, `woolly_drift` via a shared `TerraformLivestock` base), and the **alien villager**
@@ -72,14 +85,14 @@ and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after e
 > capability (extract-only) so the pipe network drains it. Root's tiered sun-tracking array + BER are
 > a deferred enhancement.
 >
-> Remaining, by subsystem (rough size): **dimensions** (Greenxertz/Cindara/Glacira biomes+dims+travel;
-> unblocks the planet ores' worldgen, mob natural-spawning, and the villager's per-planet variant);
-> **rockets** (items, tiers, launch logic); **quarry** (area mining); **structures**
-> (station/village/meteor cores + events); **atmosphere/terraforming** (oxygen field, terraformer,
-> monitor, hydration); **solar panel tiers/array/BER** (single-tier base is done); **star guide**
-> (progression UI); **creative item/fluid/gas stores** (infinite-resource config — marginal); plus mob
-> **spawn eggs + natural-spawn rules** (deferred with dimensions). **All 10 mobs are otherwise ported.**
-> Recommended order: dimensions → rockets → quarry → structures → atmosphere → the rest.
+> Remaining, by subsystem (rough size): **rockets** (items, tiers, launch + the dimension-travel
+> mechanic into the now-ported planets); **quarry** (area mining + fake-player); **structures**
+> (station/village/meteor cores + the stripped hamlet/ruin/mega_city features); **atmosphere/
+> terraforming** (oxygen field, terraformer, monitor, hydration); **meteor events**; **solar panel
+> tiers/array/BER** (single-tier base is done); **star guide** (progression UI); **creative
+> item/fluid/gas stores** (marginal); plus polish — mob **spawn-placement/eggs** and the **villager's
+> per-planet variant** (re-enable now that `ModDimensions` exists). The planets, all 10 mobs, and the
+> full machine/logistics stack are ported. Recommended order: rockets → quarry → structures → atmosphere → the rest.
 
 ---
 

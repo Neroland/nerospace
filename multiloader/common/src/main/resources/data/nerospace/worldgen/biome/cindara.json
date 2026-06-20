@@ -1,0 +1,50 @@
+{
+  "carvers": [
+    "minecraft:cave",
+    "minecraft:cave_extra_underground"
+  ],
+  "downfall": 0.0,
+  "effects": {
+    "foliage_color": "#5a3a2a",
+    "grass_color": "#4a3a33",
+    "water_color": "#70402a"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nerospace:cindrite_ore_placed"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [
+      {
+        "type": "nerospace:alien_villager",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 3
+      }
+    ],
+    "misc": [],
+    "monster": [
+      {
+        "type": "nerospace:cinder_stalker",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 14
+      }
+    ],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 2.0
+}
