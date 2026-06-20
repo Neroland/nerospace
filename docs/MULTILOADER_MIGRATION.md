@@ -5,8 +5,28 @@ field notes). This file tracks **what content has been ported into `multiloader/
 and how the remaining systems should be ported**, based on the concrete NeoForge ↔ Fabric
 API divergences found during the port.
 
-Last updated: 2026-06-19. Verified build targets: **NeoForge @ 26.1.2** and **Fabric @ 26.2**
-(both `BUILD SUCCESSFUL` via the gradle MCP after every batch).
+Last updated: 2026-06-20. Verified build targets: all four cells — **NeoForge @ 26.1.2 / 26.2**
+and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after every batch.
+
+> **2026-06-20 progress update.** Every cross-loader **platform mechanism is now built and
+> verified**: registration; the item / energy / fluid capability seams (both *expose* and
+> *query*); block-entity tickers; and menus + screens. A working **energy network** exists
+> (generators → pipe → machines/battery). Ported block entities (10): `item_store`, `battery`,
+> `creative_battery`, `fluid_tank`, `trash_can` (item+fluid void), `combustion_generator`,
+> `passive_generator`, `nerosium_grinder`, `universal_pipe`. Plus overworld nerosium-ore worldgen.
+> All content the seams support **without** a deferred subsystem is now ported. What remains
+> (below, §3b/§3c) is **subsystem work**, not per-block batches — each is a focused effort and
+> several are runtime-verification-dependent (rendering / world / behavior can't be checked headlessly).
+>
+> Remaining, by subsystem (rough size): **rocket-fuel fluid** (hard cross-loader fluid registration —
+> NeoForge `FluidType`/`BaseFlowingFluid` vs Fabric `FlowableFluid` subclass + render handler; unblocks
+> refinery, fuel tank, bucket); **gas system** (`GasResource` + handlers; unblocks oxygen generator,
+> gas tanks); **dimensions** (Greenxertz/Cindara/Glacira biomes+dims+travel; unblocks the planet ores'
+> worldgen); **entities** (alien villager, xertz stalker + attributes + renderers); **rockets** (items,
+> tiers, launch logic); **quarry** (area mining); **structures** (station/village/meteor cores + events);
+> **atmosphere/terraforming** (terraformer, monitor, hydration); **solar panel** (tiers + multiblock +
+> BER); **star guide** (progression UI); **creative item/fluid stores** (infinite-resource config — marginal).
+> Recommended order: rocket-fuel fluid → item-pipe (item query seam) → gas → entities → dimensions → the rest.
 
 ---
 

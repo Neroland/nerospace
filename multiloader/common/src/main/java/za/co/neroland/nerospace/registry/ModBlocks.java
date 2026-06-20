@@ -13,6 +13,8 @@ import za.co.neroland.nerospace.machine.CombustionGeneratorBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
+import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
+import za.co.neroland.nerospace.storage.TrashCanBlock;
 import za.co.neroland.nerospace.storage.BatteryBlock;
 import za.co.neroland.nerospace.storage.FluidTankBlock;
 import za.co.neroland.nerospace.storage.ItemStoreBlock;
@@ -129,6 +131,18 @@ public final class ModBlocks {
             key -> new UniversalPipeBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(1.5F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+
+    public static final RegistryEntry<TrashCanBlock> TRASH_CAN = BLOCKS.register("trash_can",
+            key -> new TrashCanBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_GRAY).strength(2.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+
+    public static final RegistryEntry<CreativeBatteryBlock> CREATIVE_BATTERY = BLOCKS.register("creative_battery",
+            key -> new CreativeBatteryBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
+                    .sound(SoundType.METAL).noOcclusion()));
 
     private static RegistryEntry<Block> block(String name, UnaryOperator<BlockBehaviour.Properties> props) {
         return BLOCKS.register(name, key -> new Block(props.apply(BlockBehaviour.Properties.of().setId(key))));

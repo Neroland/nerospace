@@ -26,6 +26,7 @@
     "nerospace:combustion_generator",
     "nerospace:nerosium_grinder",
     "nerospace:passive_generator",
-    "nerospace:universal_pipe"
+    "nerospace:universal_pipe",
+    "nerospace:trash_can"
   ]
 }

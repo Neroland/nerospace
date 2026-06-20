@@ -99,5 +99,21 @@ public final class NeoForgeCapabilities {
                 ENERGY,
                 ModBlockEntities.UNIVERSAL_PIPE.get(),
                 (be, side) -> be.getEnergy());
+
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+        event.registerBlockEntity(
+                FLUID,
+                ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> be.getFluid());
+
+        event.registerBlockEntity(
+                ENERGY,
+                ModBlockEntities.CREATIVE_BATTERY.get(),
+                (be, side) -> be.getEnergy());
     }
 }

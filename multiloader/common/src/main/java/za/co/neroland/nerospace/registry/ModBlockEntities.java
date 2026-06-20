@@ -9,6 +9,8 @@ import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
+import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
+import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 import za.co.neroland.nerospace.storage.BatteryBlockEntity;
 import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
 import za.co.neroland.nerospace.storage.ItemStoreBlockEntity;
@@ -50,6 +52,14 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<UniversalPipeBlockEntity>> UNIVERSAL_PIPE =
             BLOCK_ENTITIES.register("universal_pipe",
                     key -> new BlockEntityType<>(UniversalPipeBlockEntity::new, java.util.Set.of(ModBlocks.UNIVERSAL_PIPE.get())));
+
+    public static final RegistryEntry<BlockEntityType<TrashCanBlockEntity>> TRASH_CAN =
+            BLOCK_ENTITIES.register("trash_can",
+                    key -> new BlockEntityType<>(TrashCanBlockEntity::new, java.util.Set.of(ModBlocks.TRASH_CAN.get())));
+
+    public static final RegistryEntry<BlockEntityType<CreativeBatteryBlockEntity>> CREATIVE_BATTERY =
+            BLOCK_ENTITIES.register("creative_battery",
+                    key -> new BlockEntityType<>(CreativeBatteryBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_BATTERY.get())));
 
     private ModBlockEntities() {
     }
