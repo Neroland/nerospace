@@ -9,9 +9,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.platform.NeoForgeFluidFactory;
+import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
 
@@ -33,6 +35,7 @@ public final class NerospaceNeoForge {
             NeoForgeClientSetup.init(modEventBus);
         }
         modEventBus.addListener(this::onBuildCreativeTabs);
+        modEventBus.addListener(this::onCreateEntityAttributes);
     }
 
     private void onBuildCreativeTabs(BuildCreativeModeTabContentsEvent event) {
@@ -40,5 +43,9 @@ public final class NerospaceNeoForge {
         if (items != null) {
             items.forEach(event::accept);
         }
+    }
+
+    private void onCreateEntityAttributes(EntityAttributeCreationEvent event) {
+        ModEntityAttributes.forEach((type, builder) -> event.put(type, builder.build()));
     }
 }

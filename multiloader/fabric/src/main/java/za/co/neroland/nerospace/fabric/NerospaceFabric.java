@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Direction;
@@ -19,6 +20,7 @@ import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
@@ -57,6 +59,9 @@ public final class NerospaceFabric implements ModInitializer {
                         .register(output -> items.forEach(output::accept)));
 
         addOverworldOre("nerosium_ore_placed");
+
+        // Default attributes for the ported mobs (counterpart to NeoForge's EntityAttributeCreationEvent).
+        ModEntityAttributes.forEach(FabricDefaultAttributeRegistry::register);
 
         // Item-storage capability (Fabric Transfer API) — counterpart to NeoForge
         // Capabilities.Item.BLOCK; lets mod pipes move items in/out of the item store.

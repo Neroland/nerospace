@@ -1,14 +1,19 @@
 package za.co.neroland.nerospace.neoforge;
 
 import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.fluid.FluidTintSources;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
@@ -24,6 +29,16 @@ public final class NeoForgeClientSetup {
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterScreens);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterFluidModels);
+        modEventBus.addListener(NeoForgeClientSetup::onRegisterEntityRenderers);
+    }
+
+    private static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
+            @Override
+            public <E extends Entity> void register(EntityType<? extends E> type, EntityRendererProvider<E> provider) {
+                event.registerEntityRenderer(type, provider);
+            }
+        });
     }
 
     private static void onRegisterScreens(RegisterMenuScreensEvent event) {

@@ -39,6 +39,19 @@ and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after e
 > end-to-end: generator → pipe → oxygen generator → pipe → gas tank. (The world oxygen-field effect +
 > HUD + the generator GUI are a deferred atmosphere subsystem.)
 >
+> **2026-06-20 (later still): ENTITY seam + Greenxertz creatures ported** — all 4 cells green. New
+> cross-loader seam: entity types via `RegistrationProvider` over `ENTITY_TYPE` (`EntityType.Builder…
+> build(key)`); **attributes** via `ModEntityAttributes` applied per loader (NeoForge
+> `EntityAttributeCreationEvent`, Fabric `FabricDefaultAttributeRegistry`); **renderers** via a common
+> `ClientEntityRenderers` sink (NeoForge `RegisterRenderers`, Fabric `EntityRendererRegistry`). Models
+> are baked directly (`createBodyLayer().bakeRoot()`), so **no model-layer registry** is needed on
+> either loader (Fabric's `EntityModelLayerRegistry` isn't on the de-obf classpath). Ported: `xertz_stalker`,
+> `quartz_crawler`, `greenling` (full vanilla AI) + their shared `GreenxertzMobModel`/renderer/glow-eyes
+> layer, the three distinct geometry models, `ModSounds` (vanilla-aliased via `sounds.json`), and entity
+> textures. Natural-spawn placement + spawn eggs are deferred (mobs are summonable; spawning waits on
+> the planet dimensions). The remaining mobs (alien villager, ruin warden, cinder/frost striders,
+> terraform livestock) follow this same seam.
+>
 > **2026-06-20 (later still): item relay added to the universal pipe** — all 4 cells green. The pipe is
 > now a `WorldlyContainer` (3-slot buffer) and moves items by plain vanilla `Container` adjacency (no new
 > seam — works with vanilla chests/furnaces and the mod's machines on both loaders): it pulls from

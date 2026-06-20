@@ -12,10 +12,12 @@ public final class ModRegistries {
     }
 
     public static void init() {
+        ModSounds.init();
         za.co.neroland.nerospace.fluid.ModFluids.init();
         ModBlocks.init();
         ModItems.init();
         ModBlockEntities.init();
         ModMenuTypes.init();
+        ModEntities.init();
     }
 }
