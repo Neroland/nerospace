@@ -39,13 +39,24 @@ and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after e
 > end-to-end: generator → pipe → oxygen generator → pipe → gas tank. (The world oxygen-field effect +
 > HUD + the generator GUI are a deferred atmosphere subsystem.)
 >
+> **2026-06-20 (later still): item relay added to the universal pipe** — all 4 cells green. The pipe is
+> now a `WorldlyContainer` (3-slot buffer) and moves items by plain vanilla `Container` adjacency (no new
+> seam — works with vanilla chests/furnaces and the mod's machines on both loaders): it pulls from
+> non-pipe neighbours and pushes to any neighbour, so the single pipe carries **energy + gas + items**.
+> Item cap exposed on both loaders (NeoForge `Capabilities.Item.BLOCK`, Fabric `ItemStorage.SIDED`).
+>
+> **2026-06-20 (later still): solar_panel ported** — all 4 cells green. Single-tier GUI-less daylight
+> generator (`getSkyDarken()` + open-sky check → energy; halved in storms), exposes the energy
+> capability (extract-only) so the pipe network drains it. Root's tiered sun-tracking array + BER are
+> a deferred enhancement.
+>
 > Remaining, by subsystem (rough size): **dimensions** (Greenxertz/Cindara/Glacira biomes+dims+travel;
 > unblocks the planet ores' worldgen); **entities** (alien villager, xertz stalker + attributes +
 > renderers); **rockets** (items, tiers, launch logic); **quarry** (area mining); **structures**
 > (station/village/meteor cores + events); **atmosphere/terraforming** (oxygen field, terraformer,
-> monitor, hydration); **solar panel** (tiers + multiblock + BER); **star guide** (progression UI);
-> **item-pipe** (item query seam in the universal pipe); **creative item/fluid/gas stores**
-> (infinite-resource config — marginal). Recommended order: item-pipe → entities → dimensions → rockets → the rest.
+> monitor, hydration); **solar panel tiers/array/BER** (single-tier base is done); **star guide**
+> (progression UI); **creative item/fluid/gas stores** (infinite-resource config — marginal).
+> Recommended order: entities → dimensions → rockets → quarry → structures → atmosphere → the rest.
 
 ---
 

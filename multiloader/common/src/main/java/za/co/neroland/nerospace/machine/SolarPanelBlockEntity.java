@@ -37,9 +37,9 @@ public class SolarPanelBlockEntity extends BlockEntity {
         if (level.isClientSide()) {
             return;
         }
-        long dayTime = level.getDayTime() % 24000L;
-        boolean day = dayTime < 12300L || dayTime > 23850L;
-        if (!day || !level.canSeeSky(pos.above())) {
+        // getSkyDarken() is 0 in full daylight and ramps toward ~11 at night (and in storms); a low
+        // value plus an open sky above means the panel is illuminated.
+        if (level.getSkyDarken() >= 4 || !level.canSeeSky(pos.above())) {
             return;
         }
         int rate = FE_PER_TICK;

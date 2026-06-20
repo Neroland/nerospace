@@ -110,6 +110,12 @@ public final class NeoForgeCapabilities {
                 GAS,
                 ModBlockEntities.UNIVERSAL_PIPE.get(),
                 (be, side) -> be.getGas());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.UNIVERSAL_PIPE.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
 
         event.registerBlockEntity(
                 GAS,
