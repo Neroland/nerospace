@@ -152,6 +152,17 @@ public final class NerospaceFabric implements ModInitializer {
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.FUEL_REFINERY.get());
+
+        // Quarry controller: grid power in, mined output + sucked fluid out, frame casings in.
+        ENERGY.registerForBlockEntity(
+                (be, direction) -> be.getEnergy(),
+                ModBlockEntities.QUARRY_CONTROLLER.get());
+        FLUID.registerForBlockEntity(
+                (be, direction) -> be.getTank(),
+                ModBlockEntities.QUARRY_CONTROLLER.get());
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.QUARRY_CONTROLLER.get());
     }
 
     private static void addOverworldOre(String placedFeatureName) {

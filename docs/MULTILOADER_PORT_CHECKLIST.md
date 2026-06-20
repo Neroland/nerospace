@@ -1,8 +1,16 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~110 classes ported, ~154 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~121 classes ported, ~143 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-20 update — quarry ported.** All 4 cells green. Added 11 classes:
+> `machine/quarry/{MinerTier, QuarryRegion, OutputFilter, PlanetMiningProfile, QuarryFrameBlock,
+> QuarryLandmarkBlock, QuarryLandmarkBlockEntity, QuarryControllerBlock, QuarryControllerBlockEntity,
+> QuarryMenu}` + `client/QuarryScreen`. The 1000-line controller was rebuilt on the shared
+> `EnergyBuffer`/`FluidTank` + a vanilla `WorldlyContainer` (frame in, output out); force-loads via
+> vanilla `ServerLevel.setChunkForced` (no ticket seam); modules + the drill-head BER + fluid auto-eject
+> deferred. Energy/Item/Fluid caps wired on both loaders; assets + 9 lang keys copied.
 
 > **2026-06-20 update — fuel machines ported.** All 4 cells green. Added 8 classes:
 > `machine/{FuelTankBlock, FuelTankBlockEntity, FuelRefineryBlock, FuelRefineryBlockEntity}` +
@@ -71,10 +79,17 @@ checked by a headless build).
   criterion — **deferred**: needs the data-attachment + criteria seams (+ structures). The Orbital Station
   destination currently docks the rider at the shared origin platform.
 
-### Quarry  (`machine/quarry/` 11 + client)
-- [ ] Area miner: controller block/BE + menu/screen, frame + landmark blocks/BE, `QuarryRegion`,
-  `MinerTier`, `OutputFilter`, `PlanetMiningProfile`, `QuarryChunkLoader`. Risk: **high** (chunk-loading,
-  fake-player-style mining, multiblock). Chunk-loading needs a cross-loader seam (NeoForge ticket API vs Fabric).
+### Quarry  (`machine/quarry/` 11 + client) — **DONE (4 cells green); modules + BER deferred**
+- [x] Area miner ported: `QuarryControllerBlock`(+BE) + `QuarryMenu`/`QuarryScreen`, `QuarryFrameBlock`,
+  `QuarryLandmarkBlock`(+BE, client laser ticker), `QuarryRegion`, `MinerTier`, `OutputFilter`,
+  `PlanetMiningProfile`. The dig (landmarks → frame ring → layer-by-layer excavation → drops buffered/
+  auto-ejected, source fluids sucked) runs server-side; Energy/Item/Fluid caps on both loaders.
+- [~] **Chunk-loading**: `QuarryChunkLoader` (NeoForge `TicketController`) replaced by vanilla
+  `ServerLevel.setChunkForced` (works on both loaders; one chunk pinned at a time, persisted + released
+  on removal) — no cross-loader ticket seam needed.
+- [~] **Deferred**: upgrade modules (controller runs at ×1.0 speed/energy, no Silk/Fortune, no module
+  slots — depends on the `module/` batch); the moving drill-head BER (`QuarryControllerRenderer`); and
+  fluid **auto-eject** (the fluid buffer is drained by pipes instead). `Tuning` values inlined.
 
 ### Fuel machines  (`machine/Fuel*` — depends on the ported rocket-fuel fluid) — **DONE (4 cells green)**
 - [x] `FuelTankBlock`(+BE +menu +screen): stores `rocket_fuel`, accepts buckets/canisters, auto-fuels a

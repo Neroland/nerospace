@@ -20,6 +20,10 @@ import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlock;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
 import za.co.neroland.nerospace.machine.SolarPanelBlock;
+import za.co.neroland.nerospace.machine.quarry.MinerTier;
+import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlock;
+import za.co.neroland.nerospace.machine.quarry.QuarryFrameBlock;
+import za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
@@ -180,6 +184,22 @@ public final class ModBlocks {
             key -> new FuelRefineryBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+
+    // --- Quarry -------------------------------------------------------------
+    public static final RegistryEntry<QuarryControllerBlock> QUARRY_CONTROLLER = BLOCKS.register("quarry_controller",
+            key -> new QuarryControllerBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL), MinerTier.TIER_1));
+
+    public static final RegistryEntry<QuarryFrameBlock> QUARRY_FRAME = BLOCKS.register("quarry_frame",
+            key -> new QuarryFrameBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(1.5F, 6.0F)
+                    .sound(SoundType.METAL).lightLevel(s -> 7).noOcclusion().noLootTable()));
+
+    public static final RegistryEntry<QuarryLandmarkBlock> QUARRY_LANDMARK = BLOCKS.register("quarry_landmark",
+            key -> new QuarryLandmarkBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_RED).strength(1.0F, 3.0F)
+                    .sound(SoundType.METAL).lightLevel(s -> 7).noOcclusion()));
 
     // --- Rockets ------------------------------------------------------------
     public static final RegistryEntry<RocketLaunchPadBlock> ROCKET_LAUNCH_PAD = BLOCKS.register("rocket_launch_pad",

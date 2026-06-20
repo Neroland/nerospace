@@ -9,6 +9,7 @@ import za.co.neroland.nerospace.menu.CombustionGeneratorMenu;
 import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
 import za.co.neroland.nerospace.menu.FuelRefineryMenu;
 import za.co.neroland.nerospace.menu.FuelTankMenu;
+import za.co.neroland.nerospace.machine.quarry.QuarryMenu;
 import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
 import za.co.neroland.nerospace.rocket.RocketMenu;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
@@ -42,6 +43,10 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<FuelRefineryMenu>> FUEL_REFINERY =
             MENUS.register("fuel_refinery",
                     key -> new MenuType<>(FuelRefineryMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistryEntry<MenuType<QuarryMenu>> QUARRY_CONTROLLER =
+            MENUS.register("quarry_controller",
+                    key -> new MenuType<>(QuarryMenu::new, FeatureFlags.VANILLA_SET));
 
     private ModMenuTypes() {
     }

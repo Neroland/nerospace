@@ -9,6 +9,8 @@ import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
 import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
+import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
+import za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlockEntity;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
@@ -85,6 +87,14 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<FuelRefineryBlockEntity>> FUEL_REFINERY =
             BLOCK_ENTITIES.register("fuel_refinery",
                     key -> new BlockEntityType<>(FuelRefineryBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_REFINERY.get())));
+
+    public static final RegistryEntry<BlockEntityType<QuarryControllerBlockEntity>> QUARRY_CONTROLLER =
+            BLOCK_ENTITIES.register("quarry_controller",
+                    key -> new BlockEntityType<>(QuarryControllerBlockEntity::new, java.util.Set.of(ModBlocks.QUARRY_CONTROLLER.get())));
+
+    public static final RegistryEntry<BlockEntityType<QuarryLandmarkBlockEntity>> QUARRY_LANDMARK =
+            BLOCK_ENTITIES.register("quarry_landmark",
+                    key -> new BlockEntityType<>(QuarryLandmarkBlockEntity::new, java.util.Set.of(ModBlocks.QUARRY_LANDMARK.get())));
 
     private ModBlockEntities() {
     }

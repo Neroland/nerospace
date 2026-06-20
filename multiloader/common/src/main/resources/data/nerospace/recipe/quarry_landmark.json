@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "#c:glass_blocks",
+    "I": "#c:ingots/nerosteel",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "R",
+    "G",
+    "I"
+  ],
+  "result": {
+    "count": 3,
+    "id": "nerospace:quarry_landmark"
+  }
+}

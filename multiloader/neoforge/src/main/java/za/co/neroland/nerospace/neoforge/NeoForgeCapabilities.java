@@ -179,5 +179,21 @@ public final class NeoForgeCapabilities {
                 (be, side) -> side != null
                         ? new WorldlyContainerWrapper(be, side)
                         : VanillaContainerWrapper.of(be));
+
+        // Quarry controller: grid power in, mined output + sucked fluid out, frame casings in.
+        event.registerBlockEntity(
+                ENERGY,
+                ModBlockEntities.QUARRY_CONTROLLER.get(),
+                (be, side) -> be.getEnergy());
+        event.registerBlockEntity(
+                FLUID,
+                ModBlockEntities.QUARRY_CONTROLLER.get(),
+                (be, side) -> be.getTank());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.QUARRY_CONTROLLER.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
     }
 }
