@@ -25,4 +25,14 @@ public interface IPlatformHelper {
 
     /** True on the physical client (renderers, screens, HUD available). */
     boolean isClient();
+
+    // --- Per-player oxygen (data-attachment seam) ---------------------------
+    // NeoForge backs this with an AttachmentType registered via DeferredRegister; Fabric with the
+    // data-attachment API. The value defaults to {@code OxygenManager.OXYGEN_MAX} and persists.
+
+    /** The player's stored oxygen (millibuckets-of-air units), defaulting to full if unset. */
+    int getOxygen(net.minecraft.world.entity.player.Player player);
+
+    /** Stores the player's oxygen. */
+    void setOxygen(net.minecraft.world.entity.player.Player player, int value);
 }

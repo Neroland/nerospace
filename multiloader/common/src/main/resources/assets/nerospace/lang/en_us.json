@@ -147,5 +147,6 @@
   "item.nerospace.xertz_quartz": "Xertz Quartz",
   "item.nerospace.xertz_resonator": "Xertz Resonator",
   "item.nerospace.xertz_stalker_spawn_egg": "Xertz Stalker Spawn Egg",
-  "itemGroup.nerospace": "Nerospace"
+  "itemGroup.nerospace": "Nerospace",
+  "message.nerospace.greenxertz.no_air": "You are out of oxygen — reach a launch pad or an Oxygen Generator!"
 }

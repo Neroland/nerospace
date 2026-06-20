@@ -5,12 +5,16 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraft.server.level.ServerPlayer;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.platform.NeoForgeFluidFactory;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
+import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
  * NeoForge entry point. Runs shared init (building the DeferredRegisters via the
@@ -26,9 +30,17 @@ public final class NerospaceNeoForge {
         NeoForgeFluidFactory.registerFluidTypes(modEventBus);
         NeoForgeRegistrationFactory.registerAll(modEventBus);
         NeoForgeCapabilities.register(modEventBus);
+        NeoForgeAttachments.register(modEventBus);
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             NeoForgeClientSetup.init(modEventBus);
         }
+
+        // Oxygen survival: tick each player on the game bus (airless-planet drain / suffocation).
+        NeoForge.EVENT_BUS.addListener((PlayerTickEvent.Post event) -> {
+            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                OxygenManager.tick(serverPlayer);
+            }
+        });
         // Creative-tab contents are defined once by the cross-loader ModCreativeTab (a dedicated
         // Nerospace tab registered via the vanilla CREATIVE_MODE_TAB registry), so no NeoForge-specific
         // BuildCreativeModeTabContentsEvent injection is needed.

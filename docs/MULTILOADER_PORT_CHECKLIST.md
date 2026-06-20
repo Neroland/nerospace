@@ -1,7 +1,7 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~134 classes ported, ~130 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~139 classes ported, ~125 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
 > **2026-06-20 update — quarry ported.** All 4 cells green. Added 11 classes:
@@ -102,8 +102,13 @@ checked by a headless build).
   Assets (textures, models, blockstates, loot, recipes) + 4 lang keys copied.
 
 ### Atmosphere / terraforming  (`world/Oxygen*`, `world/Terraform*`, `machine/Terraform*`, `HydrationModule`)
-- [ ] Oxygen field (airless-dimension survival): `OxygenField`, `OxygenFieldManager`, `OxygenFieldEvents`,
-  oxygen HUD + air-bubble suppression, suit checks. Needs the **networking seam** (sync to client).
+- [~] **Oxygen survival core DONE (4 cells green)** — `OxygenManager` (per-player O2 drain/suffocate/refill,
+  air-supply-bar mirror, full-suit detection) on a new **data-attachment seam**: `IPlatformHelper.get/setOxygen`
+  backed by NeoForge `AttachmentType` (`NeoForgeAttachments`) and Fabric `AttachmentRegistry`
+  (`FabricAttachments`); ticked per-loader (NeoForge `PlayerTickEvent`, Fabric `ServerTickEvents.END_SERVER_TICK`).
+  Breathable = near a Launch Pad / Oxygen Generator. **Deferred**: the diffusion `OxygenFieldManager`/
+  `OxygenField`/`OxygenFieldEvents` (sealed rooms + client overlay — needs the **networking seam**),
+  terraform breathability + criteria, hazard shields/feedback, and gas-tank airlock refill. Values inlined.
 - [ ] Terraformer + Terraform Monitor + Hydration Module (blocks/BE/menus/screens), `TerraformManager`,
   `TerraformConversion`, `TerraformDrift`, `TerraformFauna`, `TerraformChunkLoader`, `TerraformResources`,
   `GreenxertzAtmosphere`, terraformed biomes. Risk: **high** (world mutation, chunk-loading, events).
@@ -154,10 +159,19 @@ checked by a headless build).
 - [~] `gear/XertzResonatorItem` — ported as a **plain item**; real gear behaviour + `AlienGearEvents` pending.
 
 ### Cross-cutting registries  (`registry/`)
-- [ ] `ModDataComponents`, `ModAttachments` (data attachments — needs a cross-loader seam: NeoForge
-  attachments vs Fabric component/attachment API), `ModCriteria` (advancement triggers), `ModTags`,
-  `ModFeatures`, `ModConfiguredFeatures`/`ModPlacedFeatures`/`ModBiomes`/`ModBiomeModifiers` (datagen
-  bootstraps — mostly superseded by the copied JSON), `ModDimensionTypes` (space type — JSON already copied).
+- [x] `ModTags` — pure `TagKey` constants (block + item; c:material + nerospace oxygen/terraform tags),
+  ported verbatim (no registration; tag membership is data).
+- [x] `ModDataComponents` — `SELECTED_PIPE_TYPE` (int) + `FILTER_ITEM` (vanilla `ItemStack` instead of the
+  root's NeoForge `ItemResource`), via `RegistrationProvider` over `DATA_COMPONENT_TYPE`. Consumed by the
+  advanced-pipe configurator/filter (advanced pipes batch).
+- [~] `ModCriteria` (`terraformed_ground`/`living_ground`/`founded_station` `PlayerTrigger`s) — **deferred**:
+  the criterion classes resolve to a **different package on 26.2 NeoForm than the root's 26.1 imports**
+  (`net.minecraft.advancements.criterion` not found), so it needs a version/loader-checked import — resolve
+  it alongside its first consumer (station founding / star guide / terraform). Orphan until then.
+- [ ] `ModAttachments` (data attachments — needs a cross-loader seam: NeoForge attachments vs Fabric
+  component/attachment API), `ModFeatures`, `ModConfiguredFeatures`/`ModPlacedFeatures`/`ModBiomes`/
+  `ModBiomeModifiers` (datagen bootstraps — mostly superseded by the copied JSON), `ModDimensionTypes`
+  (space type — JSON already copied).
 - [x] `ModCreativeModeTabs` → ported as `ModCreativeTab`: a **dedicated "Nerospace" tab** registered via
   the cross-loader `RegistrationProvider` over the vanilla `CREATIVE_MODE_TAB` registry, listing all
   items (`ModItems.creativeContents()`). **Fixes a latent runtime bug**: the earlier per-loader injection

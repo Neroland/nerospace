@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.fabric;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
@@ -20,6 +21,7 @@ import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
+import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
  * Fabric entry point. Shared init registers content eagerly, then Fabric-side
@@ -59,6 +61,11 @@ public final class NerospaceFabric implements ModInitializer {
 
         // Default attributes for the ported mobs (counterpart to NeoForge's EntityAttributeCreationEvent).
         ModEntityAttributes.forEach(FabricDefaultAttributeRegistry::register);
+
+        // Oxygen survival: register the attachment + tick each player per world tick (airless-planet drain).
+        FabricAttachments.init();
+        ServerTickEvents.END_SERVER_TICK.register(server ->
+                server.getPlayerList().getPlayers().forEach(OxygenManager::tick));
 
         // Item-storage capability (Fabric Transfer API) — counterpart to NeoForge
         // Capabilities.Item.BLOCK; lets mod pipes move items in/out of the item store.

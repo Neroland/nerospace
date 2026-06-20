@@ -3,6 +3,9 @@ package za.co.neroland.nerospace.platform;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.api.distmarker.Dist;
+import net.minecraft.world.entity.player.Player;
+
+import za.co.neroland.nerospace.neoforge.NeoForgeAttachments;
 
 /**
  * NeoForge implementation of {@link IPlatformHelper}. Registered via
@@ -30,5 +33,15 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
     public boolean isClient() {
         return FMLEnvironment.getDist() == Dist.CLIENT;
+    }
+
+    @Override
+    public int getOxygen(Player player) {
+        return player.getData(NeoForgeAttachments.OXYGEN.get());
+    }
+
+    @Override
+    public void setOxygen(Player player, int value) {
+        player.setData(NeoForgeAttachments.OXYGEN.get(), value);
     }
 }

@@ -13,6 +13,7 @@ public final class ModRegistries {
 
     public static void init() {
         ModSounds.init();
+        ModDataComponents.init();
         za.co.neroland.nerospace.fluid.ModFluids.init();
         ModBlocks.init();
         ModItems.init();
