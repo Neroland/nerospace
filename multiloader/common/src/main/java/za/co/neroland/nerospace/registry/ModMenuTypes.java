@@ -6,6 +6,7 @@ import net.minecraft.world.inventory.MenuType;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.CombustionGeneratorMenu;
+import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
 /** Menu types, shared via {@link RegistrationProvider} over the vanilla MENU registry. */
@@ -17,6 +18,10 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<CombustionGeneratorMenu>> COMBUSTION_GENERATOR =
             MENUS.register("combustion_generator",
                     key -> new MenuType<>(CombustionGeneratorMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistryEntry<MenuType<NerosiumGrinderMenu>> NEROSIUM_GRINDER =
+            MENUS.register("nerosium_grinder",
+                    key -> new MenuType<>(NerosiumGrinderMenu::new, FeatureFlags.VANILLA_SET));
 
     private ModMenuTypes() {
     }

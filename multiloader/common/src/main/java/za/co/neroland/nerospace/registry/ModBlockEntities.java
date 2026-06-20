@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.storage.BatteryBlockEntity;
 import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
 import za.co.neroland.nerospace.storage.ItemStoreBlockEntity;
@@ -35,6 +36,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<CombustionGeneratorBlockEntity>> COMBUSTION_GENERATOR =
             BLOCK_ENTITIES.register("combustion_generator",
                     key -> new BlockEntityType<>(CombustionGeneratorBlockEntity::new, java.util.Set.of(ModBlocks.COMBUSTION_GENERATOR.get())));
+
+    public static final RegistryEntry<BlockEntityType<NerosiumGrinderBlockEntity>> NEROSIUM_GRINDER =
+            BLOCK_ENTITIES.register("nerosium_grinder",
+                    key -> new BlockEntityType<>(NerosiumGrinderBlockEntity::new, java.util.Set.of(ModBlocks.NEROSIUM_GRINDER.get())));
 
     private ModBlockEntities() {
     }

@@ -58,6 +58,15 @@ public final class EnergyBuffer implements NerospaceEnergyStorage {
         }
     }
 
+    /** Internal consumption (bypasses the extract limit) — for machines. */
+    public void consume(int amount) {
+        int removed = (int) Math.max(0, Math.min(amount, this.amount));
+        if (removed > 0) {
+            this.amount -= removed;
+            this.onChanged.run();
+        }
+    }
+
     /** Raw accessors for NBT save/load. */
     public int getRaw() {
         return this.amount;

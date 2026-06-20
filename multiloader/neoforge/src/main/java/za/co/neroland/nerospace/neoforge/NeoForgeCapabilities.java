@@ -72,5 +72,16 @@ public final class NeoForgeCapabilities {
                 ENERGY,
                 ModBlockEntities.COMBUSTION_GENERATOR.get(),
                 (be, side) -> be.getEnergy());
+
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.NEROSIUM_GRINDER.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+        event.registerBlockEntity(
+                ENERGY,
+                ModBlockEntities.NEROSIUM_GRINDER.get(),
+                (be, side) -> be.getEnergy());
     }
 }

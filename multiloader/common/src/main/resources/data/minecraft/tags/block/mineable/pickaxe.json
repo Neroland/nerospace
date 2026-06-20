@@ -23,6 +23,7 @@
     "nerospace:item_store",
     "nerospace:battery",
     "nerospace:fluid_tank",
-    "nerospace:combustion_generator"
+    "nerospace:combustion_generator",
+    "nerospace:nerosium_grinder"
   ]
 }
