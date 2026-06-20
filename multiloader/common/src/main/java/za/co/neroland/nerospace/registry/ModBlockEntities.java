@@ -8,6 +8,7 @@ import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
+import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.storage.BatteryBlockEntity;
 import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
 import za.co.neroland.nerospace.storage.ItemStoreBlockEntity;
@@ -45,6 +46,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<PassiveGeneratorBlockEntity>> PASSIVE_GENERATOR =
             BLOCK_ENTITIES.register("passive_generator",
                     key -> new BlockEntityType<>(PassiveGeneratorBlockEntity::new, java.util.Set.of(ModBlocks.PASSIVE_GENERATOR.get())));
+
+    public static final RegistryEntry<BlockEntityType<UniversalPipeBlockEntity>> UNIVERSAL_PIPE =
+            BLOCK_ENTITIES.register("universal_pipe",
+                    key -> new BlockEntityType<>(UniversalPipeBlockEntity::new, java.util.Set.of(ModBlocks.UNIVERSAL_PIPE.get())));
 
     private ModBlockEntities() {
     }

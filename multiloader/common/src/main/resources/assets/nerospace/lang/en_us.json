@@ -60,5 +60,6 @@
   "block.nerospace.nerosium_grinder": "Nerosium Grinder",
   "container.nerospace.nerosium_grinder": "Nerosium Grinder",
   "block.nerospace.passive_generator": "Passive Generator",
-  "container.nerospace.passive_generator": "Passive Generator"
+  "container.nerospace.passive_generator": "Passive Generator",
+  "block.nerospace.universal_pipe": "Universal Pipe"
 }

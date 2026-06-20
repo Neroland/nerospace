@@ -12,6 +12,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
+import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.storage.BatteryBlock;
 import za.co.neroland.nerospace.storage.FluidTankBlock;
 import za.co.neroland.nerospace.storage.ItemStoreBlock;
@@ -122,6 +123,12 @@ public final class ModBlocks {
             key -> new PassiveGeneratorBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+
+
+    public static final RegistryEntry<UniversalPipeBlock> UNIVERSAL_PIPE = BLOCKS.register("universal_pipe",
+            key -> new UniversalPipeBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(1.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     private static RegistryEntry<Block> block(String name, UnaryOperator<BlockBehaviour.Properties> props) {
         return BLOCKS.register(name, key -> new Block(props.apply(BlockBehaviour.Properties.of().setId(key))));

@@ -94,5 +94,10 @@ public final class NeoForgeCapabilities {
                 ENERGY,
                 ModBlockEntities.PASSIVE_GENERATOR.get(),
                 (be, side) -> be.getEnergy());
+
+        event.registerBlockEntity(
+                ENERGY,
+                ModBlockEntities.UNIVERSAL_PIPE.get(),
+                (be, side) -> be.getEnergy());
     }
 }
