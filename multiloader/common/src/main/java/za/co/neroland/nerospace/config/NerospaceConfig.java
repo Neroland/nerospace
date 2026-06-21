@@ -27,6 +27,7 @@ public final class NerospaceConfig {
     private static final String KEY_OXYGEN_CAPACITY = "oxygenCapacityMultiplier";
     private static final String KEY_FUEL_COST = "fuelCostMultiplier";
     private static final String KEY_MACHINE_SPEED = "machineSpeedMultiplier";
+    private static final String KEY_ALIEN_RAIDS = "alienRaidsEnabled";
 
     /** Multiplier range (mirrors the root config spec): 0.1× .. 10×. */
     private static final double MULT_MIN = 0.1D;
@@ -44,6 +45,8 @@ public final class NerospaceConfig {
     private static volatile double fuelCostMultiplier = 1.0D;
     /** Scales machine work speed (inverse: higher ⇒ shorter work intervals). Clamped 0.1×..10×. */
     private static volatile double machineSpeedMultiplier = 1.0D;
+    /** Whether alien villages can be raided by hostile mobs at night. ON by default; players opt out. */
+    private static volatile boolean alienRaidsEnabled = true;
     private static volatile boolean loaded;
 
     private NerospaceConfig() {
@@ -71,6 +74,11 @@ public final class NerospaceConfig {
 
     public static double machineSpeedMultiplier() {
         return machineSpeedMultiplier;
+    }
+
+    /** Whether config-gated night raids on alien villages are enabled (default true; opt-out). */
+    public static boolean alienRaidsEnabled() {
+        return alienRaidsEnabled;
     }
 
     /**
@@ -123,6 +131,8 @@ public final class NerospaceConfig {
                         props.getProperty(KEY_FUEL_COST), fuelCostMultiplier));
                 machineSpeedMultiplier = clampMultiplier(parseDouble(
                         props.getProperty(KEY_MACHINE_SPEED), machineSpeedMultiplier));
+                alienRaidsEnabled = Boolean.parseBoolean(
+                        props.getProperty(KEY_ALIEN_RAIDS, Boolean.toString(alienRaidsEnabled)).trim());
             } catch (IOException e) {
                 NerospaceCommon.LOGGER.warn("[Nerospace] Could not read {}; using defaults.", FILE_NAME, e);
             }
@@ -152,6 +162,7 @@ public final class NerospaceConfig {
         props.setProperty(KEY_OXYGEN_CAPACITY, Double.toString(oxygenCapacityMultiplier));
         props.setProperty(KEY_FUEL_COST, Double.toString(fuelCostMultiplier));
         props.setProperty(KEY_MACHINE_SPEED, Double.toString(machineSpeedMultiplier));
+        props.setProperty(KEY_ALIEN_RAIDS, Boolean.toString(alienRaidsEnabled));
         try {
             Files.createDirectories(file.getParent());
             try (OutputStream out = Files.newOutputStream(file)) {
@@ -163,7 +174,8 @@ public final class NerospaceConfig {
                         + "scales how fast air drains. oxygenCapacityMultiplier: scales air capacity. "
                         + "fuelCostMultiplier: scales fuel burned per rocket launch. "
                         + "machineSpeedMultiplier: scales machine work speed (higher = faster). "
-                        + "All multipliers 0.1..10, default 1.");
+                        + "All multipliers 0.1..10, default 1. alienRaidsEnabled: allow hostile mobs to "
+                        + "raid alien villages at night (true by default; set false to opt out).");
             }
         } catch (IOException e) {
             NerospaceCommon.LOGGER.warn("[Nerospace] Could not write {}; using defaults.", FILE_NAME, e);

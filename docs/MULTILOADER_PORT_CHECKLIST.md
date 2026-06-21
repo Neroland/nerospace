@@ -4,6 +4,20 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-22 update — Village Core interactive controller ported (closes the last big gameplay gap).**
+> All 4 cells green (full `:neoforge:build`+`:fabric:build` on **both** 26.2 and 26.1.2; ecjCheck 0 errors /
+> 21 baseline warnings, 0 new). The decorative `VillageCoreBlock` stub is now the root's full teach-and-grow
+> engine: ported `village/VillageBuildings` (building catalogue + quest table + box-structure generator) +
+> `village/VillageCoreBlockEntity` (373-line controller: claim, nerosteel stockpile, reputation-gated build
+> jobs with staged block-by-block placement, passive production, fetch quests, config-gated night raids,
+> `ValueInput`/`ValueOutput` persistence) and replaced the block with the interactive `BaseEntityBlock`.
+> Registered the `VILLAGE_CORE` block-entity type + 2 message lang keys; added an `alienRaidsEnabled`
+> opt-out (default ON) to the properties `NerospaceConfig`. **Cross-version adaptations:** the after-dark
+> raid gate uses vanilla `Level.getSkyDarken()` (not `isBrightOutside()`, which diverges 26.1.2↔26.2), and
+> raids read the properties config seam rather than a NeoForge `ModConfigSpec`. Reuses the already-ported
+> `AlienVillager` reputation API. The structures place the same block, so alien hamlets / ruins / mega-cities
+> now ship a live, claimable, growable Village Core. **~222 classes ported.**
+
 > **2026-06-21 update — /nerospace commands ported.** All 4 cells compile green. `command/NerospaceCommands`
 > (the `/nerospace gallery` creative showcase) behind a cross-loader `register(CommandDispatcher)` seam
 > (NeoForge `RegisterCommandsEvent` / Fabric `CommandRegistrationCallback`). Adapted: block iteration via
@@ -395,9 +409,17 @@ checked by a headless build).
   configured/placed-feature JSON and **re-added the 3 placed features to the Greenxertz biome JSON**
   (`greenxertz.json` feature step 6) — since Greenxertz is our own datapack biome, no biome-modifier seam
   needed. Mega-city spawns the (ported) Ruin Warden boss; ruin/mega-city fill vanilla loot chests.
-+ [~] `VillageCoreBlock` — ported as a **plain decorative centerpiece block** (the structures' anchor).
-  The interactive controller (`VillageCoreBlockEntity`: claim → teach-and-grow construction, fetch
-  quests, night raids) is **deferred** — it pulls in `VillageBuildings` + the config seam.
++ [x] **`VillageCoreBlock` interactive controller DONE (4 cells green).** The decorative stub is now the
+  full root controller: `VillageBuildings` (HUT@T2 / WORKSHOP@T3 catalogue + box-structure generator +
+  fetch-quest table) + `VillageCoreBlockEntity` (claim → nerosteel stockpile → rep-gated teach-and-grow
+  staged block placement → passive production → fetch quests → config-gated night raids; `ValueInput`/
+  `ValueOutput` NBT) + the interactive `BaseEntityBlock` (deposit/claim/quest-handin/collect via vanilla
+  `useItemOn`/`useWithoutItem` + the `createTickerHelper` seam). Registered the `VILLAGE_CORE` BE type
+  (bound to the existing block) + 2 message lang keys; structures keep placing the same block and it is now
+  live. **Cross-version adaptations:** raids read `NerospaceConfig.alienRaidsEnabled()` (the properties
+  config seam, default ON/opt-out — no NeoForge `ModConfigSpec`), and the after-dark gate uses the
+  long-standing vanilla `Level.getSkyDarken()` instead of `isBrightOutside()` (the de-obf day/night helpers
+  diverge 26.1.2↔26.2). Reuses the already-ported `AlienVillager` rep API (`getTier`/`addReputation`).
 
 ### Meteor events  (`meteor/` 8 + client)
 

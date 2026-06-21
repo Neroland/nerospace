@@ -30,6 +30,7 @@ import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 import za.co.neroland.nerospace.storage.BatteryBlockEntity;
 import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
 import za.co.neroland.nerospace.storage.ItemStoreBlockEntity;
+import za.co.neroland.nerospace.village.VillageCoreBlockEntity;
 
 /**
  * Block-entity types, shared by both loaders via {@link RegistrationProvider} over the vanilla
@@ -141,6 +142,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<StationCoreBlockEntity>> STATION_CORE =
             BLOCK_ENTITIES.register("station_core",
                     key -> new BlockEntityType<>(StationCoreBlockEntity::new, java.util.Set.of(ModBlocks.STATION_CORE.get())));
+
+    public static final RegistryEntry<BlockEntityType<VillageCoreBlockEntity>> VILLAGE_CORE =
+            BLOCK_ENTITIES.register("village_core",
+                    key -> new BlockEntityType<>(VillageCoreBlockEntity::new, java.util.Set.of(ModBlocks.VILLAGE_CORE.get())));
 
     private ModBlockEntities() {
     }

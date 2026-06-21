@@ -300,6 +300,8 @@
   "itemGroup.nerospace": "Nerospace",
   "message.nerospace.greenxertz.no_air": "You are out of oxygen — reach a launch pad or an Oxygen Generator!",
   "message.nerospace.star_guide.empty": "Place a Star Guide Book on the pedestal to open the guide",
+  "message.nerospace.village_core.claimed": "You claim this Village Core. The aliens take note.",
+  "message.nerospace.village_core.owned": "This Village Core belongs to %s.",
   "pipe.nerospace.face.down": "Bottom",
   "pipe.nerospace.face.east": "East",
   "pipe.nerospace.face.north": "North",
