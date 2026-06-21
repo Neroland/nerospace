@@ -46,6 +46,7 @@ build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
 > **2026-06-21 update — Star Guide slice 2b (hologram BER + reusable BER seam).** All 4 cells compile green
 > (26.1.2 + 26.2). Added the first cross-loader block-entity-renderer seam (`ClientBlockEntityRenderers.Sink`)
+>
 > + the Star Guide pedestal hologram renderer (spinning next-step icon). **26.x gotcha: `BlockEntityRendererProvider`
 > is 2-type-param `<T, S extends BlockEntityRenderState>`.** The seam is reusable for future BERs (solar
 > sun-tracking deck, quarry drill head, etc.).
@@ -63,6 +64,7 @@ build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 > `item/StarGuideBookItem` + `client/StarGuideScreen` (built on the existing `TexturedContainerScreen` +
 > `SpaceButton` — near-verbatim since the root already uses the 26.x submission model). Registered block +
 > block-item + book item + BE + menu + per-loader screen; copied block/GUI/book assets + models + blockstate
+>
 > + loot table + **98 lang keys** (full chapter/step text). The guide opens from the **Star Guide Book** (in
 > hand) or a **Star Guide pedestal** (install the book). **No `ModCriteria` needed** — the guide just reads
 > advancement completion (missing advancements read as incomplete), sidestepping the 26.1↔26.2 criterion
@@ -84,6 +86,7 @@ build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
 > **2026-06-21 update — advanced pipes slice A (per-face configuration layer).** All 4 cells green
 > (compile on 26.1.2 + 26.2; full `:neoforge:build`+`:fabric:build` on 26.2). Added `pipe/PipeIoMode`
+>
 > + `pipe/PipeResourceType` (pure-vanilla enums) and the three pipe tools — `item/ConfiguratorItem`
 > (cycle selected layer + cycle a face's I/O mode), `item/PipeFilterItem` (ItemResource→vanilla
 > **ItemStack** filter), `item/PipeUpgradeItem` (speed/capacity ×2). Extended `UniversalPipeBlockEntity`
@@ -104,6 +107,7 @@ build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 > task.
 
 > **2026-06-21 update — oxygen field client visuals.** All 4 cells green. Added `network/OxygenFieldSyncPayload`
+>
 > + `client/{ClientOxygenField, ClientOxygenVisuals}`; the field now syncs to nearby clients and renders as
 > drifting GLOW particles + a boundary sound — the breathable volume is finally visible. 2nd networking-seam
 > consumer. The haze fog-tint layer is deferred (NeoForge-only fog event; no portable Fabric counterpart).
@@ -236,123 +240,127 @@ checked by a headless build).
 
 ## ✅ Done (cross-loader, all 4 cells green)
 
-- [x] **Platform seams** — `Services`/`IPlatformHelper`, `RegistrationProvider` (+ per-loader factories),
++ [x] **Platform seams** — `Services`/`IPlatformHelper`, `RegistrationProvider` (+ per-loader factories),
   capability seams for item / energy / fluid / gas (expose + query), `FluidFactory` seam.
-- [x] **Registries** — blocks, items, block-entities, menu types, entities, sounds, dimension keys,
++ [x] **Registries** — blocks, items, block-entities, menu types, entities, sounds, dimension keys,
   entity attributes (subset that's ported).
-- [x] **Logistics** — energy / fluid / gas / **item** transport; the universal pipe relays all four.
-- [x] **Machines / storage** — combustion + passive + solar generators, oxygen generator, nerosium
++ [x] **Logistics** — energy / fluid / gas / **item** transport; the universal pipe relays all four.
++ [x] **Machines / storage** — combustion + passive + solar generators, oxygen generator, nerosium
   grinder (+ 3 GUIs), item store, battery, creative battery, fluid tank, gas tank, trash can.
-- [x] **Rocket-fuel fluid** — `BaseFlowingFluid`/`FluidType` (NeoForge) vs hand-written `FlowingFluid`
++ [x] **Rocket-fuel fluid** — `BaseFlowingFluid`/`FluidType` (NeoForge) vs hand-written `FlowingFluid`
   (Fabric), liquid block + bucket; NeoForge in-world render. (Fabric in-world render = follow-up.)
-- [x] **All 10 mobs** — xertz stalker, quartz crawler, greenling, ruin warden, cinder/frost striders,
++ [x] **All 10 mobs** — xertz stalker, quartz crawler, greenling, ruin warden, cinder/frost striders,
   3 terraform livestock, alien villager (full Merchant trading + reputation). Models, renderers,
   glow layers, sounds, `village` trade tables.
-- [x] **Planet dimensions** — Greenxertz / Cindara / Glacira / Station (datapack data + `space`
++ [x] **Planet dimensions** — Greenxertz / Cindara / Glacira / Station (datapack data + `space`
   dimension_type + planet biomes that spawn the mobs and generate the ores).
-- [x] **Overworld nerosium ore** worldgen (NeoForge biome modifier + Fabric biome API).
++ [x] **Overworld nerosium ore** worldgen (NeoForge biome modifier + Fabric biome API).
 
 ---
 
 ## 🚧 Remaining subsystems
 
 ### Rockets & travel  (`rocket/` 11 + client + items) — **DONE (4 cells green); item-cap proxy deferred**
-- [x] `RocketTier`, `Destinations` (ported; `Tuning` values inlined as identity-multiplier base values).
-- [~] `RocketEntity` — rebuilt on the cross-loader `FluidTank` + a plain `SimpleContainer(1)` intake +
+
++ [x] `RocketTier`, `Destinations` (ported; `Tuning` values inlined as identity-multiplier base values).
++ [~] `RocketEntity` — rebuilt on the cross-loader `FluidTank` + a plain `SimpleContainer(1)` intake +
   vanilla `ServerPlayer.teleportTo`. **Per-station selection DONE:** `DATA_STATION` synced slot (−1 = origin),
   `cycleStation()` cycles origin → each founded station (founding order) → origin via `StationRegistry`, and
   `completeLaunch()` docks the rider at the selected station's `center()` (else the origin platform); the slot
   persists in `addAdditionalSaveData` (`StationSlot`). **Deferred:** the NeoForge-transfer entity item-capability
   **automation proxy** (pipe/hopper → docked rocket). Risk: travel/teleport unverifiable headlessly — compile-verified only.
-- [x] `RocketItem` ×4 tiers, `RocketMenu` + `RocketScreen`. Menu is **non-extended** (no loader-divergent
++ [x] `RocketItem` ×4 tiers, `RocketMenu` + `RocketScreen`. Menu is **non-extended** (no loader-divergent
   extended-menu API); buttons route via `clickMenuButton`. **Station selection DONE:** `BUTTON_CYCLE_STATION`
   + a synced `[5]=stationSlot` data value + a `RocketScreen` "Dock:" cycler shown only when the Orbital Station
   is the chosen destination. **Real charter names** ride a small clientbound `StationSyncPayload` (slot→name
   parallel arrays, POPIA-clean — no player identity) pushed when the player opens a rocket and cached in
   `client/ClientStations`; the cycler shows the live name (falling back to "Station N"/"Origin Platform") since
   the int-only `ContainerData` can't carry strings. The standalone FOUND row stays dropped — founding is charter-driven.
-- [x] `RocketModel` (+ `RocketT2/T3/T4Model`), `RocketRenderer` (bakes each tier layer directly — no
++ [x] `RocketModel` (+ `RocketT2/T3/T4Model`), `RocketRenderer` (bakes each tier layer directly — no
   model-layer registry), `RocketRenderState`; entity + item textures copied.
-- [x] Launch pad / gantry: `RocketLaunchPadBlock`, `LaunchGantryBlock`, `LaunchPadMultiblock` (multiblock gating).
-- [x] **Station founding DONE (4 cells green).** `StationCoreBlock`(+BE), `StationRegistry` (SavedData,
++ [x] Launch pad / gantry: `RocketLaunchPadBlock`, `LaunchGantryBlock`, `LaunchPadMultiblock` (multiblock gating).
++ [x] **Station founding DONE (4 cells green).** `StationCoreBlock`(+BE), `StationRegistry` (SavedData,
   POPIA-clean), and a new `StationCharterItem` — right-click the charter to found a station (slot + 7×7 pad +
   bound Core in the void station dim) and travel there; breaking the Core unregisters + pops the named charter;
   `guide/station_charter` is code-granted on founding (routes around `ModCriteria`). Founding is **charter-driven**
   rather than via the rocket FOUND row; the rocket's **per-station selection is now DONE** (see `RocketEntity`/`RocketMenu` above).
 
 ### Quarry  (`machine/quarry/` 11 + client) — **DONE (4 cells green); modules + BER deferred**
-- [x] Area miner ported: `QuarryControllerBlock`(+BE) + `QuarryMenu`/`QuarryScreen`, `QuarryFrameBlock`,
+
++ [x] Area miner ported: `QuarryControllerBlock`(+BE) + `QuarryMenu`/`QuarryScreen`, `QuarryFrameBlock`,
   `QuarryLandmarkBlock`(+BE, client laser ticker), `QuarryRegion`, `MinerTier`, `OutputFilter`,
   `PlanetMiningProfile`. The dig (landmarks → frame ring → layer-by-layer excavation → drops buffered/
   auto-ejected, source fluids sucked) runs server-side; Energy/Item/Fluid caps on both loaders.
-- [~] **Chunk-loading**: `QuarryChunkLoader` (NeoForge `TicketController`) replaced by vanilla
++ [~] **Chunk-loading**: `QuarryChunkLoader` (NeoForge `TicketController`) replaced by vanilla
   `ServerLevel.setChunkForced` (works on both loaders; one chunk pinned at a time, persisted + released
   on removal) — no cross-loader ticket seam needed.
-- [~] **Deferred**: upgrade modules (controller runs at ×1.0 speed/energy, no Silk/Fortune, no module
++ [~] **Deferred**: upgrade modules (controller runs at ×1.0 speed/energy, no Silk/Fortune, no module
   slots — depends on the `module/` batch); the moving drill-head BER (`QuarryControllerRenderer`); and
   fluid **auto-eject** (the fluid buffer is drained by pipes instead). `Tuning` values inlined.
 
 ### Fuel machines  (`machine/Fuel*` — depends on the ported rocket-fuel fluid) — **DONE (4 cells green)**
-- [x] `FuelTankBlock`(+BE +menu +screen): stores `rocket_fuel`, accepts buckets/canisters, auto-fuels a
+
++ [x] `FuelTankBlock`(+BE +menu +screen): stores `rocket_fuel`, accepts buckets/canisters, auto-fuels a
   rocket on an adjacent pad (4x on a full 3x3, 12x on a Heavy complex), comparator out. Rebuilt on the
   shared `FluidTank`; canister slot is a vanilla `WorldlyContainer` (Item cap on both loaders); Fluid cap
   exposed for pipe filling. Pump FX uses a vanilla sound (root's `ModSounds.FUEL_TANK_PUMP` alias not ported).
-- [x] `FuelRefineryBlock`(+BE +menu +screen): coal/charcoal + blaze powder + grid power → liquid
++ [x] `FuelRefineryBlock`(+BE +menu +screen): coal/charcoal + blaze powder + grid power → liquid
   `rocket_fuel` over a work cycle; Energy (insert-only) + Fluid (extract) + Item caps on both loaders.
   Rebuilt on `EnergyBuffer` + `FluidTank` + a vanilla `WorldlyContainer`; `Tuning` values inlined.
   Assets (textures, models, blockstates, loot, recipes) + 4 lang keys copied.
 
 ### Atmosphere / terraforming  (`world/Oxygen*`, `world/Terraform*`, `machine/Terraform*`, `HydrationModule`)
-- [~] **Oxygen survival core DONE (4 cells green)** — `OxygenManager` (per-player O2 drain/suffocate/refill,
+
++ [~] **Oxygen survival core DONE (4 cells green)** — `OxygenManager` (per-player O2 drain/suffocate/refill,
   air-supply-bar mirror, full-suit detection) on a new **data-attachment seam**: `IPlatformHelper.get/setOxygen`
   backed by NeoForge `AttachmentType` (`NeoForgeAttachments`) and Fabric `AttachmentRegistry`
   (`FabricAttachments`); ticked per-loader (NeoForge `PlayerTickEvent`, Fabric `ServerTickEvents.END_SERVER_TICK`).
   Breathable = the diffusion field **or** near a Launch Pad (safe-zone radius).
-- [x] **Oxygen diffusion field — server half DONE (4 cells green).** `world/{OxygenField (tag-based
-  sealing classifier — `OXYGEN_SEALING`/`OXYGEN_LEAKS`, doors/trapdoors, full-cube fallback),
++ [x] **Oxygen diffusion field — server half DONE (4 cells green).** `world/{OxygenField (tag-based
+  sealing classifier —`OXYGEN_SEALING`/`OXYGEN_LEAKS`, doors/trapdoors, full-cube fallback),
   OxygenFieldManager (SavedData; sparse fastutil concentration field + source set; per-pass flood-fill
   detects sealed-vs-leaky/open volumes → sealed rooms fill to MAX, open space pressurises only a bubble;
-  slow evaporation), OxygenFieldEvents (cross-loader `tick(MinecraftServer)`, throttled sim pass)}`.
+  slow evaporation), OxygenFieldEvents (cross-loader`tick(MinecraftServer)`, throttled sim pass)}`.
   Wired into both server-tick hooks alongside the meteor driver; `OxygenManager.isBreathable` now reads the
   field; the **Oxygen Generator registers itself as a field source**, draining `EMIT_MB_PER_TICK` from its
   tank while sourcing (and clears on `setRemoved`). Sealed bases are now genuinely breathable. ~9 field
   config keys inlined.
-- [x] **Oxygen field client visuals DONE (4 cells green).** `network/OxygenFieldSyncPayload` (range snapshot,
++ [x] **Oxygen field client visuals DONE (4 cells green).** `network/OxygenFieldSyncPayload` (range snapshot,
   long[]/byte[]) registered clientbound and pushed from `OxygenFieldEvents` every 10t to nearby players;
   `client/ClientOxygenField` (data holder) + `client/ClientOxygenVisuals` (client-tick: drifting GLOW particles
   in breathable cells + a boundary-crossing sound). 2nd networking-seam consumer. **Deferred: the haze fog-tint
   layer** — rode a NeoForge-only `ViewportEvent.ComputeFogColor` with no portable Fabric counterpart.
-- [x] **Hazard shields DONE (4 cells green).** `OxygenManager` now applies a per-planet hazard (Cindara HEAT /
++ [x] **Hazard shields DONE (4 cells green).** `OxygenManager` now applies a per-planet hazard (Cindara HEAT /
   Glacira COLD): ×4 oxygen drain unless a full set of the matching `HazardShield` suit variant is worn (mixed
   set = no shield). Adds `hazardFor`/`hazardShield`/`pieceVariant`/`hazardDrainMultiplier` + thematic feedback
   (frost vignette on cold, smoke shimmer on hot — no extra damage path). **Makes the already-ported thermal/cryo
   suit variants functional.**
-- [ ] **Deferred**: terraform-breathability advancement criteria, gas-tank airlock refill (needs the gas-cap
++ [ ] **Deferred**: terraform-breathability advancement criteria, gas-tank airlock refill (needs the gas-cap
   lookup; the field/pad/terraformed already refill).
-- **Terraforming** (signature endgame) — sliced; **slice 1 DONE (4 cells green)**, rest sequenced:
-  - [x] **Slice 1 — per-chunk data-attachment seam.** `IPlatformHelper.is/setTerraformed` +
++ **Terraforming** (signature endgame) — sliced; **slice 1 DONE (4 cells green)**, rest sequenced:
+  + [x] **Slice 1 — per-chunk data-attachment seam.** `IPlatformHelper.is/setTerraformed` +
     `get/setTerraformStage(LevelChunk)` backed by NeoForge `AttachmentType` (chunk `getData`/`setData`) and
     Fabric `AttachmentRegistry` (chunk `getAttachedOrCreate`/`setAttached`) — same registries as the player
     oxygen attachment, just a `LevelChunk` target (no new API surface). Wired into `OxygenManager.isBreathable`
     (terraformed chunk ⇒ breathable). Critical-path foundation for everything below.
-  - [x] **Slice 2 — biome + tag data.** `world/ModBiomes` (4 terraformed `ResourceKey<Biome>` constants —
+  + [x] **Slice 2 — biome + tag data.** `world/ModBiomes` (4 terraformed `ResourceKey<Biome>` constants —
     the multiloader ships biomes as committed datapack JSON, so no datagen bootstrap needed) + copied the 4
     terraformed biome JSON (`terraformed`/`_meadow`/`_savanna`/`_tundra`, feature-free / runtime-written) +
     copied the 2 terraform block-tag JSON (`TERRAFORM_TO_GRASS`/`_DIRT` — TagKey constants already in `ModTags`).
     All 4 cells green; JSON python-validated. (Inert until slice 3 consumes them.)
-  - [x] **Slice 3 — conversion engine.** `machine/TerraformConversion` (staged column conversion: stage 1
+  + [x] **Slice 3 — conversion engine.** `machine/TerraformConversion` (staged column conversion: stage 1
     Rooted = terrain→grass/dirt via `TERRAFORM_TO_GRASS/DIRT` tags + breathable flag + `TERRAFORMED` biome +
     plants/ore; stage 2 Hydrated = basin water fill; stage 3 Living = mature biome + trees + herds — stage
     bookkeeping rewired onto the `Services.PLATFORM` chunk seam), `machine/TerraformResources` (inlined ore
     list), `world/TerraformFauna` (inlined herd config). Worldgen APIs (`TreeFeatures`, `ConfiguredFeature.place`,
     `PalettedContainer` biome write, `EntityType.spawn`) all resolve on common. ~7 config/tuning keys inlined.
     All 4 cells green. (Inert until slice 4's machine + manager drive it.)
-  - [x] **Slice 4a — TerraformManager + chunk-load seam.** `world/TerraformManager` (3rd `SavedData`,
+  + [x] **Slice 4a — TerraformManager + chunk-load seam.** `world/TerraformManager` (3rd `SavedData`,
     4-arg `SavedDataType`; tracks per-terraformer stage radii; `onChunkLoaded` replays staged conversion on
     in-range columns of newly-loaded chunks + biome-sync packet). Per-loader chunk-load hook: NeoForge
     `ChunkEvent.Load` (filter `ServerLevel`+`LevelChunk`), Fabric `ServerChunkEvents.CHUNK_LOAD` (**3-param
     SAM `(ServerLevel, LevelChunk, boolean newlyGenerated)`** — probed). All 4 cells green. (Inert until 4b.)
-  - [x] **Slice 4b — Terraformer machine DONE (4 cells green).** `machine/{MachineRedstone, TerraformerBlock,
+  + [x] **Slice 4b — Terraformer machine DONE (4 cells green).** `machine/{MachineRedstone, TerraformerBlock,
     TerraformerBlockEntity}` + `menu/TerraformerMenu` + `client/TerraformerScreen`. BE rewritten onto
     `EnergyBuffer` + a vanilla `WorldlyContainer`/`NonNullList` upgrade slot (dropped NeoForge
     `SimpleEnergyHandler`/`MachineItemHandler`/`ResourceHandler`); **force-load deferred** (unloaded columns
@@ -360,52 +368,54 @@ checked by a headless build).
     `TerraformManager.update` + biome-sync packet. Registered block/item/BE/menu + per-loader screen + energy/item
     caps; copied block (3 textures, FACING blockstate, multi-tex model) + GUI texture + 9 lang keys. **Placing a
     Terraformer now greens the planet outward (Rooted→Hydrated→Living).**
-  - [x] **Slice 5 — Hydration Module DONE (4 cells green).** `machine/{HydrationModuleBlock,
+  + [x] **Slice 5 — Hydration Module DONE (4 cells green).** `machine/{HydrationModuleBlock,
     HydrationModuleBlockEntity}` + `menu/HydrationModuleMenu` + `client/HydrationModuleScreen`. Melts glacite
     (the `hydration_input` tag) from a `WorldlyContainer`/`NonNullList` slot into a TOUCHING Terraformer's
     hydration buffer (`acceptHydration`); no energy of its own. Registered block/item/BE/menu + per-loader
     screen + item cap; copied block (3 tex, FACING blockstate, model) + GUI + loot table + `hydration_input`
     tag JSON + 5 lang keys. **Also fixed: the Terraformer block was missing its loot table from 4b (added).**
-  - [x] **Slice 6a — Terraform Monitor DONE (4 cells green).** `machine/{TerraformMonitorBlock,
+  + [x] **Slice 6a — Terraform Monitor DONE (4 cells green).** `machine/{TerraformMonitorBlock,
     TerraformMonitorBlockEntity}` + `menu/TerraformMonitorMenu` + `client/TerraformMonitorScreen`. Pure readout
     (no inventory — `MenuProvider` + `ContainerData`): finds the nearest Terraformer via `TerraformManager`,
     shows stage radii / hydration / stall + the local column's stage on a comparator. Registered + per-loader
     screen + assets + loot table + 9 lang keys. No caps (no inventory).
-  - [x] **Slice 6b — `TerraformDrift` DONE (4 cells green).** `world/TerraformDrift` — idle ground-cover
+  + [x] **Slice 6b — `TerraformDrift` DONE (4 cells green).** `world/TerraformDrift` — idle ground-cover
     garnish on settled terraformed land, near players, on a per-second budget; cross-loader `tick(MinecraftServer)`
     wired into both server-tick hooks (alongside meteor + oxygen-field). Config inlined.
-  - [ ] **Remaining (optional, low value):** `TerraformChunkLoader` (the deferred opt-in active force-loader —
+  + [ ] **Remaining (optional, low value):** `TerraformChunkLoader` (the deferred opt-in active force-loader —
     needs a chunk-force-ticket seam; off by default so the chunk-load catch-up covers it).
     `world/GreenxertzAtmosphere` is **NOT terraforming** — it's the root's full oxygen-survival class, already
     superseded by the ported `OxygenManager` + diffusion field + terraformed-flag. Its only unported extras
     (hazard shields heat/cold, gas-tank airlock refill) are a separate **oxygen enhancement**, tracked below.
 
 ### Structures  (`world/*Feature`, `village/VillageCore*`, station core, `ModFeatures`) — **DONE (4 cells green)**
-- [x] `HamletFeature`, `MegaCityFeature`, `RuinFeature`, `AlienBuild`, `StructureSpacing` + `ModFeatures`
+
++ [x] `HamletFeature`, `MegaCityFeature`, `RuinFeature`, `AlienBuild`, `StructureSpacing` + `ModFeatures`
   (registers the 3 `Feature` types via `RegistrationProvider` over `FEATURE`). Copied the
   configured/placed-feature JSON and **re-added the 3 placed features to the Greenxertz biome JSON**
   (`greenxertz.json` feature step 6) — since Greenxertz is our own datapack biome, no biome-modifier seam
   needed. Mega-city spawns the (ported) Ruin Warden boss; ruin/mega-city fill vanilla loot chests.
-- [~] `VillageCoreBlock` — ported as a **plain decorative centerpiece block** (the structures' anchor).
++ [~] `VillageCoreBlock` — ported as a **plain decorative centerpiece block** (the structures' anchor).
   The interactive controller (`VillageCoreBlockEntity`: claim → teach-and-grow construction, fetch
   quests, night raids) is **deferred** — it pulls in `VillageBuildings` + the config seam.
 
 ### Meteor events  (`meteor/` 8 + client)
-- [x] **Creative slice** — `FallingMeteorEntity` (+ `FallingMeteorModel`/`FallingMeteorRenderer`/
+
++ [x] **Creative slice** — `FallingMeteorEntity` (+ `FallingMeteorModel`/`FallingMeteorRenderer`/
   `FallingMeteorRenderState`, bake-direct), `MeteorCallerItem` (creative-only), `MeteorCoreBlock`(+BE,
   break-to-loot), `MeteorLoot`. Meteor Caller → falling meteor → crater of `meteor_rock` around a
   loot-bearing `meteor_core`. `METEOR_ROCK` + loot items (`alien_*`, raw ores) already existed; added
   `FALLING_METEOR` entity, `METEOR_CORE` block+BE (no block item — world-gen only), `METEOR_CALLER`
   item (TOOLS tab) + renderer; copied 3 textures + 4 asset JSON + 4 lang keys. Config meteor keys
   inlined (crater radius 3, bonus rolls 3). All 4 cells green.
-- [x] **Natural showers (scheduler)** — `MeteorSite` + `MeteorEventManager` (the multiloader's first
++ [x] **Natural showers (scheduler)** — `MeteorSite` + `MeteorEventManager` (the multiloader's first
   `SavedData`) + cross-loader `MeteorEvents.tick(MinecraftServer)` driving the per-level scheduler on the
   4 surface dims (overworld + Greenxertz + Cindara + Glacira); wired into NeoForge `ServerTickEvent.Post`
   and Fabric `END_SERVER_TICK`; `FallingMeteorEntity` re-wired to call `onImpact`. Meteor pacing inlined
   (avg 9000s, warn 30s, 200–500 blocks, ≤4 active). **26.x gotcha: `SavedDataType` on pure-vanilla NeoForm
   has only the 4-arg ctor `(Identifier, Supplier, Codec, DataFixTypes)`** — the standalone mod's 3-arg call
   is a NeoForge convenience; pass `null` DataFixTypes (new mod data, no datafixer schema). All 4 cells green.
-- [x] **Tracker HUD** — `ModItems.METEOR_TRACKER` item + `network/MeteorSyncPayload` (the multiloader's
++ [x] **Tracker HUD** — `ModItems.METEOR_TRACKER` item + `network/MeteorSyncPayload` (the multiloader's
   **first networking payload** — registered clientbound in `ModNetwork.init()`, auto-wired by both loader
   seams) pushed to tracker holders every 10t from `MeteorEvents` + `client/ClientMeteorTracker` (data
   holder) + `client/MeteorTrackerHud` (action-bar readout via `Player.sendOverlayMessage`) driven by
@@ -414,11 +424,12 @@ checked by a headless build).
   use `Player.sendOverlayMessage(Component)`** (probed). Proves the networking seam end-to-end. All 4 cells green.
 
 ### Star Guide / progression  (`progression/` 5 + client + item) — **slice 1 DONE (4 cells green)**
-- [x] **Slice 1 — browsable guide.** `progression/{StarGuide, StarGuideProgress, StarGuideBlock,
+
++ [x] **Slice 1 — browsable guide.** `progression/{StarGuide, StarGuideProgress, StarGuideBlock,
   StarGuideBlockEntity, StarGuideMenu}` + `item/StarGuideBookItem` + `client/StarGuideScreen`. Registered
   block/block-item/book/BE/menu + per-loader screen + assets + 98 lang keys. Opens from the book (in hand)
   or the pedestal (install the book). Reads advancement completion — **no `ModCriteria` dependency**.
-- [x] **Slice 2a — advancement DATA DONE (4 cells green).** Copied all 42 nerospace advancements; **39 use
++ [x] **Slice 2a — advancement DATA DONE (4 cells green).** Copied all 42 nerospace advancements; **39 use
   pure vanilla triggers** (`inventory_changed` / `changed_dimension` / `bred_animals`) and track real
   completion immediately. The **3 custom-trigger ones** (`terraformed_ground`/`living_world`/`station_charter`,
   which need the deferred `ModCriteria` whose `PlayerTrigger` base moved packages 26.1↔26.2) were rewritten to
@@ -426,7 +437,7 @@ checked by a headless build).
   are not orphaned) — they display but stay incomplete until granted. Repointed 2 display icons off unported
   items (`station_charter`→`station_floor`, `new_life`→`meadow_loper_spawn_egg`). **The guide now tracks live
   progress.** All JSON parse-validated; item predicates + the 4 `changed_dimension` targets all resolve.
-- [x] **Slice 2b — hologram BER DONE (4 cells green).** Added a reusable cross-loader BER seam
++ [x] **Slice 2b — hologram BER DONE (4 cells green).** Added a reusable cross-loader BER seam
   `client/ClientBlockEntityRenderers` (`Sink` mirrors `ClientEntityRenderers` — NeoForge
   `RegisterRenderers.registerBlockEntityRenderer`, Fabric `BlockEntityRendererRegistry.register`) +
   `client/{StarGuideHologramRenderer, StarGuideHologramRenderState}` (verbatim 26.x BER submission). The
@@ -434,50 +445,53 @@ checked by a headless build).
   type params `<T, S extends BlockEntityRenderState>`** (probed via build error) — the Sink carries both. The
   seam now unblocks future BERs (solar sun-tracking, quarry drill, etc.). (Fabric `BlockEntityRendererRegistry`
   is soft-deprecated — works; a later switch to vanilla `BlockEntityRenderers.register` is optional.)
-- [x] **Slice 2c — seen-pulse DONE (4 cells green).** Added a `List<Integer>` `STAR_GUIDE_SEEN` player
++ [x] **Slice 2c — seen-pulse DONE (4 cells green).** Added a `List<Integer>` `STAR_GUIDE_SEEN` player
   attachment through the existing data-attachment seam (`IPlatformHelper.get/setStarGuideSeen` +
   `NeoForgeAttachments`/`FabricAttachments`, `Codec.INT.listOf()`, copy-on-death). Restored the menu's seen
   masks (`DATA_COUNT = CHAPTER_COUNT*2`, `clickMenuButton` marks seen via `Services.PLATFORM`) + the screen's
   completed-but-unseen pulse (clicking a step acknowledges it). **The Star Guide is now feature-complete**
   (browse + live progress + hologram + seen-pulse). 26.x gotcha: NeoForge `AttachmentType.builder(...)` is
   overloaded, so the default must be a lambda `() -> List.of()` (not the `List::of` method ref — ambiguous).
-- [x] **Slice 2d — terraform advancements code-granted (4 cells green).** `progression/StarGuideGrants`
++ [x] **Slice 2d — terraform advancements code-granted (4 cells green).** `progression/StarGuideGrants`
   (driven from the per-player server tick, beside `OxygenManager.tick`) awards the impossible-criterion
   `guide/terraformed_ground` (chunk stage ≥ 1) and `guide/living_world` (stage ≥ 3) directly when the player
   stands on terraformed / fully-living ground — replicating the standalone mod's `PlayerTrigger` **without**
   `ModCriteria`. **41 of 42 advancements now track real completion.** 26.x: award via
   `getOrStartProgress(holder).getRemainingCriteria()` → `PlayerAdvancements.award(holder, criterion)`.
-- [x] **Slice 2e — DONE via station founding.** `guide/station_charter` is now code-granted when a station is
++ [x] **Slice 2e — DONE via station founding.** `guide/station_charter` is now code-granted when a station is
   founded (the charter item), and its Star-Guide step + advancement icons point at the now-real `station_charter`
   item. **All 42 advancements track real completion.** Only the `new_life` guide-step icon stays substituted
   (Meadow Loper spawn egg) until `LOPER_HAUNCH` is ported — purely cosmetic.
 
 ### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slice A DONE (4 cells green)**
-- [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla
+
++ [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla
   enums); `item/{ConfiguratorItem, PipeFilterItem (vanilla ItemStack filter), PipeUpgradeItem ×2}`.
   `UniversalPipeBlockEntity` extended with per-face×per-type modes (packed long) + per-face item filters +
   speed/capacity upgrades; the energy/gas/item relay honours `canPull`/`canPush`/`OFF` + filters + speed
   throughput; `UniversalPipeBlock` sneak-empty-hand pops upgrades. Items registered (TOOLS tab) + assets +
   20 lang keys.
-- [x] **Fluid relay** — added the `platform/FluidLookup` query seam (common + both loaders + services) and a
++ [x] **Fluid relay** — added the `platform/FluidLookup` query seam (common + both loaders + services) and a
   `FluidTank` + `relayFluid()` to the pipe BE (honours the FLUID face-mode + speed); the pipe's fluid handler
   is exposed as the FLUID cap on both loaders. The pipe now carries all four layers; the FLUID face-mode is
   live (e.g. Refinery → pipe → Fuel Tank).
-- [ ] **Slice B (deferred) — graph + visuals + GUI.** `PipeNetwork` (591-line graph; NeoForge-transfer-
++ [ ] **Slice B (deferred) — graph + visuals + GUI.** `PipeNetwork` (591-line graph; NeoForge-transfer-
   coupled), `TravellingItem` (animated stacks; ItemResource→ItemStack), `UniversalPipeRenderer` +
   `UniversalPipeRenderState` (stream + travelling-item visuals), `PipeConfigScreen` + `PipeConfigOpenHandler`
   + `network/SetPipeModePayload` (the per-face×per-type config GUI — needs a cross-loader client-screen-open
   seam). Cosmetic / convenience; the slice-A in-world cycling already configures pipes fully.
 
 ### Machine modules / upgrades  (`module/` 3) — **DONE (4 cells green)**
-- [x] `ModuleType`, `UpgradeModuleItem` (4 items: speed / efficiency / fortune / silk-touch) + `MachineModules`
+
++ [x] `ModuleType`, `UpgradeModuleItem` (4 items: speed / efficiency / fortune / silk-touch) + `MachineModules`
   (rebuilt on a `NonNullList` instead of the root's `MachineItemHandler`). **Re-enabled in the quarry**:
   module slots restored in the controller's combined `WorldlyContainer` view + `QuarryMenu`, and the
   speed / energy / Silk-Touch / Fortune multipliers now drive the dig (the quarry's earlier `×1.0`
   deferral is resolved). Assets + 4 lang keys copied.
 
 ### Solar — tiers/array/BER  (`machine/Solar*`) — **slice 1 DONE (4 cells green); multiblock + BER deferred**
-- [x] **Tiers + array pooling DONE.** `SolarTier` (T1/T2/T3, config-scaled FE/buffer via `NerospaceConfig`)
+
++ [x] **Tiers + array pooling DONE.** `SolarTier` (T1/T2/T3, config-scaled FE/buffer via `NerospaceConfig`)
   + `SolarArray` (flood-fill same-tier pooling, rebalanced each tick so a pipe on ANY panel drains the
   whole run) + tier-aware `SolarPanelBlock` (comparator output) + `SolarPanelBlockEntity` rebuilt on the
   multiloader `EnergyBuffer` (the NeoForge transfer `SimpleEnergyHandler` isn't ported). `solar_panel`
@@ -486,33 +500,36 @@ checked by a headless build).
   no per-loader change. Daylight uses vanilla `getSkyDarken()` (the NeoForge dimension clock /
   `getDayTime()` / `LevelData.getDayTime()` aren't on the de-obf classpath); airless dims get the 2× sun
   bonus via `ModDimensions` keys. Assets: tier textures copied from root + hand-authored block/item/loot JSON; 2 lang keys.
-- [~] **Deferred (slice 2):** the N×N multiblock footprint (every tier is 1×1 for now — `SolarTier.footprint`
++ [~] **Deferred (slice 2):** the N×N multiblock footprint (every tier is 1×1 for now — `SolarTier.footprint`
   is carried but unused for placement) and the tilting sun-tracking deck renderer (the BER seam is ready).
 
 ### Creative storage variants  (`storage/Creative*`) — **DONE (4 cells green)**
-- [x] `AbstractStorageBlock` (shared base) + `CreativeFluidTank` (endless rocket_fuel), `CreativeGasTank`
+
++ [x] `AbstractStorageBlock` (shared base) + `CreativeFluidTank` (endless rocket_fuel), `CreativeGasTank`
   (endless oxygen), `CreativeItemStore` (right-click to set an endless item source). Fluid/gas mirror
   the ported `CreativeBattery`'s infinite pattern on the cross-loader storage interfaces; the item store
   exposes its endless source through a vanilla `Container` (no NeoForge `InfiniteResourceHandler`).
   Fluid/Gas/Item caps wired on both loaders; assets + lang copied.
 
 ### Utility items  (`item/`) — **partly DONE (4 cells green)**
-- [x] `NerospaceSpawnEggItem` (+ **9 spawn eggs**: xertz stalker, quartz crawler, greenling, alien
+
++ [x] `NerospaceSpawnEggItem` (+ **9 spawn eggs**: xertz stalker, quartz crawler, greenling, alien
   villager, cinder stalker, frost strider, meadow loper, ember strutter, woolly drift — ruin warden is
   summon-only). Lazy `EntityType` supplier (vanilla `SpawnEggItem` binds too early); SPAWN_EGGS tab.
-- [x] `DestinationCompassItem` (×4: station/greenxertz/cindara/glacira) + `GreenxertzNavigatorItem` —
++ [x] `DestinationCompassItem` (×4: station/greenxertz/cindara/glacira) + `GreenxertzNavigatorItem` —
   creative-only travel devices; TOOLS_AND_UTILITIES tab. Assets + 17 lang keys copied.
-- [x] `ConfiguratorItem`, `PipeFilterItem`, `PipeUpgradeItem` — DONE (advanced-pipes slice A; TOOLS tab).
-- [ ] `StarGuideBookItem` (depends on **star guide**).
-- [~] `gear/XertzResonatorItem` — ported as a **plain item**; real gear behaviour + `AlienGearEvents` pending.
++ [x] `ConfiguratorItem`, `PipeFilterItem`, `PipeUpgradeItem` — DONE (advanced-pipes slice A; TOOLS tab).
++ [ ] `StarGuideBookItem` (depends on **star guide**).
++ [~] `gear/XertzResonatorItem` — ported as a **plain item**; real gear behaviour + `AlienGearEvents` pending.
 
 ### Cross-cutting registries  (`registry/`)
-- [x] `ModTags` — pure `TagKey` constants (block + item; c:material + nerospace oxygen/terraform tags),
+
++ [x] `ModTags` — pure `TagKey` constants (block + item; c:material + nerospace oxygen/terraform tags),
   ported verbatim (no registration; tag membership is data).
-- [x] `ModDataComponents` — `SELECTED_PIPE_TYPE` (int) + `FILTER_ITEM` (vanilla `ItemStack` instead of the
++ [x] `ModDataComponents` — `SELECTED_PIPE_TYPE` (int) + `FILTER_ITEM` (vanilla `ItemStack` instead of the
   root's NeoForge `ItemResource`), via `RegistrationProvider` over `DATA_COMPONENT_TYPE`. Consumed by the
   advanced-pipe configurator/filter (advanced pipes batch).
-- [~] `ModCriteria` (`terraformed_ground`/`living_ground`/`founded_station` `PlayerTrigger`s) — **deferred:
++ [~] `ModCriteria` (`terraformed_ground`/`living_ground`/`founded_station` `PlayerTrigger`s) — **deferred:
   confirmed cross-version vanilla package move** (probed 2026-06-21): on **26.1.2** the classes are
   `net.minecraft.advancements.CriterionTrigger` + `net.minecraft.advancements.criterion.PlayerTrigger`; on
   **26.2** both are under `net.minecraft.advancements.triggers`. A single shared `import` can't satisfy both
@@ -520,11 +537,11 @@ checked by a headless build).
   star guide / terraform) lands: (a) drop the custom advancement triggers (they're cosmetic — the systems
   work without firing them); (b) reflection (resolve `PlayerTrigger` by per-version FQN); or (c) add
   version-split source sets. Orphan until then.
-- [ ] `ModAttachments` (data attachments — needs a cross-loader seam: NeoForge attachments vs Fabric
++ [ ] `ModAttachments` (data attachments — needs a cross-loader seam: NeoForge attachments vs Fabric
   component/attachment API), `ModFeatures`, `ModConfiguredFeatures`/`ModPlacedFeatures`/`ModBiomes`/
   `ModBiomeModifiers` (datagen bootstraps — mostly superseded by the copied JSON), `ModDimensionTypes`
   (space type — JSON already copied).
-- [x] `ModCreativeModeTabs` → ported as `ModCreativeTab`: a **dedicated "Nerospace" tab** registered via
++ [x] `ModCreativeModeTabs` → ported as `ModCreativeTab`: a **dedicated "Nerospace" tab** registered via
   the cross-loader `RegistrationProvider` over the vanilla `CREATIVE_MODE_TAB` registry, listing all
   items (`ModItems.creativeContents()`). **Fixes a latent runtime bug**: the earlier per-loader injection
   into vanilla tabs (`BuildCreativeModeTabContentsEvent` / `CreativeModeTabEvents`) never populated the
@@ -532,7 +549,8 @@ checked by a headless build).
   `CreativeModeTab.builder(Row, column)` (the no-arg overload + `withTabsBefore` are NeoForge-only).
 
 ### Networking  (`network/` 5) — **SEAM DONE (4 cells green); payloads ship with their consumers**
-- [x] Cross-loader packet seam: common `network/ModNetwork` (payload registry: `clientbound`/`serverbound`
+
++ [x] Cross-loader packet seam: common `network/ModNetwork` (payload registry: `clientbound`/`serverbound`
   lists + `sendToPlayer`/`sendToServer`) + `platform/NetworkPlatform` send seam. NeoForge `NeoForgeNetwork`
   registers via `RegisterPayloadHandlersEvent` (`playToClient`/`playToServer`) and sends via
   `PacketDistributor.sendToPlayer` / **`ClientPacketDistributor.sendToServer`** (client-only). Fabric
@@ -543,27 +561,29 @@ checked by a headless build).
   serverbound(...)`). Client-safety contract documented in `ModNetwork`.
 
 ### Commands & compat
-- [x] `command/NerospaceCommands` — **DONE (4 cells green).** `/nerospace gallery` [clear] creative showcase
+
++ [x] `command/NerospaceCommands` — **DONE (4 cells green).** `/nerospace gallery` [clear] creative showcase
   builder, behind a cross-loader `register(CommandDispatcher)` seam (NeoForge `RegisterCommandsEvent`, Fabric
   `CommandRegistrationCallback`). Cross-loader/version adaptations: iterate `BuiltInRegistries.BLOCK` filtered
   to the mod namespace (the `RegistrationProvider` has no entry iteration); single `SOLAR_PANEL` (tiers
   unported); spawn the armor stands via the `ArmorStand` constructor (the de-obf `EntityType.ARMOR_STAND`
   constant isn't on the 26.2 classpath); dropped the unported `quarry.stageDisplay` preview + the Creative
   Fluid Tank `setSource` (fixed rocket_fuel here).
-- [ ] `compat/jei/*` — recipe-viewer integration. NeoForge = JEI; Fabric would use REI/EMI. Cross-mod, low priority.
++ [ ] `compat/jei/*` — recipe-viewer integration. NeoForge = JEI; Fabric would use REI/EMI. Cross-mod, low priority.
 
 ### Config / tuning — **DONE (4 cells green): all 5 multipliers wired, cross-loader seam complete**
-- [x] **Slice 1 — config seam + energy multiplier.** Extended the properties-based `config/NerospaceConfig`
+
++ [x] **Slice 1 — config seam + energy multiplier.** Extended the properties-based `config/NerospaceConfig`
   (no NeoForge `ModConfigSpec` — the cross-loader seam is the properties file the telemetry batch added) with
   `energyRateMultiplier` (clamp 0.1×..10×, default 1) + a `scale(base, mult)` helper (min-1 clamp, mirroring
   the root `Tuning` contract); wired it into the Combustion / Passive / Solar generator FE-per-tick. Loads at
   mod init (before ticking). This proves the cross-loader balance-config pattern beyond the telemetry toggle.
-- [x] **Slice 2 — oxygen multipliers.** Added `oxygenDrainMultiplier` + `oxygenCapacityMultiplier` to
++ [x] **Slice 2 — oxygen multipliers.** Added `oxygenDrainMultiplier` + `oxygenCapacityMultiplier` to
   `NerospaceConfig`; wired into `OxygenManager` (per-check drain + player/suit air capacity, both `scale`-clamped;
   the attachment default self-corrects on the first tick). **3 of the root's 5 multipliers now wired.**
-- [x] **Slice 3 — fuelCostMultiplier.** Added `fuelCostMultiplier`; wired into `RocketTier.fuelPerLaunch()`
++ [x] **Slice 3 — fuelCostMultiplier.** Added `fuelCostMultiplier`; wired into `RocketTier.fuelPerLaunch()`
   (scaled, still clamped to the tank so a launch is always possible). **4 of the root's 5 multipliers wired.**
-- [x] **Slice 4 — machineSpeedMultiplier (last multiplier; config seam COMPLETE).** Added `machineSpeedMultiplier`
++ [x] **Slice 4 — machineSpeedMultiplier (last multiplier; config seam COMPLETE).** Added `machineSpeedMultiplier`
   + a `scaleInterval` helper (inverse, clamped ≥1 tick); wired into the grinder + refinery (progress thresholds,
   both the completion check and the synced max-progress data), the hydration module + terraformer (modulo work
   intervals), and the quarry (folded into the mining rate). **All 5 of the root's balance multipliers are now
@@ -572,7 +592,8 @@ checked by a headless build).
   class is optional).
 
 ### Spawn rules
-- [x] `registry/ModSpawnPlacements` — natural-spawn placement rules for the 9 spawnable creatures
+
++ [x] `registry/ModSpawnPlacements` — natural-spawn placement rules for the 9 spawnable creatures
   (6× `ON_GROUND` light-independent; 3× terraform livestock gated on `GRASS_BLOCK`). Cross-loader
   spawn-placement seam (`ModSpawnPlacements.Sink`): NeoForge `RegisterSpawnPlacementsEvent`
   (`Operation.REPLACE`) vs Fabric vanilla `SpawnPlacements.register`. Both stable on 26.1.2 + 26.2.
@@ -581,37 +602,39 @@ checked by a headless build).
 ---
 
 ## 📡 Sentry / telemetry  (`telemetry/`) — **POPIA/GDPR-sensitive** — DONE (4 cells green)
-- [x] `telemetry/NerospaceTelemetry` — the Sentry client: captures Nerospace exceptions/crashes, with
+
++ [x] `telemetry/NerospaceTelemetry` — the Sentry client: captures Nerospace exceptions/crashes, with
   **PII scrubbing** (no IP/identity/hostname; OS-account names scrubbed from file paths via the `USER_PATH`
   regex incl. `C:\Users\<name>\...`), **nerospace-only `beforeSend` filter**, **de-dup + 10/session cap**.
   Parameterised off `Services.PLATFORM` (mod version, loader name, dist) instead of FML.
-- [x] `telemetry/SentryLogAppender` — Log4j2 appender selecting ERROR/FATAL events touching Nerospace code.
-- [x] `config/NerospaceConfig` — minimal properties config (`config/nerospace.properties`); **`telemetryEnabled`
++ [x] `telemetry/SentryLogAppender` — Log4j2 appender selecting ERROR/FATAL events touching Nerospace code.
++ [x] `config/NerospaceConfig` — minimal properties config (`config/nerospace.properties`); **`telemetryEnabled`
   default ON, opt-out** (user decision 2026-06-21). Config-dir via new `IPlatformHelper.getConfigDir()` seam.
-- [x] **Sentry SDK bundled per-loader** — common `compileOnly`, NeoForge `jarJar`, Fabric Loom `include`
++ [x] **Sentry SDK bundled per-loader** — common `compileOnly`, NeoForge `jarJar`, Fabric Loom `include`
   (both bundling tasks ran green). `NerospaceTelemetry.init()` called at each loader's bootstrap; **only
   initialises in a production (non-dev) environment**.
-- [ ] **Deferred**: `SentryTestBlock` (debug block) — minor dev tool.
-- ⚠️ **Runtime-verify on a shipped build**: the 4-cell compile + the jarJar/include tasks are green, but
++ [ ] **Deferred**: `SentryTestBlock` (debug block) — minor dev tool.
++ ⚠️ **Runtime-verify on a shipped build**: the 4-cell compile + the jarJar/include tasks are green, but
   Sentry initialisation, the nerospace-only filter, and path scrubbing have NOT been runtime-tested here
   (dev-gated + sandbox mount lag). Confirm on a production jar before relying on it. DSN = root's EU ingest.
 
 ---
 
 ## 🛠️ Tools / sync engines  (`tools/`) — currently target the **root** mod only
+
 These are dev-time generators, not shipped code. They write to the root's `src/main/resources` paths, so
 they must be pointed at (or duplicated for) `multiloader/common/src/main/resources` to drive the
 multiloader's assets instead of the current copy-from-root approach.
 
-- [ ] `model_sync.py` — **entity-model sync engine** (Blockbench `.bbmodel` ⇄ Java `LayerDefinition`,
++ [ ] `model_sync.py` — **entity-model sync engine** (Blockbench `.bbmodel` ⇄ Java `LayerDefinition`,
   Y-flip, mtime-directional). Wire to the multiloader's `client/*Model.java` + `art/blockbench/entity`.
-- [ ] `gen_textures.py` — procedural 16×16 texture generator (additive). Repoint output dir.
-- [ ] `gen_bbmodels.py` — Blockbench source generator for block/item textures. Repoint.
-- [ ] `gen_logo.py` — CurseForge logo + in-game mods-list icon. Repoint / re-emit per loader.
-- [ ] `check_assets.py` — "every model resolves" validator. Repoint at the multiloader resource roots.
-- [ ] `render_contact_sheets.py` / `render_entity_previews.py` — QA atlases. Repoint.
-- [x] `gradle-mcp` (server.js) — the agent build server; already used to verify all 4 cells.
-- [x] `fix_markdown.py` / `markdown_check` — docs linting; loader-agnostic.
++ [ ] `gen_textures.py` — procedural 16×16 texture generator (additive). Repoint output dir.
++ [ ] `gen_bbmodels.py` — Blockbench source generator for block/item textures. Repoint.
++ [ ] `gen_logo.py` — CurseForge logo + in-game mods-list icon. Repoint / re-emit per loader.
++ [ ] `check_assets.py` — "every model resolves" validator. Repoint at the multiloader resource roots.
++ [ ] `render_contact_sheets.py` / `render_entity_previews.py` — QA atlases. Repoint.
++ [x] `gradle-mcp` (server.js) — the agent build server; already used to verify all 4 cells.
++ [x] `fix_markdown.py` / `markdown_check` — docs linting; loader-agnostic.
 
 > Note: so far the multiloader reuses the root's already-generated JSON/textures by copying them. The
 > tools only need porting if the multiloader becomes the source of truth (i.e. when the root mod is retired).
@@ -619,6 +642,7 @@ multiloader's assets instead of the current copy-from-root approach.
 ---
 
 ## Recommended order
+
 rockets → fuel machines → quarry → atmosphere/terraforming → structures → meteor events → star guide →
 advanced pipes → modules → networking seam (unblocks oxygen HUD / meteors / pipe modes) → config seam →
 spawn rules → telemetry (after compliance sign-off) → creative variants / utility items / JEI → tools repoint.
