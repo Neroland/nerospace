@@ -526,9 +526,11 @@ checked by a headless build).
 - [x] **Slice 2 — oxygen multipliers.** Added `oxygenDrainMultiplier` + `oxygenCapacityMultiplier` to
   `NerospaceConfig`; wired into `OxygenManager` (per-check drain + player/suit air capacity, both `scale`-clamped;
   the attachment default self-corrects on the first tick). **3 of the root's 5 multipliers now wired.**
-- [ ] **Remaining (incremental).** `fuelCostMultiplier` (rocket launch/fuel cost) + `machineSpeedMultiplier`
-  (machine work intervals — inverse-scaled) — wire each into its consumer as a follow-up (kept out of the config
-  file until wired, so every key does something). A full `Tuning` base-value class is optional.
+- [x] **Slice 3 — fuelCostMultiplier.** Added `fuelCostMultiplier`; wired into `RocketTier.fuelPerLaunch()`
+  (scaled, still clamped to the tank so a launch is always possible). **4 of the root's 5 multipliers wired.**
+- [ ] **Slice 4 (last multiplier).** `machineSpeedMultiplier` — inverse-scaled (faster ⇒ shorter work
+  interval, clamped ≥1 tick); needs a `scaleInterval` helper + wiring into each machine's work period
+  (grinder, refinery, terraformer, quarry, …). Multiple consumers, so its own slice.
 
 ### Spawn rules
 - [x] `registry/ModSpawnPlacements` — natural-spawn placement rules for the 9 spawnable creatures

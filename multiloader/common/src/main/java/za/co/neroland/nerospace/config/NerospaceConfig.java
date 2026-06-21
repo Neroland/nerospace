@@ -25,6 +25,7 @@ public final class NerospaceConfig {
     private static final String KEY_ENERGY_RATE = "energyRateMultiplier";
     private static final String KEY_OXYGEN_DRAIN = "oxygenDrainMultiplier";
     private static final String KEY_OXYGEN_CAPACITY = "oxygenCapacityMultiplier";
+    private static final String KEY_FUEL_COST = "fuelCostMultiplier";
 
     /** Multiplier range (mirrors the root config spec): 0.1× .. 10×. */
     private static final double MULT_MIN = 0.1D;
@@ -38,6 +39,8 @@ public final class NerospaceConfig {
     private static volatile double oxygenDrainMultiplier = 1.0D;
     /** Scales player + suit air capacity. Clamped 0.1×..10×. */
     private static volatile double oxygenCapacityMultiplier = 1.0D;
+    /** Scales the fuel a rocket burns per launch (clamped to the tank). Clamped 0.1×..10×. */
+    private static volatile double fuelCostMultiplier = 1.0D;
     private static volatile boolean loaded;
 
     private NerospaceConfig() {
@@ -57,6 +60,10 @@ public final class NerospaceConfig {
 
     public static double oxygenCapacityMultiplier() {
         return oxygenCapacityMultiplier;
+    }
+
+    public static double fuelCostMultiplier() {
+        return fuelCostMultiplier;
     }
 
     /**
@@ -96,6 +103,8 @@ public final class NerospaceConfig {
                         props.getProperty(KEY_OXYGEN_DRAIN), oxygenDrainMultiplier));
                 oxygenCapacityMultiplier = clampMultiplier(parseDouble(
                         props.getProperty(KEY_OXYGEN_CAPACITY), oxygenCapacityMultiplier));
+                fuelCostMultiplier = clampMultiplier(parseDouble(
+                        props.getProperty(KEY_FUEL_COST), fuelCostMultiplier));
             } catch (IOException e) {
                 NerospaceCommon.LOGGER.warn("[Nerospace] Could not read {}; using defaults.", FILE_NAME, e);
             }
@@ -123,6 +132,7 @@ public final class NerospaceConfig {
         props.setProperty(KEY_ENERGY_RATE, Double.toString(energyRateMultiplier));
         props.setProperty(KEY_OXYGEN_DRAIN, Double.toString(oxygenDrainMultiplier));
         props.setProperty(KEY_OXYGEN_CAPACITY, Double.toString(oxygenCapacityMultiplier));
+        props.setProperty(KEY_FUEL_COST, Double.toString(fuelCostMultiplier));
         try {
             Files.createDirectories(file.getParent());
             try (OutputStream out = Files.newOutputStream(file)) {
@@ -132,6 +142,7 @@ public final class NerospaceConfig {
                         + "scrubbed of your account name. Set to false to opt out. See PRIVACY.md. "
                         + "energyRateMultiplier: scales FE/tick of all generators. oxygenDrainMultiplier: "
                         + "scales how fast air drains. oxygenCapacityMultiplier: scales air capacity. "
+                        + "fuelCostMultiplier: scales fuel burned per rocket launch. "
                         + "All multipliers 0.1..10, default 1.");
             }
         } catch (IOException e) {
