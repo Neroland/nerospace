@@ -12,7 +12,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.SpawnPlacementType;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -21,6 +26,7 @@ import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
+import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
@@ -61,6 +67,15 @@ public final class NerospaceFabric implements ModInitializer {
 
         // Default attributes for the ported mobs (counterpart to NeoForge's EntityAttributeCreationEvent).
         ModEntityAttributes.forEach(FabricDefaultAttributeRegistry::register);
+
+        // Natural-spawn placement rules (counterpart to NeoForge's RegisterSpawnPlacementsEvent).
+        ModSpawnPlacements.registerAll(new ModSpawnPlacements.Sink() {
+            @Override
+            public <T extends Mob> void register(EntityType<T> type, SpawnPlacementType placementType,
+                    Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate) {
+                SpawnPlacements.register(type, placementType, heightmap, predicate);
+            }
+        });
 
         // Oxygen survival: register the attachment + tick each player per world tick (airless-planet drain).
         FabricAttachments.init();

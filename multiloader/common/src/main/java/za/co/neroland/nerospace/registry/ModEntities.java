@@ -15,6 +15,7 @@ import za.co.neroland.nerospace.entity.QuartzCrawler;
 import za.co.neroland.nerospace.entity.RuinWarden;
 import za.co.neroland.nerospace.entity.WoollyDrift;
 import za.co.neroland.nerospace.entity.XertzStalker;
+import za.co.neroland.nerospace.meteor.FallingMeteorEntity;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
@@ -22,9 +23,8 @@ import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
  * Entity types, ported cross-loader through {@link RegistrationProvider} over the vanilla
  * {@code ENTITY_TYPE} registry (the root used NeoForge's {@code DeferredRegister.Entities}). The
  * builder's {@code build(ResourceKey)} consumes the key the provider hands the factory. Attributes
- * are applied per-loader from {@link ModEntityAttributes}; renderers from
- * {@code client/ClientEntityRenderers}. Natural-spawn placement rules are deferred until the planet
- * dimensions land (the creatures are summonable meanwhile).
+ * are applied per-loader from {@link ModEntityAttributes}; natural-spawn placement rules from
+ * {@link ModSpawnPlacements}; renderers from {@code client/ClientEntityRenderers}.
  */
 public final class ModEntities {
 
@@ -85,6 +85,11 @@ public final class ModEntities {
             "rocket",
             key -> EntityType.Builder.<RocketEntity>of(RocketEntity::new, MobCategory.MISC)
                     .sized(1.0F, 3.0F).clientTrackingRange(10).build(key));
+
+    public static final RegistryEntry<EntityType<FallingMeteorEntity>> FALLING_METEOR = ENTITY_TYPES.register(
+            "falling_meteor",
+            key -> EntityType.Builder.<FallingMeteorEntity>of(FallingMeteorEntity::new, MobCategory.MISC)
+                    .sized(1.6F, 1.6F).clientTrackingRange(12).build(key));
 
     private ModEntities() {
     }

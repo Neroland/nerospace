@@ -32,6 +32,7 @@ import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.item.DestinationCompassItem;
 import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
 import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
+import za.co.neroland.nerospace.meteor.MeteorCallerItem;
 import za.co.neroland.nerospace.module.ModuleType;
 import za.co.neroland.nerospace.module.UpgradeModuleItem;
 import za.co.neroland.nerospace.rocket.RocketItem;
@@ -142,6 +143,10 @@ public final class ModItems {
             key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.CINDARA_LEVEL));
     public static final RegistryEntry<Item> GLACIRA_COMPASS = ITEMS.register("glacira_compass",
             key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.GLACIRA_LEVEL));
+
+    /** Creative-only Meteor Caller: right-click the ground to call a loot-bearing meteor down on that spot. */
+    public static final RegistryEntry<Item> METEOR_CALLER = ITEMS.register("meteor_caller",
+            key -> new MeteorCallerItem(new Item.Properties().stacksTo(1).setId(key)));
 
     // --- Spawn eggs (lazy entity-type supplier; ruin warden is summon-only) ----
     public static final RegistryEntry<Item> XERTZ_STALKER_SPAWN_EGG = spawnEgg("xertz_stalker_spawn_egg", ModEntities.XERTZ_STALKER);
@@ -255,7 +260,7 @@ public final class ModItems {
                 List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get(), XERTZ_RESONATOR.get(),
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
                         GREENXERTZ_NAVIGATOR.get(), STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(),
-                        CINDARA_COMPASS.get(), GLACIRA_COMPASS.get()),
+                        CINDARA_COMPASS.get(), GLACIRA_COMPASS.get(), METEOR_CALLER.get()),
                 CreativeModeTabs.SPAWN_EGGS,
                 List.<ItemLike>of(XERTZ_STALKER_SPAWN_EGG.get(), QUARTZ_CRAWLER_SPAWN_EGG.get(),
                         GREENLING_SPAWN_EGG.get(), ALIEN_VILLAGER_SPAWN_EGG.get(), CINDER_STALKER_SPAWN_EGG.get(),

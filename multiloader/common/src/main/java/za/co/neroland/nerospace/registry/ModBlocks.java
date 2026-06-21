@@ -24,6 +24,7 @@ import za.co.neroland.nerospace.machine.quarry.MinerTier;
 import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlock;
 import za.co.neroland.nerospace.machine.quarry.QuarryFrameBlock;
 import za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlock;
+import za.co.neroland.nerospace.meteor.MeteorCoreBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
@@ -97,6 +98,11 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops().lightLevel(s -> 10).sound(SoundType.AMETHYST)));
     public static final RegistryEntry<Block> METEOR_ROCK = block("meteor_rock",
             p -> p.mapColor(MapColor.COLOR_BLACK).strength(3.0F, 4.0F).requiresCorrectToolForDrops().lightLevel(s -> 3).sound(SoundType.STONE));
+    /** The glowing, loot-bearing core at a crater's centre. World-generated only (no block item); breaking it spills the rolled loot. */
+    public static final RegistryEntry<MeteorCoreBlock> METEOR_CORE = BLOCKS.register("meteor_core",
+            key -> new MeteorCoreBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_BLACK).strength(4.0F, 6.0F)
+                    .requiresCorrectToolForDrops().lightLevel(s -> 9).sound(SoundType.AMETHYST)));
 
     // Block entity — item storage (pilot for the block-entity + capability seam).
     public static final RegistryEntry<ItemStoreBlock> ITEM_STORE = BLOCKS.register("item_store",

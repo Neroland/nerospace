@@ -53,6 +53,7 @@ public final class ClientEntityRenderers {
         sink.register(ModEntities.ALIEN_VILLAGER.get(), AlienVillagerRenderer::new);
 
         sink.register(ModEntities.ROCKET.get(), RocketRenderer::new);
+        sink.register(ModEntities.FALLING_METEOR.get(), FallingMeteorRenderer::new);
     }
 
     private static Identifier tex(String name) {

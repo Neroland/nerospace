@@ -1,8 +1,20 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~150 classes ported, ~114 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~159 classes ported, ~105 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — meteor creative slice ported.** All 4 cells green. Added `meteor/{FallingMeteorEntity,
+> MeteorCoreBlock, MeteorCoreBlockEntity, MeteorCallerItem, MeteorLoot}` + client `{FallingMeteorModel,
+> FallingMeteorRenderer, FallingMeteorRenderState}` (bake-direct). Creative Meteor Caller → falling meteor →
+> crater + break-to-loot Meteor Core. Config meteor keys inlined; natural-shower scheduler + client tracker +
+> sync payload deferred (a clean networking-consumer follow-up). Lang validated via the built jar (mount was
+> serving a stale truncated copy — jar check is the reliable validator).
+
+> **2026-06-21 update — spawn rules ported.** All 4 cells green. Added `registry/ModSpawnPlacements`
+> (9 placement rules: 6× ground light-independent, 3× livestock on grass) behind a `Sink` seam —
+> NeoForge `RegisterSpawnPlacementsEvent` (`Operation.REPLACE`), Fabric vanilla `SpawnPlacements.register`;
+> both stable on 26.1.2 + 26.2. Mobs previously relied on biome lists + vanilla defaults only.
 
 > **2026-06-20 update — quarry ported.** All 4 cells green. Added 11 classes:
 > `machine/quarry/{MinerTier, QuarryRegion, OutputFilter, PlanetMiningProfile, QuarryFrameBlock,
@@ -124,8 +136,16 @@ checked by a headless build).
   quests, night raids) is **deferred** — it pulls in `VillageBuildings` + the config seam.
 
 ### Meteor events  (`meteor/` 8 + client)
-- [ ] `FallingMeteorEntity` (+ model/renderer/state), `MeteorCallerItem`, `MeteorCoreBlock`(+BE),
-  `MeteorEventManager`, `MeteorEvents`, `MeteorSite`, `MeteorLoot`. Needs networking seam (impact sync).
+- [x] **Creative slice** — `FallingMeteorEntity` (+ `FallingMeteorModel`/`FallingMeteorRenderer`/
+  `FallingMeteorRenderState`, bake-direct), `MeteorCallerItem` (creative-only), `MeteorCoreBlock`(+BE,
+  break-to-loot), `MeteorLoot`. Meteor Caller → falling meteor → crater of `meteor_rock` around a
+  loot-bearing `meteor_core`. `METEOR_ROCK` + loot items (`alien_*`, raw ores) already existed; added
+  `FALLING_METEOR` entity, `METEOR_CORE` block+BE (no block item — world-gen only), `METEOR_CALLER`
+  item (TOOLS tab) + renderer; copied 3 textures + 4 asset JSON + 4 lang keys. Config meteor keys
+  inlined (crater radius 3, bonus rolls 3). All 4 cells green.
+- [ ] **Natural showers + tracker** (deferred) — `MeteorEventManager` (SavedData scheduler),
+  `MeteorEvents` (per-loader tick hook), `MeteorSite`, + client `ClientMeteorTracker` HUD and a
+  `MeteorSyncPayload` (uses the networking seam). Needs the meteor config keys (spawn pacing) too.
 
 ### Star Guide / progression  (`progression/` 5 + client + item)
 - [ ] `StarGuide`, `StarGuideProgress`, `StarGuideBlock`(+BE), `StarGuideMenu` + screen, hologram BER,
@@ -208,8 +228,11 @@ checked by a headless build).
   shared config). Many ported machines currently use inlined constants where the root reads `Tuning`.
 
 ### Spawn rules
-- [ ] `entity/ModEntityEvents` — natural-spawn placement rules (ground/light) + a cross-loader spawn-placement
-  seam (NeoForge `RegisterSpawnPlacementsEvent` vs Fabric). Mobs currently spawn via biome lists + vanilla defaults.
+- [x] `registry/ModSpawnPlacements` — natural-spawn placement rules for the 9 spawnable creatures
+  (6× `ON_GROUND` light-independent; 3× terraform livestock gated on `GRASS_BLOCK`). Cross-loader
+  spawn-placement seam (`ModSpawnPlacements.Sink`): NeoForge `RegisterSpawnPlacementsEvent`
+  (`Operation.REPLACE`) vs Fabric vanilla `SpawnPlacements.register`. Both stable on 26.1.2 + 26.2.
+  Ruin Warden has no rule (structure/event boss only).
 
 ---
 

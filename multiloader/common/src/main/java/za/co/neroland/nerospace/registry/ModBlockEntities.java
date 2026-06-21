@@ -14,6 +14,7 @@ import za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlockEntity;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
+import za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
@@ -110,6 +111,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<QuarryLandmarkBlockEntity>> QUARRY_LANDMARK =
             BLOCK_ENTITIES.register("quarry_landmark",
                     key -> new BlockEntityType<>(QuarryLandmarkBlockEntity::new, java.util.Set.of(ModBlocks.QUARRY_LANDMARK.get())));
+
+    public static final RegistryEntry<BlockEntityType<MeteorCoreBlockEntity>> METEOR_CORE =
+            BLOCK_ENTITIES.register("meteor_core",
+                    key -> new BlockEntityType<>(MeteorCoreBlockEntity::new, java.util.Set.of(ModBlocks.METEOR_CORE.get())));
 
     private ModBlockEntities() {
     }
