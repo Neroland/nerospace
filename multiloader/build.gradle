@@ -28,6 +28,21 @@ subprojects {
         options.release = 25
     }
 
+    // Strip Loom's Buildship/Gradle nature+builder from the generated .project so VSCode imports every
+    // module as a plain static Eclipse Java project (via .classpath) rather than demanding a live
+    // Buildship/Gradle import — the import that fails here ("Missing buildship prefs" / "not a valid
+    // java project"). No-op for the moddev modules (they have no Buildship nature).
+    eclipse {
+        project {
+            file {
+                whenMerged { proj ->
+                    proj.natures.removeAll { it.startsWith('org.eclipse.buildship') }
+                    proj.buildCommands.removeAll { it.name.startsWith('org.eclipse.buildship') }
+                }
+            }
+        }
+    }
+
     repositories {
         mavenCentral()
         maven { url 'https://maven.fabricmc.net/' }
