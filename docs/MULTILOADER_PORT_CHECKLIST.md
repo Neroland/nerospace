@@ -1,8 +1,24 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~202 classes ported, ~62 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~209 classes ported, ~55 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — Star Guide slice 1 (the browsable progression guide).** All 4 cells green (full
+> `:neoforge:build`+`:fabric:build` on 26.2; compile on 26.1.2). Ported `progression/{StarGuide (9-chapter
+> ×40-step content table), StarGuideProgress (reads advancements), StarGuideBlock (lectern pedestal),
+> StarGuideBlockEntity (MenuProvider + next-step hologram compute/sync), StarGuideMenu}` +
+> `item/StarGuideBookItem` + `client/StarGuideScreen` (built on the existing `TexturedContainerScreen` +
+> `SpaceButton` — near-verbatim since the root already uses the 26.x submission model). Registered block +
+> block-item + book item + BE + menu + per-loader screen; copied block/GUI/book assets + models + blockstate
+> + loot table + **98 lang keys** (full chapter/step text). The guide opens from the **Star Guide Book** (in
+> hand) or a **Star Guide pedestal** (install the book). **No `ModCriteria` needed** — the guide just reads
+> advancement completion (missing advancements read as incomplete), sidestepping the 26.1↔26.2 criterion
+> package split. Two steps (station_charter / new_life) use stand-in icons for the not-yet-ported
+> STATION_CHARTER / LOPER_HAUNCH. **Deferred (slice 2):** the advancement DATA (so steps actually tick
+> complete — the guide currently browses fully but tracks no completion until advancements land), the
+> hologram BER (cosmetic; the BE already computes+syncs the stack), and the "seen-pulse" (needs a
+> `STAR_GUIDE_SEEN` player-attachment seam).
 
 > **2026-06-21 update — pipe fluid relay (closes the slice-A FLUID gap).** All 4 cells green (compile on
 > 26.2; full `:neoforge:build`+`:fabric:build` on 26.1.2). Added a `platform/FluidLookup` query seam
@@ -336,9 +352,16 @@ checked by a headless build).
   `Gui.setOverlayMessage(Component, boolean)` (the standalone mod's call) is gone from vanilla `Gui` —
   use `Player.sendOverlayMessage(Component)`** (probed). Proves the networking seam end-to-end. All 4 cells green.
 
-### Star Guide / progression  (`progression/` 5 + client + item)
-- [ ] `StarGuide`, `StarGuideProgress`, `StarGuideBlock`(+BE), `StarGuideMenu` + screen, hologram BER,
-  `StarGuideBookItem`. Progression-tracking UI.
+### Star Guide / progression  (`progression/` 5 + client + item) — **slice 1 DONE (4 cells green)**
+- [x] **Slice 1 — browsable guide.** `progression/{StarGuide, StarGuideProgress, StarGuideBlock,
+  StarGuideBlockEntity, StarGuideMenu}` + `item/StarGuideBookItem` + `client/StarGuideScreen`. Registered
+  block/block-item/book/BE/menu + per-loader screen + assets + 98 lang keys. Opens from the book (in hand)
+  or the pedestal (install the book). Reads advancement completion — **no `ModCriteria` dependency**.
+- [ ] **Slice 2 (deferred).** Advancement DATA (so steps tick complete — currently the guide browses but
+  tracks no completion); the hologram BER (`StarGuideHologramRenderer`/`RenderState` — cosmetic; the BE
+  already computes + syncs the next-step stack); the "seen-pulse" (needs a `STAR_GUIDE_SEEN` player
+  attachment seam). Also the stand-in icons for station_charter / new_life resolve once STATION_CHARTER /
+  LOPER_HAUNCH are ported.
 
 ### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slice A DONE (4 cells green)**
 - [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla

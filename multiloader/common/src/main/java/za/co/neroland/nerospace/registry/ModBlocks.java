@@ -29,6 +29,7 @@ import za.co.neroland.nerospace.machine.quarry.QuarryFrameBlock;
 import za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlock;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
+import za.co.neroland.nerospace.progression.StarGuideBlock;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
@@ -214,6 +215,11 @@ public final class ModBlocks {
     public static final RegistryEntry<TerraformMonitorBlock> TERRAFORM_MONITOR = BLOCKS.register("terraform_monitor",
             key -> new TerraformMonitorBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_GREEN).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().lightLevel(s -> 7).sound(SoundType.METAL)));
+
+    public static final RegistryEntry<StarGuideBlock> STAR_GUIDE = BLOCKS.register("star_guide",
+            key -> new StarGuideBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_PURPLE).strength(3.0F, 6.0F)
                     .requiresCorrectToolForDrops().lightLevel(s -> 7).sound(SoundType.METAL)));
 
     public static final RegistryEntry<SolarPanelBlock> SOLAR_PANEL = BLOCKS.register("solar_panel",

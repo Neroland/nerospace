@@ -19,6 +19,7 @@ import za.co.neroland.nerospace.machine.TerraformMonitorBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
+import za.co.neroland.nerospace.progression.StarGuideBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeGasTankBlockEntity;
@@ -130,6 +131,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<TerraformMonitorBlockEntity>> TERRAFORM_MONITOR =
             BLOCK_ENTITIES.register("terraform_monitor",
                     key -> new BlockEntityType<>(TerraformMonitorBlockEntity::new, java.util.Set.of(ModBlocks.TERRAFORM_MONITOR.get())));
+
+    public static final RegistryEntry<BlockEntityType<StarGuideBlockEntity>> STAR_GUIDE =
+            BLOCK_ENTITIES.register("star_guide",
+                    key -> new BlockEntityType<>(StarGuideBlockEntity::new, java.util.Set.of(ModBlocks.STAR_GUIDE.get())));
 
     private ModBlockEntities() {
     }

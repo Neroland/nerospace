@@ -20,6 +20,7 @@ import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
 import za.co.neroland.nerospace.client.HydrationModuleScreen;
 import za.co.neroland.nerospace.client.QuarryScreen;
 import za.co.neroland.nerospace.client.RocketScreen;
+import za.co.neroland.nerospace.client.StarGuideScreen;
 import za.co.neroland.nerospace.client.TerraformMonitorScreen;
 import za.co.neroland.nerospace.client.TerraformerScreen;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
@@ -41,6 +42,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         MenuScreens.register(ModMenuTypes.TERRAFORMER.get(), TerraformerScreen::new);
         MenuScreens.register(ModMenuTypes.HYDRATION_MODULE.get(), HydrationModuleScreen::new);
         MenuScreens.register(ModMenuTypes.TERRAFORM_MONITOR.get(), TerraformMonitorScreen::new);
+        MenuScreens.register(ModMenuTypes.STAR_GUIDE.get(), StarGuideScreen::new);
 
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
             @Override

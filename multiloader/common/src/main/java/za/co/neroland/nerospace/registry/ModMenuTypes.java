@@ -14,6 +14,7 @@ import za.co.neroland.nerospace.machine.quarry.QuarryMenu;
 import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
 import za.co.neroland.nerospace.menu.TerraformMonitorMenu;
 import za.co.neroland.nerospace.menu.TerraformerMenu;
+import za.co.neroland.nerospace.progression.StarGuideMenu;
 import za.co.neroland.nerospace.rocket.RocketMenu;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
@@ -62,6 +63,10 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<TerraformMonitorMenu>> TERRAFORM_MONITOR =
             MENUS.register("terraform_monitor",
                     key -> new MenuType<>(TerraformMonitorMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistryEntry<MenuType<StarGuideMenu>> STAR_GUIDE =
+            MENUS.register("star_guide",
+                    key -> new MenuType<>(StarGuideMenu::new, FeatureFlags.VANILLA_SET));
 
     private ModMenuTypes() {
     }

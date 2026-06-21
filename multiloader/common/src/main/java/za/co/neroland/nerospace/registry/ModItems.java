@@ -35,6 +35,7 @@ import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
 import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
 import za.co.neroland.nerospace.item.PipeFilterItem;
 import za.co.neroland.nerospace.item.PipeUpgradeItem;
+import za.co.neroland.nerospace.item.StarGuideBookItem;
 import za.co.neroland.nerospace.meteor.MeteorCallerItem;
 import za.co.neroland.nerospace.module.ModuleType;
 import za.co.neroland.nerospace.module.UpgradeModuleItem;
@@ -131,6 +132,11 @@ public final class ModItems {
             key -> new PipeUpgradeItem(new Item.Properties().setId(key), PipeUpgradeItem.Kind.SPEED));
     public static final RegistryEntry<Item> CAPACITY_UPGRADE = ITEMS.register("capacity_upgrade",
             key -> new PipeUpgradeItem(new Item.Properties().setId(key), PipeUpgradeItem.Kind.CAPACITY));
+
+    // --- Star Guide (progression pedestal + book) ---------------------------
+    public static final RegistryEntry<BlockItem> STAR_GUIDE_ITEM = blockItem("star_guide", ModBlocks.STAR_GUIDE);
+    public static final RegistryEntry<Item> STAR_GUIDE_BOOK = ITEMS.register("star_guide_book",
+            key -> new StarGuideBookItem(new Item.Properties().stacksTo(1).setId(key)));
 
     // --- Machine upgrade modules (the quarry is the first consumer) ----------
     public static final RegistryEntry<Item> SPEED_MODULE = module("speed_module", ModuleType.SPEED);
@@ -280,7 +286,8 @@ public final class ModItems {
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
                         GREENXERTZ_NAVIGATOR.get(), STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(),
                         CINDARA_COMPASS.get(), GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get(),
-                        CONFIGURATOR.get(), PIPE_FILTER.get(), SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get()),
+                        CONFIGURATOR.get(), PIPE_FILTER.get(), SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get(),
+                        STAR_GUIDE_BOOK.get()),
                 CreativeModeTabs.SPAWN_EGGS,
                 List.<ItemLike>of(XERTZ_STALKER_SPAWN_EGG.get(), QUARTZ_CRAWLER_SPAWN_EGG.get(),
                         GREENLING_SPAWN_EGG.get(), ALIEN_VILLAGER_SPAWN_EGG.get(), CINDER_STALKER_SPAWN_EGG.get(),
@@ -295,7 +302,8 @@ public final class ModItems {
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
                 List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), TRASH_CAN_ITEM.get(), CREATIVE_BATTERY_ITEM.get(), GAS_TANK_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(), HYDRATION_MODULE_ITEM.get(), TERRAFORM_MONITOR_ITEM.get(),
                         SPEED_MODULE.get(), EFFICIENCY_MODULE.get(), FORTUNE_MODULE.get(), SILK_TOUCH_MODULE.get(),
-                        CREATIVE_FLUID_TANK_ITEM.get(), CREATIVE_GAS_TANK_ITEM.get(), CREATIVE_ITEM_STORE_ITEM.get()));
+                        CREATIVE_FLUID_TANK_ITEM.get(), CREATIVE_GAS_TANK_ITEM.get(), CREATIVE_ITEM_STORE_ITEM.get(),
+                        STAR_GUIDE_ITEM.get()));
     }
 
     /**
