@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/combustion_generator",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:universal_pipe"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Universal Pipe",
+    "icon": {
+      "id": "nerospace:universal_pipe"
+    },
+    "title": "Connect Everything"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

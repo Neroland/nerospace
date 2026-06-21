@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/universal_pipe",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:passive_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Build a Passive Generator",
+    "icon": {
+      "id": "nerospace:passive_generator"
+    },
+    "title": "Slow and Steady"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

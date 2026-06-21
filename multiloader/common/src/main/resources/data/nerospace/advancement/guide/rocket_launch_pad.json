@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/rocket_fuel_canister",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:rocket_launch_pad"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Rocket Launch Pad (you'll want a 3x3)",
+    "icon": {
+      "id": "nerospace:rocket_launch_pad"
+    },
+    "title": "Ground Control"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

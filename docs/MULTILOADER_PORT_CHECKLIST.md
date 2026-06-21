@@ -4,6 +4,12 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~209 classes ported, ~55 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-21 update — Star Guide slice 2a (advancement data — the guide now tracks progress).** All 4
+> cells green (full `:neoforge:build`+`:fabric:build` on 26.2; no Java changed — pure data). Copied all 42
+> nerospace advancements into common; 39 use vanilla triggers and track real completion, the 3 custom-trigger
+> ones were converted to `minecraft:impossible` (load + parent chain intact, inert until granted), and 2
+> display icons were repointed off unported items. The Star Guide steps now light up as the player progresses.
+
 > **2026-06-21 update — Star Guide slice 1 (the browsable progression guide).** All 4 cells green (full
 > `:neoforge:build`+`:fabric:build` on 26.2; compile on 26.1.2). Ported `progression/{StarGuide (9-chapter
 > ×40-step content table), StarGuideProgress (reads advancements), StarGuideBlock (lectern pedestal),
@@ -357,11 +363,19 @@ checked by a headless build).
   StarGuideBlockEntity, StarGuideMenu}` + `item/StarGuideBookItem` + `client/StarGuideScreen`. Registered
   block/block-item/book/BE/menu + per-loader screen + assets + 98 lang keys. Opens from the book (in hand)
   or the pedestal (install the book). Reads advancement completion — **no `ModCriteria` dependency**.
-- [ ] **Slice 2 (deferred).** Advancement DATA (so steps tick complete — currently the guide browses but
-  tracks no completion); the hologram BER (`StarGuideHologramRenderer`/`RenderState` — cosmetic; the BE
-  already computes + syncs the next-step stack); the "seen-pulse" (needs a `STAR_GUIDE_SEEN` player
-  attachment seam). Also the stand-in icons for station_charter / new_life resolve once STATION_CHARTER /
-  LOPER_HAUNCH are ported.
+- [x] **Slice 2a — advancement DATA DONE (4 cells green).** Copied all 42 nerospace advancements; **39 use
+  pure vanilla triggers** (`inventory_changed` / `changed_dimension` / `bred_animals`) and track real
+  completion immediately. The **3 custom-trigger ones** (`terraformed_ground`/`living_world`/`station_charter`,
+  which need the deferred `ModCriteria` whose `PlayerTrigger` base moved packages 26.1↔26.2) were rewritten to
+  `minecraft:impossible` so they load and keep the parent chain intact (children `hydration_module`/`new_life`
+  are not orphaned) — they display but stay incomplete until granted. Repointed 2 display icons off unported
+  items (`station_charter`→`station_floor`, `new_life`→`meadow_loper_spawn_egg`). **The guide now tracks live
+  progress.** All JSON parse-validated; item predicates + the 4 `changed_dimension` targets all resolve.
+- [ ] **Slice 2b (deferred).** The hologram BER (`StarGuideHologramRenderer`/`RenderState` — cosmetic; the BE
+  already computes + syncs the next-step stack); the "seen-pulse" (needs a `STAR_GUIDE_SEEN` player attachment
+  seam); converting the 3 `impossible` advancements back to real completion (needs `ModCriteria` via reflection
+  /version-split, or code-granting from the terraform/station-founding events). The station_charter / new_life
+  guide-step icons resolve once STATION_CHARTER / LOPER_HAUNCH are ported.
 
 ### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slice A DONE (4 cells green)**
 - [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla

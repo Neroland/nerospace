@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:station",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:oxygen_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Build an Oxygen Generator",
+    "icon": {
+      "id": "nerospace:oxygen_generator"
+    },
+    "title": "Something to Breathe"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

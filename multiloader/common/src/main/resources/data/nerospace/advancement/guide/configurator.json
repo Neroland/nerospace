@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/universal_pipe",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:configurator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Configurator",
+    "icon": {
+      "id": "nerospace:configurator"
+    },
+    "title": "Fine Tuning"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

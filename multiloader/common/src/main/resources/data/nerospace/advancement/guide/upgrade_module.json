@@ -1,0 +1,61 @@
+{
+  "parent": "nerospace:guide/quarry_controller",
+  "criteria": {
+    "efficiency": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:efficiency_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "fortune": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:fortune_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "silk_touch": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:silk_touch_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "speed": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:speed_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft an upgrade module — speed, efficiency, fortune or silk touch",
+    "icon": {
+      "id": "nerospace:speed_module"
+    },
+    "title": "Tune It Up"
+  },
+  "requirements": [
+    [
+      "speed",
+      "efficiency",
+      "fortune",
+      "silk_touch"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,25 @@
+{
+  "parent": "nerospace:guide/rocket_tier_4",
+  "criteria": {
+    "reached_glacira": {
+      "conditions": {
+        "to": "nerospace:glacira"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": "Travel to the frozen moon Glacira",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:glacite"
+    },
+    "title": "Into the Cold"
+  },
+  "requirements": [
+    [
+      "reached_glacira"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

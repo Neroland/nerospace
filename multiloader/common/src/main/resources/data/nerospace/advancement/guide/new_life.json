@@ -1,0 +1,63 @@
+{
+  "parent": "nerospace:guide/living_world",
+  "criteria": {
+    "bred_ember_strutter": {
+      "conditions": {
+        "child": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "nerospace:ember_strutter"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:bred_animals"
+    },
+    "bred_meadow_loper": {
+      "conditions": {
+        "child": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "nerospace:meadow_loper"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:bred_animals"
+    },
+    "bred_woolly_drift": {
+      "conditions": {
+        "child": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "nerospace:woolly_drift"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:bred_animals"
+    }
+  },
+  "display": {
+    "description": "Breed a creature born of a terraformed world",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:meadow_loper_spawn_egg"
+    },
+    "title": "New Life"
+  },
+  "requirements": [
+    [
+      "bred_meadow_loper",
+      "bred_ember_strutter",
+      "bred_woolly_drift"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

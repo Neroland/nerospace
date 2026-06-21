@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:nerosium_grinder",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:combustion_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Build a Combustion Generator",
+    "icon": {
+      "id": "nerospace:combustion_generator"
+    },
+    "title": "Burning Bright"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

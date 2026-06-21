@@ -1,0 +1,12 @@
+{
+  "parent": "nerospace:station",
+  "criteria": { "impossible": { "trigger": "minecraft:impossible" } },
+  "display": {
+    "description": "Found your own station with a Station Charter",
+    "frame": "goal",
+    "icon": { "id": "nerospace:station_floor" },
+    "title": "Homestead in Orbit"
+  },
+  "requirements": [ [ "impossible" ] ],
+  "sends_telemetry_event": true
+}

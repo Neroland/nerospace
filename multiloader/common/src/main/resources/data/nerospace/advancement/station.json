@@ -1,0 +1,25 @@
+{
+  "parent": "nerospace:rocket",
+  "criteria": {
+    "reached_station": {
+      "conditions": {
+        "to": "nerospace:station"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": "Dock at the Orbital Station",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:station_floor"
+    },
+    "title": "Orbital"
+  },
+  "requirements": [
+    [
+      "reached_station"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

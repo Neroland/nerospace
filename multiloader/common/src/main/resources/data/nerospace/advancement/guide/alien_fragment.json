@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:root",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:alien_fragment"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Loot a fallen meteor for an Alien Fragment",
+    "icon": {
+      "id": "nerospace:alien_fragment"
+    },
+    "title": "Visitor from Beyond"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

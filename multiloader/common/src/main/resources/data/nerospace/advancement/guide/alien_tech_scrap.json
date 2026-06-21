@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/alien_fragment",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:alien_tech_scrap"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Recover Alien Tech Scrap from a meteor",
+    "icon": {
+      "id": "nerospace:alien_tech_scrap"
+    },
+    "title": "Salvaged Tech"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,38 @@
+{
+  "parent": "nerospace:guide/oxygen_suit",
+  "criteria": {
+    "has_suit_t2": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:oxygen_suit_t2_helmet"
+          },
+          {
+            "items": "nerospace:oxygen_suit_t2_chestplate"
+          },
+          {
+            "items": "nerospace:oxygen_suit_t2_leggings"
+          },
+          {
+            "items": "nerospace:oxygen_suit_t2_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Assemble a full Tier 2 (cindrite) Oxygen Suit",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:oxygen_suit_t2_helmet"
+    },
+    "title": "Ember-Proof"
+  },
+  "requirements": [
+    [
+      "has_suit_t2"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

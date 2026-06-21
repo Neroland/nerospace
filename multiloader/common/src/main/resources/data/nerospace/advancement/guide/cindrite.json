@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:cindara",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:cindrite"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Mine cindrite on Cindara",
+    "icon": {
+      "id": "nerospace:cindrite"
+    },
+    "title": "Heart of the Volcano"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

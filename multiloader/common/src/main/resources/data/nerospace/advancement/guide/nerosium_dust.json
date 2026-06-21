@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:nerosium_grinder",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:nerosium_dust"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Grind nerosium into dust",
+    "icon": {
+      "id": "nerospace:nerosium_dust"
+    },
+    "title": "Finely Ground"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,38 @@
+{
+  "parent": "nerospace:guide/oxygen_generator",
+  "criteria": {
+    "has_suit": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:oxygen_suit_helmet"
+          },
+          {
+            "items": "nerospace:oxygen_suit_chestplate"
+          },
+          {
+            "items": "nerospace:oxygen_suit_leggings"
+          },
+          {
+            "items": "nerospace:oxygen_suit_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Assemble a full Oxygen Suit",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:oxygen_suit_helmet"
+    },
+    "title": "Suit Up"
+  },
+  "requirements": [
+    [
+      "has_suit"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
