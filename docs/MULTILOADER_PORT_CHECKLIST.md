@@ -1,8 +1,14 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~212 classes ported, ~52 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~213 classes ported, ~51 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — Star Guide slice 2d (terraform advancements code-granted).** All 4 cells compile
+> green. `progression/StarGuideGrants` awards `guide/terraformed_ground` + `guide/living_world` from the
+> per-player tick when the player stands on terraformed/living ground — routing around `ModCriteria` by
+> directly awarding the impossible-criterion advancements. **41/42 advancements now track real completion;**
+> only `station_charter` stays inert (blocked on station founding).
 
 > **2026-06-21 update — Star Guide slice 2c (seen-pulse; the guide is now feature-complete).** All 4 cells
 > compile green. Added a `List<Integer>` `STAR_GUIDE_SEEN` player attachment via the existing seam +
@@ -399,9 +405,15 @@ checked by a headless build).
   completed-but-unseen pulse (clicking a step acknowledges it). **The Star Guide is now feature-complete**
   (browse + live progress + hologram + seen-pulse). 26.x gotcha: NeoForge `AttachmentType.builder(...)` is
   overloaded, so the default must be a lambda `() -> List.of()` (not the `List::of` method ref — ambiguous).
-- [ ] **Slice 2d (deferred, blocked).** Converting the 3 `impossible` advancements back to real completion
-  (needs `ModCriteria` via reflection/version-split, or code-granting from terraform/station events); the
-  station_charter / new_life guide-step icons resolve once STATION_CHARTER / LOPER_HAUNCH are ported.
+- [x] **Slice 2d — terraform advancements code-granted (4 cells green).** `progression/StarGuideGrants`
+  (driven from the per-player server tick, beside `OxygenManager.tick`) awards the impossible-criterion
+  `guide/terraformed_ground` (chunk stage ≥ 1) and `guide/living_world` (stage ≥ 3) directly when the player
+  stands on terraformed / fully-living ground — replicating the standalone mod's `PlayerTrigger` **without**
+  `ModCriteria`. **41 of 42 advancements now track real completion.** 26.x: award via
+  `getOrStartProgress(holder).getRemainingCriteria()` → `PlayerAdvancements.award(holder, criterion)`.
+- [ ] **Slice 2e (deferred, blocked).** Only `guide/station_charter` stays inert (its founded_station trigger
+  needs the unported station-founding system). The station_charter / new_life guide-step icons resolve once
+  STATION_CHARTER / LOPER_HAUNCH are ported.
 
 ### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slice A DONE (4 cells green)**
 - [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla

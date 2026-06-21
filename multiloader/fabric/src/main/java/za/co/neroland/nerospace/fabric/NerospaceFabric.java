@@ -33,6 +33,7 @@ import za.co.neroland.nerospace.world.TerraformManager;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
+import za.co.neroland.nerospace.progression.StarGuideGrants;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
@@ -89,7 +90,10 @@ public final class NerospaceFabric implements ModInitializer {
         FabricAttachments.init();
         FabricNetwork.registerCommon();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            server.getPlayerList().getPlayers().forEach(OxygenManager::tick);
+            server.getPlayerList().getPlayers().forEach(player -> {
+                OxygenManager.tick(player);
+                StarGuideGrants.tick(player);
+            });
             MeteorEvents.tick(server);
             OxygenFieldEvents.tick(server);
             TerraformDrift.tick(server);

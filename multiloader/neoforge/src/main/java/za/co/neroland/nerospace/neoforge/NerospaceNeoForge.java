@@ -28,6 +28,7 @@ import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
+import za.co.neroland.nerospace.progression.StarGuideGrants;
 import za.co.neroland.nerospace.world.OxygenManager;
 import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
@@ -58,6 +59,7 @@ public final class NerospaceNeoForge {
         NeoForge.EVENT_BUS.addListener((PlayerTickEvent.Post event) -> {
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
                 OxygenManager.tick(serverPlayer);
+                StarGuideGrants.tick(serverPlayer);
             }
         });
         // Natural meteor showers + oxygen-field diffusion + terraform drift: tick the per-level drivers once per server tick.
