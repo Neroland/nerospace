@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Loom / ModDevGradle run directories
+**/runs/
+**/run/
+
+# Generated IDE project files — machine-specific (absolute ~/.gradle cache paths).
+# Regenerate locally with:  ./gradlew eclipse -Pminecraft_version=26.2
+.project
+.classpath
+.settings/
+**/.project
+**/.classpath
+**/.settings/
+bin/
+**/bin/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Keep the committed VSCode run configs (.vscode/launch.json, tasks.json) — NOT ignored.
