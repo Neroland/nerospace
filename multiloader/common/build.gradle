@@ -18,15 +18,3 @@ neoForge {
         accessTransformers.from(at.absolutePath)
     }
 }
-
-// TEMP probe (remove after): EntityType.Builder.build signature in 26.x.
-def probeCp = configurations.compileClasspath
-tasks.register('probeEntity') {
-    doLast {
-        def cp = probeCp.asPath
-        def p = ['javap', '-p', '-classpath', cp, 'net.minecraft.world.entity.EntityType$Builder'].execute()
-        def out = new StringBuilder(); def err = new StringBuilder()
-        p.consumeProcessOutput(out, err); p.waitFor()
-        out.toString().readLines().findAll { it.contains('build') || it.contains(' of(') }.each { println it }
-    }
-}

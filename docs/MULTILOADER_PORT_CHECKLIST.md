@@ -1,8 +1,15 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~159 classes ported, ~105 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~162 classes ported, ~102 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — meteor natural-shower scheduler ported.** All 4 cells green. Added `meteor/{MeteorSite,
+> MeteorEventManager (multiloader's first SavedData), MeteorEvents}` + per-loader server-tick wiring
+> (NeoForge `ServerTickEvent.Post`, Fabric `END_SERVER_TICK`). Meteors now fall naturally on the 4 surface
+> dims. **26.x `SavedDataType` is 4-arg only on NeoForm** (Identifier, Supplier, Codec, DataFixTypes=null) —
+> the 3-arg the standalone mod uses is a NeoForge convenience (found via the javap probe). Tracker HUD
+> (item + sync payload + client readout) is the deferred networking-consumer follow-up.
 
 > **2026-06-21 update — meteor creative slice ported.** All 4 cells green. Added `meteor/{FallingMeteorEntity,
 > MeteorCoreBlock, MeteorCoreBlockEntity, MeteorCallerItem, MeteorLoot}` + client `{FallingMeteorModel,
@@ -143,9 +150,16 @@ checked by a headless build).
   `FALLING_METEOR` entity, `METEOR_CORE` block+BE (no block item — world-gen only), `METEOR_CALLER`
   item (TOOLS tab) + renderer; copied 3 textures + 4 asset JSON + 4 lang keys. Config meteor keys
   inlined (crater radius 3, bonus rolls 3). All 4 cells green.
-- [ ] **Natural showers + tracker** (deferred) — `MeteorEventManager` (SavedData scheduler),
-  `MeteorEvents` (per-loader tick hook), `MeteorSite`, + client `ClientMeteorTracker` HUD and a
-  `MeteorSyncPayload` (uses the networking seam). Needs the meteor config keys (spawn pacing) too.
+- [x] **Natural showers (scheduler)** — `MeteorSite` + `MeteorEventManager` (the multiloader's first
+  `SavedData`) + cross-loader `MeteorEvents.tick(MinecraftServer)` driving the per-level scheduler on the
+  4 surface dims (overworld + Greenxertz + Cindara + Glacira); wired into NeoForge `ServerTickEvent.Post`
+  and Fabric `END_SERVER_TICK`; `FallingMeteorEntity` re-wired to call `onImpact`. Meteor pacing inlined
+  (avg 9000s, warn 30s, 200–500 blocks, ≤4 active). **26.x gotcha: `SavedDataType` on pure-vanilla NeoForm
+  has only the 4-arg ctor `(Identifier, Supplier, Codec, DataFixTypes)`** — the standalone mod's 3-arg call
+  is a NeoForge convenience; pass `null` DataFixTypes (new mod data, no datafixer schema). All 4 cells green.
+- [ ] **Tracker HUD** (deferred) — `ModItems.METEOR_TRACKER` item + `MeteorSyncPayload` (clientbound, via
+  the networking seam) pushed to tracker holders + `ClientMeteorTracker` + a client-tick readout. The
+  first real networking-seam consumer; `MeteorEventManager.nearestSite` is already in place for it.
 
 ### Star Guide / progression  (`progression/` 5 + client + item)
 - [ ] `StarGuide`, `StarGuideProgress`, `StarGuideBlock`(+BE), `StarGuideMenu` + screen, hologram BER,

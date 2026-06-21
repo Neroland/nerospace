@@ -199,6 +199,9 @@ public class FallingMeteorEntity extends Entity {
         level.playSound(null, center.getX() + 0.5D, center.getY() + 0.5D, center.getZ() + 0.5D,
                 SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 6.0F, 0.7F);
 
+        // Flip the matching scheduled site to LANDED (or add a transient one for a creative-called meteor).
+        MeteorEventManager.get(level).onImpact(center);
+
         discard();
     }
 
