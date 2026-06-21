@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EntityType;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
+import za.co.neroland.nerospace.client.ClientOxygenVisuals;
 import za.co.neroland.nerospace.client.MeteorTrackerHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
@@ -48,7 +49,10 @@ public final class NerospaceFabricClient implements ClientModInitializer {
             }
         });
 
-        // Meteor Tracker readout (action bar) — counterpart to NeoForge's ClientTickEvent.Post.
-        ClientTickEvents.END_CLIENT_TICK.register(mc -> MeteorTrackerHud.tick());
+        // Meteor Tracker readout + oxygen-field visuals — counterpart to NeoForge's ClientTickEvent.Post.
+        ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+            MeteorTrackerHud.tick();
+            ClientOxygenVisuals.tick();
+        });
     }
 }

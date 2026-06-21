@@ -81,5 +81,8 @@ public final class ModNetwork {
         // method reference is safe to register from common code.
         clientbound(MeteorSyncPayload.TYPE, MeteorSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientMeteorTracker::accept);
+        // Oxygen field: server → nearby clients range-limited concentration snapshot for the visual layers.
+        clientbound(OxygenFieldSyncPayload.TYPE, OxygenFieldSyncPayload.STREAM_CODEC,
+                za.co.neroland.nerospace.client.ClientOxygenField::accept);
     }
 }

@@ -3,6 +3,7 @@ package za.co.neroland.nerospace.world;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -29,9 +30,14 @@ import za.co.neroland.nerospace.registry.ModItems;
  * <p><b>Cross-loader port note.</b> The root drives this from a NeoForge {@code PlayerTickEvent} and a
  * full diffusion {@code OxygenFieldManager} (sealed rooms + client overlay, networking-synced), plus
  * terraform breathability, hazard shields, and gas-tank airlock refills. The multiloader ticks it from a
- * per-loader server-tick hook and keeps the self-contained survival core; the diffusion field, terraform,
- * hazard variants, advancement criteria, and gas-airlock refill are deferred to their own batches. Values
- * are inlined (the config seam is deferred).</p>
+ * per-loader server-tick hook and keeps the self-contained survival core. The diffusion field, terraform
+ * breathability, and per-planet hazard shields (heat/cold) are now wired in; advancement criteria and the
+ * gas-tank airlock refill remain deferred. Values are inlined (the config seam is deferred).</p>
+ *
+ * <p><b>Hazards (SUIT_HAZARD_DESIGN.md).</b> Cindara runs HOT and Glacira runs COLD: an uncountered
+ * hazard multiplies oxygen drain ×{@link #HAZARD_DRAIN_MULTIPLIER} (no separate damage path — lethality
+ * stays with zero-O₂ suffocation). A full set of the matching {@link HazardShield} suit variant negates
+ * it; a mixed set does not.</p>
  */
 public final class OxygenManager {
 
@@ -49,6 +55,8 @@ public final class OxygenManager {
     /** Breathable-zone scan radius around the player (launch pad / oxygen generator). */
     private static final int SAFE_RADIUS = 6;
     private static final float SUFFOCATION_DAMAGE = 1.0F;
+    /** Drain factor on a hazard dimension without the matching suit variant (SUIT_HAZARD_DESIGN.md §2). */
+    private static final int HAZARD_DRAIN_MULTIPLIER = 4;
 
     /** Every Nerospace planet (and the vacuum of the station) is airless. */
     private static final Set<ResourceKey<Level>> PLANETS = Set.of(
@@ -82,7 +90,11 @@ public final class OxygenManager {
             if (isBreathable(level, player.blockPosition())) {
                 oxygen = max;
             } else {
-                oxygen = Math.max(0, oxygen - (suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK));
+                // An uncountered dimension hazard (Cindara heat / Glacira cold) multiplies the drain.
+                int drain = (suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK)
+                        * hazardDrainMultiplier(level, player);
+                oxygen = Math.max(0, oxygen - drain);
+                hazardFeedback(level, player);
             }
             Services.PLATFORM.setOxygen(player, oxygen);
         }
@@ -151,5 +163,85 @@ public final class OxygenManager {
             }
         }
         return false;
+    }
+
+    // --- Hazard shields (SUIT_HAZARD_DESIGN.md) -----------------------------
+
+    /** Per-planet environmental hazard a suit variant must counter (NONE elsewhere). */
+    public enum HazardShield {
+        NONE, HEAT, COLD
+    }
+
+    /** The hazard a dimension carries: Cindara runs hot, Glacira runs cold. */
+    private static HazardShield hazardFor(ResourceKey<Level> dimension) {
+        if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
+            return HazardShield.HEAT;
+        }
+        if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
+            return HazardShield.COLD;
+        }
+        return HazardShield.NONE;
+    }
+
+    /** Drain factor for the player: ×{@link #HAZARD_DRAIN_MULTIPLIER} on an uncountered hazard, else 1. */
+    private static int hazardDrainMultiplier(ServerLevel level, Player player) {
+        HazardShield hazard = hazardFor(level.dimension());
+        if (hazard == HazardShield.NONE || hazardShield(player) == hazard) {
+            return 1;
+        }
+        return HAZARD_DRAIN_MULTIPLIER;
+    }
+
+    /**
+     * The worn hazard shield — requires ALL FOUR pieces of the SAME variant (a heat helmet on a cryo
+     * suit grants the suit's air tank but no shield), orthogonal to the base oxygen-suit set.
+     */
+    private static HazardShield hazardShield(Player player) {
+        HazardShield head = pieceVariant(player.getItemBySlot(EquipmentSlot.HEAD));
+        if (head == HazardShield.NONE) {
+            return HazardShield.NONE;
+        }
+        if (pieceVariant(player.getItemBySlot(EquipmentSlot.CHEST)) == head
+                && pieceVariant(player.getItemBySlot(EquipmentSlot.LEGS)) == head
+                && pieceVariant(player.getItemBySlot(EquipmentSlot.FEET)) == head) {
+            return head;
+        }
+        return HazardShield.NONE;
+    }
+
+    /** Which hazard variant a single worn piece belongs to (NONE for plain/T2/non-suit items). */
+    private static HazardShield pieceVariant(ItemStack worn) {
+        if (worn.is(ModItems.OXYGEN_SUIT_HEAT_HELMET.get())
+                || worn.is(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get())
+                || worn.is(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get())
+                || worn.is(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get())) {
+            return HazardShield.HEAT;
+        }
+        if (worn.is(ModItems.OXYGEN_SUIT_COLD_HELMET.get())
+                || worn.is(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())
+                || worn.is(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())
+                || worn.is(ModItems.OXYGEN_SUIT_COLD_BOOTS.get())) {
+            return HazardShield.COLD;
+        }
+        return HazardShield.NONE;
+    }
+
+    /**
+     * Thematic feedback for an exposed, unprotected player (no extra damage — the O₂ bar is the cost):
+     * a building frost vignette on the cold world (capped below fully-frozen so vanilla freeze damage
+     * never double-dips), sparse smoke shimmer on the hot one.
+     */
+    private static void hazardFeedback(ServerLevel level, Player player) {
+        HazardShield hazard = hazardFor(level.dimension());
+        if (hazard == HazardShield.NONE || hazardShield(player) == hazard) {
+            return;
+        }
+        if (hazard == HazardShield.COLD) {
+            int cap = player.getTicksRequiredToFreeze() - 2; // never "fully frozen" => no freeze damage
+            player.setTicksFrozen(Math.min(cap, player.getTicksFrozen() + CHECK_INTERVAL_TICKS * 2 + 15));
+        } else if (player.tickCount % (CHECK_INTERVAL_TICKS * 4) == 0) {
+            level.sendParticles(ParticleTypes.SMOKE,
+                    player.getX(), player.getY() + 1.2D, player.getZ(), 3, 0.25D, 0.4D, 0.25D, 0.01D);
+        }
     }
 }

@@ -16,6 +16,7 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
+import za.co.neroland.nerospace.client.ClientOxygenVisuals;
 import za.co.neroland.nerospace.client.MeteorTrackerHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
@@ -40,8 +41,11 @@ public final class NeoForgeClientSetup {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterScreens);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterFluidModels);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterEntityRenderers);
-        // Meteor Tracker readout (action bar) — game-bus client tick (counterpart to Fabric's END_CLIENT_TICK).
-        NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> MeteorTrackerHud.tick());
+        // Meteor Tracker readout + oxygen-field visuals — game-bus client tick (counterpart to Fabric's END_CLIENT_TICK).
+        NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> {
+            MeteorTrackerHud.tick();
+            ClientOxygenVisuals.tick();
+        });
     }
 
     private static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {

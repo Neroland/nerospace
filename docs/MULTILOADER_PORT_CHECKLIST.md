@@ -1,8 +1,18 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~187 classes ported, ~77 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~190 classes ported, ~74 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — oxygen field client visuals.** All 4 cells green. Added `network/OxygenFieldSyncPayload`
+> + `client/{ClientOxygenField, ClientOxygenVisuals}`; the field now syncs to nearby clients and renders as
+> drifting GLOW particles + a boundary sound — the breathable volume is finally visible. 2nd networking-seam
+> consumer. The haze fog-tint layer is deferred (NeoForge-only fog event; no portable Fabric counterpart).
+
+> **2026-06-21 update — oxygen hazard shields.** All 4 cells green. Extended `OxygenManager` with per-planet
+> hazards (Cindara heat / Glacira cold → ×4 drain unless wearing the matching suit variant) + frost/smoke
+> feedback. The ported thermal/cryo suit variants are now functional (previously inert). No new class — an
+> in-place enhancement. Airlock refill still deferred (needs the gas-cap lookup).
 
 > **2026-06-21 update — terraforming slice 6b: TerraformDrift (ambient cosmetic).** All 4 cells green.
 > `world/TerraformDrift` ticked from the shared server hook. **Terraforming is now essentially complete**
@@ -198,9 +208,19 @@ checked by a headless build).
   Wired into both server-tick hooks alongside the meteor driver; `OxygenManager.isBreathable` now reads the
   field; the **Oxygen Generator registers itself as a field source**, draining `EMIT_MB_PER_TICK` from its
   tank while sourcing (and clears on `setRemoved`). Sealed bases are now genuinely breathable. ~9 field
-  config keys inlined. **Deferred (cosmetic): the client visual layer** — `OxygenFieldSyncPayload` +
-  `ClientOxygenField` + the particle/haze/boundary overlay (gated on a visual-quality config).
-- [ ] **Deferred**: terraform breathability + criteria, hazard shields/feedback, gas-tank airlock refill.
+  config keys inlined.
+- [x] **Oxygen field client visuals DONE (4 cells green).** `network/OxygenFieldSyncPayload` (range snapshot,
+  long[]/byte[]) registered clientbound and pushed from `OxygenFieldEvents` every 10t to nearby players;
+  `client/ClientOxygenField` (data holder) + `client/ClientOxygenVisuals` (client-tick: drifting GLOW particles
+  in breathable cells + a boundary-crossing sound). 2nd networking-seam consumer. **Deferred: the haze fog-tint
+  layer** — rode a NeoForge-only `ViewportEvent.ComputeFogColor` with no portable Fabric counterpart.
+- [x] **Hazard shields DONE (4 cells green).** `OxygenManager` now applies a per-planet hazard (Cindara HEAT /
+  Glacira COLD): ×4 oxygen drain unless a full set of the matching `HazardShield` suit variant is worn (mixed
+  set = no shield). Adds `hazardFor`/`hazardShield`/`pieceVariant`/`hazardDrainMultiplier` + thematic feedback
+  (frost vignette on cold, smoke shimmer on hot — no extra damage path). **Makes the already-ported thermal/cryo
+  suit variants functional.**
+- [ ] **Deferred**: terraform-breathability advancement criteria, gas-tank airlock refill (needs the gas-cap
+  lookup; the field/pad/terraformed already refill).
 - **Terraforming** (signature endgame) — sliced; **slice 1 DONE (4 cells green)**, rest sequenced:
   - [x] **Slice 1 — per-chunk data-attachment seam.** `IPlatformHelper.is/setTerraformed` +
     `get/setTerraformStage(LevelChunk)` backed by NeoForge `AttachmentType` (chunk `getData`/`setData`) and

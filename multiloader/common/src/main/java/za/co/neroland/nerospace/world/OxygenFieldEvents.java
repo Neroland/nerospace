@@ -5,8 +5,11 @@ import java.util.Set;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
+import za.co.neroland.nerospace.network.ModNetwork;
+import za.co.neroland.nerospace.network.OxygenFieldSyncPayload;
 import za.co.neroland.nerospace.registry.ModDimensions;
 
 /**
@@ -29,18 +32,30 @@ public final class OxygenFieldEvents {
 
     /** Server ticks between field relaxation passes (inlined from Config.OXYGEN_SIM_INTERVAL_TICKS). */
     private static final int SIM_INTERVAL_TICKS = 5;
+    /** How often the range-limited field view is pushed to nearby clients (for the visual layers). */
+    private static final int SYNC_INTERVAL_TICKS = 10;
+    /** Blocks around a player the field snapshot covers (inlined from Config.OXYGEN_SYNC_RADIUS). */
+    private static final int SYNC_RADIUS = 32;
 
     private OxygenFieldEvents() {
     }
 
-    /** Runs one throttled field pass per eligible dimension. */
+    /** Runs one throttled field pass per eligible dimension, and syncs the nearby field to clients. */
     public static void tick(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
             if (!FIELD_DIMENSIONS.contains(level.dimension())) {
                 continue;
             }
-            if (level.getGameTime() % SIM_INTERVAL_TICKS == 0) {
-                OxygenFieldManager.get(level).simulate(level);
+            long time = level.getGameTime();
+            OxygenFieldManager manager = OxygenFieldManager.get(level);
+            if (time % SIM_INTERVAL_TICKS == 0) {
+                manager.simulate(level);
+            }
+            if (time % SYNC_INTERVAL_TICKS == 0) {
+                for (ServerPlayer player : level.players()) {
+                    ModNetwork.sendToPlayer(player,
+                            OxygenFieldSyncPayload.of(manager.snapshotAround(player.blockPosition(), SYNC_RADIUS)));
+                }
             }
         }
     }
