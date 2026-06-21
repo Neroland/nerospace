@@ -148,6 +148,9 @@ public final class ModItems {
     public static final RegistryEntry<Item> METEOR_CALLER = ITEMS.register("meteor_caller",
             key -> new MeteorCallerItem(new Item.Properties().stacksTo(1).setId(key)));
 
+    /** Meteor Tracker: while held, shows the nearest tracked meteor's heading/distance/state (server-synced). */
+    public static final RegistryEntry<Item> METEOR_TRACKER = item("meteor_tracker", p -> p.stacksTo(1));
+
     // --- Spawn eggs (lazy entity-type supplier; ruin warden is summon-only) ----
     public static final RegistryEntry<Item> XERTZ_STALKER_SPAWN_EGG = spawnEgg("xertz_stalker_spawn_egg", ModEntities.XERTZ_STALKER);
     public static final RegistryEntry<Item> QUARTZ_CRAWLER_SPAWN_EGG = spawnEgg("quartz_crawler_spawn_egg", ModEntities.QUARTZ_CRAWLER);
@@ -260,7 +263,7 @@ public final class ModItems {
                 List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get(), XERTZ_RESONATOR.get(),
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
                         GREENXERTZ_NAVIGATOR.get(), STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(),
-                        CINDARA_COMPASS.get(), GLACIRA_COMPASS.get(), METEOR_CALLER.get()),
+                        CINDARA_COMPASS.get(), GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get()),
                 CreativeModeTabs.SPAWN_EGGS,
                 List.<ItemLike>of(XERTZ_STALKER_SPAWN_EGG.get(), QUARTZ_CRAWLER_SPAWN_EGG.get(),
                         GREENLING_SPAWN_EGG.get(), ALIEN_VILLAGER_SPAWN_EGG.get(), CINDER_STALKER_SPAWN_EGG.get(),

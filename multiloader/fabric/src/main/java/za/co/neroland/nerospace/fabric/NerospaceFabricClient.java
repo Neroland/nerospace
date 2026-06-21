@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -9,6 +10,7 @@ import net.minecraft.world.entity.EntityType;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
+import za.co.neroland.nerospace.client.MeteorTrackerHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.FuelRefineryScreen;
@@ -39,5 +41,8 @@ public final class NerospaceFabricClient implements ClientModInitializer {
                 EntityRendererRegistry.register(type, provider);
             }
         });
+
+        // Meteor Tracker readout (action bar) — counterpart to NeoForge's ClientTickEvent.Post.
+        ClientTickEvents.END_CLIENT_TICK.register(mc -> MeteorTrackerHud.tick());
     }
 }

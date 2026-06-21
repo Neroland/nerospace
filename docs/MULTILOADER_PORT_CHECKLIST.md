@@ -1,8 +1,15 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~162 classes ported, ~102 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~165 classes ported, ~99 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — meteor Tracker HUD ported (networking seam proven end-to-end).** All 4 cells green.
+> Added `network/MeteorSyncPayload` (multiloader's FIRST payload), `client/{ClientMeteorTracker,
+> MeteorTrackerHud}`, `ModItems.METEOR_TRACKER`; registered clientbound in `ModNetwork.init()` (both loader
+> seams auto-wire it), pushed from `MeteorEvents` to tracker holders every 10t, readout on the action bar via
+> per-loader client-tick hooks. **26.x gotcha: `Gui.setOverlayMessage(Component, boolean)` is gone from vanilla
+> Gui → use `Player.sendOverlayMessage(Component)`** (probed). The meteor subsystem is now fully ported.
 
 > **2026-06-21 update — meteor natural-shower scheduler ported.** All 4 cells green. Added `meteor/{MeteorSite,
 > MeteorEventManager (multiloader's first SavedData), MeteorEvents}` + per-loader server-tick wiring
@@ -157,9 +164,13 @@ checked by a headless build).
   (avg 9000s, warn 30s, 200–500 blocks, ≤4 active). **26.x gotcha: `SavedDataType` on pure-vanilla NeoForm
   has only the 4-arg ctor `(Identifier, Supplier, Codec, DataFixTypes)`** — the standalone mod's 3-arg call
   is a NeoForge convenience; pass `null` DataFixTypes (new mod data, no datafixer schema). All 4 cells green.
-- [ ] **Tracker HUD** (deferred) — `ModItems.METEOR_TRACKER` item + `MeteorSyncPayload` (clientbound, via
-  the networking seam) pushed to tracker holders + `ClientMeteorTracker` + a client-tick readout. The
-  first real networking-seam consumer; `MeteorEventManager.nearestSite` is already in place for it.
+- [x] **Tracker HUD** — `ModItems.METEOR_TRACKER` item + `network/MeteorSyncPayload` (the multiloader's
+  **first networking payload** — registered clientbound in `ModNetwork.init()`, auto-wired by both loader
+  seams) pushed to tracker holders every 10t from `MeteorEvents` + `client/ClientMeteorTracker` (data
+  holder) + `client/MeteorTrackerHud` (action-bar readout via `Player.sendOverlayMessage`) driven by
+  per-loader client-tick hooks (NeoForge `ClientTickEvent.Post`, Fabric `END_CLIENT_TICK`). **26.x gotcha:
+  `Gui.setOverlayMessage(Component, boolean)` (the standalone mod's call) is gone from vanilla `Gui` —
+  use `Player.sendOverlayMessage(Component)`** (probed). Proves the networking seam end-to-end. All 4 cells green.
 
 ### Star Guide / progression  (`progression/` 5 + client + item)
 - [ ] `StarGuide`, `StarGuideProgress`, `StarGuideBlock`(+BE), `StarGuideMenu` + screen, hologram BER,

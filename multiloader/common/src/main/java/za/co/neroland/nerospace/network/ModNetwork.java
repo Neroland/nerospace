@@ -76,6 +76,10 @@ public final class ModNetwork {
 
     /** Called from common init so the payload lists are populated before each loader registers them. */
     public static void init() {
-        // Subsystems register their payloads here as they are ported.
+        // Meteor Tracker: server → tracker-holders nearest-site snapshot. The handler runs only on the
+        // physical client; ClientMeteorTracker is a pure data holder (no client-only imports), so the
+        // method reference is safe to register from common code.
+        clientbound(MeteorSyncPayload.TYPE, MeteorSyncPayload.STREAM_CODEC,
+                za.co.neroland.nerospace.client.ClientMeteorTracker::accept);
     }
 }
