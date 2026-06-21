@@ -21,5 +21,6 @@ public final class ModRegistries {
         ModMenuTypes.init();
         ModEntities.init();
         ModCreativeTab.init();
+        za.co.neroland.nerospace.network.ModNetwork.init();
     }
 }

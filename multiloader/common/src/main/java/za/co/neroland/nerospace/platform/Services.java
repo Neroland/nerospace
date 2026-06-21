@@ -16,6 +16,8 @@ public final class Services {
 
     public static final IPlatformHelper PLATFORM = load(IPlatformHelper.class);
 
+    public static final NetworkPlatform NETWORK = load(NetworkPlatform.class);
+
     private Services() {
     }
 

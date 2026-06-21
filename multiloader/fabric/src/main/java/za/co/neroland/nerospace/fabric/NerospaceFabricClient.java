@@ -24,6 +24,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         NerospaceCommon.LOGGER.info("[Nerospace] Fabric client bootstrap");
+        FabricNetwork.registerClient();
         MenuScreens.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         MenuScreens.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         MenuScreens.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);

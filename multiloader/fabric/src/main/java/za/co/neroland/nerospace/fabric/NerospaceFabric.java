@@ -64,6 +64,7 @@ public final class NerospaceFabric implements ModInitializer {
 
         // Oxygen survival: register the attachment + tick each player per world tick (airless-planet drain).
         FabricAttachments.init();
+        FabricNetwork.registerCommon();
         ServerTickEvents.END_SERVER_TICK.register(server ->
                 server.getPlayerList().getPlayers().forEach(OxygenManager::tick));
 

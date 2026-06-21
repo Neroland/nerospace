@@ -31,6 +31,7 @@ public final class NerospaceNeoForge {
         NeoForgeRegistrationFactory.registerAll(modEventBus);
         NeoForgeCapabilities.register(modEventBus);
         NeoForgeAttachments.register(modEventBus);
+        NeoForgeNetwork.register(modEventBus);
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             NeoForgeClientSetup.init(modEventBus);
         }

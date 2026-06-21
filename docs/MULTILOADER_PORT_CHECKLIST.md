@@ -1,7 +1,7 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~139 classes ported, ~125 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~143 classes ported, ~121 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
 > **2026-06-20 update — quarry ported.** All 4 cells green. Added 11 classes:
@@ -164,10 +164,14 @@ checked by a headless build).
 - [x] `ModDataComponents` — `SELECTED_PIPE_TYPE` (int) + `FILTER_ITEM` (vanilla `ItemStack` instead of the
   root's NeoForge `ItemResource`), via `RegistrationProvider` over `DATA_COMPONENT_TYPE`. Consumed by the
   advanced-pipe configurator/filter (advanced pipes batch).
-- [~] `ModCriteria` (`terraformed_ground`/`living_ground`/`founded_station` `PlayerTrigger`s) — **deferred**:
-  the criterion classes resolve to a **different package on 26.2 NeoForm than the root's 26.1 imports**
-  (`net.minecraft.advancements.criterion` not found), so it needs a version/loader-checked import — resolve
-  it alongside its first consumer (station founding / star guide / terraform). Orphan until then.
+- [~] `ModCriteria` (`terraformed_ground`/`living_ground`/`founded_station` `PlayerTrigger`s) — **deferred:
+  confirmed cross-version vanilla package move** (probed 2026-06-21): on **26.1.2** the classes are
+  `net.minecraft.advancements.CriterionTrigger` + `net.minecraft.advancements.criterion.PlayerTrigger`; on
+  **26.2** both are under `net.minecraft.advancements.triggers`. A single shared `import` can't satisfy both
+  MC versions, so this can't be a plain common class. Options when its first consumer (station founding /
+  star guide / terraform) lands: (a) drop the custom advancement triggers (they're cosmetic — the systems
+  work without firing them); (b) reflection (resolve `PlayerTrigger` by per-version FQN); or (c) add
+  version-split source sets. Orphan until then.
 - [ ] `ModAttachments` (data attachments — needs a cross-loader seam: NeoForge attachments vs Fabric
   component/attachment API), `ModFeatures`, `ModConfiguredFeatures`/`ModPlacedFeatures`/`ModBiomes`/
   `ModBiomeModifiers` (datagen bootstraps — mostly superseded by the copied JSON), `ModDimensionTypes`
@@ -179,9 +183,16 @@ checked by a headless build).
   tabs in-game (items were searchable but absent when browsing) — replaced on both loaders. Note: vanilla
   `CreativeModeTab.builder(Row, column)` (the no-arg overload + `withTabsBefore` are NeoForge-only).
 
-### Networking  (`network/` 5) — **needed by oxygen HUD, meteors, pipe modes**
-- [ ] Cross-loader packet seam: NeoForge `PayloadRegistrar` vs Fabric networking API. `ModNetwork`,
-  `ModPayloads`, `OxygenFieldSyncPayload`, `MeteorSyncPayload`, `SetPipeModePayload`.
+### Networking  (`network/` 5) — **SEAM DONE (4 cells green); payloads ship with their consumers**
+- [x] Cross-loader packet seam: common `network/ModNetwork` (payload registry: `clientbound`/`serverbound`
+  lists + `sendToPlayer`/`sendToServer`) + `platform/NetworkPlatform` send seam. NeoForge `NeoForgeNetwork`
+  registers via `RegisterPayloadHandlersEvent` (`playToClient`/`playToServer`) and sends via
+  `PacketDistributor.sendToPlayer` / **`ClientPacketDistributor.sendToServer`** (client-only). Fabric
+  `FabricNetwork` registers via **`PayloadTypeRegistry.clientboundPlay()/serverboundPlay()`** +
+  `Server/ClientPlayNetworking` receivers and sends via `Server/ClientPlayNetworking.send`. Verified the
+  exact 26.2 APIs with a temporary javap probe (removed). No payloads registered yet — `OxygenFieldSyncPayload`,
+  `MeteorSyncPayload`, `SetPipeModePayload` ship with their subsystems (each just calls `ModNetwork.clientbound/
+  serverbound(...)`). Client-safety contract documented in `ModNetwork`.
 
 ### Commands & compat
 - [ ] `command/NerospaceCommands` — `/nerospace` debug/admin commands (vanilla Brigadier; loader event differs).
