@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -46,7 +47,7 @@ public class SolarPanelBlockEntity extends BlockEntity {
         if (level.isRaining() || level.isThundering()) {
             rate /= 2;
         }
-        this.energy.generate(rate);
+        this.energy.generate(NerospaceConfig.scale(rate, NerospaceConfig.energyRateMultiplier()));
     }
 
     @Override

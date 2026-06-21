@@ -4,6 +4,11 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~217 classes ported, ~47 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-21 update — config seam slice 1 (energy multiplier).** All 4 cells compile green. Extended the
+> properties `NerospaceConfig` with `energyRateMultiplier` (0.1×..10×) + a `scale()` clamp helper, wired into
+> all three generators' FE/tick. Establishes the cross-loader balance-config pattern (properties file, no
+> `ModConfigSpec` seam); the root's other 4 multipliers wire in incrementally (kept out of the file until wired).
+
 > **2026-06-21 update — station founding (charter-driven; closes the last advancement).** All 4 cells green
 > (full `:neoforge:build`+`:fabric:build` on 26.2; compile on 26.1.2). Ported `rocket/{StationRegistry
 > (SavedData, POPIA-clean — no player identity), StationCoreBlock, StationCoreBlockEntity}` + a new
@@ -512,9 +517,16 @@ checked by a headless build).
 - [ ] `command/NerospaceCommands` — `/nerospace` debug/admin commands (vanilla Brigadier; loader event differs).
 - [ ] `compat/jei/*` — recipe-viewer integration. NeoForge = JEI; Fabric would use REI/EMI. Cross-mod, low priority.
 
-### Config / tuning
-- [ ] `Config` + `Tuning` — NeoForge `ModConfigSpec`-based; needs a cross-loader config seam (or a simple
-  shared config). Many ported machines currently use inlined constants where the root reads `Tuning`.
+### Config / tuning — **slice 1 DONE (4 cells green); cross-loader seam established**
+- [x] **Slice 1 — config seam + energy multiplier.** Extended the properties-based `config/NerospaceConfig`
+  (no NeoForge `ModConfigSpec` — the cross-loader seam is the properties file the telemetry batch added) with
+  `energyRateMultiplier` (clamp 0.1×..10×, default 1) + a `scale(base, mult)` helper (min-1 clamp, mirroring
+  the root `Tuning` contract); wired it into the Combustion / Passive / Solar generator FE-per-tick. Loads at
+  mod init (before ticking). This proves the cross-loader balance-config pattern beyond the telemetry toggle.
+- [ ] **Remaining (incremental).** The root's other four multipliers (`oxygenDrainMultiplier`,
+  `oxygenCapacityMultiplier`, `fuelCostMultiplier`, `machineSpeedMultiplier`) + the base-value constants — wire
+  each into its consumer(s) as a follow-up (kept out of the config file until wired, so every key does
+  something). A full `Tuning` base-value class is optional (the multiloader inlines base values per machine).
 
 ### Spawn rules
 - [x] `registry/ModSpawnPlacements` — natural-spawn placement rules for the 9 spawnable creatures

@@ -20,6 +20,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
@@ -95,7 +96,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
         }
         if (this.coreTicks > 0 && this.energy.getAmount() < this.energy.getCapacity()) {
             this.coreTicks--;
-            this.energy.generate(FE_PER_TICK);
+            this.energy.generate(NerospaceConfig.scale(FE_PER_TICK, NerospaceConfig.energyRateMultiplier()));
         }
     }
 
