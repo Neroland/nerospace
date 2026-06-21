@@ -13,6 +13,7 @@ import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
 import za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlockEntity;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.HydrationModuleBlockEntity;
 import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity;
@@ -120,6 +121,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<TerraformerBlockEntity>> TERRAFORMER =
             BLOCK_ENTITIES.register("terraformer",
                     key -> new BlockEntityType<>(TerraformerBlockEntity::new, java.util.Set.of(ModBlocks.TERRAFORMER.get())));
+
+    public static final RegistryEntry<BlockEntityType<HydrationModuleBlockEntity>> HYDRATION_MODULE =
+            BLOCK_ENTITIES.register("hydration_module",
+                    key -> new BlockEntityType<>(HydrationModuleBlockEntity::new, java.util.Set.of(ModBlocks.HYDRATION_MODULE.get())));
 
     private ModBlockEntities() {
     }

@@ -1,8 +1,15 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~178 classes ported, ~86 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~182 classes ported, ~82 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — terraforming slice 5: Hydration Module.** All 4 cells green. Added
+> `machine/{HydrationModuleBlock, HydrationModuleBlockEntity}` + `menu/HydrationModuleMenu` +
+> `client/HydrationModuleScreen` (BE on `WorldlyContainer`/`NonNullList`, melts glacite into a touching
+> Terraformer's water-stage buffer). Registered + item cap + assets + `hydration_input` tag + loot table + lang.
+> Also fixed a 4b omission: the Terraformer block had no loot table (added — it would have dropped nothing).
+> Remaining terraform: slice 6 = Monitor + Drift + ChunkLoader + GreenxertzAtmosphere (all secondary).
 
 > **2026-06-21 update — terraforming slice 4b: the Terraformer machine.** All 4 cells green. Added
 > `machine/{MachineRedstone, TerraformerBlock, TerraformerBlockEntity}` + `menu/TerraformerMenu` +
@@ -213,7 +220,12 @@ checked by a headless build).
     `TerraformManager.update` + biome-sync packet. Registered block/item/BE/menu + per-loader screen + energy/item
     caps; copied block (3 textures, FACING blockstate, multi-tex model) + GUI texture + 9 lang keys. **Placing a
     Terraformer now greens the planet outward (Rooted→Hydrated→Living).**
-  - [ ] **Slice 5 — Hydration Module** (block/BE/menu/screen) + stage-2 wiring.
+  - [x] **Slice 5 — Hydration Module DONE (4 cells green).** `machine/{HydrationModuleBlock,
+    HydrationModuleBlockEntity}` + `menu/HydrationModuleMenu` + `client/HydrationModuleScreen`. Melts glacite
+    (the `hydration_input` tag) from a `WorldlyContainer`/`NonNullList` slot into a TOUCHING Terraformer's
+    hydration buffer (`acceptHydration`); no energy of its own. Registered block/item/BE/menu + per-loader
+    screen + item cap; copied block (3 tex, FACING blockstate, model) + GUI + loot table + `hydration_input`
+    tag JSON + 5 lang keys. **Also fixed: the Terraformer block was missing its loot table from 4b (added).**
   - [ ] **Slice 6 — Terraform Monitor** (block/BE/menu/screen) + `TerraformDrift` + `TerraformChunkLoader` +
     `GreenxertzAtmosphere`. Risk: **high** (world mutation, chunk-loading, events).
 

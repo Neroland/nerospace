@@ -148,6 +148,14 @@ public final class NeoForgeCapabilities {
                         ? new WorldlyContainerWrapper(be, side)
                         : VanillaContainerWrapper.of(be));
 
+        // Hydration Module: glacite in (no energy of its own).
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.HYDRATION_MODULE.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.TRASH_CAN.get(),

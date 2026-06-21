@@ -19,6 +19,7 @@ import za.co.neroland.nerospace.machine.FuelTankBlock;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlock;
 import za.co.neroland.nerospace.machine.OxygenGeneratorBlock;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlock;
+import za.co.neroland.nerospace.machine.HydrationModuleBlock;
 import za.co.neroland.nerospace.machine.SolarPanelBlock;
 import za.co.neroland.nerospace.machine.TerraformerBlock;
 import za.co.neroland.nerospace.machine.quarry.MinerTier;
@@ -203,6 +204,11 @@ public final class ModBlocks {
             key -> new TerraformerBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_GREEN).strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops().lightLevel(s -> 6).sound(SoundType.METAL)));
+
+    public static final RegistryEntry<HydrationModuleBlock> HYDRATION_MODULE = BLOCKS.register("hydration_module",
+            key -> new HydrationModuleBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops().lightLevel(s -> 4).sound(SoundType.METAL)));
 
     public static final RegistryEntry<SolarPanelBlock> SOLAR_PANEL = BLOCKS.register("solar_panel",
             key -> new SolarPanelBlock(BlockBehaviour.Properties.of()

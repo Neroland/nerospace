@@ -87,6 +87,7 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> GAS_TANK_ITEM = blockItem("gas_tank", ModBlocks.GAS_TANK);
     public static final RegistryEntry<BlockItem> OXYGEN_GENERATOR_ITEM = blockItem("oxygen_generator", ModBlocks.OXYGEN_GENERATOR);
     public static final RegistryEntry<BlockItem> TERRAFORMER_ITEM = blockItem("terraformer", ModBlocks.TERRAFORMER);
+    public static final RegistryEntry<BlockItem> HYDRATION_MODULE_ITEM = blockItem("hydration_module", ModBlocks.HYDRATION_MODULE);
     public static final RegistryEntry<BlockItem> SOLAR_PANEL_ITEM = blockItem("solar_panel", ModBlocks.SOLAR_PANEL);
     public static final RegistryEntry<BlockItem> ROCKET_LAUNCH_PAD_ITEM = blockItem("rocket_launch_pad", ModBlocks.ROCKET_LAUNCH_PAD);
     public static final RegistryEntry<BlockItem> LAUNCH_GANTRY_ITEM = blockItem("launch_gantry", ModBlocks.LAUNCH_GANTRY);
@@ -277,7 +278,7 @@ public final class ModItems {
                         OXYGEN_SUIT_HEAT_HELMET.get(), OXYGEN_SUIT_HEAT_CHESTPLATE.get(), OXYGEN_SUIT_HEAT_LEGGINGS.get(), OXYGEN_SUIT_HEAT_BOOTS.get(),
                         OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get()),
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
-                List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), TRASH_CAN_ITEM.get(), CREATIVE_BATTERY_ITEM.get(), GAS_TANK_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(),
+                List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), TRASH_CAN_ITEM.get(), CREATIVE_BATTERY_ITEM.get(), GAS_TANK_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(), HYDRATION_MODULE_ITEM.get(),
                         SPEED_MODULE.get(), EFFICIENCY_MODULE.get(), FORTUNE_MODULE.get(), SILK_TOUCH_MODULE.get(),
                         CREATIVE_FLUID_TANK_ITEM.get(), CREATIVE_GAS_TANK_ITEM.get(), CREATIVE_ITEM_STORE_ITEM.get()));
     }

@@ -162,6 +162,11 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.TERRAFORMER.get());
 
+        // Hydration Module: glacite in (no energy of its own).
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.HYDRATION_MODULE.get());
+
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.TRASH_CAN.get());
