@@ -19,7 +19,10 @@
     [],
     [
       "nerospace:nerosteel_ore_placed",
-      "nerospace:xertz_quartz_ore_placed"
+      "nerospace:xertz_quartz_ore_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed",
+      "nerospace:mega_city_placed"
     ]
   ],
   "has_precipitation": false,

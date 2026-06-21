@@ -36,6 +36,7 @@ import za.co.neroland.nerospace.storage.TrashCanBlock;
 import za.co.neroland.nerospace.storage.BatteryBlock;
 import za.co.neroland.nerospace.storage.FluidTankBlock;
 import za.co.neroland.nerospace.storage.ItemStoreBlock;
+import za.co.neroland.nerospace.village.VillageCoreBlock;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
 /**
@@ -90,6 +91,10 @@ public final class ModBlocks {
             p -> p.mapColor(MapColor.COLOR_GREEN).strength(1.5F, 6.0F).lightLevel(s -> 15).sound(SoundType.METAL));
     public static final RegistryEntry<Block> ALIEN_CRYSTAL_BLOCK = block("alien_crystal_block",
             p -> p.mapColor(MapColor.EMERALD).strength(1.5F, 6.0F).lightLevel(s -> 12).sound(SoundType.AMETHYST));
+    public static final RegistryEntry<VillageCoreBlock> VILLAGE_CORE = BLOCKS.register("village_core",
+            key -> new VillageCoreBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.EMERALD).strength(2.0F, 6.0F)
+                    .requiresCorrectToolForDrops().lightLevel(s -> 10).sound(SoundType.AMETHYST)));
     public static final RegistryEntry<Block> METEOR_ROCK = block("meteor_rock",
             p -> p.mapColor(MapColor.COLOR_BLACK).strength(3.0F, 4.0F).requiresCorrectToolForDrops().lightLevel(s -> 3).sound(SoundType.STONE));
 

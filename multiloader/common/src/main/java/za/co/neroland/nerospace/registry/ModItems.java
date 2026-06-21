@@ -69,6 +69,7 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> ALIEN_PILLAR_ITEM = blockItem("alien_pillar", ModBlocks.ALIEN_PILLAR);
     public static final RegistryEntry<BlockItem> ALIEN_LAMP_ITEM = blockItem("alien_lamp", ModBlocks.ALIEN_LAMP);
     public static final RegistryEntry<BlockItem> ALIEN_CRYSTAL_BLOCK_ITEM = blockItem("alien_crystal_block", ModBlocks.ALIEN_CRYSTAL_BLOCK);
+    public static final RegistryEntry<BlockItem> VILLAGE_CORE_ITEM = blockItem("village_core", ModBlocks.VILLAGE_CORE);
     public static final RegistryEntry<BlockItem> METEOR_ROCK_ITEM = blockItem("meteor_rock", ModBlocks.METEOR_ROCK);
     public static final RegistryEntry<BlockItem> ITEM_STORE_ITEM = blockItem("item_store", ModBlocks.ITEM_STORE);
     public static final RegistryEntry<BlockItem> BATTERY_ITEM = blockItem("battery", ModBlocks.BATTERY);
@@ -242,7 +243,8 @@ public final class ModItems {
                         NEROSTEEL_BLOCK_ITEM.get(), CINDRITE_BLOCK_ITEM.get(), GLACITE_BLOCK_ITEM.get(),
                         STATION_FLOOR_ITEM.get(), STATION_WALL_ITEM.get(),
                         ALIEN_BRICKS_ITEM.get(), CRACKED_ALIEN_BRICKS_ITEM.get(), ALIEN_TILE_ITEM.get(),
-                        ALIEN_PILLAR_ITEM.get(), ALIEN_LAMP_ITEM.get(), ALIEN_CRYSTAL_BLOCK_ITEM.get()),
+                        ALIEN_PILLAR_ITEM.get(), ALIEN_LAMP_ITEM.get(), ALIEN_CRYSTAL_BLOCK_ITEM.get(),
+                        VILLAGE_CORE_ITEM.get()),
                 CreativeModeTabs.INGREDIENTS,
                 List.<ItemLike>of(RAW_NEROSIUM.get(), NEROSIUM_INGOT.get(),
                         RAW_NEROSTEEL.get(), NEROSTEEL_INGOT.get(),

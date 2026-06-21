@@ -20,6 +20,7 @@ public final class ModRegistries {
         ModBlockEntities.init();
         ModMenuTypes.init();
         ModEntities.init();
+        ModFeatures.init();
         ModCreativeTab.init();
         za.co.neroland.nerospace.network.ModNetwork.init();
     }

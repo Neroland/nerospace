@@ -1,7 +1,7 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~143 classes ported, ~121 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~150 classes ported, ~114 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
 > **2026-06-20 update — quarry ported.** All 4 cells green. Added 11 classes:
@@ -113,10 +113,15 @@ checked by a headless build).
   `TerraformConversion`, `TerraformDrift`, `TerraformFauna`, `TerraformChunkLoader`, `TerraformResources`,
   `GreenxertzAtmosphere`, terraformed biomes. Risk: **high** (world mutation, chunk-loading, events).
 
-### Structures  (`world/*Feature`, `village/VillageCore*`, station core, `ModFeatures`)
-- [ ] `HamletFeature`, `MegaCityFeature`, `RuinFeature`, `AlienBuild`, `StructureSpacing` + their
-  configured/placed-feature JSON (the 3 features I **stripped** from the Greenxertz biome) + structure data.
-- [ ] `VillageCoreBlock`(+BE) — per-village reputation aggregation.
+### Structures  (`world/*Feature`, `village/VillageCore*`, station core, `ModFeatures`) — **DONE (4 cells green)**
+- [x] `HamletFeature`, `MegaCityFeature`, `RuinFeature`, `AlienBuild`, `StructureSpacing` + `ModFeatures`
+  (registers the 3 `Feature` types via `RegistrationProvider` over `FEATURE`). Copied the
+  configured/placed-feature JSON and **re-added the 3 placed features to the Greenxertz biome JSON**
+  (`greenxertz.json` feature step 6) — since Greenxertz is our own datapack biome, no biome-modifier seam
+  needed. Mega-city spawns the (ported) Ruin Warden boss; ruin/mega-city fill vanilla loot chests.
+- [~] `VillageCoreBlock` — ported as a **plain decorative centerpiece block** (the structures' anchor).
+  The interactive controller (`VillageCoreBlockEntity`: claim → teach-and-grow construction, fetch
+  quests, night raids) is **deferred** — it pulls in `VillageBuildings` + the config seam.
 
 ### Meteor events  (`meteor/` 8 + client)
 - [ ] `FallingMeteorEntity` (+ model/renderer/state), `MeteorCallerItem`, `MeteorCoreBlock`(+BE),
