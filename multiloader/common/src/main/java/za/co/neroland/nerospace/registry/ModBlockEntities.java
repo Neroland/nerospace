@@ -15,6 +15,7 @@ import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.HydrationModuleBlockEntity;
 import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
+import za.co.neroland.nerospace.machine.TerraformMonitorBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
@@ -125,6 +126,10 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<HydrationModuleBlockEntity>> HYDRATION_MODULE =
             BLOCK_ENTITIES.register("hydration_module",
                     key -> new BlockEntityType<>(HydrationModuleBlockEntity::new, java.util.Set.of(ModBlocks.HYDRATION_MODULE.get())));
+
+    public static final RegistryEntry<BlockEntityType<TerraformMonitorBlockEntity>> TERRAFORM_MONITOR =
+            BLOCK_ENTITIES.register("terraform_monitor",
+                    key -> new BlockEntityType<>(TerraformMonitorBlockEntity::new, java.util.Set.of(ModBlocks.TERRAFORM_MONITOR.get())));
 
     private ModBlockEntities() {
     }

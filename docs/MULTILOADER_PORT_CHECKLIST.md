@@ -1,8 +1,14 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~182 classes ported, ~82 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~186 classes ported, ~78 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — terraforming slice 6a: Terraform Monitor.** All 4 cells green. Added
+> `machine/{TerraformMonitorBlock, TerraformMonitorBlockEntity}` + `menu/TerraformMonitorMenu` +
+> `client/TerraformMonitorScreen` (pure readout, no inventory; reads `TerraformManager`). Registered + assets +
+> loot table + lang. Terraforming is now slices 1–5 + 6a done; only optional ambient bits remain (6b: Drift,
+> ChunkLoader, GreenxertzAtmosphere).
 
 > **2026-06-21 update — terraforming slice 5: Hydration Module.** All 4 cells green. Added
 > `machine/{HydrationModuleBlock, HydrationModuleBlockEntity}` + `menu/HydrationModuleMenu` +
@@ -226,8 +232,15 @@ checked by a headless build).
     hydration buffer (`acceptHydration`); no energy of its own. Registered block/item/BE/menu + per-loader
     screen + item cap; copied block (3 tex, FACING blockstate, model) + GUI + loot table + `hydration_input`
     tag JSON + 5 lang keys. **Also fixed: the Terraformer block was missing its loot table from 4b (added).**
-  - [ ] **Slice 6 — Terraform Monitor** (block/BE/menu/screen) + `TerraformDrift` + `TerraformChunkLoader` +
-    `GreenxertzAtmosphere`. Risk: **high** (world mutation, chunk-loading, events).
+  - [x] **Slice 6a — Terraform Monitor DONE (4 cells green).** `machine/{TerraformMonitorBlock,
+    TerraformMonitorBlockEntity}` + `menu/TerraformMonitorMenu` + `client/TerraformMonitorScreen`. Pure readout
+    (no inventory — `MenuProvider` + `ContainerData`): finds the nearest Terraformer via `TerraformManager`,
+    shows stage radii / hydration / stall + the local column's stage on a comparator. Registered + per-loader
+    screen + assets + loot table + 9 lang keys. No caps (no inventory).
+  - [ ] **Slice 6b — ambient/secondary (optional).** `TerraformDrift` (idle ground-cover garnish),
+    `TerraformChunkLoader` (the deferred opt-in active force-loader — needs a chunk-force-ticket seam),
+    `GreenxertzAtmosphere` (assess vs the already-ported OxygenManager/field/terraformed-flag — may be superseded).
+    None required for terraforming to function.
 
 ### Structures  (`world/*Feature`, `village/VillageCore*`, station core, `ModFeatures`) — **DONE (4 cells green)**
 - [x] `HamletFeature`, `MegaCityFeature`, `RuinFeature`, `AlienBuild`, `StructureSpacing` + `ModFeatures`
