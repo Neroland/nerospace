@@ -74,6 +74,9 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Index into the current tier's destination list. */
     private static final EntityDataAccessor<Integer> DATA_DEST =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    /** Selected founded-station slot for the Orbital Station destination ({@code -1} = the origin platform). */
+    private static final EntityDataAccessor<Integer> DATA_STATION =
+            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
 
     /** Ticks of ascent before the rider is transported. */
     public static final int LAUNCH_DURATION = 100;
@@ -108,7 +111,8 @@ public class RocketEntity extends Entity implements MenuProvider {
     private final SimpleContainer fuelInput = new SimpleContainer(1);
 
     /**
-     * Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex.
+     * Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex,
+     * [5]=stationSlot (−1 = origin; only meaningful for the Orbital Station destination).
      */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -119,6 +123,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 2 -> getTier().ordinal();
                 case 3 -> canLaunch() ? 1 : 0;
                 case 4 -> getDestinationIndex();
+                case 5 -> getStationSlot();
                 default -> 0;
             };
         }
@@ -130,7 +135,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
     };
 
@@ -187,6 +192,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         builder.define(DATA_TIER, RocketTier.TIER_1.ordinal());
         builder.define(DATA_LAUNCHING, false);
         builder.define(DATA_DEST, 0);
+        builder.define(DATA_STATION, -1);
     }
 
     public int getFuel() {
@@ -257,6 +263,41 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (count > 0) {
             this.entityData.set(DATA_DEST, Math.floorMod(index, count));
         }
+    }
+
+    // --- Orbital-station selection (which founded station the Station destination docks at) ---
+
+    /** Selected founded-station slot, or {@code -1} for the shared origin platform. */
+    public int getStationSlot() {
+        return this.entityData.get(DATA_STATION);
+    }
+
+    /**
+     * Cycles the docking target for the Orbital Station destination: origin → each founded station (in
+     * founding order) → back to origin. Server-side; routed from the menu button.
+     */
+    public void cycleStation() {
+        if (!(level() instanceof ServerLevel server) || isLaunching()) {
+            return;
+        }
+        java.util.List<StationRegistry.StationEntry> all = StationRegistry.get(server.getServer()).all();
+        int current = getStationSlot();
+        int next;
+        if (all.isEmpty()) {
+            next = -1;
+        } else if (current < 0) {
+            next = all.get(0).slot();
+        } else {
+            int idx = -1;
+            for (int i = 0; i < all.size(); i++) {
+                if (all.get(i).slot() == current) {
+                    idx = i;
+                    break;
+                }
+            }
+            next = (idx < 0 || idx + 1 >= all.size()) ? -1 : all.get(idx + 1).slot();
+        }
+        this.entityData.set(DATA_STATION, next);
     }
 
     public boolean isLaunching() {
@@ -434,8 +475,11 @@ public class RocketEntity extends Entity implements MenuProvider {
                 double arrivalZ;
                 Component arrivalMessage;
                 if (targetKey.equals(ModDimensions.STATION_LEVEL)) {
-                    // Origin = the shared public platform (the multi-station founding system is deferred).
-                    BlockPos centre = new BlockPos(0, PLATFORM_Y, 0);
+                    // Dock at the selected founded station, or the shared origin platform when none is chosen.
+                    int slot = getStationSlot();
+                    StationRegistry.StationEntry entry =
+                            slot >= 0 ? StationRegistry.get(server).get(slot) : null;
+                    BlockPos centre = entry != null ? entry.center() : new BlockPos(0, PLATFORM_Y, 0);
                     arrivalMessage = Component.translatable("entity.nerospace.rocket.docked");
                     destination.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
                     if (!destination.getBlockState(centre).is(ModBlocks.STATION_FLOOR.get())) {
@@ -570,6 +614,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     protected void readAdditionalSaveData(ValueInput input) {
         this.entityData.set(DATA_TIER, input.getIntOr("Tier", RocketTier.TIER_1.ordinal()));
         this.entityData.set(DATA_DEST, input.getIntOr("Destination", getTier().defaultDestinationIndex()));
+        this.entityData.set(DATA_STATION, input.getIntOr("StationSlot", -1));
         Fluid fluid = BuiltInRegistries.FLUID.getValue(
                 Identifier.parse(input.getStringOr("FuelFluid", "minecraft:empty")));
         this.fuelTank.setRaw(fluid, input.getIntOr("FuelAmount", 0));
@@ -583,6 +628,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     protected void addAdditionalSaveData(ValueOutput output) {
         output.putInt("Tier", getTier().ordinal());
         output.putInt("Destination", getDestinationIndex());
+        output.putInt("StationSlot", getStationSlot());
         output.putString("FuelFluid", BuiltInRegistries.FLUID.getKey(this.fuelTank.getRawFluid()).toString());
         output.putInt("FuelAmount", this.fuelTank.getRawAmount());
         output.store("FuelInput", ItemStack.OPTIONAL_CODEC, this.fuelInput.getItem(0));

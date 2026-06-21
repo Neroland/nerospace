@@ -36,6 +36,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private static final List<ResourceKey<Level>> ALL_DESTINATIONS = RocketTier.TIER_4.destinations();
 
     private SpaceButton launchButton;
+    private SpaceButton stationButton;
     private final List<SpaceButton> destinationButtons = new ArrayList<>();
 
     public RocketScreen(RocketMenu menu, Inventory playerInventory, Component title) {
@@ -62,6 +63,11 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             x += 36;
         }
 
+        // Station dock cycler: shown only when the Orbital Station is the chosen destination.
+        this.stationButton = new SpaceButton(this.leftPos + 8, this.topPos + 52, 160, 12,
+                Component.empty(), ACCENT, b -> onCycleStation());
+        this.addRenderableWidget(this.stationButton);
+
         this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + 68, 160, 14,
                 Component.translatable("gui.nerospace.rocket.launch"), ACCENT, b -> onLaunch());
         this.addRenderableWidget(this.launchButton);
@@ -82,6 +88,14 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             node.active = i < reachable && reachable > 1;
             node.visible = i < reachable;
             node.setSelected(i == selected);
+        }
+        if (this.stationButton != null) {
+            boolean stationDest = this.menu.isStationDestination();
+            this.stationButton.visible = stationDest;
+            this.stationButton.active = stationDest;
+            if (stationDest) {
+                this.stationButton.setMessage(Component.literal("Dock: " + this.menu.getStationName()));
+            }
         }
         if (this.launchButton != null) {
             this.launchButton.active = this.menu.isLaunchable();
@@ -114,6 +128,10 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
     private void onSelectDestination(int index) {
         sendButton(RocketMenu.SELECT_DEST_BASE + index);
+    }
+
+    private void onCycleStation() {
+        sendButton(RocketMenu.BUTTON_CYCLE_STATION);
     }
 
     private void onLaunch() {

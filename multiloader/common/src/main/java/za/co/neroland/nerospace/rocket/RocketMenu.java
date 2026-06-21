@@ -12,6 +12,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /**
@@ -32,10 +33,12 @@ public class RocketMenu extends AbstractContainerMenu {
 
     public static final int BUTTON_LAUNCH = 0;
     public static final int BUTTON_CYCLE_DEST = 1;
+    /** Cycles which founded station the Orbital Station destination docks at (origin → each station → origin). */
+    public static final int BUTTON_CYCLE_STATION = 2;
     /** Select destination {@code n} via button id {@code SELECT_DEST_BASE + n}. */
     public static final int SELECT_DEST_BASE = 100;
 
-    private static final int DATA_COUNT = 5;
+    private static final int DATA_COUNT = 6;
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
@@ -78,6 +81,10 @@ public class RocketMenu extends AbstractContainerMenu {
         }
         if (id == BUTTON_CYCLE_DEST) {
             current.cycleDestination();
+            return true;
+        }
+        if (id == BUTTON_CYCLE_STATION) {
+            current.cycleStation();
             return true;
         }
         if (id >= SELECT_DEST_BASE) {
@@ -165,6 +172,27 @@ public class RocketMenu extends AbstractContainerMenu {
 
     public boolean hasMultipleDestinations() {
         return getTier().destinations().size() > 1;
+    }
+
+    // --- Orbital-station selection (shown only when the Orbital Station is the destination) ----------
+
+    /** Selected founded-station slot, or {@code -1} for the shared origin platform. */
+    public int getStationSlot() {
+        return this.data.get(5);
+    }
+
+    /** Whether the currently selected destination is the Orbital Station dimension. */
+    public boolean isStationDestination() {
+        return ModDimensions.STATION_LEVEL.equals(getTier().destination(getDestinationIndex()));
+    }
+
+    /**
+     * Display label for the selected docking target. The custom charter name lives server-side (it can't
+     * ride the int-only {@link ContainerData}), so the client shows the stable founding-order label.
+     */
+    public String getStationName() {
+        int slot = getStationSlot();
+        return slot < 0 ? "Origin Platform" : "Station " + (slot + 1);
     }
 
     /** Fuel-intake slot: only rocket fuel buckets/canisters may be placed. */

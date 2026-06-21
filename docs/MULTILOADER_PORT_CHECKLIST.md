@@ -28,7 +28,8 @@ build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 > **decoupling founding from the deferred rocket FOUND row.** Registered block (no block item / loot table) +
 > BE + charter item; copied assets + lang; repointed the Star-Guide step + advancement icons to the now-real
 > `station_charter` item. **All 42 advancements now track real completion.** Break the Core to unregister +
-> reclaim the (named) charter. Deferred (slice 2): the rocket's per-station selection/return rows.
+> reclaim the (named) charter. **Slice 2 DONE:** the rocket's per-station selection — the in-rocket UI cycles the
+> Orbital Station destination between the origin platform and each founded station, and the rocket docks at the chosen one.
 
 > **2026-06-21 update — Star Guide slice 2d (terraform advancements code-granted).** All 4 cells compile
 > green. `progression/StarGuideGrants` awards `guide/terraformed_ground` + `guide/living_world` from the
@@ -255,14 +256,19 @@ checked by a headless build).
 
 ## 🚧 Remaining subsystems
 
-### Rockets & travel  (`rocket/` 11 + client + items) — **core DONE (4 cells green); station-founding deferred**
+### Rockets & travel  (`rocket/` 11 + client + items) — **DONE (4 cells green); item-cap proxy deferred**
 - [x] `RocketTier`, `Destinations` (ported; `Tuning` values inlined as identity-multiplier base values).
 - [~] `RocketEntity` — rebuilt on the cross-loader `FluidTank` + a plain `SimpleContainer(1)` intake +
-  vanilla `ServerPlayer.teleportTo`. **Deferred:** the NeoForge-transfer entity item-capability
-  **automation proxy** (pipe/hopper → docked rocket) and the multi-station selection. Risk: travel/teleport
-  unverifiable headlessly — compile-verified only.
-- [x] `RocketItem` ×4 tiers, `RocketMenu` + `RocketScreen` (destination selector + fuel gauge). Menu is
-  **non-extended** (no loader-divergent extended-menu API); the station/FOUND rows are deferred.
+  vanilla `ServerPlayer.teleportTo`. **Per-station selection DONE:** `DATA_STATION` synced slot (−1 = origin),
+  `cycleStation()` cycles origin → each founded station (founding order) → origin via `StationRegistry`, and
+  `completeLaunch()` docks the rider at the selected station's `center()` (else the origin platform); the slot
+  persists in `addAdditionalSaveData` (`StationSlot`). **Deferred:** the NeoForge-transfer entity item-capability
+  **automation proxy** (pipe/hopper → docked rocket). Risk: travel/teleport unverifiable headlessly — compile-verified only.
+- [x] `RocketItem` ×4 tiers, `RocketMenu` + `RocketScreen`. Menu is **non-extended** (no loader-divergent
+  extended-menu API); buttons route via `clickMenuButton`. **Station selection DONE:** `BUTTON_CYCLE_STATION`
+  + a synced `[5]=stationSlot` data value + a `RocketScreen` "Dock:" cycler shown only when the Orbital Station
+  is the chosen destination (label = stable founding-order "Station N"/"Origin Platform"; the custom charter
+  name stays server-side since `ContainerData` is int-only). The standalone FOUND row stays dropped — founding is charter-driven.
 - [x] `RocketModel` (+ `RocketT2/T3/T4Model`), `RocketRenderer` (bakes each tier layer directly — no
   model-layer registry), `RocketRenderState`; entity + item textures copied.
 - [x] Launch pad / gantry: `RocketLaunchPadBlock`, `LaunchGantryBlock`, `LaunchPadMultiblock` (multiblock gating).
@@ -270,7 +276,7 @@ checked by a headless build).
   POPIA-clean), and a new `StationCharterItem` — right-click the charter to found a station (slot + 7×7 pad +
   bound Core in the void station dim) and travel there; breaking the Core unregisters + pops the named charter;
   `guide/station_charter` is code-granted on founding (routes around `ModCriteria`). Founding is **charter-driven**
-  rather than via the rocket FOUND row (the rocket's per-station selection/return rows remain deferred).
+  rather than via the rocket FOUND row; the rocket's **per-station selection is now DONE** (see `RocketEntity`/`RocketMenu` above).
 
 ### Quarry  (`machine/quarry/` 11 + client) — **DONE (4 cells green); modules + BER deferred**
 - [x] Area miner ported: `QuarryControllerBlock`(+BE) + `QuarryMenu`/`QuarryScreen`, `QuarryFrameBlock`,
