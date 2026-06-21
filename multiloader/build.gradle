@@ -12,6 +12,12 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    // Generate static Eclipse project files (.project/.classpath/.settings) in every module via
+    // `./gradlew eclipse`. VSCode's Java extension reads these directly and resolves the full classpath,
+    // which sidesteps the flaky live Buildship/Loom Gradle import (the cause of the "cannot find
+    // java.lang.Object" / "not a valid java project" cascade). Fabric already applied this in its own
+    // script; applying here too is idempotent and adds it to common + neoforge.
+    apply plugin: 'eclipse'
 
     java {
         toolchain.languageVersion = JavaLanguageVersion.of(25)
