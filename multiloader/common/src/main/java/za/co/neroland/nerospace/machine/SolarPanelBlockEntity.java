@@ -68,9 +68,29 @@ public class SolarPanelBlockEntity extends BlockEntity {
         return this.anchorPos.equals(this.worldPosition);
     }
 
-    /** Exposed to the energy capability on every face (extract-only pool). */
+    /** Point a filler cell at its anchor (set during multiblock placement). */
+    public void setAnchor(BlockPos anchor) {
+        this.anchorPos = anchor;
+        setChanged();
+    }
+
+    /** The anchor's BE (this one if it is the anchor), or {@code null} if the anchor is gone. */
+    @Nullable
+    private SolarPanelBlockEntity anchorEntity() {
+        if (isAnchor()) {
+            return this;
+        }
+        return this.level != null && this.level.getBlockEntity(this.anchorPos) instanceof SolarPanelBlockEntity a
+                ? a : null;
+    }
+
+    /**
+     * Exposed to the energy capability on every face. Filler cells forward to the anchor's buffer, so the
+     * whole multiblock reads as one extract-only pool from any side.
+     */
     public NerospaceEnergyStorage getEnergy() {
-        return this.energy;
+        SolarPanelBlockEntity anchor = anchorEntity();
+        return anchor != null ? anchor.energy : this.energy;
     }
 
     /** The raw buffer — used by {@link SolarArray} to balance the pool. */
@@ -131,6 +151,11 @@ public class SolarPanelBlockEntity extends BlockEntity {
      * daylight and ramps toward ~11 at night — and rises during rain/thunder, so weather is already
      * folded in (no separate multiplier needed).</p>
      */
+    /** True in the mod's airless dimensions (permanent sun, no weather) — drives the solar 2× bonus. */
+    public static boolean isAirless(Level level) {
+        return AIRLESS.contains(level.dimension());
+    }
+
     private static float solarFactor(ServerLevel level, BlockPos pos) {
         if (AIRLESS.contains(level.dimension())) {
             return 2.0F; // permanent sun in orbit / on an airless moon, no weather — the 2x bonus

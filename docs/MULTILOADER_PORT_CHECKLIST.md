@@ -489,7 +489,7 @@ checked by a headless build).
   speed / energy / Silk-Touch / Fortune multipliers now drive the dig (the quarry's earlier `×1.0`
   deferral is resolved). Assets + 4 lang keys copied.
 
-### Solar — tiers/array/BER  (`machine/Solar*`) — **slice 1 DONE (4 cells green); multiblock + BER deferred**
+### Solar — tiers/array/BER  (`machine/Solar*` + `client/SolarPanel*`) — **DONE (4 cells green)**
 
 + [x] **Tiers + array pooling DONE.** `SolarTier` (T1/T2/T3, config-scaled FE/buffer via `NerospaceConfig`)
   + `SolarArray` (flood-fill same-tier pooling, rebalanced each tick so a pipe on ANY panel drains the
@@ -500,8 +500,15 @@ checked by a headless build).
   no per-loader change. Daylight uses vanilla `getSkyDarken()` (the NeoForge dimension clock /
   `getDayTime()` / `LevelData.getDayTime()` aren't on the de-obf classpath); airless dims get the 2× sun
   bonus via `ModDimensions` keys. Assets: tier textures copied from root + hand-authored block/item/loot JSON; 2 lang keys.
-+ [~] **Deferred (slice 2):** the N×N multiblock footprint (every tier is 1×1 for now — `SolarTier.footprint`
-  is carried but unused for placement) and the tilting sun-tracking deck renderer (the BER seam is ready).
++ [x] **Slice 2 DONE — multiblock + sun-tracking BER.** `SolarPanelBlock` gained the `ANCHOR` property +
+  N×N placement/teardown (T2 2×2, T3 3×3 — clicked min-corner is the anchor, fillers forward their energy
+  to it via `SolarPanelBlockEntity.getEnergy()` → `anchorEntity()`); blockstates carry `anchor=true|false`.
+  `client/SolarPanelRenderer` + `SolarPanelRenderState` draw the tilting sun-tracking deck (one big deck per
+  multiblock, on the anchor) via the BER seam — ported from the root's submission-model geometry
+  (`submitCustomGeometry` + `RenderTypes.entityCutout` + raw `VertexConsumer`), **compiles on both 26.1.2 and
+  26.2**. Cross-loader adaptations: deck angle from vanilla `getGameTime()` (no NeoForge dimension clock),
+  airless 2× via `SolarPanelBlockEntity.isAirless`. Dropped (minor): the per-face connector stubs (needed
+  client-side energy-cap queries). The solar subsystem is now feature-complete.
 
 ### Creative storage variants  (`storage/Creative*`) — **DONE (4 cells green)**
 

@@ -27,5 +27,7 @@ public final class ClientBlockEntityRenderers {
     public static void registerAll(Sink sink) {
         // Star Guide pedestal: the floating, spinning next-step hologram above a loaded pedestal.
         sink.register(ModBlockEntities.STAR_GUIDE.get(), context -> new StarGuideHologramRenderer());
+        // Solar panels: the sun-tracking deck above each tier's housing (one big deck per multiblock).
+        sink.register(ModBlockEntities.SOLAR_PANEL.get(), context -> new SolarPanelRenderer());
     }
 }

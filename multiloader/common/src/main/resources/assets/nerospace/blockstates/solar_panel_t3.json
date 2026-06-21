@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "anchor=true": {
+      "model": "nerospace:block/solar_panel_t3"
+    },
+    "anchor=false": {
       "model": "nerospace:block/solar_panel_t3"
     }
   }
