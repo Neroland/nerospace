@@ -1,8 +1,15 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~169 classes ported, ~95 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~172 classes ported, ~92 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — terraforming slice 3 (conversion engine).** All 4 cells green. Added
+> `machine/{TerraformConversion (335ln staged converter), TerraformResources}` + `world/TerraformFauna`;
+> stage bookkeeping rewired from `chunk.getData(ModAttachments…)` onto the slice-1 `Services.PLATFORM` chunk
+> seam. Worldgen APIs (TreeFeatures/ConfiguredFeature.place/PalettedContainer/EntityType.spawn) resolve on
+> common. Next = slice 4: Terraformer machine (block/BE 584ln/menu/screen) + TerraformManager (SavedData) +
+> chunk-load catch-up hook — the slice that makes terraforming actually run.
 
 > **2026-06-21 update — terraforming slice 2 (biomes + tags data).** All 4 cells green. Added `world/ModBiomes`
 > (4 terraformed biome ResourceKey constants) + copied the 4 terraformed biome JSON + 2 terraform tag JSON.
@@ -173,8 +180,13 @@ checked by a headless build).
     terraformed biome JSON (`terraformed`/`_meadow`/`_savanna`/`_tundra`, feature-free / runtime-written) +
     copied the 2 terraform block-tag JSON (`TERRAFORM_TO_GRASS`/`_DIRT` — TagKey constants already in `ModTags`).
     All 4 cells green; JSON python-validated. (Inert until slice 3 consumes them.)
-  - [ ] **Slice 3 — conversion engine.** `TerraformConversion` (rewrite stage bookkeeping onto the seam, not
-    `chunk.getData(ModAttachments…)`), `TerraformResources`, `TerraformFauna`. Inline terraform config keys.
+  - [x] **Slice 3 — conversion engine.** `machine/TerraformConversion` (staged column conversion: stage 1
+    Rooted = terrain→grass/dirt via `TERRAFORM_TO_GRASS/DIRT` tags + breathable flag + `TERRAFORMED` biome +
+    plants/ore; stage 2 Hydrated = basin water fill; stage 3 Living = mature biome + trees + herds — stage
+    bookkeeping rewired onto the `Services.PLATFORM` chunk seam), `machine/TerraformResources` (inlined ore
+    list), `world/TerraformFauna` (inlined herd config). Worldgen APIs (`TreeFeatures`, `ConfiguredFeature.place`,
+    `PalettedContainer` biome write, `EntityType.spawn`) all resolve on common. ~7 config/tuning keys inlined.
+    All 4 cells green. (Inert until slice 4's machine + manager drive it.)
   - [ ] **Slice 4 — Terraformer machine.** `TerraformerBlock`(+BE 584ln)+menu+screen + `TerraformManager`
     (SavedData; 4-arg `SavedDataType`) + chunk-load catch-up hook (per-loader) + biome-sync packet.
   - [ ] **Slice 5 — Hydration Module** (block/BE/menu/screen) + stage-2 wiring.
