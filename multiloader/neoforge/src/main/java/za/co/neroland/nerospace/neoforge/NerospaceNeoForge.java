@@ -28,6 +28,7 @@ import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
 import za.co.neroland.nerospace.world.OxygenManager;
+import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
 
 /**
@@ -56,10 +57,11 @@ public final class NerospaceNeoForge {
                 OxygenManager.tick(serverPlayer);
             }
         });
-        // Natural meteor showers + oxygen-field diffusion: tick the per-level drivers once per server tick.
+        // Natural meteor showers + oxygen-field diffusion + terraform drift: tick the per-level drivers once per server tick.
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
             MeteorEvents.tick(event.getServer());
             OxygenFieldEvents.tick(event.getServer());
+            TerraformDrift.tick(event.getServer());
         });
         // Terraform catch-up: convert any in-range columns on chunks that load after the frontier passed.
         NeoForge.EVENT_BUS.addListener((ChunkEvent.Load event) -> {

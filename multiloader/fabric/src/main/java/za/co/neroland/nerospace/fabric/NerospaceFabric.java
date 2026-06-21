@@ -28,6 +28,7 @@ import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.meteor.MeteorEvents;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.world.OxygenFieldEvents;
+import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
@@ -88,6 +89,7 @@ public final class NerospaceFabric implements ModInitializer {
             server.getPlayerList().getPlayers().forEach(OxygenManager::tick);
             MeteorEvents.tick(server);
             OxygenFieldEvents.tick(server);
+            TerraformDrift.tick(server);
         });
         // Terraform catch-up: convert any in-range columns on chunks that load after the frontier passed.
         // (Fabric's Load SAM passes a third "newly generated" flag, which we don't need.)

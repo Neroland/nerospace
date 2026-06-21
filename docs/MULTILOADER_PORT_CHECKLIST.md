@@ -1,8 +1,14 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~186 classes ported, ~78 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~187 classes ported, ~77 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — terraforming slice 6b: TerraformDrift (ambient cosmetic).** All 4 cells green.
+> `world/TerraformDrift` ticked from the shared server hook. **Terraforming is now essentially complete**
+> (slices 1–5 + 6a + drift); only the opt-in force-loader remains (off by default). Note: `GreenxertzAtmosphere`
+> is the root's oxygen-survival class, already superseded by the ported `OxygenManager` — reclassified out of
+> terraforming; its hazard-shield + airlock-refill extras are a separate optional oxygen enhancement.
 
 > **2026-06-21 update — terraforming slice 6a: Terraform Monitor.** All 4 cells green. Added
 > `machine/{TerraformMonitorBlock, TerraformMonitorBlockEntity}` + `menu/TerraformMonitorMenu` +
@@ -237,10 +243,14 @@ checked by a headless build).
     (no inventory — `MenuProvider` + `ContainerData`): finds the nearest Terraformer via `TerraformManager`,
     shows stage radii / hydration / stall + the local column's stage on a comparator. Registered + per-loader
     screen + assets + loot table + 9 lang keys. No caps (no inventory).
-  - [ ] **Slice 6b — ambient/secondary (optional).** `TerraformDrift` (idle ground-cover garnish),
-    `TerraformChunkLoader` (the deferred opt-in active force-loader — needs a chunk-force-ticket seam),
-    `GreenxertzAtmosphere` (assess vs the already-ported OxygenManager/field/terraformed-flag — may be superseded).
-    None required for terraforming to function.
+  - [x] **Slice 6b — `TerraformDrift` DONE (4 cells green).** `world/TerraformDrift` — idle ground-cover
+    garnish on settled terraformed land, near players, on a per-second budget; cross-loader `tick(MinecraftServer)`
+    wired into both server-tick hooks (alongside meteor + oxygen-field). Config inlined.
+  - [ ] **Remaining (optional, low value):** `TerraformChunkLoader` (the deferred opt-in active force-loader —
+    needs a chunk-force-ticket seam; off by default so the chunk-load catch-up covers it).
+    `world/GreenxertzAtmosphere` is **NOT terraforming** — it's the root's full oxygen-survival class, already
+    superseded by the ported `OxygenManager` + diffusion field + terraformed-flag. Its only unported extras
+    (hazard shields heat/cold, gas-tank airlock refill) are a separate **oxygen enhancement**, tracked below.
 
 ### Structures  (`world/*Feature`, `village/VillageCore*`, station core, `ModFeatures`) — **DONE (4 cells green)**
 - [x] `HamletFeature`, `MegaCityFeature`, `RuinFeature`, `AlienBuild`, `StructureSpacing` + `ModFeatures`
