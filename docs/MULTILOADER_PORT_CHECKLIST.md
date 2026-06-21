@@ -1,8 +1,15 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~190 classes ported, ~74 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~194 classes ported, ~70 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — telemetry (Sentry) ported.** All 4 cells green; Sentry bundled per-loader (NeoForge
+> jarJar + Fabric include, both tasks green). `telemetry/{NerospaceTelemetry, SentryLogAppender}` +
+> `config/NerospaceConfig` (opt-out toggle, **default ON** per user decision) + `IPlatformHelper.getConfigDir/
+> getModVersion` seam. PII scrubbing + nerospace-only filter + de-dup/cap intact; production-gated (off in dev).
+> ⚠️ Runtime-unverified (dev-gated + mount lag) — confirm on a shipped jar. Closes the last pre-existing pending
+> task.
 
 > **2026-06-21 update — oxygen field client visuals.** All 4 cells green. Added `network/OxygenFieldSyncPayload`
 > + `client/{ClientOxygenField, ClientOxygenVisuals}`; the field now syncs to nearby clients and renders as
@@ -394,17 +401,21 @@ checked by a headless build).
 
 ---
 
-## 📡 Sentry / telemetry  (`telemetry/` 3 + `sentry_test` block) — **POPIA/GDPR-sensitive**
-- [ ] `NerospaceTelemetry` — the Sentry client: captures Nerospace exceptions/crashes, with **PII
-  scrubbing, de-dup, rate-limiting** and an active/opt-in gate.
-- [ ] `SentryLogAppender` — Log4j2 appender that selects ERROR/FATAL events touching Nerospace code.
-- [ ] `SentryTestBlock` — a debug block that forces a captured error.
-
-**Compliance gate (per project preference — POPIA + GDPR):** before porting, confirm telemetry is
-**opt-in** (off by default), transmits **no personal data** (scrub usernames, UUIDs, IPs, file paths,
-world names), documents what's collected + retention, and offers a clear off switch. Verify the Sentry
-DSN/endpoint and data-processing terms meet POPIA (SA) + GDPR (EU). Re-confirm the scrubbing covers
-log paths like `C:\Users\<name>\...`. Do **not** port as-is until this is signed off.
+## 📡 Sentry / telemetry  (`telemetry/`) — **POPIA/GDPR-sensitive** — DONE (4 cells green)
+- [x] `telemetry/NerospaceTelemetry` — the Sentry client: captures Nerospace exceptions/crashes, with
+  **PII scrubbing** (no IP/identity/hostname; OS-account names scrubbed from file paths via the `USER_PATH`
+  regex incl. `C:\Users\<name>\...`), **nerospace-only `beforeSend` filter**, **de-dup + 10/session cap**.
+  Parameterised off `Services.PLATFORM` (mod version, loader name, dist) instead of FML.
+- [x] `telemetry/SentryLogAppender` — Log4j2 appender selecting ERROR/FATAL events touching Nerospace code.
+- [x] `config/NerospaceConfig` — minimal properties config (`config/nerospace.properties`); **`telemetryEnabled`
+  default ON, opt-out** (user decision 2026-06-21). Config-dir via new `IPlatformHelper.getConfigDir()` seam.
+- [x] **Sentry SDK bundled per-loader** — common `compileOnly`, NeoForge `jarJar`, Fabric Loom `include`
+  (both bundling tasks ran green). `NerospaceTelemetry.init()` called at each loader's bootstrap; **only
+  initialises in a production (non-dev) environment**.
+- [ ] **Deferred**: `SentryTestBlock` (debug block) — minor dev tool.
+- ⚠️ **Runtime-verify on a shipped build**: the 4-cell compile + the jarJar/include tasks are green, but
+  Sentry initialisation, the nerospace-only filter, and path scrubbing have NOT been runtime-tested here
+  (dev-gated + sandbox mount lag). Confirm on a production jar before relying on it. DSN = root's EU ingest.
 
 ---
 

@@ -26,6 +26,12 @@ public interface IPlatformHelper {
     /** True on the physical client (renderers, screens, HUD available). */
     boolean isClient();
 
+    /** The loader config directory (NeoForge {@code FMLPaths.CONFIGDIR}, Fabric {@code getConfigDir}). */
+    java.nio.file.Path getConfigDir();
+
+    /** This mod's version string (for telemetry release tags), or "unknown" if unavailable. */
+    String getModVersion();
+
     // --- Per-player oxygen (data-attachment seam) ---------------------------
     // NeoForge backs this with an AttachmentType registered via DeferredRegister; Fabric with the
     // data-attachment API. The value defaults to {@code OxygenManager.OXYGEN_MAX} and persists.

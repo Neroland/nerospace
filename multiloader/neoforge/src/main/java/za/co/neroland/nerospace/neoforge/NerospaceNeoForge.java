@@ -22,6 +22,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.meteor.MeteorEvents;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.platform.NeoForgeFluidFactory;
 import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
@@ -42,6 +43,8 @@ public final class NerospaceNeoForge {
     public NerospaceNeoForge(IEventBus modEventBus, ModContainer modContainer) {
         NerospaceCommon.LOGGER.info("[Nerospace] NeoForge bootstrap");
         NerospaceCommon.init();
+        // Anonymous, Nerospace-only crash reporting (opt-out via config/nerospace.properties; off in dev).
+        NerospaceTelemetry.init();
         NeoForgeFluidFactory.registerFluidTypes(modEventBus);
         NeoForgeRegistrationFactory.registerAll(modEventBus);
         NeoForgeCapabilities.register(modEventBus);

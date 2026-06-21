@@ -2,10 +2,12 @@ package za.co.neroland.nerospace.platform;
 
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.api.distmarker.Dist;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.neoforge.NeoForgeAttachments;
 
 /**
@@ -34,6 +36,18 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
     public boolean isClient() {
         return FMLEnvironment.getDist() == Dist.CLIENT;
+    }
+
+    @Override
+    public java.nio.file.Path getConfigDir() {
+        return FMLPaths.CONFIGDIR.get();
+    }
+
+    @Override
+    public String getModVersion() {
+        return ModList.get().getModContainerById(NerospaceCommon.MOD_ID)
+                .map(c -> c.getModInfo().getVersion().toString())
+                .orElse("unknown");
     }
 
     @Override

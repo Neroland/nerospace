@@ -20,6 +20,11 @@ dependencies {
     if (fabricApi != null) {
         implementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
     }
+
+    // Sentry SDK (telemetry/NerospaceTelemetry): compile against it + embed it as a jar-in-jar so the
+    // shipped Fabric jar carries it. Counterpart to the NeoForge JarJar bundling.
+    implementation 'io.sentry:sentry:8.42.0'
+    include 'io.sentry:sentry:8.42.0'
 }
 
 // Expand fabric.mod.json from src/main/templates into a generated resources dir.

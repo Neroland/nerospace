@@ -18,3 +18,11 @@ neoForge {
         accessTransformers.from(at.absolutePath)
     }
 }
+
+dependencies {
+    // Sentry error-reporting SDK (telemetry/NerospaceTelemetry). The telemetry core lives in common, so
+    // it compiles against the API here; each loader BUNDLES the jar (NeoForge JarJar / Fabric include).
+    // The core 'sentry' artifact is dependency-free. Privacy: opt-out config + nerospace-only filter +
+    // PII scrubbing (see PRIVACY.md).
+    compileOnly 'io.sentry:sentry:8.42.0'
+}

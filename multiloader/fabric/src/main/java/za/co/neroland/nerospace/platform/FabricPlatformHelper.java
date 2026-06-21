@@ -5,6 +5,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fabric.FabricAttachments;
 
 /**
@@ -31,6 +32,18 @@ public final class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public boolean isClient() {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+    }
+
+    @Override
+    public java.nio.file.Path getConfigDir() {
+        return FabricLoader.getInstance().getConfigDir();
+    }
+
+    @Override
+    public String getModVersion() {
+        return FabricLoader.getInstance().getModContainer(NerospaceCommon.MOD_ID)
+                .map(c -> c.getMetadata().getVersion().getFriendlyString())
+                .orElse("unknown");
     }
 
     @Override

@@ -32,6 +32,7 @@ import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
@@ -64,6 +65,8 @@ public final class NerospaceFabric implements ModInitializer {
     public void onInitialize() {
         NerospaceCommon.LOGGER.info("[Nerospace] Fabric bootstrap");
         NerospaceCommon.init();
+        // Anonymous, Nerospace-only crash reporting (opt-out via config/nerospace.properties; off in dev).
+        NerospaceTelemetry.init();
 
         // Creative-tab contents are defined once by the cross-loader ModCreativeTab (a dedicated
         // Nerospace tab), so no per-loader creative-tab injection is needed here.
