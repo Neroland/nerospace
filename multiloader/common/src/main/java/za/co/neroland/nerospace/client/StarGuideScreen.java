@@ -101,6 +101,11 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
 
     private void selectStep(int step) {
         this.selectedStep = step;
+        // Report "seen" so the completed-pulse stops (server writes the STAR_GUIDE_SEEN attachment).
+        if (this.minecraft != null && this.minecraft.gameMode != null) {
+            this.minecraft.gameMode.handleInventoryButtonClick(
+                    this.menu.containerId, this.selectedChapter * 16 + step);
+        }
     }
 
     @Override
@@ -128,11 +133,14 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
             }
         }
 
-        // Step nodes: completed steps lit, with a completion pip.
+        // Step nodes: completed steps lit (steady once seen, pulsing until clicked once).
+        long now = System.currentTimeMillis();
+        boolean pulseOn = (now / 400L) % 2L == 0L;
         for (int i = 0; i < this.stepButtons.size(); i++) {
             boolean done = this.menu.isStepComplete(this.selectedChapter, i);
+            boolean seen = this.menu.isStepSeen(this.selectedChapter, i);
             SpaceButton node = this.stepButtons.get(i);
-            node.setSelected(done);
+            node.setSelected(done && (seen || pulseOn));
             if (done) {
                 g.fill(node.getX() + node.getWidth() - 5, node.getY() + 2, // completion pip
                         node.getX() + node.getWidth() - 2, node.getY() + 5, DONE);

@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.neoforge;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.mojang.serialization.Codec;
@@ -41,6 +42,14 @@ public final class NeoForgeAttachments {
             "terraform_stage",
             () -> AttachmentType.builder(() -> 0)
                     .serialize(Codec.INT.fieldOf("terraform_stage"))
+                    .build());
+
+    /** Per-player: one Star Guide "seen" bitmask per chapter (bit i = step i acknowledged). */
+    public static final Supplier<AttachmentType<List<Integer>>> STAR_GUIDE_SEEN = ATTACHMENT_TYPES.register(
+            "star_guide_seen",
+            () -> AttachmentType.<List<Integer>>builder(() -> List.of())
+                    .serialize(Codec.INT.listOf().fieldOf("star_guide_seen"))
+                    .copyOnDeath()
                     .build());
 
     private NeoForgeAttachments() {

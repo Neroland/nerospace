@@ -79,4 +79,14 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
     public void setTerraformStage(LevelChunk chunk, int value) {
         chunk.setData(NeoForgeAttachments.TERRAFORM_STAGE.get(), value);
     }
+
+    @Override
+    public java.util.List<Integer> getStarGuideSeen(Player player) {
+        return player.getData(NeoForgeAttachments.STAR_GUIDE_SEEN.get());
+    }
+
+    @Override
+    public void setStarGuideSeen(Player player, java.util.List<Integer> value) {
+        player.setData(NeoForgeAttachments.STAR_GUIDE_SEEN.get(), value);
+    }
 }

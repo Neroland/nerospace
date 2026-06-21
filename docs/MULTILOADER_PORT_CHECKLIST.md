@@ -4,6 +4,13 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~212 classes ported, ~52 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-21 update — Star Guide slice 2c (seen-pulse; the guide is now feature-complete).** All 4 cells
+> compile green. Added a `List<Integer>` `STAR_GUIDE_SEEN` player attachment via the existing seam +
+> restored the menu seen-masks + screen pulse (completed-but-unseen steps pulse until clicked). 26.x gotcha:
+> NeoForge `AttachmentType.builder` default must be a lambda (`List::of` is ambiguous). Star Guide = browse +
+> live progress + hologram + seen-pulse; only converting the 3 `impossible` advancements remains (blocked on
+> ModCriteria).
+
 > **2026-06-21 update — Star Guide slice 2b (hologram BER + reusable BER seam).** All 4 cells compile green
 > (26.1.2 + 26.2). Added the first cross-loader block-entity-renderer seam (`ClientBlockEntityRenderers.Sink`)
 > + the Star Guide pedestal hologram renderer (spinning next-step icon). **26.x gotcha: `BlockEntityRendererProvider`
@@ -385,10 +392,16 @@ checked by a headless build).
   type params `<T, S extends BlockEntityRenderState>`** (probed via build error) — the Sink carries both. The
   seam now unblocks future BERs (solar sun-tracking, quarry drill, etc.). (Fabric `BlockEntityRendererRegistry`
   is soft-deprecated — works; a later switch to vanilla `BlockEntityRenderers.register` is optional.)
-- [ ] **Slice 2c (deferred, minor).** The "seen-pulse" (needs a `STAR_GUIDE_SEEN` player attachment seam);
-  converting the 3 `impossible` advancements back to real completion (needs `ModCriteria` via reflection
-  /version-split, or code-granting from the terraform/station-founding events). The station_charter / new_life
-  guide-step icons resolve once STATION_CHARTER / LOPER_HAUNCH are ported.
+- [x] **Slice 2c — seen-pulse DONE (4 cells green).** Added a `List<Integer>` `STAR_GUIDE_SEEN` player
+  attachment through the existing data-attachment seam (`IPlatformHelper.get/setStarGuideSeen` +
+  `NeoForgeAttachments`/`FabricAttachments`, `Codec.INT.listOf()`, copy-on-death). Restored the menu's seen
+  masks (`DATA_COUNT = CHAPTER_COUNT*2`, `clickMenuButton` marks seen via `Services.PLATFORM`) + the screen's
+  completed-but-unseen pulse (clicking a step acknowledges it). **The Star Guide is now feature-complete**
+  (browse + live progress + hologram + seen-pulse). 26.x gotcha: NeoForge `AttachmentType.builder(...)` is
+  overloaded, so the default must be a lambda `() -> List.of()` (not the `List::of` method ref — ambiguous).
+- [ ] **Slice 2d (deferred, blocked).** Converting the 3 `impossible` advancements back to real completion
+  (needs `ModCriteria` via reflection/version-split, or code-granting from terraform/station events); the
+  station_charter / new_life guide-step icons resolve once STATION_CHARTER / LOPER_HAUNCH are ported.
 
 ### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slice A DONE (4 cells green)**
 - [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla

@@ -1,5 +1,7 @@
 package za.co.neroland.nerospace.fabric;
 
+import java.util.List;
+
 import com.mojang.serialization.Codec;
 
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -33,6 +35,13 @@ public final class FabricAttachments {
             .initializer(() -> 0)
             .persistent(Codec.INT)
             .buildAndRegister(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "terraform_stage"));
+
+    /** Per-player: one Star Guide "seen" bitmask per chapter (bit i = step i acknowledged). */
+    public static final AttachmentType<List<Integer>> STAR_GUIDE_SEEN = AttachmentRegistry.<List<Integer>>builder()
+            .initializer(List::of)
+            .persistent(Codec.INT.listOf())
+            .copyOnDeath()
+            .buildAndRegister(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "star_guide_seen"));
 
     private FabricAttachments() {
     }

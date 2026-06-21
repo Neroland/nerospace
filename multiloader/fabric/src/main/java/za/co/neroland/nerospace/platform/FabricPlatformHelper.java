@@ -75,4 +75,14 @@ public final class FabricPlatformHelper implements IPlatformHelper {
     public void setTerraformStage(LevelChunk chunk, int value) {
         chunk.setAttached(FabricAttachments.TERRAFORM_STAGE, value);
     }
+
+    @Override
+    public java.util.List<Integer> getStarGuideSeen(Player player) {
+        return player.getAttachedOrCreate(FabricAttachments.STAR_GUIDE_SEEN);
+    }
+
+    @Override
+    public void setStarGuideSeen(Player player, java.util.List<Integer> value) {
+        player.setAttached(FabricAttachments.STAR_GUIDE_SEEN, value);
+    }
 }

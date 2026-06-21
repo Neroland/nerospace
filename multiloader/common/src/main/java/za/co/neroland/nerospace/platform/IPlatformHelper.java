@@ -58,4 +58,14 @@ public interface IPlatformHelper {
 
     /** Records the chunk's terraform stage. */
     void setTerraformStage(net.minecraft.world.level.chunk.LevelChunk chunk, int value);
+
+    // --- Per-player Star Guide "seen" masks (data-attachment seam) -----------
+    // One bitmask per chapter (bit i = step i acknowledged). Persists across logout, copies on death;
+    // defaults to an empty list. Backs the Star Guide GUI's completed-but-unseen step pulse.
+
+    /** The player's per-chapter Star Guide "seen" bitmasks (empty list if unset). */
+    java.util.List<Integer> getStarGuideSeen(net.minecraft.world.entity.player.Player player);
+
+    /** Stores the player's per-chapter Star Guide "seen" bitmasks. */
+    void setStarGuideSeen(net.minecraft.world.entity.player.Player player, java.util.List<Integer> value);
 }
