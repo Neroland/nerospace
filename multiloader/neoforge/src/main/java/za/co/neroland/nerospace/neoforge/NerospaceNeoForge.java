@@ -8,6 +8,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.command.NerospaceCommands;
 import za.co.neroland.nerospace.meteor.MeteorEvents;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.platform.NeoForgeFluidFactory;
@@ -68,6 +70,9 @@ public final class NerospaceNeoForge {
             OxygenFieldEvents.tick(event.getServer());
             TerraformDrift.tick(event.getServer());
         });
+        // Creative debug commands (/nerospace gallery) — game-bus command registration.
+        NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) ->
+                NerospaceCommands.register(event.getDispatcher()));
         // Terraform catch-up: convert any in-range columns on chunks that load after the frontier passed.
         NeoForge.EVENT_BUS.addListener((ChunkEvent.Load event) -> {
             if (event.getLevel() instanceof ServerLevel serverLevel && event.getChunk() instanceof LevelChunk chunk) {

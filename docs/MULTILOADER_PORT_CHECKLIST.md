@@ -1,8 +1,14 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~217 classes ported, ~47 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — /nerospace commands ported.** All 4 cells compile green. `command/NerospaceCommands`
+> (the `/nerospace gallery` creative showcase) behind a cross-loader `register(CommandDispatcher)` seam
+> (NeoForge `RegisterCommandsEvent` / Fabric `CommandRegistrationCallback`). Adapted: block iteration via
+> `BuiltInRegistries.BLOCK` namespace filter (no `RegistrationProvider` iteration), single `SOLAR_PANEL`,
+> `ArmorStand` constructor (no `EntityType.ARMOR_STAND` on 26.2), dropped unported `quarry.stageDisplay`.
 
 > **2026-06-21 update — config seam COMPLETE (all 5 multipliers).** All 4 cells compile green. Slices 2–4
 > added `oxygenDrain`/`oxygenCapacity` (→ OxygenManager), `fuelCost` (→ RocketTier.fuelPerLaunch), and
@@ -519,7 +525,13 @@ checked by a headless build).
   serverbound(...)`). Client-safety contract documented in `ModNetwork`.
 
 ### Commands & compat
-- [ ] `command/NerospaceCommands` — `/nerospace` debug/admin commands (vanilla Brigadier; loader event differs).
+- [x] `command/NerospaceCommands` — **DONE (4 cells green).** `/nerospace gallery` [clear] creative showcase
+  builder, behind a cross-loader `register(CommandDispatcher)` seam (NeoForge `RegisterCommandsEvent`, Fabric
+  `CommandRegistrationCallback`). Cross-loader/version adaptations: iterate `BuiltInRegistries.BLOCK` filtered
+  to the mod namespace (the `RegistrationProvider` has no entry iteration); single `SOLAR_PANEL` (tiers
+  unported); spawn the armor stands via the `ArmorStand` constructor (the de-obf `EntityType.ARMOR_STAND`
+  constant isn't on the 26.2 classpath); dropped the unported `quarry.stageDisplay` preview + the Creative
+  Fluid Tank `setSource` (fixed rocket_fuel here).
 - [ ] `compat/jei/*` — recipe-viewer integration. NeoForge = JEI; Fabric would use REI/EMI. Cross-mod, low priority.
 
 ### Config / tuning — **DONE (4 cells green): all 5 multipliers wired, cross-loader seam complete**

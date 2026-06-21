@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.fabric;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.command.NerospaceCommands;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
@@ -98,6 +100,9 @@ public final class NerospaceFabric implements ModInitializer {
             OxygenFieldEvents.tick(server);
             TerraformDrift.tick(server);
         });
+        // Creative debug commands (/nerospace gallery).
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                NerospaceCommands.register(dispatcher));
         // Terraform catch-up: convert any in-range columns on chunks that load after the frontier passed.
         // (Fabric's Load SAM passes a third "newly generated" flag, which we don't need.)
         ServerChunkEvents.CHUNK_LOAD.register((serverLevel, chunk, newlyGenerated) ->
