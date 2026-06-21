@@ -523,10 +523,12 @@ checked by a headless build).
   `energyRateMultiplier` (clamp 0.1×..10×, default 1) + a `scale(base, mult)` helper (min-1 clamp, mirroring
   the root `Tuning` contract); wired it into the Combustion / Passive / Solar generator FE-per-tick. Loads at
   mod init (before ticking). This proves the cross-loader balance-config pattern beyond the telemetry toggle.
-- [ ] **Remaining (incremental).** The root's other four multipliers (`oxygenDrainMultiplier`,
-  `oxygenCapacityMultiplier`, `fuelCostMultiplier`, `machineSpeedMultiplier`) + the base-value constants — wire
-  each into its consumer(s) as a follow-up (kept out of the config file until wired, so every key does
-  something). A full `Tuning` base-value class is optional (the multiloader inlines base values per machine).
+- [x] **Slice 2 — oxygen multipliers.** Added `oxygenDrainMultiplier` + `oxygenCapacityMultiplier` to
+  `NerospaceConfig`; wired into `OxygenManager` (per-check drain + player/suit air capacity, both `scale`-clamped;
+  the attachment default self-corrects on the first tick). **3 of the root's 5 multipliers now wired.**
+- [ ] **Remaining (incremental).** `fuelCostMultiplier` (rocket launch/fuel cost) + `machineSpeedMultiplier`
+  (machine work intervals — inverse-scaled) — wire each into its consumer as a follow-up (kept out of the config
+  file until wired, so every key does something). A full `Tuning` base-value class is optional.
 
 ### Spawn rules
 - [x] `registry/ModSpawnPlacements` — natural-spawn placement rules for the 9 spawnable creatures

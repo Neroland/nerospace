@@ -23,6 +23,8 @@ public final class NerospaceConfig {
     private static final String FILE_NAME = "nerospace.properties";
     private static final String KEY_TELEMETRY = "telemetryEnabled";
     private static final String KEY_ENERGY_RATE = "energyRateMultiplier";
+    private static final String KEY_OXYGEN_DRAIN = "oxygenDrainMultiplier";
+    private static final String KEY_OXYGEN_CAPACITY = "oxygenCapacityMultiplier";
 
     /** Multiplier range (mirrors the root config spec): 0.1× .. 10×. */
     private static final double MULT_MIN = 0.1D;
@@ -32,6 +34,10 @@ public final class NerospaceConfig {
     private static volatile boolean telemetryEnabled = true;
     /** Scales the FE/tick of every generator (combustion, passive, solar). Clamped 0.1×..10×. */
     private static volatile double energyRateMultiplier = 1.0D;
+    /** Scales how fast oxygen drains off a safe zone (bare + suited). Clamped 0.1×..10×. */
+    private static volatile double oxygenDrainMultiplier = 1.0D;
+    /** Scales player + suit air capacity. Clamped 0.1×..10×. */
+    private static volatile double oxygenCapacityMultiplier = 1.0D;
     private static volatile boolean loaded;
 
     private NerospaceConfig() {
@@ -43,6 +49,14 @@ public final class NerospaceConfig {
 
     public static double energyRateMultiplier() {
         return energyRateMultiplier;
+    }
+
+    public static double oxygenDrainMultiplier() {
+        return oxygenDrainMultiplier;
+    }
+
+    public static double oxygenCapacityMultiplier() {
+        return oxygenCapacityMultiplier;
     }
 
     /**
@@ -78,6 +92,10 @@ public final class NerospaceConfig {
                         props.getProperty(KEY_TELEMETRY, Boolean.toString(telemetryEnabled)).trim());
                 energyRateMultiplier = clampMultiplier(parseDouble(
                         props.getProperty(KEY_ENERGY_RATE), energyRateMultiplier));
+                oxygenDrainMultiplier = clampMultiplier(parseDouble(
+                        props.getProperty(KEY_OXYGEN_DRAIN), oxygenDrainMultiplier));
+                oxygenCapacityMultiplier = clampMultiplier(parseDouble(
+                        props.getProperty(KEY_OXYGEN_CAPACITY), oxygenCapacityMultiplier));
             } catch (IOException e) {
                 NerospaceCommon.LOGGER.warn("[Nerospace] Could not read {}; using defaults.", FILE_NAME, e);
             }
@@ -103,6 +121,8 @@ public final class NerospaceConfig {
         Properties props = new Properties();
         props.setProperty(KEY_TELEMETRY, Boolean.toString(telemetryEnabled));
         props.setProperty(KEY_ENERGY_RATE, Double.toString(energyRateMultiplier));
+        props.setProperty(KEY_OXYGEN_DRAIN, Double.toString(oxygenDrainMultiplier));
+        props.setProperty(KEY_OXYGEN_CAPACITY, Double.toString(oxygenCapacityMultiplier));
         try {
             Files.createDirectories(file.getParent());
             try (OutputStream out = Files.newOutputStream(file)) {
@@ -110,7 +130,9 @@ public final class NerospaceConfig {
                         + "crash reports (Sentry, EU servers) — stack trace + mod/MC/loader/OS/Java "
                         + "versions only; no IP, username, UUID, world data or chat; file paths are "
                         + "scrubbed of your account name. Set to false to opt out. See PRIVACY.md. "
-                        + "energyRateMultiplier: scales FE/tick of all generators (0.1..10, default 1).");
+                        + "energyRateMultiplier: scales FE/tick of all generators. oxygenDrainMultiplier: "
+                        + "scales how fast air drains. oxygenCapacityMultiplier: scales air capacity. "
+                        + "All multipliers 0.1..10, default 1.");
             }
         } catch (IOException e) {
             NerospaceCommon.LOGGER.warn("[Nerospace] Could not write {}; using defaults.", FILE_NAME, e);

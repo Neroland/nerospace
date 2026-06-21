@@ -14,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
@@ -73,7 +74,8 @@ public final class OxygenManager {
         }
 
         boolean suited = isFullSuit(player);
-        int max = suited ? OXYGEN_SUIT_MAX : OXYGEN_MAX;
+        int max = NerospaceConfig.scale(suited ? OXYGEN_SUIT_MAX : OXYGEN_MAX,
+                NerospaceConfig.oxygenCapacityMultiplier());
 
         boolean airless = PLANETS.contains(level.dimension())
                 && !player.getAbilities().instabuild
@@ -91,8 +93,8 @@ public final class OxygenManager {
                 oxygen = max;
             } else {
                 // An uncountered dimension hazard (Cindara heat / Glacira cold) multiplies the drain.
-                int drain = (suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK)
-                        * hazardDrainMultiplier(level, player);
+                int drain = NerospaceConfig.scale(suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK,
+                        NerospaceConfig.oxygenDrainMultiplier()) * hazardDrainMultiplier(level, player);
                 oxygen = Math.max(0, oxygen - drain);
                 hazardFeedback(level, player);
             }
