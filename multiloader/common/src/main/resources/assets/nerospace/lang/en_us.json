@@ -50,6 +50,8 @@
   "block.nerospace.rocket_launch_pad.report.t3_not_ready": "Tier 3 needs a Station Wall ring or a Heavy Launch Complex",
   "block.nerospace.rocket_launch_pad.report.t3_ready": "Tier 3 ready: Station Wall ring or Heavy complex present",
   "block.nerospace.solar_panel": "Solar Panel",
+  "block.nerospace.solar_panel_t2": "Solar Panel (Tier 2)",
+  "block.nerospace.solar_panel_t3": "Solar Panel (Tier 3)",
   "block.nerospace.star_guide": "Star Guide",
   "block.nerospace.station_core": "Station Core",
   "block.nerospace.station_core.bound": "Station Core: %s",

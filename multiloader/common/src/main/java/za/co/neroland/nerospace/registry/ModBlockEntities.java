@@ -87,7 +87,8 @@ public final class ModBlockEntities {
 
     public static final RegistryEntry<BlockEntityType<SolarPanelBlockEntity>> SOLAR_PANEL =
             BLOCK_ENTITIES.register("solar_panel",
-                    key -> new BlockEntityType<>(SolarPanelBlockEntity::new, java.util.Set.of(ModBlocks.SOLAR_PANEL.get())));
+                    key -> new BlockEntityType<>(SolarPanelBlockEntity::new, java.util.Set.of(
+                            ModBlocks.SOLAR_PANEL.get(), ModBlocks.SOLAR_PANEL_T2.get(), ModBlocks.SOLAR_PANEL_T3.get())));
 
     public static final RegistryEntry<BlockEntityType<FuelTankBlockEntity>> FUEL_TANK =
             BLOCK_ENTITIES.register("fuel_tank",

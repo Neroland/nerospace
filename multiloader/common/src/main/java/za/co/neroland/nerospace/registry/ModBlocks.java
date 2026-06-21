@@ -230,8 +230,18 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops().lightLevel(s -> 7).sound(SoundType.METAL)));
 
     public static final RegistryEntry<SolarPanelBlock> SOLAR_PANEL = BLOCKS.register("solar_panel",
-            key -> new SolarPanelBlock(BlockBehaviour.Properties.of()
+            key -> new SolarPanelBlock(za.co.neroland.nerospace.machine.SolarTier.TIER_1, BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_BLUE).strength(2.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<SolarPanelBlock> SOLAR_PANEL_T2 = BLOCKS.register("solar_panel_t2",
+            key -> new SolarPanelBlock(za.co.neroland.nerospace.machine.SolarTier.TIER_2, BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_MAGENTA).strength(2.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<SolarPanelBlock> SOLAR_PANEL_T3 = BLOCKS.register("solar_panel_t3",
+            key -> new SolarPanelBlock(za.co.neroland.nerospace.machine.SolarTier.TIER_3, BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.GOLD).strength(3.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     // --- Fuel machines ------------------------------------------------------

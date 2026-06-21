@@ -476,8 +476,18 @@ checked by a headless build).
   speed / energy / Silk-Touch / Fortune multipliers now drive the dig (the quarry's earlier `×1.0`
   deferral is resolved). Assets + 4 lang keys copied.
 
-### Solar — tiers/array/BER  (`solar/` 4; single-tier base **done**)
-- [~] `SolarTier`, `SolarArray` (multi-panel pooling), the root tiered block/BE + sun-tracking BER.
+### Solar — tiers/array/BER  (`machine/Solar*`) — **slice 1 DONE (4 cells green); multiblock + BER deferred**
+- [x] **Tiers + array pooling DONE.** `SolarTier` (T1/T2/T3, config-scaled FE/buffer via `NerospaceConfig`)
+  + `SolarArray` (flood-fill same-tier pooling, rebalanced each tick so a pipe on ANY panel drains the
+  whole run) + tier-aware `SolarPanelBlock` (comparator output) + `SolarPanelBlockEntity` rebuilt on the
+  multiloader `EnergyBuffer` (the NeoForge transfer `SimpleEnergyHandler` isn't ported). `solar_panel`
+  stays Tier 1 (**non-breaking**) and `solar_panel_t2` / `solar_panel_t3` are added; the shared `SOLAR_PANEL`
+  BE type is bound to all three, so the existing per-loader energy cap (`be.getEnergy()`) covers them with
+  no per-loader change. Daylight uses vanilla `getSkyDarken()` (the NeoForge dimension clock /
+  `getDayTime()` / `LevelData.getDayTime()` aren't on the de-obf classpath); airless dims get the 2× sun
+  bonus via `ModDimensions` keys. Assets: tier textures copied from root + hand-authored block/item/loot JSON; 2 lang keys.
+- [~] **Deferred (slice 2):** the N×N multiblock footprint (every tier is 1×1 for now — `SolarTier.footprint`
+  is carried but unused for placement) and the tilting sun-tracking deck renderer (the BER seam is ready).
 
 ### Creative storage variants  (`storage/Creative*`) — **DONE (4 cells green)**
 - [x] `AbstractStorageBlock` (shared base) + `CreativeFluidTank` (endless rocket_fuel), `CreativeGasTank`
