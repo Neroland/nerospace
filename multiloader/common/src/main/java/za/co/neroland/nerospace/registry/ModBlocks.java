@@ -31,6 +31,7 @@ import za.co.neroland.nerospace.meteor.MeteorCoreBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.progression.StarGuideBlock;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
+import za.co.neroland.nerospace.rocket.StationCoreBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
 import za.co.neroland.nerospace.storage.CreativeFluidTankBlock;
@@ -107,6 +108,12 @@ public final class ModBlocks {
             key -> new MeteorCoreBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_BLACK).strength(4.0F, 6.0F)
                     .requiresCorrectToolForDrops().lightLevel(s -> 9).sound(SoundType.AMETHYST)));
+
+    /** The founded-station anchor. Placed only by founding (no block item / loot table); breaking it pops the charter. */
+    public static final RegistryEntry<StationCoreBlock> STATION_CORE = BLOCKS.register("station_core",
+            key -> new StationCoreBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_CYAN).strength(4.0F, 1200.0F)
+                    .requiresCorrectToolForDrops().lightLevel(s -> 10).sound(SoundType.METAL)));
 
     // Block entity — item storage (pilot for the block-entity + capability seam).
     public static final RegistryEntry<ItemStoreBlock> ITEM_STORE = BLOCKS.register("item_store",

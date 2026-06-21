@@ -4,7 +4,7 @@
   "display": {
     "description": "Found your own station with a Station Charter",
     "frame": "goal",
-    "icon": { "id": "nerospace:station_floor" },
+    "icon": { "id": "nerospace:station_charter" },
     "title": "Homestead in Orbit"
   },
   "requirements": [ [ "impossible" ] ],

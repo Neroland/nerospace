@@ -1,8 +1,18 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~213 classes ported, ~51 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~217 classes ported, ~47 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — station founding (charter-driven; closes the last advancement).** All 4 cells green
+> (full `:neoforge:build`+`:fabric:build` on 26.2; compile on 26.1.2). Ported `rocket/{StationRegistry
+> (SavedData, POPIA-clean — no player identity), StationCoreBlock, StationCoreBlockEntity}` + a new
+> `item/StationCharterItem` whose right-click founds a station (allocates a slot, lays the 7×7 pad, binds a
+> Station Core in the `nerospace:station` void dim, travels there) and code-grants `guide/station_charter` —
+> **decoupling founding from the deferred rocket FOUND row.** Registered block (no block item / loot table) +
+> BE + charter item; copied assets + lang; repointed the Star-Guide step + advancement icons to the now-real
+> `station_charter` item. **All 42 advancements now track real completion.** Break the Core to unregister +
+> reclaim the (named) charter. Deferred (slice 2): the rocket's per-station selection/return rows.
 
 > **2026-06-21 update — Star Guide slice 2d (terraform advancements code-granted).** All 4 cells compile
 > green. `progression/StarGuideGrants` awards `guide/terraformed_ground` + `guide/living_world` from the
@@ -240,9 +250,11 @@ checked by a headless build).
 - [x] `RocketModel` (+ `RocketT2/T3/T4Model`), `RocketRenderer` (bakes each tier layer directly — no
   model-layer registry), `RocketRenderState`; entity + item textures copied.
 - [x] Launch pad / gantry: `RocketLaunchPadBlock`, `LaunchGantryBlock`, `LaunchPadMultiblock` (multiblock gating).
-- [ ] `StationCoreBlock`(+BE), `StationRegistry` (multi-station slots), Station Charter, `founded_station`
-  criterion — **deferred**: needs the data-attachment + criteria seams (+ structures). The Orbital Station
-  destination currently docks the rider at the shared origin platform.
+- [x] **Station founding DONE (4 cells green).** `StationCoreBlock`(+BE), `StationRegistry` (SavedData,
+  POPIA-clean), and a new `StationCharterItem` — right-click the charter to found a station (slot + 7×7 pad +
+  bound Core in the void station dim) and travel there; breaking the Core unregisters + pops the named charter;
+  `guide/station_charter` is code-granted on founding (routes around `ModCriteria`). Founding is **charter-driven**
+  rather than via the rocket FOUND row (the rocket's per-station selection/return rows remain deferred).
 
 ### Quarry  (`machine/quarry/` 11 + client) — **DONE (4 cells green); modules + BER deferred**
 - [x] Area miner ported: `QuarryControllerBlock`(+BE) + `QuarryMenu`/`QuarryScreen`, `QuarryFrameBlock`,
@@ -411,9 +423,10 @@ checked by a headless build).
   stands on terraformed / fully-living ground — replicating the standalone mod's `PlayerTrigger` **without**
   `ModCriteria`. **41 of 42 advancements now track real completion.** 26.x: award via
   `getOrStartProgress(holder).getRemainingCriteria()` → `PlayerAdvancements.award(holder, criterion)`.
-- [ ] **Slice 2e (deferred, blocked).** Only `guide/station_charter` stays inert (its founded_station trigger
-  needs the unported station-founding system). The station_charter / new_life guide-step icons resolve once
-  STATION_CHARTER / LOPER_HAUNCH are ported.
+- [x] **Slice 2e — DONE via station founding.** `guide/station_charter` is now code-granted when a station is
+  founded (the charter item), and its Star-Guide step + advancement icons point at the now-real `station_charter`
+  item. **All 42 advancements track real completion.** Only the `new_life` guide-step icon stays substituted
+  (Meadow Loper spawn egg) until `LOPER_HAUNCH` is ported — purely cosmetic.
 
 ### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slice A DONE (4 cells green)**
 - [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla

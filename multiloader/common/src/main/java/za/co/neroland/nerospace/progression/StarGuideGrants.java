@@ -42,7 +42,8 @@ public final class StarGuideGrants {
         }
     }
 
-    private static void grant(ServerPlayer player, String path) {
+    /** Awards an impossible-criterion guide advancement directly (routes around the deferred ModCriteria). */
+    public static void grant(ServerPlayer player, String path) {
         ServerAdvancementManager manager = player.level().getServer().getAdvancements();
         AdvancementHolder holder = manager.get(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path));
         if (holder == null) {

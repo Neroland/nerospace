@@ -76,8 +76,7 @@ public final class StarGuide {
                     step("rocket_launch_pad", () -> ModBlocks.ROCKET_LAUNCH_PAD.get(), "guide/rocket_launch_pad"),
                     step("rocket_tier_1", () -> ModItems.ROCKET_TIER_1.get(), "rocket"),
                     step("station", () -> ModBlocks.STATION_FLOOR.get(), "station"),
-                    // STATION_CHARTER not yet ported — substitute the Station Floor icon.
-                    step("station_charter", () -> ModBlocks.STATION_FLOOR.get(), "guide/station_charter"))),
+                    step("station_charter", () -> ModItems.STATION_CHARTER.get(), "guide/station_charter"))),
             new Chapter("new_worlds", List.of(
                     step("rocket_tier_2", () -> ModItems.ROCKET_TIER_2.get(), "guide/rocket_tier_2"),
                     step("greenxertz", () -> ModItems.NEROSTEEL_INGOT.get(), "greenxertz"),

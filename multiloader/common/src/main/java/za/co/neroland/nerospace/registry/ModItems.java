@@ -36,6 +36,7 @@ import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
 import za.co.neroland.nerospace.item.PipeFilterItem;
 import za.co.neroland.nerospace.item.PipeUpgradeItem;
 import za.co.neroland.nerospace.item.StarGuideBookItem;
+import za.co.neroland.nerospace.item.StationCharterItem;
 import za.co.neroland.nerospace.meteor.MeteorCallerItem;
 import za.co.neroland.nerospace.module.ModuleType;
 import za.co.neroland.nerospace.module.UpgradeModuleItem;
@@ -166,6 +167,10 @@ public final class ModItems {
     public static final RegistryEntry<Item> GLACIRA_COMPASS = ITEMS.register("glacira_compass",
             key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.GLACIRA_LEVEL));
 
+    /** Station Charter: right-click founds a player station in the void station dimension + travels there. */
+    public static final RegistryEntry<Item> STATION_CHARTER = ITEMS.register("station_charter",
+            key -> new StationCharterItem(new Item.Properties().stacksTo(16).setId(key)));
+
     /** Creative-only Meteor Caller: right-click the ground to call a loot-bearing meteor down on that spot. */
     public static final RegistryEntry<Item> METEOR_CALLER = ITEMS.register("meteor_caller",
             key -> new MeteorCallerItem(new Item.Properties().stacksTo(1).setId(key)));
@@ -287,7 +292,7 @@ public final class ModItems {
                         GREENXERTZ_NAVIGATOR.get(), STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(),
                         CINDARA_COMPASS.get(), GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get(),
                         CONFIGURATOR.get(), PIPE_FILTER.get(), SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get(),
-                        STAR_GUIDE_BOOK.get()),
+                        STAR_GUIDE_BOOK.get(), STATION_CHARTER.get()),
                 CreativeModeTabs.SPAWN_EGGS,
                 List.<ItemLike>of(XERTZ_STALKER_SPAWN_EGG.get(), QUARTZ_CRAWLER_SPAWN_EGG.get(),
                         GREENLING_SPAWN_EGG.get(), ALIEN_VILLAGER_SPAWN_EGG.get(), CINDER_STALKER_SPAWN_EGG.get(),
