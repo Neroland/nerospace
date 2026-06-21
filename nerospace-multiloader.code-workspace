@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"name": "nerospace-multiloader",
+			"path": "multiloader"
+		}
+	],
+	"settings": {
+		// Treat multiloader/ as the Gradle build root and let the Java extension import it
+		// via the module wrapper (Gradle 9.5.1), re-importing automatically when build.gradle changes.
+		"java.import.gradle.enabled": true,
+		"java.import.gradle.wrapper.enabled": true,
+		"java.configuration.updateBuildConfiguration": "automatic",
+		// The build targets Java 25 — VSCode's Java extension must run on / have a JDK 25 registered
+		// in "java.configuration.runtimes" (set it in your USER settings, pointing at your JDK 25 path).
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}
