@@ -4,6 +4,15 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-22 update — Artificer gear behaviour ported (the village's exclusive trades are now functional).**
+> All 4 cells green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21
+> baseline warnings, 0 new). Added `gear/XertzResonatorItem` (right-click ore-ping over a new `c:ores`
+> convention tag — `ModTags.Blocks.ORES`, the cross-loader replacement for NeoForge `Tags.Blocks.ORES`) +
+> `gear/AlienGearAbilities` (shared `negatesFall` predicate). Grav Striders' fall-negate is wired through a
+> small per-loader event seam: NeoForge `LivingFallEvent.setDamageMultiplier(0)`, Fabric
+> `ServerLivingEntityEvents.ALLOW_DAMAGE` vetoing `DamageTypes.FALL`. This is the cross-loader stand-in for
+> the root's NeoForge-only `@EventBusSubscriber` `AlienGearEvents`. **~224 classes ported.**
+
 > **2026-06-22 update — Village Core interactive controller ported (closes the last big gameplay gap).**
 > All 4 cells green (full `:neoforge:build`+`:fabric:build` on **both** 26.2 and 26.1.2; ecjCheck 0 errors /
 > 21 baseline warnings, 0 new). The decorative `VillageCoreBlock` stub is now the root's full teach-and-grow
@@ -559,7 +568,13 @@ checked by a headless build).
   creative-only travel devices; TOOLS_AND_UTILITIES tab. Assets + 17 lang keys copied.
 + [x] `ConfiguratorItem`, `PipeFilterItem`, `PipeUpgradeItem` — DONE (advanced-pipes slice A; TOOLS tab).
 + [ ] `StarGuideBookItem` (depends on **star guide**).
-+ [~] `gear/XertzResonatorItem` — ported as a **plain item**; real gear behaviour + `AlienGearEvents` pending.
++ [x] **Artificer gear behaviour DONE (4 cells green).** `gear/XertzResonatorItem` (right-click ore-ping —
+  reuses the new `c:ores` convention `TagKey` in `ModTags.Blocks.ORES` instead of NeoForge `Tags.Blocks.ORES`,
+  registered in place of the plain item) + `gear/AlienGearAbilities` (shared `negatesFall` predicate — the
+  cross-loader stand-in for the root's NeoForge `@EventBusSubscriber` `AlienGearEvents`). Grav Striders'
+  fall-negate is bound per loader: NeoForge `LivingFallEvent.setDamageMultiplier(0)`, Fabric
+  `ServerLivingEntityEvents.ALLOW_DAMAGE` vetoing a `DamageTypes.FALL` source (both stable on 26.1.2 + 26.2).
+  The village system's T4/T5 gear trades are now functional.
 
 ### Cross-cutting registries  (`registry/`)
 

@@ -29,6 +29,9 @@ public final class ModTags {
         private Blocks() {
         }
 
+        /** The common "all ores" convention tag (any mod's ores) — used by the Xertz Resonator's ore ping. */
+        public static final TagKey<Block> ORES = blockTag("c", "ores");
+
         public static final TagKey<Block> ORES_NEROSIUM = blockTag("c", "ores/nerosium");
         public static final TagKey<Block> STORAGE_BLOCKS_NEROSIUM = blockTag("c", "storage_blocks/nerosium");
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_NEROSIUM = blockTag("c", "storage_blocks/raw_nerosium");

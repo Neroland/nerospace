@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.Block;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.gear.XertzResonatorItem;
 import za.co.neroland.nerospace.item.ConfiguratorItem;
 import za.co.neroland.nerospace.item.DestinationCompassItem;
 import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
@@ -123,8 +124,9 @@ public final class ModItems {
     public static final RegistryEntry<Item> FRAME_CASING = item("frame_casing");
     public static final RegistryEntry<Item> GRAV_STRIDERS = item("grav_striders");
     public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");
-    /** Trade-only Artificer gear; ported as a plain item (its custom gear behaviour is deferred). */
-    public static final RegistryEntry<Item> XERTZ_RESONATOR = item("xertz_resonator");
+    /** Trade-only Artificer gear: right-click pings nearby ores ({@code c:ores}); see {@link XertzResonatorItem}. */
+    public static final RegistryEntry<Item> XERTZ_RESONATOR = ITEMS.register("xertz_resonator",
+            key -> new XertzResonatorItem(new Item.Properties().setId(key)));
 
     // --- Universal Pipe tools (per-face I/O modes, item filters, throughput upgrades) ----
     public static final RegistryEntry<Item> CONFIGURATOR = ITEMS.register("configurator",

@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.fabric;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -13,6 +14,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerospace.gear.AlienGearAbilities;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.meteor.MeteorEvents;
@@ -107,6 +110,10 @@ public final class NerospaceFabric implements ModInitializer {
         // (Fabric's Load SAM passes a third "newly generated" flag, which we don't need.)
         ServerChunkEvents.CHUNK_LOAD.register((serverLevel, chunk, newlyGenerated) ->
                 TerraformManager.get(serverLevel).onChunkLoaded(serverLevel, chunk));
+        // Artificer gear: Grav Striders cushion the wearer — cancel fall damage while carried
+        // (counterpart to NeoForge's LivingFallEvent; returning false vetoes the damage).
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) ->
+                !(source.is(DamageTypes.FALL) && AlienGearAbilities.negatesFall(entity)));
 
         // Item-storage capability (Fabric Transfer API) — counterpart to NeoForge
         // Capabilities.Item.BLOCK; lets mod pipes move items in/out of the item store.

@@ -8,6 +8,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
+import za.co.neroland.nerospace.gear.AlienGearAbilities;
 import za.co.neroland.nerospace.meteor.MeteorEvents;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.platform.NeoForgeFluidFactory;
@@ -69,6 +71,12 @@ public final class NerospaceNeoForge {
             MeteorEvents.tick(event.getServer());
             OxygenFieldEvents.tick(event.getServer());
             TerraformDrift.tick(event.getServer());
+        });
+        // Artificer gear: Grav Striders cushion the wearer — negate fall damage while carried.
+        NeoForge.EVENT_BUS.addListener((LivingFallEvent event) -> {
+            if (AlienGearAbilities.negatesFall(event.getEntity())) {
+                event.setDamageMultiplier(0.0F);
+            }
         });
         // Creative debug commands (/nerospace gallery) — game-bus command registration.
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) ->
