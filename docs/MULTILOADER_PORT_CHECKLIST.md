@@ -267,8 +267,10 @@ checked by a headless build).
 - [x] `RocketItem` ×4 tiers, `RocketMenu` + `RocketScreen`. Menu is **non-extended** (no loader-divergent
   extended-menu API); buttons route via `clickMenuButton`. **Station selection DONE:** `BUTTON_CYCLE_STATION`
   + a synced `[5]=stationSlot` data value + a `RocketScreen` "Dock:" cycler shown only when the Orbital Station
-  is the chosen destination (label = stable founding-order "Station N"/"Origin Platform"; the custom charter
-  name stays server-side since `ContainerData` is int-only). The standalone FOUND row stays dropped — founding is charter-driven.
+  is the chosen destination. **Real charter names** ride a small clientbound `StationSyncPayload` (slot→name
+  parallel arrays, POPIA-clean — no player identity) pushed when the player opens a rocket and cached in
+  `client/ClientStations`; the cycler shows the live name (falling back to "Station N"/"Origin Platform") since
+  the int-only `ContainerData` can't carry strings. The standalone FOUND row stays dropped — founding is charter-driven.
 - [x] `RocketModel` (+ `RocketT2/T3/T4Model`), `RocketRenderer` (bakes each tier layer directly — no
   model-layer registry), `RocketRenderState`; entity + item textures copied.
 - [x] Launch pad / gantry: `RocketLaunchPadBlock`, `LaunchGantryBlock`, `LaunchPadMultiblock` (multiblock gating).

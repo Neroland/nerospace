@@ -84,5 +84,8 @@ public final class ModNetwork {
         // Oxygen field: server → nearby clients range-limited concentration snapshot for the visual layers.
         clientbound(OxygenFieldSyncPayload.TYPE, OxygenFieldSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientOxygenField::accept);
+        // Founded-station names: server → a player opening a rocket, so the "Dock:" cycler shows real names.
+        clientbound(StationSyncPayload.TYPE, StationSyncPayload.STREAM_CODEC,
+                za.co.neroland.nerospace.client.ClientStations::accept);
     }
 }

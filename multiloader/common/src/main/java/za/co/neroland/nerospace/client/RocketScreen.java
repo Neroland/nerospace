@@ -94,7 +94,8 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             this.stationButton.visible = stationDest;
             this.stationButton.active = stationDest;
             if (stationDest) {
-                this.stationButton.setMessage(Component.literal("Dock: " + this.menu.getStationName()));
+                this.stationButton.setMessage(
+                        Component.literal("Dock: " + ClientStations.name(this.menu.getStationSlot())));
             }
         }
         if (this.launchButton != null) {

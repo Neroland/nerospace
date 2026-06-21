@@ -559,6 +559,10 @@ public class RocketEntity extends Entity implements MenuProvider {
                 player.startRiding(this);
             }
             if (player instanceof ServerPlayer serverPlayer) {
+                // Push the founded-station names so the in-rocket "Dock:" cycler can label them.
+                za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
+                        za.co.neroland.nerospace.network.StationSyncPayload.of(
+                                StationRegistry.get(serverPlayer.level().getServer())));
                 serverPlayer.openMenu(this);
             }
         }
