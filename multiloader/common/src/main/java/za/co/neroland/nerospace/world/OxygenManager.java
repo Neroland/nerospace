@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModBlocks;
@@ -105,13 +104,20 @@ public final class OxygenManager {
         player.setAirSupply(Math.min(airMax, Math.max(0, air)));
     }
 
-    /** A breathable zone: within {@link #SAFE_RADIUS} of a Rocket Launch Pad or an Oxygen Generator. */
-    private static boolean isBreathable(Level level, BlockPos center) {
+    /**
+     * A breathable zone: the diffusion {@link OxygenFieldManager} reads breathable at {@code center}
+     * (sealed rooms fill completely; an Oxygen Generator pressurises a bubble / its sealed room), or the
+     * player is within {@link #SAFE_RADIUS} of a Rocket Launch Pad — a permanent pressurised safe zone at
+     * the landing site (the pad is not a field source, so it stays a simple radius check).
+     */
+    private static boolean isBreathable(ServerLevel level, BlockPos center) {
+        if (OxygenFieldManager.get(level).isBreathable(center)) {
+            return true;
+        }
         for (BlockPos pos : BlockPos.betweenClosed(
                 center.offset(-SAFE_RADIUS, -SAFE_RADIUS, -SAFE_RADIUS),
                 center.offset(SAFE_RADIUS, SAFE_RADIUS, SAFE_RADIUS))) {
-            BlockState state = level.getBlockState(pos);
-            if (state.is(ModBlocks.ROCKET_LAUNCH_PAD.get()) || state.is(ModBlocks.OXYGEN_GENERATOR.get())) {
+            if (level.getBlockState(pos).is(ModBlocks.ROCKET_LAUNCH_PAD.get())) {
                 return true;
             }
         }

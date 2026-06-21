@@ -20,6 +20,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.meteor.MeteorEvents;
 import za.co.neroland.nerospace.platform.NeoForgeFluidFactory;
+import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
@@ -51,8 +52,11 @@ public final class NerospaceNeoForge {
                 OxygenManager.tick(serverPlayer);
             }
         });
-        // Natural meteor showers: tick the per-level scheduler once per server tick.
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> MeteorEvents.tick(event.getServer()));
+        // Natural meteor showers + oxygen-field diffusion: tick the per-level drivers once per server tick.
+        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
+            MeteorEvents.tick(event.getServer());
+            OxygenFieldEvents.tick(event.getServer());
+        });
         // Creative-tab contents are defined once by the cross-loader ModCreativeTab (a dedicated
         // Nerospace tab registered via the vanilla CREATIVE_MODE_TAB registry), so no NeoForge-specific
         // BuildCreativeModeTabContentsEvent injection is needed.

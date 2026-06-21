@@ -1,8 +1,15 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~165 classes ported, ~99 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~168 classes ported, ~96 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — oxygen diffusion field (server half) ported.** All 4 cells green. Added
+> `world/{OxygenField, OxygenFieldManager (SavedData, fastutil flood-fill sim), OxygenFieldEvents}`; the
+> Oxygen Generator now feeds the field from its tank and `OxygenManager.isBreathable` reads it, so **sealed
+> rooms are genuinely breathable** (open space only gets a bubble). Field config inlined; the cosmetic client
+> visual layer (sync payload + particle/haze/boundary overlay) is the deferred follow-up. fastutil resolves on
+> common NeoForm.
 
 > **2026-06-21 update — meteor Tracker HUD ported (networking seam proven end-to-end).** All 4 cells green.
 > Added `network/MeteorSyncPayload` (multiloader's FIRST payload), `client/{ClientMeteorTracker,
@@ -132,9 +139,18 @@ checked by a headless build).
   air-supply-bar mirror, full-suit detection) on a new **data-attachment seam**: `IPlatformHelper.get/setOxygen`
   backed by NeoForge `AttachmentType` (`NeoForgeAttachments`) and Fabric `AttachmentRegistry`
   (`FabricAttachments`); ticked per-loader (NeoForge `PlayerTickEvent`, Fabric `ServerTickEvents.END_SERVER_TICK`).
-  Breathable = near a Launch Pad / Oxygen Generator. **Deferred**: the diffusion `OxygenFieldManager`/
-  `OxygenField`/`OxygenFieldEvents` (sealed rooms + client overlay — needs the **networking seam**),
-  terraform breathability + criteria, hazard shields/feedback, and gas-tank airlock refill. Values inlined.
+  Breathable = the diffusion field **or** near a Launch Pad (safe-zone radius).
+- [x] **Oxygen diffusion field — server half DONE (4 cells green).** `world/{OxygenField (tag-based
+  sealing classifier — `OXYGEN_SEALING`/`OXYGEN_LEAKS`, doors/trapdoors, full-cube fallback),
+  OxygenFieldManager (SavedData; sparse fastutil concentration field + source set; per-pass flood-fill
+  detects sealed-vs-leaky/open volumes → sealed rooms fill to MAX, open space pressurises only a bubble;
+  slow evaporation), OxygenFieldEvents (cross-loader `tick(MinecraftServer)`, throttled sim pass)}`.
+  Wired into both server-tick hooks alongside the meteor driver; `OxygenManager.isBreathable` now reads the
+  field; the **Oxygen Generator registers itself as a field source**, draining `EMIT_MB_PER_TICK` from its
+  tank while sourcing (and clears on `setRemoved`). Sealed bases are now genuinely breathable. ~9 field
+  config keys inlined. **Deferred (cosmetic): the client visual layer** — `OxygenFieldSyncPayload` +
+  `ClientOxygenField` + the particle/haze/boundary overlay (gated on a visual-quality config).
+- [ ] **Deferred**: terraform breathability + criteria, hazard shields/feedback, gas-tank airlock refill.
 - [ ] Terraformer + Terraform Monitor + Hydration Module (blocks/BE/menus/screens), `TerraformManager`,
   `TerraformConversion`, `TerraformDrift`, `TerraformFauna`, `TerraformChunkLoader`, `TerraformResources`,
   `GreenxertzAtmosphere`, terraformed biomes. Risk: **high** (world mutation, chunk-loading, events).

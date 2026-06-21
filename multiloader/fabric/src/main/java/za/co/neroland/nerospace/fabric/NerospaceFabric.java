@@ -26,6 +26,7 @@ import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.meteor.MeteorEvents;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.world.OxygenManager;
@@ -84,6 +85,7 @@ public final class NerospaceFabric implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             server.getPlayerList().getPlayers().forEach(OxygenManager::tick);
             MeteorEvents.tick(server);
+            OxygenFieldEvents.tick(server);
         });
 
         // Item-storage capability (Fabric Transfer API) — counterpart to NeoForge
