@@ -3,6 +3,8 @@ package za.co.neroland.nerospace.pipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
@@ -12,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -19,11 +23,14 @@ import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerospace.fluid.FluidTank;
+import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.GasTank;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.item.PipeUpgradeItem;
 import za.co.neroland.nerospace.platform.EnergyLookup;
+import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -42,6 +49,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     public static final int MAX_IO = 1_000;
     public static final int GAS_CAPACITY = 8_000;
     public static final int GAS_MAX_IO = 1_000;
+    public static final int FLUID_CAPACITY = 8_000;
+    public static final int FLUID_MAX_IO = 1_000;
     public static final int ITEM_SLOTS = 3;
 
     private static final int[] ALL_SLOTS = {0, 1, 2};
@@ -51,6 +60,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_IO, MAX_IO, this::setChanged);
     private final GasTank gas = new GasTank(GAS_CAPACITY, this::setChanged);
+    private final FluidTank fluid = new FluidTank(FLUID_CAPACITY, this::setChanged);
     private final NonNullList<ItemStack> items = NonNullList.withSize(ITEM_SLOTS, ItemStack.EMPTY);
 
     /** Per-face (6) × per-resource-type (4) I/O mode, set with the Configurator. Default AUTO. */
@@ -76,6 +86,10 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     public NerospaceGasStorage getGas() {
         return this.gas;
+    }
+
+    public NerospaceFluidStorage getFluidTank() {
+        return this.fluid;
     }
 
     // --- Per-face I/O modes (Configurator) -----------------------------------
@@ -172,6 +186,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         }
         relayEnergy(level, pos);
         relayGas(level, pos);
+        relayFluid(level, pos);
         relayItems(level, pos);
     }
 
@@ -252,6 +267,50 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             long accepted = neighbour.fill(g, offered, false);
             if (accepted > 0) {
                 this.gas.drain(accepted, false);
+            }
+        }
+    }
+
+    private void relayFluid(Level level, BlockPos pos) {
+        long io = (long) FLUID_MAX_IO * speedMultiplier();
+        for (Direction dir : Direction.values()) {
+            long room = this.fluid.getCapacity() - this.fluid.getAmount();
+            if (room <= 0) {
+                break;
+            }
+            if (!mode(dir, PipeResourceType.FLUID).canPull()) {
+                continue;
+            }
+            NerospaceFluidStorage neighbour = FluidLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
+            if (neighbour == null) {
+                continue;
+            }
+            Fluid nfluid = neighbour.getFluid();
+            if (nfluid == Fluids.EMPTY || (this.fluid.getFluid() != Fluids.EMPTY && this.fluid.getFluid() != nfluid)) {
+                continue;
+            }
+            long available = neighbour.drain(Math.min(room, io), true);
+            long moved = this.fluid.fill(nfluid, available, false);
+            if (moved > 0) {
+                neighbour.drain(moved, false);
+            }
+        }
+        for (Direction dir : Direction.values()) {
+            if (this.fluid.getAmount() <= 0) {
+                break;
+            }
+            if (!mode(dir, PipeResourceType.FLUID).canPush()) {
+                continue;
+            }
+            NerospaceFluidStorage neighbour = FluidLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
+            if (neighbour == null) {
+                continue;
+            }
+            Fluid f = this.fluid.getFluid();
+            long offered = this.fluid.drain(Math.min(this.fluid.getAmount(), io), true);
+            long accepted = neighbour.fill(f, offered, false);
+            if (accepted > 0) {
+                this.fluid.drain(accepted, false);
             }
         }
     }
@@ -361,6 +420,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         output.putInt("Energy", this.energy.getRaw());
         output.putString("Gas", this.gas.getRawGas().getSerializedName());
         output.putInt("GasAmount", this.gas.getRawAmount());
+        output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.fluid.getRawFluid()).toString());
+        output.putInt("FluidAmount", this.fluid.getRawAmount());
         for (int i = 0; i < ITEM_SLOTS; i++) {
             if (!this.items.get(i).isEmpty()) {
                 output.store("Item" + i, ItemStack.OPTIONAL_CODEC, this.items.get(i));
@@ -389,6 +450,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         super.loadAdditional(input);
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.gas.setRaw(GasResource.byName(input.getStringOr("Gas", "empty")), input.getIntOr("GasAmount", 0));
+        Fluid storedFluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
+        this.fluid.setRaw(storedFluid, input.getIntOr("FluidAmount", 0));
         for (int i = 0; i < ITEM_SLOTS; i++) {
             this.items.set(i, input.read("Item" + i, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         }

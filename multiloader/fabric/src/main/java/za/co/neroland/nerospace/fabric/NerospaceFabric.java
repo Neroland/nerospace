@@ -140,6 +140,9 @@ public final class NerospaceFabric implements ModInitializer {
         GAS.registerForBlockEntity(
                 (be, direction) -> be.getGas(),
                 ModBlockEntities.UNIVERSAL_PIPE.get());
+        FLUID.registerForBlockEntity(
+                (be, direction) -> be.getFluidTank(),
+                ModBlockEntities.UNIVERSAL_PIPE.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.UNIVERSAL_PIPE.get());

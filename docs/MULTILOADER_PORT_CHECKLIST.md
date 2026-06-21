@@ -1,8 +1,18 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~199 classes ported, ~65 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~202 classes ported, ~62 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — pipe fluid relay (closes the slice-A FLUID gap).** All 4 cells green (compile on
+> 26.2; full `:neoforge:build`+`:fabric:build` on 26.1.2). Added a `platform/FluidLookup` query seam
+> (mirrors `EnergyLookup`/`GasLookup`: common interface via `Services.load` + `NeoForgeFluidLookup`
+> [`level.getCapability`] + `FabricFluidLookup` [`BlockApiLookup.find`] + both `META-INF/services` files).
+> `UniversalPipeBlockEntity` gained a `FluidTank` + `getFluidTank()`, a `relayFluid()` mirroring the gas
+> relay (honours the FLUID face-mode + speed throughput), tick wiring, and NBT persistence; the pipe's
+> fluid handler is now exposed as the FLUID capability on both loaders. **The Universal Pipe now genuinely
+> carries all four layers (energy/fluid/gas/item)** — e.g. piping `rocket_fuel` from a Refinery to a Fuel
+> Tank — and the slice-A FLUID face-mode is now functional (no longer inert).
 
 > **2026-06-21 update — advanced pipes slice A (per-face configuration layer).** All 4 cells green
 > (compile on 26.1.2 + 26.2; full `:neoforge:build`+`:fabric:build` on 26.2). Added `pipe/PipeIoMode`
@@ -337,6 +347,10 @@ checked by a headless build).
   speed/capacity upgrades; the energy/gas/item relay honours `canPull`/`canPush`/`OFF` + filters + speed
   throughput; `UniversalPipeBlock` sneak-empty-hand pops upgrades. Items registered (TOOLS tab) + assets +
   20 lang keys.
+- [x] **Fluid relay** — added the `platform/FluidLookup` query seam (common + both loaders + services) and a
+  `FluidTank` + `relayFluid()` to the pipe BE (honours the FLUID face-mode + speed); the pipe's fluid handler
+  is exposed as the FLUID cap on both loaders. The pipe now carries all four layers; the FLUID face-mode is
+  live (e.g. Refinery → pipe → Fuel Tank).
 - [ ] **Slice B (deferred) — graph + visuals + GUI.** `PipeNetwork` (591-line graph; NeoForge-transfer-
   coupled), `TravellingItem` (animated stacks; ItemResource→ItemStack), `UniversalPipeRenderer` +
   `UniversalPipeRenderState` (stream + travelling-item visuals), `PipeConfigScreen` + `PipeConfigOpenHandler`

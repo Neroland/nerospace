@@ -111,6 +111,10 @@ public final class NeoForgeCapabilities {
                 ModBlockEntities.UNIVERSAL_PIPE.get(),
                 (be, side) -> be.getGas());
         event.registerBlockEntity(
+                FLUID,
+                ModBlockEntities.UNIVERSAL_PIPE.get(),
+                (be, side) -> be.getFluidTank());
+        event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.UNIVERSAL_PIPE.get(),
                 (be, side) -> side != null
