@@ -1,8 +1,14 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~209 classes ported, ~55 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~212 classes ported, ~52 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — Star Guide slice 2b (hologram BER + reusable BER seam).** All 4 cells compile green
+> (26.1.2 + 26.2). Added the first cross-loader block-entity-renderer seam (`ClientBlockEntityRenderers.Sink`)
+> + the Star Guide pedestal hologram renderer (spinning next-step icon). **26.x gotcha: `BlockEntityRendererProvider`
+> is 2-type-param `<T, S extends BlockEntityRenderState>`.** The seam is reusable for future BERs (solar
+> sun-tracking deck, quarry drill head, etc.).
 
 > **2026-06-21 update — Star Guide slice 2a (advancement data — the guide now tracks progress).** All 4
 > cells green (full `:neoforge:build`+`:fabric:build` on 26.2; no Java changed — pure data). Copied all 42
@@ -371,9 +377,16 @@ checked by a headless build).
   are not orphaned) — they display but stay incomplete until granted. Repointed 2 display icons off unported
   items (`station_charter`→`station_floor`, `new_life`→`meadow_loper_spawn_egg`). **The guide now tracks live
   progress.** All JSON parse-validated; item predicates + the 4 `changed_dimension` targets all resolve.
-- [ ] **Slice 2b (deferred).** The hologram BER (`StarGuideHologramRenderer`/`RenderState` — cosmetic; the BE
-  already computes + syncs the next-step stack); the "seen-pulse" (needs a `STAR_GUIDE_SEEN` player attachment
-  seam); converting the 3 `impossible` advancements back to real completion (needs `ModCriteria` via reflection
+- [x] **Slice 2b — hologram BER DONE (4 cells green).** Added a reusable cross-loader BER seam
+  `client/ClientBlockEntityRenderers` (`Sink` mirrors `ClientEntityRenderers` — NeoForge
+  `RegisterRenderers.registerBlockEntityRenderer`, Fabric `BlockEntityRendererRegistry.register`) +
+  `client/{StarGuideHologramRenderer, StarGuideHologramRenderState}` (verbatim 26.x BER submission). The
+  pedestal now floats the spinning next-step hologram. **26.x gotcha: `BlockEntityRendererProvider` takes 2
+  type params `<T, S extends BlockEntityRenderState>`** (probed via build error) — the Sink carries both. The
+  seam now unblocks future BERs (solar sun-tracking, quarry drill, etc.). (Fabric `BlockEntityRendererRegistry`
+  is soft-deprecated — works; a later switch to vanilla `BlockEntityRenderers.register` is optional.)
+- [ ] **Slice 2c (deferred, minor).** The "seen-pulse" (needs a `STAR_GUIDE_SEEN` player attachment seam);
+  converting the 3 `impossible` advancements back to real completion (needs `ModCriteria` via reflection
   /version-split, or code-granting from the terraform/station-founding events). The station_charter / new_life
   guide-step icons resolve once STATION_CHARTER / LOPER_HAUNCH are ported.
 

@@ -2,13 +2,19 @@ package za.co.neroland.nerospace.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.ClientOxygenVisuals;
 import za.co.neroland.nerospace.client.MeteorTrackerHud;
@@ -48,6 +54,13 @@ public final class NerospaceFabricClient implements ClientModInitializer {
             @Override
             public <E extends Entity> void register(EntityType<? extends E> type, EntityRendererProvider<E> provider) {
                 EntityRendererRegistry.register(type, provider);
+            }
+        });
+        ClientBlockEntityRenderers.registerAll(new ClientBlockEntityRenderers.Sink() {
+            @Override
+            public <T extends BlockEntity, S extends BlockEntityRenderState> void register(
+                    BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider) {
+                BlockEntityRendererRegistry.register(type, provider);
             }
         });
 

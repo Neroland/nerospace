@@ -1,11 +1,15 @@
 package za.co.neroland.nerospace.neoforge;
 
 import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -15,6 +19,7 @@ import net.neoforged.neoforge.client.fluid.FluidTintSources;
 import net.neoforged.neoforge.common.NeoForge;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.ClientOxygenVisuals;
 import za.co.neroland.nerospace.client.MeteorTrackerHud;
@@ -54,6 +59,13 @@ public final class NeoForgeClientSetup {
             @Override
             public <E extends Entity> void register(EntityType<? extends E> type, EntityRendererProvider<E> provider) {
                 event.registerEntityRenderer(type, provider);
+            }
+        });
+        ClientBlockEntityRenderers.registerAll(new ClientBlockEntityRenderers.Sink() {
+            @Override
+            public <T extends BlockEntity, S extends BlockEntityRenderState> void register(
+                    BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider) {
+                event.registerBlockEntityRenderer(type, provider);
             }
         });
     }
