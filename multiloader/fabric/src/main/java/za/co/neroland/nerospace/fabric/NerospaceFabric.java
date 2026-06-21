@@ -154,6 +154,14 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.SOLAR_PANEL.get());
 
+        // Terraformer: grid power in, upgrade slot in.
+        ENERGY.registerForBlockEntity(
+                (be, direction) -> be.getEnergy(),
+                ModBlockEntities.TERRAFORMER.get());
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.TERRAFORMER.get());
+
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.TRASH_CAN.get());

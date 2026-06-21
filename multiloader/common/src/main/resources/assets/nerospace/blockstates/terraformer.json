@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "nerospace:block/terraformer",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "nerospace:block/terraformer"
+    },
+    "facing=south": {
+      "model": "nerospace:block/terraformer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "nerospace:block/terraformer",
+      "y": 270
+    }
+  }
+}

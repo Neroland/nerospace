@@ -11,6 +11,7 @@ import za.co.neroland.nerospace.menu.FuelRefineryMenu;
 import za.co.neroland.nerospace.menu.FuelTankMenu;
 import za.co.neroland.nerospace.machine.quarry.QuarryMenu;
 import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
+import za.co.neroland.nerospace.menu.TerraformerMenu;
 import za.co.neroland.nerospace.rocket.RocketMenu;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
@@ -47,6 +48,10 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<QuarryMenu>> QUARRY_CONTROLLER =
             MENUS.register("quarry_controller",
                     key -> new MenuType<>(QuarryMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistryEntry<MenuType<TerraformerMenu>> TERRAFORMER =
+            MENUS.register("terraformer",
+                    key -> new MenuType<>(TerraformerMenu::new, FeatureFlags.VANILLA_SET));
 
     private ModMenuTypes() {
     }

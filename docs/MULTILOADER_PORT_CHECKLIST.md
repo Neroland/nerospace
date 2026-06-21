@@ -1,8 +1,15 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~173 classes ported, ~91 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~178 classes ported, ~86 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — terraforming slice 4b: the Terraformer machine.** All 4 cells green. Added
+> `machine/{MachineRedstone, TerraformerBlock, TerraformerBlockEntity}` + `menu/TerraformerMenu` +
+> `client/TerraformerScreen`; the 584-line BE rewritten onto `EnergyBuffer` + a `WorldlyContainer` upgrade slot
+> (force-load deferred). Registered + capped + assets/lang. **Placing a Terraformer now greens the planet
+> outward through the three stages** — the signature feature is functional cross-loader. Remaining terraform
+> slices: 5 Hydration Module, 6 Monitor + Drift + ChunkLoader + GreenxertzAtmosphere.
 
 > **2026-06-21 update — terraforming slice 4a (TerraformManager + chunk-load seam).** All 4 cells green.
 > Added `world/TerraformManager` (3rd SavedData; per-terraformer radii + `onChunkLoaded` catch-up) + a
@@ -198,11 +205,14 @@ checked by a headless build).
     in-range columns of newly-loaded chunks + biome-sync packet). Per-loader chunk-load hook: NeoForge
     `ChunkEvent.Load` (filter `ServerLevel`+`LevelChunk`), Fabric `ServerChunkEvents.CHUNK_LOAD` (**3-param
     SAM `(ServerLevel, LevelChunk, boolean newlyGenerated)`** — probed). All 4 cells green. (Inert until 4b.)
-  - [ ] **Slice 4b — Terraformer machine.** `TerraformerBlock`(+BE 584ln)+menu+screen — rewrite the BE onto
-    `EnergyBuffer` + a `Container`/`NonNullList` upgrade slot (drop NeoForge `SimpleEnergyHandler`/
-    `MachineItemHandler`/`ResourceHandler`); **defer force-load** (opt-in, off by default, needs
-    `TerraformChunkLoader`); inline Tuning/Config; calls `TerraformManager.update`. + register block/item/BE/menu
-    + screen (per-loader) + energy/item caps + assets + lang. This is the slice that makes terraforming run.
+  - [x] **Slice 4b — Terraformer machine DONE (4 cells green).** `machine/{MachineRedstone, TerraformerBlock,
+    TerraformerBlockEntity}` + `menu/TerraformerMenu` + `client/TerraformerScreen`. BE rewritten onto
+    `EnergyBuffer` + a vanilla `WorldlyContainer`/`NonNullList` upgrade slot (dropped NeoForge
+    `SimpleEnergyHandler`/`MachineItemHandler`/`ResourceHandler`); **force-load deferred** (unloaded columns
+    handled by the slice-4a catch-up); Tuning/Config inlined; drives `TerraformConversion` 3-stage frontier +
+    `TerraformManager.update` + biome-sync packet. Registered block/item/BE/menu + per-loader screen + energy/item
+    caps; copied block (3 textures, FACING blockstate, multi-tex model) + GUI texture + 9 lang keys. **Placing a
+    Terraformer now greens the planet outward (Rooted→Hydrated→Living).**
   - [ ] **Slice 5 — Hydration Module** (block/BE/menu/screen) + stage-2 wiring.
   - [ ] **Slice 6 — Terraform Monitor** (block/BE/menu/screen) + `TerraformDrift` + `TerraformChunkLoader` +
     `GreenxertzAtmosphere`. Risk: **high** (world mutation, chunk-loading, events).

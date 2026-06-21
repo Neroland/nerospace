@@ -136,6 +136,18 @@ public final class NeoForgeCapabilities {
                 ModBlockEntities.SOLAR_PANEL.get(),
                 (be, side) -> be.getEnergy());
 
+        // Terraformer: grid power in, upgrade slot in.
+        event.registerBlockEntity(
+                ENERGY,
+                ModBlockEntities.TERRAFORMER.get(),
+                (be, side) -> be.getEnergy());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.TERRAFORMER.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.TRASH_CAN.get(),

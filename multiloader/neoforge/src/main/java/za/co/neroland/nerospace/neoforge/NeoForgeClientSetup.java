@@ -24,6 +24,7 @@ import za.co.neroland.nerospace.client.FuelTankScreen;
 import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
 import za.co.neroland.nerospace.client.QuarryScreen;
 import za.co.neroland.nerospace.client.RocketScreen;
+import za.co.neroland.nerospace.client.TerraformerScreen;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
@@ -58,6 +59,7 @@ public final class NeoForgeClientSetup {
         event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
         event.register(ModMenuTypes.FUEL_REFINERY.get(), FuelRefineryScreen::new);
         event.register(ModMenuTypes.QUARRY_CONTROLLER.get(), QuarryScreen::new);
+        event.register(ModMenuTypes.TERRAFORMER.get(), TerraformerScreen::new);
     }
 
     /** Rocket fuel renders as itself (amber still/flow) instead of the default missing art. */

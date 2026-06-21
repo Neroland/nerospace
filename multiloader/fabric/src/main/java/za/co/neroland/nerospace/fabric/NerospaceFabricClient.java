@@ -18,6 +18,7 @@ import za.co.neroland.nerospace.client.FuelTankScreen;
 import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
 import za.co.neroland.nerospace.client.QuarryScreen;
 import za.co.neroland.nerospace.client.RocketScreen;
+import za.co.neroland.nerospace.client.TerraformerScreen;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /** Fabric client entry point — screen + entity-renderer registration. */
@@ -34,6 +35,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         MenuScreens.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
         MenuScreens.register(ModMenuTypes.FUEL_REFINERY.get(), FuelRefineryScreen::new);
         MenuScreens.register(ModMenuTypes.QUARRY_CONTROLLER.get(), QuarryScreen::new);
+        MenuScreens.register(ModMenuTypes.TERRAFORMER.get(), TerraformerScreen::new);
 
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
             @Override
