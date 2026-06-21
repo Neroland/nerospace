@@ -21,6 +21,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.menu.HydrationModuleMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -101,7 +102,8 @@ public class HydrationModuleBlockEntity extends BlockEntity implements WorldlyCo
 
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (!(level instanceof ServerLevel serverLevel)
-                || serverLevel.getGameTime() % WORK_INTERVAL_TICKS != 0) {
+                || serverLevel.getGameTime() % NerospaceConfig.scaleInterval(
+                        WORK_INTERVAL_TICKS, NerospaceConfig.machineSpeedMultiplier()) != 0) {
             return;
         }
         meltPulse(serverLevel, pos);

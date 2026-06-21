@@ -37,6 +37,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.FluidTank;
@@ -398,7 +399,8 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
 
     private long miningInterval(ServerLevel level) {
         double planet = PlanetMiningProfile.forDimension(level.dimension()).speedMultiplier();
-        double rate = this.tier.baseBlocksPerCycle() * this.modules.speedMultiplier() * planet;
+        double rate = this.tier.baseBlocksPerCycle() * this.modules.speedMultiplier() * planet
+                * NerospaceConfig.machineSpeedMultiplier();
         return Math.max(1L, Math.round(MINE_INTERVAL / Math.max(0.01, rate)));
     }
 

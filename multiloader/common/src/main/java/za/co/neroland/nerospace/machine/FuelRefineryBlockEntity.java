@@ -25,6 +25,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.energy.EnergyBuffer;
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.ModFluids;
@@ -74,7 +75,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
                 case 2 -> (int) tank.getAmount();
                 case 3 -> (int) tank.getCapacity();
                 case 4 -> progress;
-                case 5 -> WORK_TICKS;
+                case 5 -> NerospaceConfig.scaleInterval(WORK_TICKS, NerospaceConfig.machineSpeedMultiplier());
                 default -> 0;
             };
         }
@@ -148,7 +149,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
 
         this.energy.consume(FE_PER_TICK);
         this.progress++;
-        if (this.progress >= WORK_TICKS) {
+        if (this.progress >= NerospaceConfig.scaleInterval(WORK_TICKS, NerospaceConfig.machineSpeedMultiplier())) {
             this.progress = 0;
             this.items.get(CARBON_SLOT).shrink(1);
             this.items.get(CATALYST_SLOT).shrink(1);

@@ -20,6 +20,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
@@ -50,7 +51,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         public int get(int index) {
             return switch (index) {
                 case 0 -> progress;
-                case 1 -> MAX_PROGRESS;
+                case 1 -> NerospaceConfig.scaleInterval(MAX_PROGRESS, NerospaceConfig.machineSpeedMultiplier());
                 case 2 -> energy.getRaw();
                 case 3 -> CAPACITY;
                 default -> 0;
@@ -89,7 +90,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         if (canWork) {
             this.progress++;
             this.energy.consume(ENERGY_PER_TICK);
-            if (this.progress >= MAX_PROGRESS) {
+            if (this.progress >= NerospaceConfig.scaleInterval(MAX_PROGRESS, NerospaceConfig.machineSpeedMultiplier())) {
                 craft(result);
                 this.progress = 0;
             }

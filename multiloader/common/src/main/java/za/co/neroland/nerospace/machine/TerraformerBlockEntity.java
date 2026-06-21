@@ -29,6 +29,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.menu.TerraformerMenu;
@@ -227,7 +228,9 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
         }
 
         // Redstone switch: wired machines only sweep while powered.
-        if (serverLevel.getGameTime() % WORK_INTERVAL_TICKS == 0 && MachineRedstone.allowsRun(level, pos)) {
+        if (serverLevel.getGameTime() % NerospaceConfig.scaleInterval(
+                        WORK_INTERVAL_TICKS, NerospaceConfig.machineSpeedMultiplier()) == 0
+                && MachineRedstone.allowsRun(level, pos)) {
             work(serverLevel, pos);
         }
     }

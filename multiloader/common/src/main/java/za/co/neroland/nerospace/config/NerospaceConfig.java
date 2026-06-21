@@ -26,6 +26,7 @@ public final class NerospaceConfig {
     private static final String KEY_OXYGEN_DRAIN = "oxygenDrainMultiplier";
     private static final String KEY_OXYGEN_CAPACITY = "oxygenCapacityMultiplier";
     private static final String KEY_FUEL_COST = "fuelCostMultiplier";
+    private static final String KEY_MACHINE_SPEED = "machineSpeedMultiplier";
 
     /** Multiplier range (mirrors the root config spec): 0.1× .. 10×. */
     private static final double MULT_MIN = 0.1D;
@@ -41,6 +42,8 @@ public final class NerospaceConfig {
     private static volatile double oxygenCapacityMultiplier = 1.0D;
     /** Scales the fuel a rocket burns per launch (clamped to the tank). Clamped 0.1×..10×. */
     private static volatile double fuelCostMultiplier = 1.0D;
+    /** Scales machine work speed (inverse: higher ⇒ shorter work intervals). Clamped 0.1×..10×. */
+    private static volatile double machineSpeedMultiplier = 1.0D;
     private static volatile boolean loaded;
 
     private NerospaceConfig() {
@@ -64,6 +67,19 @@ public final class NerospaceConfig {
 
     public static double fuelCostMultiplier() {
         return fuelCostMultiplier;
+    }
+
+    public static double machineSpeedMultiplier() {
+        return machineSpeedMultiplier;
+    }
+
+    /**
+     * Inverse-scales a base work interval by the machine-speed multiplier: a higher speed yields a
+     * SHORTER interval, clamped to ≥1 tick (so 10× can't produce a zero-tick interval). Mirrors the root
+     * {@code Tuning} interval-clamp contract.
+     */
+    public static int scaleInterval(int baseTicks, double speedMultiplier) {
+        return Math.max(1, (int) Math.round(baseTicks / Math.max(0.01D, speedMultiplier)));
     }
 
     /**
@@ -105,6 +121,8 @@ public final class NerospaceConfig {
                         props.getProperty(KEY_OXYGEN_CAPACITY), oxygenCapacityMultiplier));
                 fuelCostMultiplier = clampMultiplier(parseDouble(
                         props.getProperty(KEY_FUEL_COST), fuelCostMultiplier));
+                machineSpeedMultiplier = clampMultiplier(parseDouble(
+                        props.getProperty(KEY_MACHINE_SPEED), machineSpeedMultiplier));
             } catch (IOException e) {
                 NerospaceCommon.LOGGER.warn("[Nerospace] Could not read {}; using defaults.", FILE_NAME, e);
             }
@@ -133,6 +151,7 @@ public final class NerospaceConfig {
         props.setProperty(KEY_OXYGEN_DRAIN, Double.toString(oxygenDrainMultiplier));
         props.setProperty(KEY_OXYGEN_CAPACITY, Double.toString(oxygenCapacityMultiplier));
         props.setProperty(KEY_FUEL_COST, Double.toString(fuelCostMultiplier));
+        props.setProperty(KEY_MACHINE_SPEED, Double.toString(machineSpeedMultiplier));
         try {
             Files.createDirectories(file.getParent());
             try (OutputStream out = Files.newOutputStream(file)) {
@@ -143,6 +162,7 @@ public final class NerospaceConfig {
                         + "energyRateMultiplier: scales FE/tick of all generators. oxygenDrainMultiplier: "
                         + "scales how fast air drains. oxygenCapacityMultiplier: scales air capacity. "
                         + "fuelCostMultiplier: scales fuel burned per rocket launch. "
+                        + "machineSpeedMultiplier: scales machine work speed (higher = faster). "
                         + "All multipliers 0.1..10, default 1.");
             }
         } catch (IOException e) {

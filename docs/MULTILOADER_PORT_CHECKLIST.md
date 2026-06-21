@@ -4,6 +4,11 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~217 classes ported, ~47 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-21 update — config seam COMPLETE (all 5 multipliers).** All 4 cells compile green. Slices 2–4
+> added `oxygenDrain`/`oxygenCapacity` (→ OxygenManager), `fuelCost` (→ RocketTier.fuelPerLaunch), and
+> `machineSpeed` (+ inverse `scaleInterval` → grinder/refinery/hydration/terraformer/quarry). All five of the
+> root's balance multipliers (0.1×..10×) are now live cross-loader through the properties `NerospaceConfig`.
+
 > **2026-06-21 update — config seam slice 1 (energy multiplier).** All 4 cells compile green. Extended the
 > properties `NerospaceConfig` with `energyRateMultiplier` (0.1×..10×) + a `scale()` clamp helper, wired into
 > all three generators' FE/tick. Establishes the cross-loader balance-config pattern (properties file, no
@@ -517,7 +522,7 @@ checked by a headless build).
 - [ ] `command/NerospaceCommands` — `/nerospace` debug/admin commands (vanilla Brigadier; loader event differs).
 - [ ] `compat/jei/*` — recipe-viewer integration. NeoForge = JEI; Fabric would use REI/EMI. Cross-mod, low priority.
 
-### Config / tuning — **slice 1 DONE (4 cells green); cross-loader seam established**
+### Config / tuning — **DONE (4 cells green): all 5 multipliers wired, cross-loader seam complete**
 - [x] **Slice 1 — config seam + energy multiplier.** Extended the properties-based `config/NerospaceConfig`
   (no NeoForge `ModConfigSpec` — the cross-loader seam is the properties file the telemetry batch added) with
   `energyRateMultiplier` (clamp 0.1×..10×, default 1) + a `scale(base, mult)` helper (min-1 clamp, mirroring
@@ -528,9 +533,13 @@ checked by a headless build).
   the attachment default self-corrects on the first tick). **3 of the root's 5 multipliers now wired.**
 - [x] **Slice 3 — fuelCostMultiplier.** Added `fuelCostMultiplier`; wired into `RocketTier.fuelPerLaunch()`
   (scaled, still clamped to the tank so a launch is always possible). **4 of the root's 5 multipliers wired.**
-- [ ] **Slice 4 (last multiplier).** `machineSpeedMultiplier` — inverse-scaled (faster ⇒ shorter work
-  interval, clamped ≥1 tick); needs a `scaleInterval` helper + wiring into each machine's work period
-  (grinder, refinery, terraformer, quarry, …). Multiple consumers, so its own slice.
+- [x] **Slice 4 — machineSpeedMultiplier (last multiplier; config seam COMPLETE).** Added `machineSpeedMultiplier`
+  + a `scaleInterval` helper (inverse, clamped ≥1 tick); wired into the grinder + refinery (progress thresholds,
+  both the completion check and the synced max-progress data), the hydration module + terraformer (modulo work
+  intervals), and the quarry (folded into the mining rate). **All 5 of the root's balance multipliers are now
+  live cross-loader** (energyRate, oxygenDrain, oxygenCapacity, fuelCost, machineSpeed) via the properties
+  `NerospaceConfig` — no NeoForge `ModConfigSpec`. Base values stay inlined per machine (a central `Tuning`
+  class is optional).
 
 ### Spawn rules
 - [x] `registry/ModSpawnPlacements` — natural-spawn placement rules for the 9 spawnable creatures
