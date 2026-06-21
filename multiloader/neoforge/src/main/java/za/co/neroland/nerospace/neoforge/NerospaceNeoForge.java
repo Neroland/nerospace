@@ -8,9 +8,12 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementType;
@@ -25,6 +28,7 @@ import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
 import za.co.neroland.nerospace.world.OxygenManager;
+import za.co.neroland.nerospace.world.TerraformManager;
 
 /**
  * NeoForge entry point. Runs shared init (building the DeferredRegisters via the
@@ -56,6 +60,12 @@ public final class NerospaceNeoForge {
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
             MeteorEvents.tick(event.getServer());
             OxygenFieldEvents.tick(event.getServer());
+        });
+        // Terraform catch-up: convert any in-range columns on chunks that load after the frontier passed.
+        NeoForge.EVENT_BUS.addListener((ChunkEvent.Load event) -> {
+            if (event.getLevel() instanceof ServerLevel serverLevel && event.getChunk() instanceof LevelChunk chunk) {
+                TerraformManager.get(serverLevel).onChunkLoaded(serverLevel, chunk);
+            }
         });
         // Creative-tab contents are defined once by the cross-loader ModCreativeTab (a dedicated
         // Nerospace tab registered via the vanilla CREATIVE_MODE_TAB registry), so no NeoForge-specific

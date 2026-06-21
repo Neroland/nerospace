@@ -1,8 +1,14 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~172 classes ported, ~92 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~173 classes ported, ~91 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — terraforming slice 4a (TerraformManager + chunk-load seam).** All 4 cells green.
+> Added `world/TerraformManager` (3rd SavedData; per-terraformer radii + `onChunkLoaded` catch-up) + a
+> per-loader chunk-load hook. **26.x gotcha: Fabric `ServerChunkEvents.Load` SAM is 3-param
+> `(ServerLevel, LevelChunk, boolean)`** (probed). Remaining: slice 4b = the Terraformer machine BE (rewrite
+> onto EnergyBuffer/Container, defer force-load) + block/menu/screen — the slice that drives the engine.
 
 > **2026-06-21 update — terraforming slice 3 (conversion engine).** All 4 cells green. Added
 > `machine/{TerraformConversion (335ln staged converter), TerraformResources}` + `world/TerraformFauna`;
@@ -187,8 +193,16 @@ checked by a headless build).
     list), `world/TerraformFauna` (inlined herd config). Worldgen APIs (`TreeFeatures`, `ConfiguredFeature.place`,
     `PalettedContainer` biome write, `EntityType.spawn`) all resolve on common. ~7 config/tuning keys inlined.
     All 4 cells green. (Inert until slice 4's machine + manager drive it.)
-  - [ ] **Slice 4 — Terraformer machine.** `TerraformerBlock`(+BE 584ln)+menu+screen + `TerraformManager`
-    (SavedData; 4-arg `SavedDataType`) + chunk-load catch-up hook (per-loader) + biome-sync packet.
+  - [x] **Slice 4a — TerraformManager + chunk-load seam.** `world/TerraformManager` (3rd `SavedData`,
+    4-arg `SavedDataType`; tracks per-terraformer stage radii; `onChunkLoaded` replays staged conversion on
+    in-range columns of newly-loaded chunks + biome-sync packet). Per-loader chunk-load hook: NeoForge
+    `ChunkEvent.Load` (filter `ServerLevel`+`LevelChunk`), Fabric `ServerChunkEvents.CHUNK_LOAD` (**3-param
+    SAM `(ServerLevel, LevelChunk, boolean newlyGenerated)`** — probed). All 4 cells green. (Inert until 4b.)
+  - [ ] **Slice 4b — Terraformer machine.** `TerraformerBlock`(+BE 584ln)+menu+screen — rewrite the BE onto
+    `EnergyBuffer` + a `Container`/`NonNullList` upgrade slot (drop NeoForge `SimpleEnergyHandler`/
+    `MachineItemHandler`/`ResourceHandler`); **defer force-load** (opt-in, off by default, needs
+    `TerraformChunkLoader`); inline Tuning/Config; calls `TerraformManager.update`. + register block/item/BE/menu
+    + screen (per-loader) + energy/item caps + assets + lang. This is the slice that makes terraforming run.
   - [ ] **Slice 5 — Hydration Module** (block/BE/menu/screen) + stage-2 wiring.
   - [ ] **Slice 6 — Terraform Monitor** (block/BE/menu/screen) + `TerraformDrift` + `TerraformChunkLoader` +
     `GreenxertzAtmosphere`. Risk: **high** (world mutation, chunk-loading, events).
