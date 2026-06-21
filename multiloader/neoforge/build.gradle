@@ -82,3 +82,38 @@ neoForge {
         }
     }
 }
+
+// ecjCheck: run the Eclipse compiler (the SAME analyzer VS Code's Java extension uses) over the shared
+// common + neoforge main sources, with the repo-root tools/ecj.prefs mirroring the IDE's diagnostic
+// settings. Surfaces Problems-panel diagnostics (null analysis, unused members, unnecessary
+// suppressions, ...) from the command line / gradle MCP. Warnings are reported in the log; the task only
+// FAILS on real errors. The NeoForge module is analysed because its compile classpath resolves the full
+// vanilla + NeoForge API (common alone is raw vanilla and won't resolve loader-facing references), and
+// its main sourceSet already includes the common sources (srcDir above). Mirrors the repo-root ecjCheck.
+configurations {
+    ecj
+}
+dependencies {
+    ecj 'org.eclipse.jdt:ecj:+'
+}
+tasks.register('ecjCheck', JavaExec) {
+    group = 'verification'
+    description = 'Run the Eclipse (IDE) analyzer over common + neoforge main sources and report its diagnostics.'
+    notCompatibleWithConfigurationCache('assembles the analysis classpath at execution time')
+    dependsOn tasks.named('compileJava')
+    classpath = configurations.ecj
+    mainClass = 'org.eclipse.jdt.internal.compiler.batch.Main'
+    doFirst {
+        def analysisCp = (sourceSets.main.compileClasspath.files + sourceSets.main.output.files)
+                .findAll { it.exists() }
+                .join(File.pathSeparator)
+        def srcDirs = sourceSets.main.java.srcDirs.findAll { it.exists() }.collect { it.absolutePath }
+        args = [
+                '--release', '25',
+                '-proc:none',
+                '-d', 'none',
+                '-properties', rootProject.file('../tools/ecj.prefs').absolutePath,
+                '-classpath', analysisCp,
+        ] + srcDirs
+    }
+}
