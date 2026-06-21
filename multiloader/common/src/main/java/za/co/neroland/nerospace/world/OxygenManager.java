@@ -111,6 +111,10 @@ public final class OxygenManager {
      * the landing site (the pad is not a field source, so it stays a simple radius check).
      */
     private static boolean isBreathable(ServerLevel level, BlockPos center) {
+        // Terraformed ground is permanently breathable (the Terraformer flags the chunk).
+        if (Services.PLATFORM.isTerraformed(level.getChunkAt(center))) {
+            return true;
+        }
         if (OxygenFieldManager.get(level).isBreathable(center)) {
             return true;
         }

@@ -22,6 +22,18 @@ public final class FabricAttachments {
             .copyOnDeath()
             .buildAndRegister(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen"));
 
+    /** Per-chunk: the converted chunk is permanently breathable at/above the surface. */
+    public static final AttachmentType<Boolean> TERRAFORMED = AttachmentRegistry.<Boolean>builder()
+            .initializer(() -> Boolean.FALSE)
+            .persistent(Codec.BOOL)
+            .buildAndRegister(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "terraformed"));
+
+    /** Per-chunk: highest terraform stage completed (0 none / 1 Rooted / 2 Hydrated / 3 Living). */
+    public static final AttachmentType<Integer> TERRAFORM_STAGE = AttachmentRegistry.<Integer>builder()
+            .initializer(() -> 0)
+            .persistent(Codec.INT)
+            .buildAndRegister(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "terraform_stage"));
+
     private FabricAttachments() {
     }
 

@@ -29,6 +29,20 @@ public final class NeoForgeAttachments {
                     .copyOnDeath()
                     .build());
 
+    /** Per-chunk: the converted chunk is permanently breathable at/above the surface. */
+    public static final Supplier<AttachmentType<Boolean>> TERRAFORMED = ATTACHMENT_TYPES.register(
+            "terraformed",
+            () -> AttachmentType.builder(() -> Boolean.FALSE)
+                    .serialize(Codec.BOOL.fieldOf("terraformed"))
+                    .build());
+
+    /** Per-chunk: highest terraform stage completed (0 none / 1 Rooted / 2 Hydrated / 3 Living). */
+    public static final Supplier<AttachmentType<Integer>> TERRAFORM_STAGE = ATTACHMENT_TYPES.register(
+            "terraform_stage",
+            () -> AttachmentType.builder(() -> 0)
+                    .serialize(Codec.INT.fieldOf("terraform_stage"))
+                    .build());
+
     private NeoForgeAttachments() {
     }
 

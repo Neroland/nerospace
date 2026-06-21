@@ -3,6 +3,7 @@ package za.co.neroland.nerospace.platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import za.co.neroland.nerospace.fabric.FabricAttachments;
 
@@ -40,5 +41,25 @@ public final class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public void setOxygen(Player player, int value) {
         player.setAttached(FabricAttachments.OXYGEN, value);
+    }
+
+    @Override
+    public boolean isTerraformed(LevelChunk chunk) {
+        return chunk.getAttachedOrCreate(FabricAttachments.TERRAFORMED);
+    }
+
+    @Override
+    public void setTerraformed(LevelChunk chunk, boolean value) {
+        chunk.setAttached(FabricAttachments.TERRAFORMED, value);
+    }
+
+    @Override
+    public int getTerraformStage(LevelChunk chunk) {
+        return chunk.getAttachedOrCreate(FabricAttachments.TERRAFORM_STAGE);
+    }
+
+    @Override
+    public void setTerraformStage(LevelChunk chunk, int value) {
+        chunk.setAttached(FabricAttachments.TERRAFORM_STAGE, value);
     }
 }

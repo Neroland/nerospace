@@ -4,6 +4,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.api.distmarker.Dist;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import za.co.neroland.nerospace.neoforge.NeoForgeAttachments;
 
@@ -43,5 +44,25 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
     public void setOxygen(Player player, int value) {
         player.setData(NeoForgeAttachments.OXYGEN.get(), value);
+    }
+
+    @Override
+    public boolean isTerraformed(LevelChunk chunk) {
+        return chunk.getData(NeoForgeAttachments.TERRAFORMED.get());
+    }
+
+    @Override
+    public void setTerraformed(LevelChunk chunk, boolean value) {
+        chunk.setData(NeoForgeAttachments.TERRAFORMED.get(), value);
+    }
+
+    @Override
+    public int getTerraformStage(LevelChunk chunk) {
+        return chunk.getData(NeoForgeAttachments.TERRAFORM_STAGE.get());
+    }
+
+    @Override
+    public void setTerraformStage(LevelChunk chunk, int value) {
+        chunk.setData(NeoForgeAttachments.TERRAFORM_STAGE.get(), value);
     }
 }

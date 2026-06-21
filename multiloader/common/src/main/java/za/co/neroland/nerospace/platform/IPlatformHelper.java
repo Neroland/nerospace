@@ -35,4 +35,21 @@ public interface IPlatformHelper {
 
     /** Stores the player's oxygen. */
     void setOxygen(net.minecraft.world.entity.player.Player player, int value);
+
+    // --- Per-chunk terraform data (data-attachment seam) --------------------
+    // The Terraformer permanently flags converted chunks: TERRAFORMED (breathable at/above the surface)
+    // and TERRAFORM_STAGE (1 Rooted / 2 Hydrated / 3 Living). Same attachment APIs as the player oxygen,
+    // applied to a LevelChunk target. Persist with the chunk; not synced (breathability is server-side).
+
+    /** Whether the chunk has been terraformed (breathable ground). Defaults false. */
+    boolean isTerraformed(net.minecraft.world.level.chunk.LevelChunk chunk);
+
+    /** Flags the chunk as terraformed. */
+    void setTerraformed(net.minecraft.world.level.chunk.LevelChunk chunk, boolean value);
+
+    /** The highest terraform stage any column in the chunk has completed (0 none .. 3 Living). */
+    int getTerraformStage(net.minecraft.world.level.chunk.LevelChunk chunk);
+
+    /** Records the chunk's terraform stage. */
+    void setTerraformStage(net.minecraft.world.level.chunk.LevelChunk chunk, int value);
 }

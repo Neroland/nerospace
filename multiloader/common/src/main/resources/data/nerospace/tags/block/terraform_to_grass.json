@@ -1,0 +1,27 @@
+{
+  "values": [
+    "minecraft:stone",
+    "minecraft:dirt",
+    "minecraft:coarse_dirt",
+    "minecraft:podzol",
+    "minecraft:gravel",
+    "minecraft:sand",
+    "minecraft:red_sand",
+    "minecraft:sandstone",
+    "minecraft:andesite",
+    "minecraft:diorite",
+    "minecraft:granite",
+    "minecraft:tuff",
+    "minecraft:calcite",
+    "minecraft:netherrack",
+    "minecraft:blackstone",
+    "minecraft:basalt",
+    "minecraft:end_stone",
+    "minecraft:terracotta",
+    "minecraft:clay",
+    "minecraft:mud",
+    "minecraft:snow_block",
+    "minecraft:mycelium",
+    "#minecraft:dirt"
+  ]
+}

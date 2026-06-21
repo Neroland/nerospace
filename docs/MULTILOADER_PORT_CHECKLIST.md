@@ -1,8 +1,19 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~168 classes ported, ~96 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~169 classes ported, ~95 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — terraforming slice 2 (biomes + tags data).** All 4 cells green. Added `world/ModBiomes`
+> (4 terraformed biome ResourceKey constants) + copied the 4 terraformed biome JSON + 2 terraform tag JSON.
+> Data foundation for the conversion engine (slice 3).
+
+> **2026-06-21 update — terraforming started (slice 1: chunk-attachment seam).** All 4 cells green.
+> Extended the data-attachment seam for per-chunk terraform data (`TERRAFORMED` + `TERRAFORM_STAGE`) —
+> NeoForge `chunk.getData/setData`, Fabric `chunk.getAttachedOrCreate/setAttached` (same registries as the
+> player oxygen attachment, `LevelChunk` target); wired terraformed-ground into `OxygenManager.isBreathable`.
+> The signature terraform subsystem is sliced into 6 (see Atmosphere section); this is the critical-path
+> foundation. No new class count yet (seam extension); slices 2–6 add the ~18 terraform classes.
 
 > **2026-06-21 update — oxygen diffusion field (server half) ported.** All 4 cells green. Added
 > `world/{OxygenField, OxygenFieldManager (SavedData, fastutil flood-fill sim), OxygenFieldEvents}`; the
@@ -151,9 +162,24 @@ checked by a headless build).
   config keys inlined. **Deferred (cosmetic): the client visual layer** — `OxygenFieldSyncPayload` +
   `ClientOxygenField` + the particle/haze/boundary overlay (gated on a visual-quality config).
 - [ ] **Deferred**: terraform breathability + criteria, hazard shields/feedback, gas-tank airlock refill.
-- [ ] Terraformer + Terraform Monitor + Hydration Module (blocks/BE/menus/screens), `TerraformManager`,
-  `TerraformConversion`, `TerraformDrift`, `TerraformFauna`, `TerraformChunkLoader`, `TerraformResources`,
-  `GreenxertzAtmosphere`, terraformed biomes. Risk: **high** (world mutation, chunk-loading, events).
+- **Terraforming** (signature endgame) — sliced; **slice 1 DONE (4 cells green)**, rest sequenced:
+  - [x] **Slice 1 — per-chunk data-attachment seam.** `IPlatformHelper.is/setTerraformed` +
+    `get/setTerraformStage(LevelChunk)` backed by NeoForge `AttachmentType` (chunk `getData`/`setData`) and
+    Fabric `AttachmentRegistry` (chunk `getAttachedOrCreate`/`setAttached`) — same registries as the player
+    oxygen attachment, just a `LevelChunk` target (no new API surface). Wired into `OxygenManager.isBreathable`
+    (terraformed chunk ⇒ breathable). Critical-path foundation for everything below.
+  - [x] **Slice 2 — biome + tag data.** `world/ModBiomes` (4 terraformed `ResourceKey<Biome>` constants —
+    the multiloader ships biomes as committed datapack JSON, so no datagen bootstrap needed) + copied the 4
+    terraformed biome JSON (`terraformed`/`_meadow`/`_savanna`/`_tundra`, feature-free / runtime-written) +
+    copied the 2 terraform block-tag JSON (`TERRAFORM_TO_GRASS`/`_DIRT` — TagKey constants already in `ModTags`).
+    All 4 cells green; JSON python-validated. (Inert until slice 3 consumes them.)
+  - [ ] **Slice 3 — conversion engine.** `TerraformConversion` (rewrite stage bookkeeping onto the seam, not
+    `chunk.getData(ModAttachments…)`), `TerraformResources`, `TerraformFauna`. Inline terraform config keys.
+  - [ ] **Slice 4 — Terraformer machine.** `TerraformerBlock`(+BE 584ln)+menu+screen + `TerraformManager`
+    (SavedData; 4-arg `SavedDataType`) + chunk-load catch-up hook (per-loader) + biome-sync packet.
+  - [ ] **Slice 5 — Hydration Module** (block/BE/menu/screen) + stage-2 wiring.
+  - [ ] **Slice 6 — Terraform Monitor** (block/BE/menu/screen) + `TerraformDrift` + `TerraformChunkLoader` +
+    `GreenxertzAtmosphere`. Risk: **high** (world mutation, chunk-loading, events).
 
 ### Structures  (`world/*Feature`, `village/VillageCore*`, station core, `ModFeatures`) — **DONE (4 cells green)**
 - [x] `HamletFeature`, `MegaCityFeature`, `RuinFeature`, `AlienBuild`, `StructureSpacing` + `ModFeatures`
