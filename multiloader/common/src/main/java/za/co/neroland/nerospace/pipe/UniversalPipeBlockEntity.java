@@ -4,12 +4,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -29,6 +34,7 @@ import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.GasTank;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.item.PipeUpgradeItem;
+import za.co.neroland.nerospace.menu.PipeConfigMenu;
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
@@ -43,7 +49,7 @@ import za.co.neroland.nerospace.registry.ModItems;
  * as the item capability and chains pipe-to-pipe. Item flow is directed: pull only from non-pipe
  * containers, push to any neighbour — sources feed the line, the line feeds sinks.
  */
-public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyContainer {
+public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
     public static final int CAPACITY = 8_000;
     public static final int MAX_IO = 1_000;
@@ -110,6 +116,52 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     public void setMode(Direction dir, PipeResourceType type, PipeIoMode mode) {
         this.faceModes[dir.get3DDataValue()][type.ordinal()] = mode;
         setChanged();
+    }
+
+    // --- Config GUI (Configurator sneak-use) ---------------------------------
+
+    /** Transient UI state: which resource layer the open config menu edits (not saved). */
+    private int configType = 0;
+
+    /** Synced to the config menu: [0]=configType, [1..6]=each face's mode ordinal for that layer. */
+    private final ContainerData configData = new ContainerData() {
+        @Override
+        public int get(int index) {
+            if (index == 0) {
+                return configType;
+            }
+            Direction dir = Direction.from3DDataValue(index - 1);
+            return faceModes[dir.get3DDataValue()][configType].ordinal();
+        }
+
+        @Override
+        public void set(int index, int value) {
+            // read-only from the client
+        }
+
+        @Override
+        public int getCount() {
+            return 7;
+        }
+    };
+
+    public int configType() {
+        return this.configType;
+    }
+
+    /** Cycle which resource layer the config menu edits (menu button). */
+    public void cycleConfigType() {
+        this.configType = Math.floorMod(this.configType + 1, PipeResourceType.VALUES.length);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.nerospace.universal_pipe");
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+        return new PipeConfigMenu(containerId, inventory, this, this.configData);
     }
 
     // --- Per-face item filter (Pipe Filter) ----------------------------------

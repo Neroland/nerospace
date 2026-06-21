@@ -475,11 +475,21 @@ checked by a headless build).
   `FluidTank` + `relayFluid()` to the pipe BE (honours the FLUID face-mode + speed); the pipe's fluid handler
   is exposed as the FLUID cap on both loaders. The pipe now carries all four layers; the FLUID face-mode is
   live (e.g. Refinery → pipe → Fuel Tank).
-+ [ ] **Slice B (deferred) — graph + visuals + GUI.** `PipeNetwork` (591-line graph; NeoForge-transfer-
-  coupled), `TravellingItem` (animated stacks; ItemResource→ItemStack), `UniversalPipeRenderer` +
-  `UniversalPipeRenderState` (stream + travelling-item visuals), `PipeConfigScreen` + `PipeConfigOpenHandler`
-  + `network/SetPipeModePayload` (the per-face×per-type config GUI — needs a cross-loader client-screen-open
-  seam). Cosmetic / convenience; the slice-A in-world cycling already configures pipes fully.
++ [x] **Slice B1 DONE — per-face config GUI.** A slot-less `PipeConfigMenu` (`menu/`) + `PipeConfigScreen`
+  (`client/`, plain hull panel, no texture asset, SpaceButtons) let the player edit one resource layer at a
+  time across all six faces: 7 synced data values ([0]=layer, [1..6]=each face's mode), a layer cycler +
+  one cycler per face, all routed through `clickMenuButton` (no packet). `UniversalPipeBlockEntity` now
+  implements `MenuProvider` (+ a transient `configType` + `configData` `ContainerData`); the **Configurator's
+  sneak+right-click on a pipe opens it** via the vanilla `openMenu` path. **Cross-loader adaptation:** uses a
+  server-authoritative menu instead of the standalone mod's client-`PipeConfigScreen` + `SetPipeModePayload`
+  + `PipeConfigOpenHandler`, so **no client-screen-open seam is needed** (menus + their screens already
+  register cross-loader). Menu type registered + screen registered on both loaders; reuses the existing
+  `pipe.nerospace.mode.*` lang.
++ [ ] **Slice B2 (deferred) — travelling-item visuals.** `TravellingItem` (animated in-transit stacks) +
+  `UniversalPipeRenderer` + `UniversalPipeRenderState` (items visibly flow through the pipe), and optionally
+  the `PipeNetwork` 591-line routing graph. Purely cosmetic (the relay already moves resources); the BER
+  rendering API is now proven cross-version (see solar slice 2), so the renderer itself is de-risked — the
+  remaining work is making the item relay animation-aware (tracking + syncing in-transit stacks).
 
 ### Machine modules / upgrades  (`module/` 3) — **DONE (4 cells green)**
 

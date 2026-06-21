@@ -28,6 +28,7 @@ import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.FuelRefineryScreen;
 import za.co.neroland.nerospace.client.FuelTankScreen;
 import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
+import za.co.neroland.nerospace.client.PipeConfigScreen;
 import za.co.neroland.nerospace.client.HydrationModuleScreen;
 import za.co.neroland.nerospace.client.QuarryScreen;
 import za.co.neroland.nerospace.client.RocketScreen;
@@ -74,6 +75,7 @@ public final class NeoForgeClientSetup {
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         event.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
+        event.register(ModMenuTypes.PIPE_CONFIG.get(), PipeConfigScreen::new);
         event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
         event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
         event.register(ModMenuTypes.FUEL_REFINERY.get(), FuelRefineryScreen::new);

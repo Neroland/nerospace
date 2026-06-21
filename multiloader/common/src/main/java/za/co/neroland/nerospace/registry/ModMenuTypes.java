@@ -12,6 +12,7 @@ import za.co.neroland.nerospace.menu.FuelTankMenu;
 import za.co.neroland.nerospace.menu.HydrationModuleMenu;
 import za.co.neroland.nerospace.machine.quarry.QuarryMenu;
 import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
+import za.co.neroland.nerospace.menu.PipeConfigMenu;
 import za.co.neroland.nerospace.menu.TerraformMonitorMenu;
 import za.co.neroland.nerospace.menu.TerraformerMenu;
 import za.co.neroland.nerospace.progression.StarGuideMenu;
@@ -31,6 +32,10 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<NerosiumGrinderMenu>> NEROSIUM_GRINDER =
             MENUS.register("nerosium_grinder",
                     key -> new MenuType<>(NerosiumGrinderMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistryEntry<MenuType<PipeConfigMenu>> PIPE_CONFIG =
+            MENUS.register("pipe_config",
+                    key -> new MenuType<>(PipeConfigMenu::new, FeatureFlags.VANILLA_SET));
 
     public static final RegistryEntry<MenuType<PassiveGeneratorMenu>> PASSIVE_GENERATOR =
             MENUS.register("passive_generator",

@@ -55,8 +55,11 @@ public class ConfiguratorItem extends Item {
         Player player = context.getPlayer();
 
         if (player != null && player.isShiftKeyDown()) {
-            if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity) {
-                // Reserved for the config GUI (client slice); only cycle when sneaking on other blocks.
+            if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
+                // Sneak + right-click a pipe: open the per-face configuration GUI.
+                if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.openMenu(pipe);
+                }
                 return InteractionResult.SUCCESS;
             }
             if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
