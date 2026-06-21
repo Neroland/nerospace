@@ -1,8 +1,22 @@
 # Nerospace multiloader — port checklist
 
 Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~194 classes ported, ~70 remaining**, all four
+cross-loader `multiloader/` project. As of this audit: **~199 classes ported, ~65 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **2026-06-21 update — advanced pipes slice A (per-face configuration layer).** All 4 cells green
+> (compile on 26.1.2 + 26.2; full `:neoforge:build`+`:fabric:build` on 26.2). Added `pipe/PipeIoMode`
+> + `pipe/PipeResourceType` (pure-vanilla enums) and the three pipe tools — `item/ConfiguratorItem`
+> (cycle selected layer + cycle a face's I/O mode), `item/PipeFilterItem` (ItemResource→vanilla
+> **ItemStack** filter), `item/PipeUpgradeItem` (speed/capacity ×2). Extended `UniversalPipeBlockEntity`
+> with per-face×per-type `PipeIoMode` storage (packed long), per-face item filters, speed/capacity
+> upgrade counts, and rewired the energy/gas/item relay to honour `canPull`/`canPush`/`OFF` + filters +
+> the speed throughput multiplier; `UniversalPipeBlock` pops upgrades on sneak-empty-hand. Registered the
+> 4 items (TOOLS tab) + copied 4 textures + item models/defs + 20 lang keys. **Pipes are now configurable
+> per face.** Deferred to **slice B**: the full `PipeNetwork` graph + `TravellingItem` animation +
+> `UniversalPipeRenderer`/`RenderState` (cosmetic, NeoForge-transfer-coupled) and the `PipeConfigScreen`
+> GUI + `SetPipeModePayload` (needs a client-screen-open seam). Note: the multiloader relay still carries
+> no FLUID layer, so the stored FLUID face-mode is inert until a fluid relay lands.
 
 > **2026-06-21 update — telemetry (Sentry) ported.** All 4 cells green; Sentry bundled per-loader (NeoForge
 > jarJar + Fabric include, both tasks green). `telemetry/{NerospaceTelemetry, SentryLogAppender}` +
@@ -316,10 +330,18 @@ checked by a headless build).
 - [ ] `StarGuide`, `StarGuideProgress`, `StarGuideBlock`(+BE), `StarGuideMenu` + screen, hologram BER,
   `StarGuideBookItem`. Progression-tracking UI.
 
-### Pipes — advanced  (`pipe/` 4 + items + payload + renderer; basic pipe already ported)
-- [ ] `PipeNetwork`, `TravellingItem`, `PipeIoMode`, `PipeResourceType`, `PipeFilterItem`,
-  `PipeUpgradeItem`, `SetPipeModePayload`, `UniversalPipeRenderer` (streams + travelling-item visuals,
-  per-side I/O modes, filters). Needs networking seam.
+### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slice A DONE (4 cells green)**
+- [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla
+  enums); `item/{ConfiguratorItem, PipeFilterItem (vanilla ItemStack filter), PipeUpgradeItem ×2}`.
+  `UniversalPipeBlockEntity` extended with per-face×per-type modes (packed long) + per-face item filters +
+  speed/capacity upgrades; the energy/gas/item relay honours `canPull`/`canPush`/`OFF` + filters + speed
+  throughput; `UniversalPipeBlock` sneak-empty-hand pops upgrades. Items registered (TOOLS tab) + assets +
+  20 lang keys.
+- [ ] **Slice B (deferred) — graph + visuals + GUI.** `PipeNetwork` (591-line graph; NeoForge-transfer-
+  coupled), `TravellingItem` (animated stacks; ItemResource→ItemStack), `UniversalPipeRenderer` +
+  `UniversalPipeRenderState` (stream + travelling-item visuals), `PipeConfigScreen` + `PipeConfigOpenHandler`
+  + `network/SetPipeModePayload` (the per-face×per-type config GUI — needs a cross-loader client-screen-open
+  seam). Cosmetic / convenience; the slice-A in-world cycling already configures pipes fully.
 
 ### Machine modules / upgrades  (`module/` 3) — **DONE (4 cells green)**
 - [x] `ModuleType`, `UpgradeModuleItem` (4 items: speed / efficiency / fortune / silk-touch) + `MachineModules`
@@ -344,8 +366,8 @@ checked by a headless build).
   summon-only). Lazy `EntityType` supplier (vanilla `SpawnEggItem` binds too early); SPAWN_EGGS tab.
 - [x] `DestinationCompassItem` (×4: station/greenxertz/cindara/glacira) + `GreenxertzNavigatorItem` —
   creative-only travel devices; TOOLS_AND_UTILITIES tab. Assets + 17 lang keys copied.
-- [ ] `ConfiguratorItem`, `PipeFilterItem`, `PipeUpgradeItem` (depend on **advanced pipes**),
-  `StarGuideBookItem` (depends on **star guide**).
+- [x] `ConfiguratorItem`, `PipeFilterItem`, `PipeUpgradeItem` — DONE (advanced-pipes slice A; TOOLS tab).
+- [ ] `StarGuideBookItem` (depends on **star guide**).
 - [~] `gear/XertzResonatorItem` — ported as a **plain item**; real gear behaviour + `AlienGearEvents` pending.
 
 ### Cross-cutting registries  (`registry/`)

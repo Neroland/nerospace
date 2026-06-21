@@ -3,7 +3,9 @@ package za.co.neroland.nerospace.pipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -20,9 +22,11 @@ import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.GasTank;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
+import za.co.neroland.nerospace.item.PipeUpgradeItem;
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.registry.ModItems;
 
 /**
  * Universal Pipe — relays energy, gas AND items between adjacent storages. Energy/gas use the
@@ -42,12 +46,28 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     private static final int[] ALL_SLOTS = {0, 1, 2};
 
+    /** Max installed upgrades of each kind per segment. */
+    public static final int MAX_UPGRADES = 3;
+
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_IO, MAX_IO, this::setChanged);
     private final GasTank gas = new GasTank(GAS_CAPACITY, this::setChanged);
     private final NonNullList<ItemStack> items = NonNullList.withSize(ITEM_SLOTS, ItemStack.EMPTY);
 
+    /** Per-face (6) × per-resource-type (4) I/O mode, set with the Configurator. Default AUTO. */
+    private final PipeIoMode[][] faceModes = new PipeIoMode[6][PipeResourceType.VALUES.length];
+    /** Per-face item-layer filter (EMPTY = unfiltered), indexed by {@code Direction.get3DDataValue()}. */
+    private final ItemStack[] faceFilters = new ItemStack[6];
+    private int speedUpgrades;
+    private int capacityUpgrades;
+
     public UniversalPipeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.UNIVERSAL_PIPE.get(), pos, state);
+        for (int f = 0; f < 6; f++) {
+            for (int t = 0; t < PipeResourceType.VALUES.length; t++) {
+                this.faceModes[f][t] = PipeIoMode.AUTO;
+            }
+            this.faceFilters[f] = ItemStack.EMPTY;
+        }
     }
 
     public NerospaceEnergyStorage getEnergy() {
@@ -56,6 +76,94 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     public NerospaceGasStorage getGas() {
         return this.gas;
+    }
+
+    // --- Per-face I/O modes (Configurator) -----------------------------------
+
+    public PipeIoMode mode(Direction dir, PipeResourceType type) {
+        return this.faceModes[dir.get3DDataValue()][type.ordinal()];
+    }
+
+    /** Cycle a face's mode for one resource type (Configurator). @return the new mode. */
+    public PipeIoMode cycleMode(Direction dir, PipeResourceType type) {
+        PipeIoMode next = mode(dir, type).next();
+        this.faceModes[dir.get3DDataValue()][type.ordinal()] = next;
+        setChanged();
+        return next;
+    }
+
+    /** Directly set a face's mode for one resource type (Configurator GUI / commands). */
+    public void setMode(Direction dir, PipeResourceType type, PipeIoMode mode) {
+        this.faceModes[dir.get3DDataValue()][type.ordinal()] = mode;
+        setChanged();
+    }
+
+    // --- Per-face item filter (Pipe Filter) ----------------------------------
+
+    public ItemStack filter(Direction dir) {
+        return this.faceFilters[dir.get3DDataValue()];
+    }
+
+    public void setFilter(Direction dir, ItemStack filter) {
+        this.faceFilters[dir.get3DDataValue()] = filter == null ? ItemStack.EMPTY : filter;
+        setChanged();
+    }
+
+    private boolean passesFilter(Direction dir, ItemStack candidate) {
+        ItemStack f = this.faceFilters[dir.get3DDataValue()];
+        return f.isEmpty() || ItemStack.isSameItemSameComponents(f, candidate);
+    }
+
+    // --- Upgrades (Speed / Capacity) -----------------------------------------
+
+    public boolean installUpgrade(PipeUpgradeItem.Kind kind) {
+        if (upgradeCount(kind) >= MAX_UPGRADES) {
+            return false;
+        }
+        if (kind == PipeUpgradeItem.Kind.SPEED) {
+            this.speedUpgrades++;
+        } else {
+            this.capacityUpgrades++;
+        }
+        setChanged();
+        return true;
+    }
+
+    public int upgradeCount(PipeUpgradeItem.Kind kind) {
+        return kind == PipeUpgradeItem.Kind.SPEED ? this.speedUpgrades : this.capacityUpgrades;
+    }
+
+    /** Pops all installed upgrades back out (sneak-right-click with an empty hand). @return count. */
+    public int uninstallUpgrades() {
+        int total = this.speedUpgrades + this.capacityUpgrades;
+        if (total > 0 && this.level instanceof ServerLevel serverLevel) {
+            BlockPos pos = getBlockPos();
+            double x = pos.getX() + 0.5;
+            double y = pos.getY() + 0.5;
+            double z = pos.getZ() + 0.5;
+            if (this.speedUpgrades > 0) {
+                Containers.dropItemStack(serverLevel, x, y, z,
+                        new ItemStack(ModItems.SPEED_UPGRADE.get(), this.speedUpgrades));
+            }
+            if (this.capacityUpgrades > 0) {
+                Containers.dropItemStack(serverLevel, x, y, z,
+                        new ItemStack(ModItems.CAPACITY_UPGRADE.get(), this.capacityUpgrades));
+            }
+            this.speedUpgrades = 0;
+            this.capacityUpgrades = 0;
+            setChanged();
+        }
+        return total;
+    }
+
+    /** Throughput multiplier for the energy/gas layers (and item move rate). */
+    public int speedMultiplier() {
+        return 1 + this.speedUpgrades;
+    }
+
+    /** Buffer multiplier — reserved for the fluid/gas tanks + in-transit cap in the graph slice. */
+    public int capacityMultiplier() {
+        return 1 + this.capacityUpgrades;
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {
@@ -68,14 +176,18 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     private void relayEnergy(Level level, BlockPos pos) {
+        long io = (long) MAX_IO * speedMultiplier();
         for (Direction dir : Direction.values()) {
+            if (!mode(dir, PipeResourceType.ENERGY).canPull()) {
+                continue;
+            }
             NerospaceEnergyStorage neighbour = EnergyLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
             if (neighbour == null) {
                 continue;
             }
             long room = this.energy.getCapacity() - this.energy.getAmount();
             if (room > 0) {
-                long moved = neighbour.extract(Math.min(room, MAX_IO), false);
+                long moved = neighbour.extract(Math.min(room, io), false);
                 if (moved > 0) {
                     this.energy.insert(moved, false);
                 }
@@ -85,11 +197,14 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             if (this.energy.getAmount() <= 0) {
                 break;
             }
+            if (!mode(dir, PipeResourceType.ENERGY).canPush()) {
+                continue;
+            }
             NerospaceEnergyStorage neighbour = EnergyLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
             if (neighbour == null) {
                 continue;
             }
-            long offered = this.energy.extract(Math.min(this.energy.getAmount(), MAX_IO), true);
+            long offered = this.energy.extract(Math.min(this.energy.getAmount(), io), true);
             long accepted = neighbour.insert(offered, false);
             if (accepted > 0) {
                 this.energy.extract(accepted, false);
@@ -98,10 +213,14 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     private void relayGas(Level level, BlockPos pos) {
+        long io = (long) GAS_MAX_IO * speedMultiplier();
         for (Direction dir : Direction.values()) {
             long room = this.gas.getCapacity() - this.gas.getAmount();
             if (room <= 0) {
                 break;
+            }
+            if (!mode(dir, PipeResourceType.GAS).canPull()) {
+                continue;
             }
             NerospaceGasStorage neighbour = GasLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
             if (neighbour == null) {
@@ -111,7 +230,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             if (ngas.isEmpty() || (!this.gas.getGas().isEmpty() && this.gas.getGas() != ngas)) {
                 continue;
             }
-            long available = neighbour.drain(Math.min(room, GAS_MAX_IO), true);
+            long available = neighbour.drain(Math.min(room, io), true);
             long moved = this.gas.fill(ngas, available, false);
             if (moved > 0) {
                 neighbour.drain(moved, false);
@@ -121,12 +240,15 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             if (this.gas.getAmount() <= 0) {
                 break;
             }
+            if (!mode(dir, PipeResourceType.GAS).canPush()) {
+                continue;
+            }
             NerospaceGasStorage neighbour = GasLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
             if (neighbour == null) {
                 continue;
             }
             GasResource g = this.gas.getGas();
-            long offered = this.gas.drain(Math.min(this.gas.getAmount(), GAS_MAX_IO), true);
+            long offered = this.gas.drain(Math.min(this.gas.getAmount(), io), true);
             long accepted = neighbour.fill(g, offered, false);
             if (accepted > 0) {
                 this.gas.drain(accepted, false);
@@ -135,18 +257,34 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     private void relayItems(Level level, BlockPos pos) {
-        // Pull one item per tick from each non-pipe neighbour container into the buffer.
+        int perTick = speedMultiplier();
+        // Pull from each non-pipe neighbour whose face ITEM mode allows pulling; the pipe's face filter
+        // (if any) restricts what enters. Sources feed the line — pipes are never pulled from.
         for (Direction dir : Direction.values()) {
+            if (!mode(dir, PipeResourceType.ITEM).canPull()) {
+                continue;
+            }
             BlockEntity be = level.getBlockEntity(pos.relative(dir));
             if (be instanceof Container src && !(be instanceof UniversalPipeBlockEntity)) {
-                moveOne(src, dir.getOpposite(), this, dir);
+                for (int i = 0; i < perTick; i++) {
+                    if (!moveOneFiltered(src, dir.getOpposite(), this, dir, dir)) {
+                        break;
+                    }
+                }
             }
         }
-        // Push one item per tick from the buffer into each neighbour container (incl. other pipes).
+        // Push into each neighbour (incl. other pipes) whose face ITEM mode allows pushing.
         for (Direction dir : Direction.values()) {
+            if (!mode(dir, PipeResourceType.ITEM).canPush()) {
+                continue;
+            }
             BlockEntity be = level.getBlockEntity(pos.relative(dir));
             if (be instanceof Container dst) {
-                moveOne(this, dir, dst, dir.getOpposite());
+                for (int i = 0; i < perTick; i++) {
+                    if (!moveOneFiltered(this, dir, dst, dir.getOpposite(), dir)) {
+                        break;
+                    }
+                }
             }
         }
     }
@@ -169,11 +307,18 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         return !(into instanceof WorldlyContainer wc) || wc.canPlaceItemThroughFace(slot, stack, face);
     }
 
-    /** Move a single item from {@code from} (extracted through {@code fromFace}) into {@code into}. */
-    private static boolean moveOne(Container from, Direction fromFace, Container into, Direction intoFace) {
+    /**
+     * Move a single item from {@code from} (extracted through {@code fromFace}) into {@code into},
+     * honouring this pipe's item filter on {@code filterFace} (the face the item passes through here).
+     */
+    private boolean moveOneFiltered(Container from, Direction fromFace, Container into, Direction intoFace,
+            Direction filterFace) {
         for (int fs : slotsFor(from, fromFace)) {
             ItemStack stack = from.getItem(fs);
             if (stack.isEmpty()) {
+                continue;
+            }
+            if (!passesFilter(filterFace, stack)) {
                 continue;
             }
             if (from instanceof WorldlyContainer wc && !wc.canTakeItemThroughFace(fs, stack, fromFace)) {
@@ -221,6 +366,22 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
                 output.store("Item" + i, ItemStack.OPTIONAL_CODEC, this.items.get(i));
             }
         }
+        // Per-face × per-type I/O modes packed two bits each (6 faces × 4 types = 48 bits).
+        long packed = 0L;
+        int types = PipeResourceType.VALUES.length;
+        for (int f = 0; f < 6; f++) {
+            for (int t = 0; t < types; t++) {
+                packed |= ((long) (this.faceModes[f][t].ordinal() & 0x3)) << ((f * types + t) * 2);
+            }
+        }
+        output.putLong("Faces", packed);
+        for (int f = 0; f < 6; f++) {
+            if (!this.faceFilters[f].isEmpty()) {
+                output.store("Filter" + f, ItemStack.OPTIONAL_CODEC, this.faceFilters[f]);
+            }
+        }
+        output.putInt("SpeedUpgrades", this.speedUpgrades);
+        output.putInt("CapacityUpgrades", this.capacityUpgrades);
     }
 
     @Override
@@ -231,6 +392,18 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         for (int i = 0; i < ITEM_SLOTS; i++) {
             this.items.set(i, input.read("Item" + i, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         }
+        long packed = input.getLongOr("Faces", 0L);
+        int types = PipeResourceType.VALUES.length;
+        for (int f = 0; f < 6; f++) {
+            for (int t = 0; t < types; t++) {
+                this.faceModes[f][t] = PipeIoMode.VALUES[(int) ((packed >> ((f * types + t) * 2)) & 0x3L)];
+            }
+        }
+        for (int f = 0; f < 6; f++) {
+            this.faceFilters[f] = input.read("Filter" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        }
+        this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
+        this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);
     }
 
     // --- WorldlyContainer (item buffer) -------------------------------------

@@ -29,9 +29,12 @@ import net.minecraft.world.level.block.Block;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.item.ConfiguratorItem;
 import za.co.neroland.nerospace.item.DestinationCompassItem;
 import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
 import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
+import za.co.neroland.nerospace.item.PipeFilterItem;
+import za.co.neroland.nerospace.item.PipeUpgradeItem;
 import za.co.neroland.nerospace.meteor.MeteorCallerItem;
 import za.co.neroland.nerospace.module.ModuleType;
 import za.co.neroland.nerospace.module.UpgradeModuleItem;
@@ -118,6 +121,16 @@ public final class ModItems {
     public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");
     /** Trade-only Artificer gear; ported as a plain item (its custom gear behaviour is deferred). */
     public static final RegistryEntry<Item> XERTZ_RESONATOR = item("xertz_resonator");
+
+    // --- Universal Pipe tools (per-face I/O modes, item filters, throughput upgrades) ----
+    public static final RegistryEntry<Item> CONFIGURATOR = ITEMS.register("configurator",
+            key -> new ConfiguratorItem(new Item.Properties().stacksTo(1).setId(key)));
+    public static final RegistryEntry<Item> PIPE_FILTER = ITEMS.register("pipe_filter",
+            key -> new PipeFilterItem(new Item.Properties().stacksTo(16).setId(key)));
+    public static final RegistryEntry<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
+            key -> new PipeUpgradeItem(new Item.Properties().setId(key), PipeUpgradeItem.Kind.SPEED));
+    public static final RegistryEntry<Item> CAPACITY_UPGRADE = ITEMS.register("capacity_upgrade",
+            key -> new PipeUpgradeItem(new Item.Properties().setId(key), PipeUpgradeItem.Kind.CAPACITY));
 
     // --- Machine upgrade modules (the quarry is the first consumer) ----------
     public static final RegistryEntry<Item> SPEED_MODULE = module("speed_module", ModuleType.SPEED);
@@ -266,7 +279,8 @@ public final class ModItems {
                 List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get(), XERTZ_RESONATOR.get(),
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
                         GREENXERTZ_NAVIGATOR.get(), STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(),
-                        CINDARA_COMPASS.get(), GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get()),
+                        CINDARA_COMPASS.get(), GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get(),
+                        CONFIGURATOR.get(), PIPE_FILTER.get(), SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get()),
                 CreativeModeTabs.SPAWN_EGGS,
                 List.<ItemLike>of(XERTZ_STALKER_SPAWN_EGG.get(), QUARTZ_CRAWLER_SPAWN_EGG.get(),
                         GREENLING_SPAWN_EGG.get(), ALIEN_VILLAGER_SPAWN_EGG.get(), CINDER_STALKER_SPAWN_EGG.get(),
