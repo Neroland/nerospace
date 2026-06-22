@@ -4,15 +4,18 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
-> **2026-06-22 update — JEI compat DONE (NeoForge recipe viewer; corrects the wrong "blocked" status).**
+> **2026-06-22 update — JEI compat DONE on BOTH loaders (NeoForge + Fabric recipe viewer).**
 > All 4 cells green (NeoForge + Fabric × 26.2 + 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new). JEI **does**
-> ship for both MC versions (`29.6.2.31` on 26.1.2, `30.1.0.10` on 26.2, BlameJared maven). Wired the per-MC
-> `jei_version_<mc>` dependency in `neoforge/build.gradle` and ported `compat/jei/{NerospaceJeiPlugin +
-> Grinding/Refining/CombustionFuel categories}` to the neoforge source set, exposing the in-code recipe data
-> (`GrinderRecipes.Grinding`/`all()`, `CombustionGeneratorBlockEntity.knownFuels()`) and swapping the root's
-> `Tuning.*` for the machines' constants × live `NerospaceConfig` multipliers + 6 lang keys. The feared JEI
-> 29→30 API divergence didn't materialise — the category API compiles identically on both. JEI now shows the
-> grinder/refinery/combustion recipes + machine catalysts. (Fabric REI/EMI is a separate follow-up.)
+> ship for both loaders + MC versions (`29.6.2.31` on 26.1.2, `30.1.0.10` on 26.2; `jei-<mc>-neoforge` and
+> `jei-<mc>-fabric`, BlameJared maven). The `compat/jei/{NerospaceJeiPlugin + Grinding/Refining/CombustionFuel
+> categories}` use ONLY the loader-agnostic JEI **common API**, so they live in `common` and ship in BOTH jars;
+> each loader adds its own JEI deps (`neoforge`: common+neoforge API compileOnly + `jei-neoforge` runtimeOnly;
+> `fabric`: common+fabric API compileOnly + `jei-fabric` runtimeOnly), guarded by `if (jeiVersion)` and reusing
+> the SAME `jei_version_<mc>` pins. The categories expose the in-code recipe data (`GrinderRecipes.Grinding`/
+> `all()`, `CombustionGeneratorBlockEntity.knownFuels()`) × live `NerospaceConfig` multipliers + 6 lang keys.
+> The feared JEI 29→30 API divergence didn't materialise — the category API compiles identically on both. JEI
+> now shows the grinder/refinery/combustion recipes + machine catalysts on NeoForge AND Fabric. (Fabric also
+> works with EMI/REI via JEI's compat, but a native REI/EMI plugin is a separate follow-up.)
 
 > **2026-06-22 update — quarry drill-head BER DONE (the flagship machine now digs visibly).** All 4 cells
 > green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new).
@@ -757,12 +760,15 @@ checked by a headless build).
   unported); spawn the armor stands via the `ArmorStand` constructor (the de-obf `EntityType.ARMOR_STAND`
   constant isn't on the 26.2 classpath); dropped the unported `quarry.stageDisplay` preview + the Creative
   Fluid Tank `setSource` (fixed rocket_fuel here).
-+ [x] **JEI compat DONE (NeoForge, both MC versions; 2026-06-22). Was wrongly marked "no 26.x artifact".**
-  JEI publishes for both: `jei-26.1.2-*:29.6.2.31` and `jei-26.2-*:30.1.0.10` (BlameJared maven, inherited).
-  Dependency wired in `neoforge/build.gradle` as per-MC-version `jei_version_<mc>` (compileOnly common+neoforge
-  API, runtimeOnly the full NeoForge artifact — never published as a hard dep), guarded by `if (jeiVersion)`.
-  Ported `compat/jei/{NerospaceJeiPlugin, GrindingCategory, RefiningCategory, CombustionFuelCategory}` to the
-  **neoforge source set** (JEI is NeoForge-only). Exposed the in-code recipe data the categories iterate:
++ [x] **JEI compat DONE on BOTH loaders (NeoForge + Fabric, both MC versions; 2026-06-22).**
+  JEI publishes for both loaders + versions: `jei-<mc>-neoforge`/`jei-<mc>-fabric` at `29.6.2.31` (26.1.2) and
+  `30.1.0.10` (26.2) (BlameJared maven, inherited). The plugin uses ONLY the loader-agnostic JEI **common API**
+  (`mezz.jei.api.*`), so `compat/jei/{NerospaceJeiPlugin, GrindingCategory, RefiningCategory, CombustionFuelCategory}`
+  lives in the **common source set** and ships in BOTH jars (verified: 6 jei classes in each loader's jar). Each
+  loader adds JEI per-MC via `jei_version_<mc>`, guarded by `if (jeiVersion)`: `neoforge/build.gradle` =
+  compileOnly common+neoforge API + runtimeOnly `jei-<mc>-neoforge`; `fabric/build.gradle` = compileOnly
+  common+fabric API + runtimeOnly `jei-<mc>-fabric`. `@JeiPlugin` is auto-discovered by JEI on both loaders (no
+  entrypoint/mods-toml line needed). Exposed the in-code recipe data the categories iterate:
   `GrinderRecipes.Grinding` record + `all()` and `CombustionGeneratorBlockEntity.knownFuels()` (common);
   replaced the root's `Tuning.*` with the machines' own public constants × the live `NerospaceConfig`
   multipliers (no `Tuning` class in the multiloader). Added 6 `jei.nerospace.*` lang keys. **The feared

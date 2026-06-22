@@ -9,6 +9,7 @@ plugins {
 // MC version comes from the Stonecutter node (e.g. :fabric:26.1.2), not a global property.
 def mc = stonecutter.current.version
 def fabricApi = project.findProperty("fabric_api_version_${mc}")
+def jeiVersion = project.findProperty("jei_version_${mc}")
 
 // This node's projectDir is <loader>/versions/<v>; the authoritative loader source +
 // resources live in the BRANCH root (fabric/). Resolve branch-root paths via the parent.
@@ -30,6 +31,16 @@ dependencies {
     // shipped Fabric jar carries it. Counterpart to the NeoForge JarJar bundling.
     implementation 'io.sentry:sentry:8.42.0'
     include 'io.sentry:sentry:8.42.0'
+
+    // JEI (optional recipe-viewer compat). The shared compat/jei plugin lives in `common` and uses ONLY
+    // the loader-agnostic JEI common API; on Fabric it compiles against the common + fabric APIs and loads
+    // against the Fabric JEI mod at dev runtime. JEI is a soft dependency (compile-time API only; the mod
+    // is runtime-only). Same per-MC version as NeoForge (jei_version_<mc>, BlameJared maven from the root).
+    if (jeiVersion) {
+        compileOnly "mezz.jei:jei-${mc}-common-api:${jeiVersion}"
+        compileOnly "mezz.jei:jei-${mc}-fabric-api:${jeiVersion}"
+        runtimeOnly "mezz.jei:jei-${mc}-fabric:${jeiVersion}"
+    }
 }
 
 // Expand fabric.mod.json from src/main/templates into a generated resources dir.
