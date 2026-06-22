@@ -107,8 +107,8 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> energy.getRaw();
-                case 1 -> ENERGY_BUFFER;
+                case 0 -> (int) (energy.getRaw() * 1000L / ENERGY_BUFFER); // permille (ContainerData syncs as short)
+                case 1 -> 1000;
                 case 2 -> tier;
                 case 3 -> radius;
                 case 4 -> hydration;

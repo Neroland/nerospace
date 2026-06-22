@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +13,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -162,11 +165,29 @@ public class UniversalPipeBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (player.isShiftKeyDown() && level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe
-                && pipe.uninstallUpgrades() > 0) {
-            return InteractionResult.SUCCESS;
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
+                && level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
+            if (player.isShiftKeyDown()) {
+                pipe.uninstallUpgrades(); // sneak + empty hand: pop installed upgrades back out
+                return InteractionResult.SUCCESS;
+            }
+            // Read out what is flowing through this segment (energy / fluid / gas / items).
+            serverPlayer.sendSystemMessage(Component.literal("§eEnergy: " + pipe.getEnergy().getAmount() + " FE"));
+            if (pipe.getFluidTank().getFluid() != Fluids.EMPTY) {
+                serverPlayer.sendSystemMessage(Component.literal("§bFluid: " + pipe.getFluidTank().getAmount() + " mB"));
+            }
+            if (!pipe.getGas().getGas().isEmpty()) {
+                serverPlayer.sendSystemMessage(Component.literal("§aGas: " + pipe.getGas().getAmount() + " mB"));
+            }
+            int items = 0;
+            for (int i = 0; i < pipe.getContainerSize(); i++) {
+                items += pipe.getItem(i).getCount();
+            }
+            if (items > 0) {
+                serverPlayer.sendSystemMessage(Component.literal("§fItems in transit: " + items));
+            }
         }
-        return InteractionResult.PASS;
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable

@@ -123,7 +123,9 @@ public class QuarryControllerRenderer
         double rx = be.prevDispX + (be.dispX - be.prevDispX) * partialTick;
         double ry = be.prevDispY + (be.dispY - be.prevDispY) * partialTick;
         double rz = be.prevDispZ + (be.dispZ - be.prevDispZ) * partialTick;
-        s.hx = rx - p.getX();
+        // The gantry/drill otherwise render exactly +1 block on the X axis relative to the frame; nudge
+        // the whole assembly (bridge, carriage, shaft and spinning bit all key off hx) back by one.
+        s.hx = rx - p.getX() - 1.0;
         s.hy = ry - p.getY();
         s.hz = rz - p.getZ();
 

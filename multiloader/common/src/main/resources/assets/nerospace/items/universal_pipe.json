@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "nerospace:block/universal_pipe"
+    "model": "nerospace:block/universal_pipe_core"
   }
 }

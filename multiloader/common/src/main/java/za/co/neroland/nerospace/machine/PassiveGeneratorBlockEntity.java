@@ -48,8 +48,8 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> energy.getRaw();
-                case 1 -> CAPACITY;
+                case 0 -> (int) (energy.getRaw() * 1000L / CAPACITY); // permille (ContainerData syncs as short)
+                case 1 -> 1000;
                 case 2 -> coreTicks;
                 case 3 -> CORE_TICKS;
                 default -> 0;

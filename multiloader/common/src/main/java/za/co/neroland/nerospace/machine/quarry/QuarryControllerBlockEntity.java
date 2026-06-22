@@ -128,8 +128,11 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> (int) energy.getAmount();
-                case 1 -> (int) energy.getCapacity();
+                // Sync power as a per-mille (0..1000): ContainerData syncs values as 16-bit shorts, so the
+                // raw FE (capacity 200k) would overflow and read negative on the client. The screen's
+                // energy*100/cap and energy/cap math is preserved (cap synced as the constant 1000).
+                case 0 -> (int) (energy.getAmount() * 1000L / Math.max(1L, energy.getCapacity()));
+                case 1 -> 1000;
                 case 2 -> state.ordinal();
                 case 3 -> (int) fluidBuffer.getAmount();
                 case 4 -> (int) fluidBuffer.getCapacity();

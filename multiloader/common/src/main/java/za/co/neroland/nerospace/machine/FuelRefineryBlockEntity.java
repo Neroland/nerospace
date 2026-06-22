@@ -74,8 +74,8 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> energy.getRaw();
-                case 1 -> ENERGY_BUFFER;
+                case 0 -> (int) (energy.getRaw() * 1000L / ENERGY_BUFFER); // permille (ContainerData syncs as short)
+                case 1 -> 1000;
                 case 2 -> (int) tank.getAmount();
                 case 3 -> (int) tank.getCapacity();
                 case 4 -> progress;

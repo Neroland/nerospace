@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
-/** Creative Battery — an endless energy source and sink for testing power grids. */
+/** Creative Battery — an endless energy SOURCE for testing power grids (pure provider; see insert). */
 public class CreativeBatteryBlockEntity extends BlockEntity {
 
     private static final NerospaceEnergyStorage INFINITE = new NerospaceEnergyStorage() {
@@ -23,7 +23,10 @@ public class CreativeBatteryBlockEntity extends BlockEntity {
 
         @Override
         public long insert(long maxAmount, boolean simulate) {
-            return Math.max(0, maxAmount);
+            // Pure source: must NOT accept energy back. If it did, a pipe with a default AUTO face would
+            // pull power out and immediately push the network's energy straight back in (an infinite
+            // sink), so nothing would ever reach the machines downstream.
+            return 0;
         }
 
         @Override

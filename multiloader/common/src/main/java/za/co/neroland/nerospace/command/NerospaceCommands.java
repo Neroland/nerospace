@@ -322,7 +322,7 @@ public final class NerospaceCommands {
         List<EntityType<? extends Mob>> creatures = List.of(
                 ModEntities.XERTZ_STALKER.get(), ModEntities.QUARTZ_CRAWLER.get(),
                 ModEntities.GREENLING.get(), ModEntities.CINDER_STALKER.get(),
-                ModEntities.FROST_STRIDER.get(),
+                ModEntities.FROST_STRIDER.get(), ModEntities.ALIEN_VILLAGER.get(),
                 // Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5).
                 ModEntities.MEADOW_LOPER.get(), ModEntities.EMBER_STRUTTER.get(),
                 ModEntities.WOOLLY_DRIFT.get());

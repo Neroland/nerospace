@@ -401,6 +401,10 @@ public final class PipeNetwork {
                 if (pulled.isEmpty()) {
                     continue;
                 }
+                // Cosmetic: show the item travelling through the pipe (the BER animates pipe.travelling()).
+                if (pipe.travelling().size() < UniversalPipeBlockEntity.MAX_TRAVELLING) {
+                    pipe.travelling().add(new TravellingItem(pulled.copy(), dir, dir.getOpposite(), 0.0F));
+                }
                 ItemStack leftover = insertIntoPipe(pipe, pulled);
                 if (!leftover.isEmpty()) {
                     insert(src, dir.getOpposite(), leftover); // pipe full — put the remainder back, never drop
