@@ -4,6 +4,17 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-22 update — rocket item-canister intake proxy DONE (rocket automation now fluid + items).** All
+> 4 cells green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline,
+> 0 new). `rocket/RocketPadItemContainer` (stateless single-slot `WorldlyContainer` over the pad position,
+> re-finds the docked rocket each call via the new `LaunchPadMultiblock.dockedRocket` helper and forwards to
+> its `getFuelInput()`) exposed as the launch-pad block's Item capability — NeoForge `registerBlock`
+> (sided `WorldlyContainerWrapper`) / Fabric `ItemStorage.SIDED.registerForBlocks` + `ContainerStorage.of`.
+> Accepts only fuel containers while a non-launching rocket is docked; rejects everything (no item loss) when
+> the pad is empty; lets automation reclaim the empty bucket the rocket leaves but never pull a full canister.
+> Reuses the no-BE block-cap pattern from the fluid proxy. **The rocket pipe/hopper automation proxy is now
+> complete (fluid + items).** ~228 classes.
+
 > **2026-06-22 update — rocket auto-fuel automation proxy DONE (the last real gameplay gap).** All 4 cells
 > green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new).
 > `rocket/RocketPadFluidProxy` (a stateless `NerospaceFluidStorage` over a pad position) is exposed as the
@@ -347,8 +358,13 @@ checked by a headless build).
   `rocket_fuel` into the docked rocket (`addFuel`), registered on the pad block (no BE) via NeoForge
   `event.registerBlock` / Fabric `FLUID.registerForBlocks` — so a pipe or any fluid source beside the pad
   refuels the rocket (Refinery → pipe → pad → rocket), routing around the absence of a cross-loader
-  *entity*-capability seam. **Deferred (secondary):** the item-canister intake proxy (hoppers dropping
-  canisters). Risk: travel/teleport still unverifiable headlessly — compile-verified only.
+  *entity*-capability seam. **Item-canister intake proxy DONE too (4 cells green):** `rocket/RocketPadItemContainer`
+  (a stateless single-slot `WorldlyContainer` over the pad pos, forwarding to the docked rocket's
+  `getFuelInput()`; accepts only fuel containers while a rocket is docked, and lets automation pull the
+  empty bucket back out but never a full canister) exposed as the pad block's Item capability on both loaders
+  (NeoForge `registerBlock` sided wrapper / Fabric `ItemStorage.SIDED.registerForBlocks` + `ContainerStorage.of`).
+  **The rocket pipe/hopper automation proxy is now complete (fluid + items).** Risk: travel/teleport still
+  unverifiable headlessly — compile-verified only.
 + [x] `RocketItem` ×4 tiers, `RocketMenu` + `RocketScreen`. Menu is **non-extended** (no loader-divergent
   extended-menu API); buttons route via `clickMenuButton`. **Station selection DONE:** `BUTTON_CYCLE_STATION`
   + a synced `[5]=stationSlot` data value + a `RocketScreen` "Dock:" cycler shown only when the Orbital Station

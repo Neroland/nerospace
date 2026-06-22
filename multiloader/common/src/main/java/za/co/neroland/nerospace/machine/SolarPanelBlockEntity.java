@@ -27,7 +27,7 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  * sun). The cap is exposed on every side (extract-only) via the energy seam.
  *
  * <p>Cross-loader port: rebuilt on the multiloader {@link EnergyBuffer} (the NeoForge transfer
- * {@code SimpleEnergyHandler} isn't ported); daylight uses vanilla {@code getDayTime} rather than the
+ * {@code SimpleEnergyHandler} isn't ported); daylight uses vanilla {@code getSkyDarken} rather than the
  * NeoForge-only dimension clock, and the airless 2× bonus keys off {@link ModDimensions} (no
  * {@code ModDimensionTypes}). Every panel is a 1×1 self-anchor here; the N×N multiblock + sun-tracking
  * renderer are a deferred enhancement.</p>

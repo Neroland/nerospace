@@ -34,6 +34,7 @@ import za.co.neroland.nerospace.meteor.MeteorEvents;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.rocket.RocketPadFluidProxy;
+import za.co.neroland.nerospace.rocket.RocketPadItemContainer;
 import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
@@ -246,9 +247,13 @@ public final class NerospaceFabric implements ModInitializer {
                 ModBlockEntities.QUARRY_CONTROLLER.get());
 
         // Rocket launch pad: a fluid sink forwarding rocket_fuel into a docked rocket (refuelling
-        // automation). Registered on the BLOCK (no block entity) — the proxy finds the rocket above the pad.
+        // automation), plus an item sink forwarding fuel canisters into the rocket's intake. Registered on
+        // the BLOCK (no block entity) — the proxies find the rocket above the pad.
         FLUID.registerForBlocks(
                 (world, pos, state, blockEntity, side) -> new RocketPadFluidProxy(world, pos),
+                ModBlocks.ROCKET_LAUNCH_PAD.get());
+        ItemStorage.SIDED.registerForBlocks(
+                (world, pos, state, blockEntity, side) -> ContainerStorage.of(new RocketPadItemContainer(world, pos), side),
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
     }
 

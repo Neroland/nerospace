@@ -199,6 +199,12 @@ public final class LaunchPadMultiblock {
         return true;
     }
 
+    /** The non-launching rocket docked on the pad cluster containing {@code padPos}, or {@code null}. */
+    @Nullable
+    public static RocketEntity dockedRocket(Level level, BlockPos padPos) {
+        return rocketAbove(level, connectedPads(level, padPos));
+    }
+
     /** The first {@link RocketEntity} standing on top of any pad in {@code pads}, or {@code null}. */
     @Nullable
     public static RocketEntity rocketAbove(Level level, Set<BlockPos> pads) {

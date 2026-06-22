@@ -1,7 +1,5 @@
 package za.co.neroland.nerospace.rocket;
 
-import java.util.Set;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
@@ -36,8 +34,7 @@ public final class RocketPadFluidProxy implements NerospaceFluidStorage {
 
     @Nullable
     private RocketEntity rocket() {
-        Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(this.level, this.padPos);
-        return LaunchPadMultiblock.rocketAbove(this.level, pads);
+        return LaunchPadMultiblock.dockedRocket(this.level, this.padPos);
     }
 
     @Override
