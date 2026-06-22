@@ -40,8 +40,9 @@ import za.co.neroland.nerospace.platform.Services;
  *
  * <p>Cross-loader port note: the root drove start/stop from NeoForge {@code ModConfigEvent} and read
  * FML for version/dist; here {@link #init()} is called once per loader at bootstrap and reads loader
- * facts through {@link Services#PLATFORM}. Only initialises in a production (non-dev) environment.
- * Full disclosure text: {@code PRIVACY.md}.</p>
+ * facts through {@link Services#PLATFORM}. Reporting is gated only on {@code telemetryEnabled} (default
+ * ON); dev/IDE runs report too, tagged {@code environment=development} so they stay out of release
+ * metrics. Full disclosure text: {@code PRIVACY.md}.</p>
  */
 public final class NerospaceTelemetry {
 
@@ -68,13 +69,15 @@ public final class NerospaceTelemetry {
     }
 
     /**
-     * Called once per loader at bootstrap. Starts reporting iff the player has not opted out and we are
-     * in a shipped (non-development) environment — so dev runs never report, and nothing is sent before
-     * the player's choice is read from {@link NerospaceConfig}.
+     * Called once per loader at bootstrap. Starts reporting iff the player has not opted out
+     * ({@code telemetryEnabled=true}, the default). Dev (IDE) runs ALSO report now — so the developer
+     * can test error reporting end to end (e.g. the {@code sentry_test} block) — but they are tagged
+     * {@code environment=development} / {@code runtime=development} so they are trivially filtered out of
+     * production metrics. Set {@code telemetryEnabled=false} to silence everything (incl. dev).
      */
     public static void init() {
         NerospaceConfig.load();
-        if (!NerospaceConfig.isTelemetryEnabled() || Services.PLATFORM.isDevelopmentEnvironment()) {
+        if (!NerospaceConfig.isTelemetryEnabled()) {
             return;
         }
         start();
@@ -103,10 +106,12 @@ public final class NerospaceTelemetry {
             return;
         }
         String modVersion = Services.PLATFORM.getModVersion();
+        boolean dev = Services.PLATFORM.isDevelopmentEnvironment();
         Sentry.init(options -> {
             options.setDsn(DSN);
             options.setRelease("nerospace@" + modVersion);
-            options.setEnvironment(environmentOf(modVersion));
+            // Dev/IDE runs report under a dedicated environment so they never mix with real releases.
+            options.setEnvironment(dev ? "development" : environmentOf(modVersion));
             // POPIA/GDPR: never store the sender's IP address or identity.
             options.setSendDefaultPii(false);
             // The machine's hostname is identifying; never attach it.
@@ -117,7 +122,7 @@ public final class NerospaceTelemetry {
         Sentry.configureScope(scope -> {
             scope.setTag("loader", Services.PLATFORM.getPlatformName().toLowerCase(Locale.ROOT));
             scope.setTag("dist", Services.PLATFORM.isClient() ? "client" : "dedicated_server");
-            scope.setTag("runtime", "production");
+            scope.setTag("runtime", dev ? "development" : "production");
         });
         if (appender == null) {
             appender = new SentryLogAppender();

@@ -1,6 +1,11 @@
-name: Build
+name: Build (root single-loader — DISABLED)
 
-on: [pull_request]
+# DISABLED 2026-06-22: the root single-loader mod is superseded by the multiloader
+# (see multiloader.yml, which builds all 4 loader x MC cells). This workflow no longer
+# runs on pull_request; it is kept manual-only (workflow_dispatch) in case the legacy
+# root build ever needs a one-off check. Re-enable by restoring `pull_request` here.
+on:
+  workflow_dispatch:
 
 jobs:
   build:

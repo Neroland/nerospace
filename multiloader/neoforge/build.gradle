@@ -18,6 +18,10 @@ def jeiVersion = project.findProperty("jei_version_${mc}")
 // templates live in the BRANCH root (neoforge/). Resolve branch-root paths via the parent.
 def branchDir = project.parent.projectDir
 
+// Distinct, descriptive jar name per cell (the node project is named after the MC version, so the
+// default jar would be "<mc>-<version>.jar" and COLLIDE with the fabric cell of the same version).
+base { archivesName = "nerospace-neoforge-${mc}" }
+
 repositories {
     mavenLocal() // resolves a self-built NeoForge 26.2 until the official jar drops
 }

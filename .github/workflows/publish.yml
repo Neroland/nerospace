@@ -1,10 +1,12 @@
 name: Publish
 
-# Builds and publishes the mod whenever the mod_version in gradle.properties has no
-# published release yet. The detect job checks for the release tag (v<mod_version>)
-# that every publish creates — NOT the previous commit — so a version bumped two (or
-# twenty) commits ago still publishes on the next push, and re-running the workflow
-# is always safe (already-released versions are skipped by their tag).
+# Builds and publishes the MULTILOADER mod (all 4 cells: fabric/neoforge x 26.1.2/26.2)
+# whenever the mod_version in multiloader/gradle.properties has no published release yet.
+# The detect job checks for the release tag (v<mod_version>) that every publish creates —
+# NOT the previous commit — so a version bumped two (or twenty) commits ago still publishes
+# on the next push, and re-running the workflow is always safe (already-released versions
+# are skipped by their tag). All four jars ship in one release version, tagged with both
+# loaders + both game versions.
 #
 # Escape hatches: `workflow_dispatch` runs the same check manually (catches up a
 # missed release without a dummy commit); if a publish half-failed AFTER its tag was
@@ -13,7 +15,7 @@ on:
   push:
     branches: [main]
     paths:
-      - gradle.properties
+      - multiloader/gradle.properties
   workflow_dispatch:
 
 # Allow the workflow to create GitHub Releases.
@@ -40,11 +42,11 @@ jobs:
         run: |
           read_version() { grep -E '^mod_version=' "$1" | head -n1 | cut -d= -f2 | tr -d '[:space:]'; }
 
-          CURRENT="$(read_version gradle.properties)"
+          CURRENT="$(read_version multiloader/gradle.properties)"
           echo "current=$CURRENT"
 
           if [ -z "$CURRENT" ]; then
-            echo "::error::Could not read mod_version from gradle.properties"
+            echo "::error::Could not read mod_version from multiloader/gradle.properties"
             exit 1
           fi
 
@@ -81,10 +83,17 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Make Gradle wrapper executable
-        run: chmod +x ./gradlew
+        run: chmod +x ./multiloader/gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      # Build all four multiloader cells (loader x MC version). Each produces a distinctly named
+      # jar (nerospace-<loader>-<mc>-<version>.jar) under <loader>/versions/<mc>/build/libs.
+      - name: Build all multiloader cells
+        working-directory: multiloader
+        run: >-
+          ./gradlew
+          :fabric:26.1.2:build :fabric:26.2:build
+          :neoforge:26.1.2:build :neoforge:26.2:build
+          --stacktrace
 
       # Derive the release channel from the version suffix once, for both Sentry and
       # the publish targets (NerospaceTelemetry derives its environment the same way:
@@ -163,10 +172,13 @@ jobs:
           # alpha/beta/release, derived from the version suffix (1.0.0 -> release).
           version-type: ${{ steps.channel.outputs.version_type }}
           changelog-file: RELEASE_NOTES.md
-          files: build/libs/nerospace-!(*-sources|*-dev|*-shadow|*-javadoc).jar
-          loaders: neoforge
-          game-versions: ${{ env.minecraft_version }}
+          # All four cells' jars, one release version. mc-publish reads each jar's fabric.mod.json /
+          # neoforge.mods.toml; the loaders + game-versions below are the union it tags the version with.
+          files: multiloader/*/versions/*/build/libs/nerospace-*-!(*-sources|*-dev|*-shadow|*-javadoc).jar
+          loaders: |
+            fabric
+            neoforge
+          game-versions: |
+            26.1.2
+            26.2
           java: 25
-        env:
-          # Surfaced so game-versions stays in sync with gradle.properties.
-          minecraft_version: 26.1.2
