@@ -64,6 +64,8 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     private static final int WORK_INTERVAL_TICKS = 8;
     private static final int HYDRATION_CAP = 1_024;
     private static final int MAX_COLUMNS_PER_TICK = 48;
+    /** Opt-in (config) force-load window: a (2R+1)² chunk square centred on the machine (R=2 → 25 chunks). */
+    private static final int FORCE_LOAD_RADIUS = 2;
 
     private static final int[] SLOTS = {UPGRADE_SLOT};
 
@@ -88,6 +90,9 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     /** Transient per-stage caches of the current ring's column offsets (recomputed on load). */
     private final transient List<int[]>[] rings = newRingCache();
     private final transient int[] ringsFor = {-1, -1, -1};
+
+    /** Chunks we currently keep force-loaded (opt-in, config-gated) — {@link #packChunk} long keys. */
+    private final transient Set<Long> forcedChunks = new HashSet<>();
 
     @SuppressWarnings("unchecked")
     private static List<int[]>[] newRingCache() {
@@ -212,6 +217,9 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
+
+        // Opt-in (config) active force-loading: keep a small window of chunks loaded while running.
+        updateForcedChunks(serverLevel, pos);
 
         // Auto-consume tier upgrades: a Nerosteel Ingot → T2, a Cindrite → T3.
         ItemStack upgrade = this.items.get(UPGRADE_SLOT);
@@ -398,8 +406,63 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     public void setRemoved() {
         if (this.level instanceof ServerLevel serverLevel) {
             TerraformManager.get(serverLevel).remove(this.worldPosition);
+            releaseForcedChunks(serverLevel);
         }
         super.setRemoved();
+    }
+
+    /**
+     * Opt-in active force-loading (config {@code terraformerForceLoadEnabled}): while running (powered),
+     * keep a bounded {@link #FORCE_LOAD_RADIUS} window of chunks force-loaded so the frontier keeps
+     * converting with no player nearby; release them when the machine idles or the config is off. The
+     * window is diffed against {@link #forcedChunks} so a steady state issues no per-tick ticket churn.
+     */
+    private void updateForcedChunks(ServerLevel level, BlockPos center) {
+        boolean want = NerospaceConfig.terraformerForceLoadEnabled() && isActive();
+        if (!want) {
+            if (!this.forcedChunks.isEmpty()) {
+                releaseForcedChunks(level);
+            }
+            return;
+        }
+
+        int cx = center.getX() >> 4;
+        int cz = center.getZ() >> 4;
+        Set<Long> desired = new HashSet<>();
+        for (int dx = -FORCE_LOAD_RADIUS; dx <= FORCE_LOAD_RADIUS; dx++) {
+            for (int dz = -FORCE_LOAD_RADIUS; dz <= FORCE_LOAD_RADIUS; dz++) {
+                desired.add(packChunk(cx + dx, cz + dz));
+            }
+        }
+        if (desired.equals(this.forcedChunks)) {
+            return; // steady state — no ticket changes needed this tick
+        }
+
+        for (long key : new ArrayList<>(this.forcedChunks)) {
+            if (!desired.contains(key)) {
+                level.setChunkForced((int) key, (int) (key >> 32), false);
+            }
+        }
+        for (long key : desired) {
+            if (!this.forcedChunks.contains(key)) {
+                level.setChunkForced((int) key, (int) (key >> 32), true);
+            }
+        }
+        this.forcedChunks.clear();
+        this.forcedChunks.addAll(desired);
+    }
+
+    /** Releases every chunk we force-loaded (on idle / config-off / removal). */
+    private void releaseForcedChunks(ServerLevel level) {
+        for (long key : this.forcedChunks) {
+            level.setChunkForced((int) key, (int) (key >> 32), false);
+        }
+        this.forcedChunks.clear();
+    }
+
+    /** Packs chunk coords (lower 32 bits = x, upper = z) into a {@link #forcedChunks} key. */
+    private static long packChunk(int x, int z) {
+        return ((long) z << 32) | (x & 0xFFFF_FFFFL);
     }
 
     // --- Persistence --------------------------------------------------------

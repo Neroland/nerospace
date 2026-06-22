@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -31,6 +32,7 @@ import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.menu.FuelRefineryMenu;
+import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -54,6 +56,8 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
     public static final int ENERGY_BUFFER = 40_000;
     public static final int ENERGY_MAX_INSERT = 1_000;
     public static final int TANK_CAPACITY = 8_000;
+    /** Max mB pushed to each adjacent fluid store per tick by the active auto-eject. */
+    private static final long EJECT_RATE = 200L;
     public static final int FE_PER_TICK = 40;
     public static final int MB_PER_BATCH = 2_000;
     public static final int WORK_TICKS = 100;
@@ -139,6 +143,11 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
         if (level.isClientSide()) {
             return;
         }
+
+        // Active auto-eject: push the refined fuel into any adjacent fluid store (tank/pipe) even with no
+        // pipe pulling — so a full output tank keeps draining and the refinery never idles on "tank full".
+        pushFluid(level, pos);
+
         if (!canRun()) {
             if (this.progress != 0) {
                 this.progress = 0;
@@ -156,6 +165,29 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
             this.tank.fill(rocketFuel(), MB_PER_BATCH, false);
         }
         setChanged();
+    }
+
+    /** Pushes up to {@link #EJECT_RATE} mB of the stored fuel into each adjacent {@link NerospaceFluidStorage}. */
+    private void pushFluid(Level level, BlockPos pos) {
+        Fluid fluid = this.tank.getFluid();
+        if (this.tank.getAmount() <= 0 || fluid == Fluids.EMPTY) {
+            return;
+        }
+        for (Direction dir : Direction.values()) {
+            if (this.tank.getAmount() <= 0) {
+                break;
+            }
+            NerospaceFluidStorage dest = FluidLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
+            if (dest == null) {
+                continue;
+            }
+            long offered = Math.min(EJECT_RATE, this.tank.getAmount());
+            long accepted = dest.fill(fluid, offered, false);
+            if (accepted > 0) {
+                this.tank.drain(accepted, false);
+                setChanged();
+            }
+        }
     }
 
     // --- Persistence --------------------------------------------------------

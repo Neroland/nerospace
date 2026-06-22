@@ -28,6 +28,7 @@ public final class NerospaceConfig {
     private static final String KEY_FUEL_COST = "fuelCostMultiplier";
     private static final String KEY_MACHINE_SPEED = "machineSpeedMultiplier";
     private static final String KEY_ALIEN_RAIDS = "alienRaidsEnabled";
+    private static final String KEY_TERRAFORMER_FORCE_LOAD = "terraformerForceLoadEnabled";
 
     /** Multiplier range (mirrors the root config spec): 0.1× .. 10×. */
     private static final double MULT_MIN = 0.1D;
@@ -47,6 +48,12 @@ public final class NerospaceConfig {
     private static volatile double machineSpeedMultiplier = 1.0D;
     /** Whether alien villages can be raided by hostile mobs at night. ON by default; players opt out. */
     private static volatile boolean alienRaidsEnabled = true;
+    /**
+     * OPT-IN active chunk force-loading for the Terraformer: when true, a running terraformer keeps a
+     * small bounded window of chunks around itself loaded, so it keeps converting the frontier while no
+     * player is nearby (off by default — the lazy chunk-load catch-up still fills gaps either way).
+     */
+    private static volatile boolean terraformerForceLoadEnabled = false;
     private static volatile boolean loaded;
 
     private NerospaceConfig() {
@@ -79,6 +86,11 @@ public final class NerospaceConfig {
     /** Whether config-gated night raids on alien villages are enabled (default true; opt-out). */
     public static boolean alienRaidsEnabled() {
         return alienRaidsEnabled;
+    }
+
+    /** Whether the Terraformer actively force-loads a small window of chunks while running (default false; opt-in). */
+    public static boolean terraformerForceLoadEnabled() {
+        return terraformerForceLoadEnabled;
     }
 
     /**
@@ -133,6 +145,9 @@ public final class NerospaceConfig {
                         props.getProperty(KEY_MACHINE_SPEED), machineSpeedMultiplier));
                 alienRaidsEnabled = Boolean.parseBoolean(
                         props.getProperty(KEY_ALIEN_RAIDS, Boolean.toString(alienRaidsEnabled)).trim());
+                terraformerForceLoadEnabled = Boolean.parseBoolean(
+                        props.getProperty(KEY_TERRAFORMER_FORCE_LOAD,
+                                Boolean.toString(terraformerForceLoadEnabled)).trim());
             } catch (IOException e) {
                 NerospaceCommon.LOGGER.warn("[Nerospace] Could not read {}; using defaults.", FILE_NAME, e);
             }
@@ -163,6 +178,7 @@ public final class NerospaceConfig {
         props.setProperty(KEY_FUEL_COST, Double.toString(fuelCostMultiplier));
         props.setProperty(KEY_MACHINE_SPEED, Double.toString(machineSpeedMultiplier));
         props.setProperty(KEY_ALIEN_RAIDS, Boolean.toString(alienRaidsEnabled));
+        props.setProperty(KEY_TERRAFORMER_FORCE_LOAD, Boolean.toString(terraformerForceLoadEnabled));
         try {
             Files.createDirectories(file.getParent());
             try (OutputStream out = Files.newOutputStream(file)) {
@@ -175,7 +191,10 @@ public final class NerospaceConfig {
                         + "fuelCostMultiplier: scales fuel burned per rocket launch. "
                         + "machineSpeedMultiplier: scales machine work speed (higher = faster). "
                         + "All multipliers 0.1..10, default 1. alienRaidsEnabled: allow hostile mobs to "
-                        + "raid alien villages at night (true by default; set false to opt out).");
+                        + "raid alien villages at night (true by default; set false to opt out). "
+                        + "terraformerForceLoadEnabled: when true, a running Terraformer keeps a small "
+                        + "window of chunks around itself loaded so it keeps terraforming while you are "
+                        + "away (false by default; opt-in — costs server memory/TPS while it runs).");
             }
         } catch (IOException e) {
             NerospaceCommon.LOGGER.warn("[Nerospace] Could not write {}; using defaults.", FILE_NAME, e);

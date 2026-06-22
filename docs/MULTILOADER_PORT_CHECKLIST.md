@@ -526,8 +526,17 @@ checked by a headless build).
   + [x] **Slice 6b — `TerraformDrift` DONE (4 cells green).** `world/TerraformDrift` — idle ground-cover
     garnish on settled terraformed land, near players, on a per-second budget; cross-loader `tick(MinecraftServer)`
     wired into both server-tick hooks (alongside meteor + oxygen-field). Config inlined.
-  + [ ] **Remaining (optional, low value):** `TerraformChunkLoader` (the deferred opt-in active force-loader —
-    needs a chunk-force-ticket seam; off by default so the chunk-load catch-up covers it).
+  + [x] **Terraformer opt-in active force-loader DONE (2026-06-22; 4 cells green).** New config flag
+    `terraformerForceLoadEnabled` (default false). When on, a *running* (powered) Terraformer keeps a bounded
+    5×5 chunk window around itself force-loaded via vanilla `ServerLevel.setChunkForced(int,int,boolean)` (the
+    same call the Quarry uses — no cross-loader seam needed), diffed against a tracked set so steady state
+    issues no per-tick ticket churn; released on idle / config-off / `setRemoved`. The lazy chunk-load
+    catch-up still covers anything outside the window. (26.x note: `ChunkPos` is a record now — pack chunk
+    coords into a `long` by hand rather than `ChunkPos.asLong` / `new ChunkPos(long)`, both gone.)
+  + [x] **Fuel-Refinery fluid auto-eject DONE (2026-06-22; 4 cells green).** The refinery now actively pushes
+    up to 200 mB/tick of its refined fuel into each adjacent `NerospaceFluidStorage` (tank/pipe) via the
+    `FluidLookup` seam — so a full output tank keeps draining even with no pipe pulling, and the refinery
+    never idles on "tank full".
     `world/GreenxertzAtmosphere` is **NOT terraforming** — it's the root's full oxygen-survival class, already
     superseded by the ported `OxygenManager` + diffusion field + terraformed-flag. Its only unported extras
     (hazard shields heat/cold, gas-tank airlock refill) are a separate **oxygen enhancement**, tracked below.
