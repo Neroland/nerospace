@@ -480,7 +480,10 @@ checked by a headless build).
   seam → drain whole air units at `AIRLOCK_MB_PER_AIR` mB each + a bubble SFX), in the not-breathable branch
   (drain, then refill). A tank by the base door now acts as an airlock without needing a breathable bubble.
   Unblocked by the `GasLookup` seam the advanced-pipes batch added.
-+ [ ] **Deferred**: terraform-breathability advancement criteria (the custom-trigger `ModCriteria` split).
++ [x] **RESOLVED (keep code-grant, 2026-06-22):** terraform-breathability advancement criteria. The
+  `StarGuideGrants` code-grant already completes these advancements at the exact gameplay moment; porting
+  real `PlayerTrigger`s (the criterion↔triggers package split) is a no-op refactor — decided to keep the
+  code-grant. See the `ModCriteria` row under Cross-cutting registries.
 + **Terraforming** (signature endgame) — sliced; **slice 1 DONE (4 cells green)**, rest sequenced:
   + [x] **Slice 1 — per-chunk data-attachment seam.** `IPlatformHelper.is/setTerraformed` +
     `get/setTerraformStage(LevelChunk)` backed by NeoForge `AttachmentType` (chunk `getData`/`setData`) and
@@ -715,7 +718,7 @@ checked by a headless build).
 + [x] `DestinationCompassItem` (×4: station/greenxertz/cindara/glacira) + `GreenxertzNavigatorItem` —
   creative-only travel devices; TOOLS_AND_UTILITIES tab. Assets + 17 lang keys copied.
 + [x] `ConfiguratorItem`, `PipeFilterItem`, `PipeUpgradeItem` — DONE (advanced-pipes slice A; TOOLS tab).
-+ [ ] `StarGuideBookItem` (depends on **star guide**).
++ [x] `StarGuideBookItem` — DONE (registered as `ModItems.STAR_GUIDE_BOOK`; opens the live Star Guide GUI).
 + [x] **Artificer gear behaviour DONE (4 cells green).** `gear/XertzResonatorItem` (right-click ore-ping —
   reuses the new `c:ores` convention `TagKey` in `ModTags.Blocks.ORES` instead of NeoForge `Tags.Blocks.ORES`,
   registered in place of the plain item) + `gear/AlienGearAbilities` (shared `negatesFall` predicate — the
@@ -731,18 +734,22 @@ checked by a headless build).
 + [x] `ModDataComponents` — `SELECTED_PIPE_TYPE` (int) + `FILTER_ITEM` (vanilla `ItemStack` instead of the
   root's NeoForge `ItemResource`), via `RegistrationProvider` over `DATA_COMPONENT_TYPE`. Consumed by the
   advanced-pipe configurator/filter (advanced pipes batch).
-+ [~] `ModCriteria` (`terraformed_ground`/`living_ground`/`founded_station` `PlayerTrigger`s) — **deferred:
-  confirmed cross-version vanilla package move** (probed 2026-06-21): on **26.1.2** the classes are
-  `net.minecraft.advancements.CriterionTrigger` + `net.minecraft.advancements.criterion.PlayerTrigger`; on
-  **26.2** both are under `net.minecraft.advancements.triggers`. A single shared `import` can't satisfy both
-  MC versions, so this can't be a plain common class. Options when its first consumer (station founding /
-  star guide / terraform) lands: (a) drop the custom advancement triggers (they're cosmetic — the systems
-  work without firing them); (b) reflection (resolve `PlayerTrigger` by per-version FQN); or (c) add
-  version-split source sets. Orphan until then.
-+ [ ] `ModAttachments` (data attachments — needs a cross-loader seam: NeoForge attachments vs Fabric
-  component/attachment API), `ModFeatures`, `ModConfiguredFeatures`/`ModPlacedFeatures`/`ModBiomes`/
-  `ModBiomeModifiers` (datagen bootstraps — mostly superseded by the copied JSON), `ModDimensionTypes`
-  (space type — JSON already copied).
++ [x] `ModCriteria` — **RESOLVED 2026-06-22: keep the code-grant, do NOT port real triggers (no functional
+  value).** Re-confirmed the package move via javap: **26.1.2** = `net.minecraft.advancements.CriterionTrigger`
+  + `net.minecraft.advancements.criterion.PlayerTrigger`; **26.2** = both under `net.minecraft.advancements.triggers`.
+  Porting would need a Stonecutter `//? if >=26.2` preprocessor split in the LOADER source + per-loader
+  trigger registration. BUT the `StarGuideGrants` code-grant (`getOrStartProgress` + `award(holder,
+  remainingCriterion)`) already completes `terraformed_ground`/`living_world`/`station_charter` at the exact
+  gameplay moment a `PlayerTrigger` would, using only the STABLE `net.minecraft.advancements.*` API — identical
+  player outcome (telemetry events still fire on completion), simpler, no version split. Decision: the 3
+  advancements stay `minecraft:impossible` + code-grant. (Stonecutter's preprocessor stays unused — common
+  compiles raw on both versions; this was the only divergence-requiring feature, and the code-grant routes
+  around it.)
++ [x] `ModAttachments` — DONE: the cross-loader data-attachment seam exists (`NeoForgeAttachments` +
+  `FabricAttachments` + both `PlatformHelper`s — player oxygen / star-guide-seen + per-chunk terraform stage).
+  The Java datagen bootstraps (`ModFeatures`/`ModConfiguredFeatures`/`ModPlacedFeatures`/`ModBiomes`/
+  `ModBiomeModifiers`/`ModDimensionTypes`) are intentionally **superseded** — the worldgen/dimension JSON was
+  copied directly rather than regenerated, so no Java port is needed. Nothing pending here.
 + [x] `ModCreativeModeTabs` → ported as `ModCreativeTab`: a **dedicated "Nerospace" tab** registered via
   the cross-loader `RegistrationProvider` over the vanilla `CREATIVE_MODE_TAB` registry, listing all
   items (`ModItems.creativeContents()`). **Fixes a latent runtime bug**: the earlier per-loader injection
