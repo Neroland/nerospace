@@ -78,6 +78,10 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     private final FluidTank fluid = new FluidTank(FLUID_CAPACITY, this::setChanged);
     private final NonNullList<ItemStack> items = NonNullList.withSize(ITEM_SLOTS, ItemStack.EMPTY);
 
+    /** The shared {@link PipeNetwork} this segment belongs to (lazily built; rebuilt on topology change). */
+    @Nullable
+    private PipeNetwork network;
+
     /** Per-face (6) × per-resource-type (4) I/O mode, set with the Configurator. Default AUTO. */
     private final PipeIoMode[][] faceModes = new PipeIoMode[6][PipeResourceType.VALUES.length];
     /** Per-face item-layer filter (EMPTY = unfiltered), indexed by {@code Direction.get3DDataValue()}. */
@@ -125,6 +129,24 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     public NerospaceFluidStorage getFluidTank() {
         return this.fluid;
+    }
+
+    // --- Network accessors (concrete buffers, used by PipeNetwork balancing) --
+    EnergyBuffer energy() {
+        return this.energy;
+    }
+
+    FluidTank fluid() {
+        return this.fluid;
+    }
+
+    GasTank gas() {
+        return this.gas;
+    }
+
+    /** Adopt the shared network this segment now belongs to. */
+    void adopt(PipeNetwork net) {
+        this.network = net;
     }
 
     // --- Per-face I/O modes (Configurator) -----------------------------------
@@ -265,10 +287,16 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         if (level.isClientSide()) {
             return;
         }
-        relayEnergy(level, pos);
-        relayGas(level, pos);
-        relayFluid(level, pos);
-        relayItems(level, pos);
+        // Move + balance resources across the whole connected network (one shared pool → unlimited range),
+        // instead of the old per-pipe relay that only reached a single neighbour and dropped items.
+        if (level instanceof ServerLevel serverLevel) {
+            PipeNetwork net = this.network;
+            if (net == null || !net.isValid()) {
+                net = PipeNetwork.getOrBuild(serverLevel, pos);
+                this.network = net;
+            }
+            net.tick(serverLevel);
+        }
         tickTravelling();
         maybeSyncClient(level, pos, state);
         refreshConnections(level, pos, state);
