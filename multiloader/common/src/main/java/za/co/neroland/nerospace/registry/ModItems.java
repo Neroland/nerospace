@@ -253,6 +253,9 @@ public final class ModItems {
     }
 
     private static RegistryEntry<BlockItem> blockItem(String name, RegistryEntry<? extends Block> block) {
+        // NOTE: 26.x Item.getDescriptionId() is final and resolves to item.nerospace.<id>; BlockItem no
+        // longer delegates to the block's key. So every block item needs a matching item.nerospace.<id>
+        // lang entry (mirrored from block.nerospace.<id>) or it shows the raw key — see en_us.json.
         return ITEMS.register(name, key -> new BlockItem(block.get(), new Item.Properties().setId(key)));
     }
 
