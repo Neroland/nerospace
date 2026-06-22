@@ -1,27 +1,33 @@
 package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
 
-/** Minimal functional screen for the passive generator (backdrop + energy bar). */
-public class PassiveGeneratorScreen extends AbstractContainerScreen<PassiveGeneratorMenu> {
+/** Screen for the Passive Generator: a power-output gauge over the sci-fi hull panel. */
+public class PassiveGeneratorScreen extends TexturedContainerScreen<PassiveGeneratorMenu> {
+
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/passive_generator.png");
+    private static final int ACCENT = 0xFFB327A0; // nerosium magenta
 
     public PassiveGeneratorScreen(PassiveGeneratorMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
+        super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
+        this.titleLabelX = 10;
+        this.inventoryLabelX = 10;
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
-        int x = this.leftPos;
-        int y = this.topPos;
-        extractor.fill(x, y, x + this.imageWidth, y + this.imageHeight, 0xFFC6C6C6);
-        super.extractContents(extractor, mouseX, mouseY, partialTick);
-        int cap = this.menu.capacity();
-        int filled = cap > 0 ? (int) (this.menu.energy() / (double) cap * 50.0D) : 0;
-        extractor.fill(x + 10, y + 16 + (50 - filled), x + 18, y + 66, 0xFFFF5A3C);
+    protected void extractForeground(GuiGraphicsExtractor g) {
+        int energy = this.menu.energy();
+        int max = this.menu.capacity();
+        int pct = max == 0 ? 0 : energy * 100 / max;
+        float frac = max == 0 ? 0f : (float) energy / max;
+        label(g, Component.literal("Power: " + pct + "%"), 8, 20, 0xFFF0CFEA);
+        segGauge(g, 8, 31, 160, 6, frac, ACCENT);
     }
 }

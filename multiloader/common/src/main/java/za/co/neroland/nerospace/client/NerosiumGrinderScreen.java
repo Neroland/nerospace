@@ -1,32 +1,37 @@
 package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
 
-/** Minimal functional screen for the grinder (backdrop + progress arrow + energy bar). */
-public class NerosiumGrinderScreen extends AbstractContainerScreen<NerosiumGrinderMenu> {
+/** Screen for the Nerosium Grinder: a power gauge and a grind-progress arrow over the sci-fi hull panel. */
+public class NerosiumGrinderScreen extends TexturedContainerScreen<NerosiumGrinderMenu> {
+
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/nerosium_grinder.png");
+    private static final int ACCENT = 0xFFD23A8C; // nerosium magenta
 
     public NerosiumGrinderScreen(NerosiumGrinderMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
+        super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
+        this.titleLabelX = 10;
+        this.inventoryLabelX = 10;
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
-        int x = this.leftPos;
-        int y = this.topPos;
-        extractor.fill(x, y, x + this.imageWidth, y + this.imageHeight, 0xFFC6C6C6);
-        super.extractContents(extractor, mouseX, mouseY, partialTick);
-        // progress arrow (between input @56 and output @116)
-        int max = this.menu.maxProgress();
-        int prog = max > 0 ? (int) (this.menu.progress() / (double) max * 22.0D) : 0;
-        extractor.fill(x + 80, y + 38, x + 80 + prog, y + 42, 0xFF50C0FF);
-        // energy bar
-        int cap = this.menu.capacity();
-        int filled = cap > 0 ? (int) (this.menu.energy() / (double) cap * 50.0D) : 0;
-        extractor.fill(x + 10, y + 16 + (50 - filled), x + 18, y + 66, 0xFFFF5A3C);
+    protected void extractForeground(GuiGraphicsExtractor g) {
+        int energy = this.menu.energy();
+        int max = this.menu.capacity();
+        int pct = max == 0 ? 0 : energy * 100 / max;
+        float frac = max == 0 ? 0f : (float) energy / max;
+        label(g, Component.literal("Power: " + pct + "%"), 8, 18, 0xFFE9C2DC);
+        segGauge(g, 8, 28, 160, 4, frac, ACCENT);
+
+        int maxProg = this.menu.maxProgress();
+        float pf = maxProg == 0 ? 0f : (float) this.menu.progress() / maxProg;
+        hGauge(g, 78, 40, 22, 6, pf, 0xFF9CF06A);
     }
 }

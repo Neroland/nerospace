@@ -1,39 +1,43 @@
 package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.OxygenGeneratorMenu;
 
 /**
- * Minimal functional screen for the Oxygen Generator (bare backdrop + a power gauge and an oxygen-tank
- * gauge). No slots — power and oxygen both move through the Universal Pipe network. Uses the 26.x
- * container-screen API ({@code extractContents(GuiGraphicsExtractor, ...)}); proven on both loaders.
+ * Screen for the Oxygen Generator: a power-buffer gauge (fed by pipes) and the internal oxygen-tank
+ * gauge over the sci-fi hull panel. No slots — power and oxygen both move through the pipe network.
  */
-public class OxygenGeneratorScreen extends AbstractContainerScreen<OxygenGeneratorMenu> {
+public class OxygenGeneratorScreen extends TexturedContainerScreen<OxygenGeneratorMenu> {
 
-    private static final int POWER = 0xFF3CC8E6;   // cyan
-    private static final int OXYGEN = 0xFF54D46A;  // gas-layer green
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/oxygen_generator.png");
+    private static final int ACCENT = 0xFF3CC8E6; // cyan (power)
+    private static final int OXYGEN = 0xFF54D46A; // gas-layer green
 
     public OxygenGeneratorScreen(OxygenGeneratorMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
+        super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
+        this.titleLabelX = 10;
+        this.inventoryLabelX = 10;
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
-        int x = this.leftPos;
-        int y = this.topPos;
-        extractor.fill(x, y, x + this.imageWidth, y + this.imageHeight, 0xFFC6C6C6);
-        super.extractContents(extractor, mouseX, mouseY, partialTick);
-
+    protected void extractForeground(GuiGraphicsExtractor g) {
+        int energy = this.menu.getEnergy();
         int maxEnergy = this.menu.getMaxEnergy();
-        int eFill = maxEnergy > 0 ? (int) (this.menu.getEnergy() / (double) maxEnergy * 50.0D) : 0;
-        extractor.fill(x + 10, y + 16 + (50 - eFill), x + 18, y + 66, POWER);
+        int pct = maxEnergy == 0 ? 0 : energy * 100 / maxEnergy;
+        float energyFrac = maxEnergy == 0 ? 0f : (float) energy / maxEnergy;
+        label(g, Component.literal("Power: " + pct + "%"), 8, 20, 0xFFCFE7FF);
+        segGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
 
+        int oxygen = this.menu.getOxygen();
         int maxOxygen = this.menu.getMaxOxygen();
-        int oFill = maxOxygen > 0 ? (int) (this.menu.getOxygen() / (double) maxOxygen * 50.0D) : 0;
-        extractor.fill(x + 22, y + 16 + (50 - oFill), x + 30, y + 66, OXYGEN);
+        float o2Frac = maxOxygen == 0 ? 0f : (float) oxygen / maxOxygen;
+        label(g, Component.literal("Oxygen: " + oxygen + " / " + maxOxygen + " mB"), 8, 46, 0xFFC8F0D2);
+        fluidGauge(g, 8, 57, 160, 6, o2Frac, OXYGEN);
     }
 }
