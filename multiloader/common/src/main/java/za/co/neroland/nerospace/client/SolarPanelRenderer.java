@@ -28,9 +28,9 @@ import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
  * descending edge never dips below the housings.
  *
  * <p>Cross-loader port: the standalone renderer minus the per-face connector stubs (they needed
- * client-side energy-cap queries — dropped for this slice). The deck angle is driven by vanilla
- * {@code getDefaultClockTime()} (the real day-of-time clock — available on the common classpath in both
- * 26.1.2 and 26.2) so it tracks the visible sun, and the airless 2× "permanent sun" case keys off
+ * client-side energy-cap queries — dropped for this slice). The deck angle is driven by the real
+ * day-of-time clock ({@link #dayOfTime}), falling back to the game clock where the data-driven clock
+ * isn't loaded, and the airless 2× "permanent sun" case keys off
  * {@link SolarPanelBlockEntity#isAirless}.</p>
  */
 public class SolarPanelRenderer
@@ -73,10 +73,8 @@ public class SolarPanelRenderer
             openness = 1.0F; // permanent sun in orbit / on an airless moon
             track = 0.0F;
         } else {
-            // Real day-of-time clock (vanilla on the common classpath in both 26.1.2 and 26.2 — same call
-            // the standalone uses), so the deck tracks the visible sun and folds at the true night rather
-            // than drifting on getGameTime()'s free-running counter. 0 sunrise, 6000 noon, 18000 midnight.
-            long tod = level.getDefaultClockTime() % 24000L;
+            // Day-of-time for sun tracking. 0 sunrise, 6000 noon, 18000 midnight.
+            long tod = dayOfTime(level);
             float sun = Mth.cos((float) ((tod - 6000L) / 24000.0 * 2.0 * Math.PI)); // +1 noon, -1 midnight
             openness = Mth.clamp((sun + 0.05F) / 0.3F, 0.0F, 1.0F); // eases to 0 at night → folds flat
             track = (float) ((tod - 6000L) / 24000.0) * 360.0F; // -90 sunrise .. 0 noon .. +90 sunset
@@ -146,6 +144,27 @@ public class SolarPanelRenderer
                         -half, -THICK / 2.0F, -half, half, THICK / 2.0F, half,
                         0.0F, 0.0F, 1.0F, 1.0F));
         poseStack.popPose();
+    }
+
+    /** Once a world's data-driven clock markers are found missing, stop calling the throwing path. */
+    private static boolean clockAvailable = true;
+
+    /**
+     * Real day-of-time (0..23999) for sun tracking. Prefers the 26.x data-driven clock
+     * ({@code getDefaultClockTime()}), which is sun-accurate and matches the standalone — but that throws
+     * when a world's clock time-markers aren't loaded (seen in some dev/data setups: "Time marker ...
+     * does not exist for clock minecraft:overworld"). We try it once and fall back permanently to the
+     * free-running game clock if it's unavailable, so the deck still animates without erroring.
+     */
+    private static long dayOfTime(Level level) {
+        if (clockAvailable) {
+            try {
+                return level.getDefaultClockTime() % 24000L;
+            } catch (RuntimeException ex) {
+                clockAvailable = false;
+            }
+        }
+        return level.getGameTime() % 24000L;
     }
 
     /** Texture suffix per tier: T1 reuses the base "solar_panel" sprite, T2/T3 use "_t2"/"_t3". */
