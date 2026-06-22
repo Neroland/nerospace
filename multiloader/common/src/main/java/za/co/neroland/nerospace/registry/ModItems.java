@@ -76,6 +76,8 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> ALIEN_PILLAR_ITEM = blockItem("alien_pillar", ModBlocks.ALIEN_PILLAR);
     public static final RegistryEntry<BlockItem> ALIEN_LAMP_ITEM = blockItem("alien_lamp", ModBlocks.ALIEN_LAMP);
     public static final RegistryEntry<BlockItem> ALIEN_CRYSTAL_BLOCK_ITEM = blockItem("alien_crystal_block", ModBlocks.ALIEN_CRYSTAL_BLOCK);
+    /** Give-only Sentry test block item — intentionally NOT added to creativeTabItems() (obtain via /give). */
+    public static final RegistryEntry<BlockItem> SENTRY_TEST_ITEM = blockItem("sentry_test", ModBlocks.SENTRY_TEST);
     public static final RegistryEntry<BlockItem> VILLAGE_CORE_ITEM = blockItem("village_core", ModBlocks.VILLAGE_CORE);
     public static final RegistryEntry<BlockItem> METEOR_ROCK_ITEM = blockItem("meteor_rock", ModBlocks.METEOR_ROCK);
     public static final RegistryEntry<BlockItem> ITEM_STORE_ITEM = blockItem("item_store", ModBlocks.ITEM_STORE);

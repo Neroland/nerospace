@@ -115,6 +115,17 @@ public final class ModBlocks {
                     .setId(key).mapColor(MapColor.COLOR_CYAN).strength(4.0F, 1200.0F)
                     .requiresCorrectToolForDrops().lightLevel(s -> 10).sound(SoundType.METAL)));
 
+    /**
+     * Hidden developer diagnostic block — give-only ({@code /give @s nerospace:sentry_test}; NOT listed in
+     * the creative tab). Placing it fires one synthetic Sentry event to confirm error reporting end to end
+     * on a real jar (every loader + MC version). Backed by
+     * {@link za.co.neroland.nerospace.telemetry.SentryTestBlock}.
+     */
+    public static final RegistryEntry<za.co.neroland.nerospace.telemetry.SentryTestBlock> SENTRY_TEST =
+            BLOCKS.register("sentry_test",
+                    key -> new za.co.neroland.nerospace.telemetry.SentryTestBlock(BlockBehaviour.Properties.of()
+                            .setId(key).mapColor(MapColor.COLOR_RED).strength(1.0F, 1.0F).sound(SoundType.METAL)));
+
     // Block entity — item storage (pilot for the block-entity + capability seam).
     public static final RegistryEntry<ItemStoreBlock> ITEM_STORE = BLOCKS.register("item_store",
             key -> new ItemStoreBlock(BlockBehaviour.Properties.of()

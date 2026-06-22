@@ -80,6 +80,24 @@ public final class NerospaceTelemetry {
         start();
     }
 
+    /**
+     * Fires a single synthetic Sentry event (a Nerospace-originated {@link IllegalStateException}), used by
+     * the give-only {@code sentry_test} block to confirm end-to-end reporting on a real (production) jar. The
+     * exception originates in Nerospace code so it passes the package-only {@code beforeSend} filter; the
+     * per-session de-dup means repeat calls in one session collapse to one event (restart to test again).
+     *
+     * @return {@code true} if telemetry is active and the event was dispatched; {@code false} if it was
+     *         skipped because telemetry is opted out / not in a production environment.
+     */
+    public static boolean sendTestEvent(String origin) {
+        if (!active) {
+            return false;
+        }
+        capture(new IllegalStateException(
+                "Nerospace Sentry test block (" + origin + ") — synthetic event, safe to ignore"));
+        return true;
+    }
+
     private static synchronized void start() {
         if (active) {
             return;
