@@ -4,6 +4,16 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-22 update — pipe stream pulses DONE → advanced pipes slices A+B COMPLETE.** All 4 cells green
+> (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new). The
+> Universal Pipe renderer now draws the coloured energy/fluid/gas stream pulses along active arms (red/blue/
+> cyan), reading the `CONNECTIONS` blockstate + buffered amounts + per-face modes; ported `renderStreams`/
+> `crossQuads`/`quad` near-verbatim via `submitCustomGeometry` + `RenderTypes.lightning()` (resolves on both
+> versions). Broadened the BE client-sync to two cadences (fast 3t for in-flight items, slow 10t for buffered
+> content) so streams stay current without per-tick spam. **The Universal Pipe is now fully featured** (4-layer
+> relay + per-face config GUI + connected model + travelling-item + stream visuals); only the optional 591-line
+> `PipeNetwork` routing graph stays deferred (pure refactor — the per-BE relay already moves everything).
+
 > **2026-06-22 update — connected-pipe model DONE (B2 follow-on; unblocks the stream layer).** All 4 cells
 > green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new;
 > 3 JSON files validated). `UniversalPipeBlock` gained the 6 vanilla boolean connection properties +
@@ -515,7 +525,7 @@ checked by a headless build).
   item. **All 42 advancements track real completion.** Only the `new_life` guide-step icon stays substituted
   (Meadow Loper spawn egg) until `LOPER_HAUNCH` is ported — purely cosmetic.
 
-### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slice A DONE (4 cells green)**
+### Pipes — advanced  (`pipe/` + items + payload + renderer; basic pipe already ported) — **slices A + B DONE (4 cells green); only the optional PipeNetwork graph remains**
 
 + [x] **Slice A — per-face configuration layer.** `pipe/PipeIoMode` + `pipe/PipeResourceType` (vanilla
   enums); `item/{ConfiguratorItem, PipeFilterItem (vanilla ItemStack filter), PipeUpgradeItem ×2}`.
@@ -537,17 +547,19 @@ checked by a headless build).
   + `PipeConfigOpenHandler`, so **no client-screen-open seam is needed** (menus + their screens already
   register cross-loader). Menu type registered + screen registered on both loaders; reuses the existing
   `pipe.nerospace.mode.*` lang.
-+ [~] **Slice B2 — travelling-item visuals DONE (items lane; 4 cells green).** `pipe/TravellingItem`
++ [x] **Slice B2 — pipe renderer DONE (travelling items + stream pulses; 4 cells green).** `pipe/TravellingItem`
   (rebuilt on a vanilla `ItemStack` — the root's `ItemResource` isn't on common) + `client/UniversalPipeRenderer`
-  + `client/UniversalPipeRenderState`, registered via the `ClientBlockEntityRenderers` BER seam. Items now
-  visibly slide entry-face → centre → exit-face through the pipe. Implemented as a **cosmetic echo**: the
-  instant item relay is unchanged; each successful push spawns a transient `TravellingItem` that the BE
-  advances + expires each tick and persists, riding the block-entity update packet (`getUpdatePacket` +
-  `getUpdateTag` = `saveCustomOnly`, throttled `sendBlockUpdated` every 3 ticks); the renderer advances
-  progress locally between syncs for smooth motion (mirrors the root). **Deferred:** the coloured
-  energy/fluid/gas **stream pulses** (need the per-face connection blockstates the multiloader pipe's
-  single-cube model doesn't carry) and the optional `PipeNetwork` 591-line routing graph (the per-BE relay
-  already moves everything). Renderer/BE-sync APIs all proven by the Star Guide hologram + solar deck.
+  + `client/UniversalPipeRenderState`, registered via the `ClientBlockEntityRenderers` BER seam. **(a) Items**
+  visibly slide entry-face → centre → exit-face: a **cosmetic echo** — the instant item relay is unchanged; each
+  successful push spawns a transient `TravellingItem` the BE advances + expires + persists. **(b) Stream pulses**
+  (red energy / blue fluid / cyan gas) pulse along each active arm — `renderStreams`/`crossQuads`/`quad` ported
+  near-verbatim via `collector.order(1).submitCustomGeometry(..., RenderTypes.lightning(), ...)`, reading the
+  `CONNECTIONS` blockstate + buffered amounts (`getEnergy/getFluidTank/getGas().getAmount()`) + per-face
+  `mode()`. The BE update packet (`getUpdatePacket` + `getUpdateTag` = `saveCustomOnly`) is throttled on two
+  cadences — fast (3t) while items are in flight, slower (10t) while the pipe just holds content — so streams
+  stay current without per-tick spam; the renderer advances item progress locally between syncs. **Only the
+  optional `PipeNetwork` 591-line routing graph remains deferred** (the per-BE relay already moves all four
+  layers — pure refactor, low value). Renderer/BE-sync APIs all proven by the Star Guide hologram + solar deck.
 + [x] **Connected-pipe model DONE (4 cells green).** `UniversalPipeBlock` now carries the 6 vanilla boolean
   connection properties (`NORTH`..`DOWN` / `CONNECTIONS[]`) + per-mask `VoxelShape`s (core + arms) + a
   multipart blockstate (core + 6 rotated arms) + `universal_pipe_core`/`_arm` models (reuse the existing
@@ -556,9 +568,8 @@ checked by a headless build).
   server tick (throttled, `setBlock` on change) + `getStateForPlacement`, deliberately AVOIDING the
   `neighborChanged`/`updateShape` overrides (their 26.x signatures with `Orientation`/`ScheduledTickAccess`
   are version-fragile and no other multiloader block overrides them). Pipes now visually join neighbours
-  with arms and have matching collision — and the travelling items flow through the arms. This **unblocks
-  the stream layer** (it can now read `CONNECTIONS`); the only remaining streams work is a periodic
-  client content-sync (the pipe currently only syncs when travelling items are present).
+  with arms and have matching collision — and the travelling items flow through the arms. This **unblocked
+  the stream layer** (it reads `CONNECTIONS`) — now DONE (see Slice B2 above).
 
 ### Machine modules / upgrades  (`module/` 3) — **DONE (4 cells green)**
 

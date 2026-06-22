@@ -90,13 +90,16 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     public static final int MAX_TRAVELLING = 6;
     /** Base ticks a visual packet takes to cross one pipe (scaled down by Speed upgrades). */
     private static final int ITEM_TICKS_PER_BLOCK = 8;
-    /** How often (server ticks) a pipe pushes its travelling-item snapshot to nearby clients. */
+    /** How often (server ticks) a pipe pushes a travelling-item snapshot to nearby clients (snappy motion). */
     private static final int SYNC_INTERVAL = 3;
+    /** How often (server ticks) a pipe syncs its buffered energy/fluid/gas presence (for the slower stream pulses). */
+    private static final int CONTENT_SYNC_INTERVAL = 10;
     /** How often (server ticks) a pipe re-derives its 6 connection blockstate properties from neighbours. */
     private static final int CONNECTION_REFRESH_INTERVAL = 10;
     /** In-transit visual packets (a cosmetic echo of the relay; advanced + expired each tick, synced + persisted). */
     private final List<TravellingItem> travelling = new ArrayList<>();
-    private boolean lastSyncEmpty = true;
+    /** Whether the last client sync carried any visual (items or buffered content), to send one final clear. */
+    private boolean lastSyncHadVisual;
     /** Client-only: game time of the last render extraction, for smooth local advance between syncs. */
     public float clientItemTime;
 
@@ -264,7 +267,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         relayGas(level, pos);
         relayFluid(level, pos);
         relayItems(level, pos);
-        tickTravelling(level, pos, state);
+        tickTravelling();
+        maybeSyncClient(level, pos, state);
         refreshConnections(level, pos, state);
     }
 
@@ -280,22 +284,33 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         }
     }
 
-    /** Advance + expire the cosmetic in-transit packets and push a throttled snapshot to clients. */
-    private void tickTravelling(Level level, BlockPos pos, BlockState state) {
-        if (!this.travelling.isEmpty()) {
-            float step = 1.0F / itemTicksPerBlock();
-            this.travelling.removeIf(item -> {
-                item.advance(step);
-                return item.isFinished();
-            });
+    /** Advance + expire the cosmetic in-transit packets (the visuals; the relay already moved the items). */
+    private void tickTravelling() {
+        if (this.travelling.isEmpty()) {
+            return;
         }
-        if (level.getGameTime() % SYNC_INTERVAL == 0) {
-            boolean empty = this.travelling.isEmpty();
-            // Sync while there's motion, plus one final snapshot so the client clears its lane.
-            if (!empty || !this.lastSyncEmpty) {
-                level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
-                this.lastSyncEmpty = empty;
-            }
+        float step = 1.0F / itemTicksPerBlock();
+        this.travelling.removeIf(item -> {
+            item.advance(step);
+            return item.isFinished();
+        });
+    }
+
+    /**
+     * Push a throttled block-entity update so the renderer can draw the travelling items and the
+     * energy/fluid/gas stream pulses: a snappy cadence while items are in flight, a slower cadence while
+     * the pipe merely holds content, plus one final snapshot so the client clears a now-idle segment.
+     */
+    private void maybeSyncClient(Level level, BlockPos pos, BlockState state) {
+        boolean items = !this.travelling.isEmpty();
+        boolean content = this.energy.getAmount() > 0 || this.gas.getAmount() > 0 || this.fluid.getAmount() > 0;
+        long now = level.getGameTime();
+        boolean send = (items && now % SYNC_INTERVAL == 0)
+                || (content && now % CONTENT_SYNC_INTERVAL == 0)
+                || (this.lastSyncHadVisual && !items && !content && now % SYNC_INTERVAL == 0);
+        if (send) {
+            level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+            this.lastSyncHadVisual = items || content;
         }
     }
 
