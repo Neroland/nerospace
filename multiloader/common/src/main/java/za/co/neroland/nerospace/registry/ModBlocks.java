@@ -163,19 +163,20 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(3.5F, 6.0F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL)));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
 
 
     public static final RegistryEntry<NerosiumGrinderBlock> NEROSIUM_GRINDER = BLOCKS.register("nerosium_grinder",
             key -> new NerosiumGrinderBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
 
     public static final RegistryEntry<PassiveGeneratorBlock> PASSIVE_GENERATOR = BLOCKS.register("passive_generator",
             key -> new PassiveGeneratorBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
 
     public static final RegistryEntry<UniversalPipeBlock> UNIVERSAL_PIPE = BLOCKS.register("universal_pipe",
@@ -218,27 +219,27 @@ public final class ModBlocks {
     public static final RegistryEntry<OxygenGeneratorBlock> OXYGEN_GENERATOR = BLOCKS.register("oxygen_generator",
             key -> new OxygenGeneratorBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     public static final RegistryEntry<TerraformerBlock> TERRAFORMER = BLOCKS.register("terraformer",
             key -> new TerraformerBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_GREEN).strength(3.5F, 6.0F)
-                    .requiresCorrectToolForDrops().lightLevel(s -> 6).sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().lightLevel(s -> 6).sound(SoundType.METAL).noOcclusion()));
 
     public static final RegistryEntry<HydrationModuleBlock> HYDRATION_MODULE = BLOCKS.register("hydration_module",
             key -> new HydrationModuleBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(3.5F, 6.0F)
-                    .requiresCorrectToolForDrops().lightLevel(s -> 4).sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().lightLevel(s -> 4).sound(SoundType.METAL).noOcclusion()));
 
     public static final RegistryEntry<TerraformMonitorBlock> TERRAFORM_MONITOR = BLOCKS.register("terraform_monitor",
             key -> new TerraformMonitorBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_GREEN).strength(3.0F, 6.0F)
-                    .requiresCorrectToolForDrops().lightLevel(s -> 7).sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().lightLevel(s -> 7).sound(SoundType.METAL).noOcclusion()));
 
     public static final RegistryEntry<StarGuideBlock> STAR_GUIDE = BLOCKS.register("star_guide",
             key -> new StarGuideBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_PURPLE).strength(3.0F, 6.0F)
-                    .requiresCorrectToolForDrops().lightLevel(s -> 7).sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().lightLevel(s -> 7).sound(SoundType.METAL).noOcclusion()));
 
     public static final RegistryEntry<SolarPanelBlock> SOLAR_PANEL = BLOCKS.register("solar_panel",
             key -> new SolarPanelBlock(za.co.neroland.nerospace.machine.SolarTier.TIER_1, BlockBehaviour.Properties.of()
@@ -259,18 +260,18 @@ public final class ModBlocks {
     public static final RegistryEntry<FuelTankBlock> FUEL_TANK = BLOCKS.register("fuel_tank",
             key -> new FuelTankBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     public static final RegistryEntry<FuelRefineryBlock> FUEL_REFINERY = BLOCKS.register("fuel_refinery",
             key -> new FuelRefineryBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     // --- Quarry -------------------------------------------------------------
     public static final RegistryEntry<QuarryControllerBlock> QUARRY_CONTROLLER = BLOCKS.register("quarry_controller",
             key -> new QuarryControllerBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL), MinerTier.TIER_1));
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion(), MinerTier.TIER_1));
 
     public static final RegistryEntry<QuarryFrameBlock> QUARRY_FRAME = BLOCKS.register("quarry_frame",
             key -> new QuarryFrameBlock(BlockBehaviour.Properties.of()

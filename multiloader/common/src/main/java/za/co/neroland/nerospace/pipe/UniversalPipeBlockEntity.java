@@ -94,8 +94,10 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     private static final int SYNC_INTERVAL = 3;
     /** How often (server ticks) a pipe syncs its buffered energy/fluid/gas presence (for the slower stream pulses). */
     private static final int CONTENT_SYNC_INTERVAL = 10;
-    /** How often (server ticks) a pipe re-derives its 6 connection blockstate properties from neighbours. */
-    private static final int CONNECTION_REFRESH_INTERVAL = 10;
+    /** How often (server ticks) a pipe re-derives its 6 connection blockstate properties from neighbours.
+     *  Kept low (2 ticks ≈ 100 ms) so a freshly-placed neighbour links up near-instantly — the throttle only
+     *  exists to avoid re-deriving every tick; refreshConnections() no-ops unless a connection actually changed. */
+    private static final int CONNECTION_REFRESH_INTERVAL = 2;
     /** In-transit visual packets (a cosmetic echo of the relay; advanced + expired each tick, synced + persisted). */
     private final List<TravellingItem> travelling = new ArrayList<>();
     /** Whether the last client sync carried any visual (items or buffered content), to send one final clear. */

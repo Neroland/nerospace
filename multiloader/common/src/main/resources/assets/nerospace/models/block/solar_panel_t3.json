@@ -1,8 +1,40 @@
 {
-  "parent": "minecraft:block/cube_bottom_top",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        3,
+        16
+      ]
+    }
+  ],
   "textures": {
-    "top": "nerospace:block/solar_panel_t3",
-    "bottom": "nerospace:block/solar_panel_t3_base",
-    "side": "nerospace:block/solar_panel_t3_base"
+    "all": "nerospace:block/solar_panel_t3_base",
+    "particle": "nerospace:block/solar_panel_t3_base"
   }
 }

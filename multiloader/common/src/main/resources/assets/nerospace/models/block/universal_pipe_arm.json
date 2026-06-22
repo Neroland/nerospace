@@ -1,8 +1,8 @@
 {
   "ambientocclusion": false,
   "textures": {
-    "all": "nerospace:block/universal_pipe",
-    "particle": "nerospace:block/universal_pipe"
+    "all": "nerospace:block/universal_pipe_glass",
+    "particle": "nerospace:block/universal_pipe_glass"
   },
   "elements": [
     {

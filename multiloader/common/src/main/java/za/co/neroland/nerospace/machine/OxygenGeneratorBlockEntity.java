@@ -1,7 +1,14 @@
 package za.co.neroland.nerospace.machine;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -13,6 +20,7 @@ import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.GasTank;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
+import za.co.neroland.nerospace.menu.OxygenGeneratorMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.world.OxygenFieldManager;
 
@@ -23,7 +31,7 @@ import za.co.neroland.nerospace.world.OxygenFieldManager;
  * adjacent gas tanks). It also feeds the world {@link OxygenFieldManager}: while its tank holds oxygen
  * this position is a field source (pressurising sealed rooms / a bubble) and the tank drains slowly.
  */
-public class OxygenGeneratorBlockEntity extends BlockEntity {
+public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int ENERGY_CAPACITY = 50_000;
     public static final int GAS_CAPACITY = 8_000;
@@ -35,6 +43,30 @@ public class OxygenGeneratorBlockEntity extends BlockEntity {
 
     private final EnergyBuffer energy = new EnergyBuffer(ENERGY_CAPACITY, MAX_INSERT, 0, this::setChanged);
     private final GasTank gas = new GasTank(GAS_CAPACITY, this::setChanged);
+
+    /** Synced gauge values for the screen: [0]=energy, [1]=energy cap, [2]=oxygen mB, [3]=oxygen cap. */
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> energy.getRaw();
+                case 1 -> ENERGY_CAPACITY;
+                case 2 -> gas.getRawAmount();
+                case 3 -> GAS_CAPACITY;
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            // server-authoritative; the gauges are read-only
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
+    };
 
     public OxygenGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.OXYGEN_GENERATOR.get(), pos, state);
@@ -100,6 +132,18 @@ public class OxygenGeneratorBlockEntity extends BlockEntity {
                 fieldManager.removeSource(pos);
             }
         }
+    }
+
+    // --- MenuProvider ---------------------------------------------------------
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("container.nerospace.oxygen_generator");
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new OxygenGeneratorMenu(containerId, playerInventory, this.data,
+                ContainerLevelAccess.create(this.level, this.worldPosition));
     }
 
     @Override
