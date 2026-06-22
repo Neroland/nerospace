@@ -2,18 +2,24 @@ package za.co.neroland.nerospace.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.ClientOxygenVisuals;
@@ -66,10 +72,26 @@ public final class NerospaceFabricClient implements ClientModInitializer {
             }
         });
 
+        registerFluidRendering();
+
         // Meteor Tracker readout + oxygen-field visuals — counterpart to NeoForge's ClientTickEvent.Post.
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
         });
+    }
+
+    /**
+     * Rocket fuel renders as itself (amber still/flow) in the world instead of the missing-texture
+     * checkerboard. Counterpart to NeoForge's {@code RegisterFluidModelsEvent} wiring in
+     * {@code NeoForgeClientSetup}: same still/flow sprites, same constant (untinted) colour — here via
+     * Fabric API's {@code FluidRenderingRegistry} + the vanilla {@code FluidModel.Unbaked} / vanilla
+     * {@code BlockTintSources.constant(...)} (the Fabric-rendering-fluids-v1 module ships in fabric-api).
+     */
+    private static void registerFluidRendering() {
+        Material still = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still"));
+        Material flow = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow"));
+        FluidModel.Unbaked model = new FluidModel.Unbaked(still, flow, still, BlockTintSources.constant(0xFFFFFFFF));
+        FluidRenderingRegistry.register(ModFluids.ROCKET_FUEL.get(), ModFluids.ROCKET_FUEL_FLOWING.get(), model);
     }
 }

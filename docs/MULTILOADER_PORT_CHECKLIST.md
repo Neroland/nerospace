@@ -359,14 +359,16 @@ checked by a headless build).
 + [x] **Rocket-fuel fluid** — `BaseFlowingFluid`/`FluidType` (NeoForge) vs hand-written `FlowingFluid`
   (Fabric), liquid block + bucket; NeoForge in-world render via the new `RegisterFluidModelsEvent`
   (`FluidModel.Unbaked` + `Material` + `FluidTintSources`).
-+ [ ] **Fabric in-world fluid render — BLOCKED on the 26.x fluid-render overhaul (investigated 2026-06-22).**
-  The old Fabric `fabric-rendering-fluids-v1` API (`FluidRenderHandlerRegistry` / `SimpleFluidRenderHandler`)
-  is **gone** in this Fabric API — 26.x moved fluid rendering to the **vanilla** `net.minecraft.client.renderer.block.FluidModel`
-  system (NeoForge registers it via its own `RegisterFluidModelsEvent`). Fabric's registration path for the
-  new vanilla `FluidModel` isn't the old handler API and needs investigation against the decompiled client
-  (likely a vanilla fluid-model registry or a new Fabric module). Attempt reverted to keep the build green;
-  not a simple follow-up. Until then, rocket fuel shows the missing-texture art in-world **on Fabric only**
-  (NeoForge is correct; the fluid still functions on both — buckets, tanks, pipes, refinery all work).
++ [x] **Fabric in-world fluid render — DONE (2026-06-22). The earlier "module gone" diagnosis was WRONG.**
+  `fabric-rendering-fluids-v1` still ships in fabric-api (v6.0.4 here), but the API changed: it now wraps the
+  **vanilla** `net.minecraft.client.renderer.block.FluidModel` (the same type NeoForge registers via
+  `RegisterFluidModelsEvent`). Found via a temp `javap` probe over the fabric compileClasspath. Registered in
+  `NerospaceFabricClient.registerFluidRendering()`:
+  `FluidRenderingRegistry.register(ROCKET_FUEL, ROCKET_FUEL_FLOWING, new FluidModel.Unbaked(still, flow, still, BlockTintSources.constant(0xFFFFFFFF)))`
+  — vanilla `Material(Identifier)` (1-arg) for the `block/rocket_fuel_still|flow` sprites + vanilla
+  `BlockTintSources.constant(...)` (the analog of NeoForge's `FluidTintSources.constant`). Mirrors
+  `NeoForgeClientSetup.onRegisterFluidModels` exactly. Both Fabric cells build green. Rocket fuel now renders
+  as itself in-world on BOTH loaders (storage/transfer already worked on both).
 + [x] **All 10 mobs** — xertz stalker, quartz crawler, greenling, ruin warden, cinder/frost striders,
   3 terraform livestock, alien villager (full Merchant trading + reputation). Models, renderers,
   glow layers, sounds, `village` trade tables.
