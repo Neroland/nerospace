@@ -92,6 +92,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     private static final int ITEM_TICKS_PER_BLOCK = 8;
     /** How often (server ticks) a pipe pushes its travelling-item snapshot to nearby clients. */
     private static final int SYNC_INTERVAL = 3;
+    /** How often (server ticks) a pipe re-derives its 6 connection blockstate properties from neighbours. */
+    private static final int CONNECTION_REFRESH_INTERVAL = 10;
     /** In-transit visual packets (a cosmetic echo of the relay; advanced + expired each tick, synced + persisted). */
     private final List<TravellingItem> travelling = new ArrayList<>();
     private boolean lastSyncEmpty = true;
@@ -263,6 +265,19 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         relayFluid(level, pos);
         relayItems(level, pos);
         tickTravelling(level, pos, state);
+        refreshConnections(level, pos, state);
+    }
+
+    /** Re-derive the 6 connection blockstate properties from neighbours (throttled) so the tube model +
+     *  voxel shape track the world without the version-fragile neighbour-event overrides. */
+    private void refreshConnections(Level level, BlockPos pos, BlockState state) {
+        if (level.getGameTime() % CONNECTION_REFRESH_INTERVAL != 0) {
+            return;
+        }
+        BlockState connected = UniversalPipeBlock.withConnections(state, level, pos);
+        if (connected != state) {
+            level.setBlock(pos, connected, Block.UPDATE_ALL);
+        }
     }
 
     /** Advance + expire the cosmetic in-transit packets and push a throttled snapshot to clients. */

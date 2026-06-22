@@ -4,6 +4,16 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-22 update — connected-pipe model DONE (B2 follow-on; unblocks the stream layer).** All 4 cells
+> green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new;
+> 3 JSON files validated). `UniversalPipeBlock` gained the 6 vanilla boolean connection properties +
+> per-mask `VoxelShape`s + a multipart blockstate (core + 6 rotated arms) + `universal_pipe_core`/`_arm`
+> models (existing texture). `canConnect` uses the lookup seams + `Container` (not NeoForge `Capabilities`).
+> **Cross-version-safe connection refresh: recomputed from the BE server tick (throttled `setBlock`) +
+> `getStateForPlacement`, deliberately avoiding the fragile `neighborChanged`/`updateShape` overrides.**
+> Pipes now visually join neighbours (arms) with matching collision, and the travelling items flow through
+> the arms. **~226 classes.**
+
 > **2026-06-22 update — advanced-pipes slice B2 (travelling-item visuals) started + items lane DONE.**
 > All 4 cells green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21
 > baseline warnings, 0 new). Items now visibly flow through Universal Pipes: `pipe/TravellingItem` (rebuilt
@@ -538,6 +548,17 @@ checked by a headless build).
   energy/fluid/gas **stream pulses** (need the per-face connection blockstates the multiloader pipe's
   single-cube model doesn't carry) and the optional `PipeNetwork` 591-line routing graph (the per-BE relay
   already moves everything). Renderer/BE-sync APIs all proven by the Star Guide hologram + solar deck.
++ [x] **Connected-pipe model DONE (4 cells green).** `UniversalPipeBlock` now carries the 6 vanilla boolean
+  connection properties (`NORTH`..`DOWN` / `CONNECTIONS[]`) + per-mask `VoxelShape`s (core + arms) + a
+  multipart blockstate (core + 6 rotated arms) + `universal_pipe_core`/`_arm` models (reuse the existing
+  texture). `canConnect` uses the `EnergyLookup`/`FluidLookup`/`GasLookup` seams + vanilla `Container`
+  adjacency (not NeoForge `Capabilities`). **Cross-version note:** connections are recomputed from the BE's
+  server tick (throttled, `setBlock` on change) + `getStateForPlacement`, deliberately AVOIDING the
+  `neighborChanged`/`updateShape` overrides (their 26.x signatures with `Orientation`/`ScheduledTickAccess`
+  are version-fragile and no other multiloader block overrides them). Pipes now visually join neighbours
+  with arms and have matching collision — and the travelling items flow through the arms. This **unblocks
+  the stream layer** (it can now read `CONNECTIONS`); the only remaining streams work is a periodic
+  client content-sync (the pipe currently only syncs when travelling items are present).
 
 ### Machine modules / upgrades  (`module/` 3) — **DONE (4 cells green)**
 
