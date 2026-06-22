@@ -102,21 +102,32 @@ public class QuarryControllerRenderer
             ty = r.refY() + 0.5;
             tz = cz;
         }
+        long tick = be.getLevel().getGameTime();
         if (!be.dispInit) {
-            be.dispX = tx;
-            be.dispY = ty;
-            be.dispZ = tz;
+            be.dispX = be.prevDispX = tx;
+            be.dispY = be.prevDispY = ty;
+            be.dispZ = be.prevDispZ = tz;
             be.dispInit = true;
-        } else {
-            be.dispX += (tx - be.dispX) * 0.2;
-            be.dispY += (ty - be.dispY) * 0.2;
-            be.dispZ += (tz - be.dispZ) * 0.2;
+            be.lastDispTick = tick;
+        } else if (tick != be.lastDispTick) {
+            // Ease ONCE per tick (FPS-independent), saving the previous-tick position so the render below
+            // interpolates across the tick — smooth, jitter-free motion at any frame rate.
+            be.lastDispTick = tick;
+            be.prevDispX = be.dispX;
+            be.prevDispY = be.dispY;
+            be.prevDispZ = be.dispZ;
+            be.dispX += (tx - be.dispX) * 0.4;
+            be.dispY += (ty - be.dispY) * 0.4;
+            be.dispZ += (tz - be.dispZ) * 0.4;
         }
-        s.hx = be.dispX - p.getX();
-        s.hy = be.dispY - p.getY();
-        s.hz = be.dispZ - p.getZ();
+        double rx = be.prevDispX + (be.dispX - be.prevDispX) * partialTick;
+        double ry = be.prevDispY + (be.dispY - be.prevDispY) * partialTick;
+        double rz = be.prevDispZ + (be.dispZ - be.prevDispZ) * partialTick;
+        s.hx = rx - p.getX();
+        s.hy = ry - p.getY();
+        s.hz = rz - p.getZ();
 
-        double now = be.getLevel().getGameTime() + partialTick;
+        double now = tick + partialTick;
         s.headSpin = (float) ((now * 18.0) % 360.0); // fast spin reads as a working drill
     }
 

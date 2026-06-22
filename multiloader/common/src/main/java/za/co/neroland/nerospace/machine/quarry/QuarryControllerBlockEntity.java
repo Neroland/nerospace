@@ -109,13 +109,20 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     private final Set<Long> forcedChunks = new HashSet<>();
     private transient int frameTotal = -1;
 
-    /** How often (server ticks) the controller pushes a render snapshot (region/state/cursor) to clients. */
-    private static final int RENDER_SYNC_INTERVAL = 10;
+    /** How often (server ticks) the controller pushes a render snapshot (region/state/cursor) to clients.
+     *  Kept low so the drill-head target updates finely (the renderer eases + sub-tick interpolates on top). */
+    private static final int RENDER_SYNC_INTERVAL = 4;
     /** Client-only: smoothed drill-head world position for the gantry/drill renderer (eased toward the cell). */
     public double dispX;
     public double dispY;
     public double dispZ;
+    /** Client-only: previous-tick smoothed position, so the renderer can sub-tick interpolate (no FPS jitter). */
+    public double prevDispX;
+    public double prevDispY;
+    public double prevDispZ;
     public boolean dispInit;
+    /** Client-only: game time of the last per-tick ease — gates the ease to once per tick (FPS-independent). */
+    public long lastDispTick = Long.MIN_VALUE;
 
     private final ContainerData dataAccess = new ContainerData() {
         @Override
