@@ -14,6 +14,8 @@ import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.rocket.RocketPadFluidProxy;
 
 /**
  * NeoForge side of the capability seams:
@@ -233,5 +235,12 @@ public final class NeoForgeCapabilities {
                 (be, side) -> side != null
                         ? new WorldlyContainerWrapper(be, side)
                         : VanillaContainerWrapper.of(be));
+
+        // Rocket launch pad: a fluid sink that forwards rocket_fuel into a docked rocket (pipe / Fuel Tank
+        // refuelling automation). Registered on the BLOCK (no block entity) — the proxy finds the rocket.
+        event.registerBlock(
+                FLUID,
+                (level, pos, state, blockEntity, side) -> new RocketPadFluidProxy(level, pos),
+                ModBlocks.ROCKET_LAUNCH_PAD.get());
     }
 }
