@@ -17,7 +17,7 @@ Built via the gradle MCP on this machine:
 | `fabric` | Fabric Loom `1.17.11` | ✅ **builds** (`fabric-api 0.152.1+26.2`) | ✅ builds (`fabric-api 0.151.0+26.1.2`; needs access widener — see below) |
 | `neoforge` | ModDevGradle (NeoForge) | ✅ builds (`26.2.0.6-beta`, on public NeoForged Maven) | NeoForge `26.1.2.76` |
 
-`./gradlew :common:build :fabric:build -Pminecraft_version=26.2` → **BUILD SUCCESSFUL**.
+`./gradlew :fabric:26.2:build :neoforge:26.2:build` → **BUILD SUCCESSFUL** (all four cells green via Stonecutter nodes).
 
 ## Why this layout (not Architectury)
 
@@ -55,14 +55,19 @@ It's a standalone build with its **own Gradle 9.5.1 wrapper** — run from insid
 ```bash
 cd multiloader
 
-./gradlew :common:build :fabric:build -Pminecraft_version=26.2   # verified green
-./gradlew :neoforge:build             -Pminecraft_version=26.1.2 # NeoForge on 26.1.x
+# Stonecutter: each loader x MC version is its OWN node — the node path picks the version.
+./gradlew :fabric:26.2:build         # Fabric on 26.2
+./gradlew :neoforge:26.1.2:build     # NeoForge on 26.1.x
 
-# default version is gradle.properties -> minecraft_version (26.2);
-# -Pminecraft_version selects the matching *_<mc> pins.
+# ...or all four cells at once:
+./gradlew :fabric:26.1.2:build :fabric:26.2:build :neoforge:26.1.2:build :neoforge:26.2:build
+
+# The IDE-active version is set in stonecutter.gradle (`stonecutter.active '26.2'`);
+# switch it with the generated `stonecutterSwitchTo26_1_2` / `stonecutterSwitchTo26_2` tasks.
+# Per-version pins still come from gradle.properties (neo_version_<mc>, fabric_api_version_<mc>, ...).
 ```
 
-Jars land in `multiloader/<loader>/build/libs/`.
+Jars land in `multiloader/<loader>/versions/<mc>/build/libs/`.
 
 ## All four cells build (was: NeoForge 26.2 pending)
 

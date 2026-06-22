@@ -10,19 +10,39 @@ pluginManagement {
         id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
         id 'net.neoforged.moddev' version '2.0.141'      // common (NeoForm) + neoforge
         id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT' // fabric — 1.17 handles de-obf 26.x (omit mappings)
+        id 'dev.kikugie.stonecutter' version '0.9.6'     // version axis (per-MC nodes)
     }
 }
 
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention'
+    id 'dev.kikugie.stonecutter'
 }
 
 rootProject.name = 'nerospace-multiloader'
 
-// MultiLoader-Template layout (no architectury-loom — it can't do de-obf 26.x):
-//   common   -> net.neoforged.moddev (NeoForm) : de-obfuscated vanilla, shared source
-//   fabric   -> net.fabricmc.fabric-loom        : de-obf-ready, omits `mappings`
-//   neoforge -> net.neoforged.moddev            : full NeoForge userdev
-include 'common'
-include 'fabric'
-include 'neoforge'
+// ---------------------------------------------------------------------------
+// Stonecutter version tree (replaces the old `-Pminecraft_version` axis +
+// the flat include 'common'/'fabric'/'neoforge').
+//
+//   branch  -> loader   (fabric, neoforge)   : its own dir + build.gradle
+//   version -> MC build (26.1.2, 26.2)       : a real subproject per cell
+//
+// Produces the four cells as DISTINCT Gradle projects, each with its own
+// resolved classpath:
+//   :fabric:26.1.2   :fabric:26.2   :neoforge:26.1.2   :neoforge:26.2
+// That per-node classpath is what lets VS Code switch versions on selection
+// (one .classpath per node) instead of every config sharing one pinned classpath.
+//
+// `common` is NOT a node — it is shared source pulled into every node via
+// rootProject.ext.commonJava/commonResources (see stonecutter.gradle). The
+// authoritative loader source stays in fabric/src + neoforge/src; Stonecutter
+// links it into the active node automatically.
+// ---------------------------------------------------------------------------
+stonecutter {
+    create(rootProject) {
+        branch('fabric')   { versions('26.1.2', '26.2') }
+        branch('neoforge') { versions('26.1.2', '26.2') }
+        vcsVersion = '26.2'   // reset point for commits / default checkout
+    }
+}

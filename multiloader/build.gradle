@@ -1,63 +1,11 @@
 // =====================================================================
-// Nerospace multiloader — ROOT build (MultiLoader-Template style)
-// Each module applies its own loader plugin (declared in settings.gradle):
-//   common -> net.neoforged.moddev (NeoForm) | fabric -> fabric-loom | neoforge -> moddev
-// This root only holds config shared by all three.
+// Intentionally inert.
+//
+// Stonecutter repoints rootProject.buildFileName to `stonecutter.gradle`
+// (see settings.gradle), so THIS file is no longer the root build script.
+// All shared root config (allprojects/subprojects, java toolchain, the
+// Buildship-nature strip, repositories, and the shared-common source roots
+// ext.commonJava/ext.commonResources) now lives in stonecutter.gradle.
+//
+// Kept (rather than deleted) only because the repo mount blocks unlink.
 // =====================================================================
-
-allprojects {
-    group = rootProject.mod_group_id
-    version = rootProject.mod_version
-}
-
-subprojects {
-    apply plugin: 'java'
-    // Generate static Eclipse project files (.project/.classpath/.settings) in every module via
-    // `./gradlew eclipse`. VSCode's Java extension reads these directly and resolves the full classpath,
-    // which sidesteps the flaky live Buildship/Loom Gradle import (the cause of the "cannot find
-    // java.lang.Object" / "not a valid java project" cascade). Fabric already applied this in its own
-    // script; applying here too is idempotent and adds it to common + neoforge.
-    apply plugin: 'eclipse'
-
-    java {
-        toolchain.languageVersion = JavaLanguageVersion.of(25)
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = 'UTF-8'
-        options.release = 25
-    }
-
-    // Strip Loom's Buildship/Gradle nature+builder from the generated .project so VSCode imports every
-    // module as a plain static Eclipse Java project (via .classpath) rather than demanding a live
-    // Buildship/Gradle import — the import that fails here ("Missing buildship prefs" / "not a valid
-    // java project"). No-op for the moddev modules (they have no Buildship nature).
-    eclipse {
-        project {
-            file {
-                whenMerged { proj ->
-                    proj.natures.removeAll { it.startsWith('org.eclipse.buildship') }
-                    proj.buildCommands.removeAll { it.name.startsWith('org.eclipse.buildship') }
-                }
-            }
-        }
-    }
-
-    repositories {
-        mavenCentral()
-        maven { url 'https://maven.fabricmc.net/' }
-        maven { url 'https://maven.neoforged.net/releases/' }
-        maven { name = 'BlameJared'; url = 'https://maven.blamejared.com/' } // JEI etc. (later)
-    }
-
-    // NOTE: loader manifests (fabric.mod.json / neoforge.mods.toml) are expanded
-    // per-module by each module's `generateModMetadata` task from src/main/templates
-    // (see fabric/ and neoforge/ build.gradle). They are intentionally NOT in
-    // src/main/resources, so the IDE never copies a raw, unexpanded ${...} manifest
-    // into bin/main — which is what broke Run & Debug.
-}
-
-// Resolve the shared common source directories once, for the loader modules to
-// pull in (single copy of the mechanics -> no drift).
-ext.commonJava = "${rootProject.projectDir}/common/src/main/java"
-ext.commonResources = "${rootProject.projectDir}/common/src/main/resources"

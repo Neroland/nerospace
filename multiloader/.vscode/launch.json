@@ -1,125 +1,125 @@
 {
-  "//": "Committed RELATIVE multiloader run/debug configs (no machine paths). Open nerospace.code-workspace, then pick a config in Run \u0026 Debug. preLaunchTasks regenerate per-machine launch args; manifests expand into bin/main on Gradle/IDE sync. fml.modFolders points at bin/main only (IDE compiles classes + copies the expanded manifest there); do NOT add a 2nd path with ${pathSeparator} (VS Code resolves it to the FILE separator, not the classpath separator). Today Fabric@26.2 and NeoForge@26.1.2 run; Fabric@26.1.2 (no Fabric MC 26.1.2) and NeoForge@26.2 (needs userdev) fail in preLaunch until upstream ships.",
+  "//": "Committed RELATIVE run/debug configs (no machine paths). Under Stonecutter each loader x MC version is its OWN Gradle project with its OWN resolved classpath, so each config targets a distinct `projectName` (nerospace-\u003cloader\u003e-\u003cversion\u003e) and TRULY runs that version when selected. Open nerospace.code-workspace, run `gradlew eclipse` once (generates the per-node .classpath/.project), reload VS Code, then pick a config in Run \u0026 Debug. preLaunchTasks regenerate per-machine launch args / loom launch.cfg for that node. All paths are relative (${workspaceFolder}); nothing here is machine-specific.",
   "version": "0.2.0",
   "configurations": [
     {
       "type": "java",
       "request": "launch",
       "name": "Fabric Client (26.2)",
-      "cwd": "${workspaceFolder}/fabric/runs/client",
+      "cwd": "${workspaceFolder}/fabric/versions/26.2/runs/client",
       "console": "integratedTerminal",
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotClient --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
+      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/26.2/launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotClient --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
       "args": "",
-      "projectName": "fabric",
+      "projectName": "nerospace-fabric-26.2",
       "preLaunchTask": "ml-prepare-fabric-26.2"
     },
     {
       "type": "java",
       "request": "launch",
       "name": "Fabric Client (26.1.2)",
-      "cwd": "${workspaceFolder}/fabric/runs/client",
+      "cwd": "${workspaceFolder}/fabric/versions/26.1.2/runs/client",
       "console": "integratedTerminal",
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotClient --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
+      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/26.1.2/launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotClient --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
       "args": "",
-      "projectName": "fabric",
+      "projectName": "nerospace-fabric-26.1.2",
       "preLaunchTask": "ml-prepare-fabric-26.1.2"
     },
     {
       "type": "java",
       "request": "launch",
       "name": "Fabric Server (26.2)",
-      "cwd": "${workspaceFolder}/fabric/runs/server",
+      "cwd": "${workspaceFolder}/fabric/versions/26.2/runs/server",
       "console": "integratedTerminal",
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotServer --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
+      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/26.2/launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotServer --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
       "args": "nogui",
-      "projectName": "fabric",
+      "projectName": "nerospace-fabric-26.2",
       "preLaunchTask": "ml-prepare-fabric-26.2"
     },
     {
       "type": "java",
       "request": "launch",
       "name": "Fabric Server (26.1.2)",
-      "cwd": "${workspaceFolder}/fabric/runs/server",
+      "cwd": "${workspaceFolder}/fabric/versions/26.1.2/runs/server",
       "console": "integratedTerminal",
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotServer --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
+      "vmArgs": "-Dfabric.dli.config\u003d${workspaceFolder}/.gradle/loom-cache/projects/fabric/26.1.2/launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotServer --sun-misc-unsafe-memory-access\u003dallow --enable-native-access\u003dALL-UNNAMED",
       "args": "nogui",
-      "projectName": "fabric",
+      "projectName": "nerospace-fabric-26.1.2",
       "preLaunchTask": "ml-prepare-fabric-26.1.2"
     },
     {
       "type": "java",
       "request": "launch",
-      "name": "NeoForge Client (26.1.2)",
-      "cwd": "${workspaceFolder}/neoforge/runs/client",
-      "console": "internalConsole",
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "args": [
-        "@${workspaceFolder}/neoforge/build/moddev/clientRunProgramArgs.txt"
-      ],
-      "vmArgs": [
-        "@${workspaceFolder}/neoforge/build/moddev/clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/bin/main"
-      ],
-      "projectName": "neoforge",
-      "preLaunchTask": "ml-prepare-neoforge-client-26.1.2",
-      "shortenCommandLine": "none"
-    },
-    {
-      "type": "java",
-      "request": "launch",
       "name": "NeoForge Client (26.2)",
-      "cwd": "${workspaceFolder}/neoforge/runs/client",
+      "cwd": "${workspaceFolder}/neoforge/versions/26.2/runs/client",
       "console": "internalConsole",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@${workspaceFolder}/neoforge/build/moddev/clientRunProgramArgs.txt"
+        "@${workspaceFolder}/neoforge/versions/26.2/build/moddev/clientRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@${workspaceFolder}/neoforge/build/moddev/clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/bin/main"
+        "@${workspaceFolder}/neoforge/versions/26.2/build/moddev/clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/versions/26.2/bin/main"
       ],
-      "projectName": "neoforge",
+      "projectName": "nerospace-neoforge-26.2",
       "preLaunchTask": "ml-prepare-neoforge-client-26.2",
       "shortenCommandLine": "none"
     },
     {
       "type": "java",
       "request": "launch",
-      "name": "NeoForge Server (26.1.2)",
-      "cwd": "${workspaceFolder}/neoforge/runs/server",
+      "name": "NeoForge Client (26.1.2)",
+      "cwd": "${workspaceFolder}/neoforge/versions/26.1.2/runs/client",
       "console": "internalConsole",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@${workspaceFolder}/neoforge/build/moddev/serverRunProgramArgs.txt"
+        "@${workspaceFolder}/neoforge/versions/26.1.2/build/moddev/clientRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@${workspaceFolder}/neoforge/build/moddev/serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/bin/main"
+        "@${workspaceFolder}/neoforge/versions/26.1.2/build/moddev/clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/versions/26.1.2/bin/main"
       ],
-      "projectName": "neoforge",
-      "preLaunchTask": "ml-prepare-neoforge-server-26.1.2",
+      "projectName": "nerospace-neoforge-26.1.2",
+      "preLaunchTask": "ml-prepare-neoforge-client-26.1.2",
       "shortenCommandLine": "none"
     },
     {
       "type": "java",
       "request": "launch",
       "name": "NeoForge Server (26.2)",
-      "cwd": "${workspaceFolder}/neoforge/runs/server",
+      "cwd": "${workspaceFolder}/neoforge/versions/26.2/runs/server",
       "console": "internalConsole",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@${workspaceFolder}/neoforge/build/moddev/serverRunProgramArgs.txt"
+        "@${workspaceFolder}/neoforge/versions/26.2/build/moddev/serverRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@${workspaceFolder}/neoforge/build/moddev/serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/bin/main"
+        "@${workspaceFolder}/neoforge/versions/26.2/build/moddev/serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/versions/26.2/bin/main"
       ],
-      "projectName": "neoforge",
+      "projectName": "nerospace-neoforge-26.2",
       "preLaunchTask": "ml-prepare-neoforge-server-26.2",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "NeoForge Server (26.1.2)",
+      "cwd": "${workspaceFolder}/neoforge/versions/26.1.2/runs/server",
+      "console": "internalConsole",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@${workspaceFolder}/neoforge/versions/26.1.2/build/moddev/serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@${workspaceFolder}/neoforge/versions/26.1.2/build/moddev/serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/neoforge/versions/26.1.2/bin/main"
+      ],
+      "projectName": "nerospace-neoforge-26.1.2",
+      "preLaunchTask": "ml-prepare-neoforge-server-26.1.2",
       "shortenCommandLine": "none"
     }
   ]

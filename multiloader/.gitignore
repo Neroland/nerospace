@@ -18,6 +18,13 @@ build/
 bin/
 **/bin/
 
+# Loom/Eclipse-generated launch configs — these embed ABSOLUTE machine paths
+# (e.g. -Dfabric.dli.config=C:\Users\...). Never commit them; the portable run
+# configs live in .vscode/launch.json (relative ${workspaceFolder} only).
+*.launch
+**/*.launch
+**/.eclipse/
+
 # IntelliJ
 .idea/
 *.iml

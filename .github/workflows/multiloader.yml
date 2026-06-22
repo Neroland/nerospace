@@ -63,9 +63,10 @@ jobs:
 
       - name: Build ${{ matrix.loader }} for MC ${{ matrix.mc }}
         working-directory: multiloader
+        # Stonecutter: each loader x MC version is its own node (:loader:version:build).
+        # The old `-Pminecraft_version` axis is gone — the node path selects the version.
         run: >-
-          ./gradlew :${{ matrix.loader }}:build
-          -Pminecraft_version=${{ matrix.mc }}
+          ./gradlew :${{ matrix.loader }}:${{ matrix.mc }}:build
           --stacktrace
 
       - name: Upload ${{ matrix.loader }} ${{ matrix.mc }} jars
@@ -73,5 +74,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nerospace-${{ matrix.loader }}-${{ matrix.mc }}
-          path: multiloader/${{ matrix.loader }}/build/libs/*.jar
+          # Stonecutter node output lives under versions/<mc>/build/libs.
+          path: multiloader/${{ matrix.loader }}/versions/${{ matrix.mc }}/build/libs/*.jar
           if-no-files-found: ignore

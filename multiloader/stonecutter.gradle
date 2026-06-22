@@ -1,33 +1,76 @@
 // =====================================================================
-// Stonecutter controller (version axis) — SCAFFOLD STUB
+// Stonecutter controller — this IS the root project's build script.
+// (Stonecutter repoints rootProject.buildFileName here, so the old root
+// build.gradle config lives in this file now.)
 //
-// This file is only consumed once you activate Stonecutter by
-// uncommenting the `stonecutter { create(rootProject) { ... } }` block in
-// settings.gradle. Until then it is inert.
-//
-// When active, Stonecutter applies this script to the version controller
-// and exposes per-node helpers. The typical contents:
-//
-//   plugins { id 'dev.kikugie.stonecutter' }
-//
-//   stonecutter active '26.1.2'   // the version checked out in your IDE
-//
-//   // Aggregate task that builds every declared version, e.g.
-//   // ./gradlew chiseledBuild
-//   stonecutter registerChiseled tasks.register('chiseledBuild', stonecutter.chiseled) {
-//       group = 'project'
-//       ofTask 'build'
-//   }
-//
-// Preprocessor usage in source (handles signature/API drift between
-// Minecraft versions without branching):
-//
-//   //? if >=26.2 {
-//   /*newSignature();
-//   *///?} else {
-//   oldSignature();
-//   //?}
-//
-// See README.md "Finishing the version axis" for the two wiring options
-// (Stonecraft turnkey, or hand-wired Stonecutter).
+// Holds: (a) the active version checked out in the IDE, (b) the shared
+// config applied to every loader node, (c) the shared-common source roots.
 // =====================================================================
+plugins {
+    id 'dev.kikugie.stonecutter'
+}
+
+// The version checked out in the IDE / used by a plain `build`. Switch with the
+// generated `stonecutterSwitchTo26_1_2` / `...26_2` tasks (or the IDE button).
+// A string LITERAL — Stonecutter rewrites it in place on switch. Groovy needs the
+// dot form (`stonecutter.active`, not the Kotlin infix `stonecutter active`).
+stonecutter.active '26.2'
+
+allprojects {
+    group = rootProject.mod_group_id
+    version = rootProject.mod_version
+}
+
+// Shared common source — pulled into every loader node (single copy -> no drift).
+// Dynamic, machine-independent paths (resolved from rootProject.projectDir).
+ext.commonJava = "${rootProject.projectDir}/common/src/main/java"
+ext.commonResources = "${rootProject.projectDir}/common/src/main/resources"
+
+subprojects {
+    apply plugin: 'java'
+
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(25)
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 25
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://maven.fabricmc.net/' }
+        maven { url 'https://maven.neoforged.net/releases/' }
+        maven { name = 'BlameJared'; url = 'https://maven.blamejared.com/' } // JEI
+    }
+
+    // Generate static Eclipse projects (.project/.classpath) ONLY for the version
+    // NODES (:fabric:26.1.2, :neoforge:26.2, ...), NOT the branch-parent containers
+    // (:fabric / :neoforge) or root. A node lives INSIDE its branch dir
+    // (fabric/versions/26.2); if the branch parent ALSO carried a .project, the redhat
+    // Java extension would reject the nested node ("not a valid java project"). Keeping
+    // branch parents as plain folders lets VS Code import each node as a standalone project.
+    def isNode = project.parent != null && project.parent.parent != null
+    if (isNode) {
+        // Compute the unique name HERE (project = the Gradle project); inside
+        // `eclipse.project {}` `project` rebinds to the Eclipse model, which has no `parent`.
+        def nodeEclipseName = "nerospace-${project.parent.name}-${project.name}"
+        apply plugin: 'eclipse'
+        eclipse {
+            project {
+                // Two nodes share the leaf name ('26.1.2' under both fabric and neoforge);
+                // give each a unique Eclipse project name.
+                name = nodeEclipseName
+                // Strip Loom's Buildship nature so VS Code imports the static .classpath
+                // instead of attempting a live (failing) Gradle import.
+                file {
+                    whenMerged { proj ->
+                        proj.natures.removeAll { it.startsWith('org.eclipse.buildship') }
+                        proj.buildCommands.removeAll { it.name.startsWith('org.eclipse.buildship') }
+                    }
+                }
+            }
+        }
+    }
+}

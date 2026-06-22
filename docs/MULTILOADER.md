@@ -45,11 +45,20 @@ Hard facts gathered while trying to unblock 26.2, so the next person doesn't re-
 **Status: IMPLEMENTED and verified (2026-06-20).** The `multiloader/` scaffold now
 uses the MultiLoader-Template layout (ModDevGradle `common` on NeoForm + Fabric
 Loom `fabric` + ModDevGradle `neoforge`) — architectury-loom is gone.
-`./gradlew :neoforge:build :fabric:build -Pminecraft_version=26.2` is **BUILD
+`./gradlew :neoforge:26.2:build :fabric:26.2:build` is **BUILD
 SUCCESSFUL** on this machine: `common`/`neoforge` against NeoForm `26.2-1` +
-NeoForge `26.2.0.6-beta`, `fabric` against Fabric Loom `1.17.11` + Fabric API
+NeoForge `26.2.0.6-beta`, `fabric` against Fabric Loom `1.17` + Fabric API
 `0.152.1+26.2` (no `mappings`). All four loader × version cells now build from
 public artifacts. See `multiloader/README.md` for the per-cell status.
+
+**Version axis = Stonecutter (2026-06-22).** The old `-Pminecraft_version` flag is
+gone. Each loader × MC version is now its own Gradle node (`:fabric:26.1.2`,
+`:fabric:26.2`, `:neoforge:26.1.2`, `:neoforge:26.2`) created by Stonecutter
+(`settings.gradle` + `stonecutter.gradle` controller). Because each node is a
+distinct project with its OWN resolved classpath, VS Code can switch the running
+MC version per Run-&-Debug config (each targets `nerospace-<loader>-<version>`).
+Build a cell with `:loader:version:build`; the active IDE version is set by
+`stonecutter.active` and switched with the `stonecutterSwitchTo…` tasks.
 
 ### Field-notes sources
 

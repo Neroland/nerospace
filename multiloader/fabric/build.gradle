@@ -6,8 +6,13 @@ plugins {
     id 'eclipse'   // for eclipse.synchronizationTasks (VS Code / Buildship import hook)
 }
 
-def mc = rootProject.minecraft_version
+// MC version comes from the Stonecutter node (e.g. :fabric:26.1.2), not a global property.
+def mc = stonecutter.current.version
 def fabricApi = project.findProperty("fabric_api_version_${mc}")
+
+// This node's projectDir is <loader>/versions/<v>; the authoritative loader source +
+// resources live in the BRANCH root (fabric/). Resolve branch-root paths via the parent.
+def branchDir = project.parent.projectDir
 
 // Pull in the shared common source + resources.
 sourceSets.main.java.srcDir rootProject.ext.commonJava
@@ -44,24 +49,27 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     ]
     inputs.properties(props)
     expand(props)
-    from 'src/main/templates'
+    from "${branchDir}/src/main/templates"
     into layout.buildDirectory.dir('generated/sources/modMetadata')
 }
 sourceSets.main.resources.srcDir generateModMetadata
 eclipse.synchronizationTasks generateModMetadata
 
 loom {
-    accessWidenerPath = file("src/main/resources/nerospace.accesswidener")
+    accessWidenerPath = file("${branchDir}/src/main/resources/nerospace.accesswidener")
 
     runs {
         client {
             client()
-            ideConfigGenerated true
+            // Do NOT let Loom write Eclipse *.launch files — they embed absolute machine
+            // paths. The committed .vscode/launch.json (relative ${workspaceFolder}) is the
+            // single source of truth for run/debug.
+            ideConfigGenerated false
             runDir 'runs/client'
         }
         server {
             server()
-            ideConfigGenerated true
+            ideConfigGenerated false
             runDir 'runs/server'
         }
     }
