@@ -8,10 +8,15 @@ import java.util.Set;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -104,6 +109,14 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     private final Set<Long> forcedChunks = new HashSet<>();
     private transient int frameTotal = -1;
 
+    /** How often (server ticks) the controller pushes a render snapshot (region/state/cursor) to clients. */
+    private static final int RENDER_SYNC_INTERVAL = 10;
+    /** Client-only: smoothed drill-head world position for the gantry/drill renderer (eased toward the cell). */
+    public double dispX;
+    public double dispY;
+    public double dispZ;
+    public boolean dispInit;
+
     private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
@@ -165,6 +178,25 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         return this.tier;
     }
 
+    // --- Renderer accessors (gantry + drill-head BER reads the synced dig state) -------------
+
+    @Nullable
+    public QuarryRegion renderRegion() {
+        return this.region;
+    }
+
+    public State renderState() {
+        return this.state;
+    }
+
+    public int renderCurrentY() {
+        return this.currentY;
+    }
+
+    public int renderCursor() {
+        return this.cursor;
+    }
+
     // --- Ticking ----------------------------------------------------------------
 
     public void tick(Level level, BlockPos pos, BlockState blockState) {
@@ -186,6 +218,23 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         if (this.region != null) {
             autoEject(serverLevel, pos);
         }
+        // Push a throttled render snapshot (region/state/cursor ride the BE update tag) so the gantry +
+        // drill-head BER can draw and track the dig while the quarry is working.
+        if (this.state != State.IDLE && serverLevel.getGameTime() % RENDER_SYNC_INTERVAL == 0L) {
+            serverLevel.sendBlockUpdated(pos, blockState, blockState, Block.UPDATE_CLIENTS);
+        }
+    }
+
+    // --- Client sync (render state rides the block-entity update packet) ---------------------
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
     }
 
     private void resume(ServerLevel level, BlockPos pos) {

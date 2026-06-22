@@ -4,6 +4,16 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-22 update — quarry drill-head BER DONE (the flagship machine now digs visibly).** All 4 cells
+> green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new).
+> `client/{QuarryControllerRenderer, QuarryControllerRenderState}` draw a gantry crane + spinning drill head
+> tracking the dig column (textured `entityCutout` submission geometry, gantry/bit verbatim from root),
+> registered via the BER seam. `QuarryControllerBlockEntity` gained `getUpdatePacket`/`getUpdateTag` +
+> throttled `sendBlockUpdated` (syncs region/state/cursor) + `render*` accessors + client `disp*` smoothing.
+> Head eases toward the current dig cell (simplified from the root's mined-history lerp). **26.x gotcha: the
+> root's `getRenderBoundingBox(T)` BER override isn't on the de-obf signature — javac rejects it (ecjCheck's
+> lenient prefs missed it); dropped it, `shouldRenderOffScreen()=true` keeps the gantry visible.** ~230 classes.
+
 > **2026-06-22 update — rocket item-canister intake proxy DONE (rocket automation now fluid + items).** All
 > 4 cells green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline,
 > 0 new). `rocket/RocketPadItemContainer` (stateless single-slot `WorldlyContainer` over the pad position,
@@ -390,9 +400,19 @@ checked by a headless build).
 + [~] **Chunk-loading**: `QuarryChunkLoader` (NeoForge `TicketController`) replaced by vanilla
   `ServerLevel.setChunkForced` (works on both loaders; one chunk pinned at a time, persisted + released
   on removal) — no cross-loader ticket seam needed.
-+ [~] **Deferred**: upgrade modules (controller runs at ×1.0 speed/energy, no Silk/Fortune, no module
-  slots — depends on the `module/` batch); the moving drill-head BER (`QuarryControllerRenderer`); and
-  fluid **auto-eject** (the fluid buffer is drained by pipes instead). `Tuning` values inlined.
++ [x] **Drill-head BER DONE (4 cells green).** `client/{QuarryControllerRenderState, QuarryControllerRenderer}`
+  — a gantry crane riding the frame + a spinning drill head tracking the dig column, as textured submission
+  geometry (`RenderTypes.entityCutout` over `quarry_gantry`/`quarry_drill`), registered via the
+  `ClientBlockEntityRenderers` seam. The BE syncs its dig state (region/state/currentY/cursor ride a new
+  `getUpdatePacket`/`getUpdateTag` + throttled `sendBlockUpdated` while working) and exposes
+  `renderRegion`/`renderState`/`renderCurrentY`/`renderCursor` + client `dispX/Y/Z` smoothing fields.
+  **Cross-loader simplification:** the head eases toward the current dig cell (`region.columnPos(cursor,
+  currentY)`) instead of the root's per-block mined-history time-lerp (less synced state, same look).
+  **26.x gotcha: `BlockEntityRenderer.getRenderBoundingBox(T)` is NOT on the de-obf BER signature** (javac
+  rejects the `@Override`; ecjCheck's lenient prefs missed it — the full build is the authority) → dropped it
+  and rely on `shouldRenderOffScreen()=true` (a valid override) to keep the gantry from culling.
++ [~] **Deferred (minor):** fluid **auto-eject** (the fluid buffer is drained by pipes instead). Upgrade
+  modules are DONE (re-enabled in the `module/` batch — this note was stale). `Tuning` values inlined.
 
 ### Fuel machines  (`machine/Fuel*` — depends on the ported rocket-fuel fluid) — **DONE (4 cells green)**
 
