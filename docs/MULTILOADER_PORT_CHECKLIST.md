@@ -344,7 +344,16 @@ checked by a headless build).
 + [x] **Machines / storage** — combustion + passive + solar generators, oxygen generator, nerosium
   grinder (+ 3 GUIs), item store, battery, creative battery, fluid tank, gas tank, trash can.
 + [x] **Rocket-fuel fluid** — `BaseFlowingFluid`/`FluidType` (NeoForge) vs hand-written `FlowingFluid`
-  (Fabric), liquid block + bucket; NeoForge in-world render. (Fabric in-world render = follow-up.)
+  (Fabric), liquid block + bucket; NeoForge in-world render via the new `RegisterFluidModelsEvent`
+  (`FluidModel.Unbaked` + `Material` + `FluidTintSources`).
++ [ ] **Fabric in-world fluid render — BLOCKED on the 26.x fluid-render overhaul (investigated 2026-06-22).**
+  The old Fabric `fabric-rendering-fluids-v1` API (`FluidRenderHandlerRegistry` / `SimpleFluidRenderHandler`)
+  is **gone** in this Fabric API — 26.x moved fluid rendering to the **vanilla** `net.minecraft.client.renderer.block.FluidModel`
+  system (NeoForge registers it via its own `RegisterFluidModelsEvent`). Fabric's registration path for the
+  new vanilla `FluidModel` isn't the old handler API and needs investigation against the decompiled client
+  (likely a vanilla fluid-model registry or a new Fabric module). Attempt reverted to keep the build green;
+  not a simple follow-up. Until then, rocket fuel shows the missing-texture art in-world **on Fabric only**
+  (NeoForge is correct; the fluid still functions on both — buckets, tanks, pipes, refinery all work).
 + [x] **All 10 mobs** — xertz stalker, quartz crawler, greenling, ruin warden, cinder/frost striders,
   3 terraform livestock, alien villager (full Merchant trading + reputation). Models, renderers,
   glow layers, sounds, `village` trade tables.
