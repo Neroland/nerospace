@@ -13,7 +13,7 @@ name: Publish
 # created, delete the v<version> tag/release and re-run.
 on:
   push:
-    branches: [main]
+    branches: [main, enhancement/multi-loader-support]
     paths:
       - multiloader/gradle.properties
   workflow_dispatch:
