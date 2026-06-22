@@ -85,7 +85,10 @@ public class SolarPanelRenderer
     @Override
     public void submit(SolarPanelRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
             CameraRenderState cameraState) {
-        int light = state.lightCoords;
+        // Full-bright: the PV deck reads as a lit/reflective surface, and (like the quarry renderer)
+        // we can't rely on state.lightCoords being populated for submitted custom geometry — when it is
+        // left at 0 the deck draws nearly black against the dark housing and looks like it's missing.
+        int light = 0x00F000F0;
         Identifier texture = Identifier.fromNamespaceAndPath(
                 NerospaceCommon.MOD_ID, "textures/block/solar_panel" + tierSuffix(state.tier) + ".png");
 
