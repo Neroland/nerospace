@@ -103,6 +103,16 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         return 0;
     }
 
+    /** Every accepted fuel item (mirrors {@link #fuelValue}), for display/integration (JEI). */
+    public static java.util.List<ItemStack> knownFuels() {
+        return java.util.List.of(
+                new ItemStack(Items.COAL),
+                new ItemStack(Items.CHARCOAL),
+                new ItemStack(Items.COAL_BLOCK),
+                new ItemStack(Items.BLAZE_ROD),
+                new ItemStack(ModItems.ROCKET_FUEL_CANISTER.get()));
+    }
+
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) {
             return;

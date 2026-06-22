@@ -1,5 +1,9 @@
 package za.co.neroland.nerospace.machine;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import za.co.neroland.nerospace.registry.ModItems;
@@ -8,6 +12,24 @@ import za.co.neroland.nerospace.registry.ModItems;
 public final class GrinderRecipes {
 
     private GrinderRecipes() {
+    }
+
+    /** One input → output pairing, for display/integration (JEI). */
+    public record Grinding(ItemStack input, ItemStack output) {
+    }
+
+    /** @return every grinding pairing, derived through {@link #getResult} so the display can't drift. */
+    public static List<Grinding> all() {
+        List<Grinding> recipes = new ArrayList<>();
+        for (Item item : List.of(ModItems.NEROSIUM_ORE_ITEM.get(), ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get(),
+                ModItems.RAW_NEROSIUM.get(), ModItems.NEROSIUM_INGOT.get())) {
+            ItemStack input = new ItemStack(item);
+            ItemStack output = getResult(input);
+            if (!output.isEmpty()) {
+                recipes.add(new Grinding(input, output));
+            }
+        }
+        return List.copyOf(recipes);
     }
 
     public static ItemStack getResult(ItemStack input) {
