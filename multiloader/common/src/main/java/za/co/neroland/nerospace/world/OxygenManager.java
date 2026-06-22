@@ -8,13 +8,19 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerospace.config.NerospaceConfig;
+import za.co.neroland.nerospace.gas.GasResource;
+import za.co.neroland.nerospace.gas.NerospaceGasStorage;
+import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
@@ -59,6 +65,13 @@ public final class OxygenManager {
     /** Drain factor on a hazard dimension without the matching suit variant (SUIT_HAZARD_DESIGN.md §2). */
     private static final int HAZARD_DRAIN_MULTIPLIER = 4;
 
+    /** Airlock refill: scan radius around a suited player for a Gas Tank / Oxygen Generator holding O2. */
+    private static final int AIRLOCK_RADIUS = 4;
+    /** Air units a suit's tank regains per check from an in-range oxygen store (drain offsets it nicely). */
+    private static final int AIRLOCK_REFILL_PER_CHECK = 90;
+    /** Gas (mB) consumed per air unit restored — the conversion rate from a tank's oxygen to suit air. */
+    private static final int AIRLOCK_MB_PER_AIR = 2;
+
     /** Every Nerospace planet (and the vacuum of the station) is airless. */
     private static final Set<ResourceKey<Level>> PLANETS = Set.of(
             ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
@@ -97,6 +110,11 @@ public final class OxygenManager {
                         NerospaceConfig.oxygenDrainMultiplier()) * hazardDrainMultiplier(level, player);
                 oxygen = Math.max(0, oxygen - drain);
                 hazardFeedback(level, player);
+                // Airlock: a worn suit beside a Gas Tank / Oxygen Generator holding O2 taps it to top up —
+                // a tank by the base door keeps you fuelled without a breathable bubble.
+                if (suited && oxygen < max) {
+                    oxygen = Math.min(max, oxygen + airlockRefill(level, player, max - oxygen));
+                }
             }
             Services.PLATFORM.setOxygen(player, oxygen);
         }
@@ -140,6 +158,62 @@ public final class OxygenManager {
             }
         }
         return false;
+    }
+
+    /**
+     * Airlock refill: a worn suit within {@link #AIRLOCK_RADIUS} of a Gas Tank / Creative Gas Tank /
+     * Oxygen Generator holding Oxygen draws gas from it to refill the suit's air tank — so a tank at the
+     * base entrance acts as an airlock. {@link #AIRLOCK_MB_PER_AIR} mB of oxygen restores one air unit.
+     *
+     * @param need air units missing from the suit tank
+     * @return air units actually restored (0 when no usable oxygen store is in range)
+     */
+    private static int airlockRefill(ServerLevel level, Player player, int need) {
+        if (need <= 0) {
+            return 0;
+        }
+        int want = Math.min(need, AIRLOCK_REFILL_PER_CHECK);
+        BlockPos center = player.blockPosition();
+        int restored = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(
+                center.offset(-AIRLOCK_RADIUS, -AIRLOCK_RADIUS, -AIRLOCK_RADIUS),
+                center.offset(AIRLOCK_RADIUS, AIRLOCK_RADIUS, AIRLOCK_RADIUS))) {
+            if (want <= 0) {
+                break;
+            }
+            BlockState state = level.getBlockState(pos);
+            if (!state.is(ModBlocks.GAS_TANK.get())
+                    && !state.is(ModBlocks.CREATIVE_GAS_TANK.get())
+                    && !state.is(ModBlocks.OXYGEN_GENERATOR.get())) {
+                continue;
+            }
+            NerospaceGasStorage store = GasLookup.INSTANCE.find(level, pos.immutable(), null);
+            if (store == null) {
+                continue;
+            }
+            int gained = drawOxygen(store, want);
+            restored += gained;
+            want -= gained;
+        }
+        if (restored > 0) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundSource.PLAYERS, 0.3F, 1.4F);
+        }
+        return restored;
+    }
+
+    /** Extract whole air units of Oxygen from {@code store}: simulate, floor to whole units, then commit. */
+    private static int drawOxygen(NerospaceGasStorage store, int wantAir) {
+        if (store.getGas() != GasResource.OXYGEN || store.getAmount() <= 0) {
+            return 0;
+        }
+        long peeked = store.drain((long) wantAir * AIRLOCK_MB_PER_AIR, true);
+        int units = (int) (peeked / AIRLOCK_MB_PER_AIR);
+        if (units <= 0) {
+            return 0;
+        }
+        store.drain((long) units * AIRLOCK_MB_PER_AIR, false);
+        return units;
     }
 
     /** Whether the player wears a full set of Oxygen Suit pieces (any tier / hazard variant counts). */

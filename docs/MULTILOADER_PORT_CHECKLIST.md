@@ -4,6 +4,15 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-22 update — gas-tank airlock suit-refill DONE (oxygen enhancement).** All 4 cells green
+> (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new).
+> `OxygenManager` now refills a worn suit from a nearby Gas Tank / Creative Gas Tank / Oxygen Generator
+> holding Oxygen — radius scan → `GasLookup.INSTANCE.find` → drain whole air units (`AIRLOCK_MB_PER_AIR` mB
+> each) + bubble SFX, in the not-breathable branch (drain, then top up). A tank by the base door acts as an
+> airlock. Unblocked by the `GasLookup` seam the advanced-pipes batch added (the original deferral note is
+> now stale). The only remaining oxygen deferral is the custom-trigger advancement criteria (`ModCriteria`
+> 26.1↔26.2 package split).
+
 > **2026-06-22 update — pipe stream pulses DONE → advanced pipes slices A+B COMPLETE.** All 4 cells green
 > (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new). The
 > Universal Pipe renderer now draws the coloured energy/fluid/gas stream pulses along active arms (red/blue/
@@ -389,8 +398,12 @@ checked by a headless build).
   set = no shield). Adds `hazardFor`/`hazardShield`/`pieceVariant`/`hazardDrainMultiplier` + thematic feedback
   (frost vignette on cold, smoke shimmer on hot — no extra damage path). **Makes the already-ported thermal/cryo
   suit variants functional.**
-+ [ ] **Deferred**: terraform-breathability advancement criteria, gas-tank airlock refill (needs the gas-cap
-  lookup; the field/pad/terraformed already refill).
++ [x] **Gas-tank airlock refill DONE (4 cells green).** `OxygenManager` now tops up a worn suit's air tank
+  from a nearby Gas Tank / Creative Gas Tank / Oxygen Generator holding Oxygen (radius scan → `GasLookup`
+  seam → drain whole air units at `AIRLOCK_MB_PER_AIR` mB each + a bubble SFX), in the not-breathable branch
+  (drain, then refill). A tank by the base door now acts as an airlock without needing a breathable bubble.
+  Unblocked by the `GasLookup` seam the advanced-pipes batch added.
++ [ ] **Deferred**: terraform-breathability advancement criteria (the custom-trigger `ModCriteria` split).
 + **Terraforming** (signature endgame) — sliced; **slice 1 DONE (4 cells green)**, rest sequenced:
   + [x] **Slice 1 — per-chunk data-attachment seam.** `IPlatformHelper.is/setTerraformed` +
     `get/setTerraformStage(LevelChunk)` backed by NeoForge `AttachmentType` (chunk `getData`/`setData`) and
