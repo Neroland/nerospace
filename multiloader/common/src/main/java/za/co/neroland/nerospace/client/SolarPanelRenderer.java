@@ -29,8 +29,9 @@ import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
  *
  * <p>Cross-loader port: the standalone renderer minus the per-face connector stubs (they needed
  * client-side energy-cap queries — dropped for this slice). The deck angle is driven by vanilla
- * {@code getGameTime()} (the NeoForge dimension clock {@code getDefaultClockTime()} isn't on the de-obf
- * classpath) and the airless 2× "permanent sun" case keys off {@link SolarPanelBlockEntity#isAirless}.</p>
+ * {@code getDefaultClockTime()} (the real day-of-time clock — available on the common classpath in both
+ * 26.1.2 and 26.2) so it tracks the visible sun, and the airless 2× "permanent sun" case keys off
+ * {@link SolarPanelBlockEntity#isAirless}.</p>
  */
 public class SolarPanelRenderer
         implements BlockEntityRenderer<SolarPanelBlockEntity, SolarPanelRenderState> {
@@ -72,9 +73,10 @@ public class SolarPanelRenderer
             openness = 1.0F; // permanent sun in orbit / on an airless moon
             track = 0.0F;
         } else {
-            // Vanilla getGameTime() as the day-cycle proxy (the NeoForge dimension clock isn't available
-            // cross-loader). 0 sunrise, 6000 noon, 18000 midnight.
-            long tod = (level.getGameTime() + (long) partialTick) % 24000L;
+            // Real day-of-time clock (vanilla on the common classpath in both 26.1.2 and 26.2 — same call
+            // the standalone uses), so the deck tracks the visible sun and folds at the true night rather
+            // than drifting on getGameTime()'s free-running counter. 0 sunrise, 6000 noon, 18000 midnight.
+            long tod = level.getDefaultClockTime() % 24000L;
             float sun = Mth.cos((float) ((tod - 6000L) / 24000.0 * 2.0 * Math.PI)); // +1 noon, -1 midnight
             openness = Mth.clamp((sun + 0.05F) / 0.3F, 0.0F, 1.0F); // eases to 0 at night → folds flat
             track = (float) ((tod - 6000L) / 24000.0) * 360.0F; // -90 sunrise .. 0 noon .. +90 sunset

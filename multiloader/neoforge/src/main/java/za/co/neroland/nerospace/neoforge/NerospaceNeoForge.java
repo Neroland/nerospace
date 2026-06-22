@@ -9,6 +9,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -34,6 +35,7 @@ import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.registry.NeoForgeRegistrationFactory;
 import za.co.neroland.nerospace.progression.StarGuideGrants;
 import za.co.neroland.nerospace.world.OxygenManager;
+import za.co.neroland.nerospace.world.PlayerJoinHandler;
 import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
 
@@ -76,6 +78,12 @@ public final class NerospaceNeoForge {
         NeoForge.EVENT_BUS.addListener((LivingFallEvent event) -> {
             if (AlienGearAbilities.negatesFall(event.getEntity())) {
                 event.setDamageMultiplier(0.0F);
+            }
+        });
+        // One-time welcome on join (Star Guide pointer + repo link).
+        NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                PlayerJoinHandler.onPlayerJoin(serverPlayer);
             }
         });
         // Creative debug commands (/nerospace gallery) — game-bus command registration.

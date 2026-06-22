@@ -1,0 +1,22 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "deck": "nerospace:block/solar_panel_t3",
+    "base": "nerospace:block/solar_panel_t3_base",
+    "particle": "nerospace:block/solar_panel_t3_base"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 3, 16],
+      "faces": {
+        "up": {"texture": "#deck"},
+        "down": {"texture": "#base"},
+        "north": {"texture": "#base"},
+        "south": {"texture": "#base"},
+        "east": {"texture": "#base"},
+        "west": {"texture": "#base"}
+      }
+    }
+  ]
+}

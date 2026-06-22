@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
@@ -36,6 +37,7 @@ import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.rocket.RocketPadFluidProxy;
 import za.co.neroland.nerospace.rocket.RocketPadItemContainer;
 import za.co.neroland.nerospace.world.OxygenFieldEvents;
+import za.co.neroland.nerospace.world.PlayerJoinHandler;
 import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
@@ -109,6 +111,9 @@ public final class NerospaceFabric implements ModInitializer {
         // Creative debug commands (/nerospace gallery).
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 NerospaceCommands.register(dispatcher));
+        // One-time welcome on join (counterpart to NeoForge's PlayerLoggedInEvent).
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+                PlayerJoinHandler.onPlayerJoin(handler.player));
         // Terraform catch-up: convert any in-range columns on chunks that load after the frontier passed.
         // (Fabric's Load SAM passes a third "newly generated" flag, which we don't need.)
         ServerChunkEvents.CHUNK_LOAD.register((serverLevel, chunk, newlyGenerated) ->
