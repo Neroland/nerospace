@@ -747,7 +747,18 @@ checked by a headless build).
   unported); spawn the armor stands via the `ArmorStand` constructor (the de-obf `EntityType.ARMOR_STAND`
   constant isn't on the 26.2 classpath); dropped the unported `quarry.stageDisplay` preview + the Creative
   Fluid Tank `setSource` (fixed rocket_fuel here).
-+ [ ] `compat/jei/*` — recipe-viewer integration. NeoForge = JEI; Fabric would use REI/EMI. Cross-mod, low priority.
++ [~] **JEI — dependency UNBLOCKED + wired (2026-06-22; was wrongly marked "no 26.x artifact").** JEI **does**
+  publish for both: `jei-26.1.2-*:29.6.2.31` and `jei-26.2-*:30.1.0.10` (BlameJared maven, already inherited).
+  Wired in `neoforge/build.gradle` as per-MC-version `jei_version_<mc>` (compileOnly common+neoforge API,
+  runtimeOnly the full NeoForge artifact — never published as a hard dep), guarded by `if (jeiVersion)`.
+  Both `:neoforge:build` cells green (26.2 + 26.1.2); baseline JEI integration now works (mod items appear).
+  **Remaining = the `compat/jei` PLUGIN itself** (`NerospaceJeiPlugin` + Grinding/Refining/CombustionFuel
+  categories, NeoForge source set). Two real porting tasks, not blockers: (1) the multiloader inlines recipe
+  data — `GrinderRecipes` is a bare `getResult(input)` with no recipe-list/record, and there's no `Tuning`
+  class — so the categories need recipe-list exposure (a `Grinding` record + lists for grinder/refinery/
+  combustion) and Tuning→inlined-constant adaptation; (2) **JEI jumped 29→30 between the two MC versions**, a
+  major-API bump, so the categories must compile against both JEI APIs (cross-version risk on the JEI side,
+  on top of MC). Fabric recipe viewer (REI/EMI) is a separate follow-up.
 
 ### Config / tuning — **DONE (4 cells green): all 5 multipliers wired, cross-loader seam complete**
 
