@@ -4,6 +4,17 @@ Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still n
 cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 
+> **2026-06-22 update — advanced-pipes slice B2 (travelling-item visuals) started + items lane DONE.**
+> All 4 cells green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21
+> baseline warnings, 0 new). Items now visibly flow through Universal Pipes: `pipe/TravellingItem` (rebuilt
+> on vanilla `ItemStack`) + `client/UniversalPipeRenderer` + `client/UniversalPipeRenderState`, registered
+> via the `ClientBlockEntityRenderers` BER seam. **Cosmetic-echo design (zero relay risk):** the instant
+> item relay is untouched; each successful push spawns a transient `TravellingItem` that the BE advances,
+> expires and persists, riding the BE update packet (`getUpdatePacket`/`getUpdateTag`=`saveCustomOnly`,
+> throttled `sendBlockUpdated`); the renderer advances locally between syncs for smooth motion. **Deferred
+> within B2:** the coloured energy/fluid/gas stream pulses (need per-face connection blockstates the
+> single-cube pipe model lacks) and the optional 591-line `PipeNetwork` routing graph. **~226 classes.**
+
 > **2026-06-22 update — Artificer gear behaviour ported (the village's exclusive trades are now functional).**
 > All 4 cells green (`:neoforge:build`+`:fabric:build` on both 26.2 and 26.1.2; ecjCheck 0 errors / 21
 > baseline warnings, 0 new). Added `gear/XertzResonatorItem` (right-click ore-ping over a new `c:ores`
@@ -516,11 +527,17 @@ checked by a headless build).
   + `PipeConfigOpenHandler`, so **no client-screen-open seam is needed** (menus + their screens already
   register cross-loader). Menu type registered + screen registered on both loaders; reuses the existing
   `pipe.nerospace.mode.*` lang.
-+ [ ] **Slice B2 (deferred) — travelling-item visuals.** `TravellingItem` (animated in-transit stacks) +
-  `UniversalPipeRenderer` + `UniversalPipeRenderState` (items visibly flow through the pipe), and optionally
-  the `PipeNetwork` 591-line routing graph. Purely cosmetic (the relay already moves resources); the BER
-  rendering API is now proven cross-version (see solar slice 2), so the renderer itself is de-risked — the
-  remaining work is making the item relay animation-aware (tracking + syncing in-transit stacks).
++ [~] **Slice B2 — travelling-item visuals DONE (items lane; 4 cells green).** `pipe/TravellingItem`
+  (rebuilt on a vanilla `ItemStack` — the root's `ItemResource` isn't on common) + `client/UniversalPipeRenderer`
+  + `client/UniversalPipeRenderState`, registered via the `ClientBlockEntityRenderers` BER seam. Items now
+  visibly slide entry-face → centre → exit-face through the pipe. Implemented as a **cosmetic echo**: the
+  instant item relay is unchanged; each successful push spawns a transient `TravellingItem` that the BE
+  advances + expires each tick and persists, riding the block-entity update packet (`getUpdatePacket` +
+  `getUpdateTag` = `saveCustomOnly`, throttled `sendBlockUpdated` every 3 ticks); the renderer advances
+  progress locally between syncs for smooth motion (mirrors the root). **Deferred:** the coloured
+  energy/fluid/gas **stream pulses** (need the per-face connection blockstates the multiloader pipe's
+  single-cube model doesn't carry) and the optional `PipeNetwork` 591-line routing graph (the per-BE relay
+  already moves everything). Renderer/BE-sync APIs all proven by the Star Guide hologram + solar deck.
 
 ### Machine modules / upgrades  (`module/` 3) — **DONE (4 cells green)**
 

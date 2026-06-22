@@ -1,10 +1,18 @@
 package za.co.neroland.nerospace.pipe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -17,6 +25,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -75,6 +84,19 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     private final ItemStack[] faceFilters = new ItemStack[6];
     private int speedUpgrades;
     private int capacityUpgrades;
+
+    // --- Travelling-item visuals (cosmetic echo of the item relay) -----------
+    /** Max simultaneously-animated in-transit stacks per segment (visual cap, not a throughput limit). */
+    public static final int MAX_TRAVELLING = 6;
+    /** Base ticks a visual packet takes to cross one pipe (scaled down by Speed upgrades). */
+    private static final int ITEM_TICKS_PER_BLOCK = 8;
+    /** How often (server ticks) a pipe pushes its travelling-item snapshot to nearby clients. */
+    private static final int SYNC_INTERVAL = 3;
+    /** In-transit visual packets (a cosmetic echo of the relay; advanced + expired each tick, synced + persisted). */
+    private final List<TravellingItem> travelling = new ArrayList<>();
+    private boolean lastSyncEmpty = true;
+    /** Client-only: game time of the last render extraction, for smooth local advance between syncs. */
+    public float clientItemTime;
 
     public UniversalPipeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.UNIVERSAL_PIPE.get(), pos, state);
@@ -240,6 +262,45 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         relayGas(level, pos);
         relayFluid(level, pos);
         relayItems(level, pos);
+        tickTravelling(level, pos, state);
+    }
+
+    /** Advance + expire the cosmetic in-transit packets and push a throttled snapshot to clients. */
+    private void tickTravelling(Level level, BlockPos pos, BlockState state) {
+        if (!this.travelling.isEmpty()) {
+            float step = 1.0F / itemTicksPerBlock();
+            this.travelling.removeIf(item -> {
+                item.advance(step);
+                return item.isFinished();
+            });
+        }
+        if (level.getGameTime() % SYNC_INTERVAL == 0) {
+            boolean empty = this.travelling.isEmpty();
+            // Sync while there's motion, plus one final snapshot so the client clears its lane.
+            if (!empty || !this.lastSyncEmpty) {
+                level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+                this.lastSyncEmpty = empty;
+            }
+        }
+    }
+
+    /** Visual ticks for one packet to cross a segment — faster with Speed upgrades (min 3). */
+    public int itemTicksPerBlock() {
+        return Math.max(3, ITEM_TICKS_PER_BLOCK / speedMultiplier());
+    }
+
+    /** Read-only view of the in-transit packets, for the renderer. */
+    public List<TravellingItem> travelling() {
+        return this.travelling;
+    }
+
+    /** Spawn a cosmetic packet crossing the segment toward {@code outFace} (does not affect the transfer). */
+    private void spawnTravelling(ItemStack moved, Direction outFace) {
+        if (moved.isEmpty() || this.travelling.size() >= MAX_TRAVELLING) {
+            return;
+        }
+        this.travelling.add(new TravellingItem(moved.copy(), outFace.getOpposite(), outFace, 0.0F));
+        setChanged();
     }
 
     private void relayEnergy(Level level, BlockPos pos) {
@@ -378,7 +439,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             BlockEntity be = level.getBlockEntity(pos.relative(dir));
             if (be instanceof Container src && !(be instanceof UniversalPipeBlockEntity)) {
                 for (int i = 0; i < perTick; i++) {
-                    if (!moveOneFiltered(src, dir.getOpposite(), this, dir, dir)) {
+                    if (moveOneFiltered(src, dir.getOpposite(), this, dir, dir).isEmpty()) {
                         break;
                     }
                 }
@@ -392,9 +453,12 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             BlockEntity be = level.getBlockEntity(pos.relative(dir));
             if (be instanceof Container dst) {
                 for (int i = 0; i < perTick; i++) {
-                    if (!moveOneFiltered(this, dir, dst, dir.getOpposite(), dir)) {
+                    ItemStack moved = moveOneFiltered(this, dir, dst, dir.getOpposite(), dir);
+                    if (moved.isEmpty()) {
                         break;
                     }
+                    // Cosmetic: echo the (already-completed) transfer as a packet crossing toward this face.
+                    spawnTravelling(moved, dir);
                 }
             }
         }
@@ -421,8 +485,10 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     /**
      * Move a single item from {@code from} (extracted through {@code fromFace}) into {@code into},
      * honouring this pipe's item filter on {@code filterFace} (the face the item passes through here).
+     *
+     * @return a single-item copy of what moved (for the travelling-item visual), or {@code EMPTY} if nothing moved.
      */
-    private boolean moveOneFiltered(Container from, Direction fromFace, Container into, Direction intoFace,
+    private ItemStack moveOneFiltered(Container from, Direction fromFace, Container into, Direction intoFace,
             Direction filterFace) {
         for (int fs : slotsFor(from, fromFace)) {
             ItemStack stack = from.getItem(fs);
@@ -439,10 +505,10 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             if (insertOne(into, one, intoFace)) {
                 from.removeItem(fs, 1);
                 from.setChanged();
-                return true;
+                return one;
             }
         }
-        return false;
+        return ItemStack.EMPTY;
     }
 
     private static boolean insertOne(Container into, ItemStack one, Direction face) {
@@ -495,6 +561,9 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         }
         output.putInt("SpeedUpgrades", this.speedUpgrades);
         output.putInt("CapacityUpgrades", this.capacityUpgrades);
+        if (!this.travelling.isEmpty()) {
+            output.store("Travelling", TravellingItem.CODEC.listOf(), this.travelling);
+        }
     }
 
     @Override
@@ -519,6 +588,20 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         }
         this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
         this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);
+        this.travelling.clear();
+        this.travelling.addAll(input.read("Travelling", TravellingItem.CODEC.listOf()).orElse(List.of()));
+    }
+
+    // --- Client sync (travelling-item visuals ride the block-entity update packet) ------------
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
     }
 
     // --- WorldlyContainer (item buffer) -------------------------------------

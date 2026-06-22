@@ -29,5 +29,7 @@ public final class ClientBlockEntityRenderers {
         sink.register(ModBlockEntities.STAR_GUIDE.get(), context -> new StarGuideHologramRenderer());
         // Solar panels: the sun-tracking deck above each tier's housing (one big deck per multiblock).
         sink.register(ModBlockEntities.SOLAR_PANEL.get(), context -> new SolarPanelRenderer());
+        // Universal Pipe: the item stacks visibly travelling through the segment.
+        sink.register(ModBlockEntities.UNIVERSAL_PIPE.get(), context -> new UniversalPipeRenderer());
     }
 }
