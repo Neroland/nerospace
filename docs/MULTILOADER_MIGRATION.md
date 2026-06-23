@@ -10,8 +10,12 @@ API divergences found during the port.
 > now just `common/` and resources are hand-authored there (no datagen). See
 > `post_port.md`.
 
-Last updated: 2026-06-20. Verified build targets: all four cells — **NeoForge @ 26.1.2 / 26.2**
-and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after every batch.
+> **Current matrix note (2026-06-23).** The live repo-root build now supports six cells by adding
+> MinecraftForge/Forge (`:forge:26.1.2`, `:forge:26.2`) alongside NeoForge and Fabric. The dated
+> "all 4 cells green" entries below are the original NeoForge/Fabric migration log.
+
+Last updated for the original migration log: 2026-06-20. Its verified build targets were the four
+NeoForge/Fabric cells; current six-cell status lives in `docs/MULTILOADER_BUILD.md`.
 
 > **2026-06-20 (later still): ROCKETS (core) ported** — all 4 cells green. The rideable
 > `RocketEntity` (tiers, fuelling, destination selection, simulated ascent → vanilla teleport), the

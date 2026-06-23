@@ -1,6 +1,10 @@
 # Post-Port Cutover Runbook — retire the standalone root, make `multiloader/` the default
 
-**Status:** the cross-loader port is functionally complete and build-green (all 4 cells — NeoForge & Fabric × MC 26.1.2 & 26.2 — `BUILD SUCCESSFUL`, ecjCheck 0 errors). This document is the **runbook for the cutover branch** that retires the old single-loader project at the repo root and promotes `multiloader/` to be the canonical build.
+**Status:** historical cutover runbook. It was written when the supported matrix was 4 cells
+(NeoForge & Fabric × MC 26.1.2 & 26.2). The current flattened repo-root build supports 6 cells by adding
+Forge (`:forge:26.1.2`, `:forge:26.2`); see [`docs/MULTILOADER_BUILD.md`](MULTILOADER_BUILD.md) for the
+current build matrix. This document is kept as the record of retiring the old single-loader project and
+promoting `multiloader/` to the canonical repo-root build.
 
 It is deliberately **phased and reversible**. Nothing is deleted up front — the old root is **moved into `legacy/`** and kept until you are 120% confident every mechanic is ported (see the parity checklist at the end). Run each phase on a branch, verify, and only proceed when green.
 

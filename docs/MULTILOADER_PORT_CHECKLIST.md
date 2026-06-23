@@ -9,6 +9,12 @@ build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
 > (`post_port.md` Phase 2) — `multiloader/` is the repo root and `tools/` already
 > target `common/` with `--multiloader`. Kept for the per-system port record.
 
+> **2026-06-23 update — Forge added as the third loader.** The current support matrix is now six cells
+> (NeoForge + Forge + Fabric × MC 26.1.2 + 26.2). Forge has its own `forge/` Stonecutter branch using
+> ForgeGradle 7, `mods.toml`, ServiceLoader seam implementations, classic Forge capabilities/attachments,
+> Forge payload channels, client setup, and Forge biome modifiers. The older "all 4 cells green" notes below
+> are historical evidence from the NeoForge/Fabric port and should be read in that dated context.
+
 > **2026-06-22 update — JEI compat DONE on BOTH loaders (NeoForge + Fabric recipe viewer).**
 > All 4 cells green (NeoForge + Fabric × 26.2 + 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new). JEI **does**
 > ship for both loaders + MC versions (`29.6.2.31` on 26.1.2, `30.1.0.10` on 26.2; `jei-<mc>-neoforge` and

@@ -42,12 +42,13 @@ subprojects {
         mavenCentral()
         maven { url 'https://maven.fabricmc.net/' }
         maven { url 'https://maven.neoforged.net/releases/' }
+        maven { url 'https://maven.minecraftforge.net/' }
         maven { name = 'BlameJared'; url = 'https://maven.blamejared.com/' } // JEI
     }
 
     // Generate static Eclipse projects (.project/.classpath) ONLY for the version
-    // NODES (:fabric:26.1.2, :neoforge:26.2, ...), NOT the branch-parent containers
-    // (:fabric / :neoforge) or root. A node lives INSIDE its branch dir
+    // NODES (:fabric:26.1.2, :neoforge:26.2, :forge:26.2, ...), NOT the branch-parent containers
+    // (:fabric / :neoforge / :forge) or root. A node lives INSIDE its branch dir
     // (fabric/versions/26.2); if the branch parent ALSO carried a .project, the redhat
     // Java extension would reject the nested node ("not a valid java project"). Keeping
     // branch parents as plain folders lets VS Code import each node as a standalone project.
@@ -59,7 +60,7 @@ subprojects {
         apply plugin: 'eclipse'
         eclipse {
             project {
-                // Two nodes share the leaf name ('26.1.2' under both fabric and neoforge);
+                // Multiple nodes share the leaf name ('26.1.2' under fabric/neoforge/forge);
                 // give each a unique Eclipse project name.
                 name = nodeEclipseName
                 // Strip Loom's Buildship nature so VS Code imports the static .classpath
@@ -78,7 +79,7 @@ subprojects {
 // ---------------------------------------------------------------------------
 // Bidirectional Blockbench <-> Java entity-model sync for the MULTILOADER.
 // Runs the shared tools/model_sync.py with --multiloader, so it operates on
-// multiloader/common/src/main/java (the entity model classes carry the
+// common/src/main/java (the entity model classes carry the
 // model_sync:begin/end markers) + the repo-root art/blockbench/entity/*.bbmodel.
 // Standalone (NOT auto-wired into compileJava — keeps the green build free of a
 // hard Python requirement); run it deliberately when you edit a .bbmodel or the
@@ -90,7 +91,7 @@ subprojects {
 // ---------------------------------------------------------------------------
 tasks.register('syncModels') {
     group = 'nerospace'
-    description = 'Sync entity-model Blockbench <-> Java for multiloader/common (tools/model_sync.py --multiloader).'
+    description = 'Sync entity-model Blockbench <-> Java for common (tools/model_sync.py --multiloader).'
     // <repo> = the project root (now flattened); run python from there so tools/model_sync.py resolves.
     def repoRoot = rootProject.projectDir
     def pythonOverride = providers.gradleProperty('pythonCmd').getOrNull()
@@ -147,7 +148,7 @@ tasks.register('syncModels') {
 // ---------------------------------------------------------------------------
 tasks.register('genAssets') {
     group = 'nerospace'
-    description = 'Regenerate textures + Blockbench block/item models into multiloader/common (additive).'
+    description = 'Regenerate textures + Blockbench block/item models into common (additive).'
     def repoRoot = rootProject.projectDir
     def pythonOverride = providers.gradleProperty('pythonCmd').getOrNull()
     def isWindows = System.getProperty('os.name').toLowerCase().contains('win')

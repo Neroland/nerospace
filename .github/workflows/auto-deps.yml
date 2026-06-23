@@ -1,7 +1,7 @@
 name: Auto-update dependencies
 
 # Daily resolver that opens PRs bumping the modding dependency pins held as
-# version variables in gradle.properties (NeoForge, NeoForm, Fabric loader +
+# version variables in gradle.properties (NeoForge, Forge, NeoForm, Fabric loader +
 # API, JEI) — the things Dependabot's Gradle ecosystem cannot see because they
 # live in gradle.properties, not in dependency{} blocks.
 #
@@ -95,7 +95,7 @@ jobs:
             gradle
             automated
           body: |
-            Automated **within-line** dependency update (NeoForge / NeoForm / Fabric / JEI) for the Minecraft versions already tracked.
+            Automated **within-line** dependency update (NeoForge / Forge / NeoForm / Fabric / JEI) for the Minecraft versions already tracked.
 
             ${{ steps.resolve.outputs.summary }}
 
