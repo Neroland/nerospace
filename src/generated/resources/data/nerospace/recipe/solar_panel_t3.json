@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "G": "minecraft:gold_block",
+    "Q": "nerospace:solar_panel_t2"
+  },
+  "pattern": [
+    " Q ",
+    "QGQ",
+    " Q "
+  ],
+  "result": {
+    "id": "nerospace:solar_panel_t3"
+  }
+}

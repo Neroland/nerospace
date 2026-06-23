@@ -56,6 +56,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.UNIVERSAL_PIPE.get(), "Universal Pipe");
         add(ModBlocks.COMBUSTION_GENERATOR.get(), "Combustion Generator");
         add(ModBlocks.PASSIVE_GENERATOR.get(), "Passive Generator");
+        add(ModBlocks.SOLAR_PANEL_T1.get(), "Tier 1 Solar Panel");
+        add(ModBlocks.SOLAR_PANEL_T2.get(), "Tier 2 Solar Panel");
+        add(ModBlocks.SOLAR_PANEL_T3.get(), "Tier 3 Solar Panel");
+        add("block.nerospace.solar_panel.readout", "Solar panel: %s / %s FE  (array of %s)");
         add(ModItems.CONFIGURATOR.get(), "Configurator");
         add("block.nerospace.universal_pipe.energy", "Pipe energy: %s FE");
         add("block.nerospace.universal_pipe.fluid", "Pipe fluid: %s mB of %s");

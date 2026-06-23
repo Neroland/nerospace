@@ -43,6 +43,8 @@ release** — the complete progression from the first nerosium ore to a terrafor
 
 ## 🛠️ Next up (first post-1.0 updates)
 
+- **[Solar Panels](Solar-Panel)** — sun-tracking, array-pooling power generation across **three tiers**
+  (Tier 1 1×1, Tier 2 2×2, Tier 3 3×3 multiblocks), each folding the previous panel into its recipe.
 - **EMI integration** as soon as it reaches 26.1.
 - **Balance tuning from player feedback** — the config multipliers make this cheap.
 - **Bespoke audio** to replace the vanilla-alias placeholders.

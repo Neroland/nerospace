@@ -174,6 +174,11 @@ public class NerospaceClient {
                 za.co.neroland.nerospace.registry.ModBlockEntities.UNIVERSAL_PIPE.get(),
                 context -> new UniversalPipeRenderer());
 
+        // Solar panel: the sun-tracking, night-folding deck drawn above the housing.
+        event.registerBlockEntityRenderer(
+                za.co.neroland.nerospace.registry.ModBlockEntities.SOLAR_PANEL.get(),
+                context -> new za.co.neroland.nerospace.client.SolarPanelRenderer());
+
         // Star Guide pedestal: the floating next-step hologram.
         event.registerBlockEntityRenderer(
                 za.co.neroland.nerospace.registry.ModBlockEntities.STAR_GUIDE.get(),

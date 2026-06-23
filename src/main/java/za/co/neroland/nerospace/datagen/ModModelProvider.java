@@ -72,6 +72,29 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(
                 BlockModelGenerators.createSimpleBlock(pad, BlockModelGenerators.plainVariant(padModel)));
 
+        // Solar Panel (T1): the static steel mount — a 3px housing, a central post and a N-S cross-bar
+        // (the "T-pole") on its `_base` sprite. The sun-tracking PV deck pivots on it (renderer-drawn).
+        registerSolarHousing(blockModels, ModBlocks.SOLAR_PANEL_T1.get());
+
+        // Tier 2/3 Solar Panels: each cell is just a flat 3px housing on its own `_base` sprite. The
+        // single big N×N tilting deck (ONE panel) and its central support mast are drawn by the anchor's
+        // renderer. The "" variant covers both ANCHOR states.
+        for (Block multi : new Block[] {ModBlocks.SOLAR_PANEL_T2.get(), ModBlocks.SOLAR_PANEL_T3.get()}) {
+            var baseTex = TextureMapping.getBlockTexture(multi, "_base");
+            TextureMapping mapping = new TextureMapping()
+                    .put(TextureSlot.ALL, baseTex).put(TextureSlot.PARTICLE, baseTex);
+            ExtendedModelTemplate template = ExtendedModelTemplateBuilder.builder()
+                    .requiredTextureSlot(TextureSlot.ALL)
+                    .requiredTextureSlot(TextureSlot.PARTICLE)
+                    .element(e -> e.from(0, 0, 0).to(16, 3, 16)
+                            .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                    .build();
+            Identifier model = template.create(
+                    ModelLocationUtils.getModelLocation(multi), mapping, blockModels.modelOutput);
+            blockModels.blockStateOutput.accept(
+                    BlockModelGenerators.createSimpleBlock(multi, BlockModelGenerators.plainVariant(model)));
+        }
+
         // Launch Gantry — shaped tower in registerShapedMachines (art overhaul §3).
 
         // Power grid — connection-aware translucent pipe (multipart: core + one arm per connected
@@ -439,6 +462,31 @@ public class ModModelProvider extends ModelProvider {
             builder.element(e -> { e.from(14, yy, 2).to(16, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
         }
         shapedBlock(blockModels, block, builder.build(), mapping, false);
+    }
+
+    /**
+     * One solar-panel housing model (used by every tier): a 3px housing, a central post, and a N-S
+     * cross-bar (the "T-pole"), all on the block's own {@code _base} sprite. The torque tube tops out at
+     * 8px — JUST BELOW the deck's 9px pivot — so it never rises through the deck at the 40° tracking cap.
+     */
+    private void registerSolarHousing(BlockModelGenerators blockModels, Block solar) {
+        var baseTexture = TextureMapping.getBlockTexture(solar, "_base");
+        TextureMapping mapping = new TextureMapping()
+                .put(TextureSlot.ALL, baseTexture).put(TextureSlot.PARTICLE, baseTexture);
+        ExtendedModelTemplate template = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.ALL)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .element(e -> e.from(0, 0, 0).to(16, 3, 16)        // housing
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .element(e -> e.from(7, 3, 7).to(9, 7, 9)          // vertical post
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .element(e -> e.from(7, 7, 4).to(9, 8, 12)         // N-S torque tube under the deck swing
+                        .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
+                .build();
+        Identifier model = template.create(
+                ModelLocationUtils.getModelLocation(solar), mapping, blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(
+                BlockModelGenerators.createSimpleBlock(solar, BlockModelGenerators.plainVariant(model)));
     }
 
     /**

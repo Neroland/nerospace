@@ -2823,7 +2823,77 @@ def gen_trash_can():
     save(img, os.path.join(BLOCK_DIR, "trash_can.png"))
 
 
+def gen_solar_panel(name, edge):
+    """Futuristic photovoltaic deck: neon blue-and-green cells on a near-black lattice, filling the
+    sprite edge-to-edge (pixel-perfect — no steel padding), wrapped in a single tier-coloured pixel
+    border. The {@code edge} colour codes the tier (T1/T2/T3); the cells are the same for every tier."""
+    img = new_img()
+    px = img.load()
+    sub     = (10, 16, 30, 255)    # near-black blue substrate = the grid wires/gaps
+    blue_d  = (22, 60, 104, 255)
+    blue    = (40, 112, 172, 255)
+    blue_hi = (96, 184, 238, 255)
+    grn     = (50, 206, 112, 255)  # bright green mixed in with the blue cells
+    grn_hi  = (132, 255, 176, 255)
+    for y in range(S):
+        for x in range(S):
+            if x % 3 == 0 or y % 3 == 0:
+                px[x, y] = sub                      # thin dark lattice between cells
+            else:
+                cx, cy = x // 3, y // 3
+                node = (x % 3 == 2 and y % 3 == 2)  # cell centre = highlight node
+                if (cx + cy) % 3 == 1:              # ~a third of cells are bright green
+                    px[x, y] = grn_hi if node else grn
+                else:
+                    px[x, y] = blue_hi if node else (blue if (x + y) % 2 == 0 else blue_d)
+    # A brighter green core node so the deck reads as "alive".
+    px[7, 7] = grn_hi
+    px[8, 8] = grn_hi
+    # Tier-coloured edge ring: the outermost pixels, all four sides (pixel-perfect, no padding).
+    for i in range(S):
+        px[0, i] = edge
+        px[S - 1, i] = edge
+        px[i, 0] = edge
+        px[i, S - 1] = edge
+    save(img, os.path.join(BLOCK_DIR, name + ".png"))
+
+
+def gen_solar_panel_base(name, edge):
+    """The housing the deck sits on — a neutral blued-steel plate (NOT the green steel, NOT the PV
+    sprite) with a recessed bay and tier-coloured corner bolts, so the static base reads as a distinct
+    futuristic mount and still identifies its tier."""
+    img = new_img()
+    px = img.load()
+    base = METAL[1]
+    dk = METAL[2]
+    lt = METAL_L
+    recess = METAL[0]
+    for y in range(S):
+        for x in range(S):
+            px[x, y] = base
+    bevel(img, lt, dk)
+    # Recessed central bay (where the deck rests when folded flat).
+    for y in range(3, 13):
+        for x in range(3, 13):
+            px[x, y] = dk if (x + y) % 2 == 0 else recess
+    # Two vent ridges + tier-coloured corner bolts.
+    for x in range(4, 12):
+        px[x, 5] = lt
+        px[x, 10] = lt
+    for (bx, by) in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        px[bx, by] = edge
+    save(img, os.path.join(BLOCK_DIR, name + ".png"))
+
+
 if __name__ == "__main__":
+    # Solar panels (SOLAR_PANEL_DESIGN): shared futuristic blue+green PV deck; the edge ring colour
+    # codes the tier — T1 signal red, T2 nerosium magenta, T3 gold.
+    gen_solar_panel("solar_panel_t1", N_RED)
+    gen_solar_panel_base("solar_panel_t1_base", N_RED)
+    gen_solar_panel("solar_panel_t2", N_MAG)
+    gen_solar_panel_base("solar_panel_t2_base", N_MAG)
+    gen_solar_panel("solar_panel_t3", GOLD)
+    gen_solar_panel_base("solar_panel_t3_base", GOLD)
     # Trash Can (logistics void sink).
     gen_trash_can()
     # Quarry / Miner (MINER_DESIGN).

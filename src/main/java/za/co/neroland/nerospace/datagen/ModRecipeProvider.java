@@ -46,6 +46,43 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes() {
+        // --- Solar Panel T1 (SOLAR_PANEL_DESIGN): glass deck, quartz/copper cells, nerosteel housing.
+        // Higher tiers will fold the previous panel into their recipe (a Tier 1 panel inside Tier 2).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.REDSTONE, ModBlocks.SOLAR_PANEL_T1.get())
+                .pattern("GGG")
+                .pattern("QCQ")
+                .pattern("NNN")
+                .define('G', Items.GLASS)
+                .define('Q', ModItems.XERTZ_QUARTZ)
+                .define('C', Items.COPPER_INGOT)
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .unlockedBy("has_xertz_quartz", this.has(ModItems.XERTZ_QUARTZ))
+                .save(this.output);
+
+        // Tier 2 (2x2): four Tier 1 panels around a Block of Nerosium core. Each tier folds in the
+        // previous panel, so building up the tiers reuses your existing array.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.REDSTONE, ModBlocks.SOLAR_PANEL_T2.get())
+                .pattern(" P ")
+                .pattern("PNP")
+                .pattern(" P ")
+                .define('P', ModBlocks.SOLAR_PANEL_T1.get())
+                .define('N', ModBlocks.NEROSIUM_BLOCK.get())
+                .unlockedBy("has_solar_panel_t1", this.has(ModBlocks.SOLAR_PANEL_T1.get()))
+                .save(this.output);
+
+        // Tier 3 (3x3): four Tier 2 panels around a Block of Gold core.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.REDSTONE, ModBlocks.SOLAR_PANEL_T3.get())
+                .pattern(" Q ")
+                .pattern("QGQ")
+                .pattern(" Q ")
+                .define('Q', ModBlocks.SOLAR_PANEL_T2.get())
+                .define('G', Items.GOLD_BLOCK)
+                .unlockedBy("has_solar_panel_t2", this.has(ModBlocks.SOLAR_PANEL_T2.get()))
+                .save(this.output);
+
         // --- Smelting & blasting: raw nerosium -> ingot ---------------------
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModItems.RAW_NEROSIUM),
                         RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.NEROSIUM_INGOT, 0.7F, 200)

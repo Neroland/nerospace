@@ -389,6 +389,46 @@ public final class ModBlocks {
                     .sound(SoundType.METAL)
                     .noOcclusion()); // pedestal-and-panel model (art overhaul §3)
 
+    /**
+     * Tier 1 Solar Panel: a sun-tracking generator that pools with adjacent same-tier panels into one
+     * array (SOLAR_PANEL_DESIGN). noOcclusion — its flat housing must not cull neighbours, and the
+     * tilting deck is renderer-drawn above the block.
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.solar.SolarPanelBlock> SOLAR_PANEL_T1 =
+            BLOCKS.registerBlock("solar_panel_t1",
+                    props -> new za.co.neroland.nerospace.solar.SolarPanelBlock(
+                            za.co.neroland.nerospace.solar.SolarTier.TIER_1, props),
+                    props -> props
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.METAL)
+                            .noOcclusion());
+
+    /** Tier 2 Solar Panel: a 2x2 multiblock array (placing one item fills the footprint). */
+    public static final DeferredBlock<za.co.neroland.nerospace.solar.SolarPanelBlock> SOLAR_PANEL_T2 =
+            BLOCKS.registerBlock("solar_panel_t2",
+                    props -> new za.co.neroland.nerospace.solar.SolarPanelBlock(
+                            za.co.neroland.nerospace.solar.SolarTier.TIER_2, props),
+                    props -> props
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.METAL)
+                            .noOcclusion());
+
+    /** Tier 3 Solar Panel: a 3x3 multiblock array (placing one item fills the footprint). */
+    public static final DeferredBlock<za.co.neroland.nerospace.solar.SolarPanelBlock> SOLAR_PANEL_T3 =
+            BLOCKS.registerBlock("solar_panel_t3",
+                    props -> new za.co.neroland.nerospace.solar.SolarPanelBlock(
+                            za.co.neroland.nerospace.solar.SolarTier.TIER_3, props),
+                    props -> props
+                            .mapColor(MapColor.METAL)
+                            .strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.METAL)
+                            .noOcclusion());
+
     // --- Storage endpoints (battery / tanks / item store + creative sources) ---
 
     // All storage endpoints carry shaped models (art overhaul §3) — noOcclusion stops the renderer

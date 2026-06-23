@@ -20,6 +20,9 @@
     "nerospace:universal_pipe",
     "nerospace:combustion_generator",
     "nerospace:passive_generator",
+    "nerospace:solar_panel_t1",
+    "nerospace:solar_panel_t2",
+    "nerospace:solar_panel_t3",
     "nerospace:quarry_controller"
   ]
 }

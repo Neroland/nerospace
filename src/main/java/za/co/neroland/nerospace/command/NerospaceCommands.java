@@ -350,12 +350,19 @@ public final class NerospaceCommands {
         buildGalleryQuarry(level, floor, origin.getX() + 42, origin.getZ() - 40, fy, 8, 8);
         buildGalleryQuarry(level, floor, origin.getX() + 64, origin.getZ() - 56, fy, 16, 12);
 
+        // SOLAR ARRAYS (SOLAR_PANEL_DESIGN, SW bearing): one unit per tier, then a multi-unit seam-joined
+        // field per tier (so the per-cell trackers reading as one surface is visible), plus a
+        // battery → universal cable → panel hookup that lights the panel's power connector.
+        buildSolarArrays(level, floor, origin.getX() - 50, origin.getZ() + 36, fy);
+
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
                 + blocks.size() + " blocks, 4 RUNNING machine clusters (grinder line, fuel refinery "
                 + "line, oxygen generator + lever, terraformer crew + lever — flip a lever to start "
                 + "those two), 4 live pipe scenarios (energy/fluid/gas/items), all 4 suit variants, "
                 + "a loaded Star Guide pedestal, all 4 rocket tiers on their required pads (3x3, "
-                + "3x3, walled ring, Heavy Launch Complex), and 8 creatures (frozen for clean shots)."), false);
+                + "3x3, walled ring, Heavy Launch Complex), 8 creatures (frozen for clean shots), and "
+                + "the solar arrays (T1/T2/T3 single units + a seam-joined field per tier + a cabled "
+                + "hookup showing the power connector)."), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -418,6 +425,56 @@ public final class NerospaceCommands {
         source.sendSuccess(() -> Component.literal("Cleared the Nerospace gallery: " + clearedBlocks
                 + " blocks → air, " + removedEntities + " entities removed."), false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    /**
+     * Solar showcase (SW). Front row: one of each tier as a single unit — a 1×1 T1, a 2×2 T2 (one big
+     * panel) and a 3×3 T3 (one big panel). Behind it: several units of each tier side by side — nine T1
+     * panels (a seam-joined 3×3 field), four T2 units and two T3 units — so multiple arrays tiling is
+     * visible. A Creative Battery → Universal Pipe → T1 panel line shows the dynamic power connector (the
+     * panel grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX,
+     * baseZ)}, extending east (+X) and south (+Z); panels sit on the floor with the tracking deck above.
+     */
+    private static void buildSolarArrays(ServerLevel level, BlockState floor, int baseX, int baseZ, int fy) {
+        int sy = fy + 1;
+        for (int dx = -2; dx <= 20; dx++) {
+            for (int dz = -2; dz <= 10; dz++) {
+                level.setBlockAndUpdate(new BlockPos(baseX + dx, fy, baseZ + dz), floor);
+            }
+        }
+
+        // Front row: one of each tier (multiblock anchors auto-fill their N×N footprint via onPlace).
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T1.get(), baseX, sy, baseZ);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 2, sy, baseZ); // fills +2..3
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 5, sy, baseZ); // fills +5..7
+
+        // Cable hookup: Creative Battery → Universal Pipe → T1 panel (lights the panel's west connector).
+        level.setBlockAndUpdate(new BlockPos(baseX + 10, sy, baseZ),
+                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(baseX + 11, sy, baseZ),
+                ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T1.get(), baseX + 12, sy, baseZ);
+
+        // Multi-unit seam-joined fields, set back (+Z) so footprints don't touch the front row.
+        // T1: a 3x3 field of nine single panels → one continuous tracking surface.
+        for (int dx = 0; dx <= 2; dx++) {
+            for (int dz = 4; dz <= 6; dz++) {
+                placeSolar(level, ModBlocks.SOLAR_PANEL_T1.get(), baseX + dx, sy, baseZ + dz);
+            }
+        }
+        // T2: four 2x2 units → a 4x4 field.
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 5, sy, baseZ + 4);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 7, sy, baseZ + 4);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 5, sy, baseZ + 6);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 7, sy, baseZ + 6);
+        // T3: two 3x3 units → a 6x3 field.
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 11, sy, baseZ + 4); // fills +11..13
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 14, sy, baseZ + 4); // fills +14..16
+    }
+
+    /** Place a solar panel anchor; multiblock tiers auto-expand their footprint in {@code onPlace}. */
+    private static void placeSolar(ServerLevel level, Block block, int x, int y, int z) {
+        level.setBlockAndUpdate(new BlockPos(x, y, z), block.defaultBlockState());
     }
 
     /**
