@@ -206,6 +206,48 @@ public class Config {
             .comment("Guard on how many chunks active terraforming may force-load at once.")
             .defineInRange("terraformMaxForcedChunks", 16, 0, 256);
 
+    // --- Meteor events (meteor-events-design.md) -----------------------------
+    // Spawn pacing + loot tunables. Defaults give roughly one natural meteor every ~2-3 play-hours
+    // per active level; tune for busier or quieter skies.
+
+    public static final ModConfigSpec.BooleanValue METEOR_NATURAL_SPAWN = BUILDER
+            .comment("Whether meteors fall naturally near players (the creative Meteor Caller works either way).")
+            .define("meteorNaturalSpawn", true);
+
+    public static final ModConfigSpec.IntValue METEOR_AVG_INTERVAL_SECONDS = BUILDER
+            .comment("Average seconds between natural meteor impacts on an eligible dimension with players online.",
+                    "Default 9000 (~2.5 hours). Each interval is randomised 0.66x..1.33x so impacts feel irregular.")
+            .defineInRange("meteorAvgIntervalSeconds", 9000, 60, 1_000_000);
+
+    public static final ModConfigSpec.IntValue METEOR_WARNING_SECONDS = BUILDER
+            .comment("Warning window: seconds a meteor is tracked as 'incoming' before it actually falls.")
+            .defineInRange("meteorWarningSeconds", 30, 0, 600);
+
+    public static final ModConfigSpec.IntValue METEOR_MIN_DISTANCE = BUILDER
+            .comment("Minimum horizontal distance (blocks) from the anchor player a meteor targets.")
+            .defineInRange("meteorMinDistance", 200, 0, 2000);
+
+    public static final ModConfigSpec.IntValue METEOR_MAX_DISTANCE = BUILDER
+            .comment("Maximum horizontal distance (blocks) from the anchor player a meteor targets.")
+            .defineInRange("meteorMaxDistance", 500, 16, 4000);
+
+    public static final ModConfigSpec.IntValue METEOR_CRATER_RADIUS = BUILDER
+            .comment("Radius (blocks) of the small crater a meteor carves. Kept modest to avoid griefing builds.")
+            .defineInRange("meteorCraterRadius", 3, 1, 8);
+
+    public static final ModConfigSpec.IntValue METEOR_MAX_ACTIVE_SITES = BUILDER
+            .comment("Max simultaneous scheduled/falling meteors tracked per dimension.")
+            .defineInRange("meteorMaxActiveSites", 4, 1, 64);
+
+    public static final ModConfigSpec.IntValue METEOR_LOOT_BONUS_ROLLS = BUILDER
+            .comment("Weighted bonus loot rolls in a meteor core, on top of its guaranteed alien fragments.")
+            .defineInRange("meteorLootBonusRolls", 3, 0, 32);
+
+    public static final ModConfigSpec.BooleanValue METEOR_DEBUG_LOG = BUILDER
+            .comment("Verbose, NON-personal meteor logging (dimension + coordinates only, never player",
+                    "identifiers). Off by shipped default (POPIA/GDPR).")
+            .define("meteorDebugLog", false);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     /** Client oxygen-visual quality tiers. */

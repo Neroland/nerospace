@@ -71,6 +71,23 @@ public final class ModItems {
     /** Glacite gem — dropped by glacite ore on Glacira; feeds future suit variants/terraforming. */
     public static final DeferredItem<Item> GLACITE = ITEMS.registerSimpleItem("glacite");
 
+    // --- Meteor events (meteor-events-design.md) ----------------------------
+    // Tiered "alien" loot from meteor cores; the fragment is the future scanner feedstock.
+    /** Common meteor loot; future Scanner input. */
+    public static final DeferredItem<Item> ALIEN_FRAGMENT = ITEMS.registerSimpleItem("alien_fragment");
+    /** Uncommon meteor loot; future upgrade crafting. */
+    public static final DeferredItem<Item> ALIEN_TECH_SCRAP = ITEMS.registerSimpleItem("alien_tech_scrap");
+    /** Rare meteor loot; high-value scanner/upgrade gate. */
+    public static final DeferredItem<Item> ALIEN_CORE = ITEMS.registerSimpleItem("alien_core");
+
+    /** Meteor Tracker — points to the nearest tracked meteor (held readout; no survival recipe yet). */
+    public static final DeferredItem<Item> METEOR_TRACKER = ITEMS.registerItem(
+            "meteor_tracker", props -> new Item(props.stacksTo(1)));
+
+    /** Creative-only Meteor Caller — right-click a block to call a meteor down onto it. */
+    public static final DeferredItem<Item> METEOR_CALLER = ITEMS.registerItem(
+            "meteor_caller", props -> new za.co.neroland.nerospace.meteor.MeteorCallerItem(props.stacksTo(1)));
+
     // --- Tools --------------------------------------------------------------
 
     public static final DeferredItem<Item> NEROSIUM_PICKAXE = ITEMS.registerItem(
@@ -295,6 +312,12 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.GLACITE_ORE);
     public static final DeferredItem<BlockItem> GLACITE_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.GLACITE_BLOCK);
+
+    // Meteor events (meteor-events-design.md) block items.
+    public static final DeferredItem<BlockItem> METEOR_ROCK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.METEOR_ROCK);
+    public static final DeferredItem<BlockItem> METEOR_CORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.METEOR_CORE);
 
     // Phase 7c — station block items.
     public static final DeferredItem<BlockItem> STATION_FLOOR_ITEM =

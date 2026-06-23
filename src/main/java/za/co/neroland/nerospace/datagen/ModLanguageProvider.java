@@ -252,6 +252,22 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.STRUTTER_DRUMSTICK.get(), "Strutter Drumstick");
         add(ModItems.DRIFT_FLEECE.get(), "Drift Fleece");
 
+        // Meteor events (meteor-events-design.md).
+        add(ModBlocks.METEOR_ROCK.get(), "Meteor Rock");
+        add(ModBlocks.METEOR_CORE.get(), "Meteor Core");
+        add(ModItems.ALIEN_FRAGMENT.get(), "Alien Fragment");
+        add(ModItems.ALIEN_TECH_SCRAP.get(), "Alien Tech Scrap");
+        add(ModItems.ALIEN_CORE.get(), "Alien Core");
+        add(ModItems.METEOR_TRACKER.get(), "Meteor Tracker");
+        add(ModItems.METEOR_CALLER.get(), "Meteor Caller");
+        add("entity.nerospace.falling_meteor", "Meteor");
+        add("item.nerospace.meteor_caller.called", "A meteor streaks down from the sky...");
+        add("item.nerospace.meteor_caller.creative_only", "The Meteor Caller only works in Creative mode");
+        add("item.nerospace.meteor_tracker.none", "Meteor Tracker: no meteors detected");
+        add("item.nerospace.meteor_tracker.incoming", "Incoming");
+        add("item.nerospace.meteor_tracker.landed", "Landed");
+        add("item.nerospace.meteor_tracker.readout", "☄ Meteor %s — %s, %sm");
+
         // Entities.
         add("entity.nerospace.rocket", "Rocket");
         add("entity.nerospace.xertz_stalker", "Xertz Stalker");
@@ -369,6 +385,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.nerospace.star_guide.chapter.mining", "Mining");
         add("gui.nerospace.star_guide.chapter.vacuum", "Vacuum");
         add("gui.nerospace.star_guide.chapter.terraforming", "Terraforming");
+        add("gui.nerospace.star_guide.chapter.meteor_events", "Meteor Events");
 
         add("gui.nerospace.star_guide.step.raw_nerosium", "Strange Red Rock");
         add("gui.nerospace.star_guide.step.raw_nerosium.text",
@@ -537,6 +554,21 @@ public class ModLanguageProvider extends LanguageProvider {
                 "Each planet wakes its own livestock: the Meadow Loper, the Ember Strutter, the "
                         + "Woolly Drift. Feed a pair their favourite crop and breed the first "
                         + "generation born off Earth.");
+
+        // Meteor events chapter (meteor-events-design.md).
+        add("gui.nerospace.star_guide.step.meteor_site", "Visitor from Beyond");
+        add("gui.nerospace.star_guide.step.meteor_site.text",
+                "Meteors crash on the Overworld and the planets, leaving a small crater around a "
+                        + "glowing Meteor Core. Break the core to claim Alien Fragments and a jump-start "
+                        + "of off-world ores — hold a Meteor Tracker to find the way.");
+        add("gui.nerospace.star_guide.step.alien_tech", "Salvaged Tech");
+        add("gui.nerospace.star_guide.step.alien_tech.text",
+                "Rarer meteors carry Alien Tech Scrap — the raw material of the scanners and upgrades "
+                        + "to come. Hoard it.");
+        add("gui.nerospace.star_guide.step.alien_core", "Alien Core");
+        add("gui.nerospace.star_guide.step.alien_core.text",
+                "The rarest meteor prize. An intact Alien Core is the key to the deepest alien "
+                        + "technology — the heart of a future upgrade tree.");
 
         // Rocket action feedback.
         add("item.nerospace.rocket.deployed", "Rocket deployed on the launch pad");

@@ -179,6 +179,14 @@ public final class ModBlockEntities {
                             false,
                             ModBlocks.STAR_GUIDE.get()));
 
+    // Meteor Core (meteor-events-design.md §5): stores the rolled loot, break-to-loot.
+    public static final Supplier<BlockEntityType<za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity>> METEOR_CORE =
+            BLOCK_ENTITY_TYPES.register("meteor_core",
+                    () -> new BlockEntityType<>(
+                            za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity::new,
+                            false,
+                            ModBlocks.METEOR_CORE.get()));
+
     private ModBlockEntities() {
     }
 

@@ -93,6 +93,23 @@ at defaults unless debugging server performance.
 | `terraformForceLoadChunks` | `false` | — | Force-load a bounded arc around the working frontier (TPS footgun — off by default). |
 | `terraformMaxForcedChunks` | `16` | 0–256 | Guard on force-loaded chunks. |
 
+### Meteor events
+
+Tunables for the meteor world-event (see **[Meteor Events](Meteor-Events)**). Defaults give roughly
+one natural meteor every 2–3 play-hours per active dimension; the Meteor Caller works regardless.
+
+| Key | Default | Range | Meaning |
+|---|---|---|---|
+| `meteorNaturalSpawn` | `true` | — | Whether meteors fall naturally near players. |
+| `meteorAvgIntervalSeconds` | `9000` | 60–1,000,000 | Average seconds between natural impacts (randomised 0.66×–1.33×). |
+| `meteorWarningSeconds` | `30` | 0–600 | Warning window a meteor is tracked as *incoming* before it falls. |
+| `meteorMinDistance` | `200` | 0–2,000 | Min horizontal distance from the anchor player a meteor targets. |
+| `meteorMaxDistance` | `500` | 16–4,000 | Max horizontal distance a meteor targets. |
+| `meteorCraterRadius` | `3` | 1–8 | Radius of the crater carved (kept modest to avoid griefing builds). |
+| `meteorMaxActiveSites` | `4` | 1–64 | Max simultaneous scheduled/falling meteors per dimension. |
+| `meteorLootBonusRolls` | `3` | 0–32 | Weighted bonus loot rolls on top of the guaranteed alien fragments. |
+| `meteorDebugLog` | `false` | — | Verbose, non-personal meteor logging (dimension + coordinates only — POPIA/GDPR). |
+
 ## Removed keys (for modpack authors migrating)
 
 Folded into multipliers: `atmosphereDamage`, `oxygenMax`, `oxygenDrainPerTick`, `oxygenSuitDrain`,

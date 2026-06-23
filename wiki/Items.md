@@ -14,6 +14,9 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 | **Xertz Quartz** | Gem dropped by [Xertz Quartz Ore](Xertz-Quartz-Ore); used in upgrades and the Terraform Monitor. |
 | **Cindrite** | Gem from [Cindrite Ore](Cindrite-Ore) on Cindara; Tier-3 Terraformer upgrade, Tier 2 + [Thermal Suit](Oxygen-Suit) pieces, Tier 4 rocket. |
 | **Glacite** | Gem from [Glacite Ore](Glacite-Ore) on Glacira; [Cryo Suit](Oxygen-Suit) pieces and the [Hydration Module](Hydration-Module)'s water cycle. |
+| **Alien Fragment** | Common loot from a [Meteor Core](Meteor-Core); future scanner feedstock. |
+| **Alien Tech Scrap** | Uncommon meteor loot; future upgrade crafting. |
+| **Alien Core** | Rare meteor loot; high-value scanner/upgrade gate. |
 
 ## Tools
 
@@ -75,6 +78,13 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 - **Strutter Drumstick** — dropped by the Ember Strutter; food.
 - **Drift Fleece** — dropped by the Woolly Drift; crafts into 4 String.
   See **[Creatures](Creatures)** for the livestock themselves.
+
+## Meteor events
+
+- **Meteor Tracker** — points to the nearest meteor (held action-bar readout: state, heading,
+  distance). Creative for now; a survival craft comes with the scanner.
+- **Meteor Caller** — creative-only: right-click a block to call a meteor down onto it.
+  See **[Meteor Events](Meteor-Events)** for the full world-event, loot table and config.
 
 ## Travel devices (creative)
 

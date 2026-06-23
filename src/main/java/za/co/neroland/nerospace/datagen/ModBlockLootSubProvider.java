@@ -102,6 +102,10 @@ public class ModBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.STATION_FLOOR.get());
         dropSelf(ModBlocks.STATION_WALL.get());
 
+        // Meteor events (meteor-events-design.md): rock drops itself; the core has noLootTable and
+        // spills its stored loot from the block entity on break (so it is intentionally omitted).
+        dropSelf(ModBlocks.METEOR_ROCK.get());
+
         // Developer diagnostics — Sentry test block (drops itself so it is reusable).
         dropSelf(ModBlocks.SENTRY_TEST.get());
     }

@@ -2885,6 +2885,143 @@ def gen_solar_panel_base(name, edge):
     save(img, os.path.join(BLOCK_DIR, name + ".png"))
 
 
+# ---------------- METEOR EVENTS (meteor-events-design.md) ----------------
+# Charred basalt body with a cyan/teal + amber "alien" glow — kept visually distinct from the
+# nerosium (red/purple) and Greenxertz (green) families.
+M_DARK = (24, 22, 30, 255)
+M_GREY = (60, 58, 70, 255)
+M_GREY2 = (84, 82, 96, 255)
+M_TEAL = (40, 200, 200, 255)
+M_CYAN = (120, 240, 248, 255)
+M_AMBER = (255, 176, 64, 255)
+M_GLOW = (210, 255, 255, 255)
+METEOR_STONE = [M_DARK, M_GREY, (40, 38, 48, 255), M_GREY2]
+
+
+def gen_meteor_rock():
+    rng = random.Random(int(hashlib.md5(b"meteor_rock").hexdigest(), 16) & 0xffffffff)
+    img = new_img()
+    noise_fill(img, METEOR_STONE, rng)
+    px = img.load()
+    for _ in range(10):
+        px[rng.randint(0, S - 1), rng.randint(0, S - 1)] = M_TEAL if rng.random() < 0.6 else M_AMBER
+    for _ in range(3):
+        px[rng.randint(1, S - 2), rng.randint(1, S - 2)] = M_CYAN
+    save(img, os.path.join(BLOCK_DIR, "meteor_rock.png"))
+
+
+def gen_meteor_core():
+    rng = random.Random(int(hashlib.md5(b"meteor_core").hexdigest(), 16) & 0xffffffff)
+    img = new_img()
+    noise_fill(img, METEOR_STONE, rng)
+    px = img.load()
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d <= 3:
+                px[x, y] = M_CYAN if d <= 2 else M_TEAL
+            elif d <= 4:
+                px[x, y] = M_AMBER
+    px[7, 7] = M_GLOW
+    px[8, 8] = M_GLOW
+    save(img, os.path.join(BLOCK_DIR, "meteor_core.png"))
+
+
+def gen_alien_fragment():
+    img = new_img()
+    px = img.load()
+    shape = {5: (6, 10), 6: (5, 11), 7: (5, 11), 8: (6, 11), 9: (7, 10), 10: (7, 9)}
+    for y, (x0, x1) in shape.items():
+        for x in range(x0, x1):
+            px[x, y] = M_TEAL
+    px[6, 6] = M_CYAN
+    px[7, 7] = M_CYAN
+    px[9, 8] = M_AMBER
+    save(img, os.path.join(ITEM_DIR, "alien_fragment.png"))
+
+
+def gen_alien_tech_scrap():
+    img = new_img()
+    px = img.load()
+    for y in range(5, 11):
+        for x in range(4, 12):
+            px[x, y] = M_GREY2 if (x + y) % 2 == 0 else M_GREY
+    for x in range(5, 11):
+        px[x, 7] = M_TEAL
+    px[6, 6] = M_CYAN
+    px[9, 9] = M_AMBER
+    px[5, 9] = M_CYAN
+    save(img, os.path.join(ITEM_DIR, "alien_tech_scrap.png"))
+
+
+def gen_alien_core():
+    img = new_img()
+    px = img.load()
+    for y in range(S):
+        for x in range(S):
+            d = ((x - 7.5) ** 2 + ((y - 7.5) * 0.8) ** 2) ** 0.5
+            if d <= 2:
+                px[x, y] = M_GLOW
+            elif d <= 3.5:
+                px[x, y] = M_CYAN
+            elif d <= 5:
+                px[x, y] = M_AMBER
+            elif d <= 5.8:
+                px[x, y] = M_DARK
+    save(img, os.path.join(ITEM_DIR, "alien_core.png"))
+
+
+def gen_meteor_tracker():
+    img = new_img()
+    px = img.load()
+    cx = cy = 8
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx + 0.5) ** 2 + (y - cy + 0.5) ** 2) ** 0.5
+            if d <= 7:
+                if d > 6:
+                    px[x, y] = METAL_D
+                elif d > 5:
+                    px[x, y] = METAL_L
+                else:
+                    px[x, y] = (24, 30, 36, 255)
+    for (x, y) in [(8, 4), (8, 5), (8, 6), (7, 5), (9, 5)]:
+        px[x, y] = M_CYAN
+    for (x, y) in [(8, 9), (8, 10), (8, 11)]:
+        px[x, y] = M_AMBER
+    px[8, 8] = M_GLOW
+    save(img, os.path.join(ITEM_DIR, "meteor_tracker.png"))
+
+
+def gen_meteor_caller():
+    img = new_img()
+    px = img.load()
+    for y in range(3, 13):
+        for x in range(5, 11):
+            px[x, y] = METAL_L if (x + y) % 2 else METAL_D
+    for (x, y) in [(7, 4), (8, 4), (7, 5), (8, 5)]:
+        px[x, y] = M_AMBER
+    for (x, y) in [(6, 6), (9, 7), (7, 8), (8, 9)]:
+        px[x, y] = M_CYAN
+    px[8, 11] = M_TEAL
+    save(img, os.path.join(ITEM_DIR, "meteor_caller.png"))
+
+
+def gen_falling_meteor_entity():
+    # 64x64 box-UV sheet: charred rock with glowing cyan/amber cracks (uniform-ish so every face reads).
+    rng = random.Random(4242)
+    img = Image.new("RGBA", (ES, ES), (0, 0, 0, 0))
+    px = img.load()
+    for y in range(ES):
+        for x in range(ES):
+            px[x, y] = rng.choice(METEOR_STONE)
+    for _ in range(120):
+        px[rng.randint(0, ES - 1), rng.randint(0, ES - 1)] = M_TEAL if rng.random() < 0.6 else M_AMBER
+    for _ in range(40):
+        px[rng.randint(0, ES - 1), rng.randint(0, ES - 1)] = M_CYAN
+    save(img, os.path.join(ENTITY_DIR, "falling_meteor.png"))
+
+
 if __name__ == "__main__":
     # Solar panels (SOLAR_PANEL_DESIGN): shared futuristic blue+green PV deck; the edge ring colour
     # codes the tier — T1 signal red, T2 nerosium magenta, T3 gold.
@@ -2988,3 +3125,12 @@ if __name__ == "__main__":
     gen_station_charter()
     # Developer diagnostics — hidden Sentry test block: a steel panel with a red warning glyph.
     gen_panel_block("sentry_test", N_RED, SYM_BANG)
+    # Meteor events (meteor-events-design.md): crater rock/core, alien loot, tracker/caller, entity.
+    gen_meteor_rock()
+    gen_meteor_core()
+    gen_alien_fragment()
+    gen_alien_tech_scrap()
+    gen_alien_core()
+    gen_meteor_tracker()
+    gen_meteor_caller()
+    gen_falling_meteor_entity()

@@ -93,5 +93,9 @@ public class ModItemTagProvider extends ItemTagsProvider {
         // vanilla ice would bypass the Glacira gate; packs can widen the tag.
         this.tag(ModTags.Items.HYDRATION_INPUT)
                 .add(ModItems.GLACITE.get(), ModItems.GLACITE_BLOCK_ITEM.get());
+
+        // Meteor events (meteor-events-design.md): the alien loot family for the future scanner.
+        this.tag(ModTags.Items.ALIEN_MATERIALS)
+                .add(ModItems.ALIEN_FRAGMENT.get(), ModItems.ALIEN_TECH_SCRAP.get(), ModItems.ALIEN_CORE.get());
     }
 }

@@ -36,6 +36,8 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import za.co.neroland.nerospace.Nerospace;
+import za.co.neroland.nerospace.meteor.FallingMeteorEntity;
+import za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
 import za.co.neroland.nerospace.machine.HydrationModuleBlockEntity;
@@ -329,6 +331,10 @@ public final class NerospaceCommands {
             spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz + 1), true);
         }
 
+        // METEOR SITE (meteor-events-design.md): a small crater of meteor_rock around a loot-bearing
+        // meteor_core, with a frozen meteor hovering above it (spins + trails for the shot). SW spoke.
+        buildMeteorSite(level, floor, origin.getX() - 28, origin.getZ() + 30, fy);
+
         // QUARRY (MINER_DESIGN): two NE displays.
         //  1. Landmark-only — three landmarks in an L (shows the projected marker lasers).
         //  2. Fully operating — a powered quarry mid-dig: frame ring, drill head, a real pit forming.
@@ -360,9 +366,10 @@ public final class NerospaceCommands {
                 + "line, oxygen generator + lever, terraformer crew + lever — flip a lever to start "
                 + "those two), 4 live pipe scenarios (energy/fluid/gas/items), all 4 suit variants, "
                 + "a loaded Star Guide pedestal, all 4 rocket tiers on their required pads (3x3, "
-                + "3x3, walled ring, Heavy Launch Complex), 8 creatures (frozen for clean shots), and "
-                + "the solar arrays (T1/T2/T3 single units + a seam-joined field per tier + a cabled "
-                + "hookup showing the power connector)."), false);
+                + "3x3, walled ring, Heavy Launch Complex), 8 creatures (frozen for clean shots), "
+                + "a meteor crash site (crater + loot core + hovering meteor), and the solar arrays "
+                + "(T1/T2/T3 single units + a seam-joined field per tier + a cabled hookup showing "
+                + "the power connector)."), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -518,6 +525,34 @@ public final class NerospaceCommands {
                     new ItemStack(ModItems.FRAME_CASING.get(), 64));
             quarry.stageDisplay(region, refY - pitDepth);
         }
+    }
+
+    /**
+     * A showcase meteor crash site: a 7x7 floor pad, a 5x5 {@code meteor_rock} crater floor with a
+     * raised rim, a loot-pre-rolled {@code meteor_core} nestled in the centre, and a frozen
+     * {@link FallingMeteorEntity} hovering above (spins + trails, but never falls — gallery only).
+     */
+    private static void buildMeteorSite(ServerLevel level, BlockState floor, int cx, int cz, int fy) {
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                level.setBlockAndUpdate(new BlockPos(cx + dx, fy, cz + dz), floor);
+            }
+        }
+        BlockState rock = ModBlocks.METEOR_ROCK.get().defaultBlockState();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                level.setBlockAndUpdate(new BlockPos(cx + dx, fy + 1, cz + dz), rock); // crater floor
+                if (Math.abs(dx) == 2 || Math.abs(dz) == 2) {
+                    level.setBlockAndUpdate(new BlockPos(cx + dx, fy + 2, cz + dz), rock); // raised rim
+                }
+            }
+        }
+        BlockPos corePos = new BlockPos(cx, fy + 2, cz);
+        level.setBlockAndUpdate(corePos, ModBlocks.METEOR_CORE.get().defaultBlockState());
+        if (level.getBlockEntity(corePos) instanceof MeteorCoreBlockEntity core) {
+            core.generateLoot(level.getRandom().nextLong());
+        }
+        FallingMeteorEntity.spawnFrozen(level, cx + 0.5D, fy + 11, cz + 0.5D);
     }
 
     /** A full {@code size x size} square of launch pads with min-corner {@code corner}. */

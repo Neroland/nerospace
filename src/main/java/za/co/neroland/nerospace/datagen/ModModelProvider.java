@@ -110,6 +110,10 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.GLACITE_ORE.get());
         blockModels.createTrivialCube(ModBlocks.GLACITE_BLOCK.get());
 
+        // Meteor events (meteor-events-design.md): crater rock + loot core (full cubes).
+        blockModels.createTrivialCube(ModBlocks.METEOR_ROCK.get());
+        blockModels.createTrivialCube(ModBlocks.METEOR_CORE.get());
+
         // Phase 7c — station building blocks.
         blockModels.createTrivialCube(ModBlocks.STATION_FLOOR.get());
         blockModels.createTrivialCube(ModBlocks.STATION_WALL.get());
@@ -156,6 +160,13 @@ public class ModModelProvider extends ModelProvider {
 
         // Glacira (NEW_DESTINATION_DESIGN.md).
         itemModels.generateFlatItem(ModItems.GLACITE.get(), ModelTemplates.FLAT_ITEM);
+
+        // Meteor events (meteor-events-design.md): alien loot + tracker/caller.
+        itemModels.generateFlatItem(ModItems.ALIEN_FRAGMENT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ALIEN_TECH_SCRAP.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ALIEN_CORE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.METEOR_TRACKER.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.METEOR_CALLER.get(), ModelTemplates.FLAT_ITEM);
 
         // Phase 7b — rocket fuel bucket.
         itemModels.generateFlatItem(ModItems.ROCKET_FUEL_BUCKET.get(), ModelTemplates.FLAT_ITEM);

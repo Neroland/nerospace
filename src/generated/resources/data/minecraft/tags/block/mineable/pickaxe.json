@@ -35,6 +35,8 @@
     "nerospace:quarry_controller",
     "nerospace:quarry_landmark",
     "nerospace:quarry_frame",
-    "nerospace:trash_can"
+    "nerospace:trash_can",
+    "nerospace:meteor_rock",
+    "nerospace:meteor_core"
   ]
 }

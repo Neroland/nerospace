@@ -9,7 +9,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -41,8 +43,13 @@ import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.PassiveGeneratorScreen;
+import za.co.neroland.nerospace.client.ClientMeteorTracker;
+import za.co.neroland.nerospace.client.FallingMeteorModel;
+import za.co.neroland.nerospace.client.FallingMeteorRenderer;
 import za.co.neroland.nerospace.client.RocketModel;
 import za.co.neroland.nerospace.client.RocketRenderer;
+import za.co.neroland.nerospace.meteor.MeteorSite;
+import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.client.UniversalPipeRenderer;
 import za.co.neroland.nerospace.client.RocketScreen;
 import za.co.neroland.nerospace.client.TerraformerScreen;
@@ -131,6 +138,8 @@ public class NerospaceClient {
     @SubscribeEvent
     static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
+        // Meteor events (meteor-events-design.md): the tumbling, trailing falling meteor.
+        event.registerEntityRenderer(ModEntities.FALLING_METEOR.get(), FallingMeteorRenderer::new);
         // Each creature now has its own model geometry; the scale just fine-tunes size.
         event.registerEntityRenderer(ModEntities.XERTZ_STALKER.get(),
                 context -> new GreenxertzCreatureRenderer(context,
@@ -204,6 +213,7 @@ public class NerospaceClient {
         event.registerLayerDefinition(za.co.neroland.nerospace.client.WoollyDriftModel.LAYER,
                 za.co.neroland.nerospace.client.WoollyDriftModel::createBodyLayer);
         event.registerLayerDefinition(RocketModel.LAYER, RocketModel::createBodyLayer);
+        event.registerLayerDefinition(FallingMeteorModel.LAYER, FallingMeteorModel::createBodyLayer);
         // Per-tier rocket geometry (ART_OVERHAUL_DESIGN.md §4.2).
         event.registerLayerDefinition(za.co.neroland.nerospace.client.RocketT2Model.LAYER,
                 za.co.neroland.nerospace.client.RocketT2Model::createBodyLayer);
@@ -324,6 +334,44 @@ public class NerospaceClient {
 
     private static float lerp(float from, float to, float t) {
         return from + (to - from) * t;
+    }
+
+    private static final String[] COMPASS_8 = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
+
+    /**
+     * Meteor Tracker readout (meteor-events design §6): while the player holds a tracker, show the
+     * nearest meteor's state (incoming / landed), compass heading and distance in the action bar.
+     * Server-authoritative — the data arrives via {@link ClientMeteorTracker}; this only presents it.
+     */
+    @SubscribeEvent
+    static void onMeteorTrackerTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null || mc.isPaused()) {
+            return;
+        }
+        boolean holding = mc.player.getMainHandItem().is(ModItems.METEOR_TRACKER.get())
+                || mc.player.getOffhandItem().is(ModItems.METEOR_TRACKER.get());
+        if (!holding) {
+            return;
+        }
+        if (!ClientMeteorTracker.isPresent()) {
+            mc.gui.setOverlayMessage(
+                    Component.translatable("item.nerospace.meteor_tracker.none"), false);
+            return;
+        }
+        BlockPos target = ClientMeteorTracker.pos();
+        Vec3 p = mc.player.position();
+        double dx = target.getX() + 0.5D - p.x;
+        double dz = target.getZ() + 0.5D - p.z;
+        int dist = (int) Math.round(Math.sqrt(dx * dx + dz * dz));
+        // Bearing where North = -Z, East = +X (Minecraft convention).
+        double deg = (Math.toDegrees(Math.atan2(dx, -dz)) + 360.0D) % 360.0D;
+        String heading = COMPASS_8[(int) Math.round(deg / 45.0D) & 7];
+        Component state = Component.translatable(ClientMeteorTracker.state() == MeteorSite.LANDED
+                ? "item.nerospace.meteor_tracker.landed"
+                : "item.nerospace.meteor_tracker.incoming");
+        mc.gui.setOverlayMessage(
+                Component.translatable("item.nerospace.meteor_tracker.readout", state, heading, dist), false);
     }
 
     private static Identifier entityTexture(String name) {
