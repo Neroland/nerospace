@@ -12,10 +12,10 @@ import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
- * Bespoke oxygen / hazard HUD gauge (terraform design §1.7): an O₂ bubble icon + bar drawn above the
- * hotbar while the player is in an airless Nerospace dimension — the proper readout that replaces the
- * vanilla air-bubble stopgap (which each loader suppresses on these dimensions). It also surfaces the
- * worn suit tier and any active / uncountered hazard, which the vanilla bubbles cannot.
+ * Bespoke oxygen / hazard HUD gauge (terraform design §1.7): an O₂ bubble icon + bar drawn just to the
+ * right of the hotbar while the player is in an airless Nerospace dimension — the proper readout that
+ * replaces the vanilla air-bubble stopgap (which each loader suppresses on these dimensions). The O₂ %,
+ * the worn suit tier, and any active / uncountered hazard each stack on their own line above the bar.
  *
  * <p><b>Cross-loader seam.</b> The drawing is pure vanilla ({@link GuiGraphicsExtractor}), so it lives
  * once here in {@code common} and both loaders call {@link #render(GuiGraphicsExtractor)} from their own
@@ -54,9 +54,11 @@ public final class OxygenHud {
     /** Draw the gauge for the local player; a no-op off airless dimensions / in creative / with the GUI hidden. */
     public static void render(GuiGraphicsExtractor g) {
         Minecraft mc = Minecraft.getInstance();
+        // Respect F1 / hide-GUI (see isGuiHidden — read reflectively as the 26.x API has no public path).
+        if (isGuiHidden(mc)) {
+            return;
+        }
         LocalPlayer player = mc.player;
-        // No explicit F1/hide-GUI check: both loaders' HUD pipelines already skip all custom layers when
-        // the GUI is hidden (the whole HUD render is gated on it), and 26.x dropped Options#hideGui.
         if (player == null || player.isSpectator() || player.getAbilities().instabuild) {
             return;
         }
@@ -70,49 +72,82 @@ public final class OxygenHud {
         int air = Math.max(0, Math.min(max, player.getAirSupply()));
         float frac = (float) air / max;
 
-        int x = g.guiWidth() / 2 - 91;     // align with the left edge of the hotbar
-        int y = g.guiHeight() - 49;        // sit just above the hotbar / status rows
-        int barX = x + ICON_SIZE + 3;      // bar to the right of the icon
+        // Sit just to the RIGHT of the hotbar, vertically level with it; the labels stack upward.
+        int totalW = ICON_SIZE + 3 + BAR_W;
+        int x = Math.min(g.guiWidth() / 2 + 91 + 4, g.guiWidth() - totalW - 2); // right of the hotbar, clamped on-screen
+        int y = g.guiHeight() - 19;                                              // icon top (~level with the hotbar)
+        int barX = x + ICON_SIZE + 3;                                            // bar to the right of the icon
+        int barY = y + ICON_SIZE / 2 - BAR_H / 2;                                // bar vertically centred on the icon
 
-        // Icon (16x16 GUI texture), vertically centred on the bar.
-        g.blit(RenderPipelines.GUI_TEXTURED, ICON, x, y + BAR_H / 2 - ICON_SIZE / 2,
-                0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+        // Icon (16x16 GUI texture).
+        g.blit(RenderPipelines.GUI_TEXTURED, ICON, x, y, 0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
 
         // Gauge: inked border, dark trough, cyan fill (red when low), top sheen.
-        g.fill(barX - 1, y - 1, barX + BAR_W + 1, y + BAR_H + 1, INK);
-        g.fill(barX, y, barX + BAR_W, y + BAR_H, TROUGH);
+        g.fill(barX - 1, barY - 1, barX + BAR_W + 1, barY + BAR_H + 1, INK);
+        g.fill(barX, barY, barX + BAR_W, barY + BAR_H, TROUGH);
         int fw = Math.round(BAR_W * frac);
         if (fw > 0) {
-            g.fill(barX, y, barX + fw, y + BAR_H, frac > 0.3F ? O2 : LOW);
-            g.fill(barX, y, barX + fw, y + 1, 0x55FFFFFF); // top sheen
+            g.fill(barX, barY, barX + fw, barY + BAR_H, frac > 0.3F ? O2 : LOW);
+            g.fill(barX, barY, barX + fw, barY + 1, 0x55FFFFFF); // top sheen
         }
 
-        g.text(mc.font, Component.literal("O2  " + Math.round(frac * 100) + "%"), barX, y - 9, LABEL, true);
+        // Labels stack upward, each on its own line above the bar.
+        int line = barY - 10;
+        g.text(mc.font, Component.literal("O2  " + Math.round(frac * 100) + "%"), barX, line, LABEL, true);
 
         // Suit badge (armour slots are already client-synced): an active hazard SHIELD outranks the
         // capacity tier on the badge — both axes still apply.
         OxygenManager.SuitTier suit = OxygenManager.suitTier(player);
         OxygenManager.HazardShield shield = OxygenManager.hazardShield(player);
-        int badgeRight = barX + BAR_W;
         if (shield != OxygenManager.HazardShield.NONE) {
             boolean heat = shield == OxygenManager.HazardShield.HEAT;
-            Component badge = Component.literal(heat ? "SUIT HEAT" : "SUIT COLD");
-            int w = mc.font.width(badge);
-            g.text(mc.font, badge, badgeRight - w, y - 9, heat ? HEAT : COLD, true);
-            badgeRight -= w + 6;
+            line -= 10;
+            g.text(mc.font, Component.literal(heat ? "SUIT HEAT" : "SUIT COLD"), barX, line, heat ? HEAT : COLD, true);
         } else if (suit != OxygenManager.SuitTier.NONE) {
             boolean t2 = suit == OxygenManager.SuitTier.TIER_2;
-            Component badge = Component.literal(t2 ? "SUIT T2" : "SUIT T1");
-            int w = mc.font.width(badge);
-            g.text(mc.font, badge, badgeRight - w, y - 9, t2 ? TIER2 : TIER1, true);
-            badgeRight -= w + 6;
+            line -= 10;
+            g.text(mc.font, Component.literal(t2 ? "SUIT T2" : "SUIT T1"), barX, line, t2 ? TIER2 : TIER1, true);
         }
 
-        // Uncountered dimension hazard: a red warning so the x4 drain is never mysterious.
+        // Uncountered dimension hazard: a red warning on its own line so the x4 drain is never mysterious.
         OxygenManager.HazardShield hazard = OxygenManager.hazardFor(player.level().dimension());
         if (hazard != OxygenManager.HazardShield.NONE && shield != hazard) {
-            Component warn = Component.literal(hazard == OxygenManager.HazardShield.HEAT ? "HEAT!" : "COLD!");
-            g.text(mc.font, warn, badgeRight - mc.font.width(warn), y - 9, LOW, true);
+            line -= 10;
+            g.text(mc.font, Component.literal(hazard == OxygenManager.HazardShield.HEAT ? "HEAT!" : "COLD!"),
+                    barX, line, LOW, true);
+        }
+    }
+
+    // --- F1 / hide-GUI detection --------------------------------------------
+    // 26.x removed Options#hideGui; the flag is Hud#isHidden(), reached via the Gui#hud field. That field
+    // is package-private on the de-obf compile classpath (only NeoForge's runtime AT widens it) and its
+    // type diverges across 26.1.2/26.2, so a per-version access-widener is brittle. Read it reflectively
+    // (handles cached after the first lookup; falls back to "not hidden" if the shape ever changes).
+
+    private static boolean hideGuiResolved;
+    private static java.lang.reflect.Field guiHudField;
+    private static java.lang.reflect.Method hudIsHidden;
+
+    private static boolean isGuiHidden(Minecraft mc) {
+        if (!hideGuiResolved) {
+            hideGuiResolved = true;
+            try {
+                guiHudField = net.minecraft.client.gui.Gui.class.getDeclaredField("hud");
+                guiHudField.setAccessible(true);
+                hudIsHidden = guiHudField.getType().getMethod("isHidden");
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                guiHudField = null;
+                hudIsHidden = null;
+            }
+        }
+        if (guiHudField == null || hudIsHidden == null) {
+            return false;
+        }
+        try {
+            Object hud = guiHudField.get(mc.gui);
+            return hud != null && Boolean.TRUE.equals(hudIsHidden.invoke(hud));
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return false;
         }
     }
 }
