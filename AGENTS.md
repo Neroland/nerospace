@@ -3,17 +3,19 @@
 > This and `CLAUDE.md` are kept identical; update both together.
 
 ## The mod
+
 - **nerospace** — a space-tech Minecraft mod: rockets + tiered launch pads, planets/dimensions
   (Greenxertz, Cindara, Glacira, orbital Station void), oxygen survival + space/hazard suits, power
   machines (generators, grinder, refinery, fuel tank, oxygen generator, terraformer, hydration),
   universal pipes (energy/fluid/gas/item), quarry, terraforming + meteors, alien village, Star Guide
-  progression. Author: **Neroland** (Dario, dario@neroland.co.za). Repo: github.com/Neroland/nerospace.
+  progression. Author: **Neroland** (Dario). Repo: github.com/Neroland/nerospace.
 - Mod id: **`nerospace`** (matches the registry namespace + every loader manifest). Package root:
   `za.co.neroland.nerospace`.
 - Targets **MC 26.1.2 AND 26.2** on **both NeoForge and Fabric** → the **"4 cells"**. **Java 25.**
   Mappings = official Mojang names (26.x ships de-obfuscated; no Parchment).
 
 ## Working with Dario (the developer)
+
 - **Keep responses concise and direct** — minimal verbosity, minimal formatting (he set this preference).
 - **POPIA & GDPR**: keep all logging/telemetry/scripts compliant — only public version strings, never
   personal data. (Sentry telemetry is opt-out + scrubbed.)
@@ -25,6 +27,7 @@
   `~/.pyenv/pyenv-win`; override with `-PpythonCmd=<path>`.
 
 ## Repo layout — FLATTENED cross-loader build (post_port.md Phase 2)
+
 - **The build IS the repo root.** `common/` (shared, raw-vanilla source spliced into every node),
   `neoforge/` (ModDevGradle), `fabric/` (Fabric Loom). Root build files: `settings.gradle`,
   `stonecutter.gradle` (the REAL root build script — Stonecutter repoints `buildFileName` here; the root
@@ -39,6 +42,7 @@
   `.github/`.
 
 ## Build & verify — gradle MCP ONLY (the agent sandbox cannot decompile)
+
 - A local gradle MCP server (`tools/gradle-mcp/server.js`, MCP server `gradle`) runs `gradlew` natively
   with JDK 25. **`project_dir` = the repo root** (the default; the flattened build lives there).
 - Build the cells: `mcp__gradle__gradle_build` tasks `[":neoforge:26.1.2:build", ":neoforge:26.2:build",
@@ -59,18 +63,21 @@
   `Entity#interact(Player, InteractionHand, Vec3)`.)
 
 ## CRITICAL — git from the agent (the sandbox mount corrupts .git)
+
 - The Cowork sandbox **bash mount mis-reads/writes git internals** (`.git/index`, `packed-refs`): phantom
   detached HEAD, "bad signature", "unterminated line", stale reads. **Do NOT run git through bash.** Large
   bash in-place writes (>~25 KB, e.g. `sed -i`/python) also TRUNCATE files (lang/JSON) — use the Edit/Write
   tools for those.
 - **Run native git via a temporary gradle init-script task executed by the gradle MCP** (runs on Dario's
   machine, where git is fine):
+
   ```groovy
   gradle.rootProject { tasks.register('x') { doLast {
       def p = ['git', /* args */].execute(null, rootProject.projectDir)
       p.waitForProcessOutput(System.out, System.err)   // DRAIN then wait (no deadlock)
   } } }
   ```
+
   Run it with `mcp__gradle__gradle_build` `tasks:['x']`, `extra_args:['--init-script','<ABS path on the dev
   machine>']` — do NOT add `--console=plain` (the MCP appends it; a duplicate makes gradle print usage).
   Read results from the native gradle log; delete the init script after. `git mv a b c … dir/` moves
@@ -80,6 +87,7 @@
   unreliable — trust the native gradle log and Dario's native git over a bash `git status`.
 
 ## Conventions (cross-loader)
+
 - **Resources are HAND-AUTHORED in `common/src/main/resources`** — the multiloader does **not** run
   datagen. Recipes/loot/tags/lang/blockstates/models/`items/` are committed JSON; validate with
   `python json.load` after any edit. (Datapack folders are singular: `recipe/`, `loot_table/`.)
@@ -104,6 +112,7 @@
   field note: `docs/MULTILOADER.md` §0c.
 
 ## Assets (textures + models) — generators own the trivial ones
+
 - Generators target the flattened `common` module with `--multiloader` (routed via
   `tools/nerospace_target.py` → `common/src/main/{java,resources}`):
   `python tools/gen_textures.py --multiloader && python tools/gen_bbmodels.py --multiloader`
@@ -123,6 +132,7 @@
   `common/src/main/resources/nerospace_logo.png` (referenced by `logoFile` in each loader manifest).
 
 ## IDE (VS Code) run & debug
+
 - Workspace: **`nerospace.code-workspace`** (single-root `"."`). Import the Stonecutter nodes as **static
   Eclipse projects**: `./gradlew eclipse` (the live Buildship/Loom import fails here, so
   `java.import.gradle.enabled=false`). Re-run `./gradlew eclipse` after dependency changes, then reload VS
@@ -137,6 +147,7 @@
     No effect on normal runs/builds.
 
 ## Status & open follow-ups
+
 - **Cross-loader port: COMPLETE + signed off** (5-agent parity audit; gaps ported — recipes, loot, lang,
   tags, ore-gen, comparators, etc.). All 4 cells green. See `post_port.md` + `docs/MULTILOADER.md`.
 - **post_port.md Phase 1** (retire standalone root → `legacy/`) + **Phase 2** (flatten the multiloader to
@@ -151,6 +162,7 @@
   drain / suit-tank numbers, and the bespoke O2/hazard HUD (not ported).
 
 ## DO NOT
+
 - Commit or push automatically — leave changes staged for Dario.
 - Run git through the sandbox bash mount — use the native gradle-init-script technique.
 - Edit `common/` for loader-specific work — reuse the existing seams.
