@@ -41,6 +41,14 @@ crest. Deliberately the *only* creature that barely glows — just a tiny glint 
 **Sounds:** chirps while idle, squeaks when hurt, wilts on death. *(Placeholder aliases vanilla panda
 sounds for a soft, gentle voice.)*
 
+### Alien Villager — "The Wary" (social)
+
+The social aliens of the planets — see the dedicated **[Alien Villagers](Alien-Villagers)** page for the
+full system (appearance, gifting, trust tiers, trading). In brief: a wary-neutral humanoid with a domed
+head and crystalline shoulder growths that strides on two legs. Each individual is a slightly different
+green/steel shade, and the skin shifts per planet (Cindara ember, Glacira frost). Win its trust to trade
+and to grow a **[Village Core](Village-Core)** village.
+
 ## Cindara
 
 ### Cinder Stalker — "Magma Hulk" (hostile)
@@ -66,6 +74,17 @@ row of ice-shard back spines. Freeze-immune; slightly faster but more fragile th
 
 **Sounds:** creaks while idle, splinters when hurt, shatters on death. *(Placeholder aliases vanilla
 stray sounds.)*
+
+## Bosses
+
+### Ruin Warden
+
+A towering crystalline construct that guards the **[Mega-City](Alien-Structures)** keep. Heavily
+armoured, resists knockback, hits hard, and hunts players on sight — clearing it is the price of the
+keep's grand vault.
+
+**Look:** a hulking dark-crystal body veined with glowing violet, with jagged crystal shoulder spires
+and heavy limbs. **Stats:** 120 HP, high armour + knockback resistance, strong melee.
 
 ## Terraformed worlds — livestock
 

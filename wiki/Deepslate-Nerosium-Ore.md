@@ -10,6 +10,7 @@ Identical drops and uses to Nerosium Ore, but embedded in deepslate, so it is sl
 
 - **Mining:** requires an **iron-tier pickaxe** or better. Drops **Raw Nerosium** (Fortune-affected).
 - **Generation:** the deepslate form of the Overworld nerosium ore deposit (appears where the deposit
+
   intersects deepslate, in the lower part of the **y −24 to y 56** band).
 
 ## Use

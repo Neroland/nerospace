@@ -31,6 +31,8 @@ import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import za.co.neroland.nerospace.client.ClientOxygenField;
 import za.co.neroland.nerospace.client.OxygenHudLayer;
 
+import za.co.neroland.nerospace.client.AlienVillagerModel;
+import za.co.neroland.nerospace.client.AlienVillagerRenderer;
 import za.co.neroland.nerospace.client.CinderStalkerModel;
 import za.co.neroland.nerospace.client.FrostStriderModel;
 import za.co.neroland.nerospace.client.GreenlingModel;
@@ -153,6 +155,13 @@ public class NerospaceClient {
                 context -> new GreenxertzCreatureRenderer(context,
                         new GreenlingModel(context.bakeLayer(GreenlingModel.LAYER)),
                         entityTexture("greenling"), 1.0F, 1.0F, 1.0F, 0.3F, entityGlow("greenling")));
+        // Alien Villager uses its own renderer (Phase 1): per-individual palette tint + per-biome skin.
+        event.registerEntityRenderer(ModEntities.ALIEN_VILLAGER.get(), AlienVillagerRenderer::new);
+        event.registerEntityRenderer(ModEntities.RUIN_WARDEN.get(),
+                context -> new GreenxertzCreatureRenderer(context,
+                        new za.co.neroland.nerospace.client.RuinWardenModel(
+                                context.bakeLayer(za.co.neroland.nerospace.client.RuinWardenModel.LAYER)),
+                        entityTexture("ruin_warden"), 1.4F, 1.4F, 1.4F, 0.9F, entityGlow("ruin_warden")));
         event.registerEntityRenderer(ModEntities.CINDER_STALKER.get(),
                 context -> new GreenxertzCreatureRenderer(context,
                         new CinderStalkerModel(context.bakeLayer(CinderStalkerModel.LAYER)),
@@ -204,6 +213,9 @@ public class NerospaceClient {
         event.registerLayerDefinition(XertzStalkerModel.LAYER, XertzStalkerModel::createBodyLayer);
         event.registerLayerDefinition(QuartzCrawlerModel.LAYER, QuartzCrawlerModel::createBodyLayer);
         event.registerLayerDefinition(GreenlingModel.LAYER, GreenlingModel::createBodyLayer);
+        event.registerLayerDefinition(AlienVillagerModel.LAYER, AlienVillagerModel::createBodyLayer);
+        event.registerLayerDefinition(za.co.neroland.nerospace.client.RuinWardenModel.LAYER,
+                za.co.neroland.nerospace.client.RuinWardenModel::createBodyLayer);
         event.registerLayerDefinition(CinderStalkerModel.LAYER, CinderStalkerModel::createBodyLayer);
         event.registerLayerDefinition(FrostStriderModel.LAYER, FrostStriderModel::createBodyLayer);
         event.registerLayerDefinition(za.co.neroland.nerospace.client.MeadowLoperModel.LAYER,
@@ -360,6 +372,10 @@ public class NerospaceClient {
             return;
         }
         BlockPos target = ClientMeteorTracker.pos();
+        if (target == null) {
+            // isPresent() was true above, but pos() is @Nullable — guard the deref explicitly.
+            return;
+        }
         Vec3 p = mc.player.position();
         double dx = target.getX() + 0.5D - p.x;
         double dz = target.getZ() + 0.5D - p.z;

@@ -493,6 +493,29 @@ public final class ModBlocks {
                             .sound(SoundType.STONE)
                             .noOcclusion()); // pedestal model (art overhaul §3)
 
+    /** The Village Core: controller block of an alien village (claimed by right-click). */
+    public static final DeferredBlock<za.co.neroland.nerospace.village.VillageCoreBlock> VILLAGE_CORE =
+            BLOCKS.registerBlock("village_core", za.co.neroland.nerospace.village.VillageCoreBlock::new,
+                    props -> props
+                            .mapColor(MapColor.COLOR_GREEN)
+                            .strength(2.0F, 8.0F)
+                            .sound(SoundType.STONE)
+                            .requiresCorrectToolForDrops());
+
+    // --- Greenxertz decoration set (ALIEN_VILLAGERS_DESIGN.md §8) ------------
+    public static final DeferredBlock<Block> ALIEN_BRICKS = BLOCKS.registerSimpleBlock("alien_bricks",
+            props -> props.mapColor(MapColor.COLOR_GREEN).strength(1.5F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
+    public static final DeferredBlock<Block> CRACKED_ALIEN_BRICKS = BLOCKS.registerSimpleBlock("cracked_alien_bricks",
+            props -> props.mapColor(MapColor.COLOR_GREEN).strength(1.5F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
+    public static final DeferredBlock<Block> ALIEN_TILE = BLOCKS.registerSimpleBlock("alien_tile",
+            props -> props.mapColor(MapColor.COLOR_GREEN).strength(1.5F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
+    public static final DeferredBlock<Block> ALIEN_PILLAR = BLOCKS.registerSimpleBlock("alien_pillar",
+            props -> props.mapColor(MapColor.COLOR_GREEN).strength(1.5F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
+    public static final DeferredBlock<Block> ALIEN_LAMP = BLOCKS.registerSimpleBlock("alien_lamp",
+            props -> props.mapColor(MapColor.COLOR_GREEN).strength(1.5F, 6.0F).lightLevel(s -> 15).sound(SoundType.METAL));
+    public static final DeferredBlock<Block> ALIEN_CRYSTAL_BLOCK = BLOCKS.registerSimpleBlock("alien_crystal_block",
+            props -> props.mapColor(MapColor.EMERALD).strength(1.5F, 6.0F).lightLevel(s -> 12).sound(SoundType.AMETHYST));
+
     // --- Rocket Fuel liquid block (Phase 7b) --------------------------------
 
     /** The world block for the {@code rocket_fuel} fluid (placed by its bucket). */

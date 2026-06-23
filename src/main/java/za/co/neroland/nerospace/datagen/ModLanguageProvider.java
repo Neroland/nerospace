@@ -34,6 +34,18 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.NEROSTEEL_ORE.get(), "Nerosteel Ore");
         add(ModBlocks.XERTZ_QUARTZ_ORE.get(), "Xertz Quartz Ore");
         add(ModBlocks.NEROSTEEL_BLOCK.get(), "Block of Nerosteel");
+        add(ModBlocks.VILLAGE_CORE.get(), "Village Core");
+        add("message.nerospace.village_core.claimed", "You claim this Village Core. The aliens take note.");
+        add("message.nerospace.village_core.status_self", "This is your Village Core.");
+        add("message.nerospace.village_core.owned", "This Village Core belongs to %s.");
+        add(ModItems.GRAV_STRIDERS.get(), "Grav Striders");
+        add(ModItems.XERTZ_RESONATOR.get(), "Xertz Resonator");
+        add(ModBlocks.ALIEN_BRICKS.get(), "Alien Bricks");
+        add(ModBlocks.CRACKED_ALIEN_BRICKS.get(), "Cracked Alien Bricks");
+        add(ModBlocks.ALIEN_TILE.get(), "Alien Tile");
+        add(ModBlocks.ALIEN_PILLAR.get(), "Alien Pillar");
+        add(ModBlocks.ALIEN_LAMP.get(), "Alien Lamp");
+        add(ModBlocks.ALIEN_CRYSTAL_BLOCK.get(), "Alien Crystal Block");
 
         // Phase 4 blocks.
         add(ModBlocks.ROCKET_LAUNCH_PAD.get(), "Rocket Launch Pad");
@@ -241,6 +253,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.XERTZ_STALKER_SPAWN_EGG.get(), "Xertz Stalker Spawn Egg");
         add(ModItems.QUARTZ_CRAWLER_SPAWN_EGG.get(), "Quartz Crawler Spawn Egg");
         add(ModItems.GREENLING_SPAWN_EGG.get(), "Greenling Spawn Egg");
+        add(ModItems.ALIEN_VILLAGER_SPAWN_EGG.get(), "Alien Villager Spawn Egg");
         add(ModItems.CINDER_STALKER_SPAWN_EGG.get(), "Cinder Stalker Spawn Egg");
         add(ModItems.FROST_STRIDER_SPAWN_EGG.get(), "Frost Strider Spawn Egg");
         add(ModItems.MEADOW_LOPER_SPAWN_EGG.get(), "Meadow Loper Spawn Egg");
@@ -273,6 +286,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("entity.nerospace.xertz_stalker", "Xertz Stalker");
         add("entity.nerospace.quartz_crawler", "Quartz Crawler");
         add("entity.nerospace.greenling", "Greenling");
+        add("entity.nerospace.alien_villager", "Alien Villager");
         add("entity.nerospace.cinder_stalker", "Cinder Stalker");
         add("entity.nerospace.frost_strider", "Frost Strider");
         add("entity.nerospace.meadow_loper", "Meadow Loper");

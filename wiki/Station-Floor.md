@@ -11,6 +11,7 @@ base in orbit (and anywhere else). A sturdy, blast-resistant deco/building block
 
 - **Craft:** a ring of **8 Nerosteel Ingots** around an empty centre → **8 Station Floor**.
 - The station's starter platform is generated automatically on first arrival (a single shared
+
   platform — see [Rocket Launch Pad](Rocket-Launch-Pad) / Roadmap).
 
 ## Details

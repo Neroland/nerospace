@@ -1346,7 +1346,36 @@ def _pat_wool(part, face, nx, ny, rng):
     return None
 
 
+# Alien Villager (Greenxertz species) — pale-green skin, a deep teal-green robe with steel trim, and
+# bright cyan-green shoulder crystals + eyes (the only emissive parts, picked up by gen_entity_glow).
+AV_DARK  = (28, 58, 50, 255)
+AV_ROBE  = (44, 92, 78, 255)
+AV_ROBE2 = (60, 120, 100, 255)
+AV_STEEL = (150, 170, 168, 255)
+AV_TRIM  = (190, 205, 200, 255)
+AV_SKIN_D = (74, 150, 112, 255)
+AV_SKIN  = (120, 196, 150, 255)
+AV_SKIN_L = (170, 224, 188, 255)
+AV_CRYS  = (140, 240, 200, 255)
+AV_GLOW  = (200, 255, 232, 255)
+
+
+def _pat_robe(part, face, nx, ny, rng):
+    # Body: faint vertical robe seams + an occasional steel-trim fleck. Crystals: bright facets.
+    if part.startswith("crystal"):
+        return AV_GLOW if rng.random() < 0.18 else (AV_CRYS if rng.random() < 0.3 else None)
+    if part == "body" and (nx in (0.0, 1.0) or int(nx * 8) % 4 == 0):
+        return AV_STEEL if rng.random() < 0.5 else None
+    return AV_TRIM if rng.random() < 0.02 else None
+
+
 def gen_creatures():
+    _gen_creature_v2("alien_villager", "AlienVillagerModel",
+                     [AV_DARK, AV_ROBE, AV_ROBE2, AV_STEEL, AV_TRIM], 509,
+                     pattern=_pat_robe,
+                     part_ramps={"head": [AV_SKIN_D, AV_SKIN, AV_SKIN, AV_SKIN_L, AV_SKIN_L],
+                                 "crystal": [AV_ROBE2, AV_CRYS, AV_CRYS, AV_GLOW, AV_GLOW]},
+                     eye=AV_GLOW, socket=AV_DARK, glint=AV_GLOW, big_eyes=True)
     _gen_creature_v2("xertz_stalker", "XertzStalkerModel",
                      [XS_DARK, XS_BODY, XS_MID, XS_FACET, XS_GLOW], 501,
                      pattern=_pat_facets, eye=XS_GLOW, socket=XS_DARK, glint=XS_GLOW)
@@ -1421,6 +1450,7 @@ def gen_spawn_egg(name, base, spot, outline, seed):
 
 
 def gen_spawn_eggs():
+    gen_spawn_egg("alien_villager", AV_ROBE, AV_CRYS, AV_DARK, 619)
     gen_spawn_egg("xertz_stalker", XS_BODY, XS_FACET, XS_DARK, 611)
     gen_spawn_egg("quartz_crawler", (188, 190, 202, 255), QC_CRY, QC_SEAM, 612)
     gen_spawn_egg("greenling", GL_BODY, GL_LITE, GL_DARK, 613)
@@ -3080,8 +3110,8 @@ if __name__ == "__main__":
     gen_loper_haunch()
     gen_strutter_drumstick()
     gen_drift_fleece()
-    for _name in ("xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker", "frost_strider",
-                  "meadow_loper", "ember_strutter", "woolly_drift"):
+    for _name in ("alien_villager", "xertz_stalker", "quartz_crawler", "greenling", "cinder_stalker",
+                  "frost_strider", "meadow_loper", "ember_strutter", "woolly_drift"):
         gen_entity_glow(_name)
     gen_ore(STONE, "nerosium_ore")
     gen_ore(DEEP, "deepslate_nerosium_ore")

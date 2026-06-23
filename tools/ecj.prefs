@@ -15,16 +15,17 @@ org.eclipse.jdt.core.compiler.annotation.nullable.secondary=javax.annotation.Nul
 org.eclipse.jdt.core.compiler.annotation.nonnull.secondary=javax.annotation.Nonnull,jakarta.annotation.Nonnull
 org.eclipse.jdt.core.compiler.annotation.inheritNullAnnotations=enabled
 org.eclipse.jdt.core.compiler.problem.missingNonNullByDefaultAnnotation=ignore
-# Generic-null TYPE-ANNOTATION noise from Minecraft/NeoForge's heavily @NonNull-annotated generics
-# meeting our unannotated code. nullUncheckedConversion (vanilla CriterionTrigger generics) can be
-# ignored outright; nullSpecViolation ("Null constraint mismatch", e.g. Feature<FC> bounds) is a
-# mandatory JDT problem that JDT refuses to set to `ignore` (it reverts to ERROR), so it stays a
-# warning and the handful of framework-interop sites carry a local @SuppressWarnings("null").
-# The high-value deref checks (nullReference / potentialNullReference) stay ON — they caught the
-# real @Nullable field/variable bugs.
+# Null analysis severities. These are kept at `warning` (NOT `ignore`) so ecjCheck surfaces exactly
+# what VS Code's Problems panel shows — nothing is hidden. In particular nullUncheckedConversion and
+# nullSpecViolation arise where Mojang/NeoForge's @NonNull-annotated codec generics (RecordCodecBuilder,
+# StreamCodec.composite, SavedDataType) meet our unannotated lambdas; VS Code reports these too, and
+# they are framework-interop warnings that cannot be resolved without either mis-annotating our own
+# constructors @Nullable or @SuppressWarnings. Per project policy we do NEITHER — they remain visible
+# warnings in both tools. Genuine @Nullable deref bugs (nullReference / potentialNullReference) are
+# fixed in code with explicit guards, not suppressed.
 org.eclipse.jdt.core.compiler.problem.nullSpecViolation=warning
 org.eclipse.jdt.core.compiler.problem.nullAnnotationInferenceConflict=warning
-org.eclipse.jdt.core.compiler.problem.nullUncheckedConversion=ignore
+org.eclipse.jdt.core.compiler.problem.nullUncheckedConversion=warning
 org.eclipse.jdt.core.compiler.problem.potentialNullReference=warning
 org.eclipse.jdt.core.compiler.problem.redundantNullCheck=warning
 org.eclipse.jdt.core.compiler.problem.nullReference=warning

@@ -26,9 +26,13 @@ C C C
   - Nerosium Ore / Deepslate Nerosium Ore / Raw Nerosium → **2 Nerosium Dust**
   - Nerosium Ingot → **1 Nerosium Dust**
 - **Power:** it has an internal energy buffer (10,000 FE) and currently **self-charges**
+
   (~15 FE/tick), spending ~30 FE/tick while grinding. A full grind takes ~100 progress ticks.
+
 - **Automation:** the inventory is exposed via the item capability — hoppers/pipes can **insert into
+
   the input from the top or sides and extract dust from the bottom**.
+
 - **GUI:** shows a power gauge and grind-progress; emits a **comparator signal** from its energy level.
 
 ## Tips

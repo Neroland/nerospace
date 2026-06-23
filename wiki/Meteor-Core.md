@@ -23,4 +23,5 @@ weighted bonus rolls of raw ores and the rarer **Alien Tech Scrap** / **Alien Co
 
 - ID: `nerospace:meteor_core` · Tool: pickaxe · No loot table — drops its stored contents on break.
 - Emits light (level 10). Loot is configurable via the **Meteor events** keys in
+
   [Configuration](Configuration).

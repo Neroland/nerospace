@@ -19,11 +19,16 @@ N N N
 ## How it works
 
 - **Place it anywhere** on or near terraformed land. It links to the nearest Terraformer within
+
   **32 blocks** automatically (no wiring).
+
 - **GUI readout:** the local column's stage (Dead / Rooted / Hydrated / Living), the linked
+
   machine's three stage radii, its hydration units, and a red "Needs glacite" warning when the
   water stage has stalled.
+
 - **Comparator output = local stage:** 0 (dead), 5 (Rooted), 10 (Hydrated), 15 (Living). Open the
+
   ranch gates when the land turns Living, or alarm when terraforming reaches your base.
 
 ## Details

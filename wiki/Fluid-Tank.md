@@ -20,7 +20,9 @@ N G N
 - Holds **16,000 mB** (configurable) of any one fluid.
 - **Buckets:** right-click with a filled bucket to pour in, an empty bucket to draw out.
 - **Pipes:** the fluid layer fills and drains it on every side — remember the network carries one
+
   fluid at a time.
+
 - Bare-hand right-click reads out the contents.
 
 A **Creative Fluid Tank** variant supplies endless fluid — see

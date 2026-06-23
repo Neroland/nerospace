@@ -1,0 +1,464 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "modded_entity",
+    "box_uv": true
+  },
+  "name": "alien_villager",
+  "model_identifier": "",
+  "visible_box": [
+    2,
+    3,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 64,
+    "height": 64
+  },
+  "elements": [
+    {
+      "name": "head",
+      "box_uv": true,
+      "uv_offset": [
+        0,
+        28
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -4,
+        22,
+        -4
+      ],
+      "to": [
+        4,
+        30,
+        4
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "f58d9981-af6a-b620-1fec-a07e30920982"
+    },
+    {
+      "name": "body",
+      "box_uv": true,
+      "uv_offset": [
+        0,
+        0
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -4,
+        10,
+        -2
+      ],
+      "to": [
+        4,
+        22,
+        2
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "32954df3-4930-6399-b574-865c8ad6e8d1"
+    },
+    {
+      "name": "crystal_left",
+      "box_uv": true,
+      "uv_offset": [
+        44,
+        0
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -6,
+        19,
+        -1
+      ],
+      "to": [
+        -4,
+        24,
+        1
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "e9de2c63-ad3c-164e-a750-ebce6b583368"
+    },
+    {
+      "name": "crystal_right",
+      "box_uv": true,
+      "uv_offset": [
+        44,
+        0
+      ],
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        4,
+        19,
+        -1
+      ],
+      "to": [
+        6,
+        24,
+        1
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "188b6d53-c0d1-702d-f895-7fca705b221e"
+    }
+  ],
+  "outliner": [
+    {
+      "name": "head",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "d93e82ce-5f94-900a-91c0-c203fd01151a",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "f58d9981-af6a-b620-1fec-a07e30920982"
+      ]
+    },
+    {
+      "name": "body",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "1cd26d0b-c520-b27d-f69f-e14771da26c7",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "32954df3-4930-6399-b574-865c8ad6e8d1"
+      ]
+    },
+    {
+      "name": "crystal_left",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "e9bf3991-2943-0f57-ce2b-fd0a24d1df09",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "e9de2c63-ad3c-164e-a750-ebce6b583368"
+      ]
+    },
+    {
+      "name": "crystal_right",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "uuid": "a6c4f39d-62aa-c620-0c32-9f6d07615a8c",
+      "export": true,
+      "isOpen": false,
+      "visibility": true,
+      "autouv": 0,
+      "children": [
+        "188b6d53-c0d1-702d-f895-7fca705b221e"
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\alien_villager.png",
+      "name": "alien_villager.png",
+      "folder": "entity",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "ee991821-586c-796e-498a-993d6303f090",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/entity/alien_villager.png",
+      "source": "data:image/png;base64,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"
+    }
+  ]
+}

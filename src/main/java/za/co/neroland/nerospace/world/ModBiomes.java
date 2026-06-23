@@ -98,10 +98,15 @@ public final class ModBiomes {
                 .dryFoliageColorOverride(foliageColor)
                 .build();
 
-        MobSpawnSettings spawns = new MobSpawnSettings.Builder()
+        MobSpawnSettings.Builder spawnBuilder = new MobSpawnSettings.Builder()
                 .addSpawn(MobCategory.CREATURE, 10,
-                        new MobSpawnSettings.SpawnerData(livestock, 2, 4))
-                .build();
+                        new MobSpawnSettings.SpawnerData(livestock, 2, 4));
+        // Greenxertz alien villagers persist into the mature meadow (Phase 1: lighter accessory set).
+        if (key == TERRAFORMED_MEADOW) {
+            spawnBuilder.addSpawn(MobCategory.CREATURE, 5,
+                    new MobSpawnSettings.SpawnerData(ModEntities.ALIEN_VILLAGER.get(), 1, 2));
+        }
+        MobSpawnSettings spawns = spawnBuilder.build();
 
         Biome biome = new Biome.BiomeBuilder()
                 .hasPrecipitation(true)
@@ -154,6 +159,13 @@ public final class ModBiomes {
                 placedFeatures.getOrThrow(ModPlacedFeatures.NEROSTEEL_ORE_PLACED));
         generation.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES,
                 placedFeatures.getOrThrow(ModPlacedFeatures.XERTZ_QUARTZ_ORE_PLACED));
+        // Alien hamlet outposts dot the surface (ALIEN_VILLAGERS_DESIGN.md §5, Phase 3).
+        generation.addFeature(GenerationStep.Decoration.SURFACE_STRUCTURES,
+                placedFeatures.getOrThrow(ModPlacedFeatures.HAMLET_PLACED));
+        generation.addFeature(GenerationStep.Decoration.SURFACE_STRUCTURES,
+                placedFeatures.getOrThrow(ModPlacedFeatures.RUIN_PLACED));
+        generation.addFeature(GenerationStep.Decoration.SURFACE_STRUCTURES,
+                placedFeatures.getOrThrow(ModPlacedFeatures.MEGA_CITY_PLACED));
 
         // MC 26.1 trimmed BiomeSpecialEffects.Builder to water + grass/foliage colors; fog/sky/water-fog
         // colors are no longer set here. The green surface palette comes from the grass/foliage overrides.
@@ -171,6 +183,9 @@ public final class ModBiomes {
                         new MobSpawnSettings.SpawnerData(ModEntities.QUARTZ_CRAWLER.get(), 1, 3))
                 .addSpawn(MobCategory.AMBIENT, 8,
                         new MobSpawnSettings.SpawnerData(ModEntities.GREENLING.get(), 2, 4))
+                // Alien Villagers (Phase 0): small, sparse social groups on the surface.
+                .addSpawn(MobCategory.CREATURE, 6,
+                        new MobSpawnSettings.SpawnerData(ModEntities.ALIEN_VILLAGER.get(), 1, 3))
                 .build();
 
         Biome biome = new Biome.BiomeBuilder()
@@ -207,6 +222,8 @@ public final class ModBiomes {
         MobSpawnSettings spawns = new MobSpawnSettings.Builder()
                 .addSpawn(MobCategory.MONSTER, 14,
                         new MobSpawnSettings.SpawnerData(ModEntities.CINDER_STALKER.get(), 1, 2))
+                .addSpawn(MobCategory.CREATURE, 3,
+                        new MobSpawnSettings.SpawnerData(ModEntities.ALIEN_VILLAGER.get(), 1, 2))
                 .build();
 
         Biome biome = new Biome.BiomeBuilder()
@@ -244,6 +261,8 @@ public final class ModBiomes {
         MobSpawnSettings spawns = new MobSpawnSettings.Builder()
                 .addSpawn(MobCategory.MONSTER, 14,
                         new MobSpawnSettings.SpawnerData(ModEntities.FROST_STRIDER.get(), 1, 2))
+                .addSpawn(MobCategory.CREATURE, 3,
+                        new MobSpawnSettings.SpawnerData(ModEntities.ALIEN_VILLAGER.get(), 1, 2))
                 .build();
 
         Biome biome = new Biome.BiomeBuilder()

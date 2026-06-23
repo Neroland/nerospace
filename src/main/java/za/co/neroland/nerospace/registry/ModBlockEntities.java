@@ -179,6 +179,14 @@ public final class ModBlockEntities {
                             false,
                             ModBlocks.STAR_GUIDE.get()));
 
+    /** Village Core controller block entity (ALIEN_VILLAGERS_DESIGN.md §4.1). */
+    public static final Supplier<BlockEntityType<za.co.neroland.nerospace.village.VillageCoreBlockEntity>> VILLAGE_CORE =
+            BLOCK_ENTITY_TYPES.register("village_core",
+                    () -> new BlockEntityType<>(
+                            za.co.neroland.nerospace.village.VillageCoreBlockEntity::new,
+                            false,
+                            ModBlocks.VILLAGE_CORE.get()));
+
     // Meteor Core (meteor-events-design.md §5): stores the rolled loot, break-to-loot.
     public static final Supplier<BlockEntityType<za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity>> METEOR_CORE =
             BLOCK_ENTITY_TYPES.register("meteor_core",

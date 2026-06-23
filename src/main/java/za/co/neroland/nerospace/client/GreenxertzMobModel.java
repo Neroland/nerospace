@@ -32,7 +32,7 @@ import net.minecraft.util.Mth;
  *       absolutely from the part's build-time rotation.</li>
  * </ul>
  */
-public abstract class GreenxertzMobModel extends EntityModel<LivingEntityRenderState> {
+public abstract class GreenxertzMobModel<S extends LivingEntityRenderState> extends EntityModel<S> {
 
     private record Swing(ModelPart part, float baseXRot, float phase, float amp) {
     }
@@ -99,7 +99,7 @@ public abstract class GreenxertzMobModel extends EntityModel<LivingEntityRenderS
     }
 
     @Override
-    public void setupAnim(LivingEntityRenderState state) {
+    public void setupAnim(S state) {
         super.setupAnim(state);
         float pos = state.walkAnimationPos;
         float speed = Math.min(1.0F, state.walkAnimationSpeed);

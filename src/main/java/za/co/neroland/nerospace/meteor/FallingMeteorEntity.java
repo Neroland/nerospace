@@ -133,7 +133,7 @@ public class FallingMeteorEntity extends Entity {
 
     /** Flame + smoke trail, denser as the meteor nears the ground (client-side, per the design §4). */
     private void spawnTrail() {
-        double proximity = 1.0D - Math.min(1.0D, (getY() - this.targetY) / (double) FALL_HEIGHT);
+        double proximity = 1.0D - Math.min(1.0D, (getY() - this.targetY) / FALL_HEIGHT);
         int puffs = 2 + (int) (proximity * 4);
         for (int i = 0; i < puffs; i++) {
             double ox = (this.random.nextDouble() - 0.5D) * 0.8D;

@@ -36,7 +36,7 @@ rolls of existing raw ores (Raw Nerosium, Raw Nerosteel, Xertz Quartz) and the r
 **Alien Tech Scrap** and **Alien Core**.
 
 | Item | Rarity | Role |
-|---|---|---|
+| --- | --- | --- |
 | **Alien Fragment** | common (guaranteed) | Future **scanner** feedstock. |
 | **Alien Tech Scrap** | uncommon | Future upgrade crafting. |
 | **Alien Core** | rare | High-value scanner/upgrade gate. |

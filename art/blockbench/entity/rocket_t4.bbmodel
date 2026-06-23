@@ -857,7 +857,7 @@
   ],
   "textures": [
     {
-      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\entity\\rocket_t4.png",
+      "path": "/sessions/zen-dazzling-fermi/mnt/nerospace/src/main/resources/assets/nerospace/textures/entity/rocket_t4.png",
       "name": "rocket_t4.png",
       "folder": "entity",
       "namespace": "nerospace",

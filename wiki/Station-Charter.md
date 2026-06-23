@@ -25,15 +25,24 @@ W W W
 ## How it works
 
 - **Naming:** rename the charter in an **anvil** before flying — that becomes the station's name.
+
   An unnamed charter founds "Station N".
+
 - **Founding:** board any rocket with the charter in your inventory; the rocket UI shows the
+
   **FOUND** node next to the station selector. Select it and launch. The charter is consumed, the
   platform + bound Station Core are placed, and the station registers as a destination.
+
 - **Capacity:** up to **64** founded stations per world. Founding also grants the *founded station*
+
   advancement and ticks the Star Guide's rocketry chapter.
+
 - **Unregistering:** breaking the station's [Station Core](Station-Core) removes it from the
+
   destination list.
+
 - **Privacy note:** stations store no owner data — any player may fly to (or unregister) any
+
   station.
 
 ## Details

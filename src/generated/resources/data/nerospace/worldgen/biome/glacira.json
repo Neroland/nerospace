@@ -25,7 +25,14 @@
   "spawners": {
     "ambient": [],
     "axolotls": [],
-    "creature": [],
+    "creature": [
+      {
+        "type": "nerospace:alien_villager",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 3
+      }
+    ],
     "misc": [],
     "monster": [
       {

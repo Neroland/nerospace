@@ -16,10 +16,14 @@ Every Universal Pipe face has four independent I/O modes (one per layer: Energy,
 - **Off** — disconnected for that layer
 
 With the Configurator:
+
 - **Sneak-right-click a pipe** → opens the **configuration panel**: a 6-face × 4-layer grid of
+
   buttons; click any cell to cycle its mode. Changes apply instantly.
+
 - **Right-click a pipe face** → quick-cycles that face's mode for the currently selected layer.
 - **Sneak-right-click in air** (or on non-pipe blocks) → cycles which layer the quick mode edits
+
   (Energy → Fluid → Gas → Items).
 
 ## Tips

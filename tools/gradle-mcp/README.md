@@ -7,7 +7,10 @@ needs real RAM, multiple cores, and minutes of uninterrupted runtime) happens on
 your hardware instead of an ephemeral sandbox — then the assistant can poll the
 result and confirm `BUILD SUCCESSFUL`.
 
-No npm install. No external dependencies. Just Node.
+The Gradle tools need only Node — no dependencies. The `markdown_check` tool
+runs the **full markdownlint ruleset** when the optional `markdownlint` package
+is installed (see [Markdown linting](#markdown-linting)); without it, it falls
+back to a smaller built-in rule subset and says so in its `engine` field.
 
 ## Prerequisites
 
@@ -28,6 +31,8 @@ No npm install. No external dependencies. Just Node.
 | `gradle_stop` | Terminate a running build. |
 | `gradle_list` | List builds started this session. |
 | `gradle_clear_logs` | Delete this session's log files. |
+| `gradle_analyze` | Run `ecjCheck` (Eclipse compiler) async — the same analyzer/severities as the VS Code Problems panel, configured by `tools/ecj.prefs`. |
+| `markdown_check` | Lint Markdown synchronously (full markdownlint ruleset when installed), honouring `.markdownlint.json`. |
 
 The typical loop: `gradle_build` → `gradle_status` (repeat until `status` is
 `succeeded`/`failed`) → `gradle_log` with a `grep` like `error|FAIL` if it failed.
@@ -88,24 +93,20 @@ GRADLE_PROJECT_DIR="<repo>" node server.js
 # you should get an initialize result back. Ctrl-C to exit.
 ```
 
-## Privacy / logging (POPIA & GDPR)
+## Markdown linting
 
-- Build logs are written **only to the local OS temp directory** and contain
-  **only Gradle build diagnostics** (task names, compiler output, stack traces).
-- Logs are **never transmitted** anywhere by this server except back through the
-  MCP stdio channel you control — i.e. to the assistant you're already talking to.
-- The server **does not log** environment variables, secrets, or personal data.
-- Build output can incidentally include local file paths (which contain your
-  username). Use `gradle_clear_logs` to wipe session logs, or delete
-  `gradle-mcp-*.log` from your temp folder, whenever you want.
-- Nothing is persisted beyond the temp log files; no telemetry, no network calls.
+`markdown_check` matches what VS Code's markdownlint shows: it runs **every**
+markdownlint rule, dynamically honouring the repo `.markdownlint.json` (any rule
+set to `false` there is skipped, and changes to that file take effect on the next
+run — no code change needed). markdownlint 0.34+ is ESM-only and is loaded via
+dynamic `import()` at server startup.
 
-## Notes & limits
+To enable the full ruleset, install the dependency once and restart the MCP:
 
-- Builds are tracked **in memory** for the server's lifetime; restarting the app
-  starts a fresh session (the Gradle build cache on disk is untouched and still
-  speeds up subsequent runs).
-- The server only ever invokes the project's `gradlew` wrapper — it does not run
-  arbitrary shell commands.
-- First build does the one-time Minecraft decompile and will take several
-  minutes; that's expected. Subsequent builds are fast thanks to Gradle caching.
+```bash
+cd tools/gradle-mcp
+npm install
+```
+
+If `markdownlint` is not installed, `markdown_check` still works using a built-in
+subset of rules and reports `engine: builtin-subset ...` so you know to inst

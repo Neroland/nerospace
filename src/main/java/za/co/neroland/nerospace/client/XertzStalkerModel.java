@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -21,7 +22,7 @@ import za.co.neroland.nerospace.Nerospace;
  * signature — the crystal blade-arms slowly flex out and back at the shoulder, like a hunter
  * keeping its blades limber.
  */
-public class XertzStalkerModel extends GreenxertzMobModel {
+public class XertzStalkerModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "xertz_stalker"), "main");

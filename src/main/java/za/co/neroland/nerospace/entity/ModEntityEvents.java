@@ -26,6 +26,8 @@ public final class ModEntityEvents {
         event.put(ModEntities.XERTZ_STALKER.get(), XertzStalker.createAttributes().build());
         event.put(ModEntities.QUARTZ_CRAWLER.get(), QuartzCrawler.createAttributes().build());
         event.put(ModEntities.GREENLING.get(), Greenling.createAttributes().build());
+        event.put(ModEntities.ALIEN_VILLAGER.get(), AlienVillager.createAttributes().build());
+        event.put(ModEntities.RUIN_WARDEN.get(), RuinWarden.createAttributes().build());
         event.put(ModEntities.CINDER_STALKER.get(), CinderStalker.createAttributes().build());
         event.put(ModEntities.FROST_STRIDER.get(), FrostStrider.createAttributes().build());
         // Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5).
@@ -61,6 +63,13 @@ public final class ModEntityEvents {
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(ModEntities.FROST_STRIDER.get(), SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) ->
+                        !level.getBlockState(pos.below()).isAir() && level.getBlockState(pos).isAir(),
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        // Alien Villager (Phase 0): surface-dwelling, spawns on solid ground with open space above.
+        event.register(ModEntities.ALIEN_VILLAGER.get(), SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 (type, level, reason, pos, random) ->
                         !level.getBlockState(pos.below()).isAir() && level.getBlockState(pos).isAir(),

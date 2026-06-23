@@ -433,6 +433,21 @@ public final class ModItems {
     // --- Star Guide (progression block, 1.0) ---------------------------------
     public static final DeferredItem<BlockItem> STAR_GUIDE_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.STAR_GUIDE);
+    public static final DeferredItem<BlockItem> VILLAGE_CORE_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.VILLAGE_CORE);
+
+    // Exclusive Artificer gear (ALIEN_VILLAGERS_DESIGN.md §6.1) — trade-only.
+    public static final DeferredItem<Item> GRAV_STRIDERS = ITEMS.registerSimpleItem("grav_striders");
+    public static final DeferredItem<Item> XERTZ_RESONATOR = ITEMS.registerItem(
+            "xertz_resonator", props -> new za.co.neroland.nerospace.gear.XertzResonatorItem(props));
+    // Greenxertz decoration block items (§8).
+    public static final DeferredItem<BlockItem> ALIEN_BRICKS_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_BRICKS);
+    public static final DeferredItem<BlockItem> CRACKED_ALIEN_BRICKS_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.CRACKED_ALIEN_BRICKS);
+    public static final DeferredItem<BlockItem> ALIEN_TILE_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_TILE);
+    public static final DeferredItem<BlockItem> ALIEN_PILLAR_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_PILLAR);
+    public static final DeferredItem<BlockItem> ALIEN_LAMP_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_LAMP);
+    public static final DeferredItem<BlockItem> ALIEN_CRYSTAL_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.ALIEN_CRYSTAL_BLOCK);
+
     public static final DeferredItem<Item> STAR_GUIDE_BOOK = ITEMS.registerItem(
             "star_guide_book", props -> new za.co.neroland.nerospace.item.StarGuideBookItem(props.stacksTo(1)));
 
@@ -443,6 +458,8 @@ public final class ModItems {
             "quartz_crawler_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.QUARTZ_CRAWLER));
     public static final DeferredItem<Item> GREENLING_SPAWN_EGG = ITEMS.registerItem(
             "greenling_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.GREENLING));
+    public static final DeferredItem<Item> ALIEN_VILLAGER_SPAWN_EGG = ITEMS.registerItem(
+            "alien_villager_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.ALIEN_VILLAGER));
     public static final DeferredItem<Item> CINDER_STALKER_SPAWN_EGG = ITEMS.registerItem(
             "cinder_stalker_spawn_egg", props -> new NerospaceSpawnEggItem(props, ModEntities.CINDER_STALKER));
     public static final DeferredItem<Item> FROST_STRIDER_SPAWN_EGG = ITEMS.registerItem(

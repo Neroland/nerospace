@@ -10,8 +10,11 @@ is plentiful. It is a key crafting reagent, most notably for **Rocket Fuel Canis
 ## Obtaining
 
 - **Mining:** any pickaxe works. Drops **Xertz Quartz** directly (Fortune-affected). The ore can also
+
   be smelted into Xertz Quartz if you prefer.
+
 - **Generation:** spawns abundantly across the **Greenxertz** dimension, uniformly between about
+
   **y 0 and y 110**.
 
 ## Use

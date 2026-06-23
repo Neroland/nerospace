@@ -25,7 +25,7 @@ across its slots and sums their effects (you can stack several). The [Quarry Con
 has **1 module slot at Tier 1** (more at higher tiers).
 
 | Module | Effect | Notes |
-|---|---|---|
+| --- | --- | --- |
 | **Speed Module** | +50% to the work-cap per module | Lets the machine do more when fed more power; capped at ×8. |
 | **Efficiency Module** | −15% energy cost per module | Floors at 25% of the base cost. |
 | **Fortune Module** | Applies Fortune to mined blocks | Stacks up to Fortune III. |
@@ -42,7 +42,7 @@ R S R
 `N` = [Nerosteel Ingot](Items) · `R` = Redstone · `S` = signature:
 
 | Module | Signature `S` |
-|---|---|
+| --- | --- |
 | Speed | Sugar |
 | Efficiency | Lapis Lazuli |
 | Fortune | Diamond |
@@ -51,5 +51,7 @@ R S R
 ## Details
 
 - IDs: `nerospace:frame_casing`, `nerospace:speed_module`, `nerospace:efficiency_module`,
+
   `nerospace:fortune_module`, `nerospace:silk_touch_module`
+
 - Used by: [Quarry Controller](Quarry-Controller) (more machines planned)

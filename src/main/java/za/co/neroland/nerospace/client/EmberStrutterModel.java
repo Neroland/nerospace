@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -19,7 +20,7 @@ import za.co.neroland.nerospace.Nerospace;
  * beak, stubby wing slabs and a raked tail fan. Idle: rapid bird breathing, sharp pecky head bobs
  * and nervous wing flicks.
  */
-public class EmberStrutterModel extends GreenxertzMobModel {
+public class EmberStrutterModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(Nerospace.MODID, "ember_strutter"), "main");

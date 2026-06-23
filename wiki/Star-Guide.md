@@ -27,15 +27,21 @@ S S S
 
 - **Read anywhere:** right-click with the **Star Guide Book** in hand to open the guide GUI.
 - **Pedestal:** right-click the empty pedestal with the book to install it (lectern-style; breaking
+
   the pedestal or sneak-right-clicking pops the book back out). An installed pedestal projects a
   rotating **hologram of your next goal**, and right-clicking it opens the same GUI.
+
 - **The tree:** chapters cover **Nerosium → Machines → Power Grid → Rocketry → New Worlds →
+
   [Mining](Quarry-Controller) → Surviving Vacuum → Terraforming**. Completed steps pulse; each step
   carries guide text telling you exactly what to do next.
+
 - **Mining chapter:** the quarry automation track — [Quarry Landmark](Quarry-Landmark) →
+
   [Frame Casing](Upgrade-Modules) → [Quarry Controller](Quarry-Controller) →
   [Upgrade Modules](Upgrade-Modules). Gated behind nerosteel (Greenxertz), since the frame is built
   from it.
+
 - **Comparator:** the pedestal emits a signal when a book is installed.
 
 ## Details

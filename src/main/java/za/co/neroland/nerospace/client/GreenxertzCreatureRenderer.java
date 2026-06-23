@@ -39,7 +39,7 @@ public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRen
         this.scaleY = scaleY;
         this.scaleZ = scaleZ;
         if (glowTexture != null) {
-            this.addLayer(new GlowEyesLayer(this, glowTexture));
+            this.addLayer(new GlowEyesLayer<LivingEntityRenderState>(this, glowTexture));
         }
     }
 

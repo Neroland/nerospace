@@ -13,11 +13,11 @@ import net.minecraft.resources.Identifier;
  * {@code eyes} render type using a per-creature glow texture (transparent except the eyes / crystal /
  * ember accents), so those pixels glow in the dark regardless of light level.
  */
-public class GlowEyesLayer extends EyesLayer<LivingEntityRenderState, EntityModel<LivingEntityRenderState>> {
+public class GlowEyesLayer<S extends LivingEntityRenderState> extends EyesLayer<S, EntityModel<S>> {
 
     private final RenderType type;
 
-    public GlowEyesLayer(RenderLayerParent<LivingEntityRenderState, EntityModel<LivingEntityRenderState>> parent,
+    public GlowEyesLayer(RenderLayerParent<S, EntityModel<S>> parent,
                          Identifier glowTexture) {
         super(parent);
         this.type = RenderTypes.eyes(glowTexture);

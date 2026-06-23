@@ -66,6 +66,8 @@ REGISTRY = [
     _entry("XertzStalkerModel", "xertz_stalker"),
     _entry("QuartzCrawlerModel", "quartz_crawler"),
     _entry("GreenlingModel", "greenling"),
+    _entry("AlienVillagerModel", "alien_villager"),
+    _entry("RuinWardenModel", "ruin_warden"),
     _entry("CinderStalkerModel", "cinder_stalker"),
     _entry("FrostStriderModel", "frost_strider"),
     _entry("MeadowLoperModel", "meadow_loper"),

@@ -5,7 +5,7 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 ## Materials
 
 | Item | Notes |
-|---|---|
+| --- | --- |
 | **Raw Nerosium** | Mined from [Nerosium Ore](Nerosium-Ore); smelt/blast into a Nerosium Ingot. |
 | **Nerosium Ingot** | Core early metal; crafts tools, the grinder and the launch pad core. |
 | **Nerosium Dust** | Output of the [Nerosium Grinder](Nerosium-Grinder); smelts into an ingot (doubles ore yield). |
@@ -21,10 +21,15 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 ## Tools
 
 - **Nerosium Pickaxe** — iron-tier mining, higher durability and a small attack bonus. Craft:
+
   3 Nerosium Ingots over two sticks (standard pickaxe pattern).
+
 - **[Configurator](Configurator)** — the pipe-network tool: per-face × per-layer I/O modes, with a
+
   full configuration panel on sneak-right-click.
+
 - **Pipe Filter / Speed Upgrade / Capacity Upgrade** — see
+
   [Pipe Filters and Upgrades](Pipe-Filters-and-Upgrades).
 
 ## Oxygen Suit
@@ -47,29 +52,42 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 ## Rockets & Fuel
 
 - **Rocket Fuel Canister** — a stackable fuel unit. Craft (shapeless): Blaze Powder + Coal +
+
   Iron Ingot → 2 canisters. Used to fuel rockets/machines and as a crafting core. (Reachable before
   your first launch — no off-world materials needed.)
+
 - **[Fuel Refinery](Fuel-Refinery)** — automates fuel: coal + blaze powder + grid power → pipeable
+
   liquid rocket fuel, the logistics-grade alternative to hand-crafting canisters.
+
 - **Rocket Fuel Bucket** — a bucket of the `rocket_fuel` fluid; pour it into a rocket or [Fuel Tank](Fuel-Tank).
 - **Rockets (Tier 1 / 2 / 3 / 4)** — deploy onto a [Rocket Launch Pad](Rocket-Launch-Pad), fuel up,
+
   board, pick a destination, and launch (destinations are cumulative):
+
   - **Tier 1** → the Orbital Station (and any [founded station](Station-Charter)).
   - **Tier 2** → + Greenxertz.
   - **Tier 3** → + Cindara. (Needs a 3×3 pad ringed with [Station Wall](Station-Wall) **or** a
+
     [Heavy Launch Complex](Launch-Gantry).)
+
   - **Tier 4** → + Glacira. (Deploys **only** on the [Heavy Launch Complex](Launch-Gantry);
+
     24,000 mB tank.)
   The in-rocket screen shows a live fuel gauge, a selectable destination trajectory, a station
   selector, and a Launch button.
+
 - **[Station Charter](Station-Charter)** — 8 [Station Wall](Station-Wall) around a
+
   [Station Floor](Station-Floor); rename in an anvil, carry it aboard, and pick the rocket UI's
   **FOUND** node to found your own named orbital station.
 
 ## Star Guide
 
 - **Star Guide Book** — Book + Raw Nerosium (shapeless). Right-click to open the
+
   **[Star Guide](Star-Guide)**, the interactive 7-chapter progression tree.
+
 - **[Star Guide](Star-Guide)** (pedestal block) — holds the book, projects a next-goal hologram.
 
 ## Food & creature drops
@@ -77,18 +95,23 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 - **Loper Haunch** — dropped by the Meadow Loper; hearty food.
 - **Strutter Drumstick** — dropped by the Ember Strutter; food.
 - **Drift Fleece** — dropped by the Woolly Drift; crafts into 4 String.
+
   See **[Creatures](Creatures)** for the livestock themselves.
 
 ## Meteor events
 
 - **Meteor Tracker** — points to the nearest meteor (held action-bar readout: state, heading,
+
   distance). Creative for now; a survival craft comes with the scanner.
+
 - **Meteor Caller** — creative-only: right-click a block to call a meteor down onto it.
+
   See **[Meteor Events](Meteor-Events)** for the full world-event, loot table and config.
 
 ## Travel devices (creative)
 
 - **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira Compasses** are
+
   creative-only one-click travel aids for testing and building (no survival recipe — rockets are the
   survival route).
 

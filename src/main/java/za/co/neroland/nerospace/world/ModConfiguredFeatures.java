@@ -30,6 +30,10 @@ public final class ModConfiguredFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>> CINDRITE_ORE = registerKey("cindrite_ore");
     // Glacira dimension ore (NEW_DESTINATION_DESIGN.md).
     public static final ResourceKey<ConfiguredFeature<?, ?>> GLACITE_ORE = registerKey("glacite_ore");
+    /** Alien hamlet outpost (ALIEN_VILLAGERS_DESIGN.md §5, Phase 3). */
+    public static final ResourceKey<ConfiguredFeature<?, ?>> HAMLET = registerKey("hamlet");
+    public static final ResourceKey<ConfiguredFeature<?, ?>> RUIN = registerKey("ruin");
+    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_CITY = registerKey("mega_city");
 
     private ModConfiguredFeatures() {
     }
@@ -67,6 +71,18 @@ public final class ModConfiguredFeatures {
                 OreConfiguration.target(stoneReplaceables, ModBlocks.GLACITE_ORE.get().defaultBlockState()),
                 OreConfiguration.target(deepslateReplaceables, ModBlocks.GLACITE_ORE.get().defaultBlockState()));
         context.register(GLACITE_ORE, new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(glaciteTargets, 8)));
+
+        context.register(HAMLET, new ConfiguredFeature<>(
+                za.co.neroland.nerospace.registry.ModFeatures.HAMLET.get(),
+                net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration.INSTANCE));
+
+        context.register(RUIN, new ConfiguredFeature<>(
+                za.co.neroland.nerospace.registry.ModFeatures.RUIN.get(),
+                net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration.INSTANCE));
+
+        context.register(MEGA_CITY, new ConfiguredFeature<>(
+                za.co.neroland.nerospace.registry.ModFeatures.MEGA_CITY.get(),
+                net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration.INSTANCE));
     }
 
     private static ResourceKey<ConfiguredFeature<?, ?>> registerKey(String name) {
