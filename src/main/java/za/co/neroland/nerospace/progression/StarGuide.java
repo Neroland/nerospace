@@ -82,6 +82,11 @@ public final class StarGuide {
                     step("rocket_tier_4", () -> ModItems.ROCKET_TIER_4.get(), "guide/rocket_tier_4"),
                     step("glacira", () -> ModItems.GLACITE.get(), "glacira"),
                     step("glacite", () -> ModBlocks.GLACITE_BLOCK.get(), "guide/glacite"))),
+            new Chapter("mining", List.of(
+                    step("quarry_landmark", () -> ModBlocks.QUARRY_LANDMARK.get(), "guide/quarry_landmark"),
+                    step("frame_casing", () -> ModItems.FRAME_CASING.get(), "guide/frame_casing"),
+                    step("quarry_controller", () -> ModBlocks.QUARRY_CONTROLLER.get(), "guide/quarry_controller"),
+                    step("upgrade_module", () -> ModItems.SPEED_MODULE.get(), "guide/upgrade_module"))),
             new Chapter("vacuum", List.of(
                     step("oxygen_generator", () -> ModBlocks.OXYGEN_GENERATOR.get(), "guide/oxygen_generator"),
                     step("gas_tank", () -> ModBlocks.GAS_TANK.get(), "guide/gas_tank"),

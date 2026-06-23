@@ -30,6 +30,20 @@ public class ModRecipeProvider extends RecipeProvider {
         super(registries, output);
     }
 
+    /** A cross-machine upgrade module: a nerosteel/redstone frame around a signature centre item. */
+    private void moduleRecipe(net.minecraft.world.item.Item result, net.minecraft.world.item.Item signature) {
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, result)
+                .pattern(" N ")
+                .pattern("RSR")
+                .pattern(" N ")
+                .define('N', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('R', Items.REDSTONE)
+                .define('S', signature)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+    }
+
     @Override
     protected void buildRecipes() {
         // --- Smelting & blasting: raw nerosium -> ingot ---------------------
@@ -135,6 +149,59 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('F', Items.FURNACE)
                 .define('C', Tags.Items.COBBLESTONES)
                 .unlockedBy("has_nerosium_ingot", this.has(ModItems.NEROSIUM_INGOT))
+                .save(this.output);
+
+        // --- Quarry / Miner (MINER_DESIGN) ---------------------------------
+        // Frame casing: a hollow ring of nerosteel (4 per craft).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModItems.FRAME_CASING.get(), 4)
+                .pattern("III")
+                .pattern("I I")
+                .pattern("III")
+                .define('I', ModTags.Items.INGOTS_NEROSTEEL)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Quarry Controller (Tier 1).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.QUARRY_CONTROLLER.get())
+                .pattern("IDI")
+                .pattern("FRF")
+                .pattern("III")
+                .define('I', ModTags.Items.INGOTS_NEROSTEEL)
+                .define('D', Tags.Items.GEMS_DIAMOND)
+                .define('F', ModItems.FRAME_CASING.get())
+                .define('R', Items.REDSTONE_BLOCK)
+                .unlockedBy("has_frame_casing", this.has(ModItems.FRAME_CASING.get()))
+                .save(this.output);
+
+        // Quarry Landmark (3 per craft).
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.QUARRY_LANDMARK.get(), 3)
+                .pattern("R")
+                .pattern("G")
+                .pattern("I")
+                .define('R', Items.REDSTONE)
+                .define('G', Tags.Items.GLASS_BLOCKS)
+                .define('I', ModTags.Items.INGOTS_NEROSTEEL)
+                .unlockedBy("has_nerosteel_ingot", this.has(ModItems.NEROSTEEL_INGOT))
+                .save(this.output);
+
+        // Cross-machine upgrade modules (same frame, signature centre item).
+        moduleRecipe(ModItems.SPEED_MODULE.get(), Items.SUGAR);
+        moduleRecipe(ModItems.EFFICIENCY_MODULE.get(), Items.LAPIS_LAZULI);
+        moduleRecipe(ModItems.FORTUNE_MODULE.get(), Items.DIAMOND);
+        moduleRecipe(ModItems.SILK_TOUCH_MODULE.get(), Items.AMETHYST_SHARD);
+
+        // Trash Can: an iron bin around a cactus core.
+        ShapedRecipeBuilder.shaped(this.registries.lookupOrThrow(Registries.ITEM),
+                        RecipeCategory.MISC, ModBlocks.TRASH_CAN.get())
+                .pattern("III")
+                .pattern("ICI")
+                .pattern("III")
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('C', Items.CACTUS)
+                .unlockedBy("has_iron_ingot", this.has(Items.IRON_INGOT))
                 .save(this.output);
 
         // Dust smelts/blasts back into an ingot (closes the processing loop).

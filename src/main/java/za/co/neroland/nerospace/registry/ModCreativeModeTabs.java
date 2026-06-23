@@ -72,6 +72,16 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.COMBUSTION_GENERATOR.get());
                         output.accept(ModBlocks.PASSIVE_GENERATOR.get());
                         output.accept(ModBlocks.UNIVERSAL_PIPE.get());
+
+                        // Quarry / Miner (MINER_DESIGN).
+                        output.accept(ModBlocks.QUARRY_CONTROLLER.get());
+                        output.accept(ModBlocks.QUARRY_LANDMARK.get());
+                        output.accept(ModItems.FRAME_CASING.get());
+                        output.accept(ModItems.SPEED_MODULE.get());
+                        output.accept(ModItems.EFFICIENCY_MODULE.get());
+                        output.accept(ModItems.FORTUNE_MODULE.get());
+                        output.accept(ModItems.SILK_TOUCH_MODULE.get());
+
                         output.accept(ModItems.CONFIGURATOR.get());
                         output.accept(ModItems.PIPE_FILTER.get());
                         output.accept(ModItems.SPEED_UPGRADE.get());
@@ -86,6 +96,7 @@ public final class ModCreativeModeTabs {
                         output.accept(ModBlocks.CREATIVE_FLUID_TANK.get());
                         output.accept(ModBlocks.CREATIVE_GAS_TANK.get());
                         output.accept(ModBlocks.CREATIVE_ITEM_STORE.get());
+                        output.accept(ModBlocks.TRASH_CAN.get());
                         output.accept(ModItems.OXYGEN_SUIT_HELMET.get());
                         output.accept(ModItems.OXYGEN_SUIT_CHESTPLATE.get());
                         output.accept(ModItems.OXYGEN_SUIT_LEGGINGS.get());

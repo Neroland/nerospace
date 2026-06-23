@@ -4,6 +4,7 @@
 - [Star Guide](Star-Guide)
 
 **Blocks — Ores**
+
 - [Nerosium Ore](Nerosium-Ore)
 - [Deepslate Nerosium Ore](Deepslate-Nerosium-Ore)
 - [Nerosteel Ore](Nerosteel-Ore)
@@ -12,6 +13,7 @@
 - [Glacite Ore](Glacite-Ore)
 
 **Blocks — Material Storage**
+
 - [Block of Nerosium](Block-of-Nerosium)
 - [Block of Raw Nerosium](Block-of-Raw-Nerosium)
 - [Block of Nerosteel](Block-of-Nerosteel)
@@ -19,6 +21,7 @@
 - [Block of Glacite](Block-of-Glacite)
 
 **Blocks — Machines**
+
 - [Nerosium Grinder](Nerosium-Grinder)
 - [Oxygen Generator](Oxygen-Generator)
 - [Fuel Tank](Fuel-Tank)
@@ -27,7 +30,14 @@
 - [Hydration Module](Hydration-Module)
 - [Terraform Monitor](Terraform-Monitor)
 
+**Mining**
+
+- [Quarry Controller](Quarry-Controller)
+- [Quarry Landmark](Quarry-Landmark)
+- [Upgrade Modules](Upgrade-Modules)
+
 **Logistics**
+
 - [Universal Pipe](Universal-Pipe)
 - [Configurator](Configurator)
 - [Pipe Filters and Upgrades](Pipe-Filters-and-Upgrades)
@@ -37,9 +47,11 @@
 - [Fluid Tank](Fluid-Tank)
 - [Gas Tank](Gas-Tank)
 - [Item Store](Item-Store)
+- [Trash Can](Trash-Can)
 - [Creative Source Blocks](Creative-Source-Blocks)
 
 **Blocks — Structures**
+
 - [Rocket Launch Pad](Rocket-Launch-Pad)
 - [Launch Gantry](Launch-Gantry)
 - [Station Floor](Station-Floor)
@@ -47,6 +59,7 @@
 - [Station Core](Station-Core)
 
 **More**
+
 - [Items](Items)
 - [Oxygen Suit](Oxygen-Suit)
 - [Station Charter](Station-Charter)

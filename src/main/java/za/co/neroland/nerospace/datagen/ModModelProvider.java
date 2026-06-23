@@ -91,6 +91,14 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.STATION_FLOOR.get());
         blockModels.createTrivialCube(ModBlocks.STATION_WALL.get());
 
+        // Quarry / Miner (MINER_DESIGN): controller + landmark cubes; the frame is a real 3-D open
+        // structural frame (four corner posts + edge rails, see-through centre — BuildCraft-style),
+        // built from the same beam recipe as the tanks. Emissive via the bright strut texture + the
+        // block's light level; .noOcclusion() (ModBlocks) stops the open gaps culling the world behind.
+        blockModels.createTrivialCube(ModBlocks.QUARRY_CONTROLLER.get());
+        blockModels.createTrivialCube(ModBlocks.QUARRY_LANDMARK.get());
+        registerQuarryFrame(blockModels);
+
         // Developer diagnostics — Sentry test block (hidden; /give only).
         blockModels.createTrivialCube(ModBlocks.SENTRY_TEST.get());
 
@@ -143,6 +151,13 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.PIPE_FILTER.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.SPEED_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CAPACITY_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
+
+        // Quarry / Miner — frame casing + cross-machine upgrade module cards.
+        itemModels.generateFlatItem(ModItems.FRAME_CASING.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.SPEED_MODULE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.EFFICIENCY_MODULE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.FORTUNE_MODULE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.SILK_TOUCH_MODULE.get(), ModelTemplates.FLAT_ITEM);
 
         // Phase 8d — oxygen suit (inventory item models; the worn layer is the equipment asset).
         itemModels.generateFlatItem(ModItems.OXYGEN_SUIT_HELMET.get(), ModelTemplates.FLAT_ITEM);
@@ -323,6 +338,8 @@ public class ModModelProvider extends ModelProvider {
                 .build(), machineMapping(ModBlocks.ITEM_STORE.get(), true, true), true);
         // Creative Item Store keeps the plain cube (no drawer — it conjures items, not stores them).
         blockModels.createTrivialCube(ModBlocks.CREATIVE_ITEM_STORE.get());
+        // Trash Can — plain textured cube.
+        blockModels.createTrivialCube(ModBlocks.TRASH_CAN.get());
 
         // Tanks: a corner-beam frame around a visible content core (real depth, no cutout needed).
         registerTank(blockModels, ModBlocks.FLUID_TANK.get());
@@ -359,6 +376,39 @@ public class ModModelProvider extends ModelProvider {
                         .allFaces((dir, face) -> face.texture(TextureSlot.ALL)))
                 .build();
         shapedBlock(blockModels, ModBlocks.STAR_GUIDE.get(), starTemplate, starMapping, false);
+    }
+
+    /**
+     * The quarry frame: a 3-D OPEN structural frame — four 2px corner posts + top/bottom edge rails,
+     * with a see-through centre (no content core, unlike {@link #registerTank}). Reuses the tank's
+     * beam layout so the gantry reads as a matching machine. The block's own {@code quarry_frame}
+     * texture skins every strut.
+     */
+    private void registerQuarryFrame(BlockModelGenerators blockModels) {
+        Block block = ModBlocks.QUARRY_FRAME.get();
+        var beam = TextureMapping.getBlockTexture(block);
+        TextureMapping mapping = new TextureMapping()
+                .put(TextureSlot.SIDE, beam)
+                .put(TextureSlot.PARTICLE, beam);
+        ExtendedModelTemplateBuilder builder = ExtendedModelTemplateBuilder.builder()
+                .requiredTextureSlot(TextureSlot.SIDE)
+                .requiredTextureSlot(TextureSlot.PARTICLE)
+                .ambientOcclusion(false); // emissive struts read flat, no AO darkening at the joints
+        // four vertical corner posts
+        for (int[] c : new int[][] {{0, 0}, {14, 0}, {0, 14}, {14, 14}}) {
+            int x = c[0];
+            int z = c[1];
+            builder.element(e -> { e.from(x, 0, z).to(x + 2, 16, z + 2); faces(e, TextureSlot.SIDE, null); });
+        }
+        // horizontal rails, bottom + top, both axes (the centre stays open)
+        for (int y : new int[] {0, 14}) {
+            int yy = y;
+            builder.element(e -> { e.from(2, yy, 0).to(14, yy + 2, 2); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(2, yy, 14).to(14, yy + 2, 16); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(0, yy, 2).to(2, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
+            builder.element(e -> { e.from(14, yy, 2).to(16, yy + 2, 14); faces(e, TextureSlot.SIDE, null); });
+        }
+        shapedBlock(blockModels, block, builder.build(), mapping, false);
     }
 
     /** A tank: 12 frame beams (the block's own texture) around a {@code <name>_core} content core. */

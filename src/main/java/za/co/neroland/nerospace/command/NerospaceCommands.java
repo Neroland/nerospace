@@ -40,6 +40,8 @@ import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
 import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
 import za.co.neroland.nerospace.machine.HydrationModuleBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
+import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
+import za.co.neroland.nerospace.machine.quarry.QuarryRegion;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
@@ -327,6 +329,27 @@ public final class NerospaceCommands {
             spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz + 1), true);
         }
 
+        // QUARRY (MINER_DESIGN): two NE displays.
+        //  1. Landmark-only — three landmarks in an L (shows the projected marker lasers).
+        //  2. Fully operating — a powered quarry mid-dig: frame ring, drill head, a real pit forming.
+        BlockState landmark = ModBlocks.QUARRY_LANDMARK.get().defaultBlockState();
+        int lx = origin.getX() + 28; // landmark-only display (NE, nearer the centre)
+        int lz = origin.getZ() - 40;
+        for (int dx = -1; dx <= 7; dx++) {
+            for (int dz = -1; dz <= 7; dz++) {
+                level.setBlockAndUpdate(new BlockPos(lx + dx, fy, lz + dz), floor);
+            }
+        }
+        level.setBlockAndUpdate(new BlockPos(lx, fy + 1, lz), landmark);
+        level.setBlockAndUpdate(new BlockPos(lx + 6, fy + 1, lz), landmark);
+        level.setBlockAndUpdate(new BlockPos(lx, fy + 1, lz + 6), landmark);
+
+        // Operating quarries: staged straight into a deep mid-dig so the frame, gantry, drill head and
+        // interior-only excavation all read at a glance. Two sizes — a standard 9x9 and a big 17x17 to
+        // stress-test rendering + mining over a large area.
+        buildGalleryQuarry(level, floor, origin.getX() + 42, origin.getZ() - 40, fy, 8, 8);
+        buildGalleryQuarry(level, floor, origin.getX() + 64, origin.getZ() - 56, fy, 16, 12);
+
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
                 + blocks.size() + " blocks, 4 RUNNING machine clusters (grinder line, fuel refinery "
                 + "line, oxygen generator + lever, terraformer crew + lever — flip a lever to start "
@@ -395,6 +418,49 @@ public final class NerospaceCommands {
         source.sendSuccess(() -> Component.literal("Cleared the Nerospace gallery: " + clearedBlocks
                 + " blocks → air, " + removedEntities + " entities removed."), false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    /**
+     * Build one staged, fully-powered gallery quarry: a {@code (side+1) x (side+1)} region with its
+     * frame ring, a west-side creative battery + pipe feed, an interior-only pre-carved pit
+     * {@code pitDepth} deep (the columns under the frame stay, matching real mining), dropped straight
+     * into MINING so the gantry + drill animate immediately.
+     */
+    private static void buildGalleryQuarry(ServerLevel level, BlockState floor, int qx, int qz, int fy,
+            int side, int pitDepth) {
+        int refY = fy + 1;
+        int mid = side / 2;
+        for (int dx = -5; dx <= side; dx++) {   // ground: power pad (west) + under the region
+            for (int dz = -1; dz <= side; dz++) {
+                level.setBlockAndUpdate(new BlockPos(qx + dx, fy, qz + dz), floor);
+            }
+        }
+        QuarryRegion region = new QuarryRegion(qx, qz, qx + side, qz + side, refY);
+        BlockState frameBlock = ModBlocks.QUARRY_FRAME.get().defaultBlockState();
+        for (BlockPos fp : region.framePositions()) {
+            level.setBlockAndUpdate(fp, frameBlock);
+        }
+        // Pre-carve a starter pit — INTERIOR only, leaving the columns under the frame intact.
+        for (int x = qx + 1; x <= qx + side - 1; x++) {
+            for (int z = qz + 1; z <= qz + side - 1; z++) {
+                for (int y = refY - 1; y >= refY - pitDepth; y--) {
+                    level.setBlockAndUpdate(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        BlockPos quarryPos = new BlockPos(qx - 2, refY, qz + mid);
+        level.setBlockAndUpdate(new BlockPos(qx - 4, refY, qz + mid),
+                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(qx - 3, refY, qz + mid),
+                ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(quarryPos, ModBlocks.QUARRY_CONTROLLER.get().defaultBlockState());
+        setAllModes(level, new BlockPos(qx - 3, refY, qz + mid), Direction.WEST, PipeIoMode.IN);
+        setAllModes(level, new BlockPos(qx - 3, refY, qz + mid), Direction.EAST, PipeIoMode.OUT);
+        if (level.getBlockEntity(quarryPos) instanceof QuarryControllerBlockEntity quarry) {
+            quarry.setItem(QuarryControllerBlockEntity.FRAME_SLOT,
+                    new ItemStack(ModItems.FRAME_CASING.get(), 64));
+            quarry.stageDisplay(region, refY - pitDepth);
+        }
     }
 
     /** A full {@code size x size} square of launch pads with min-corner {@code corner}. */

@@ -4,6 +4,7 @@ The end-game machine: slowly converts a dead planet into livable, breathable, **
 three visible stages.
 
 ## Overview
+
 Place a Terraformer on a barren world, power it, and it advances an **ever-expanding circular frontier**
 outward from itself. With deeper terraforming the machine runs **three frontiers**, each trailing the
 last, so a long-running world is always a gradient — raw chemistry at the edge, a living ecosystem at
@@ -16,15 +17,19 @@ the centre:
 | 3 | **Living** | the biome settles into a natural **per-planet palette** (meadow / savanna / tundra) with grown trees, **rain or snow**, and starter herds of the planet's [livestock](Creatures) |
 
 ## Obtaining
+
 **Craft** (shaped):
-```
+
+```text
 N D N
 D O D
 N B N
 ```
+
 `N` = Nerosteel Ingot · `D` = Dirt · `O` = [Oxygen Generator](Oxygen-Generator) · `B` = Block of Nerosteel
 
 ## How it works
+
 - **Grid power:** runs exclusively on piped energy — connect a Universal Pipe carrying FE. Its
   100,000 FE buffer drains as it works (higher tiers / more power = faster).
 - **Expanding frontiers:** each work cycle it converts a ring of surface columns per stage, then grows
@@ -50,6 +55,7 @@ N B N
   new stages simply sweep over it once you build the new blocks. No migration.
 
 ## Details
+
 - ID: `nerospace:terraformer` · Tool: pickaxe, iron tier · Drops: itself
 - Companions: [Hydration Module](Hydration-Module) (glacite intake, must touch),
   [Terraform Monitor](Terraform-Monitor) (stage readout + comparator)

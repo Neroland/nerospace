@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/frame_casing",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:quarry_landmark"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft Quarry Landmarks to mark out a rectangular mining region",
+    "icon": {
+      "id": "nerospace:quarry_landmark"
+    },
+    "title": "Stake a Claim"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

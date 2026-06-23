@@ -311,6 +311,49 @@ public final class ModBlocks {
                     .sound(SoundType.METAL)
                     .noOcclusion()); // pedestal-screen model (art overhaul §3)
 
+    // --- Quarry / Miner (MINER_DESIGN) --------------------------------------
+
+    /**
+     * Quarry Controller (Tier 1): the brain of the miner. Marks out a region with landmarks, builds a
+     * frame and excavates it layer-by-layer. Backed by
+     * {@link za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity}.
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.machine.quarry.QuarryControllerBlock> QUARRY_CONTROLLER =
+            BLOCKS.registerBlock("quarry_controller",
+                    za.co.neroland.nerospace.machine.quarry.QuarryControllerBlock::new,
+                    props -> props
+                            .mapColor(MapColor.METAL)
+                            .strength(3.5F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .sound(SoundType.METAL)
+                            .noOcclusion());
+
+    /** Quarry Landmark: a corner marker; three forming an L define the region to mine. */
+    public static final DeferredBlock<za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlock> QUARRY_LANDMARK =
+            BLOCKS.registerBlock("quarry_landmark",
+                    za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlock::new,
+                    props -> props
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .strength(0.8F, 1.0F)
+                            .sound(SoundType.METAL)
+                            .noOcclusion());
+
+    /**
+     * Quarry Frame: the glowing structural ring the controller materialises around its region.
+     * Machine-placed only (no block item), drops nothing ({@code noLootTable}); broken when the
+     * controller is removed.
+     */
+    public static final DeferredBlock<za.co.neroland.nerospace.machine.quarry.QuarryFrameBlock> QUARRY_FRAME =
+            BLOCKS.registerBlock("quarry_frame",
+                    za.co.neroland.nerospace.machine.quarry.QuarryFrameBlock::new,
+                    props -> props
+                            .mapColor(MapColor.COLOR_CYAN)
+                            .strength(1.0F, 1.0F)
+                            .sound(SoundType.METAL)
+                            .lightLevel(state -> 10)
+                            .noOcclusion()
+                            .noLootTable());
+
     // --- Power grid (Universal Pipe + generators) ---------------------------
 
     /** The Universal Pipe: a connection-aware transmitter that moves energy (and later items/fluids/gas). */
@@ -389,6 +432,12 @@ public final class ModBlocks {
             BLOCKS.registerBlock("creative_item_store", za.co.neroland.nerospace.storage.CreativeItemStoreBlock::new,
                     props -> props.mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
                             .sound(SoundType.METAL));
+
+    /** Trash Can: voids any item / fluid / gas piped into it. */
+    public static final DeferredBlock<za.co.neroland.nerospace.storage.TrashCanBlock> TRASH_CAN =
+            BLOCKS.registerBlock("trash_can", za.co.neroland.nerospace.storage.TrashCanBlock::new,
+                    props -> props.mapColor(MapColor.COLOR_GRAY).strength(2.0F, 6.0F)
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion());
 
     // --- Star Guide (progression block, 1.0) ---------------------------------
 

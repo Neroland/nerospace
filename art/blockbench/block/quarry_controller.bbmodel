@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "quarry_controller",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "quarry_controller",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "404f1f9b-bf26-4498-9eb3-52ae8cf5d4d8"
+    }
+  ],
+  "outliner": [
+    "404f1f9b-bf26-4498-9eb3-52ae8cf5d4d8"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\Github\\nerospace\\src\\main\\resources\\assets\\nerospace\\textures\\block\\quarry_controller.png",
+      "name": "quarry_controller.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "1f2fa489-a44b-4912-9ee3-3f4b16597f33",
+      "relative_path": "../../../src/main/resources/assets/nerospace/textures/block/quarry_controller.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABlklEQVR4nKWSMWsbMRiGHxtDixFClMNoOI4OIhwdj5KpU+fOHTqUDP0BnUsGT5kzhwwmdCodTIf8gkymePBkioZy3CCOIxyH8FRwBldKD9M4kHcRkj7pe99HGszmqy1P0Ajg4nyKTg12vWSiM2pXYvKCrm2oXclEZ0iV0LUNUiW4yuJ9x23jGALo1JBOzzB5wca3e4drV+IqS+1KAF5ffkMICcBgNl9tf3z/CoBdL3v2TF7gKrtneywUG99S/v61iwDEwtvGxcLFzTVWJxjXxLXs5RFSJXE+BOja+4LHKMSLF0iVoFODyYuDh8dCUbsyMhgBPfqHtPEtQki87+4vCNQnOmMx+tM78OzjDHt1EufvhEKqJALfc2CaPg97ddKH+PwFUiWYvGBxc71jEPKE8SEF6wH8MCxKlcTNhxRAh6eM/yAwCC687zB5wdvKcvzmmBD13+8cHUx0xqvzi9hlLBRCSLq2QacmNhBCUruSdHoW3Q5h9zQ/P73vxRj/pe0qi10ve3vV9EtsNpjNV9vTzx8OZv+f7gBTd8GK7JAejwAAAABJRU5ErkJggg=="
+    }
+  ]
+}

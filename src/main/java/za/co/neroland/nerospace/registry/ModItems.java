@@ -334,6 +334,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> TERRAFORM_MONITOR_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.TERRAFORM_MONITOR);
 
+    // Quarry / Miner block items (the frame has no item — machine-placed only).
+    public static final DeferredItem<BlockItem> QUARRY_CONTROLLER_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.QUARRY_CONTROLLER);
+    public static final DeferredItem<BlockItem> QUARRY_LANDMARK_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.QUARRY_LANDMARK);
+
     // Power grid block items.
     public static final DeferredItem<BlockItem> UNIVERSAL_PIPE_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.UNIVERSAL_PIPE);
@@ -359,6 +365,27 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem(ModBlocks.ITEM_STORE);
     public static final DeferredItem<BlockItem> CREATIVE_ITEM_STORE_ITEM =
             ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_ITEM_STORE);
+    public static final DeferredItem<BlockItem> TRASH_CAN_ITEM =
+            ITEMS.registerSimpleBlockItem(ModBlocks.TRASH_CAN);
+
+    // --- Quarry / Miner (MINER_DESIGN) --------------------------------------
+
+    /** Frame Casing: consumed by the quarry to materialise its frame ring (one per open cell). */
+    public static final DeferredItem<Item> FRAME_CASING = ITEMS.registerSimpleItem("frame_casing");
+
+    // Cross-machine upgrade module cards (module package). Each fixes its ModuleType.
+    public static final DeferredItem<Item> SPEED_MODULE = ITEMS.registerItem("speed_module",
+            props -> new za.co.neroland.nerospace.module.UpgradeModuleItem(props,
+                    za.co.neroland.nerospace.module.ModuleType.SPEED));
+    public static final DeferredItem<Item> EFFICIENCY_MODULE = ITEMS.registerItem("efficiency_module",
+            props -> new za.co.neroland.nerospace.module.UpgradeModuleItem(props,
+                    za.co.neroland.nerospace.module.ModuleType.EFFICIENCY));
+    public static final DeferredItem<Item> FORTUNE_MODULE = ITEMS.registerItem("fortune_module",
+            props -> new za.co.neroland.nerospace.module.UpgradeModuleItem(props,
+                    za.co.neroland.nerospace.module.ModuleType.FORTUNE));
+    public static final DeferredItem<Item> SILK_TOUCH_MODULE = ITEMS.registerItem("silk_touch_module",
+            props -> new za.co.neroland.nerospace.module.UpgradeModuleItem(props,
+                    za.co.neroland.nerospace.module.ModuleType.SILK_TOUCH));
 
     // The Configurator — the network tool (per-face I/O modes).
     public static final DeferredItem<Item> CONFIGURATOR = ITEMS.registerItem(

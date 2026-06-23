@@ -87,6 +87,21 @@ public final class ModBlockEntities {
                             false,
                             ModBlocks.TERRAFORM_MONITOR.get()));
 
+    // Quarry / Miner (MINER_DESIGN).
+    public static final Supplier<BlockEntityType<za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity>> QUARRY_CONTROLLER =
+            BLOCK_ENTITY_TYPES.register("quarry_controller",
+                    () -> new BlockEntityType<>(
+                            za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity::new,
+                            false,
+                            ModBlocks.QUARRY_CONTROLLER.get()));
+
+    public static final Supplier<BlockEntityType<za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlockEntity>> QUARRY_LANDMARK =
+            BLOCK_ENTITY_TYPES.register("quarry_landmark",
+                    () -> new BlockEntityType<>(
+                            za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlockEntity::new,
+                            false,
+                            ModBlocks.QUARRY_LANDMARK.get()));
+
     public static final Supplier<BlockEntityType<UniversalPipeBlockEntity>> UNIVERSAL_PIPE = BLOCK_ENTITY_TYPES.register(
             "universal_pipe",
             () -> new BlockEntityType<>(
@@ -136,6 +151,11 @@ public final class ModBlockEntities {
     public static final Supplier<BlockEntityType<CreativeItemStoreBlockEntity>> CREATIVE_ITEM_STORE =
             BLOCK_ENTITY_TYPES.register("creative_item_store",
                     () -> new BlockEntityType<>(CreativeItemStoreBlockEntity::new, false, ModBlocks.CREATIVE_ITEM_STORE.get()));
+
+    public static final Supplier<BlockEntityType<za.co.neroland.nerospace.storage.TrashCanBlockEntity>> TRASH_CAN =
+            BLOCK_ENTITY_TYPES.register("trash_can",
+                    () -> new BlockEntityType<>(
+                            za.co.neroland.nerospace.storage.TrashCanBlockEntity::new, false, ModBlocks.TRASH_CAN.get()));
 
     // Station Core (MULTI_STATION_DESIGN.md).
     public static final Supplier<BlockEntityType<za.co.neroland.nerospace.rocket.StationCoreBlockEntity>> STATION_CORE =

@@ -133,6 +133,29 @@ public class ModAdvancements implements AdvancementSubProvider {
 
         item(saver, greenxertz, "guide/nerosteel_ingot", ModItems.NEROSTEEL_INGOT.get(),
                 "Alien Alloy", "Smelt a nerosteel ingot from Greenxertz ore");
+
+        // --- Mining automation (MINER_DESIGN): the quarry, gated behind nerosteel ----------------
+        AdvancementHolder frameCasing = item(saver, greenxertz, "guide/frame_casing",
+                ModItems.FRAME_CASING.get(),
+                "Frameworks", "Craft Frame Casing from nerosteel — the quarry builds its frame from these");
+        AdvancementHolder quarryLandmark = item(saver, frameCasing, "guide/quarry_landmark",
+                ModBlocks.QUARRY_LANDMARK.get(),
+                "Stake a Claim", "Craft Quarry Landmarks to mark out a rectangular mining region");
+        AdvancementHolder quarryController = item(saver, quarryLandmark, "guide/quarry_controller",
+                ModBlocks.QUARRY_CONTROLLER.get(),
+                "Strip Miner", "Build a Quarry Controller and automate your digging");
+        Advancement.Builder.advancement()
+                .parent(quarryController)
+                .display(ModItems.SPEED_MODULE.get(),
+                        Component.literal("Tune It Up"),
+                        Component.literal("Craft an upgrade module — speed, efficiency, fortune or silk touch"),
+                        null, AdvancementType.TASK, true, true, false)
+                .addCriterion("speed", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SPEED_MODULE.get()))
+                .addCriterion("efficiency", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.EFFICIENCY_MODULE.get()))
+                .addCriterion("fortune", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.FORTUNE_MODULE.get()))
+                .addCriterion("silk_touch", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SILK_TOUCH_MODULE.get()))
+                .requirements(net.minecraft.advancements.AdvancementRequirements.Strategy.OR)
+                .save(saver, "nerospace:guide/upgrade_module");
         AdvancementHolder tier3 = item(saver, greenxertz, "guide/rocket_tier_3",
                 ModItems.ROCKET_TIER_3.get(),
                 "To the Fire Moon", "Craft a Tier 3 Rocket (its pad needs a Station Wall ring)");

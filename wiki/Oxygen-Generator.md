@@ -3,21 +3,26 @@
 Keeps you alive off-world by turning grid power into Oxygen gas — and pressurising the air around it.
 
 ## Overview
+
 Every Nerospace dimension is **airless** — exposed players lose oxygen and suffocate. The Oxygen
 Generator is an **electrolysis machine**: it consumes energy from the pipe network and produces
 **Oxygen gas** into an internal tank. That tank both feeds the breathable field around the machine and
 can be **piped out** through Universal Pipes (gas layer) into Gas Tanks or other rooms.
 
 ## Obtaining
+
 **Craft** (shaped):
-```
+
+```text
 N G N
 R C R
 N N N
 ```
+
 `N` = Nerosteel Ingot · `G` = Glass · `R` = Redstone · `C` = Rocket Fuel Canister
 
 ## How it works
+
 - **Power in:** connect a Universal Pipe carrying energy (from a Combustion/Passive Generator or a
   Battery). The machine stores up to 10,000 FE and cannot burn fuel directly — it is grid-only.
 - **Oxygen out:** while powered it produces up to 5 mB of Oxygen per tick (2 FE per mB) into an
@@ -38,11 +43,13 @@ N N N
 - **Automation:** emits a **comparator signal** from its oxygen tank level.
 
 ## Tips
+
 Build an airtight room, run a power line to a generator inside it, and the room stays breathable as
 long as the grid is up. Pipe surplus oxygen into a **Gas Tank** as a buffer for power outages. A full
 **Oxygen Suit** is the portable alternative for exploring away from a generator.
 
 ## Details
+
 - ID: `nerospace:oxygen_generator` · Tool: pickaxe, iron tier · Drops: itself
 - GUI: power gauge + oxygen tank gauge with a Producing/No-power status
 - Config: `oxygenBubbleRadius`, `oxygenLeakRange`, `oxygenEvaporateSeconds`, `oxygenBreathableThreshold`, …

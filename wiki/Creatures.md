@@ -7,6 +7,7 @@ the dark.
 ## Greenxertz
 
 ### Xertz Stalker — "Crystal Hunter" (hostile)
+
 A tall, upright crystalline biped — the planet's apex predator. Uses a light-independent spawn rule, so
 it's dangerous **day and night**. Strides toward prey on two legs with down-swept blade-arms.
 
@@ -18,6 +19,7 @@ a cold cyan silhouette in the dark.
 vanilla spider sounds until bespoke audio is recorded — see "Sound notes" below.)*
 
 ### Quartz Crawler — "Geode Skitterer" (neutral)
+
 A low, domed six-legged crawler with a back crystal cluster. Skitters along the ground and leaves you
 alone unless provoked.
 
@@ -29,6 +31,7 @@ quartz.
 silverfish sounds.)*
 
 ### Greenling — "Sprout" (passive)
+
 A small, chubby grounded critter with an oversized cheeky head and a leaf crest. Harmless ambient life;
 toddles around on two stubby legs.
 
@@ -41,6 +44,7 @@ sounds for a soft, gentle voice.)*
 ## Cindara
 
 ### Cinder Stalker — "Magma Hulk" (hostile)
+
 A heavy, horned quadruped of the volcanic moon, ridged with obsidian back-plates and glowing embers.
 Fire-immune and aggressive — the main threat on Cindara.
 
@@ -54,6 +58,7 @@ sounds.)*
 ## Glacira
 
 ### Frost Strider — "Ice Stilt-Walker" (hostile)
+
 A tall, gangly predator stalking the frozen moon on four stilt legs, with a long low-slung neck and a
 row of ice-shard back spines. Freeze-immune; slightly faster but more fragile than the Cinder Stalker.
 
@@ -69,15 +74,18 @@ ecosystem of deeper terraforming. All three are peaceful, follow their breed foo
 and spawn naturally on Living ground (the [Terraformer](Terraformer) also seeds starter herds).
 
 ### Meadow Loper (Greenxertz — cow-analogue)
+
 A placid bulk grazer: a deep barrel body on sturdy legs, broad low head, small horn nubs, lazy
 swishing tail. **Breeds with wheat; drops Loper Haunch** (hearty food).
 
 ### Ember Strutter (Cindara — chicken-analogue)
+
 A skittish little ground bird with ember-orange feathers, a comb and quick two-legged strut.
 Fire-proof, like everything that survives Cindara. **Breeds with seeds; drops Strutter Drumstick**
 (food). Its ember flecks glow faintly in the dark.
 
 ### Woolly Drift (Glacira — sheep-analogue)
+
 A shaggy snowdrift of a grazer: one big rounded fleece ridged with wind-packed tufts over stubby
 legs. Cold-proof (no freeze build-up). **Breeds with wheat; drops Drift Fleece** (crafts into 4
 string).
