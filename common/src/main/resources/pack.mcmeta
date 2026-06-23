@@ -2,6 +2,7 @@
   "pack": {
     "description": "Nerospace resources and data",
     "pack_format": 84,
-    "supported_formats": [84, 107]
+    "min_format": 84,
+    "max_format": 107
   }
 }
