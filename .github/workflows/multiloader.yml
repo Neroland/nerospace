@@ -1,14 +1,15 @@
 name: Multiloader Build
 
-# Builds the multiloader (multiloader/) — MultiLoader-Template layout
-# (ModDevGradle common+neoforge, Fabric Loom fabric; no architectury-loom).
-# Independent of the root single-loader build (build.yml).
+# Builds the flattened multiloader root — MultiLoader-Template layout
+# (ModDevGradle common+neoforge, Fabric Loom fabric, ForgeGradle forge; no architectury-loom).
 #
 # STRICT: there is no continue-on-error, so ANY matrix cell that fails to build
-# fails the whole workflow. All four loader x version cells are verified buildable
-# from public artifacts (gradle MCP, 2026-06-20):
+# fails the whole workflow. All six loader x version cells are verified buildable
+# from public artifacts:
 #   - neoforge @ 26.1.2  -> NeoForge 26.1.2.76
 #   - neoforge @ 26.2    -> NeoForge 26.2.0.6-beta (now on the public NeoForged Maven)
+#   - forge    @ 26.1.2  -> Forge 26.1.2-64.0.10
+#   - forge    @ 26.2    -> Forge 26.2-65.0.0
 #   - fabric   @ 26.2    -> Fabric Loom 1.17 + fabric-api 0.152.1+26.2 (de-obf, no mappings)
 #   - fabric   @ 26.1.2  -> Fabric Loom 1.17 + fabric-api 0.151.0+26.1.2; needs the access
 #                          widener (fabric/src/main/resources/nerospace.accesswidener) because
@@ -18,7 +19,14 @@ name: Multiloader Build
 on:
   push:
     paths:
-      - "multiloader/**"
+      - "common/**"
+      - "fabric/**"
+      - "neoforge/**"
+      - "forge/**"
+      - "gradle.properties"
+      - "settings.gradle"
+      - "stonecutter.gradle"
+      - "build.gradle"
       - ".github/workflows/multiloader.yml"
   workflow_dispatch:
 
@@ -36,6 +44,10 @@ jobs:
           - loader: neoforge
             mc: "26.1.2"
           - loader: neoforge
+            mc: "26.2"
+          - loader: forge
+            mc: "26.1.2"
+          - loader: forge
             mc: "26.2"
           - loader: fabric
             mc: "26.1.2"
@@ -59,10 +71,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Make Gradle wrapper executable
-        run: chmod +x ./multiloader/gradlew
+        run: chmod +x ./gradlew
 
       - name: Build ${{ matrix.loader }} for MC ${{ matrix.mc }}
-        working-directory: multiloader
         # Stonecutter: each loader x MC version is its own node (:loader:version:build).
         # The old `-Pminecraft_version` axis is gone — the node path selects the version.
         run: >-
@@ -75,5 +86,5 @@ jobs:
         with:
           name: nerospace-${{ matrix.loader }}-${{ matrix.mc }}
           # Stonecutter node output lives under versions/<mc>/build/libs.
-          path: multiloader/${{ matrix.loader }}/versions/${{ matrix.mc }}/build/libs/*.jar
+          path: ${{ matrix.loader }}/versions/${{ matrix.mc }}/build/libs/*.jar
           if-no-files-found: ignore

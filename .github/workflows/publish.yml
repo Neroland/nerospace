@@ -1,7 +1,7 @@
 name: Publish
 
-# Builds and publishes the MULTILOADER mod (all 4 cells: fabric/neoforge x 26.1.2/26.2)
-# whenever the mod_version in multiloader/gradle.properties has no published release yet.
+# Builds and publishes the MULTILOADER mod (all 6 cells: fabric/neoforge/forge x 26.1.2/26.2)
+# whenever the mod_version in gradle.properties has no published release yet.
 # The detect job checks for the release tag (v<mod_version>) that every publish creates —
 # NOT the previous commit — so a version bumped two (or twenty) commits ago still publishes
 # on the next push, and re-running the workflow is always safe (already-released versions
@@ -15,7 +15,7 @@ on:
   push:
     branches: [main, enhancement/multi-loader-support]
     paths:
-      - multiloader/gradle.properties
+      - gradle.properties
   workflow_dispatch:
 
 # Allow the workflow to create GitHub Releases.
@@ -42,11 +42,11 @@ jobs:
         run: |
           read_version() { grep -E '^mod_version=' "$1" | head -n1 | cut -d= -f2 | tr -d '[:space:]'; }
 
-          CURRENT="$(read_version multiloader/gradle.properties)"
+          CURRENT="$(read_version gradle.properties)"
           echo "current=$CURRENT"
 
           if [ -z "$CURRENT" ]; then
-            echo "::error::Could not read mod_version from multiloader/gradle.properties"
+            echo "::error::Could not read mod_version from gradle.properties"
             exit 1
           fi
 
@@ -83,16 +83,16 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Make Gradle wrapper executable
-        run: chmod +x ./multiloader/gradlew
+        run: chmod +x ./gradlew
 
-      # Build all four multiloader cells (loader x MC version). Each produces a distinctly named
+      # Build all six cells (loader x MC version). Each produces a distinctly named
       # jar (nerospace-<loader>-<mc>-<version>.jar) under <loader>/versions/<mc>/build/libs.
-      - name: Build all multiloader cells
-        working-directory: multiloader
+      - name: Build all cells
         run: >-
           ./gradlew
           :fabric:26.1.2:build :fabric:26.2:build
           :neoforge:26.1.2:build :neoforge:26.2:build
+          :forge:26.1.2:build :forge:26.2:build
           --stacktrace
 
       # Derive the release channel from the version suffix once, for both Sentry and
@@ -172,12 +172,13 @@ jobs:
           # alpha/beta/release, derived from the version suffix (1.0.0 -> release).
           version-type: ${{ steps.channel.outputs.version_type }}
           changelog-file: RELEASE_NOTES.md
-          # All four cells' jars, one release version. mc-publish reads each jar's fabric.mod.json /
-          # neoforge.mods.toml; the loaders + game-versions below are the union it tags the version with.
-          files: multiloader/*/versions/*/build/libs/nerospace-*-!(*-sources|*-dev|*-shadow|*-javadoc).jar
+          # All six cells' jars, one release version. mc-publish reads each jar's loader manifest;
+          # the loaders + game-versions below are the union it tags the version with.
+          files: "*/versions/*/build/libs/nerospace-*-!(*-sources|*-dev|*-shadow|*-javadoc).jar"
           loaders: |
             fabric
             neoforge
+            forge
           game-versions: |
             26.1.2
             26.2

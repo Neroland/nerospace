@@ -3,14 +3,18 @@
 Nerospace dependency updater.
 
 Resolves the latest Minecraft-modding dependency versions from the public
-mavens and rewrites the version pins in this repo's gradle.properties files
+mavens and rewrites the version pins in this repo's root gradle.properties
 (and, for a new Minecraft line, the stonecutter settings + CI matrix).
+
+The multiloader build IS the repo root (post_port.md Phase 2 flattened it), so
+the pins live in the root gradle.properties / settings.gradle. The retired
+standalone build under legacy/ is frozen and intentionally NOT touched.
 
 It does TWO independent things, selected with --mode:
 
   --mode within-line   Bump the loader / API versions for the Minecraft
-                       versions ALREADY tracked (NeoForge build, NeoForm,
-                       Fabric loader + API, JEI). Safe, mergeable PRs.
+versions ALREADY tracked (NeoForge build, Forge build,
+                       NeoForm, Fabric loader + API, JEI). Safe, mergeable PRs.
 
   --mode mc-jump       Detect a NEWER Minecraft line than anything tracked
                        and, if all required deps for it are published, wire
@@ -47,6 +51,7 @@ from pathlib import Path
 # --------------------------------------------------------------------------
 NEOFORGE_META = "https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml"
 NEOFORM_META = "https://maven.neoforged.net/releases/net/neoforged/neoform/maven-metadata.xml"
+FORGE_META = "https://maven.minecraftforge.net/net/minecraftforge/forge/maven-metadata.xml"
 FABRIC_LOADER_META = "https://maven.fabricmc.net/net/fabricmc/fabric-loader/maven-metadata.xml"
 FABRIC_API_META = "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml"
 JEI_META = "https://maven.blamejared.com/mezz/jei/jei-{mc}-{loader}/maven-metadata.xml"
@@ -117,6 +122,12 @@ def latest_neoforge(versions: list[str], mc: str) -> str | None:
     return max(cands, key=num_tuple) if cands else None
 
 
+def latest_forge(versions: list[str], mc: str) -> str | None:
+    prefix = mc + "-"
+    cands = [v for v in versions if v.startswith(prefix)]
+    return max(cands, key=lambda v: num_tuple(v.replace("-", "."))) if cands else None
+
+
 def latest_neoform(versions: list[str], mc: str) -> str | None:
     # NeoForm is '<mc>-<rev>' (e.g. 26.1.2-1); fold the '-' into the number
     # tuple so the trailing revision actually participates in the ordering.
@@ -166,47 +177,40 @@ def get_property(text: str, key: str) -> str | None:
 # Modes
 # --------------------------------------------------------------------------
 def do_within_line(repo: Path, changes: list[str]) -> None:
-    """Bump in-place pins for already-tracked Minecraft versions."""
+    """Bump in-place pins for already-tracked Minecraft versions.
+
+    Operates on the flattened repo-root gradle.properties (the multiloader build
+    IS the repo root since post_port.md Phase 2). The retired standalone build
+    under legacy/ is frozen and intentionally NOT bumped.
+    """
     nf = fetch_versions(NEOFORGE_META)
     nfm = fetch_versions(NEOFORM_META)
+    fg = fetch_versions(FORGE_META)
     fl = fetch_versions(FABRIC_LOADER_META)
     fa = fetch_versions(FABRIC_API_META)
 
-    # ---- root single-loader build (legacy, but kept current) -------------
-    root_gp = repo / "gradle.properties"
-    if root_gp.exists():
-        txt = root_gp.read_text(encoding="utf-8")
-        local: list[str] = []
-        mc = get_property(txt, "minecraft_version")
-        if mc:
-            if (v := latest_neoforge(nf, mc)):
-                txt = set_property(txt, "neo_version", v, local)
-            if (v := latest_jei(mc, "neoforge")):
-                txt = set_property(txt, "jei_version", v, local)
-        if local:
-            _write(root_gp, txt)
-            changes += [f"root/gradle.properties {c}" for c in local]
-
-    # ---- multiloader (the active build) ----------------------------------
-    ml_gp = repo / "multiloader" / "gradle.properties"
-    if ml_gp.exists():
-        txt = ml_gp.read_text(encoding="utf-8")
-        local = []
-        mcs = [m.strip() for m in (get_property(txt, "mc_versions") or "").split(",") if m.strip()]
-        if (v := latest_fabric_loader(fl)):
-            txt = set_property(txt, "fabric_loader_version", v, local)
-        for mc in mcs:
-            if (v := latest_neoform(nfm, mc)):
-                txt = set_property(txt, f"neo_form_version_{mc}", v, local)
-            if (v := latest_neoforge(nf, mc)):
-                txt = set_property(txt, f"neo_version_{mc}", v, local)
-            if (v := latest_fabric_api(fa, mc)):
-                txt = set_property(txt, f"fabric_api_version_{mc}", v, local)
-            if (v := latest_jei(mc, "neoforge")):
-                txt = set_property(txt, f"jei_version_{mc}", v, local)
-        if local:
-            _write(ml_gp, txt)
-            changes += [f"multiloader/gradle.properties {c}" for c in local]
+    gp = repo / "gradle.properties"
+    if not gp.exists():
+        return
+    txt = gp.read_text(encoding="utf-8")
+    local: list[str] = []
+    mcs = [m.strip() for m in (get_property(txt, "mc_versions") or "").split(",") if m.strip()]
+    if (v := latest_fabric_loader(fl)):
+        txt = set_property(txt, "fabric_loader_version", v, local)
+    for mc in mcs:
+        if (v := latest_neoform(nfm, mc)):
+            txt = set_property(txt, f"neo_form_version_{mc}", v, local)
+        if (v := latest_neoforge(nf, mc)):
+            txt = set_property(txt, f"neo_version_{mc}", v, local)
+        if (v := latest_forge(fg, mc)):
+            txt = set_property(txt, f"forge_version_{mc}", v, local)
+        if (v := latest_fabric_api(fa, mc)):
+            txt = set_property(txt, f"fabric_api_version_{mc}", v, local)
+        if (v := latest_jei(mc, "neoforge")):
+            txt = set_property(txt, f"jei_version_{mc}", v, local)
+    if local:
+        _write(gp, txt)
+        changes += [f"gradle.properties {c}" for c in local]
 
 
 def discover_new_mc(tracked: list[str], nf: list[str]) -> str | None:
@@ -225,7 +229,7 @@ def discover_new_mc(tracked: list[str], nf: list[str]) -> str | None:
 
 def do_mc_jump(repo: Path, changes: list[str]) -> str | None:
     """Wire a new Minecraft line as a stonecutter node. Returns the MC or None."""
-    ml_gp = repo / "multiloader" / "gradle.properties"
+    ml_gp = repo / "gradle.properties"
     if not ml_gp.exists():
         return None
     txt = ml_gp.read_text(encoding="utf-8")
@@ -241,9 +245,11 @@ def do_mc_jump(repo: Path, changes: list[str]) -> str | None:
     # missing, defer the jump rather than wire a node that cannot configure.
     nfm = fetch_versions(NEOFORM_META)
     fa = fetch_versions(FABRIC_API_META)
+    fg = fetch_versions(FORGE_META)
     resolved = {
         "neo_form": latest_neoform(nfm, new_mc),
         "neo_version": latest_neoforge(nf, new_mc),
+        "forge_version": latest_forge(fg, new_mc),
         "fabric_api": latest_fabric_api(fa, new_mc),
         "jei_nf": latest_jei(new_mc, "neoforge"),
         "jei_fab": latest_jei(new_mc, "fabric"),
@@ -262,6 +268,7 @@ def do_mc_jump(repo: Path, changes: list[str]) -> str | None:
         f"(verify the JEI fabric pin matches the loader)\n"
         f"neo_form_version_{new_mc}={resolved['neo_form']}\n"
         f"neo_version_{new_mc}={resolved['neo_version']}\n"
+        f"forge_version_{new_mc}={resolved['forge_version']}\n"
         f"jei_version_{new_mc}={resolved['jei_nf']}\n"
         f"fabric_api_version_{new_mc}={resolved['fabric_api']}\n"
     )
@@ -269,21 +276,22 @@ def do_mc_jump(repo: Path, changes: list[str]) -> str | None:
         txt += "\n"
     txt += addition
     _write(ml_gp, txt)
-    changes.append(f"multiloader/gradle.properties: added Minecraft {new_mc} pins")
+    changes.append(f"gradle.properties: added Minecraft {new_mc} pins")
 
     # 2) settings.gradle: append the new version to both stonecutter branches
-    settings = repo / "multiloader" / "settings.gradle"
+    settings = repo / "settings.gradle"
     s = settings.read_text(encoding="utf-8")
     s2 = re.sub(r"versions\(([^)]*)\)",
                 lambda m: f"versions({m.group(1)}, '{new_mc}')", s)
     if s2 != s:
         _write(settings, s2)
-        changes.append(f"multiloader/settings.gradle: stonecutter node {new_mc}")
+        changes.append(f"settings.gradle: stonecutter node {new_mc}")
 
-    # 3) multiloader.yml: add neoforge + fabric matrix entries
+    # 3) multiloader.yml: add neoforge + forge + fabric matrix entries
     wf = repo / ".github" / "workflows" / "multiloader.yml"
     w = wf.read_text(encoding="utf-8")
     entries = (f'          - loader: neoforge\n            mc: "{new_mc}"\n'
+               f'          - loader: forge\n            mc: "{new_mc}"\n'
                f'          - loader: fabric\n            mc: "{new_mc}"\n')
     w2 = re.sub(r"(include:\n)", lambda m: m.group(1) + entries, w, count=1)
     if w2 != w:
@@ -356,13 +364,13 @@ def main() -> int:
     # Stonecutter build tasks for every tracked cell, so the workflow can
     # validate exactly what exists (PRs opened by GITHUB_TOKEN don't trigger
     # multiloader.yml, so this run must do its own build check).
-    ml_gp = repo / "multiloader" / "gradle.properties"
+    ml_gp = repo / "gradle.properties"
     build_tasks = ""
     if ml_gp.exists():
         mcs = [m.strip() for m in
                (get_property(ml_gp.read_text(encoding="utf-8"), "mc_versions") or "").split(",")
                if m.strip()]
-        tasks = [f":{loader}:{mc}:build" for mc in mcs for loader in ("neoforge", "fabric")]
+        tasks = [f":{loader}:{mc}:build" for mc in mcs for loader in ("neoforge", "forge", "fabric")]
         build_tasks = " ".join(tasks)
 
     gh_out = os.environ.get("GITHUB_OUTPUT")

@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#c:is_overworld",
+  "features": "nerospace:nerosium_ore_placed",
+  "step": "underground_ores"
+}

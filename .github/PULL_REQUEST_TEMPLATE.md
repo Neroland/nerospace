@@ -21,7 +21,7 @@
 
 ## Checklist
 
-- [ ] `./gradlew runData` (if datagen changed) and `./gradlew build` both pass (`BUILD SUCCESSFUL`).
+- [ ] All six loader cells pass (`:neoforge:26.1.2:build`, `:neoforge:26.2:build`, `:forge:26.1.2:build`, `:forge:26.2:build`, `:fabric:26.1.2:build`, `:fabric:26.2:build`) with `BUILD SUCCESSFUL`.
 - [ ] New blocks/items have models + textures (or are intentionally placeholder).
 - [ ] No new compiler warnings.
 - [ ] I understand the project is **All Rights Reserved** and have the right to contribute this code.

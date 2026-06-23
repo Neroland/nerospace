@@ -49,7 +49,7 @@ retention period (90 days) before automatic deletion.
 
 If you believe a report contains personal data, or wish to exercise any data-subject
 right (access, deletion, objection), contact:
-**[dario@neroland.co.za](mailto:dario@neroland.co.za)**. Include the
+**[info@neroland.co.za](mailto:info@neroland.co.za)**. Include the
 approximate date/time of the crash so the matching event can be located and removed.
 
 Sentry acts as a data processor; see the

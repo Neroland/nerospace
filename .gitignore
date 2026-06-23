@@ -50,5 +50,6 @@ repo/
 PROJECT_PLAN.md
 /tools/__pycache__
 runs/
-/multiloader/fabric/runs
+/fabric/runs
 /.github/scripts/__pycache__
+/tools/gradle-mcp/node_modules

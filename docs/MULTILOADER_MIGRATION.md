@@ -1,12 +1,21 @@
 # Nerospace multiloader — migration status & remaining-work plan
 
 Companion to `MULTILOADER.md` (which holds the architecture decision and toolchain
-field notes). This file tracks **what content has been ported into `multiloader/common`
+field notes). This file tracks **what content has been ported into `common`
 and how the remaining systems should be ported**, based on the concrete NeoForge ↔ Fabric
 API divergences found during the port.
 
-Last updated: 2026-06-20. Verified build targets: all four cells — **NeoForge @ 26.1.2 / 26.2**
-and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after every batch.
+> **Layout note (post-flatten).** Paths below are historical: the multiloader was
+> flattened onto the repo root (`post_port.md` Phase 2), so `multiloader/common` is
+> now just `common/` and resources are hand-authored there (no datagen). See
+> `post_port.md`.
+
+> **Current matrix note (2026-06-23).** The live repo-root build now supports six cells by adding
+> MinecraftForge/Forge (`:forge:26.1.2`, `:forge:26.2`) alongside NeoForge and Fabric. The dated
+> "all 4 cells green" entries below are the original NeoForge/Fabric migration log.
+
+Last updated for the original migration log: 2026-06-20. Its verified build targets were the four
+NeoForge/Fabric cells; current six-cell status lives in `docs/MULTILOADER_BUILD.md`.
 
 > **2026-06-20 (later still): ROCKETS (core) ported** — all 4 cells green. The rideable
 > `RocketEntity` (tiers, fuelling, destination selection, simulated ascent → vanilla teleport), the
@@ -112,7 +121,7 @@ and **Fabric @ 26.1.2 / 26.2** — `BUILD SUCCESSFUL` via the gradle MCP after e
 
 ## 1. What is ported
 
-All of the following lives once in `multiloader/common` and drives both loaders through the
+All of the following lives once in `common` and drives both loaders through the
 `RegistrationProvider` seam (`common/registry/RegistrationProvider.java`) + the per-loader
 `RegistrationFactory` services. Creative-tab placement is defined once in
 `ModItems.creativeTabItems()` and applied by each loader entry point.
@@ -132,7 +141,7 @@ All of the following lives once in `multiloader/common` and drives both loaders 
 datagen has already emitted every asset/loot/recipe/tag/lang JSON under
 `src/generated/resources`. Migration = (a) write the registration in `common` via
 `RegistrationProvider`, (b) copy the matching generated JSON + the committed textures into
-`multiloader/common/src/main/resources`, (c) build both loaders. No multiloader datagen is
+`common/src/main/resources`, (c) build both loaders. No multiloader datagen is
 needed yet — the root is the source of truth for the JSON.
 
 ---

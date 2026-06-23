@@ -5,12 +5,12 @@ Two complementary robots keep dependencies current:
 | Robot | Config | Covers | Notes |
 | --- | --- | --- | --- |
 | **Dependabot** | `.github/dependabot.yml` | GitHub Actions versions; any deps declared as literal coordinates in `build.gradle` | **Cannot** see the loader/MC pins — they live as variables in `gradle.properties`, which Dependabot's Gradle ecosystem does not parse. |
-| **auto-deps** | `.github/workflows/auto-deps.yml` + `.github/scripts/update_deps.py` | NeoForge, NeoForm, Fabric loader + API, JEI — the `gradle.properties` version variables, plus a coordinated Minecraft-line jump | Fills exactly the gap Dependabot leaves. |
+| **auto-deps** | `.github/workflows/auto-deps.yml` + `.github/scripts/update_deps.py` | NeoForge, Forge, NeoForm, Fabric loader + API, JEI — the `gradle.properties` version variables, plus a coordinated Minecraft-line jump | Fills exactly the gap Dependabot leaves. |
 
 ## What auto-deps does
 
 Runs daily (06:00 UTC / 08:00 SAST) and on manual dispatch. It reads the public
-mavens (`maven.neoforged.net`, `maven.fabricmc.net`, `maven.blamejared.com`),
+mavens (`maven.neoforged.net`, `maven.minecraftforge.net`, `maven.fabricmc.net`, `maven.blamejared.com`),
 resolves the newest matching versions, and opens **two independent PRs** against
 `main`:
 
