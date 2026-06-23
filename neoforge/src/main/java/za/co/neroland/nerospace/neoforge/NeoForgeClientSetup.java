@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.neoforge;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
@@ -14,8 +15,11 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.fluid.FluidTintSources;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -23,6 +27,7 @@ import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.ClientOxygenVisuals;
 import za.co.neroland.nerospace.client.MeteorTrackerHud;
+import za.co.neroland.nerospace.client.OxygenHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
 import za.co.neroland.nerospace.client.TrashCanScreen;
@@ -39,6 +44,7 @@ import za.co.neroland.nerospace.client.TerraformMonitorScreen;
 import za.co.neroland.nerospace.client.TerraformerScreen;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
+import za.co.neroland.nerospace.world.OxygenFieldEvents;
 
 /** NeoForge client-only wiring (screen + fluid-model registration). Loaded only behind Dist.CLIENT. */
 public final class NeoForgeClientSetup {
@@ -50,11 +56,37 @@ public final class NeoForgeClientSetup {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterScreens);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterFluidModels);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterEntityRenderers);
+        modEventBus.addListener(NeoForgeClientSetup::onRegisterGuiLayers);
+        // Suppress the vanilla air-bubble row on airless dimensions (the bespoke gauge is the readout there).
+        NeoForge.EVENT_BUS.addListener(NeoForgeClientSetup::onRenderGuiLayer);
         // Meteor Tracker readout + oxygen-field visuals — game-bus client tick (counterpart to Fabric's END_CLIENT_TICK).
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
         });
+    }
+
+    /** Register the bespoke oxygen/hazard HUD gauge on top of the vanilla HUD (shared draw in {@code common}). */
+    private static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(
+                Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_hud"),
+                (g, delta) -> OxygenHud.render(g));
+    }
+
+    /**
+     * Hide the vanilla air-bubble row on airless Nerospace dimensions — the bespoke {@link OxygenHud} is
+     * the oxygen readout there. The server still mirrors oxygen onto the air supply (that mirror IS the
+     * client sync the gauge reads); it just no longer double-renders as bubbles.
+     */
+    private static void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
+        if (!event.getName().equals(VanillaGuiLayers.AIR_LEVEL)) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null
+                && OxygenFieldEvents.FIELD_DIMENSIONS.contains(mc.player.level().dimension())) {
+            event.setCanceled(true);
+        }
     }
 
     private static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {

@@ -75,7 +75,6 @@ jobs:
         id: build
         if: steps.resolve.outputs.changed == 'true'
         continue-on-error: true
-        working-directory: multiloader
         run: |
           chmod +x ./gradlew
           ./gradlew ${{ steps.resolve.outputs.build_tasks }} --stacktrace
@@ -89,7 +88,6 @@ jobs:
           delete-branch: true
           add-paths: |
             gradle.properties
-            multiloader/gradle.properties
           commit-message: "deps: bump loader/API versions (within Minecraft line)"
           title: "deps: within-line dependency bumps"
           labels: |
@@ -136,7 +134,6 @@ jobs:
         id: build
         if: steps.resolve.outputs.changed == 'true'
         continue-on-error: true
-        working-directory: multiloader
         run: |
           chmod +x ./gradlew
           ./gradlew ${{ steps.resolve.outputs.build_tasks }} --stacktrace
@@ -149,8 +146,8 @@ jobs:
           branch: auto-deps/mc-${{ steps.resolve.outputs.new_mc }}
           delete-branch: true
           add-paths: |
-            multiloader/gradle.properties
-            multiloader/settings.gradle
+            gradle.properties
+            settings.gradle
             .github/workflows/multiloader.yml
           commit-message: "deps: wire Minecraft ${{ steps.resolve.outputs.new_mc }} stonecutter node"
           title: "deps: Minecraft ${{ steps.resolve.outputs.new_mc }} (NEW LINE — needs manual fixes)"

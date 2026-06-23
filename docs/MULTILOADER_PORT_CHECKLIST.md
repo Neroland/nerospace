@@ -1,8 +1,13 @@
 # Nerospace multiloader — port checklist
 
-Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needs ported into the
-cross-loader `multiloader/` project. As of this audit: **~218 classes ported, ~46 remaining**, all four
+Audit of what the standalone NeoForge mod (`src/main/java`, 264 classes) still needed ported into the
+cross-loader project. As of this audit: **~218 classes ported, ~46 remaining**, all four
 build cells (NeoForge + Fabric × MC 26.1.2 + 26.2) green.
+
+> **Status (post-flatten).** Historical audit: the port is now COMPLETE (signed off,
+> all four cells green) and the multiloader was flattened onto the repo root
+> (`post_port.md` Phase 2) — `multiloader/` is the repo root and `tools/` already
+> target `common/` with `--multiloader`. Kept for the per-system port record.
 
 > **2026-06-22 update — JEI compat DONE on BOTH loaders (NeoForge + Fabric recipe viewer).**
 > All 4 cells green (NeoForge + Fabric × 26.2 + 26.1.2; ecjCheck 0 errors / 21 baseline, 0 new). JEI **does**
@@ -849,7 +854,7 @@ checked by a headless build).
 ## 🛠️ Tools / sync engines  (`tools/`) — currently target the **root** mod only
 
 These are dev-time generators, not shipped code. They write to the root's `src/main/resources` paths, so
-they must be pointed at (or duplicated for) `multiloader/common/src/main/resources` to drive the
+they must be pointed at (or duplicated for) `common/src/main/resources` to drive the
 multiloader's assets instead of the current copy-from-root approach.
 
 + [ ] `model_sync.py` — **entity-model sync engine** (Blockbench `.bbmodel` ⇄ Java `LayerDefinition`,

@@ -1,11 +1,12 @@
-# Nerospace multiloader scaffold (MultiLoader-Template)
+# Nerospace cross-loader build (MultiLoader-Template, flattened to the repo root)
 
-A self-contained skeleton for building Nerospace on **both NeoForge and Fabric**
-from one shared codebase, on the **de-obfuscated Minecraft 26.x** toolchain.
+Builds Nerospace on **both NeoForge and Fabric** from one shared codebase, on the
+**de-obfuscated Minecraft 26.x** toolchain.
 
-> **Does not affect the working build.** The single-loader NeoForge mod at the
-> repo root is untouched. This is a parallel scaffold you promote to the root
-> when ready. Full migration plan: [`docs/MULTILOADER.md`](../docs/MULTILOADER.md).
+> **This build IS the repo root.** Per `post_port.md` Phase 2 the multiloader was
+> flattened onto the repo root; the retired standalone single-loader build now
+> lives under `legacy/` (frozen, not built or shipped). Full history:
+> [`docs/MULTILOADER.md`](../docs/MULTILOADER.md) and [`post_port.md`](../post_port.md).
 
 ## Status (verified 2026-06-20)
 
@@ -36,25 +37,24 @@ and `neoforge` (single copy → no drift). No Architectury API.
 ## Layout
 
 ```text
-multiloader/
-├── gradlew(.bat) + gradle/        own wrapper, Gradle 9.5.1 (Loom 1.17 needs >= 9.4)
-├── settings.gradle                plugin versions + includes common/fabric/neoforge
-├── build.gradle                   shared subproject config (Java 25, repos, token expand)
-├── gradle.properties              per-version pins (neo_form / neo_version / fabric_api)
-├── common/                        net.neoforged.moddev (NeoForm) — shared source
+<repo root>/
+├── gradlew(.bat) + gradle/        the wrapper, Gradle 9.5.1 (Loom 1.17 needs >= 9.4)
+├── settings.gradle                plugin versions + Stonecutter version tree (fabric/neoforge × 26.1.2/26.2)
+├── stonecutter.gradle             the REAL root build script (splices common source into each node)
+├── build.gradle                   inert (Stonecutter repoints buildFileName to stonecutter.gradle)
+├── gradle.properties              per-version pins (neo_form / neo_version / fabric_api / jei)
+├── common/                        net.neoforged.moddev (NeoForm) — shared source (NOT a node; spliced in)
 │   └── src/main/java/.../NerospaceCommon, platform/{Services,IPlatformHelper}, registry/
 ├── fabric/                        net.fabricmc.fabric-loom + fabric.mod.json + platform impl
-└── neoforge/                      net.neoforged.moddev + neoforge.mods.toml + platform impl
+├── neoforge/                      net.neoforged.moddev + neoforge.mods.toml + platform impl
+└── legacy/                        the retired standalone single-loader build (frozen, not shipped)
 ```
 
 ## Building
 
-It's a standalone build with its **own Gradle 9.5.1 wrapper** — run from inside
-`multiloader/` (never `../gradlew -p multiloader`, which uses the root's 9.2.1):
+Run from the **repo root** with its Gradle 9.5.1 wrapper (Loom 1.17 needs ≥ 9.4):
 
 ```bash
-cd multiloader
-
 # Stonecutter: each loader x MC version is its OWN node — the node path picks the version.
 ./gradlew :fabric:26.2:build         # Fabric on 26.2
 ./gradlew :neoforge:26.1.2:build     # NeoForge on 26.1.x
@@ -67,7 +67,7 @@ cd multiloader
 # Per-version pins still come from gradle.properties (neo_version_<mc>, fabric_api_version_<mc>, ...).
 ```
 
-Jars land in `multiloader/<loader>/versions/<mc>/build/libs/`.
+Jars land in `<loader>/versions/<mc>/build/libs/` (relative to the repo root).
 
 ## All four cells build (was: NeoForge 26.2 pending)
 
@@ -90,9 +90,10 @@ lands on Maven, it's a **one-line change** (the version pin) — no refactor.
 - **`.github/workflows/multiloader.yml`** — loader × version matrix; `fabric @ 26.2`
   is marked non-experimental (verified), the rest stay `continue-on-error` until
   their pins/artifacts are confirmed.
-- **Root `.vscode/`** — `ML: …` tasks (build/run per loader, version picker) run
-  `multiloader/gradlew`. `runClient`/`runServer` come from Fabric Loom (`:fabric`)
-  and ModDevGradle (`:neoforge`).
+- **`.vscode/`** — `ML: …` tasks (build/run/debug per loader+MC) run the repo-root
+  `./gradlew`. `runClient`/`runServer` come from Fabric Loom (`:fabric`) and
+  ModDevGradle (`:neoforge`); the `Debug: <cell>` configs attach on :5005 (NeoForge
+  via `-PnerospaceDebug`, Fabric via `--debug-jvm` — ModDevGradle ignores `--debug-jvm`).
 
 ## Scope boundary
 
@@ -103,13 +104,13 @@ migration is the real effort and is tracked in
 loader-specific behaviour goes through the `platform/Services` seam (registration
 is per-loader — there is no Architectury API `DeferredRegister` here).
 
-## Promoting to the repo root
+## Promotion to the repo root — DONE
 
-When ready to replace the single-loader build: move the existing
-`src/main/java/...` logic into `common` (loader-specific bits behind `Services`),
-move these build files to the repo root (merging the root's JEI/datagen/tooling
-config), repoint `tools/` at the module paths, and retire the root single-loader
-build. Until then the root build remains the source of truth.
+The promotion described here was carried out in `post_port.md` Phase 1–2: the
+standalone single-loader build was retired to `legacy/` (Phase 1) and the
+multiloader was flattened onto the repo root (Phase 2). `tools/` now targets
+`common/` directly. The four Stonecutter cells are the source of truth; `legacy/`
+is frozen until the port is 120% confirmed.
 
 ## Sources
 

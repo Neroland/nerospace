@@ -42,14 +42,15 @@ Hard facts gathered while trying to unblock 26.2, so the next person doesn't re-
 
 - **Build-unblock ≠ mod port.** Getting a Fabric 26.2 jar to *compile* is separate from porting Nerospace's NeoForge-specific systems (capabilities/transfer, attachments, fluids, networking) to Fabric — that migration (§2) is the real effort and is unchanged by the toolchain choice.
 
-**Status: IMPLEMENTED and verified (2026-06-20).** The `multiloader/` scaffold now
-uses the MultiLoader-Template layout (ModDevGradle `common` on NeoForm + Fabric
+**Status: IMPLEMENTED and verified (2026-06-20).** The cross-loader build (since
+flattened onto the repo root — `post_port.md` Phase 2; the standalone build is
+retired under `legacy/`) uses the MultiLoader-Template layout (ModDevGradle `common` on NeoForm + Fabric
 Loom `fabric` + ModDevGradle `neoforge`) — architectury-loom is gone.
 `./gradlew :neoforge:26.2:build :fabric:26.2:build` is **BUILD
 SUCCESSFUL** on this machine: `common`/`neoforge` against NeoForm `26.2-1` +
 NeoForge `26.2.0.6-beta`, `fabric` against Fabric Loom `1.17` + Fabric API
 `0.152.1+26.2` (no `mappings`). All four loader × version cells now build from
-public artifacts. See `multiloader/README.md` for the per-cell status.
+public artifacts. See [`docs/MULTILOADER_BUILD.md`](MULTILOADER_BUILD.md) for the per-cell status.
 
 **Version axis = Stonecutter (2026-06-22).** The old `-Pminecraft_version` flag is
 gone. Each loader × MC version is now its own Gradle node (`:fabric:26.1.2`,

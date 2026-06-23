@@ -153,13 +153,24 @@
 - **post_port.md Phase 1** (retire standalone root → `legacy/`) + **Phase 2** (flatten the multiloader to
   the repo root + fix path refs/CI/IDE) are **DONE and STAGED (not committed)** on
   `refactor/post-port-cleanup`.
-- **Still TODO (flagged, intricate — left for deliberate work):** `.github/scripts/update_deps.py` +
-  `.github/workflows/auto-deps.yml` still reference `multiloader/` and need a root-vs-multiloader path
-  refactor (a wrong edit risks bad automated dependency PRs); delete the dead
-  `.github/workflows/build.yml`; some doc prose (README, `docs/MULTILOADER*.md`) may still say
-  `multiloader/`.
-- **Judgment-call rebalances left as-is** (flagged in `post_port.md`): machine base FE values, oxygen
-  drain / suit-tank numbers, and the bespoke O2/hazard HUD (not ported).
+- **CI / scripts / docs cleanup: DONE (staged, 2026-06-23).** `.github/scripts/update_deps.py` +
+  `.github/workflows/auto-deps.yml` now target the flattened repo-root `gradle.properties` /
+  `settings.gradle` (the retired `legacy/` build is no longer auto-bumped); the dead
+  `.github/workflows/build.yml` is deleted; the stale `multiloader/` path prose in the root
+  `gradle.properties` header + `docs/MULTILOADER*.md` is fixed (README had none).
+- **Bespoke O2/hazard HUD: PORTED cross-loader (staged, 2026-06-23).** New cross-loader graphical-HUD
+  seam: shared draw in `common/.../client/OxygenHud.java`, registered via NeoForge
+  `RegisterGuiLayersEvent` + Fabric `HudElementRegistry` (both functional interfaces taking
+  `GuiGraphicsExtractor` + `DeltaTracker`; the 26.x HUD API was javap-verified identical on all 4 cells —
+  vanilla `LayeredDraw`/`HudRenderCallback` are GONE, the new model is `Hud`/`GuiGraphicsExtractor` +
+  Fabric `…rendering.v1.hud.*`). The vanilla air-bubble row is suppressed on airless dims (NeoForge
+  `RenderGuiLayerEvent.Pre` cancel `VanillaGuiLayers.AIR_LEVEL` / Fabric
+  `replaceElement(VanillaHudElements.AIR_BAR, …)`). `OxygenManager` now exposes public
+  `suitTier`/`hazardShield`/`hazardFor`. **Builds green on all 4 cells; needs a client run to confirm the
+  on-screen visual (can't be runtime-tested from the agent).**
+- **Judgment-call rebalances: KEPT as the deliberate final balance** (Dario's call, 2026-06-23). The
+  multiloader's machine base FE values + oxygen drain / suit-tank numbers stay as-is — they differ from the
+  retired root by large factors (an intentional retune, not drift). No gameplay change.
 
 ## DO NOT
 

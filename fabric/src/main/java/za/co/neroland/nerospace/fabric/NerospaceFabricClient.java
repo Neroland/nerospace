@@ -5,6 +5,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.block.FluidModel;
@@ -20,10 +23,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.ClientOxygenVisuals;
 import za.co.neroland.nerospace.client.MeteorTrackerHud;
+import za.co.neroland.nerospace.client.OxygenHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
 import za.co.neroland.nerospace.client.TrashCanScreen;
@@ -77,11 +82,32 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         });
 
         registerFluidRendering();
+        registerOxygenHud();
 
         // Meteor Tracker readout + oxygen-field visuals — counterpart to NeoForge's ClientTickEvent.Post.
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
+        });
+    }
+
+    /**
+     * Bespoke oxygen/hazard HUD gauge — Fabric counterpart to NeoForge's {@code RegisterGuiLayersEvent}
+     * in {@code NeoForgeClientSetup}. Draws the shared {@link OxygenHud} on top of the vanilla HUD, and
+     * suppresses the vanilla air-bubble element on airless dimensions so the gauge doesn't double up (the
+     * server still mirrors oxygen onto the air supply — that mirror IS the client sync the gauge reads).
+     */
+    private static void registerOxygenHud() {
+        HudElementRegistry.addLast(
+                Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_hud"),
+                (graphics, delta) -> OxygenHud.render(graphics));
+        HudElementRegistry.replaceElement(VanillaHudElements.AIR_BAR, original -> (graphics, delta) -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null
+                    && OxygenFieldEvents.FIELD_DIMENSIONS.contains(mc.player.level().dimension())) {
+                return; // suppress vanilla air bubbles on airless dims
+            }
+            original.extractRenderState(graphics, delta);
         });
     }
 

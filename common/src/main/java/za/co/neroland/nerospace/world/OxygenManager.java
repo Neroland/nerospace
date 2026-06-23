@@ -250,8 +250,33 @@ public final class OxygenManager {
         NONE, HEAT, COLD
     }
 
-    /** The hazard a dimension carries: Cindara runs hot, Glacira runs cold. */
-    private static HazardShield hazardFor(ResourceKey<Level> dimension) {
+    /** Oxygen-suit capacity tier worn (orthogonal to the heat/cold {@link HazardShield} variant). */
+    public enum SuitTier {
+        NONE, TIER_1, TIER_2
+    }
+
+    /**
+     * The worn suit's capacity tier for the HUD badge: a full Tier-2 set reads TIER_2, any other full
+     * Oxygen Suit set (base / heat / cold) reads TIER_1, otherwise NONE. Client-safe (armour slots only).
+     */
+    public static SuitTier suitTier(Player player) {
+        if (isFullSet(player, ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
+                ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get())) {
+            return SuitTier.TIER_2;
+        }
+        return isFullSuit(player) ? SuitTier.TIER_1 : SuitTier.NONE;
+    }
+
+    /** Whether all four armour slots hold exactly the given pieces. */
+    private static boolean isFullSet(Player player, Item head, Item chest, Item legs, Item feet) {
+        return player.getItemBySlot(EquipmentSlot.HEAD).is(head)
+                && player.getItemBySlot(EquipmentSlot.CHEST).is(chest)
+                && player.getItemBySlot(EquipmentSlot.LEGS).is(legs)
+                && player.getItemBySlot(EquipmentSlot.FEET).is(feet);
+    }
+
+    /** The hazard a dimension carries: Cindara runs hot, Glacira runs cold. (Public for the HUD.) */
+    public static HazardShield hazardFor(ResourceKey<Level> dimension) {
         if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
             return HazardShield.HEAT;
         }
@@ -274,7 +299,7 @@ public final class OxygenManager {
      * The worn hazard shield — requires ALL FOUR pieces of the SAME variant (a heat helmet on a cryo
      * suit grants the suit's air tank but no shield), orthogonal to the base oxygen-suit set.
      */
-    private static HazardShield hazardShield(Player player) {
+    public static HazardShield hazardShield(Player player) {
         HazardShield head = pieceVariant(player.getItemBySlot(EquipmentSlot.HEAD));
         if (head == HazardShield.NONE) {
             return HazardShield.NONE;
