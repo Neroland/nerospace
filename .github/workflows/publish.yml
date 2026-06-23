@@ -5,8 +5,9 @@ name: Publish
 # The detect job checks for the release tag (v<mod_version>) that every publish creates —
 # NOT the previous commit — so a version bumped two (or twenty) commits ago still publishes
 # on the next push, and re-running the workflow is always safe (already-released versions
-# are skipped by their tag). All four jars ship in one release version, tagged with both
-# loaders + both game versions.
+# are skipped by their tag). GitHub gets one release containing all six distributable
+# jars; CurseForge/Modrinth get one upload per loader x MC cell so each file has exact
+# loader and game-version metadata.
 #
 # Escape hatches: `workflow_dispatch` runs the same check manually (catches up a
 # missed release without a dummy commit); if a publish half-failed AFTER its tag was
@@ -86,7 +87,8 @@ jobs:
         run: chmod +x ./gradlew
 
       # Build all six cells (loader x MC version). Each produces a distinctly named
-      # jar (nerospace-<loader>-<mc>-<version>.jar) under <loader>/versions/<mc>/build/libs.
+      # jar under <loader>/versions/<mc>/build/libs. Forge's distributable is the
+      # jarJar output ("*-all.jar"); the plain Forge jar is not uploaded.
       - name: Build all cells
         run: >-
           ./gradlew
@@ -145,41 +147,117 @@ jobs:
           release: nerospace@${{ needs.detect.outputs.version }}
           environment: ${{ steps.channel.outputs.environment }}
 
-      - name: Publish to CurseForge and GitHub Release
+      - name: Publish GitHub Release assets
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          # --- CurseForge ---
-          # Both are repository secrets (Settings -> Secrets and variables -> Actions):
-          # CURSEFORGE_PROJECT_ID (the numeric id from the project page's About section)
-          # and CURSE_FORGE_API_TOKEN (from https://legacy.curseforge.com/account/api-tokens).
-          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
-          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
-
-          # --- Modrinth ---
-          # Both are repository secrets. MODRINTH_PROJECT_ID is the project id (or slug)
-          # of https://modrinth.com/mod/nerospace; MODRINTH_API_TOKEN is a PAT from
-          # Modrinth Settings -> PATs with the "Create versions" scope.
-          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
-          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
-
-          # --- GitHub Release ---
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-tag: v${{ needs.detect.outputs.version }}
-
-          # --- Release metadata ---
           name: Nerospace ${{ needs.detect.outputs.version }}
           version: ${{ needs.detect.outputs.version }}
           # alpha/beta/release, derived from the version suffix (1.0.0 -> release).
           version-type: ${{ steps.channel.outputs.version_type }}
           changelog-file: RELEASE_NOTES.md
-          # All six cells' jars, one release version. mc-publish reads each jar's loader manifest;
-          # the loaders + game-versions below are the union it tags the version with.
-          files: "*/versions/*/build/libs/nerospace-*-!(*-sources|*-dev|*-shadow|*-javadoc).jar"
-          loaders: |
-            fabric
-            neoforge
-            forge
-          game-versions: |
-            26.1.2
-            26.2
+          files: |
+            fabric/versions/26.1.2/build/libs/nerospace-fabric-26.1.2-${{ needs.detect.outputs.version }}.jar
+            fabric/versions/26.2/build/libs/nerospace-fabric-26.2-${{ needs.detect.outputs.version }}.jar
+            neoforge/versions/26.1.2/build/libs/nerospace-neoforge-26.1.2-${{ needs.detect.outputs.version }}.jar
+            neoforge/versions/26.2/build/libs/nerospace-neoforge-26.2-${{ needs.detect.outputs.version }}.jar
+            forge/versions/26.1.2/build/libs/nerospace-forge-26.1.2-${{ needs.detect.outputs.version }}-all.jar
+            forge/versions/26.2/build/libs/nerospace-forge-26.2-${{ needs.detect.outputs.version }}-all.jar
+          java: 25
+
+      - name: Publish Fabric 26.1.2 to CurseForge and Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
+          name: Nerospace ${{ needs.detect.outputs.version }} - Fabric 26.1.2
+          version: ${{ needs.detect.outputs.version }}-fabric-26.1.2
+          version-type: ${{ steps.channel.outputs.version_type }}
+          changelog-file: RELEASE_NOTES.md
+          files: fabric/versions/26.1.2/build/libs/nerospace-fabric-26.1.2-${{ needs.detect.outputs.version }}.jar
+          loaders: fabric
+          game-versions: 26.1.2
+          java: 25
+
+      - name: Publish Fabric 26.2 to CurseForge and Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
+          name: Nerospace ${{ needs.detect.outputs.version }} - Fabric 26.2
+          version: ${{ needs.detect.outputs.version }}-fabric-26.2
+          version-type: ${{ steps.channel.outputs.version_type }}
+          changelog-file: RELEASE_NOTES.md
+          files: fabric/versions/26.2/build/libs/nerospace-fabric-26.2-${{ needs.detect.outputs.version }}.jar
+          loaders: fabric
+          game-versions: 26.2
+          java: 25
+
+      - name: Publish NeoForge 26.1.2 to CurseForge and Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
+          name: Nerospace ${{ needs.detect.outputs.version }} - NeoForge 26.1.2
+          version: ${{ needs.detect.outputs.version }}-neoforge-26.1.2
+          version-type: ${{ steps.channel.outputs.version_type }}
+          changelog-file: RELEASE_NOTES.md
+          files: neoforge/versions/26.1.2/build/libs/nerospace-neoforge-26.1.2-${{ needs.detect.outputs.version }}.jar
+          loaders: neoforge
+          game-versions: 26.1.2
+          java: 25
+
+      - name: Publish NeoForge 26.2 to CurseForge and Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
+          name: Nerospace ${{ needs.detect.outputs.version }} - NeoForge 26.2
+          version: ${{ needs.detect.outputs.version }}-neoforge-26.2
+          version-type: ${{ steps.channel.outputs.version_type }}
+          changelog-file: RELEASE_NOTES.md
+          files: neoforge/versions/26.2/build/libs/nerospace-neoforge-26.2-${{ needs.detect.outputs.version }}.jar
+          loaders: neoforge
+          game-versions: 26.2
+          java: 25
+
+      - name: Publish Forge 26.1.2 to CurseForge and Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
+          name: Nerospace ${{ needs.detect.outputs.version }} - Forge 26.1.2
+          version: ${{ needs.detect.outputs.version }}-forge-26.1.2
+          version-type: ${{ steps.channel.outputs.version_type }}
+          changelog-file: RELEASE_NOTES.md
+          files: forge/versions/26.1.2/build/libs/nerospace-forge-26.1.2-${{ needs.detect.outputs.version }}-all.jar
+          loaders: forge
+          game-versions: 26.1.2
+          java: 25
+
+      - name: Publish Forge 26.2 to CurseForge and Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
+          name: Nerospace ${{ needs.detect.outputs.version }} - Forge 26.2
+          version: ${{ needs.detect.outputs.version }}-forge-26.2
+          version-type: ${{ steps.channel.outputs.version_type }}
+          changelog-file: RELEASE_NOTES.md
+          files: forge/versions/26.2/build/libs/nerospace-forge-26.2-${{ needs.detect.outputs.version }}-all.jar
+          loaders: forge
+          game-versions: 26.2
           java: 25
