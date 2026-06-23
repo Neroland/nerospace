@@ -44,7 +44,7 @@
 			"type": "process",
 			"command": "${workspaceFolder}/gradlew",
 			"windows": { "command": "${workspaceFolder}/gradlew.bat" },
-			"args": [":neoforge:26.1.2:runClient", "--debug-jvm"],
+			"args": [":neoforge:26.1.2:runClient", "-PnerospaceDebug"],
 			"isBackground": true,
 			"presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
 			"problemMatcher": {
@@ -57,7 +57,7 @@
 			"type": "process",
 			"command": "${workspaceFolder}/gradlew",
 			"windows": { "command": "${workspaceFolder}/gradlew.bat" },
-			"args": [":neoforge:26.2:runClient", "--debug-jvm"],
+			"args": [":neoforge:26.2:runClient", "-PnerospaceDebug"],
 			"isBackground": true,
 			"presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
 			"problemMatcher": {

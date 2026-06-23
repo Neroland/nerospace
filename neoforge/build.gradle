@@ -92,6 +92,13 @@ neoForge {
         // Mirrors the root build's runs.configureEach { disableIdeRun() }.
         configureEach {
             disableIdeRun()
+            // ModDevGradle run tasks IGNORE Gradle's `--debug-jvm` (unlike Fabric Loom), so VS Code
+            // can't attach. Opt-in JDWP agent instead: the 'ML: Debug NeoForge ...' tasks pass
+            // `-PnerospaceDebug`, which makes the game JVM suspend listening on :5005 so the matching
+            // 'Debug: NeoForge ...' attach config can connect. No effect on normal runs/builds.
+            if (project.hasProperty('nerospaceDebug')) {
+                jvmArguments.add('-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005')
+            }
         }
     }
 
