@@ -15,7 +15,7 @@ on:
   push:
     branches: [main, enhancement/multi-loader-support]
     paths:
-      - multiloader/gradle.properties
+      - gradle.properties
   workflow_dispatch:
 
 # Allow the workflow to create GitHub Releases.
@@ -42,11 +42,11 @@ jobs:
         run: |
           read_version() { grep -E '^mod_version=' "$1" | head -n1 | cut -d= -f2 | tr -d '[:space:]'; }
 
-          CURRENT="$(read_version multiloader/gradle.properties)"
+          CURRENT="$(read_version gradle.properties)"
           echo "current=$CURRENT"
 
           if [ -z "$CURRENT" ]; then
-            echo "::error::Could not read mod_version from multiloader/gradle.properties"
+            echo "::error::Could not read mod_version from gradle.properties"
             exit 1
           fi
 
@@ -83,12 +83,11 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Make Gradle wrapper executable
-        run: chmod +x ./multiloader/gradlew
+        run: chmod +x ./gradlew
 
-      # Build all four multiloader cells (loader x MC version). Each produces a distinctly named
+      # Build all four cells (loader x MC version). Each produces a distinctly named
       # jar (nerospace-<loader>-<mc>-<version>.jar) under <loader>/versions/<mc>/build/libs.
-      - name: Build all multiloader cells
-        working-directory: multiloader
+      - name: Build all cells
         run: >-
           ./gradlew
           :fabric:26.1.2:build :fabric:26.2:build

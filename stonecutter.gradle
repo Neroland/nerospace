@@ -91,8 +91,8 @@ subprojects {
 tasks.register('syncModels') {
     group = 'nerospace'
     description = 'Sync entity-model Blockbench <-> Java for multiloader/common (tools/model_sync.py --multiloader).'
-    // <repo> = multiloader/.. ; run python from there so tools/model_sync.py resolves.
-    def repoRoot = rootProject.projectDir.parentFile
+    // <repo> = the project root (now flattened); run python from there so tools/model_sync.py resolves.
+    def repoRoot = rootProject.projectDir
     def pythonOverride = providers.gradleProperty('pythonCmd').getOrNull()
     def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
     def pyenvRoot = System.getenv('PYENV_ROOT') ?: System.getenv('PYENV')
@@ -148,7 +148,7 @@ tasks.register('syncModels') {
 tasks.register('genAssets') {
     group = 'nerospace'
     description = 'Regenerate textures + Blockbench block/item models into multiloader/common (additive).'
-    def repoRoot = rootProject.projectDir.parentFile
+    def repoRoot = rootProject.projectDir
     def pythonOverride = providers.gradleProperty('pythonCmd').getOrNull()
     def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
     def pyenvRoot = System.getenv('PYENV_ROOT') ?: System.getenv('PYENV')

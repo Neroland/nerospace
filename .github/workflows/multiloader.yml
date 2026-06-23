@@ -59,10 +59,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Make Gradle wrapper executable
-        run: chmod +x ./multiloader/gradlew
+        run: chmod +x ./gradlew
 
       - name: Build ${{ matrix.loader }} for MC ${{ matrix.mc }}
-        working-directory: multiloader
         # Stonecutter: each loader x MC version is its own node (:loader:version:build).
         # The old `-Pminecraft_version` axis is gone — the node path selects the version.
         run: >-

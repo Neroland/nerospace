@@ -19,7 +19,7 @@ plugins {
     id 'dev.kikugie.stonecutter'
 }
 
-rootProject.name = 'nerospace-multiloader'
+rootProject.name = 'nerospace'
 
 // ---------------------------------------------------------------------------
 // Stonecutter version tree (replaces the old `-Pminecraft_version` axis +

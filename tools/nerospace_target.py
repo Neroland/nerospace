@@ -26,7 +26,8 @@ import sys
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Where the multiloader's shared module lives (holds its own src/main/{java,resources}).
-MULTILOADER_COMMON = os.path.join(REPO_ROOT, "multiloader", "common")
+# Flattened to the repo root (post_port.md Phase 2), so common/ is a top-level dir.
+MULTILOADER_COMMON = os.path.join(REPO_ROOT, "common")
 
 
 def _target(argv):
@@ -48,7 +49,7 @@ def src_base(argv=None):
 
 
 def target_label(argv=None):
-    return "multiloader/common" if is_multiloader(argv) else "root"
+    return "common" if is_multiloader(argv) else "root"
 
 
 def resolve(rel, argv=None):
