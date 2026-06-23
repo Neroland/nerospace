@@ -32,6 +32,11 @@ jarJar.register()
 sourceSets.main.java.srcDir rootProject.ext.commonJava
 sourceSets.main.resources.srcDir rootProject.ext.commonResources
 
+// Forge 26's ModLauncher builds a JPMS layer from the dev runtime classpath. If classes and
+// processed resources are separate entries, the mod's classes can be seen as module "main" while
+// mods.toml names the resources entry "nerospace", producing split-package startup failures.
+sourceSets.main.output.resourcesDir = sourceSets.main.java.classesDirectory.get().asFile
+
 minecraft {
     runs {
         configureEach {
