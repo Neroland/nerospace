@@ -52,3 +52,4 @@ PROJECT_PLAN.md
 runs/
 /fabric/runs
 /.github/scripts/__pycache__
+/tools/gradle-mcp/node_modules

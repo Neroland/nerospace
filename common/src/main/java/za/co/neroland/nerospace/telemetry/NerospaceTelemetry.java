@@ -178,6 +178,26 @@ public final class NerospaceTelemetry {
         Sentry.captureException(t);
     }
 
+    /** Capture a handled exception if it is still clearly from Nerospace code. */
+    public static void captureHandledException(Throwable t) {
+        if (t != null && touchesNerospace(t)) {
+            capture(t);
+        }
+    }
+
+    /** Capture a handled exception with a non-identifying source label for triage. */
+    public static void captureHandledException(Throwable t, String source, String operation) {
+        if (!active || t == null || !touchesNerospace(t)) {
+            return;
+        }
+        Sentry.withScope(scope -> {
+            scope.setTag("handled", "true");
+            scope.setTag("source", source);
+            scope.setExtra("operation", operation);
+            Sentry.captureException(t);
+        });
+    }
+
     /** Capture a (scrubbed, truncated) FATAL log line that names Nerospace without a throwable. */
     static void captureMessage(String message) {
         if (!active) {
