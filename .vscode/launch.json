@@ -1,110 +1,58 @@
 {
-  "//": "Run/debug configs for the ROOT single-loader NeoForge build (project \u0027nerospace\u0027). modFolders points at bin/main (IDE classes) AND build/resources/main (where the generated neoforge.mods.toml lives). Multiloader run/debug lives in multiloader/.vscode + nerospace.code-workspace.",
+  "//": "Debug for the FLATTENED cross-loader build (Stonecutter nodes :fabric/:neoforge x 26.1.2/26.2). Pick a \u0027Debug: \u003ccell\u003e\u0027 config and press F5 — its preLaunchTask runs that cell\u0027s client with --debug-jvm (the JVM suspends on :5005), and VS Code attaches once the JVM is listening. To RUN without a debugger, use the \u0027ML: Run ...\u0027 entries in tasks.json. Project names come from \u0027./gradlew eclipse\u0027 (re-run after dependency changes, then reload).",
   "version": "0.2.0",
   "configurations": [
     {
       "type": "java",
-      "request": "launch",
-      "name": "Client",
+      "request": "attach",
+      "name": "Debug: NeoForge 26.1.2",
+      "projectName": "nerospace-neoforge-26.1.2",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "ML: Debug NeoForge Client - 26.1.2",
       "presentation": {
-        "group": "Mod Development - nerospace",
+        "group": "Nerospace",
         "order": 0
-      },
-      "projectName": "nerospace",
-      "classPaths": [
-        "${workspaceFolder}/build/moddev/devlaunchClasspath.jar"
-      ],
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "preLaunchTask": "prepareClientRun",
-      "args": [
-        "@${workspaceFolder}/build/moddev/clientRunProgramArgs.txt"
-      ],
-      "vmArgs": [
-        "@${workspaceFolder}/build/moddev/clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main"
-      ],
-      "cwd": "${workspaceFolder}/run",
-      "env": {},
-      "console": "internalConsole",
-      "shortenCommandLine": "none"
+      }
     },
     {
       "type": "java",
-      "request": "launch",
-      "name": "Data",
+      "request": "attach",
+      "name": "Debug: NeoForge 26.2",
+      "projectName": "nerospace-neoforge-26.2",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "ML: Debug NeoForge Client - 26.2",
       "presentation": {
-        "group": "Mod Development - nerospace",
+        "group": "Nerospace",
         "order": 1
-      },
-      "projectName": "nerospace",
-      "classPaths": [
-        "${workspaceFolder}/build/moddev/devlaunchClasspath.jar"
-      ],
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "preLaunchTask": "prepareDataRun",
-      "args": [
-        "@${workspaceFolder}/build/moddev/dataRunProgramArgs.txt"
-      ],
-      "vmArgs": [
-        "@${workspaceFolder}/build/moddev/dataRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main"
-      ],
-      "cwd": "${workspaceFolder}/run",
-      "env": {},
-      "console": "internalConsole",
-      "shortenCommandLine": "none"
+      }
     },
     {
       "type": "java",
-      "request": "launch",
-      "name": "GameTestServer",
+      "request": "attach",
+      "name": "Debug: Fabric 26.1.2",
+      "projectName": "nerospace-fabric-26.1.2",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "ML: Debug Fabric Client - 26.1.2",
       "presentation": {
-        "group": "Mod Development - nerospace",
+        "group": "Nerospace",
         "order": 2
-      },
-      "projectName": "nerospace",
-      "classPaths": [
-        "${workspaceFolder}/build/moddev/devlaunchClasspath.jar"
-      ],
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "preLaunchTask": "prepareGameTestServerRun",
-      "args": [
-        "@${workspaceFolder}/build/moddev/gameTestServerRunProgramArgs.txt"
-      ],
-      "vmArgs": [
-        "@${workspaceFolder}/build/moddev/gameTestServerRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main"
-      ],
-      "cwd": "${workspaceFolder}/run",
-      "env": {},
-      "console": "internalConsole",
-      "shortenCommandLine": "none"
+      }
     },
     {
       "type": "java",
-      "request": "launch",
-      "name": "Server",
+      "request": "attach",
+      "name": "Debug: Fabric 26.2",
+      "projectName": "nerospace-fabric-26.2",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "ML: Debug Fabric Client - 26.2",
       "presentation": {
-        "group": "Mod Development - nerospace",
+        "group": "Nerospace",
         "order": 3
-      },
-      "projectName": "nerospace",
-      "classPaths": [
-        "${workspaceFolder}/build/moddev/devlaunchClasspath.jar"
-      ],
-      "mainClass": "net.neoforged.devlaunch.Main",
-      "preLaunchTask": "prepareServerRun",
-      "args": [
-        "@${workspaceFolder}/build/moddev/serverRunProgramArgs.txt"
-      ],
-      "vmArgs": [
-        "@${workspaceFolder}/build/moddev/serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dnerospace%%${workspaceFolder}/bin/main"
-      ],
-      "cwd": "${workspaceFolder}/run",
-      "env": {},
-      "console": "internalConsole",
-      "shortenCommandLine": "none"
+      }
     }
   ]
 }
