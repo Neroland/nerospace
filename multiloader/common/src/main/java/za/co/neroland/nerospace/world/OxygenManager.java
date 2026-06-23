@@ -207,12 +207,14 @@ public final class OxygenManager {
         if (store.getGas() != GasResource.OXYGEN || store.getAmount() <= 0) {
             return 0;
         }
-        long peeked = store.drain((long) wantAir * AIRLOCK_MB_PER_AIR, true);
-        int units = (int) (peeked / AIRLOCK_MB_PER_AIR);
+        // The mB-of-oxygen cost per restored air unit is a consumable running cost: scale by fuelCost.
+        int mbPerAir = NerospaceConfig.scale(AIRLOCK_MB_PER_AIR, NerospaceConfig.fuelCostMultiplier());
+        long peeked = store.drain((long) wantAir * mbPerAir, true);
+        int units = (int) (peeked / mbPerAir);
         if (units <= 0) {
             return 0;
         }
-        store.drain((long) units * AIRLOCK_MB_PER_AIR, false);
+        store.drain((long) units * mbPerAir, false);
         return units;
     }
 

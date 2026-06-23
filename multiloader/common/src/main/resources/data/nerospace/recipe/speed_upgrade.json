@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": "#c:ingots/gold",
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "NRN",
+    "RGR",
+    "NRN"
+  ],
+  "result": {
+    "id": "nerospace:speed_upgrade"
+  }
+}

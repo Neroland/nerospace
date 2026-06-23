@@ -241,9 +241,17 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             this.speedUpgrades++;
         } else {
             this.capacityUpgrades++;
+            syncTankCapacities();
         }
         setChanged();
         return true;
+    }
+
+    /** Re-size the fluid + gas tanks to the base capacity scaled by the installed Capacity upgrades. */
+    private void syncTankCapacities() {
+        int mult = capacityMultiplier();
+        this.fluid.resize((long) FLUID_CAPACITY * mult);
+        this.gas.resize((long) GAS_CAPACITY * mult);
     }
 
     public int upgradeCount(PipeUpgradeItem.Kind kind) {
@@ -268,6 +276,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             }
             this.speedUpgrades = 0;
             this.capacityUpgrades = 0;
+            syncTankCapacities();
             setChanged();
         }
         return total;
@@ -629,6 +638,11 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        // Restore the upgrade counts + tank capacities first, so loading the stored fluid/gas amounts
+        // below isn't clamped to the base capacity on an upgraded pipe.
+        this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
+        this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);
+        syncTankCapacities();
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.gas.setRaw(GasResource.byName(input.getStringOr("Gas", "empty")), input.getIntOr("GasAmount", 0));
         Fluid storedFluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));

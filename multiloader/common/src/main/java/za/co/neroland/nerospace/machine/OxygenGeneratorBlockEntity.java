@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.gas.GasResource;
@@ -76,6 +77,12 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
         return this.energy;
     }
 
+    /** Comparator output (0..15) scaled to the stored oxygen fraction of the gas tank. */
+    public int comparatorSignal() {
+        int stored = (int) this.gas.getAmount();
+        return stored <= 0 ? 0 : 1 + (int) (stored / (double) GAS_CAPACITY * 14.0D);
+    }
+
     /** Extract-only view of the gas tank — the pipe/network may pull oxygen out but not push it back. */
     public NerospaceGasStorage getGas() {
         return new NerospaceGasStorage() {
@@ -110,11 +117,18 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
         if (level.isClientSide()) {
             return;
         }
+        // Redstone gate: an adjacent redstone source switches the generator off (and collapses its field).
+        if (!MachineRedstone.allowsRun(level, pos)) {
+            if (level instanceof ServerLevel serverLevel) {
+                OxygenFieldManager.get(serverLevel).removeSource(pos);
+            }
+            return;
+        }
         // Electrolyse energy into oxygen gas while powered and there's room in the tank.
         long room = this.gas.getCapacity() - this.gas.getAmount();
         int produce = (int) Math.min(MB_PER_TICK, room);
         if (produce > 0) {
-            int cost = produce * FE_PER_MB;
+            int cost = NerospaceConfig.scale(produce * FE_PER_MB, NerospaceConfig.fuelCostMultiplier());
             if (this.energy.getAmount() >= cost) {
                 this.energy.consume(cost);
                 this.gas.fill(GasResource.OXYGEN, produce, false);

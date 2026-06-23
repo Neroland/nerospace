@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "#c:chests/wooden",
+    "N": "#c:ingots/nerosteel",
+    "Q": "#c:gems/xertz_quartz"
+  },
+  "pattern": [
+    "NQN",
+    "QCQ",
+    "NQN"
+  ],
+  "result": {
+    "id": "nerospace:capacity_upgrade"
+  }
+}

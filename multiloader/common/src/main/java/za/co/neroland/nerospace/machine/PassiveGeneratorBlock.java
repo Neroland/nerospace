@@ -3,6 +3,7 @@ package za.co.neroland.nerospace.machine;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -61,5 +62,15 @@ public class PassiveGeneratorBlock extends BaseEntityBlock {
         }
         return createTickerHelper(type, ModBlockEntities.PASSIVE_GENERATOR.get(),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return level.getBlockEntity(pos) instanceof PassiveGeneratorBlockEntity gen ? gen.comparatorSignal() : 0;
     }
 }

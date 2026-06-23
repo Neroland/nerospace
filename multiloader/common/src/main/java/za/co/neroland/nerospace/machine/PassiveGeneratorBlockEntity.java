@@ -77,6 +77,13 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
         return this.energy;
     }
 
+    /** Comparator output (0..15) scaled to the stored energy fraction. */
+    public int comparatorSignal() {
+        int cap = (int) this.energy.getCapacity();
+        int stored = (int) this.energy.getAmount();
+        return (cap <= 0 || stored <= 0) ? 0 : 1 + (int) (stored / (double) cap * 14.0D);
+    }
+
     public static boolean isCore(ItemStack stack) {
         return stack.is(ModItems.RAW_NEROSIUM.get()) || stack.is(ModItems.NEROSIUM_INGOT.get())
                 || stack.is(ModItems.NEROSIUM_DUST.get());

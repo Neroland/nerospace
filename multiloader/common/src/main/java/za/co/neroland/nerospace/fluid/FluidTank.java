@@ -8,7 +8,7 @@ public final class FluidTank implements NerospaceFluidStorage {
 
     private Fluid fluid = Fluids.EMPTY;
     private long amount;
-    private final long capacity;
+    private long capacity;
     private final Runnable onChanged;
 
     public FluidTank(long capacity, Runnable onChanged) {
@@ -29,6 +29,18 @@ public final class FluidTank implements NerospaceFluidStorage {
     @Override
     public long getCapacity() {
         return this.capacity;
+    }
+
+    /** Adjust the tank's capacity (e.g. a pipe Capacity upgrade); clamps the held amount to the new bound. */
+    public void resize(long newCapacity) {
+        this.capacity = Math.max(0, newCapacity);
+        if (this.amount > this.capacity) {
+            this.amount = this.capacity;
+            if (this.amount == 0) {
+                this.fluid = Fluids.EMPTY;
+            }
+            this.onChanged.run();
+        }
     }
 
     @Override

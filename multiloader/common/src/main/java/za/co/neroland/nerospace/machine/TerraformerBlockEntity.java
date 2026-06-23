@@ -277,7 +277,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
      * predecessor's radius; a stage-2 column that needs water it can't pay for stalls in place.
      */
     private boolean workStage(ServerLevel level, BlockPos center, int stage, Set<LevelChunk> biomeChanged) {
-        int cost = stageCost(stage);
+        int cost = NerospaceConfig.scale(stageCost(stage), NerospaceConfig.fuelCostMultiplier());
         int budget = stageBudget(stage);
         boolean changed = false;
 

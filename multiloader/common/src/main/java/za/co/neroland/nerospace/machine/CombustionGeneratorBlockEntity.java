@@ -86,6 +86,13 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         return this.energy;
     }
 
+    /** Comparator output (0..15) scaled to the stored energy fraction. */
+    public int comparatorSignal() {
+        int cap = (int) this.energy.getCapacity();
+        int stored = (int) this.energy.getAmount();
+        return (cap <= 0 || stored <= 0) ? 0 : 1 + (int) (stored / (double) cap * 14.0D);
+    }
+
     /** Burn value (ticks) for a fuel item, or 0 if not accepted. */
     public static int fuelValue(ItemStack stack) {
         if (stack.is(Items.COAL) || stack.is(Items.CHARCOAL)) {

@@ -37,6 +37,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -47,6 +48,7 @@ import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
+import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.module.MachineModules;
 import za.co.neroland.nerospace.module.UpgradeModuleItem;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -567,10 +569,39 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
 
     // --- Auto-eject (items → adjacent vanilla containers) -----------------------
 
+    /** Max mB of buffered fluid pushed to each adjacent fluid store per tick by the auto-eject. */
+    private static final long FLUID_EJECT_RATE = 500L;
+
     private void autoEject(ServerLevel level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
             if (level.getBlockEntity(pos.relative(dir)) instanceof Container target && !(target instanceof QuarryControllerBlockEntity)) {
                 ejectInto(target);
+            }
+        }
+        // Mirror the item path for the fluid buffer: push buffered fluid into any adjacent fluid store (tank/
+        // pipe) so the quarry doesn't dead-pause on "fluid_full" next to a tank.
+        pushFluid(level, pos);
+    }
+
+    /** Pushes up to {@link #FLUID_EJECT_RATE} mB of the buffered fluid into each adjacent fluid store. */
+    private void pushFluid(ServerLevel level, BlockPos pos) {
+        Fluid fluid = this.fluidBuffer.getFluid();
+        if (this.fluidBuffer.getAmount() <= 0 || fluid == Fluids.EMPTY) {
+            return;
+        }
+        for (Direction dir : Direction.values()) {
+            if (this.fluidBuffer.getAmount() <= 0) {
+                break;
+            }
+            NerospaceFluidStorage dest = FluidLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
+            if (dest == null) {
+                continue;
+            }
+            long offered = Math.min(FLUID_EJECT_RATE, this.fluidBuffer.getAmount());
+            long accepted = dest.fill(fluid, offered, false);
+            if (accepted > 0) {
+                this.fluidBuffer.drain(accepted, false);
+                setChanged();
             }
         }
     }

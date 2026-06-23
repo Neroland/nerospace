@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "R": "minecraft:redstone",
+    "S": "minecraft:diamond"
+  },
+  "pattern": [
+    " N ",
+    "RSR",
+    " N "
+  ],
+  "result": {
+    "id": "nerospace:fortune_module"
+  }
+}

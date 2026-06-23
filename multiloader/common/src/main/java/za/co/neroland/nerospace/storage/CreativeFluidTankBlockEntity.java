@@ -1,26 +1,39 @@
 package za.co.neroland.nerospace.storage;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
-/** Creative Fluid Tank — an endless source and sink of {@code rocket_fuel} for testing fluid logistics. */
+/**
+ * Creative Fluid Tank — an endless source (and void sink) of one configured fluid for testing fluid
+ * logistics. Defaults to {@code rocket_fuel}; right-click the block with a filled bucket to switch the
+ * source fluid, sneak-empty-hand to clear, empty-hand to read it out. The chosen fluid persists in NBT.
+ */
 public class CreativeFluidTankBlockEntity extends BlockEntity {
 
-    private static final NerospaceFluidStorage INFINITE = new NerospaceFluidStorage() {
+    /** The endless source fluid (default rocket_fuel); {@link Fluids#EMPTY} = unset (drains nothing). */
+    private Fluid source = (Fluid) ModFluids.ROCKET_FUEL.get();
+
+    /** Endless source/sink of the configured {@link #source} — inserts are voided, drains are endless. */
+    private final NerospaceFluidStorage infinite = new NerospaceFluidStorage() {
         @Override
         public Fluid getFluid() {
-            return (Fluid) ModFluids.ROCKET_FUEL.get();
+            return source;
         }
 
         @Override
         public long getAmount() {
-            return Integer.MAX_VALUE;
+            return source == Fluids.EMPTY ? 0 : Integer.MAX_VALUE;
         }
 
         @Override
@@ -35,7 +48,7 @@ public class CreativeFluidTankBlockEntity extends BlockEntity {
 
         @Override
         public long drain(long amount, boolean simulate) {
-            return Math.max(0, amount); // endless rocket fuel
+            return source == Fluids.EMPTY ? 0 : Math.max(0, amount); // endless source of the chosen fluid
         }
     };
 
@@ -44,6 +57,30 @@ public class CreativeFluidTankBlockEntity extends BlockEntity {
     }
 
     public NerospaceFluidStorage getTank() {
-        return INFINITE;
+        return this.infinite;
+    }
+
+    /** The fluid this tank endlessly supplies (or {@link Fluids#EMPTY} when cleared). */
+    public Fluid source() {
+        return this.source;
+    }
+
+    /** Choose the endless source fluid (e.g. from a bucket); {@link Fluids#EMPTY} clears it. */
+    public void setSource(Fluid source) {
+        this.source = source == null ? Fluids.EMPTY : source;
+        setChanged();
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putString("Source", BuiltInRegistries.FLUID.getKey(this.source).toString());
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.source = BuiltInRegistries.FLUID.getValue(
+                Identifier.parse(input.getStringOr("Source", "minecraft:empty")));
     }
 }

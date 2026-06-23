@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "nerospace:fluid_tank",
+    "G": "#c:gems/glacite",
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    "GNG",
+    "NFN",
+    "GNG"
+  ],
+  "result": {
+    "id": "nerospace:hydration_module"
+  }
+}

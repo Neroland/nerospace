@@ -83,6 +83,9 @@ public final class NerospaceFabric implements ModInitializer {
         // Nerospace tab), so no per-loader creative-tab injection is needed here.
 
         addOverworldOre("nerosium_ore_placed");
+        // Deep, rare overworld nerosteel seam (anti-circular gate: nerosteel gates Greenxertz, so a small
+        // overworld supply must exist off-world). Counterpart to the NeoForge add_nerosteel_ore biome_modifier.
+        addOverworldOre("nerosteel_ore_overworld_placed");
 
         // Default attributes for the ported mobs (counterpart to NeoForge's EntityAttributeCreationEvent).
         ModEntityAttributes.forEach(FabricDefaultAttributeRegistry::register);
@@ -204,6 +207,9 @@ public final class NerospaceFabric implements ModInitializer {
                 ModBlockEntities.TRASH_CAN.get());
         FLUID.registerForBlockEntity(
                 (be, direction) -> be.getFluid(),
+                ModBlockEntities.TRASH_CAN.get());
+        GAS.registerForBlockEntity(
+                (be, direction) -> be.getGas(),
                 ModBlockEntities.TRASH_CAN.get());
 
         ENERGY.registerForBlockEntity(

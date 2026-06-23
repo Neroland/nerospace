@@ -132,10 +132,15 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
         return stored <= 0 ? 0 : 1 + (int) (stored / (double) this.tank.getCapacity() * 14.0D);
     }
 
+    /** FE consumed per working tick, scaled by the fuel-cost multiplier (a consumable running cost). */
+    private static int energyPerTick() {
+        return NerospaceConfig.scale(FE_PER_TICK, NerospaceConfig.fuelCostMultiplier());
+    }
+
     public boolean canRun() {
         return !this.items.get(CARBON_SLOT).isEmpty()
                 && !this.items.get(CATALYST_SLOT).isEmpty()
-                && this.energy.getAmount() >= FE_PER_TICK
+                && this.energy.getAmount() >= energyPerTick()
                 && this.tank.getCapacity() - this.tank.getAmount() >= MB_PER_BATCH;
     }
 
@@ -156,7 +161,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
             return;
         }
 
-        this.energy.consume(FE_PER_TICK);
+        this.energy.consume(energyPerTick());
         this.progress++;
         if (this.progress >= NerospaceConfig.scaleInterval(WORK_TICKS, NerospaceConfig.machineSpeedMultiplier())) {
             this.progress = 0;

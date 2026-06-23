@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "N": "nerospace:nerosium_block",
+    "P": "nerospace:solar_panel"
+  },
+  "pattern": [
+    " P ",
+    "PNP",
+    " P "
+  ],
+  "result": {
+    "id": "nerospace:solar_panel_t2"
+  }
+}

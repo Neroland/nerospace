@@ -81,4 +81,14 @@ public class CombustionGeneratorBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.COMBUSTION_GENERATOR.get(),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return level.getBlockEntity(pos) instanceof CombustionGeneratorBlockEntity gen ? gen.comparatorSignal() : 0;
+    }
 }

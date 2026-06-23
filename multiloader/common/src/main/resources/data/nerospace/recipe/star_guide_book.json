@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:book",
+    "nerospace:raw_nerosium"
+  ],
+  "result": {
+    "id": "nerospace:star_guide_book"
+  }
+}

@@ -80,6 +80,7 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> SENTRY_TEST_ITEM = blockItem("sentry_test", ModBlocks.SENTRY_TEST);
     public static final RegistryEntry<BlockItem> VILLAGE_CORE_ITEM = blockItem("village_core", ModBlocks.VILLAGE_CORE);
     public static final RegistryEntry<BlockItem> METEOR_ROCK_ITEM = blockItem("meteor_rock", ModBlocks.METEOR_ROCK);
+    public static final RegistryEntry<BlockItem> METEOR_CORE_ITEM = blockItem("meteor_core", ModBlocks.METEOR_CORE);
     public static final RegistryEntry<BlockItem> ITEM_STORE_ITEM = blockItem("item_store", ModBlocks.ITEM_STORE);
     public static final RegistryEntry<BlockItem> BATTERY_ITEM = blockItem("battery", ModBlocks.BATTERY);
     public static final RegistryEntry<BlockItem> FLUID_TANK_ITEM = blockItem("fluid_tank", ModBlocks.FLUID_TANK);
@@ -126,6 +127,14 @@ public final class ModItems {
     public static final RegistryEntry<Item> FRAME_CASING = item("frame_casing");
     public static final RegistryEntry<Item> GRAV_STRIDERS = item("grav_striders");
     public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");
+    /** Meadow Loper drop: a hearty haunch (no cooked variant — design §13). */
+    public static final RegistryEntry<Item> LOPER_HAUNCH = item("loper_haunch",
+            p -> p.food(new net.minecraft.world.food.FoodProperties.Builder()
+                    .nutrition(8).saturationModifier(0.8F).build()));
+    /** Ember Strutter drop: a lean drumstick. */
+    public static final RegistryEntry<Item> STRUTTER_DRUMSTICK = item("strutter_drumstick",
+            p -> p.food(new net.minecraft.world.food.FoodProperties.Builder()
+                    .nutrition(6).saturationModifier(0.6F).build()));
     /** Trade-only Artificer gear: right-click pings nearby ores ({@code c:ores}); see {@link XertzResonatorItem}. */
     public static final RegistryEntry<Item> XERTZ_RESONATOR = ITEMS.register("xertz_resonator",
             key -> new XertzResonatorItem(new Item.Properties().setId(key)));
@@ -281,7 +290,8 @@ public final class ModItems {
                 CreativeModeTabs.NATURAL_BLOCKS,
                 List.<ItemLike>of(NEROSIUM_ORE_ITEM.get(), DEEPSLATE_NEROSIUM_ORE_ITEM.get(),
                         NEROSTEEL_ORE_ITEM.get(), XERTZ_QUARTZ_ORE_ITEM.get(),
-                        CINDRITE_ORE_ITEM.get(), GLACITE_ORE_ITEM.get(), METEOR_ROCK_ITEM.get()),
+                        CINDRITE_ORE_ITEM.get(), GLACITE_ORE_ITEM.get(), METEOR_ROCK_ITEM.get(),
+                        METEOR_CORE_ITEM.get()),
                 CreativeModeTabs.BUILDING_BLOCKS,
                 List.<ItemLike>of(NEROSIUM_BLOCK_ITEM.get(), RAW_NEROSIUM_BLOCK_ITEM.get(),
                         NEROSTEEL_BLOCK_ITEM.get(), CINDRITE_BLOCK_ITEM.get(), GLACITE_BLOCK_ITEM.get(),
@@ -294,7 +304,8 @@ public final class ModItems {
                         RAW_NEROSTEEL.get(), NEROSTEEL_INGOT.get(),
                         XERTZ_QUARTZ.get(), CINDRITE.get(), GLACITE.get(),
                         NEROSIUM_DUST.get(), ALIEN_FRAGMENT.get(), ALIEN_TECH_SCRAP.get(), ALIEN_CORE.get(),
-                        ROCKET_FUEL_CANISTER.get(), FRAME_CASING.get(), GRAV_STRIDERS.get(), DRIFT_FLEECE.get()),
+                        ROCKET_FUEL_CANISTER.get(), FRAME_CASING.get(), GRAV_STRIDERS.get(), DRIFT_FLEECE.get(),
+                        LOPER_HAUNCH.get(), STRUTTER_DRUMSTICK.get()),
                 CreativeModeTabs.TOOLS_AND_UTILITIES,
                 List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get(), XERTZ_RESONATOR.get(),
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),

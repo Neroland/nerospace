@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": "nerospace:station_floor",
+    "W": "nerospace:station_wall"
+  },
+  "pattern": [
+    "WWW",
+    "WFW",
+    "WWW"
+  ],
+  "result": {
+    "id": "nerospace:station_charter"
+  }
+}

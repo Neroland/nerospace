@@ -173,6 +173,10 @@ public final class NeoForgeCapabilities {
                 FLUID,
                 ModBlockEntities.TRASH_CAN.get(),
                 (be, side) -> be.getFluid());
+        event.registerBlockEntity(
+                GAS,
+                ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> be.getGas());
 
         event.registerBlockEntity(
                 ENERGY,

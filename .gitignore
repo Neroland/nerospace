@@ -51,3 +51,4 @@ PROJECT_PLAN.md
 /tools/__pycache__
 runs/
 /multiloader/fabric/runs
+/.github/scripts/__pycache__

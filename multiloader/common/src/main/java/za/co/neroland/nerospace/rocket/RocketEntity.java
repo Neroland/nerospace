@@ -482,7 +482,8 @@ public class RocketEntity extends Entity implements MenuProvider {
                     BlockPos centre = entry != null ? entry.center() : new BlockPos(0, PLATFORM_Y, 0);
                     arrivalMessage = Component.translatable("entity.nerospace.rocket.docked");
                     destination.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
-                    if (!destination.getBlockState(centre).is(ModBlocks.STATION_FLOOR.get())) {
+                    if (!destination.getBlockState(centre).is(ModBlocks.STATION_FLOOR.get())
+                            && !destination.getBlockState(centre).is(ModBlocks.STATION_CORE.get())) {
                         buildStationPlatform(destination, centre.getX(), centre.getY(), centre.getZ());
                     }
                     arrivalX = centre.getX() + 0.5D;

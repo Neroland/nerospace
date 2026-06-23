@@ -5,7 +5,7 @@ public final class GasTank implements NerospaceGasStorage {
 
     private GasResource gas = GasResource.EMPTY;
     private long amount;
-    private final long capacity;
+    private long capacity;
     private final Runnable onChanged;
 
     public GasTank(long capacity, Runnable onChanged) {
@@ -26,6 +26,18 @@ public final class GasTank implements NerospaceGasStorage {
     @Override
     public long getCapacity() {
         return this.capacity;
+    }
+
+    /** Adjust the tank's capacity (e.g. a pipe Capacity upgrade); clamps the held amount to the new bound. */
+    public void resize(long newCapacity) {
+        this.capacity = Math.max(0, newCapacity);
+        if (this.amount > this.capacity) {
+            this.amount = this.capacity;
+            if (this.amount == 0) {
+                this.gas = GasResource.EMPTY;
+            }
+            this.onChanged.run();
+        }
     }
 
     @Override

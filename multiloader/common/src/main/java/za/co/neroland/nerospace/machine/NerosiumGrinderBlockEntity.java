@@ -86,10 +86,11 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         boolean changed = false;
         ItemStack input = this.items.get(INPUT_SLOT);
         ItemStack result = GrinderRecipes.getResult(input);
-        boolean canWork = !result.isEmpty() && canInsertOutput(result) && this.energy.getAmount() >= ENERGY_PER_TICK;
+        int energyPerTick = NerospaceConfig.scale(ENERGY_PER_TICK, NerospaceConfig.fuelCostMultiplier());
+        boolean canWork = !result.isEmpty() && canInsertOutput(result) && this.energy.getAmount() >= energyPerTick;
         if (canWork) {
             this.progress++;
-            this.energy.consume(ENERGY_PER_TICK);
+            this.energy.consume(energyPerTick);
             if (this.progress >= NerospaceConfig.scaleInterval(MAX_PROGRESS, NerospaceConfig.machineSpeedMultiplier())) {
                 craft(result);
                 this.progress = 0;

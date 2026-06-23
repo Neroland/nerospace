@@ -18,14 +18,15 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
+import za.co.neroland.nerospace.gas.GasResource;
+import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.menu.TrashCanMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
  * Trash Can — a bottomless sink. Exposes item and fluid surfaces that accept anything (from hoppers
  * or pipes) and void it: the item container always reads empty and discards on insert; the fluid
- * sink accepts any amount and stores nothing. Nothing can be pulled back out. (Gas voiding is
- * deferred with the gas system.)
+ * and gas sinks accept any amount and store nothing. Nothing can be pulled back out.
  */
 public class TrashCanBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
@@ -115,12 +116,43 @@ public class TrashCanBlockEntity extends BlockEntity implements WorldlyContainer
         }
     };
 
+    private final NerospaceGasStorage voidGas = new NerospaceGasStorage() {
+        @Override
+        public GasResource getGas() {
+            return GasResource.EMPTY;
+        }
+
+        @Override
+        public long getAmount() {
+            return 0;
+        }
+
+        @Override
+        public long getCapacity() {
+            return 1_000_000;
+        }
+
+        @Override
+        public long fill(GasResource gas, long amount, boolean simulate) {
+            return Math.max(0, amount);
+        }
+
+        @Override
+        public long drain(long amount, boolean simulate) {
+            return 0;
+        }
+    };
+
     public TrashCanBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TRASH_CAN.get(), pos, state);
     }
 
     public NerospaceFluidStorage getFluid() {
         return this.voidFluid;
+    }
+
+    public NerospaceGasStorage getGas() {
+        return this.voidGas;
     }
 
     // --- MenuProvider (the manual trash GUI; trashes on the NEXT insert) -------

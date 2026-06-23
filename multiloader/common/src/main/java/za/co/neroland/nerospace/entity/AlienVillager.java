@@ -41,6 +41,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.village.AlienTrades;
 import za.co.neroland.nerospace.village.Reputation;
@@ -141,8 +142,13 @@ public class AlienVillager extends PathfinderMob implements Merchant {
     }
 
     private Planet planetForDimension() {
-        // Multiloader port: the planet dimensions aren't ported yet, so every villager is the
-        // Greenxertz species for now. Restore per-dimension selection once ModDimensions lands.
+        var dim = this.level().dimension();
+        if (dim == ModDimensions.CINDARA_LEVEL) {
+            return Planet.CINDARA;
+        }
+        if (dim == ModDimensions.GLACIRA_LEVEL) {
+            return Planet.GLACIRA;
+        }
         return Planet.GREENXERTZ;
     }
 
