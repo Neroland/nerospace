@@ -50,6 +50,7 @@ import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.rocket.RocketTier;
 import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 
 /**
  * Creative-only debug commands (cheats / op level 2). {@code /nerospace gallery} builds a showcase
@@ -83,9 +84,27 @@ public final class NerospaceCommands {
                 Commands.literal("nerospace")
                         .requires(src -> src.getPlayer() != null)
                         .then(Commands.literal("gallery")
-                                .executes(ctx -> buildGallery(ctx.getSource()))
+                                .executes(ctx -> runSafely(ctx.getSource(), "gallery",
+                                        () -> buildGallery(ctx.getSource())))
                                 .then(Commands.literal("clear")
-                                        .executes(ctx -> clearGallery(ctx.getSource())))));
+                                        .executes(ctx -> runSafely(ctx.getSource(), "gallery clear",
+                                                () -> clearGallery(ctx.getSource()))))));
+    }
+
+    private static int runSafely(CommandSourceStack source, String commandName, CommandBody body) {
+        try {
+            return body.run();
+        } catch (RuntimeException ex) {
+            NerospaceTelemetry.captureHandledException(ex, "command", "/nerospace " + commandName);
+            NerospaceCommon.LOGGER.error("[Nerospace] /nerospace {} failed", commandName, ex);
+            source.sendFailure(Component.literal("Nerospace " + commandName + " failed; see latest.log."));
+            return 0;
+        }
+    }
+
+    @FunctionalInterface
+    private interface CommandBody {
+        int run();
     }
 
     private static int buildGallery(CommandSourceStack source) {
@@ -452,8 +471,8 @@ public final class NerospaceCommands {
 
         // Front row: one of each tier (multiblock anchors auto-fill their N×N footprint via onPlace).
         placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX, sy, baseZ);
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 2, sy, baseZ); // fills +2..3
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 5, sy, baseZ); // fills +5..7
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 2, sy, baseZ); // fills +2..3
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 5, sy, baseZ); // fills +5..7
 
         // Cable hookup: Creative Battery → Universal Pipe → T1 panel (lights the panel's west connector).
         level.setBlockAndUpdate(new BlockPos(baseX + 10, sy, baseZ),
@@ -470,13 +489,13 @@ public final class NerospaceCommands {
             }
         }
         // T2: four 2x2 units → a 4x4 field.
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 5, sy, baseZ + 4);
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 7, sy, baseZ + 4);
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 5, sy, baseZ + 6);
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 7, sy, baseZ + 6);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 5, sy, baseZ + 4);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 7, sy, baseZ + 4);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 5, sy, baseZ + 6);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 7, sy, baseZ + 6);
         // T3: two 3x3 units → a 6x3 field.
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 11, sy, baseZ + 4); // fills +11..13
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 14, sy, baseZ + 4); // fills +14..16
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 11, sy, baseZ + 4); // fills +11..13
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 14, sy, baseZ + 4); // fills +14..16
     }
 
     /** Place a solar panel anchor; multiblock tiers auto-expand their footprint in {@code onPlace}. */

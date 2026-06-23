@@ -61,11 +61,11 @@ public class SolarPanelBlockEntity extends BlockEntity {
     }
 
     public BlockPos anchorPos() {
-        return this.anchorPos;
+        return this.anchorPos == null ? this.worldPosition : this.anchorPos;
     }
 
     public boolean isAnchor() {
-        return this.anchorPos.equals(this.worldPosition);
+        return anchorPos().equals(this.worldPosition);
     }
 
     /** Point a filler cell at its anchor (set during multiblock placement). */
@@ -77,10 +77,11 @@ public class SolarPanelBlockEntity extends BlockEntity {
     /** The anchor's BE (this one if it is the anchor), or {@code null} if the anchor is gone. */
     @Nullable
     private SolarPanelBlockEntity anchorEntity() {
-        if (isAnchor()) {
+        BlockPos anchor = anchorPos();
+        if (anchor.equals(this.worldPosition)) {
             return this;
         }
-        return this.level != null && this.level.getBlockEntity(this.anchorPos) instanceof SolarPanelBlockEntity a
+        return this.level != null && this.level.getBlockEntity(anchor) instanceof SolarPanelBlockEntity a
                 ? a : null;
     }
 
@@ -171,7 +172,7 @@ public class SolarPanelBlockEntity extends BlockEntity {
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putInt("Energy", this.energy.getRaw());
-        output.putLong("Anchor", this.anchorPos.asLong());
+        output.putLong("Anchor", anchorPos().asLong());
     }
 
     @Override

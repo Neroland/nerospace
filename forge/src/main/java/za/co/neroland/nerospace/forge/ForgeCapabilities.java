@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.forge;
 
 import java.util.EnumMap;
+import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -73,50 +74,50 @@ public final class ForgeCapabilities {
 
     @Nullable
     private static MachineCaps createCaps(BlockEntity be) {
-        NerospaceEnergyStorage energy = null;
-        NerospaceFluidStorage fluid = null;
-        NerospaceGasStorage gas = null;
+        Supplier<NerospaceEnergyStorage> energy = null;
+        Supplier<NerospaceFluidStorage> fluid = null;
+        Supplier<NerospaceGasStorage> gas = null;
 
         if (be instanceof BatteryBlockEntity battery) {
-            energy = battery.getEnergy();
+            energy = battery::getEnergy;
         } else if (be instanceof CreativeBatteryBlockEntity battery) {
-            energy = battery.getEnergy();
+            energy = battery::getEnergy;
         } else if (be instanceof FluidTankBlockEntity tank) {
-            fluid = tank.getTank();
+            fluid = tank::getTank;
         } else if (be instanceof CreativeFluidTankBlockEntity tank) {
-            fluid = tank.getTank();
+            fluid = tank::getTank;
         } else if (be instanceof GasTankBlockEntity tank) {
-            gas = tank.getTank();
+            gas = tank::getTank;
         } else if (be instanceof CreativeGasTankBlockEntity tank) {
-            gas = tank.getTank();
+            gas = tank::getTank;
         } else if (be instanceof CombustionGeneratorBlockEntity machine) {
-            energy = machine.getEnergy();
+            energy = machine::getEnergy;
         } else if (be instanceof NerosiumGrinderBlockEntity machine) {
-            energy = machine.getEnergy();
+            energy = machine::getEnergy;
         } else if (be instanceof PassiveGeneratorBlockEntity machine) {
-            energy = machine.getEnergy();
+            energy = machine::getEnergy;
         } else if (be instanceof UniversalPipeBlockEntity pipe) {
-            energy = pipe.getEnergy();
-            fluid = pipe.getFluidTank();
-            gas = pipe.getGas();
+            energy = pipe::getEnergy;
+            fluid = pipe::getFluidTank;
+            gas = pipe::getGas;
         } else if (be instanceof TrashCanBlockEntity trash) {
-            fluid = trash.getFluid();
-            gas = trash.getGas();
+            fluid = trash::getFluid;
+            gas = trash::getGas;
         } else if (be instanceof OxygenGeneratorBlockEntity machine) {
-            energy = machine.getEnergy();
-            gas = machine.getGas();
+            energy = machine::getEnergy;
+            gas = machine::getGas;
         } else if (be instanceof SolarPanelBlockEntity panel) {
-            energy = panel.getEnergy();
+            energy = panel::getEnergy;
         } else if (be instanceof TerraformerBlockEntity machine) {
-            energy = machine.getEnergy();
+            energy = machine::getEnergy;
         } else if (be instanceof FuelTankBlockEntity tank) {
-            fluid = tank.getTank();
+            fluid = tank::getTank;
         } else if (be instanceof FuelRefineryBlockEntity machine) {
-            energy = machine.getEnergy();
-            fluid = machine.getTank();
+            energy = machine::getEnergy;
+            fluid = machine::getTank;
         } else if (be instanceof QuarryControllerBlockEntity machine) {
-            energy = machine.getEnergy();
-            fluid = machine.getTank();
+            energy = machine::getEnergy;
+            fluid = machine::getTank;
         }
 
         Container container = be instanceof Container c ? c : null;
@@ -144,8 +145,9 @@ public final class ForgeCapabilities {
         private final LazyOptional<IItemHandler> itemUnsided;
         private final EnumMap<Direction, LazyOptional<IItemHandler>> itemBySide = new EnumMap<>(Direction.class);
 
-        MachineCaps(@Nullable NerospaceEnergyStorage energy, @Nullable NerospaceFluidStorage fluid,
-                @Nullable NerospaceGasStorage gas, @Nullable Container container) {
+        MachineCaps(@Nullable Supplier<NerospaceEnergyStorage> energy,
+                @Nullable Supplier<NerospaceFluidStorage> fluid,
+                @Nullable Supplier<NerospaceGasStorage> gas, @Nullable Container container) {
             this.energy = energy == null ? LazyOptional.empty() : LazyOptional.of(() -> new EnergyAdapter(energy));
             this.fluid = fluid == null ? LazyOptional.empty() : LazyOptional.of(() -> new FluidAdapter(fluid));
             this.gas = gas == null ? LazyOptional.empty() : LazyOptional.of(() -> new GasAdapter(gas));
@@ -188,79 +190,79 @@ public final class ForgeCapabilities {
         }
     }
 
-    private record EnergyAdapter(NerospaceEnergyStorage delegate) implements ForgeEnergyStorageCapability {
+    private record EnergyAdapter(Supplier<NerospaceEnergyStorage> delegate) implements ForgeEnergyStorageCapability {
         @Override
         public long getAmount() {
-            return delegate.getAmount();
+            return delegate.get().getAmount();
         }
 
         @Override
         public long getCapacity() {
-            return delegate.getCapacity();
+            return delegate.get().getCapacity();
         }
 
         @Override
         public long insert(long maxAmount, boolean simulate) {
-            return delegate.insert(maxAmount, simulate);
+            return delegate.get().insert(maxAmount, simulate);
         }
 
         @Override
         public long extract(long maxAmount, boolean simulate) {
-            return delegate.extract(maxAmount, simulate);
+            return delegate.get().extract(maxAmount, simulate);
         }
     }
 
-    private record FluidAdapter(NerospaceFluidStorage delegate) implements ForgeFluidStorageCapability {
+    private record FluidAdapter(Supplier<NerospaceFluidStorage> delegate) implements ForgeFluidStorageCapability {
         @Override
         public net.minecraft.world.level.material.Fluid getFluid() {
-            return delegate.getFluid();
+            return delegate.get().getFluid();
         }
 
         @Override
         public long getAmount() {
-            return delegate.getAmount();
+            return delegate.get().getAmount();
         }
 
         @Override
         public long getCapacity() {
-            return delegate.getCapacity();
+            return delegate.get().getCapacity();
         }
 
         @Override
         public long fill(net.minecraft.world.level.material.Fluid fluid, long amount, boolean simulate) {
-            return delegate.fill(fluid, amount, simulate);
+            return delegate.get().fill(fluid, amount, simulate);
         }
 
         @Override
         public long drain(long amount, boolean simulate) {
-            return delegate.drain(amount, simulate);
+            return delegate.get().drain(amount, simulate);
         }
     }
 
-    private record GasAdapter(NerospaceGasStorage delegate) implements ForgeGasStorageCapability {
+    private record GasAdapter(Supplier<NerospaceGasStorage> delegate) implements ForgeGasStorageCapability {
         @Override
         public GasResource getGas() {
-            return delegate.getGas();
+            return delegate.get().getGas();
         }
 
         @Override
         public long getAmount() {
-            return delegate.getAmount();
+            return delegate.get().getAmount();
         }
 
         @Override
         public long getCapacity() {
-            return delegate.getCapacity();
+            return delegate.get().getCapacity();
         }
 
         @Override
         public long fill(GasResource gas, long amount, boolean simulate) {
-            return delegate.fill(gas, amount, simulate);
+            return delegate.get().fill(gas, amount, simulate);
         }
 
         @Override
         public long drain(long amount, boolean simulate) {
-            return delegate.drain(amount, simulate);
+            return delegate.get().drain(amount, simulate);
         }
     }
 }
