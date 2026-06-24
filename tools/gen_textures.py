@@ -279,35 +279,34 @@ def gen_raw():
 
 
 def gen_pickaxe():
-    # Vanilla-style orientation: a broad head in the top-left and a long diagonal handle to the
-    # bottom-right. Keep the silhouette chunky at 16x16 so it reads as a pickaxe in inventory and in hand.
+    # Vanilla pickaxe silhouette, recoloured into the nerosium family so the head reads correctly in hand.
     img = new_img()
     px = img.load()
-
-    head = {
-        (2, 2): N_REDHI, (3, 2): N_REDHI, (4, 2): N_RED, (5, 2): N_RED,
-        (6, 2): N_MAG, (7, 2): N_MAG, (8, 2): N_PURPLE,
-        (1, 3): N_REDHI, (2, 3): N_RED, (3, 3): N_RED, (4, 3): N_MAG,
-        (5, 3): N_MAG, (6, 3): N_PURPLE, (7, 3): N_PURPLE, (8, 3): N_DARK,
-        (2, 4): N_RED, (3, 4): N_MAG, (4, 4): N_PURPLE, (5, 4): N_DARK,
-        (7, 4): N_PURPLE, (8, 4): N_DARK,
-        (3, 5): N_MAG, (4, 5): N_PURPLE, (5, 5): N_DARK,
-        (6, 5): N_DARK,
-    }
-    for (x, y), colour in head.items():
-        px[x, y] = colour
-
-    socket = [(6, 6), (7, 6), (7, 7), (8, 7)]
-    for (x, y) in socket:
-        px[x, y] = N_DARK
-
-    handle = [(8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13)]
-    for (x, y) in handle:
-        px[x, y] = WOOD[0]
-        if x + 1 < S:
-            px[x + 1, y] = WOOD_D
-        if y - 1 >= 0:
-            px[x, y - 1] = WOOD[2]
+    outline = [
+        (6,2),(7,2),(8,2),(9,2),(10,2),(5,3),(11,3),(6,4),(7,4),(8,4),(9,4),
+        (13,4),(10,5),(13,5),(11,6),(14,6),(12,7),(14,7),(12,8),(14,8),
+        (12,9),(14,9),(12,10),(14,10),(13,11),(5,12),(4,13),(2,14),(3,14)
+    ]
+    bright = [(6,3),(10,3),(11,5),(13,6),(13,10)]
+    mid = [(7,3),(8,3),(9,3),(10,4),(11,4),(12,5),(12,6),(13,7),(13,8),(13,9)]
+    dark = [(7,4),(8,4),(9,4),(11,6),(12,7),(12,8),(12,9),(12,10),(13,11)]
+    handle_l = [(13,3),(12,4),(10,6),(9,7),(7,9),(5,11),(3,13)]
+    handle_m = [(12,3),(10,5),(9,6),(8,7),(7,8),(6,9),(5,10),(4,11),(3,12),(2,13)]
+    handle_d = [(13,4),(11,6),(10,7),(9,8),(8,9),(7,10),(6,11),(5,12),(4,13),(2,14),(3,14)]
+    for p in outline:
+        px[p] = N_DARK
+    for p in mid:
+        px[p] = N_MAG
+    for p in bright:
+        px[p] = N_REDHI
+    for p in dark:
+        px[p] = N_PURPLE
+    for p in handle_m:
+        px[p] = WOOD[0]
+    for p in handle_l:
+        px[p] = WOOD[2]
+    for p in handle_d:
+        px[p] = WOOD_D
     save(img, os.path.join(ITEM_DIR, "nerosium_pickaxe.png"))
 
 

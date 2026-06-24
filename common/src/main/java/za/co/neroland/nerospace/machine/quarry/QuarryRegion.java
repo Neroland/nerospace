@@ -78,6 +78,22 @@ public final class QuarryRegion {
         return x == this.minX || x == this.maxX || z == this.minZ || z == this.maxZ;
     }
 
+    public boolean acceptsController(BlockPos pos) {
+        int x = pos.getX();
+        int z = pos.getZ();
+        if (pos.getY() != this.refY) {
+            return false;
+        }
+        if (containsColumn(x, z)) {
+            return isPerimeter(x, z);
+        }
+        boolean besideWestOrEast = (x == this.minX - 1 || x == this.maxX + 1)
+                && z >= this.minZ && z <= this.maxZ;
+        boolean besideNorthOrSouth = (z == this.minZ - 1 || z == this.maxZ + 1)
+                && x >= this.minX && x <= this.maxX;
+        return besideWestOrEast || besideNorthOrSouth;
+    }
+
     public List<BlockPos> framePositions() {
         List<BlockPos> out = new ArrayList<>();
         for (int x = this.minX; x <= this.maxX; x++) {
@@ -162,7 +178,7 @@ public final class QuarryRegion {
                     continue;
                 }
                 QuarryRegion found = fromLandmarks(level, cursor, maxSide);
-                if (found == null) {
+                if (found == null || !found.acceptsController(origin)) {
                     continue;
                 }
                 int distance = Math.abs(dx) + Math.abs(dz);

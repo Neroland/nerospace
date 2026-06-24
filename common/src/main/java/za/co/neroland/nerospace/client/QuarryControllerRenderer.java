@@ -52,7 +52,7 @@ public class QuarryControllerRenderer
 
     @Override
     public int getViewDistance() {
-        return 128; // regions can stretch well past the default 64 from the controller
+        return 512; // max-size claims can put the gantry far from the controller block
     }
 
     @Override

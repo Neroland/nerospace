@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.pipe.PipeIoMode;
@@ -119,6 +120,23 @@ public class UniversalPipeRenderer
             Minecraft.getInstance().getItemModelResolver().updateForTopItem(
                     entry.renderState, item.stack(), ItemDisplayContext.GROUND, pipe.getLevel(), null,
                     (int) pipe.getBlockPos().asLong() + i);
+        }
+
+        for (int slot = 0; slot < pipe.getContainerSize() && state.visibleItems < MAX_RENDERED_ITEMS; slot++) {
+            ItemStack stack = pipe.getItem(slot);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            int i = state.visibleItems++;
+            UniversalPipeRenderState.TravellingItemEntry entry = state.entry(i);
+            int lane = i - count;
+            entry.x = 0.5F + ((lane % 2) == 0 ? -0.12F : 0.12F);
+            entry.y = 0.5F + (lane / 2) * 0.12F;
+            entry.z = 0.5F;
+            entry.spin = (now * 2.0F + i * 45.0F) % 360.0F;
+            Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                    entry.renderState, stack, ItemDisplayContext.GROUND, pipe.getLevel(), null,
+                    (int) pipe.getBlockPos().asLong() + i + 31);
         }
     }
 
