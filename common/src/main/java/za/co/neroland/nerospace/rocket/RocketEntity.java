@@ -133,7 +133,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 6;
+            return 7;
         }
     };
 
@@ -359,8 +359,26 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (isOnReturnSite()) {
             return true;
         }
-        BlockPos origin = padScanOrigin();
+        BlockPos origin = validPadScanOrigin();
+        if (origin == null) {
+            return false;
+        }
         Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), origin);
+        return isValidPadCluster(pads, origin);
+    }
+
+    @Nullable
+    private BlockPos validPadScanOrigin() {
+        for (BlockPos origin : padScanOrigins()) {
+            Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), origin);
+            if (isValidPadCluster(pads, origin)) {
+                return origin;
+            }
+        }
+        return null;
+    }
+
+    private boolean isValidPadCluster(Set<BlockPos> pads, BlockPos origin) {
         if (LaunchPadMultiblock.fullSquareCornerContaining(pads, 3, origin) == null) {
             return false;
         }
@@ -376,6 +394,27 @@ public class RocketEntity extends Entity implements MenuProvider {
     private BlockPos padScanOrigin() {
         BlockPos feet = this.blockPosition();
         return level().getBlockState(feet).getBlock() instanceof RocketLaunchPadBlock ? feet : feet.below();
+    }
+
+    private java.util.List<BlockPos> padScanOrigins() {
+        BlockPos feet = padScanOrigin();
+        int y = feet.getY();
+        int centreX = Mth.floor(this.getX());
+        int centreZ = Mth.floor(this.getZ());
+        java.util.List<BlockPos> origins = new java.util.ArrayList<>(5);
+        addUniqueOrigin(origins, new BlockPos(centreX, y, centreZ));
+        addUniqueOrigin(origins, feet);
+        addUniqueOrigin(origins, new BlockPos(centreX + 1, y, centreZ));
+        addUniqueOrigin(origins, new BlockPos(centreX - 1, y, centreZ));
+        addUniqueOrigin(origins, new BlockPos(centreX, y, centreZ + 1));
+        addUniqueOrigin(origins, new BlockPos(centreX, y, centreZ - 1));
+        return origins;
+    }
+
+    private static void addUniqueOrigin(java.util.List<BlockPos> origins, BlockPos pos) {
+        if (!origins.contains(pos)) {
+            origins.add(pos);
+        }
     }
 
     private boolean isOnReturnSite() {
