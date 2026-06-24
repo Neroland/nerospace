@@ -3,14 +3,16 @@ name: Multiloader Build
 # Builds the flattened multiloader root — MultiLoader-Template layout
 # (ModDevGradle common+neoforge, Fabric Loom fabric, ForgeGradle forge; no architectury-loom).
 #
-# STRICT: there is no continue-on-error, so ANY matrix cell that fails to build
-# fails the whole workflow. All six loader x version cells are verified buildable
-# from public artifacts:
+# The supported 26.1.2/26.2 cells are strict: any failure fails the workflow.
+# 26.3 is wired as experimental with continue-on-error because not every loader
+# has public userdev/API artifacts for it yet.
+#
+# The six supported loader x version cells are verified buildable from public artifacts:
 #   - neoforge @ 26.1.2  -> NeoForge 26.1.2.76
 #   - neoforge @ 26.2    -> NeoForge 26.2.0.6-beta (now on the public NeoForged Maven)
 #   - forge    @ 26.1.2  -> Forge 26.1.2-64.0.10
 #   - forge    @ 26.2    -> Forge 26.2-65.0.0
-#   - fabric   @ 26.2    -> Fabric Loom 1.17 + fabric-api 0.152.1+26.2 (de-obf, no mappings)
+#   - fabric   @ 26.2    -> Fabric Loom 1.17 + fabric-api 0.152.2+26.2 (de-obf, no mappings)
 #   - fabric   @ 26.1.2  -> Fabric Loom 1.17 + fabric-api 0.151.0+26.1.2; needs the access
 #                          widener (fabric/src/main/resources/nerospace.accesswidener) because
 #                          vanilla MC 26.1.2 kept BlockEntityType's constructor private
@@ -37,22 +39,38 @@ jobs:
   build:
     name: ${{ matrix.loader }} @ MC ${{ matrix.mc }}
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - loader: neoforge
             mc: "26.1.2"
+            experimental: false
           - loader: neoforge
             mc: "26.2"
+            experimental: false
+          - loader: neoforge
+            mc: "26.3"
+            experimental: true
           - loader: forge
             mc: "26.1.2"
+            experimental: false
           - loader: forge
             mc: "26.2"
+            experimental: false
+          - loader: forge
+            mc: "26.3"
+            experimental: true
           - loader: fabric
             mc: "26.1.2"
+            experimental: false
           - loader: fabric
             mc: "26.2"
+            experimental: false
+          - loader: fabric
+            mc: "26.3"
+            experimental: true
 
     steps:
       - name: Checkout repository
