@@ -209,7 +209,7 @@ jobs:
         uses: Kir-Antipov/mc-publish@995edadc13559a8b28d0b7e6571229f067ec7659 # v3.3
         with:
           curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
-          curseforge-token: ${{ secrets.CURSEFORGE_API_TOKEN }}
+          curseforge-token: ${{ secrets.CURSE_FORGE_API_TOKEN }}
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_API_TOKEN }}
           name: Nerospace ${{ needs.detect.outputs.version }} - ${{ matrix.label }} ${{ matrix.mc }}
