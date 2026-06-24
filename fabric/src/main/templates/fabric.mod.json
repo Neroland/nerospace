@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "Nerospace - multiloader build (Fabric).",
+  "authors": ["${mod_authors}"],
+  "license": "${mod_license}",
+  "accessWidener": "nerospace.accesswidener",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["za.co.neroland.nerospace.fabric.NerospaceFabric"],
+    "client": ["za.co.neroland.nerospace.fabric.NerospaceFabricClient"]
+  },
+  "mixins": [
+    "nerospace-common.mixins.json",
+    "nerospace.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

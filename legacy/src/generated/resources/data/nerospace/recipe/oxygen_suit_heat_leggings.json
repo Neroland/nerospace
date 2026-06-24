@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": "nerospace:cindrite",
+    "H": "nerospace:oxygen_suit_t2_leggings"
+  },
+  "pattern": [
+    " G ",
+    "GHG",
+    " G "
+  ],
+  "result": {
+    "id": "nerospace:oxygen_suit_heat_leggings"
+  }
+}

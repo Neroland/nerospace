@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "has_nerosium": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:nerosium_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "description": "Mine nerosium and reach for the stars",
+    "icon": {
+      "id": "nerospace:nerosium_ingot"
+    },
+    "show_toast": false,
+    "title": "Nerospace"
+  },
+  "requirements": [
+    [
+      "has_nerosium"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

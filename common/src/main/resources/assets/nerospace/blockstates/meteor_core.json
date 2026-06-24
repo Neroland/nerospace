@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "nerospace:block/meteor_core"
+    }
+  }
+}

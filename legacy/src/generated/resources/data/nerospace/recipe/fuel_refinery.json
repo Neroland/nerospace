@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "minecraft:furnace",
+    "G": "#c:glass_blocks/colorless",
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "NGN",
+    "NFN",
+    "NRN"
+  ],
+  "result": {
+    "id": "nerospace:fuel_refinery"
+  }
+}

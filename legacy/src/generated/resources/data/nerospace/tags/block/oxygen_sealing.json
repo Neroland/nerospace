@@ -1,0 +1,11 @@
+{
+  "values": [
+    "nerospace:station_wall",
+    "nerospace:station_floor",
+    "nerospace:nerosium_block",
+    "nerospace:raw_nerosium_block",
+    "nerospace:nerosteel_block",
+    "nerospace:cindrite_block",
+    "nerospace:glacite_block"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "carvers": [
+    "minecraft:cave",
+    "minecraft:cave_extra_underground",
+    "minecraft:canyon"
+  ],
+  "downfall": 0.0,
+  "effects": {
+    "foliage_color": "#4fb85a",
+    "grass_color": "#5bd46a",
+    "water_color": "#3a8e63"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nerospace:nerosteel_ore_placed",
+      "nerospace:xertz_quartz_ore_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed",
+      "nerospace:mega_city_placed"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [
+      {
+        "type": "nerospace:greenling",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 8
+      }
+    ],
+    "axolotls": [],
+    "creature": [
+      {
+        "type": "nerospace:quartz_crawler",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 10
+      },
+      {
+        "type": "nerospace:alien_villager",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 6
+      }
+    ],
+    "misc": [],
+    "monster": [
+      {
+        "type": "nerospace:xertz_stalker",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 12
+      }
+    ],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.8
+}

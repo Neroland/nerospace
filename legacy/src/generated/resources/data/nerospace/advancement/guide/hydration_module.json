@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/terraformed_ground",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:hydration_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Build a Hydration Module and feed your Terraformer glacite",
+    "icon": {
+      "id": "nerospace:hydration_module"
+    },
+    "title": "Meltwater"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

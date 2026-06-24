@@ -1,0 +1,12 @@
+{
+  "parent": "nerospace:guide/terraformer",
+  "criteria": { "impossible": { "trigger": "minecraft:impossible" } },
+  "display": {
+    "description": "Stand on ground your Terraformer made breathable",
+    "frame": "challenge",
+    "icon": { "id": "nerospace:terraformer" },
+    "title": "Green Again"
+  },
+  "requirements": [ [ "impossible" ] ],
+  "sends_telemetry_event": true
+}

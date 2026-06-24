@@ -39,7 +39,10 @@ import re
 import sys
 import time
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from nerospace_target import REPO_ROOT as ROOT, resolve, src_base, target_label
+
+# Routed via nerospace_target: `src/...` paths follow the chosen target (root, or multiloader/common
+# with --multiloader); `art/...` paths always resolve at the repo root. So one tool syncs either tree.
 TEX_ENTITY = "src/main/resources/assets/nerospace/textures/entity"
 
 BEGIN = "// model_sync:begin"
@@ -92,12 +95,12 @@ _CUBE_RE = re.compile(
 
 
 def rd(rel):
-    with open(os.path.join(ROOT, rel)) as fh:
+    with open(resolve(rel)) as fh:
         return fh.read()
 
 
 def wr(rel, text):
-    with open(os.path.join(ROOT, rel), "w") as fh:
+    with open(resolve(rel), "w") as fh:
         fh.write(text)
 
 
@@ -190,7 +193,7 @@ def parse_bbmodel(rel):
 
 
 def _tex_entry(texture):
-    png = os.path.join(ROOT, TEX_ENTITY, texture + ".png")
+    png = resolve(TEX_ENTITY + "/" + texture + ".png")
     src = ""
     if os.path.exists(png):
         with open(png, "rb") as fh:
@@ -201,9 +204,17 @@ def _tex_entry(texture):
         "render_sides": "auto", "frame_time": 1, "frame_order_type": "loop", "frame_order": "",
         "frame_interpolate": False, "visible": True, "mode": "bitmap", "saved": True,
         "uuid": _uuid("tex:" + texture),
-        "relative_path": "../../../%s/%s.png" % (TEX_ENTITY, texture),
+        "relative_path": _tex_relative_path(texture),
         "source": src,
     }
+
+
+def _tex_relative_path(texture):
+    """Hint path from the .bbmodel (art/blockbench/entity/) to its texture under the chosen target;
+    for the multiloader the texture lives a few dirs deeper (multiloader/common/...)."""
+    rel_base = os.path.relpath(src_base(), ROOT).replace("\\", "/")
+    prefix = "../../../" + ("" if rel_base == "." else rel_base + "/")
+    return prefix + TEX_ENTITY + "/" + texture + ".png"
 
 
 def _uuid(seed):
@@ -215,7 +226,7 @@ def _uuid(seed):
 def _png_size(texture):
     """The texture sheet's pixel size from the PNG IHDR (the bbmodel resolution must match the
     Java LayerDefinition sheet — rockets are 128x128 now, creatures stay 64x64)."""
-    path = os.path.join(ROOT, TEX_ENTITY, texture + ".png")
+    path = resolve(TEX_ENTITY + "/" + texture + ".png")
     try:
         with open(path, "rb") as fh:
             head = fh.read(24)
@@ -254,7 +265,7 @@ def write_bbmodel(rel, parts, texture):
         "elements": elements, "outliner": outliner, "textures": [_tex_entry(texture)],
     }
     out = json.dumps(doc, indent=2)
-    old = rd(rel) if os.path.exists(os.path.join(ROOT, rel)) else ""
+    old = rd(rel) if os.path.exists(resolve(rel)) else ""
     if out != old:
         wr(rel, out)
         return True
@@ -264,7 +275,7 @@ def write_bbmodel(rel, parts, texture):
 # ---- sync -----------------------------------------------------------------
 
 def mtime(rel):
-    p = os.path.join(ROOT, rel)
+    p = resolve(rel)
     return os.path.getmtime(p) if os.path.exists(p) else 0.0
 
 
@@ -323,6 +334,7 @@ def main():
     args = sys.argv[1:]
     forced = "java" if "--to-java" in args else ("bbmodel" if "--to-bbmodel" in args else None)
     check = "--check" in args
+    print("model_sync: target = %s" % target_label())
     if "--watch" in args:
         print("model_sync: watching (Ctrl-C to stop)...")
         seen = {}

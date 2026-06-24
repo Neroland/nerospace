@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:root",
+  "criteria": {
+    "has_grinder": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:nerosium_grinder"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Build a Nerosium Grinder",
+    "icon": {
+      "id": "nerospace:nerosium_grinder"
+    },
+    "title": "Industrial Revolution"
+  },
+  "requirements": [
+    [
+      "has_grinder"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_bars",
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    "NIN",
+    "I I",
+    "NIN"
+  ],
+  "result": {
+    "count": 4,
+    "id": "nerospace:pipe_filter"
+  }
+}

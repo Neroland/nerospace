@@ -16,9 +16,16 @@ import json
 import os
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GEN_ASSETS = os.path.join(ROOT, "src/generated/resources/assets/nerospace")
+from nerospace_target import src_base, target_label
+
+# Target the root mod by default, or multiloader/common with --multiloader.
+ROOT = src_base()
+print("check_assets: target = %s" % target_label())
 MAIN_ASSETS = os.path.join(ROOT, "src/main/resources/assets/nerospace")
+# The root mod emits datagen JSON into src/generated; the multiloader hand-authors everything in
+# src/main (no datagen), so fall back to the main assets when there is no generated tree.
+_GEN = os.path.join(ROOT, "src/generated/resources/assets/nerospace")
+GEN_ASSETS = _GEN if os.path.isdir(_GEN) else MAIN_ASSETS
 
 MODELS_DIR = os.path.join(GEN_ASSETS, "models")
 BLOCKSTATES_DIR = os.path.join(GEN_ASSETS, "blockstates")

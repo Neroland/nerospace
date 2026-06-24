@@ -22,7 +22,11 @@ except ModuleNotFoundError:
     print("gen_textures: Pillow not installed; skipping texture generation (pip install pillow).")
     sys.exit(0)
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from nerospace_target import src_base, target_label
+
+# Target the root mod by default, or multiloader/common with --multiloader (NEROSPACE_TARGET=multiloader).
+ROOT = src_base()
+print("gen_textures: target = %s" % target_label())
 BLOCK_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/block")
 ITEM_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/item")
 ENTITY_DIR = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures/entity")

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "nerospace:item/frost_strider_spawn_egg"
+  }
+}

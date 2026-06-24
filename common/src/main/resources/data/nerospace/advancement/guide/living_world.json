@@ -1,0 +1,12 @@
+{
+  "parent": "nerospace:guide/hydration_module",
+  "criteria": { "impossible": { "trigger": "minecraft:impossible" } },
+  "display": {
+    "description": "Stand on land your Terraformer brought fully to life",
+    "frame": "challenge",
+    "icon": { "id": "nerospace:meadow_loper_spawn_egg" },
+    "title": "World Awake"
+  },
+  "requirements": [ [ "impossible" ] ],
+  "sends_telemetry_event": true
+}

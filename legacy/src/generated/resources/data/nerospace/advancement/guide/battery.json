@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/universal_pipe",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:battery"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Battery",
+    "icon": {
+      "id": "nerospace:battery"
+    },
+    "title": "Stored Potential"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,24 @@
+{
+  "values": [
+    "nerospace:nerosium_ore",
+    "nerospace:deepslate_nerosium_ore",
+    "nerospace:nerosium_block",
+    "nerospace:raw_nerosium_block",
+    "nerospace:nerosteel_ore",
+    "nerospace:nerosteel_block",
+    "nerospace:cindrite_ore",
+    "nerospace:cindrite_block",
+    "nerospace:glacite_ore",
+    "nerospace:glacite_block",
+    "nerospace:station_floor",
+    "nerospace:station_wall",
+    "nerospace:item_store",
+    "nerospace:battery",
+    "nerospace:fluid_tank",
+    "nerospace:combustion_generator",
+    "nerospace:nerosium_grinder",
+    "nerospace:passive_generator",
+    "nerospace:universal_pipe",
+    "nerospace:trash_can"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "parent": "nerospace:guide/rocket_tier_3",
+  "criteria": {
+    "reached_cindara": {
+      "conditions": {
+        "to": "nerospace:cindara"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": "Travel to the volcanic moon Cindara",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:cindrite"
+    },
+    "title": "Into the Fire"
+  },
+  "requirements": [
+    [
+      "reached_cindara"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

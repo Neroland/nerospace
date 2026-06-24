@@ -1,0 +1,25 @@
+{
+  "parent": "nerospace:guide/rocket_tier_2",
+  "criteria": {
+    "reached_greenxertz": {
+      "conditions": {
+        "to": "nerospace:greenxertz"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": "Travel to Greenxertz",
+    "frame": "goal",
+    "icon": {
+      "id": "nerospace:nerosteel_ingot"
+    },
+    "title": "A Whole New World"
+  },
+  "requirements": [
+    [
+      "reached_greenxertz"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "nerospace:oxygen_suit_cold"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "nerospace:oxygen_suit_cold"
+      }
+    ]
+  }
+}

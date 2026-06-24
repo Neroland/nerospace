@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": "nerospace:glacite",
+    "H": "nerospace:oxygen_suit_t2_helmet"
+  },
+  "pattern": [
+    " G ",
+    "GHG",
+    " G "
+  ],
+  "result": {
+    "id": "nerospace:oxygen_suit_cold_helmet"
+  }
+}

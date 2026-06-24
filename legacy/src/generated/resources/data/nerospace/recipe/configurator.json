@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "N",
+    "N",
+    "R"
+  ],
+  "result": {
+    "id": "nerospace:configurator"
+  }
+}

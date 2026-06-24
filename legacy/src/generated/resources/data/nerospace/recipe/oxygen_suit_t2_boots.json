@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "#c:gems/cindrite",
+    "H": "nerospace:oxygen_suit_boots"
+  },
+  "pattern": [
+    " C ",
+    "CHC",
+    " C "
+  ],
+  "result": {
+    "id": "nerospace:oxygen_suit_t2_boots"
+  }
+}

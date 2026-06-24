@@ -23,8 +23,15 @@ import sys
 import uuid
 
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEX = os.path.join(ROOT, "src/main/resources/assets/nerospace/textures")
+from nerospace_target import REPO_ROOT, src_base, target_label
+
+ROOT = REPO_ROOT          # art/ outputs always live at the repo root (shared art source)
+SRC = src_base()          # textures follow the chosen target (root, or multiloader/common)
+print("gen_bbmodels: target = %s" % target_label())
+TEX = os.path.join(SRC, "src/main/resources/assets/nerospace/textures")
+# Relative hint from art/blockbench/<kind>/ down to the texture under the chosen target.
+_SRC_REL = os.path.relpath(SRC, ROOT).replace("\\", "/")
+_REL_PREFIX = "../../../" + ("" if _SRC_REL == "." else _SRC_REL + "/")
 OUT_BLOCK = os.path.join(ROOT, "art/blockbench/block")
 OUT_ITEM = os.path.join(ROOT, "art/blockbench/item")
 OUT_ENTITY = os.path.join(ROOT, "art/blockbench/entity")
@@ -73,7 +80,7 @@ def data_url(png_path):
 
 def texture_entry(name, folder):
     png = os.path.join(TEX, folder, name + ".png")
-    rel = "../../../src/main/resources/assets/nerospace/textures/%s/%s.png" % (folder, name)
+    rel = _REL_PREFIX + "src/main/resources/assets/nerospace/textures/%s/%s.png" % (folder, name)
     return {
         "path": os.path.normpath(png),
         "name": name + ".png",
@@ -113,6 +120,19 @@ def plate_faces():
 
 
 def make_bbmodel(name, folder, kind):
+    out_dir = OUT_BLOCK if kind == "block" else OUT_ITEM
+    path = os.path.join(out_dir, name + ".bbmodel")
+    # ADDITIVE-ONLY: never clobber an existing .bbmodel (pass --force to override). Checked FIRST so we
+    # never even open the texture for an already-generated model (the texture set differs root vs
+    # multiloader — e.g. solar tier naming — and opening a missing PNG would crash an additive run).
+    if os.path.exists(path) and "--force" not in sys.argv:
+        print("skip (exists)", os.path.relpath(path, ROOT))
+        return
+    # No source texture for this name on the chosen target -> nothing to model; skip gracefully.
+    if not os.path.exists(os.path.join(TEX, folder, name + ".png")):
+        print("skip (no texture)", "%s/%s.png" % (folder, name))
+        return
+
     el_uuid = str(uuid.uuid4())
     if kind == "block":
         frm, to, faces = [0, 0, 0], [16, 16, 16], cube_faces()
@@ -135,12 +155,6 @@ def make_bbmodel(name, folder, kind):
         "elements": [element], "outliner": [el_uuid],
         "textures": [texture_entry(name, folder)],
     }
-    out_dir = OUT_BLOCK if kind == "block" else OUT_ITEM
-    path = os.path.join(out_dir, name + ".bbmodel")
-    # ADDITIVE-ONLY: never clobber an existing .bbmodel (pass --force to override).
-    if os.path.exists(path) and "--force" not in sys.argv:
-        print("skip (exists)", os.path.relpath(path, ROOT))
-        return
     with open(path, "w") as fh:
         json.dump(doc, fh, indent=2)
     print("wrote", os.path.relpath(path, ROOT))

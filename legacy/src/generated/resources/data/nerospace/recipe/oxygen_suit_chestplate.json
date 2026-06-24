@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "nerospace:rocket_fuel_canister",
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    "N N",
+    "NCN",
+    "NNN"
+  ],
+  "result": {
+    "id": "nerospace:oxygen_suit_chestplate"
+  }
+}

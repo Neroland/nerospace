@@ -49,3 +49,7 @@ repo/
 !**/src/**/repo/
 PROJECT_PLAN.md
 /tools/__pycache__
+runs/
+/fabric/runs
+/.github/scripts/__pycache__
+/tools/gradle-mcp/node_modules

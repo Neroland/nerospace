@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:station",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:rocket_tier_2"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Tier 2 Rocket",
+    "icon": {
+      "id": "nerospace:rocket_tier_2"
+    },
+    "title": "Bigger Boosters"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "minecraft:furnace",
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "NNN",
+    "NFN",
+    "NRN"
+  ],
+  "result": {
+    "id": "nerospace:combustion_generator"
+  }
+}
