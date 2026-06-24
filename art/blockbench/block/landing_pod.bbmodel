@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "landing_pod",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "landing_pod",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "3192a3e4-0a2c-4b91-9b5f-d3715ac03c51"
+    }
+  ],
+  "outliner": [
+    "3192a3e4-0a2c-4b91-9b5f-d3715ac03c51"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\common\\src\\main\\resources\\assets\\nerospace\\textures\\block\\landing_pod.png",
+      "name": "landing_pod.png",
+      "folder": "block",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "aa987291-409b-46ca-b392-349a5a8ec88a",
+      "relative_path": "../../../common/src/main/resources/assets/nerospace/textures/block/landing_pod.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA8ElEQVR4nKWTPQ7CMAyF2yhjD5CJA3AAbsTGwsYAEwwMSCxs3IgDMCOmHqB70av0Va+umGopdfyT9xy7qW+fvq8WSNbn+zgNRtd1w2qaZtCllEFHUbxt22pzeVZJDhkxUUmAas/ChyR9xESAvSdCIB3zkjPC4DrusQHLGF7F+nCf3ft13I69AWQEKKVMQCTv6348IEBi5FFBwkkyAdmr3XnC5v3Cn+KdEQGpCgD/SfYmutaMXZgIEyAve5Aui9l97DnojczOQrnOQNNifwDNHHBGvzcxv6LHJ1Ogw7ECDnn5sz8xPqQ4FWZPn8iplz7nH56ls7Hge4IZAAAAAElFTkSuQmCC"
+    }
+  ]
+}

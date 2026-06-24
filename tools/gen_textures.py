@@ -2015,6 +2015,7 @@ SYM_GAS = [(0, 1, 0, 1, 0), (1, 0, 1, 0, 1), (0, 1, 0, 1, 0), (1, 0, 1, 0, 1), (
 SYM_BOX = [(1, 1, 1, 1, 1), (1, 0, 0, 0, 1), (1, 0, 1, 0, 1), (1, 0, 0, 0, 1), (1, 1, 1, 1, 1)]
 # Exclamation mark — the warning glyph for the hidden Sentry test block.
 SYM_BANG = [(0, 0, 1, 0, 0), (0, 0, 1, 0, 0), (0, 0, 1, 0, 0), (0, 0, 0, 0, 0), (0, 0, 1, 0, 0)]
+SYM_DOCK = [(1, 0, 0, 0, 1), (0, 1, 0, 1, 0), (0, 0, 1, 0, 0), (0, 1, 0, 1, 0), (1, 0, 0, 0, 1)]
 
 
 def gen_universal_pipe_glass():
@@ -2049,6 +2050,21 @@ def gen_storage_endpoints():
     gen_panel_block("creative_gas_tank", pink, SYM_GAS)
     gen_panel_block("item_store", (232, 232, 244, 255), SYM_BOX)
     gen_panel_block("creative_item_store", pink, SYM_BOX)
+    gen_panel_block("docking_port", I_CYAN, SYM_DOCK)
+    gen_panel_block("landing_pod", R_WINDOW, SYM_BOX)
+    img = Image.new("RGBA", (16, 16))
+    px = img.load()
+    rng = random.Random(0x1A9D1E)
+    fabric = [(120, 142, 156, 255), (146, 166, 180, 255), (92, 108, 124, 255)]
+    for y in range(16):
+        for x in range(16):
+            px[x, y] = rng.choice(fabric)
+            if (x + y) % 5 == 0 or (x - y) % 7 == 0:
+                px[x, y] = (78, 90, 106, 255)
+    bevel(img, R_WINDOW, METAL_D)
+    for x in range(4, 12):
+        px[x, 8] = R_DARK
+    save(img, os.path.join(BLOCK_DIR, "landing_pod_deflated.png"))
 
 
 # ---- Tier 1 Oxygen Suit — full generator redo (ART_OVERHAUL_DESIGN.md §4.3) -------------------

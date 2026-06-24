@@ -153,7 +153,10 @@ public final class OxygenManager {
         for (BlockPos pos : BlockPos.betweenClosed(
                 center.offset(-SAFE_RADIUS, -SAFE_RADIUS, -SAFE_RADIUS),
                 center.offset(SAFE_RADIUS, SAFE_RADIUS, SAFE_RADIUS))) {
-            if (level.getBlockState(pos).is(ModBlocks.ROCKET_LAUNCH_PAD.get())) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(ModBlocks.ROCKET_LAUNCH_PAD.get())
+                    || state.is(ModBlocks.LANDING_POD.get())
+                    || state.is(ModBlocks.DOCKING_PORT.get())) {
                 return true;
             }
         }

@@ -18,7 +18,7 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
 /**
  * Menu for the in-rocket UI. Carries the player inventory, a single fuel-intake slot (drop a fuel
  * bucket/canister to fuel the rocket), and five synced data values describing the rocket (fuel,
- * capacity, tier, launch-readiness, destination index).
+ * capacity, tier, launch-readiness, destination index and available-destination mask).
  *
  * <p>Buttons route through {@link #clickMenuButton} so no custom packet is needed: Launch, the cycle
  * button, and direct destination selection ({@code SELECT_DEST_BASE + index}) are all handled
@@ -38,7 +38,7 @@ public class RocketMenu extends AbstractContainerMenu {
     /** Select destination {@code n} via button id {@code SELECT_DEST_BASE + n}. */
     public static final int SELECT_DEST_BASE = 100;
 
-    private static final int DATA_COUNT = 6;
+    private static final int DATA_COUNT = 7;
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
@@ -166,12 +166,16 @@ public class RocketMenu extends AbstractContainerMenu {
     /** Display name of the currently selected destination. */
     public String getDestinationName() {
         net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> key =
-                getTier().destination(getDestinationIndex());
+                Destinations.byIndex(getDestinationIndex());
         return key == null ? "—" : Destinations.name(key);
     }
 
     public boolean hasMultipleDestinations() {
-        return getTier().destinations().size() > 1;
+        return Integer.bitCount(getDestinationMask()) > 1;
+    }
+
+    public int getDestinationMask() {
+        return this.data.get(6);
     }
 
     // --- Orbital-station selection (shown only when the Orbital Station is the destination) ----------
@@ -183,7 +187,7 @@ public class RocketMenu extends AbstractContainerMenu {
 
     /** Whether the currently selected destination is the Orbital Station dimension. */
     public boolean isStationDestination() {
-        return ModDimensions.STATION_LEVEL.equals(getTier().destination(getDestinationIndex()));
+        return ModDimensions.STATION_LEVEL.equals(Destinations.byIndex(getDestinationIndex()));
     }
 
     /**

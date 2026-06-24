@@ -32,8 +32,6 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -41,7 +39,6 @@ import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.ModFluids;
-import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -71,7 +68,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_LAUNCHING =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.BOOLEAN);
-    /** Index into the current tier's destination list. */
+    /** Index into {@link Destinations#all()} (Home, Station, planets). */
     private static final EntityDataAccessor<Integer> DATA_DEST =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
     /** Selected founded-station slot for the Orbital Station destination ({@code -1} = the origin platform). */
@@ -112,7 +109,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /**
      * Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex,
-     * [5]=stationSlot (−1 = origin; only meaningful for the Orbital Station destination).
+     * [5]=stationSlot (−1 = origin), [6]=destinationMask.
      */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -124,6 +121,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 3 -> canLaunch() ? 1 : 0;
                 case 4 -> getDestinationIndex();
                 case 5 -> getStationSlot();
+                case 6 -> destinationMask();
                 default -> 0;
             };
         }
@@ -228,7 +226,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     public void setTier(RocketTier tier) {
         this.entityData.set(DATA_TIER, tier.ordinal());
-        this.entityData.set(DATA_DEST, tier.defaultDestinationIndex());
+        this.entityData.set(DATA_DEST, Destinations.defaultIndex(tier, level().dimension()));
     }
 
     // --- Destination selection ----------------------------------------------
@@ -240,7 +238,15 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** The currently selected destination level, or {@code null} if this tier can't fly anywhere. */
     @Nullable
     public net.minecraft.resources.ResourceKey<Level> selectedDestination() {
-        return getTier().destination(getDestinationIndex());
+        if (!Destinations.isAvailable(getTier(), level().dimension(), getDestinationIndex())) {
+            return null;
+        }
+        return Destinations.byIndex(getDestinationIndex());
+    }
+
+    /** Bitmask of global destinations currently available to this rocket. */
+    public int destinationMask() {
+        return Destinations.availableMask(getTier(), level().dimension());
     }
 
     /** Cycles to the next destination available to this tier (server-side; from the menu button). */
@@ -248,20 +254,24 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (level().isClientSide() || isLaunching()) {
             return;
         }
-        int count = getTier().destinations().size();
-        if (count > 1) {
-            this.entityData.set(DATA_DEST, Math.floorMod(getDestinationIndex() + 1, count));
+        int mask = destinationMask();
+        int current = getDestinationIndex();
+        for (int step = 1; step <= Destinations.all().size(); step++) {
+            int next = Math.floorMod(current + step, Destinations.all().size());
+            if ((mask & (1 << next)) != 0) {
+                this.entityData.set(DATA_DEST, next);
+                return;
+            }
         }
     }
 
-    /** Selects a destination directly by index (server-side; from the trajectory buttons). */
+    /** Selects a global destination directly by index (server-side; from the trajectory buttons). */
     public void setDestinationIndex(int index) {
         if (level().isClientSide() || isLaunching()) {
             return;
         }
-        int count = getTier().destinations().size();
-        if (count > 0) {
-            this.entityData.set(DATA_DEST, Math.floorMod(index, count));
+        if (Destinations.isAvailable(getTier(), level().dimension(), index)) {
+            this.entityData.set(DATA_DEST, index);
         }
     }
 
@@ -322,9 +332,22 @@ public class RocketEntity extends Entity implements MenuProvider {
     public boolean canLaunch() {
         return !isLaunching()
                 && selectedDestination() != null
-                && getFuel() >= getTier().fuelPerLaunch()
+                && getFuel() >= requiredFuelForLaunch()
                 && this.getFirstPassenger() instanceof Player
                 && isOnValidPad();
+    }
+
+    private int requiredFuelForLaunch() {
+        net.minecraft.resources.ResourceKey<Level> target = selectedDestination();
+        if (target == null) {
+            return Integer.MAX_VALUE;
+        }
+        int outbound = getTier().fuelPerLaunch();
+        return Destinations.needsReturnReserve(target) ? outbound + returnReserveFuel() : outbound;
+    }
+
+    private int returnReserveFuel() {
+        return getTier().fuelPerLaunch();
     }
 
     /**
@@ -333,6 +356,9 @@ public class RocketEntity extends Entity implements MenuProvider {
      * Wall OR a Heavy Launch Complex; a Tier 4 rocket needs the Heavy Launch Complex specifically.
      */
     public boolean isOnValidPad() {
+        if (isOnReturnSite()) {
+            return true;
+        }
         BlockPos origin = padScanOrigin();
         Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), origin);
         if (LaunchPadMultiblock.fullSquareCornerContaining(pads, 3, origin) == null) {
@@ -350,6 +376,12 @@ public class RocketEntity extends Entity implements MenuProvider {
     private BlockPos padScanOrigin() {
         BlockPos feet = this.blockPosition();
         return level().getBlockState(feet).getBlock() instanceof RocketLaunchPadBlock ? feet : feet.below();
+    }
+
+    private boolean isOnReturnSite() {
+        BlockPos feet = this.blockPosition();
+        return ReturnSiteBlock.isReturnSite(level().getBlockState(feet))
+                || ReturnSiteBlock.isReturnSite(level().getBlockState(feet.below()));
     }
 
     /** Begins the ascent. Server-side; called from the rocket menu's Launch button. */
@@ -461,7 +493,9 @@ public class RocketEntity extends Entity implements MenuProvider {
             return;
         }
 
-        this.fuelTank.drain(getTier().fuelPerLaunch(), false);
+        int outboundFuel = getTier().fuelPerLaunch();
+        int carriedFuel = Math.max(0, getFuel() - outboundFuel);
+        this.fuelTank.drain(outboundFuel, false);
 
         Entity passenger = this.getFirstPassenger();
         if (passenger instanceof ServerPlayer player && level() instanceof ServerLevel current) {
@@ -470,53 +504,37 @@ public class RocketEntity extends Entity implements MenuProvider {
             if (destination != null) {
                 player.stopRiding();
 
-                double arrivalX;
-                double arrivalY;
-                double arrivalZ;
+                BlockPos preferred;
                 Component arrivalMessage;
                 if (targetKey.equals(ModDimensions.STATION_LEVEL)) {
                     // Dock at the selected founded station, or the shared origin platform when none is chosen.
                     int slot = getStationSlot();
                     StationRegistry.StationEntry entry =
                             slot >= 0 ? StationRegistry.get(server).get(slot) : null;
-                    BlockPos centre = entry != null ? entry.center() : new BlockPos(0, PLATFORM_Y, 0);
-                    arrivalMessage = Component.translatable("entity.nerospace.rocket.docked");
-                    destination.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
-                    if (!destination.getBlockState(centre).is(ModBlocks.STATION_FLOOR.get())
-                            && !destination.getBlockState(centre).is(ModBlocks.STATION_CORE.get())) {
-                        buildStationPlatform(destination, centre.getX(), centre.getY(), centre.getZ());
-                    }
-                    arrivalX = centre.getX() + 0.5D;
-                    arrivalY = centre.getY() + 1.0D;
-                    arrivalZ = centre.getZ() + 0.5D;
+                    preferred = entry != null ? entry.center() : new BlockPos(0, PLATFORM_Y, 0);
+                    arrivalMessage = entry != null
+                            ? Component.translatable("entity.nerospace.rocket.station_arrived", entry.name())
+                            : Component.translatable("entity.nerospace.rocket.docked");
                 } else {
                     int blockX = Mth.floor(player.getX());
                     int blockZ = Mth.floor(player.getZ());
-                    destination.getChunk(blockX >> 4, blockZ >> 4);
-                    arrivalX = player.getX();
-                    arrivalZ = player.getZ();
-                    arrivalY = destination.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockX, blockZ) + 1.0D;
-                    arrivalMessage = Component.translatable("entity.nerospace.rocket.arrived");
+                    preferred = new BlockPos(blockX, 0, blockZ);
+                    arrivalMessage = targetKey.equals(Level.OVERWORLD)
+                            ? Component.translatable("entity.nerospace.rocket.home_arrived")
+                            : Component.translatable("entity.nerospace.rocket.arrived");
                 }
 
-                player.teleportTo(destination, arrivalX, arrivalY, arrivalZ, Set.of(), player.getYRot(), player.getXRot(), true);
+                ReturnSitePlacement.Arrival arrival =
+                        ReturnSitePlacement.place(destination, targetKey, preferred, getTier(), carriedFuel);
+                player.teleportTo(destination, arrival.x(), arrival.y(), arrival.z(),
+                        Set.of(), player.getYRot(), player.getXRot(), true);
                 player.sendSystemMessage(arrivalMessage);
             }
         }
 
-        // The rocket is expended on launch; a return trip needs a pad + rocket on the destination.
+        // The in-flight rocket is expended; the arrival site contains the same-tier return kit.
         dropFuelInput();
         this.discard();
-    }
-
-    /** Lay a 7x7 station-floor landing pad so a rider arriving in the void station has solid ground. */
-    private static void buildStationPlatform(ServerLevel level, int centerX, int y, int centerZ) {
-        BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
-        for (int dx = -3; dx <= 3; dx++) {
-            for (int dz = -3; dz <= 3; dz++) {
-                level.setBlockAndUpdate(new BlockPos(centerX + dx, y, centerZ + dz), floor);
-            }
-        }
     }
 
     // --- Interaction --------------------------------------------------------
@@ -618,7 +636,15 @@ public class RocketEntity extends Entity implements MenuProvider {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         this.entityData.set(DATA_TIER, input.getIntOr("Tier", RocketTier.TIER_1.ordinal()));
-        this.entityData.set(DATA_DEST, input.getIntOr("Destination", getTier().defaultDestinationIndex()));
+        boolean globalDestination = input.getBooleanOr("GlobalDestination", false);
+        int storedDestination = input.getIntOr("Destination", globalDestination
+                ? Destinations.defaultIndex(getTier(), level().dimension())
+                : getTier().defaultDestinationIndex());
+        int destination = globalDestination
+                ? storedDestination
+                : Destinations.legacyIndex(getTier(), storedDestination);
+        this.entityData.set(DATA_DEST,
+                Destinations.sanitizeIndex(getTier(), level().dimension(), destination));
         this.entityData.set(DATA_STATION, input.getIntOr("StationSlot", -1));
         Fluid fluid = BuiltInRegistries.FLUID.getValue(
                 Identifier.parse(input.getStringOr("FuelFluid", "minecraft:empty")));
@@ -633,6 +659,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     protected void addAdditionalSaveData(ValueOutput output) {
         output.putInt("Tier", getTier().ordinal());
         output.putInt("Destination", getDestinationIndex());
+        output.putBoolean("GlobalDestination", true);
         output.putInt("StationSlot", getStationSlot());
         output.putString("FuelFluid", BuiltInRegistries.FLUID.getKey(this.fuelTank.getRawFluid()).toString());
         output.putInt("FuelAmount", this.fuelTank.getRawAmount());

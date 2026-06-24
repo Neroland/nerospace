@@ -31,6 +31,8 @@ import za.co.neroland.nerospace.meteor.MeteorCoreBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.progression.StarGuideBlock;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
+import za.co.neroland.nerospace.rocket.DockingPortBlock;
+import za.co.neroland.nerospace.rocket.LandingPodBlock;
 import za.co.neroland.nerospace.rocket.StationCoreBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
@@ -292,6 +294,16 @@ public final class ModBlocks {
     public static final RegistryEntry<LaunchGantryBlock> LAUNCH_GANTRY = BLOCKS.register("launch_gantry",
             key -> new LaunchGantryBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<LandingPodBlock> LANDING_POD = BLOCKS.register("landing_pod",
+            key -> new LandingPodBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<DockingPortBlock> DOCKING_PORT = BLOCKS.register("docking_port",
+            key -> new DockingPortBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_CYAN).strength(3.5F, 8.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     // Rocket fuel world block (placed by the bucket). LiquidBlock holds the source fluid, resolved

@@ -103,6 +103,8 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> SOLAR_PANEL_T3_ITEM = blockItem("solar_panel_t3", ModBlocks.SOLAR_PANEL_T3);
     public static final RegistryEntry<BlockItem> ROCKET_LAUNCH_PAD_ITEM = blockItem("rocket_launch_pad", ModBlocks.ROCKET_LAUNCH_PAD);
     public static final RegistryEntry<BlockItem> LAUNCH_GANTRY_ITEM = blockItem("launch_gantry", ModBlocks.LAUNCH_GANTRY);
+    public static final RegistryEntry<BlockItem> LANDING_POD_ITEM = blockItem("landing_pod", ModBlocks.LANDING_POD);
+    public static final RegistryEntry<BlockItem> DOCKING_PORT_ITEM = blockItem("docking_port", ModBlocks.DOCKING_PORT);
     public static final RegistryEntry<BlockItem> FUEL_TANK_ITEM = blockItem("fuel_tank", ModBlocks.FUEL_TANK);
     public static final RegistryEntry<BlockItem> FUEL_REFINERY_ITEM = blockItem("fuel_refinery", ModBlocks.FUEL_REFINERY);
     public static final RegistryEntry<BlockItem> QUARRY_CONTROLLER_ITEM = blockItem("quarry_controller", ModBlocks.QUARRY_CONTROLLER);
@@ -326,6 +328,7 @@ public final class ModItems {
                         OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get()),
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
                 List.<ItemLike>of(ITEM_STORE_ITEM.get(), BATTERY_ITEM.get(), FLUID_TANK_ITEM.get(), COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), TRASH_CAN_ITEM.get(), CREATIVE_BATTERY_ITEM.get(), GAS_TANK_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), SOLAR_PANEL_T2_ITEM.get(), SOLAR_PANEL_T3_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(), HYDRATION_MODULE_ITEM.get(), TERRAFORM_MONITOR_ITEM.get(),
+                        LANDING_POD_ITEM.get(), DOCKING_PORT_ITEM.get(),
                         SPEED_MODULE.get(), EFFICIENCY_MODULE.get(), FORTUNE_MODULE.get(), SILK_TOUCH_MODULE.get(),
                         CREATIVE_FLUID_TANK_ITEM.get(), CREATIVE_GAS_TANK_ITEM.get(), CREATIVE_ITEM_STORE_ITEM.get(),
                         STAR_GUIDE_ITEM.get()));

@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 /**
  * Places a {@link RocketEntity} of a fixed {@link RocketTier} onto a {@link RocketLaunchPadBlock}.
@@ -32,6 +33,10 @@ public class RocketItem extends Item {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
+
+        if (ReturnSiteBlock.isReturnSite(state)) {
+            return deployOnReturnSite(context);
+        }
 
         if (!(state.getBlock() instanceof RocketLaunchPadBlock)) {
             return InteractionResult.PASS;
@@ -95,5 +100,38 @@ public class RocketItem extends Item {
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    private InteractionResult deployOnReturnSite(UseOnContext context) {
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        if (!level.isClientSide()) {
+            Player player = context.getPlayer();
+            if (rocketAboveReturnSite(level, pos)) {
+                if (player != null) {
+                    player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_occupied"));
+                }
+                return InteractionResult.SUCCESS;
+            }
+
+            RocketEntity rocket = new RocketEntity(
+                    level, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, this.tier);
+            level.addFreshEntity(rocket);
+
+            ItemStack stack = context.getItemInHand();
+            if (player != null && !player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+            if (player != null) {
+                player.sendSystemMessage(Component.translatable("item.nerospace.rocket.deployed"));
+            }
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    private static boolean rocketAboveReturnSite(Level level, BlockPos pos) {
+        AABB box = new AABB(pos.getX(), pos.getY() + 0.1D, pos.getZ(),
+                pos.getX() + 1.0D, pos.getY() + 8.0D, pos.getZ() + 1.0D);
+        return !level.getEntitiesOfClass(RocketEntity.class, box, rocket -> !rocket.isLaunching()).isEmpty();
     }
 }
