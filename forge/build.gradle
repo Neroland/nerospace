@@ -11,15 +11,12 @@ plugins {
 def mc = stonecutter.current.version
 def forgeVersion = project.findProperty("forge_version_${mc}")
 def jeiVersion = project.findProperty("jei_version_${mc}")
-
-if (!forgeVersion) {
-    throw new GradleException("Missing forge_version_${mc} in gradle.properties")
-}
+def unsupportedForgePin = !forgeVersion
 
 // This node's projectDir is <loader>/versions/<v>; the authoritative loader source +
 // templates live in the BRANCH root (forge/). Resolve branch-root paths via the parent.
 def branchDir = project.parent.projectDir
-def forgeBuild = forgeVersion.toString().split('-', 2)[1]
+def forgeBuild = unsupportedForgePin ? '0' : forgeVersion.toString().split('-', 2)[1]
 def forgeMajor = forgeBuild.split('\\.')[0]
 
 // Distinct, descriptive jar name per cell.
@@ -67,7 +64,9 @@ repositories {
 }
 
 dependencies {
-    implementation minecraft.dependency("net.minecraftforge:forge:${forgeVersion}")
+    if (!unsupportedForgePin) {
+        implementation minecraft.dependency("net.minecraftforge:forge:${forgeVersion}")
+    }
     annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.1'
 
     implementation 'io.sentry:sentry:8.42.0'
@@ -76,6 +75,24 @@ dependencies {
     // JEI common API only; Forge 26.x loader artifacts are not yet published on the pinned JEI lines.
     if (jeiVersion) {
         compileOnly "mezz.jei:jei-${mc}-common-api:${jeiVersion}"
+    }
+}
+
+if (unsupportedForgePin) {
+    def unsupportedMinecraftVersion = tasks.register('unsupportedMinecraftVersion') {
+        group = 'verification'
+        description = "Explain why the Forge ${mc} experimental node cannot build yet."
+        doLast {
+            throw new GradleException(
+                    "Forge ${mc} is wired as an experimental CI node, but forge_version_${mc} " +
+                    "is empty in gradle.properties because no public Forge userdev is available yet.")
+        }
+    }
+    tasks.matching {
+        it.name in ['compileJava', 'processResources', 'classes', 'jar', 'assemble', 'build',
+                    'runClient', 'runServer']
+    }.configureEach {
+        dependsOn unsupportedMinecraftVersion
     }
 }
 
@@ -108,30 +125,38 @@ def createForgeRunDirs = tasks.register('createForgeRunDirs') {
 tasks.matching { it.name == 'configureLaunch' }.configureEach { dependsOn createForgeRunDirs }
 
 // ecjCheck: run the Eclipse compiler over common + forge main sources, with the same prefs as VS Code.
-configurations {
-    ecj
-}
-dependencies {
-    ecj 'org.eclipse.jdt:ecj:+'
-}
-tasks.register('ecjCheck', JavaExec) {
-    group = 'verification'
-    description = 'Run the Eclipse (IDE) analyzer over common + forge main sources and report its diagnostics.'
-    notCompatibleWithConfigurationCache('assembles the analysis classpath at execution time')
-    dependsOn tasks.named('compileJava')
-    classpath = configurations.ecj
-    mainClass = 'org.eclipse.jdt.internal.compiler.batch.Main'
-    doFirst {
-        def analysisCp = (sourceSets.main.compileClasspath.files + sourceSets.main.output.files)
-                .findAll { it.exists() }
-                .join(File.pathSeparator)
-        def srcDirs = sourceSets.main.java.srcDirs.findAll { it.exists() }.collect { it.absolutePath }
-        args = [
-                '--release', '25',
-                '-proc:none',
-                '-d', 'none',
-                '-properties', rootProject.file('tools/ecj.prefs').absolutePath,
-                '-classpath', analysisCp,
-        ] + srcDirs
+if (!unsupportedForgePin) {
+    configurations {
+        ecj
+    }
+    dependencies {
+        ecj 'org.eclipse.jdt:ecj:+'
+    }
+    tasks.register('ecjCheck', JavaExec) {
+        group = 'verification'
+        description = 'Run the Eclipse (IDE) analyzer over common + forge main sources and report its diagnostics.'
+        notCompatibleWithConfigurationCache('assembles the analysis classpath at execution time')
+        dependsOn tasks.named('compileJava')
+        classpath = configurations.ecj
+        mainClass = 'org.eclipse.jdt.internal.compiler.batch.Main'
+        doFirst {
+            def analysisCp = (sourceSets.main.compileClasspath.files + sourceSets.main.output.files)
+                    .findAll { it.exists() }
+                    .join(File.pathSeparator)
+            def srcDirs = sourceSets.main.java.srcDirs.findAll { it.exists() }.collect { it.absolutePath }
+            args = [
+                    '--release', '25',
+                    '-proc:none',
+                    '-d', 'none',
+                    '-properties', rootProject.file('tools/ecj.prefs').absolutePath,
+                    '-classpath', analysisCp,
+            ] + srcDirs
+        }
+    }
+} else {
+    tasks.register('ecjCheck') {
+        group = 'verification'
+        description = "Skip ECJ for unsupported Forge ${mc}."
+        onlyIf { false }
     }
 }

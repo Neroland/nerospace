@@ -290,10 +290,19 @@ def do_mc_jump(repo: Path, changes: list[str]) -> str | None:
     # 3) multiloader.yml: add neoforge + forge + fabric matrix entries
     wf = repo / ".github" / "workflows" / "multiloader.yml"
     w = wf.read_text(encoding="utf-8")
-    entries = (f'          - loader: neoforge\n            mc: "{new_mc}"\n'
-               f'          - loader: forge\n            mc: "{new_mc}"\n'
-               f'          - loader: fabric\n            mc: "{new_mc}"\n')
-    w2 = re.sub(r"(include:\n)", lambda m: m.group(1) + entries, w, count=1)
+    entries = ""
+    for loader in ("neoforge", "forge", "fabric"):
+        existing = re.search(
+            rf"- loader:\s+{loader}\s*\n\s*mc:\s+[\"']{re.escape(new_mc)}[\"']",
+            w,
+        )
+        if not existing:
+            entries += (
+                f'          - loader: {loader}\n'
+                f'            mc: "{new_mc}"\n'
+                f'            experimental: false\n'
+            )
+    w2 = re.sub(r"(include:\n)", lambda m: m.group(1) + entries, w, count=1) if entries else w
     if w2 != w:
         _write(wf, w2)
         changes.append(f".github/workflows/multiloader.yml: matrix cells for {new_mc}")

@@ -2,7 +2,7 @@
 // module's source directly (single copy -> no drift).
 
 plugins {
-    id 'net.fabricmc.fabric-loom'
+    id 'net.fabricmc.fabric-loom' apply false
     id 'eclipse'   // for eclipse.synchronizationTasks (VS Code / Buildship import hook)
 }
 
@@ -10,6 +10,11 @@ plugins {
 def mc = stonecutter.current.version
 def fabricApi = project.findProperty("fabric_api_version_${mc}")
 def jeiVersion = project.findProperty("jei_version_${mc}")
+def unsupportedFabricMc = project.findProperty("minecraft_available_${mc}") == 'false'
+
+if (!unsupportedFabricMc) {
+    apply plugin: 'net.fabricmc.fabric-loom'
+}
 
 // This node's projectDir is <loader>/versions/<v>; the authoritative loader source +
 // resources live in the BRANCH root (fabric/). Resolve branch-root paths via the parent.
@@ -24,23 +29,27 @@ sourceSets.main.java.srcDir rootProject.ext.commonJava
 sourceSets.main.resources.srcDir rootProject.ext.commonResources
 
 dependencies {
-    minecraft "com.mojang:minecraft:${mc}"
-    // NOTE: no `mappings` — de-obfuscated 26.x needs none (Fabric Loom 1.17+).
-    implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    if (fabricApi != null) {
-        implementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+    if (!unsupportedFabricMc) {
+        minecraft "com.mojang:minecraft:${mc}"
+        // NOTE: no `mappings` — de-obfuscated 26.x needs none (Fabric Loom 1.17+).
+        implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+        if (fabricApi) {
+            implementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+        }
     }
 
     // Sentry SDK (telemetry/NerospaceTelemetry): compile against it + embed it as a jar-in-jar so the
     // shipped Fabric jar carries it. Counterpart to the NeoForge JarJar bundling.
     implementation 'io.sentry:sentry:8.42.0'
-    include 'io.sentry:sentry:8.42.0'
+    if (!unsupportedFabricMc) {
+        include 'io.sentry:sentry:8.42.0'
+    }
 
     // JEI (optional recipe-viewer compat). The shared compat/jei plugin lives in `common` and uses ONLY
     // the loader-agnostic JEI common API; on Fabric it compiles against the common + fabric APIs and loads
     // against the Fabric JEI mod at dev runtime. JEI is a soft dependency (compile-time API only; the mod
     // is runtime-only). Same per-MC version as NeoForge (jei_version_<mc>, BlameJared maven from the root).
-    if (jeiVersion) {
+    if (!unsupportedFabricMc && jeiVersion) {
         compileOnly "mezz.jei:jei-${mc}-common-api:${jeiVersion}"
         compileOnly "mezz.jei:jei-${mc}-fabric-api:${jeiVersion}"
         runtimeOnly "mezz.jei:jei-${mc}-fabric:${jeiVersion}"
@@ -70,22 +79,24 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
 sourceSets.main.resources.srcDir generateModMetadata
 eclipse.synchronizationTasks generateModMetadata
 
-loom {
-    accessWidenerPath = file("${branchDir}/src/main/resources/nerospace.accesswidener")
+if (!unsupportedFabricMc) {
+    loom {
+        accessWidenerPath = file("${branchDir}/src/main/resources/nerospace.accesswidener")
 
-    runs {
-        client {
-            client()
-            // Do NOT let Loom write Eclipse *.launch files — they embed absolute machine
-            // paths. The committed .vscode/launch.json (relative ${workspaceFolder}) is the
-            // single source of truth for run/debug.
-            ideConfigGenerated false
-            runDir 'runs/client'
-        }
-        server {
-            server()
-            ideConfigGenerated false
-            runDir 'runs/server'
+        runs {
+            client {
+                client()
+                // Do NOT let Loom write Eclipse *.launch files — they embed absolute machine
+                // paths. The committed .vscode/launch.json (relative ${workspaceFolder}) is the
+                // single source of truth for run/debug.
+                ideConfigGenerated false
+                runDir 'runs/client'
+            }
+            server {
+                server()
+                ideConfigGenerated false
+                runDir 'runs/server'
+            }
         }
     }
 }
@@ -105,31 +116,57 @@ def createFabricRunDirs = tasks.register('createFabricRunDirs') {
 eclipse.synchronizationTasks createFabricRunDirs
 tasks.matching { it.name == 'configureLaunch' }.configureEach { dependsOn createFabricRunDirs }
 
+if (unsupportedFabricMc) {
+    def unsupportedMinecraftVersion = tasks.register('unsupportedMinecraftVersion') {
+        group = 'verification'
+        description = "Explain why the Fabric ${mc} experimental node cannot build yet."
+        doLast {
+            throw new GradleException(
+                    "Fabric ${mc} is wired as an experimental CI node, but minecraft_available_${mc}=false " +
+                    "because Mojang's version manifest does not list this Minecraft version yet.")
+        }
+    }
+    tasks.matching {
+        it.name in ['compileJava', 'processResources', 'classes', 'jar', 'assemble', 'build',
+                    'runClient', 'runServer']
+    }.configureEach {
+        dependsOn unsupportedMinecraftVersion
+    }
+}
+
 // ecjCheck: run the Eclipse compiler over common + fabric main sources, with the same prefs as VS Code.
-configurations {
-    ecj
-}
-dependencies {
-    ecj 'org.eclipse.jdt:ecj:+'
-}
-tasks.register('ecjCheck', JavaExec) {
-    group = 'verification'
-    description = 'Run the Eclipse (IDE) analyzer over common + fabric main sources and report its diagnostics.'
-    notCompatibleWithConfigurationCache('assembles the analysis classpath at execution time')
-    dependsOn tasks.named('compileJava')
-    classpath = configurations.ecj
-    mainClass = 'org.eclipse.jdt.internal.compiler.batch.Main'
-    doFirst {
-        def analysisCp = (sourceSets.main.compileClasspath.files + sourceSets.main.output.files)
-                .findAll { it.exists() }
-                .join(File.pathSeparator)
-        def srcDirs = sourceSets.main.java.srcDirs.findAll { it.exists() }.collect { it.absolutePath }
-        args = [
-                '--release', '25',
-                '-proc:none',
-                '-d', 'none',
-                '-properties', rootProject.file('tools/ecj.prefs').absolutePath,
-                '-classpath', analysisCp,
-        ] + srcDirs
+if (!unsupportedFabricMc) {
+    configurations {
+        ecj
+    }
+    dependencies {
+        ecj 'org.eclipse.jdt:ecj:+'
+    }
+    tasks.register('ecjCheck', JavaExec) {
+        group = 'verification'
+        description = 'Run the Eclipse (IDE) analyzer over common + fabric main sources and report its diagnostics.'
+        notCompatibleWithConfigurationCache('assembles the analysis classpath at execution time')
+        dependsOn tasks.named('compileJava')
+        classpath = configurations.ecj
+        mainClass = 'org.eclipse.jdt.internal.compiler.batch.Main'
+        doFirst {
+            def analysisCp = (sourceSets.main.compileClasspath.files + sourceSets.main.output.files)
+                    .findAll { it.exists() }
+                    .join(File.pathSeparator)
+            def srcDirs = sourceSets.main.java.srcDirs.findAll { it.exists() }.collect { it.absolutePath }
+            args = [
+                    '--release', '25',
+                    '-proc:none',
+                    '-d', 'none',
+                    '-properties', rootProject.file('tools/ecj.prefs').absolutePath,
+                    '-classpath', analysisCp,
+            ] + srcDirs
+        }
+    }
+} else {
+    tasks.register('ecjCheck') {
+        group = 'verification'
+        description = "Skip ECJ for unsupported Fabric ${mc}."
+        onlyIf { false }
     }
 }
