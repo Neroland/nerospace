@@ -457,8 +457,8 @@ public final class NerospaceCommands {
      * Solar showcase (SW). Front row: one of each tier as a single unit — a 1×1 T1, a 2×2 T2 (one big
      * panel) and a 3×3 T3 (one big panel). Behind it: several units of each tier side by side — nine T1
      * panels (a seam-joined 3×3 field), four T2 units and two T3 units — so multiple arrays tiling is
-     * visible. A Creative Battery → Universal Pipe → T1 panel line shows the dynamic power connector (the
-     * panel grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX,
+     * visible. A Tier 3 panel → Universal Pipe → Battery line shows live charging and the dynamic cable
+     * connector (the panel grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX,
      * baseZ)}, extending east (+X) and south (+Z); panels sit on the floor with the tracking deck above.
      */
     private static void buildSolarArrays(ServerLevel level, BlockState floor, int baseX, int baseZ, int fy) {
@@ -474,12 +474,14 @@ public final class NerospaceCommands {
         placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 2, sy, baseZ); // fills +2..3
         placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 5, sy, baseZ); // fills +5..7
 
-        // Cable hookup: Creative Battery → Universal Pipe → T1 panel (lights the panel's west connector).
+        // Cable hookup: T3 panel -> Universal Pipe -> Battery (solar output charges the battery).
         level.setBlockAndUpdate(new BlockPos(baseX + 10, sy, baseZ),
-                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+                ModBlocks.BATTERY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(baseX + 11, sy, baseZ),
                 ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 12, sy, baseZ);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 12, sy, baseZ);
+        setAllModes(level, new BlockPos(baseX + 11, sy, baseZ), Direction.EAST, PipeIoMode.IN);
+        setAllModes(level, new BlockPos(baseX + 11, sy, baseZ), Direction.WEST, PipeIoMode.OUT);
 
         // Multi-unit seam-joined fields, set back (+Z) so footprints don't touch the front row.
         // T1: a 3x3 field of nine single panels → one continuous tracking surface.

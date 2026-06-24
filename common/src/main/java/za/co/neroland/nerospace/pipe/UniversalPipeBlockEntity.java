@@ -372,6 +372,15 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         setChanged();
     }
 
+    /** Network-level visual packet for an item routed through this segment. */
+    void showTravelling(ItemStack moved, Direction inFace, @Nullable Direction outFace) {
+        if (moved.isEmpty() || this.travelling.size() >= MAX_TRAVELLING) {
+            return;
+        }
+        this.travelling.add(new TravellingItem(moved.copy(), inFace, outFace, 0.0F));
+        setChanged();
+    }
+
     private void relayEnergy(Level level, BlockPos pos) {
         long io = (long) MAX_IO * speedMultiplier();
         for (Direction dir : Direction.values()) {

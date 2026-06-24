@@ -81,10 +81,19 @@ public final class QuarryRegion {
     public List<BlockPos> framePositions() {
         List<BlockPos> out = new ArrayList<>();
         for (int x = this.minX; x <= this.maxX; x++) {
-            for (int z = this.minZ; z <= this.maxZ; z++) {
-                if (isPerimeter(x, z)) {
-                    out.add(new BlockPos(x, this.refY, z));
-                }
+            out.add(new BlockPos(x, this.refY, this.minZ));
+        }
+        for (int z = this.minZ + 1; z <= this.maxZ; z++) {
+            out.add(new BlockPos(this.maxX, this.refY, z));
+        }
+        if (this.maxZ > this.minZ) {
+            for (int x = this.maxX - 1; x >= this.minX; x--) {
+                out.add(new BlockPos(x, this.refY, this.maxZ));
+            }
+        }
+        if (this.maxX > this.minX) {
+            for (int z = this.maxZ - 1; z > this.minZ; z--) {
+                out.add(new BlockPos(this.minX, this.refY, z));
             }
         }
         return out;
@@ -135,21 +144,35 @@ public final class QuarryRegion {
 
         int w = maxX - minX + 1;
         int l = maxZ - minZ + 1;
-        if (cluster.size() < 2 || w < 2 || l < 2 || w > maxSide || l > maxSide) {
+        if (cluster.size() < 3 || w < 2 || l < 2 || w > maxSide || l > maxSide) {
             return null;
         }
         return new QuarryRegion(minX, minZ, maxX, maxZ, refY);
     }
 
     @Nullable
-    public static BlockPos findNearbyLandmark(Level level, BlockPos origin, int range) {
-        for (Direction dir : Direction.Plane.HORIZONTAL) {
-            BlockPos found = projectToLandmark(level, origin, dir, range);
-            if (found != null) {
-                return found;
+    public static QuarryRegion findClaim(Level level, BlockPos origin, int maxSide) {
+        QuarryRegion best = null;
+        int bestDistance = Integer.MAX_VALUE;
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        for (int dx = -maxSide; dx <= maxSide; dx++) {
+            for (int dz = -maxSide; dz <= maxSide; dz++) {
+                cursor.set(origin.getX() + dx, origin.getY(), origin.getZ() + dz);
+                if (!isLandmark(level, cursor)) {
+                    continue;
+                }
+                QuarryRegion found = fromLandmarks(level, cursor, maxSide);
+                if (found == null) {
+                    continue;
+                }
+                int distance = Math.abs(dx) + Math.abs(dz);
+                if (distance < bestDistance) {
+                    best = found;
+                    bestDistance = distance;
+                }
             }
         }
-        return null;
+        return best;
     }
 
     @Nullable

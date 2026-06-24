@@ -66,6 +66,11 @@ public class QuarryControllerRenderer
     }
 
     @Override
+    public boolean shouldRender(QuarryControllerBlockEntity blockEntity, Vec3 cameraPos) {
+        return true;
+    }
+
+    @Override
     public void extractRenderState(QuarryControllerBlockEntity be, QuarryControllerRenderState s,
             float partialTick, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(be, s, partialTick, cameraPos, breakProgress);

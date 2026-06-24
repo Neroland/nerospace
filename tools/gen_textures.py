@@ -279,25 +279,35 @@ def gen_raw():
 
 
 def gen_pickaxe():
-    # Vanilla-style orientation: head in the TOP-LEFT (two up-tips), handle diagonal to the
-    # BOTTOM-RIGHT. The handheld display transform treats the top-left as the working tip, so this
-    # renders head-up in hand (the old top-centre/vertical-handle layout looked upside down).
+    # Vanilla-style orientation: a broad head in the top-left and a long diagonal handle to the
+    # bottom-right. Keep the silhouette chunky at 16x16 so it reads as a pickaxe in inventory and in hand.
     img = new_img()
     px = img.load()
-    for (x, y) in [(1, 1), (2, 1), (6, 1), (7, 1)]:
-        px[x, y] = N_GLOW
-    for (x, y) in [(1, 2), (2, 2), (3, 2), (5, 2), (6, 2), (7, 2)]:
-        px[x, y] = N_REDHI if x in (1, 7) else N_RED
-    for (x, y) in [(2, 3), (3, 3), (4, 3), (5, 3)]:
-        px[x, y] = N_MAG
-    for (x, y) in [(3, 4), (4, 4)]:
-        px[x, y] = N_PURPLE
-    for (x, y) in [(4, 5), (5, 5)]:
+
+    head = {
+        (2, 2): N_REDHI, (3, 2): N_REDHI, (4, 2): N_RED, (5, 2): N_RED,
+        (6, 2): N_MAG, (7, 2): N_MAG, (8, 2): N_PURPLE,
+        (1, 3): N_REDHI, (2, 3): N_RED, (3, 3): N_RED, (4, 3): N_MAG,
+        (5, 3): N_MAG, (6, 3): N_PURPLE, (7, 3): N_PURPLE, (8, 3): N_DARK,
+        (2, 4): N_RED, (3, 4): N_MAG, (4, 4): N_PURPLE, (5, 4): N_DARK,
+        (7, 4): N_PURPLE, (8, 4): N_DARK,
+        (3, 5): N_MAG, (4, 5): N_PURPLE, (5, 5): N_DARK,
+        (6, 5): N_DARK,
+    }
+    for (x, y), colour in head.items():
+        px[x, y] = colour
+
+    socket = [(6, 6), (7, 6), (7, 7), (8, 7)]
+    for (x, y) in socket:
         px[x, y] = N_DARK
-    for (x, y) in [(6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12)]:
+
+    handle = [(8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13)]
+    for (x, y) in handle:
         px[x, y] = WOOD[0]
         if x + 1 < S:
             px[x + 1, y] = WOOD_D
+        if y - 1 >= 0:
+            px[x, y - 1] = WOOD[2]
     save(img, os.path.join(ITEM_DIR, "nerosium_pickaxe.png"))
 
 
@@ -443,32 +453,6 @@ def gen_xertz_quartz():
         px[x, 3] = Q_WHITE
     _gem_facets(px, shape, Q_WHITE, Q_SHADOW)
     save(img, os.path.join(ITEM_DIR, "xertz_quartz.png"))
-
-
-def gen_greenxertz_navigator():
-    img = new_img()
-    px = img.load()
-    cx = cy = 8
-    for y in range(S):
-        for x in range(S):
-            d = ((x - cx + 0.5) ** 2 + (y - cy + 0.5) ** 2) ** 0.5
-            if d <= 6.5:
-                if d > 5.3:
-                    px[x, y] = METAL_D
-                elif d > 4.6:
-                    px[x, y] = METAL_L
-                else:
-                    px[x, y] = (24, 36, 30, 255)
-    for (x, y) in [(8,8),(8,7),(9,6),(9,5),(10,5)]:
-        px[x, y] = G_GLOW
-    px[10, 4] = G_GREEN_L
-    for (x, y) in [(8,9),(7,10),(7,11)]:
-        px[x, y] = N_RED
-    for (x, y) in [(8, 3), (8, 12), (3, 8), (12, 8)]:
-        px[x, y] = G_GREEN
-    px[8, 8] = Q_WHITE
-    save(img, os.path.join(ITEM_DIR, "greenxertz_navigator.png"))
-
 
 
 # ---------------- PHASE 4: ROCKETS ----------------
@@ -3132,7 +3116,6 @@ if __name__ == "__main__":
     gen_raw_nerosteel()
     gen_nerosteel_ingot()
     gen_xertz_quartz()
-    gen_greenxertz_navigator()
     # Phase 4 — rockets
     gen_rocket_launch_pad()
     gen_fuel_tank()
