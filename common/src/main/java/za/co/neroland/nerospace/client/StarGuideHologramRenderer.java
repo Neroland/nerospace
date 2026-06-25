@@ -15,6 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.progression.StarGuideBlockEntity;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -40,7 +42,7 @@ public class StarGuideHologramRenderer
 
     @Override
     public void extractRenderState(StarGuideBlockEntity guide, StarGuideHologramRenderState state,
-            float partialTick, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+            float partialTick, Vec3 cameraPos, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(guide, state, partialTick, cameraPos, breakProgress);
         Level level = guide.getLevel();
         if (!guide.hasBook() || level == null) {
@@ -52,9 +54,9 @@ public class StarGuideHologramRenderer
         state.spin = (now * 1.5F) % 360.0F;
         state.bob = Mth.sin(now * 0.06F) * 0.05F;
 
-        ItemStack icon = guide.getHologram();
+        ItemStack icon = NerospaceCommon.requireNonNull(guide.getHologram());
         if (icon.isEmpty()) {
-            icon = new ItemStack(ModItems.STAR_GUIDE_BOOK.get()); // all complete (or no player near)
+            icon = new ItemStack(NerospaceCommon.requireNonNull(ModItems.STAR_GUIDE_BOOK.get()));
         }
         Minecraft.getInstance().getItemModelResolver().updateForTopItem(
                 NerospaceCommon.requireNonNull(state.renderState), icon, ItemDisplayContext.GROUND, level, null,
@@ -73,7 +75,8 @@ public class StarGuideHologramRenderer
         poseStack.scale(0.75F, 0.75F, 0.75F);
         // Emissive: a hologram is its own light source, so render full-bright instead of with the
         // pedestal's world light (it read pitch-black at night).
-        state.renderState.submit(poseStack, collector, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+        NerospaceCommon.requireNonNull(state.renderState)
+                .submit(poseStack, collector, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
     }
 }

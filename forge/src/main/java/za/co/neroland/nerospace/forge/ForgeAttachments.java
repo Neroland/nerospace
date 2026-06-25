@@ -3,10 +3,12 @@ package za.co.neroland.nerospace.forge;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
@@ -21,17 +23,16 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /** Forge entity/chunk capability data backing oxygen, terraform state, and Star Guide seen masks. */
-@SuppressWarnings("null")
 public final class ForgeAttachments {
 
     public static final Capability<ForgePlayerDataCapability> PLAYER_DATA =
-            CapabilityManager.get(new CapabilityToken<>() {});
+            NerospaceCommon.requireNonNull(CapabilityManager.get(new CapabilityToken<>() {}));
     public static final Capability<ForgeChunkDataCapability> CHUNK_DATA =
-            CapabilityManager.get(new CapabilityToken<>() {});
+            NerospaceCommon.requireNonNull(CapabilityManager.get(new CapabilityToken<>() {}));
 
-    private static final @org.jspecify.annotations.NonNull Identifier PLAYER_DATA_ID =
+    private static final Identifier PLAYER_DATA_ID =
             NerospaceCommon.id("player_data");
-    private static final @org.jspecify.annotations.NonNull Identifier CHUNK_DATA_ID =
+    private static final Identifier CHUNK_DATA_ID =
             NerospaceCommon.id("chunk_data");
 
     private ForgeAttachments() {
@@ -81,12 +82,12 @@ public final class ForgeAttachments {
 
         @Override
         public List<Integer> getStarGuideSeen() {
-            return starGuideSeen;
+            return NerospaceCommon.requireNonNull(starGuideSeen);
         }
 
         @Override
         public void setStarGuideSeen(List<Integer> value) {
-            this.starGuideSeen = List.copyOf(value);
+            this.starGuideSeen = NerospaceCommon.requireNonNull(List.copyOf(value));
         }
 
         @Override
@@ -109,7 +110,7 @@ public final class ForgeAttachments {
             for (int value : seen) {
                 values.add(value);
             }
-            starGuideSeen = List.copyOf(values);
+            starGuideSeen = NerospaceCommon.requireNonNull(List.copyOf(values));
         }
     }
 
@@ -155,17 +156,20 @@ public final class ForgeAttachments {
         private final LazyOptional<ForgePlayerDataCapability> optional = LazyOptional.of(() -> data);
 
         @Override
-        public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable net.minecraft.core.Direction side) {
+        public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
             return cap == PLAYER_DATA ? optional.cast() : LazyOptional.empty();
         }
 
         @Override
-        public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        public CompoundTag serializeNBT(@Nullable Provider provider) {
             return data.save();
         }
 
         @Override
-        public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        public void deserializeNBT(@Nullable Provider provider, @Nullable CompoundTag nbt) {
+            if (nbt == null) {
+                return;
+            }
             data.load(nbt);
         }
 
@@ -179,17 +183,20 @@ public final class ForgeAttachments {
         private final LazyOptional<ForgeChunkDataCapability> optional = LazyOptional.of(() -> data);
 
         @Override
-        public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable net.minecraft.core.Direction side) {
+        public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
             return cap == CHUNK_DATA ? optional.cast() : LazyOptional.empty();
         }
 
         @Override
-        public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        public CompoundTag serializeNBT(@Nullable Provider provider) {
             return data.save();
         }
 
         @Override
-        public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        public void deserializeNBT(@Nullable Provider provider, @Nullable CompoundTag nbt) {
+            if (nbt == null) {
+                return;
+            }
             data.load(nbt);
         }
 

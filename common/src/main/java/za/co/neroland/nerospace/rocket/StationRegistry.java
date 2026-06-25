@@ -16,7 +16,6 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -35,7 +34,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public final class StationRegistry extends SavedData {
 
-    public static final @org.jspecify.annotations.NonNull Identifier ID = NerospaceCommon.id("stations");
+    public static final Identifier ID = NerospaceCommon.id("stations");
 
     /** Hard cap on founded stations (a full X-row of ~262k blocks; lift post-1.0 if ever hit). */
     public static final int MAX_STATIONS = 64;
@@ -46,13 +45,13 @@ public final class StationRegistry extends SavedData {
     /** The Y level every platform is built at (matches the origin public platform). */
     public static final int PLATFORM_Y = 64;
 
-    public static final @NonNull SavedDataType<StationRegistry> TYPE = new SavedDataType<>(
+    public static final SavedDataType<StationRegistry> TYPE = new SavedDataType<>(
             ID, StationRegistry::new, codec(), DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     /** One founded station. The name comes from the founding charter (or an auto "Station N"). */
     public record StationEntry(int slot, String name, BlockPos center) {
 
-        public static final @NonNull Codec<StationEntry> CODEC = NerospaceCommon.requireNonNull(
+        public static final Codec<StationEntry> CODEC = java.util.Objects.requireNonNull(
                 RecordCodecBuilder.create(inst -> inst.group(
                 Codec.INT.fieldOf("slot").forGetter(StationEntry::slot),
                 Codec.STRING.fieldOf("name").forGetter(StationEntry::name),
@@ -60,9 +59,9 @@ public final class StationRegistry extends SavedData {
         ).apply(inst, StationEntry::of)));
 
         /** Boxed-parameter factory for the codec (avoids the ECJ unboxing null-safety warning). */
-        private static @NonNull StationEntry of(Integer slot, String name, BlockPos center) {
-            return new StationEntry(NerospaceCommon.requireNonNull(slot).intValue(),
-                    NerospaceCommon.requireNonNull(name), NerospaceCommon.requireNonNull(center));
+        private static StationEntry of(Integer slot, String name, BlockPos center) {
+            return new StationEntry(java.util.Objects.requireNonNull(slot).intValue(),
+                    java.util.Objects.requireNonNull(name), java.util.Objects.requireNonNull(center));
         }
     }
 
@@ -73,20 +72,20 @@ public final class StationRegistry extends SavedData {
     public StationRegistry() {
     }
 
-    private static @NonNull Codec<StationRegistry> codec() {
-        return NerospaceCommon.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
+    private static Codec<StationRegistry> codec() {
+        return java.util.Objects.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
                 StationEntry.CODEC.listOf().fieldOf("stations")
                         .forGetter(r -> new ArrayList<>(r.stations.values())),
                 Codec.INT.fieldOf("next_slot").forGetter(r -> r.nextSlot)
         ).apply(inst, StationRegistry::fromEntries)));
     }
 
-    private static @NonNull StationRegistry fromEntries(List<StationEntry> entries, Integer nextSlot) {
+    private static StationRegistry fromEntries(List<StationEntry> entries, Integer nextSlot) {
         StationRegistry registry = new StationRegistry();
-        for (StationEntry entry : NerospaceCommon.requireNonNull(entries)) {
+        for (StationEntry entry : java.util.Objects.requireNonNull(entries)) {
             registry.stations.put(entry.slot(), entry);
         }
-        registry.nextSlot = NerospaceCommon.requireNonNull(nextSlot).intValue();
+        registry.nextSlot = java.util.Objects.requireNonNull(nextSlot).intValue();
         return registry;
     }
 

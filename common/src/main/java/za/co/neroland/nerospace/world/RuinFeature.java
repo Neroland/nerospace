@@ -40,17 +40,17 @@ public class RuinFeature extends Feature<NoneFeatureConfiguration> {
 
         AlienBuild.tower(level, o.getX(), baseY, o.getZ(), 6, 6, true, rand, m);
 
-        BlockState core = ModBlocks.VILLAGE_CORE.get().defaultBlockState();
+        BlockState core = java.util.Objects.requireNonNull(ModBlocks.VILLAGE_CORE.get()).defaultBlockState();
         m.set(o.getX(), baseY, o.getZ());
         level.setBlock(m, core, 2);
 
         BlockPos chestPos = new BlockPos(o.getX() + 3, baseY, o.getZ() + 3);
         level.setBlock(chestPos, Blocks.CHEST.defaultBlockState(), 2);
         if (level.getBlockEntity(chestPos) instanceof ChestBlockEntity chest) {
-            chest.setItem(4, new ItemStack(ModItems.ALIEN_CORE.get(), 1));
-            chest.setItem(6, new ItemStack(ModItems.ALIEN_TECH_SCRAP.get(), 2 + rand.nextInt(4)));
-            chest.setItem(10, new ItemStack(ModItems.ALIEN_FRAGMENT.get(), 3 + rand.nextInt(5)));
-            chest.setItem(13, new ItemStack(ModItems.NEROSIUM_INGOT.get(), 2 + rand.nextInt(4)));
+            chest.setItem(4, new ItemStack(java.util.Objects.requireNonNull(ModItems.ALIEN_CORE.get()), 1));
+            chest.setItem(6, new ItemStack(java.util.Objects.requireNonNull(ModItems.ALIEN_TECH_SCRAP.get()), 2 + rand.nextInt(4)));
+            chest.setItem(10, new ItemStack(java.util.Objects.requireNonNull(ModItems.ALIEN_FRAGMENT.get()), 3 + rand.nextInt(5)));
+            chest.setItem(13, new ItemStack(java.util.Objects.requireNonNull(ModItems.NEROSIUM_INGOT.get()), 2 + rand.nextInt(4)));
             chest.setItem(22, new ItemStack(Items.EMERALD, 4 + rand.nextInt(8)));
         }
         return true;

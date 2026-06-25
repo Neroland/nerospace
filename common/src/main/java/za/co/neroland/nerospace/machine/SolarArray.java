@@ -65,7 +65,7 @@ public final class SolarArray {
 
         int visited = 0;
         while (!queue.isEmpty() && visited < MAX_CELLS) {
-            BlockPos pos = NerospaceCommon.requireNonNull(queue.poll());
+            BlockPos pos = java.util.Objects.requireNonNull(queue.poll());
             if (!(level.getBlockEntity(pos) instanceof SolarPanelBlockEntity cell) || cell.tier() != tier) {
                 continue;
             }
@@ -75,7 +75,7 @@ public final class SolarArray {
                 anchors.add(anchor);
             }
             for (Direction dir : Direction.values()) {
-                BlockPos np = pos.relative(NerospaceCommon.requireNonNull(dir));
+                BlockPos np = pos.relative(java.util.Objects.requireNonNull(dir));
                 if (seen.add(np.asLong())
                         && level.getBlockEntity(np) instanceof SolarPanelBlockEntity neighbour
                         && neighbour.tier() == tier) {

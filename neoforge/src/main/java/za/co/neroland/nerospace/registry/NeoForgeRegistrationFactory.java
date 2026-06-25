@@ -12,7 +12,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -30,7 +29,7 @@ public final class NeoForgeRegistrationFactory implements RegistrationProvider.F
     private static final List<DeferredRegister<?>> REGISTERS = new ArrayList<>();
 
     /** Attach every DeferredRegister created so far to the mod event bus. */
-    public static void registerAll(@NonNull IEventBus modEventBus) {
+    public static void registerAll(IEventBus modEventBus) {
         REGISTERS.forEach(register -> register.register(modEventBus));
     }
 
@@ -46,11 +45,11 @@ public final class NeoForgeRegistrationFactory implements RegistrationProvider.F
     private static final class Provider<T> implements RegistrationProvider<T> {
 
         private final DeferredRegister<T> register;
-        private final @NonNull ResourceKey<? extends Registry<T>> registryKey;
-        private final @NonNull String modId;
+        private final ResourceKey<? extends Registry<T>> registryKey;
+        private final String modId;
 
-        Provider(DeferredRegister<T> register, @NonNull ResourceKey<? extends Registry<T>> registryKey,
-                @NonNull String modId) {
+        Provider(DeferredRegister<T> register, ResourceKey<? extends Registry<T>> registryKey,
+                String modId) {
             this.register = register;
             this.registryKey = registryKey;
             this.modId = modId;
@@ -58,7 +57,7 @@ public final class NeoForgeRegistrationFactory implements RegistrationProvider.F
 
         @Override
         public <I extends T> RegistryEntry<I> register(
-                String name, Function<@NonNull ResourceKey<T>, I> factory) {
+                String name, Function<ResourceKey<T>, I> factory) {
             String nonNullName = NerospaceCommon.requireNonNull(name);
             Identifier id = Identifier.fromNamespaceAndPath(modId, nonNullName);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);

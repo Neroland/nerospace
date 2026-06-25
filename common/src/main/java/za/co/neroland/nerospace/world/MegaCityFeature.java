@@ -89,18 +89,18 @@ public class MegaCityFeature extends Feature<NoneFeatureConfiguration> {
 
         AlienBuild.tower(level, o.getX(), baseY, o.getZ(), 5, 8, false, rand, m);
         m.set(o.getX(), baseY, o.getZ());
-        level.setBlock(m, ModBlocks.VILLAGE_CORE.get().defaultBlockState(), 2);
+        level.setBlock(m, java.util.Objects.requireNonNull(ModBlocks.VILLAGE_CORE.get()).defaultBlockState(), 2);
         BlockPos chestPos = new BlockPos(o.getX() + 2, baseY, o.getZ() + 2);
         level.setBlock(chestPos, Blocks.CHEST.defaultBlockState(), 2);
         if (level.getBlockEntity(chestPos) instanceof ChestBlockEntity chest) {
-            chest.setItem(4, new ItemStack(ModItems.ALIEN_CORE.get(), 2 + rand.nextInt(3)));
-            chest.setItem(6, new ItemStack(ModItems.GRAV_STRIDERS.get(), 1));
-            chest.setItem(10, new ItemStack(ModItems.XERTZ_RESONATOR.get(), 1));
+            chest.setItem(4, new ItemStack(java.util.Objects.requireNonNull(ModItems.ALIEN_CORE.get()), 2 + rand.nextInt(3)));
+            chest.setItem(6, new ItemStack(java.util.Objects.requireNonNull(ModItems.GRAV_STRIDERS.get()), 1));
+            chest.setItem(10, new ItemStack(java.util.Objects.requireNonNull(ModItems.XERTZ_RESONATOR.get()), 1));
             chest.setItem(13, new ItemStack(Items.DIAMOND, 4 + rand.nextInt(6)));
             chest.setItem(22, new ItemStack(Items.EMERALD, 12 + rand.nextInt(12)));
         }
         int by = level.getHeight(Heightmap.Types.WORLD_SURFACE, o.getX(), o.getZ());
-        ModEntities.RUIN_WARDEN.get().spawn(level.getLevel(), new BlockPos(o.getX(), by, o.getZ()),
+        java.util.Objects.requireNonNull(ModEntities.RUIN_WARDEN.get()).spawn(level.getLevel(), new BlockPos(o.getX(), by, o.getZ()),
                 EntitySpawnReason.EVENT);
         return true;
     }

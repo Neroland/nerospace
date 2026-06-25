@@ -10,7 +10,6 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.progression.StarGuide;
@@ -27,18 +26,18 @@ import za.co.neroland.nerospace.progression.StarGuideMenu;
  */
 public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
 
-    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+    private static final Identifier TEXTURE =
             NerospaceCommon.id("textures/gui/star_guide.png");
     /** Star Guide accent: nerosium purple (the mod's signpost block). */
     private static final int ACCENT = 0xFFB05AE0;
     private static final int DONE = 0xFF58D08A;
 
-    private final List<@NonNull SpaceButton> chapterButtons = new ArrayList<>();
-    private final List<@NonNull SpaceButton> stepButtons = new ArrayList<>();
+    private final List<SpaceButton> chapterButtons = new ArrayList<>();
+    private final List<SpaceButton> stepButtons = new ArrayList<>();
     private int selectedChapter;
     private int selectedStep;
 
-    public StarGuideScreen(@NonNull StarGuideMenu menu, @NonNull Inventory playerInventory, @NonNull Component title) {
+    public StarGuideScreen(StarGuideMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 240, 200);
         this.titleLabelX = 10;
         this.inventoryLabelY = 10_000; // no player inventory on this panel

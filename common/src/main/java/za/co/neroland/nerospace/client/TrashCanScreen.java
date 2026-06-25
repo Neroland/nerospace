@@ -5,6 +5,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.TrashCanMenu;
 
 /**
@@ -14,8 +16,9 @@ import za.co.neroland.nerospace.menu.TrashCanMenu;
  */
 public class TrashCanScreen extends AbstractContainerScreen<TrashCanMenu> {
 
-    public TrashCanScreen(TrashCanMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
+    public TrashCanScreen(TrashCanMenu menu, Inventory playerInventory, Component title) {
+        super(NerospaceCommon.requireNonNull(menu), NerospaceCommon.requireNonNull(playerInventory),
+                NerospaceCommon.requireNonNull(title));
     }
 
     @Override

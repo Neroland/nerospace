@@ -23,7 +23,6 @@ import net.minecraft.world.entity.SpawnPlacementType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
@@ -49,7 +48,7 @@ import za.co.neroland.nerospace.world.TerraformManager;
 @Mod(NerospaceCommon.MOD_ID)
 public final class NerospaceNeoForge {
 
-    public NerospaceNeoForge(@NonNull IEventBus modEventBus, ModContainer modContainer) {
+    public NerospaceNeoForge(IEventBus modEventBus, ModContainer modContainer) {
         NerospaceCommon.LOGGER.info("[Nerospace] NeoForge bootstrap");
         NerospaceCommon.init();
         // Anonymous, Nerospace-only crash reporting (opt-out via config/nerospace.properties; off in dev).

@@ -14,11 +14,11 @@ import za.co.neroland.nerospace.menu.FuelTankMenu;
  */
 public class FuelTankScreen extends TexturedContainerScreen<FuelTankMenu> {
 
-    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+    private static final Identifier TEXTURE =
             NerospaceCommon.id("textures/gui/fuel_tank.png");
     private static final int ACCENT = 0xFFF0A030;     // fuel orange
 
-    public FuelTankScreen(FuelTankMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
+    public FuelTankScreen(FuelTankMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;

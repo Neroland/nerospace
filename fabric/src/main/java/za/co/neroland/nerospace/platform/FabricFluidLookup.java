@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.fabric.NerospaceFabric;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
@@ -15,7 +14,7 @@ public final class FabricFluidLookup implements FluidLookup {
 
     @Nullable
     @Override
-    public NerospaceFluidStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side) {
+    public NerospaceFluidStorage find(Level level, BlockPos pos, @Nullable Direction side) {
         return NerospaceFabric.FLUID.find(level, pos, side);
     }
 }

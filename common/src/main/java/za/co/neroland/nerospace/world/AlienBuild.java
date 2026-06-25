@@ -6,9 +6,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-import org.jspecify.annotations.NonNull;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlocks;
 
 /**
@@ -22,36 +20,36 @@ public final class AlienBuild {
     private AlienBuild() {
     }
 
-    public static @NonNull BlockState bricks() {
-        return NerospaceCommon.requireNonNull(ModBlocks.ALIEN_BRICKS.get().defaultBlockState());
+    public static BlockState bricks() {
+        return java.util.Objects.requireNonNull(ModBlocks.ALIEN_BRICKS.get().defaultBlockState());
     }
 
-    public static @NonNull BlockState cracked() {
-        return NerospaceCommon.requireNonNull(ModBlocks.CRACKED_ALIEN_BRICKS.get().defaultBlockState());
+    public static BlockState cracked() {
+        return java.util.Objects.requireNonNull(ModBlocks.CRACKED_ALIEN_BRICKS.get().defaultBlockState());
     }
 
-    public static @NonNull BlockState tile() {
-        return NerospaceCommon.requireNonNull(ModBlocks.ALIEN_TILE.get().defaultBlockState());
+    public static BlockState tile() {
+        return java.util.Objects.requireNonNull(ModBlocks.ALIEN_TILE.get().defaultBlockState());
     }
 
-    public static @NonNull BlockState pillar() {
-        return NerospaceCommon.requireNonNull(ModBlocks.ALIEN_PILLAR.get().defaultBlockState());
+    public static BlockState pillar() {
+        return java.util.Objects.requireNonNull(ModBlocks.ALIEN_PILLAR.get().defaultBlockState());
     }
 
-    public static @NonNull BlockState lamp() {
-        return NerospaceCommon.requireNonNull(ModBlocks.ALIEN_LAMP.get().defaultBlockState());
+    public static BlockState lamp() {
+        return java.util.Objects.requireNonNull(ModBlocks.ALIEN_LAMP.get().defaultBlockState());
     }
 
-    public static @NonNull BlockState crystal() {
-        return NerospaceCommon.requireNonNull(ModBlocks.ALIEN_CRYSTAL_BLOCK.get().defaultBlockState());
+    public static BlockState crystal() {
+        return java.util.Objects.requireNonNull(ModBlocks.ALIEN_CRYSTAL_BLOCK.get().defaultBlockState());
     }
 
-    public static @NonNull BlockState air() {
-        return NerospaceCommon.requireNonNull(Blocks.AIR.defaultBlockState());
+    public static BlockState air() {
+        return java.util.Objects.requireNonNull(Blocks.AIR.defaultBlockState());
     }
 
     private static void set(WorldGenLevel level, BlockPos.MutableBlockPos m, int x, int y, int z,
-            @NonNull BlockState s) {
+            BlockState s) {
         m.set(x, y, z);
         level.setBlock(m, s, 2);
     }

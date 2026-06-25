@@ -17,15 +17,15 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
 public class PassiveGeneratorMenu extends AbstractContainerMenu {
 
     private static final int MACHINE_SLOTS = PassiveGeneratorBlockEntity.SIZE;
-    private final @org.jspecify.annotations.NonNull Container container;
-    private final @org.jspecify.annotations.NonNull ContainerData data;
+    private final Container container;
+    private final ContainerData data;
 
-    public PassiveGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory) {
+    public PassiveGeneratorMenu(int id, Inventory playerInventory) {
         this(id, playerInventory, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(4));
     }
 
-    public PassiveGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data) {
-        super(ModMenuTypes.PASSIVE_GENERATOR.get(), id);
+    public PassiveGeneratorMenu(int id, Inventory playerInventory, Container container, ContainerData data) {
+        super(java.util.Objects.requireNonNull(ModMenuTypes.PASSIVE_GENERATOR.get()), id);
         checkContainerSize(container, MACHINE_SLOTS);
         this.container = container;
         this.data = data;

@@ -9,7 +9,6 @@ import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -32,19 +31,19 @@ import za.co.neroland.nerospace.rocket.RocketPadItemContainer;
 public final class NeoForgeCapabilities {
 
     /** Mod-owned energy capability; mirrors the Fabric {@code BlockApiLookup} of the same id. */
-    public static final @NonNull BlockCapability<NerospaceEnergyStorage, @Nullable Direction> ENERGY =
+    public static final BlockCapability<NerospaceEnergyStorage, @Nullable Direction> ENERGY =
             NerospaceCommon.requireNonNull(BlockCapability.createSided(
                     NerospaceCommon.id("energy"),
                     NerospaceEnergyStorage.class));
 
     /** Mod-owned fluid capability; mirrors the Fabric {@code BlockApiLookup} of the same id. */
-    public static final @NonNull BlockCapability<NerospaceFluidStorage, @Nullable Direction> FLUID =
+    public static final BlockCapability<NerospaceFluidStorage, @Nullable Direction> FLUID =
             NerospaceCommon.requireNonNull(BlockCapability.createSided(
                     NerospaceCommon.id("fluid"),
                     NerospaceFluidStorage.class));
 
     /** Mod-owned gas capability; mirrors the Fabric {@code BlockApiLookup} of the same id. */
-    public static final @NonNull BlockCapability<NerospaceGasStorage, @Nullable Direction> GAS =
+    public static final BlockCapability<NerospaceGasStorage, @Nullable Direction> GAS =
             NerospaceCommon.requireNonNull(BlockCapability.createSided(
                     NerospaceCommon.id("gas"),
                     NerospaceGasStorage.class));
@@ -52,7 +51,7 @@ public final class NeoForgeCapabilities {
     private NeoForgeCapabilities() {
     }
 
-    public static void register(@NonNull IEventBus modEventBus) {
+    public static void register(IEventBus modEventBus) {
         modEventBus.addListener(NeoForgeCapabilities::onRegisterCapabilities);
     }
 

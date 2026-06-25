@@ -15,7 +15,7 @@ org.eclipse.jdt.core.compiler.annotation.nonnullbydefault=org.jspecify.annotatio
 org.eclipse.jdt.core.compiler.annotation.nullable.secondary=org.jetbrains.annotations.Nullable,javax.annotation.Nullable,jakarta.annotation.Nullable
 org.eclipse.jdt.core.compiler.annotation.nonnull.secondary=org.jetbrains.annotations.NotNull,javax.annotation.Nonnull,jakarta.annotation.Nonnull
 org.eclipse.jdt.core.compiler.annotation.nonnullbydefault.secondary=org.eclipse.jdt.annotation.NonNullByDefault,javax.annotation.ParametersAreNonnullByDefault
-org.eclipse.jdt.core.compiler.annotation.inheritNullAnnotations=enabled
+org.eclipse.jdt.core.compiler.annotation.inheritNullAnnotations=disabled
 org.eclipse.jdt.core.compiler.annotation.missingNonNullByDefaultAnnotation=ignore
 # Null analysis severities. These are kept at `warning` (NOT `ignore`) so ecjCheck surfaces exactly
 # what VS Code's Problems panel shows — nothing is hidden. In particular nullUncheckedConversion and

@@ -6,6 +6,8 @@ import java.util.List;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
+import org.jspecify.annotations.Nullable;
+
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
@@ -39,7 +41,7 @@ public final class VillageBuildings {
             this.height = height;
         }
 
-        public static Type byOrdinalOrNull(int i) {
+        public static @Nullable Type byOrdinalOrNull(int i) {
             Type[] v = values();
             return (i >= 0 && i < v.length) ? v[i] : null;
         }
@@ -61,9 +63,9 @@ public final class VillageBuildings {
 
         public Item item() {
             return switch (this) {
-                case XERTZ_QUARTZ -> ModItems.XERTZ_QUARTZ.get();
-                case RAW_NEROSTEEL -> ModItems.RAW_NEROSTEEL.get();
-                case ALIEN_FRAGMENT -> ModItems.ALIEN_FRAGMENT.get();
+                case XERTZ_QUARTZ -> java.util.Objects.requireNonNull(ModItems.XERTZ_QUARTZ.get());
+                case RAW_NEROSTEEL -> java.util.Objects.requireNonNull(ModItems.RAW_NEROSTEEL.get());
+                case ALIEN_FRAGMENT -> java.util.Objects.requireNonNull(ModItems.ALIEN_FRAGMENT.get());
             };
         }
 
@@ -71,7 +73,7 @@ public final class VillageBuildings {
             return Items.EMERALD;
         }
 
-        public static Quest byOrdinalOrNull(int i) {
+        public static @Nullable Quest byOrdinalOrNull(int i) {
             Quest[] v = values();
             return (i >= 0 && i < v.length) ? v[i] : null;
         }

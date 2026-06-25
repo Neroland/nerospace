@@ -19,17 +19,17 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
  */
 public class OxygenGeneratorMenu extends AbstractContainerMenu {
 
-    private final @org.jspecify.annotations.NonNull ContainerData data;
-    private final @org.jspecify.annotations.NonNull ContainerLevelAccess access;
+    private final ContainerData data;
+    private final ContainerLevelAccess access;
 
     /** Client constructor (referenced by the {@code MenuType}); dummy data syncs from the server. */
-    public OxygenGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory) {
+    public OxygenGeneratorMenu(int id, Inventory playerInventory) {
         this(id, playerInventory, new SimpleContainerData(4), ContainerLevelAccess.NULL);
     }
 
-    public OxygenGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull ContainerData data,
-            @org.jspecify.annotations.NonNull ContainerLevelAccess access) {
-        super(ModMenuTypes.OXYGEN_GENERATOR.get(), id);
+    public OxygenGeneratorMenu(int id, Inventory playerInventory, ContainerData data,
+            ContainerLevelAccess access) {
+        super(java.util.Objects.requireNonNull(ModMenuTypes.OXYGEN_GENERATOR.get()), id);
         this.data = data;
         this.access = access;
 
@@ -62,7 +62,7 @@ public class OxygenGeneratorMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(this.access, player, ModBlocks.OXYGEN_GENERATOR.get());
+        return stillValid(this.access, player, java.util.Objects.requireNonNull(ModBlocks.OXYGEN_GENERATOR.get()));
     }
 
     @Override

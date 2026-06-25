@@ -24,6 +24,6 @@ public final class MachineRedstone {
                 break;
             }
         }
-        return !wired || level.hasNeighborSignal(za.co.neroland.nerospace.NerospaceCommon.requireNonNull(pos));
+        return !wired || level.hasNeighborSignal(java.util.Objects.requireNonNull(pos));
     }
 }

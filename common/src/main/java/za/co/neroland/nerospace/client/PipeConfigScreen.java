@@ -28,7 +28,7 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
     private static final int FIRST_ROW_Y = 40;
     private static final int ROW_STEP = 18;
 
-    public PipeConfigScreen(PipeConfigMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
+    public PipeConfigScreen(PipeConfigMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, NerospaceCommon.requireNonNull(title), 176, 152);
         this.titleLabelX = 8;
         this.titleLabelY = 6;

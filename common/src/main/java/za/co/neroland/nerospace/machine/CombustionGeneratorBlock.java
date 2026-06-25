@@ -28,7 +28,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 /** Combustion Generator block — directional, ticks its {@link CombustionGeneratorBlockEntity}. */
 public class CombustionGeneratorBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<CombustionGeneratorBlock> CODEC = simpleCodec(CombustionGeneratorBlock::new);
+    public static final MapCodec<CombustionGeneratorBlock> CODEC = simpleCodec(CombustionGeneratorBlock::new);
     public static final EnumProperty<Direction> FACING =
             NerospaceCommon.requireNonNull(BlockStateProperties.HORIZONTAL_FACING);
 
@@ -78,7 +78,7 @@ public class CombustionGeneratorBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }

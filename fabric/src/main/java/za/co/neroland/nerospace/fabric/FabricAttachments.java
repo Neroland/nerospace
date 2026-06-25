@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.world.OxygenManager;
@@ -19,31 +18,31 @@ import za.co.neroland.nerospace.world.OxygenManager;
  */
 public final class FabricAttachments {
 
-    private static final @NonNull Codec<Integer> INT_CODEC = NerospaceCommon.requireNonNull(Codec.INT);
-    private static final @NonNull Codec<Boolean> BOOL_CODEC = NerospaceCommon.requireNonNull(Codec.BOOL);
-    private static final @NonNull Codec<List<Integer>> INT_LIST_CODEC =
+    private static final Codec<Integer> INT_CODEC = NerospaceCommon.requireNonNull(Codec.INT);
+    private static final Codec<Boolean> BOOL_CODEC = NerospaceCommon.requireNonNull(Codec.BOOL);
+    private static final Codec<List<Integer>> INT_LIST_CODEC =
             NerospaceCommon.requireNonNull(Codec.INT.listOf());
 
-    public static final @NonNull AttachmentType<Integer> OXYGEN = AttachmentRegistry.<Integer>builder()
+    public static final AttachmentType<Integer> OXYGEN = AttachmentRegistry.<Integer>builder()
             .initializer(() -> OxygenManager.OXYGEN_MAX)
             .persistent(INT_CODEC)
             .copyOnDeath()
             .buildAndRegister(NerospaceCommon.id("oxygen"));
 
     /** Per-chunk: the converted chunk is permanently breathable at/above the surface. */
-    public static final @NonNull AttachmentType<Boolean> TERRAFORMED = AttachmentRegistry.<Boolean>builder()
+    public static final AttachmentType<Boolean> TERRAFORMED = AttachmentRegistry.<Boolean>builder()
             .initializer(() -> Boolean.FALSE)
             .persistent(BOOL_CODEC)
             .buildAndRegister(NerospaceCommon.id("terraformed"));
 
     /** Per-chunk: highest terraform stage completed (0 none / 1 Rooted / 2 Hydrated / 3 Living). */
-    public static final @NonNull AttachmentType<Integer> TERRAFORM_STAGE = AttachmentRegistry.<Integer>builder()
+    public static final AttachmentType<Integer> TERRAFORM_STAGE = AttachmentRegistry.<Integer>builder()
             .initializer(() -> 0)
             .persistent(INT_CODEC)
             .buildAndRegister(NerospaceCommon.id("terraform_stage"));
 
     /** Per-player: one Star Guide "seen" bitmask per chapter (bit i = step i acknowledged). */
-    public static final @NonNull AttachmentType<List<Integer>> STAR_GUIDE_SEEN = AttachmentRegistry.<List<Integer>>builder()
+    public static final AttachmentType<List<Integer>> STAR_GUIDE_SEEN = AttachmentRegistry.<List<Integer>>builder()
             .initializer(List::of)
             .persistent(INT_LIST_CODEC)
             .copyOnDeath()

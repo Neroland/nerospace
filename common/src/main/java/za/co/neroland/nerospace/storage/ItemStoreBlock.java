@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 /** Item Store block — right-click opens a vanilla 3-row chest GUI; holds an {@link ItemStoreBlockEntity}. */
 public class ItemStoreBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<ItemStoreBlock> CODEC = simpleCodec(ItemStoreBlock::new);
+    public static final MapCodec<ItemStoreBlock> CODEC = simpleCodec(ItemStoreBlock::new);
 
     public ItemStoreBlock(Properties properties) {
         super(properties);

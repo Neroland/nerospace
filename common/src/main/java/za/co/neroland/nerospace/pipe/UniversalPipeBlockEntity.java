@@ -32,7 +32,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -64,7 +63,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     public static final int FLUID_MAX_IO = 1_000;
     public static final int ITEM_SLOTS = 3;
 
-    private static final int @org.jspecify.annotations.NonNull[] ALL_SLOTS = {0, 1, 2};
+    private static final int [] ALL_SLOTS = {0, 1, 2};
 
     /** Max installed upgrades of each kind per segment. */
     public static final int MAX_UPGRADES = 3;
@@ -72,7 +71,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_IO, MAX_IO, this::setChanged);
     private final GasTank gas = new GasTank(GAS_CAPACITY, this::setChanged);
     private final FluidTank fluid = new FluidTank(FLUID_CAPACITY, this::setChanged);
-    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(ITEM_SLOTS, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(ITEM_SLOTS, ItemStack.EMPTY);
 
     /** The shared {@link PipeNetwork} this segment belongs to (lazily built; rebuilt on topology change). */
     @Nullable
@@ -81,7 +80,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     /** Per-face (6) × per-resource-type (4) I/O mode, set with the Configurator. Default AUTO. */
     private final PipeIoMode[][] faceModes = new PipeIoMode[6][PipeResourceType.VALUES.length];
     /** Per-face item-layer filter (EMPTY = unfiltered), indexed by {@code Direction.get3DDataValue()}. */
-    private final @NonNull ItemStack @NonNull[] faceFilters = new @NonNull ItemStack[6];
+    private final ItemStack [] faceFilters = new ItemStack[6];
     private int speedUpgrades;
     private int capacityUpgrades;
 
@@ -141,19 +140,19 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     /** Adopt the shared network this segment now belongs to. */
-    void adopt(@NonNull PipeNetwork net) {
+    void adopt(PipeNetwork net) {
         this.network = net;
     }
 
     // --- Per-face I/O modes (Configurator) -----------------------------------
 
-    public @NonNull PipeIoMode mode(@NonNull Direction dir, @NonNull PipeResourceType type) {
+    public PipeIoMode mode(Direction dir, PipeResourceType type) {
         return za.co.neroland.nerospace.NerospaceCommon.requireNonNull(
                 this.faceModes[dir.get3DDataValue()][type.ordinal()]);
     }
 
     /** Cycle a face's mode for one resource type (Configurator). @return the new mode. */
-    public @NonNull PipeIoMode cycleMode(@NonNull Direction dir, @NonNull PipeResourceType type) {
+    public PipeIoMode cycleMode(Direction dir, PipeResourceType type) {
         PipeIoMode next = za.co.neroland.nerospace.NerospaceCommon.requireNonNull(mode(dir, type).next());
         this.faceModes[dir.get3DDataValue()][type.ordinal()] = next;
         setChanged();
@@ -161,7 +160,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     /** Directly set a face's mode for one resource type (Configurator GUI / commands). */
-    public void setMode(@NonNull Direction dir, @NonNull PipeResourceType type, @NonNull PipeIoMode mode) {
+    public void setMode(Direction dir, PipeResourceType type, PipeIoMode mode) {
         this.faceModes[dir.get3DDataValue()][type.ordinal()] = mode;
         setChanged();
     }
@@ -172,7 +171,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     private int configType = 0;
 
     /** Synced to the config menu: [0]=configType, [1..6]=each face's mode ordinal for that layer. */
-    private final @NonNull ContainerData configData = new ContainerData() {
+    private final ContainerData configData = new ContainerData() {
         @Override
         public int get(int index) {
             if (index == 0) {
@@ -208,24 +207,24 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, @NonNull Inventory inventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
         return new PipeConfigMenu(containerId, inventory, this, this.configData);
     }
 
     // --- Per-face item filter (Pipe Filter) ----------------------------------
 
-    public @NonNull ItemStack filter(@NonNull Direction dir) {
+    public ItemStack filter(Direction dir) {
         return this.faceFilters[dir.get3DDataValue()];
     }
 
-    public void setFilter(@NonNull Direction dir, @Nullable ItemStack filter) {
+    public void setFilter(Direction dir, @Nullable ItemStack filter) {
         this.faceFilters[dir.get3DDataValue()] = filter == null ? ItemStack.EMPTY : filter;
         setChanged();
     }
 
     // --- Upgrades (Speed / Capacity) -----------------------------------------
 
-    public boolean installUpgrade(PipeUpgradeItem.@NonNull Kind kind) {
+    public boolean installUpgrade(PipeUpgradeItem.Kind kind) {
         if (upgradeCount(kind) >= MAX_UPGRADES) {
             return false;
         }
@@ -246,7 +245,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         this.gas.resize((long) GAS_CAPACITY * mult);
     }
 
-    public int upgradeCount(PipeUpgradeItem.@NonNull Kind kind) {
+    public int upgradeCount(PipeUpgradeItem.Kind kind) {
         return kind == PipeUpgradeItem.Kind.SPEED ? this.speedUpgrades : this.capacityUpgrades;
     }
 
@@ -284,7 +283,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         return 1 + this.capacityUpgrades;
     }
 
-    public void tick(@NonNull Level level, @NonNull BlockPos pos, @NonNull BlockState state) {
+    public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) {
             return;
         }
@@ -305,7 +304,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     /** Re-derive the 6 connection blockstate properties from neighbours (throttled) so the tube model +
      *  voxel shape track the world without the version-fragile neighbour-event overrides. */
-    private void refreshConnections(@NonNull Level level, @NonNull BlockPos pos, @NonNull BlockState state) {
+    private void refreshConnections(Level level, BlockPos pos, BlockState state) {
         if (level.getGameTime() % CONNECTION_REFRESH_INTERVAL != 0) {
             return;
         }
@@ -332,7 +331,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
      * energy/fluid/gas stream pulses: a snappy cadence while items are in flight, a slower cadence while
      * the pipe merely holds content, plus one final snapshot so the client clears a now-idle segment.
      */
-    private void maybeSyncClient(@NonNull Level level, @NonNull BlockPos pos, @NonNull BlockState state) {
+    private void maybeSyncClient(Level level, BlockPos pos, BlockState state) {
         boolean items = !this.travelling.isEmpty();
         boolean content = this.energy.getAmount() > 0 || this.gas.getAmount() > 0 || this.fluid.getAmount() > 0
                 || hasBufferedItems();
@@ -352,7 +351,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     /** Read-only view of the in-transit packets, for the renderer. */
-    public @NonNull List<TravellingItem> travelling() {
+    public List<TravellingItem> travelling() {
         return za.co.neroland.nerospace.NerospaceCommon.requireNonNull(this.travelling);
     }
 
@@ -366,7 +365,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     /** Network-level visual packet for an item routed through this segment. */
-    void showTravelling(@NonNull ItemStack moved, @NonNull Direction inFace, @Nullable Direction outFace) {
+    void showTravelling(ItemStack moved, Direction inFace, @Nullable Direction outFace) {
         if (moved.isEmpty() || this.travelling.size() >= MAX_TRAVELLING) {
             return;
         }
@@ -463,17 +462,17 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     // --- WorldlyContainer (item buffer) -------------------------------------
 
     @Override
-    public int @NonNull[] getSlotsForFace(Direction side) {
+    public int [] getSlotsForFace(Direction side) {
         return ALL_SLOTS;
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int slot, @NonNull ItemStack stack, @Nullable Direction side) {
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
         return true;
     }
 
     @Override
-    public boolean canTakeItemThroughFace(int slot, @NonNull ItemStack stack, @NonNull Direction side) {
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
         return true;
     }
 
@@ -493,12 +492,12 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     @Override
-    public @NonNull ItemStack getItem(int slot) {
+    public ItemStack getItem(int slot) {
         return this.items.get(slot);
     }
 
     @Override
-    public @NonNull ItemStack removeItem(int slot, int amount) {
+    public ItemStack removeItem(int slot, int amount) {
         ItemStack stack = this.items.get(slot);
         if (stack.isEmpty() || amount <= 0) {
             return ItemStack.EMPTY;
@@ -511,20 +510,20 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     @Override
-    public @NonNull ItemStack removeItemNoUpdate(int slot) {
+    public ItemStack removeItemNoUpdate(int slot) {
         ItemStack stack = this.items.get(slot);
         this.items.set(slot, ItemStack.EMPTY);
         return stack;
     }
 
     @Override
-    public void setItem(int slot, @NonNull ItemStack stack) {
+    public void setItem(int slot, ItemStack stack) {
         this.items.set(slot, stack);
         this.setChanged();
     }
 
     @Override
-    public boolean stillValid(@NonNull Player player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 

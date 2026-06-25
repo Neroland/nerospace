@@ -6,6 +6,9 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
+
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * A sci-fi styled button for the Nerospace machine screens: a dark recessed body with a glowing
  * accent border (brighter on hover or when {@linkplain #setSelected selected}) and centred text,
@@ -16,8 +19,10 @@ public class SpaceButton extends Button {
     private final int accent;
     private boolean selected;
 
-    public SpaceButton(int x, int y, int width, int height, Component message, int accent, OnPress onPress) {
-        super(x, y, width, height, message, onPress, DEFAULT_NARRATION);
+    public SpaceButton(int x, int y, int width, int height, Component message, int accent,
+            OnPress onPress) {
+        super(x, y, width, height, NerospaceCommon.requireNonNull(message),
+                NerospaceCommon.requireNonNull(onPress), DEFAULT_NARRATION);
         this.accent = accent;
     }
 
@@ -26,7 +31,8 @@ public class SpaceButton extends Button {
     }
 
     @Override
-    protected void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY,
+            float partialTick) {
         int x = getX();
         int y = getY();
         int w = getWidth();
@@ -40,8 +46,9 @@ public class SpaceButton extends Button {
         extractor.fill(x + 1, y + 1, x + w - 1, y + h - 1, body);
         extractor.fill(x + 1, y + 1, x + w - 1, y + 2, 0x22FFFFFF); // top sheen
 
-        Font font = Minecraft.getInstance().font;
+        Font font = NerospaceCommon.requireNonNull(Minecraft.getInstance().font);
         int textColor = !this.active ? 0xFF6A7280 : (hovered || this.selected ? 0xFFFFFFFF : 0xFFCFE7FF);
-        extractor.centeredText(font, getMessage(), x + w / 2, y + (h - 8) / 2, textColor);
+        extractor.centeredText(font, NerospaceCommon.requireNonNull(getMessage()), x + w / 2, y + (h - 8) / 2,
+                textColor);
     }
 }

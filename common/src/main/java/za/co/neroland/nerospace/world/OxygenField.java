@@ -8,7 +8,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import net.minecraft.core.BlockPos;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.registry.ModTags;
 
@@ -28,7 +27,7 @@ public final class OxygenField {
     }
 
     /** @return true if a cell can hold oxygen (air, a leaky block, or an open door); false if it seals. */
-    public static boolean canHold(@NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull BlockState state) {
+    public static boolean canHold(BlockGetter level, BlockPos pos, BlockState state) {
         if (state.isAir()) {
             return true;
         }
@@ -47,7 +46,7 @@ public final class OxygenField {
     }
 
     /** @return true for non-full / leaky cells that bleed oxygen to the void faster (openings). */
-    public static boolean isLeaky(@NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull BlockState state) {
+    public static boolean isLeaky(BlockGetter level, BlockPos pos, BlockState state) {
         if (state.isAir()) {
             return false;
         }

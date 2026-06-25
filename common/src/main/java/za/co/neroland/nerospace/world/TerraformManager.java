@@ -41,9 +41,10 @@ import za.co.neroland.nerospace.machine.TerraformConversion;
  */
 public final class TerraformManager extends SavedData {
 
-    public static final @org.jspecify.annotations.NonNull Identifier ID = NerospaceCommon.id("terraformers");
+    public static final Identifier ID = NerospaceCommon.id("terraformers");
+    private static final TerraformConversion.HydrationSink FREE_HYDRATION = units -> units;
 
-    public static final @org.jspecify.annotations.NonNull SavedDataType<TerraformManager> TYPE = new SavedDataType<>(
+    public static final SavedDataType<TerraformManager> TYPE = new SavedDataType<>(
             ID, TerraformManager::new, codec(), DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     /** Terraformer centre (packed BlockPos) → current horizontal stage-1 radius. */
@@ -63,8 +64,8 @@ public final class TerraformManager extends SavedData {
     }
 
     /** Public for the save-compat gametest, which decodes a legacy (pre-stage) payload through it. */
-    public static @org.jspecify.annotations.NonNull Codec<TerraformManager> codec() {
-        return NerospaceCommon.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
+    public static Codec<TerraformManager> codec() {
+        return java.util.Objects.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
                 Codec.LONG.listOf().fieldOf("positions").forGetter(m -> new ArrayList<>(m.radius.keySet())),
                 Codec.INT.listOf().fieldOf("radii").forGetter(m -> m.inKeyOrder(m.radius, 0)),
                 Codec.INT.listOf().fieldOf("tiers").forGetter(m -> m.inKeyOrder(m.tier, 1)),
@@ -211,7 +212,7 @@ public final class TerraformManager extends SavedData {
                         any = true;
                     }
                     if (chunkStage < 2 && hydR > 0 && dSq <= hydSq) {
-                        TerraformConversion.hydrateColumn(level, x, z, tableY, null);
+                        TerraformConversion.hydrateColumn(level, x, z, tableY, FREE_HYDRATION);
                         any = true;
                     }
                     if (chunkStage < 3 && lifeR > 0 && dSq <= lifeSq) {

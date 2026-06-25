@@ -68,16 +68,16 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
 
     public static final int CANISTER_SLOT = 0;
     public static final int SIZE = 1;
-    private static final int @org.jspecify.annotations.NonNull[] SLOTS =
+    private static final int [] SLOTS =
             za.co.neroland.nerospace.NerospaceCommon.requireNonNull(IntStream.range(0, SIZE).toArray());
 
     private int fxTick;
 
-    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final FluidTank tank = new FluidTank(CAPACITY, this::setChanged);
 
     /** Synced to the open menu: [0]=fuel, [1]=capacity. */
-    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
+    private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return index == 0 ? (int) tank.getAmount() : (int) tank.getCapacity();
@@ -115,7 +115,7 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         return new FuelTankMenu(containerId, playerInventory, this.dataAccess);
     }
 

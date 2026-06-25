@@ -9,7 +9,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
@@ -24,7 +23,7 @@ import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
  */
 public final class ModDataComponents {
 
-    private static final @NonNull StreamCodec<RegistryFriendlyByteBuf, @NonNull ItemStack> ITEM_STACK_STREAM_CODEC =
+    private static final StreamCodec<RegistryFriendlyByteBuf, ItemStack> ITEM_STACK_STREAM_CODEC =
             StreamCodec.of(
                     (buf, stack) -> ItemStack.STREAM_CODEC.encode(buf, stack),
                     buf -> NerospaceCommon.requireNonNull(ItemStack.STREAM_CODEC.decode(buf)));
@@ -40,8 +39,8 @@ public final class ModDataComponents {
                     .build());
 
     /** The item a Pipe Filter is set to (applied to pipe faces to restrict the item layer). */
-    public static final RegistryEntry<DataComponentType<@NonNull ItemStack>> FILTER_ITEM =
-            COMPONENTS.register("filter_item", key -> DataComponentType.<@NonNull ItemStack>builder()
+    public static final RegistryEntry<DataComponentType<ItemStack>> FILTER_ITEM =
+            COMPONENTS.register("filter_item", key -> DataComponentType.<ItemStack>builder()
                     .persistent(NerospaceCommon.ITEM_STACK_CODEC)
                     .networkSynchronized(ITEM_STACK_STREAM_CODEC)
                     .build());

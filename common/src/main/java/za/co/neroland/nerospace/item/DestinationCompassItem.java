@@ -17,9 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 
-import org.jspecify.annotations.NonNull;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.rocket.Destinations;
@@ -30,11 +28,11 @@ import za.co.neroland.nerospace.rocket.Destinations;
  */
 public class DestinationCompassItem extends Item {
 
-    private final @NonNull ResourceKey<Level> destination;
+    private final ResourceKey<Level> destination;
 
-    public DestinationCompassItem(Properties properties, @NonNull ResourceKey<Level> destination) {
-        super(NerospaceCommon.requireNonNull(properties));
-        this.destination = NerospaceCommon.requireNonNull(destination);
+    public DestinationCompassItem(Properties properties, ResourceKey<Level> destination) {
+        super(java.util.Objects.requireNonNull(properties));
+        this.destination = java.util.Objects.requireNonNull(destination);
     }
 
     @Override
@@ -52,7 +50,7 @@ public class DestinationCompassItem extends Item {
         if (server == null) {
             return;
         }
-        ServerLevel dest = server.getLevel(NerospaceCommon.requireNonNull(returning ? Level.OVERWORLD : this.destination));
+        ServerLevel dest = server.getLevel(java.util.Objects.requireNonNull(returning ? Level.OVERWORLD : this.destination));
         if (dest == null) {
             return;
         }
@@ -67,7 +65,7 @@ public class DestinationCompassItem extends Item {
         if (!returning && this.destination.equals(ModDimensions.STATION_LEVEL)) {
             // The station is void; drop a small platform so the player doesn't fall.
             int platformY = 64;
-            BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
+            BlockState floor = java.util.Objects.requireNonNull(ModBlocks.STATION_FLOOR.get()).defaultBlockState();
             for (int dx = -2; dx <= 2; dx++) {
                 for (int dz = -2; dz <= 2; dz++) {
                     dest.setBlockAndUpdate(new BlockPos(blockX + dx, platformY, blockZ + dz), floor);
@@ -78,7 +76,7 @@ public class DestinationCompassItem extends Item {
             y = dest.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockX, blockZ) + 1.0D;
         }
 
-        player.teleportTo(dest, x, y, z, NerospaceCommon.requireNonNull(Set.of()), player.getYRot(), player.getXRot(), true);
+        player.teleportTo(dest, x, y, z, java.util.Objects.requireNonNull(Set.of()), player.getYRot(), player.getXRot(), true);
         player.sendSystemMessage(returning
                 ? Component.translatable("item.nerospace.destination_compass.return")
                 : Component.translatable("item.nerospace.destination_compass.travel",

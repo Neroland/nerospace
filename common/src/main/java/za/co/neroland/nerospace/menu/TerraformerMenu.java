@@ -25,17 +25,17 @@ public class TerraformerMenu extends AbstractContainerMenu {
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36;
 
-    private final @org.jspecify.annotations.NonNull Container container;
-    private final @org.jspecify.annotations.NonNull ContainerData data;
+    private final Container container;
+    private final ContainerData data;
 
-    public TerraformerMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
+    public TerraformerMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(TerraformerBlockEntity.SIZE),
                 new SimpleContainerData(TerraformerBlockEntity.DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public TerraformerMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data) {
-        super(ModMenuTypes.TERRAFORMER.get(), containerId);
+    public TerraformerMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
+        super(java.util.Objects.requireNonNull(ModMenuTypes.TERRAFORMER.get()), containerId);
         checkContainerSize(container, TerraformerBlockEntity.SIZE);
         checkContainerDataCount(data, TerraformerBlockEntity.DATA_COUNT);
         this.container = container;
@@ -62,7 +62,7 @@ public class TerraformerMenu extends AbstractContainerMenu {
                 if (!this.moveItemStackTo(raw, PLAYER_INV_START, PLAYER_INV_END, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (raw.is(ModItems.NEROSTEEL_INGOT.get()) || raw.is(ModItems.CINDRITE.get())) {
+            } else if (raw.is(java.util.Objects.requireNonNull(ModItems.NEROSTEEL_INGOT.get())) || raw.is(java.util.Objects.requireNonNull(ModItems.CINDRITE.get()))) {
                 if (!this.moveItemStackTo(raw, UPGRADE_SLOT, UPGRADE_SLOT + 1, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -126,13 +126,13 @@ public class TerraformerMenu extends AbstractContainerMenu {
     }
 
     private static class UpgradeSlot extends Slot {
-        UpgradeSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
+        UpgradeSlot(Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return stack.is(ModItems.NEROSTEEL_INGOT.get()) || stack.is(ModItems.CINDRITE.get());
+            return stack.is(java.util.Objects.requireNonNull(ModItems.NEROSTEEL_INGOT.get())) || stack.is(java.util.Objects.requireNonNull(ModItems.CINDRITE.get()));
         }
 
         @Override

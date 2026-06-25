@@ -17,6 +17,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+
 /**
  * Ruin Warden (ALIEN_VILLAGERS_DESIGN.md §5.2 / §7) — the boss guardian of the ancient ruins and the
  * mega-city keep. A towering crystalline construct: heavily armoured, hard to knock back, and a

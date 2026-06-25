@@ -33,10 +33,10 @@ public class QuarryControllerRenderer
         implements BlockEntityRenderer<QuarryControllerBlockEntity, QuarryControllerRenderState> {
 
     /** Purple strut texture for the moving gantry (bridge / trucks / carriage / shaft). */
-    private static final @org.jspecify.annotations.NonNull Identifier GANTRY_TEX =
+    private static final Identifier GANTRY_TEX =
             NerospaceCommon.id("textures/block/quarry_gantry.png");
     /** Red/steel strut texture for the drill head. */
-    private static final @org.jspecify.annotations.NonNull Identifier DRILL_TEX =
+    private static final Identifier DRILL_TEX =
             NerospaceCommon.id("textures/block/quarry_drill.png");
     /** Full-bright light (the frame is emissive); per-face lighting still shades by normal. */
     private static final int FULL_BRIGHT = 0x00F000F0;

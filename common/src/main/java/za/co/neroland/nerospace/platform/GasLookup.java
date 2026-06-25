@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 
@@ -19,5 +18,5 @@ public interface GasLookup {
     GasLookup INSTANCE = Services.load(GasLookup.class);
 
     @Nullable
-    NerospaceGasStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side);
+    NerospaceGasStorage find(Level level, BlockPos pos, @Nullable Direction side);
 }

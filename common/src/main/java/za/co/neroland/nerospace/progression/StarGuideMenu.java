@@ -30,17 +30,17 @@ public class StarGuideMenu extends AbstractContainerMenu {
 
     public static final int DATA_COUNT = StarGuide.CHAPTER_COUNT * 2;
 
-    private final @org.jspecify.annotations.NonNull ContainerData data;
+    private final ContainerData data;
 
     /** Client constructor (referenced by the {@code MenuType}). */
-    public StarGuideMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
+    public StarGuideMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, playerInventory.player);
     }
 
     /** Server constructor: data reads live from the player's advancements + seen attachment. */
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public StarGuideMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
-        super(ModMenuTypes.STAR_GUIDE.get(), containerId);
+    public StarGuideMenu(int containerId, Inventory playerInventory, Player player) {
+        super(java.util.Objects.requireNonNull(ModMenuTypes.STAR_GUIDE.get()), containerId);
         this.data = player instanceof ServerPlayer serverPlayer
                 ? new ProgressData(serverPlayer)
                 : new SimpleContainerData(DATA_COUNT);

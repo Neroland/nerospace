@@ -24,7 +24,6 @@ import net.neoforged.neoforge.client.fluid.FluidTintSources;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
@@ -135,8 +134,8 @@ public final class NeoForgeClientSetup {
     private static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
         Material still = new Material(NerospaceCommon.id("block/rocket_fuel_still"));
         Material flow = new Material(NerospaceCommon.id("block/rocket_fuel_flow"));
-        @NonNull Supplier<? extends Fluid> source = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL);
-        @NonNull Supplier<? extends Fluid> flowing = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL_FLOWING);
+        Supplier<? extends Fluid> source = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL);
+        Supplier<? extends Fluid> flowing = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL_FLOWING);
         event.register(
                 new FluidModel.Unbaked(still, flow, still, FluidTintSources.constant(0xFFFFFFFF)),
                 source, flowing);

@@ -24,7 +24,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class QuarryControllerBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<QuarryControllerBlock> CODEC =
+    public static final MapCodec<QuarryControllerBlock> CODEC =
             simpleCodec(props -> new QuarryControllerBlock(props, MinerTier.TIER_1));
 
     private final MinerTier tier;
@@ -58,7 +58,7 @@ public class QuarryControllerBlock extends BaseEntityBlock {
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }

@@ -5,7 +5,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -21,10 +20,10 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public record MeteorSyncPayload(boolean present, long pos, int state) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.@NonNull Type<@NonNull MeteorSyncPayload> TYPE =
+    public static final CustomPacketPayload.Type<MeteorSyncPayload> TYPE =
             new Type<>(NerospaceCommon.id("meteor_sync"));
 
-    public static final @NonNull StreamCodec<RegistryFriendlyByteBuf, @NonNull MeteorSyncPayload> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<RegistryFriendlyByteBuf, MeteorSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL, MeteorSyncPayload::present,
             ByteBufCodecs.VAR_LONG, MeteorSyncPayload::pos,
             ByteBufCodecs.VAR_INT, MeteorSyncPayload::state,
@@ -32,12 +31,12 @@ public record MeteorSyncPayload(boolean present, long pos, int state) implements
 
     public static final MeteorSyncPayload ABSENT = new MeteorSyncPayload(false, 0L, 0);
 
-    private static @NonNull MeteorSyncPayload of(Boolean present, Long pos, Integer state) {
+    private static MeteorSyncPayload of(Boolean present, Long pos, Integer state) {
         return new MeteorSyncPayload(present.booleanValue(), pos.longValue(), state.intValue());
     }
 
     @Override
-    public CustomPacketPayload.@NonNull Type<? extends @NonNull CustomPacketPayload> type() {
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

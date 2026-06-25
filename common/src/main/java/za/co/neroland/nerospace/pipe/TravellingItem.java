@@ -9,7 +9,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -26,7 +25,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public final class TravellingItem {
 
-    public static final @NonNull Codec<TravellingItem> CODEC = NerospaceCommon.requireNonNull(
+    public static final Codec<TravellingItem> CODEC = NerospaceCommon.requireNonNull(
             RecordCodecBuilder.create(i -> i.group(
             NerospaceCommon.ITEM_STACK_CODEC.fieldOf("item").forGetter(t -> NerospaceCommon.requireNonNull(t.stack)),
             Direction.CODEC.fieldOf("from").forGetter(t -> t.from),
@@ -38,24 +37,24 @@ public final class TravellingItem {
                             to.map(NerospaceCommon::requireNonNull).orElse(null),
                             NerospaceCommon.requireNonNull(progress).floatValue()))));
 
-    private final @NonNull ItemStack stack;
-    private final @NonNull Direction from;
+    private final ItemStack stack;
+    private final Direction from;
     @Nullable
     private final Direction to;
     private float progress;
 
-    public TravellingItem(@NonNull ItemStack stack, @NonNull Direction from, @Nullable Direction to, float progress) {
+    public TravellingItem(ItemStack stack, Direction from, @Nullable Direction to, float progress) {
         this.stack = stack;
         this.from = from;
         this.to = to;
         this.progress = progress;
     }
 
-    public @NonNull ItemStack stack() {
+    public ItemStack stack() {
         return this.stack;
     }
 
-    public @NonNull Direction from() {
+    public Direction from() {
         return this.from;
     }
 

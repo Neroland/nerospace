@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 
-import org.jspecify.annotations.NonNull;
 
 /**
  * Base for the Nerospace creature models (Phase 10d/10f). Subclasses build their geometry with
@@ -65,7 +64,7 @@ public abstract class GreenxertzMobModel<S extends LivingEntityRenderState> exte
      * @param phase phase offset in radians (e.g. {@code Mth.PI} to oppose another limb)
      * @param amp   swing amplitude in radians
      */
-    protected final void swingLimb(@NonNull String name, float phase, float amp) {
+    protected final void swingLimb(String name, float phase, float amp) {
         ModelPart part = root().getChild(name);
         this.swings.add(new Swing(part, part.xRot, phase, amp));
         this.swungParts.add(part);
@@ -81,7 +80,7 @@ public abstract class GreenxertzMobModel<S extends LivingEntityRenderState> exte
      * @param phase phase offset in radians (stagger siblings for ripple/wiggle effects)
      * @param amp   oscillation amplitude in radians (keep subtle: ~0.03–0.1)
      */
-    protected final void ambient(@NonNull String name, Direction.Axis axis, float freq, float phase, float amp) {
+    protected final void ambient(String name, Direction.Axis axis, float freq, float phase, float amp) {
         ModelPart part = root().getChild(name);
         float base = switch (axis) {
             case X -> part.xRot;

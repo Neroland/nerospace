@@ -8,7 +8,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -28,14 +27,15 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
     protected static final int TITLE = 0xFFD6ECFF;     // bright label
     protected static final int SUBTLE = 0xFF8DA0B4;    // dim label
 
-    private final @NonNull Identifier background;
+    private final Identifier background;
     /** Machine accent colour (ARGB). */
     protected final int accent;
 
-    protected TexturedContainerScreen(T menu, @org.jspecify.annotations.NonNull Inventory playerInventory,
+    protected TexturedContainerScreen(T menu, Inventory playerInventory,
                                       Component title, Identifier background,
                                       int accent, int width, int height) {
-        super(menu, playerInventory, NerospaceCommon.requireNonNull(title), width, height);
+        super(NerospaceCommon.requireNonNull(menu), NerospaceCommon.requireNonNull(playerInventory),
+                NerospaceCommon.requireNonNull(title), width, height);
         this.background = NerospaceCommon.requireNonNull(background);
         this.accent = accent;
     }
@@ -140,7 +140,8 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
     }
 
     /** Centred label text within {@code [dx, dx+width)}. */
-    protected void labelCentered(GuiGraphicsExtractor g, Component text, int dx, int width, int dy, int color) {
+    protected void labelCentered(GuiGraphicsExtractor g, Component text, int dx, int width, int dy,
+            int color) {
         g.centeredText(this.font, NerospaceCommon.requireNonNull(text), this.leftPos + dx + width / 2,
                 this.topPos + dy, color);
     }

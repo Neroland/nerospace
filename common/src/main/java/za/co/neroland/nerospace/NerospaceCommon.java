@@ -8,7 +8,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import org.slf4j.Logger;
@@ -27,26 +26,26 @@ public final class NerospaceCommon {
 
     public static final String MOD_ID = "nerospace";
     public static final Logger LOGGER = LoggerFactory.getLogger("Nerospace");
-    public static final @NonNull Codec<@NonNull ItemStack> ITEM_STACK_CODEC =
+    public static final Codec<ItemStack> ITEM_STACK_CODEC =
             requireNonNull(ItemStack.OPTIONAL_CODEC.xmap(NerospaceCommon::requireNonNull, stack -> stack));
 
     private NerospaceCommon() {
     }
 
-    public static @NonNull Identifier id(@NonNull String path) {
+    public static Identifier id(String path) {
         return requireNonNull(Identifier.fromNamespaceAndPath(MOD_ID, path));
     }
 
-    public static @NonNull Identifier id(@NonNull String namespace, @NonNull String path) {
+    public static Identifier id(String namespace, String path) {
         return requireNonNull(Identifier.fromNamespaceAndPath(namespace, path));
     }
 
-    public static <T extends @Nullable Object> @NonNull T requireNonNull(T value) {
+    public static <T> T requireNonNull(@Nullable T value) {
         return Objects.requireNonNull(value);
     }
 
-    public static <T extends @Nullable Object> @NonNull T orElse(
-            @NonNull Optional<? extends T> optional, @NonNull T fallback) {
+    public static <T extends @Nullable Object> T orElse(
+            Optional<? extends T> optional, T fallback) {
         return optional.isPresent() ? requireNonNull(optional.get()) : fallback;
     }
 

@@ -14,7 +14,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 
 /**
  * Geometry helpers for the launch-pad multiblock. A "launch pad" in survival is not a single block:
@@ -39,7 +38,7 @@ public final class LaunchPadMultiblock {
     @Nullable
     public static BlockPos adjacentPad(Level level, BlockPos origin) {
         for (Direction dir : Direction.Plane.HORIZONTAL) {
-            BlockPos candidate = origin.relative(NerospaceCommon.requireNonNull(dir));
+            BlockPos candidate = origin.relative(java.util.Objects.requireNonNull(dir));
             if (isPad(level, candidate)) {
                 return candidate;
             }
@@ -60,9 +59,9 @@ public final class LaunchPadMultiblock {
         queue.add(start.immutable());
         found.add(start.immutable());
         while (!queue.isEmpty() && found.size() < MAX_PADS) {
-            BlockPos pos = NerospaceCommon.requireNonNull(queue.poll());
+            BlockPos pos = java.util.Objects.requireNonNull(queue.poll());
             for (Direction dir : Direction.Plane.HORIZONTAL) {
-                BlockPos next = pos.relative(NerospaceCommon.requireNonNull(dir));
+                BlockPos next = pos.relative(java.util.Objects.requireNonNull(dir));
                 if (!found.contains(next) && isPad(level, next)) {
                     BlockPos immutable = next.immutable();
                     found.add(immutable);
@@ -193,7 +192,8 @@ public final class LaunchPadMultiblock {
                     continue; // interior — the pad itself
                 }
                 BlockPos pos = new BlockPos(corner.getX() + dx, corner.getY(), corner.getZ() + dz);
-                if (!level.getBlockState(pos).is(za.co.neroland.nerospace.registry.ModBlocks.STATION_WALL.get())) {
+                if (!level.getBlockState(pos).is(java.util.Objects.requireNonNull(
+                        za.co.neroland.nerospace.registry.ModBlocks.STATION_WALL.get()))) {
                     return false;
                 }
             }
@@ -235,7 +235,7 @@ public final class LaunchPadMultiblock {
     }
 
     private static boolean isPad(Level level, BlockPos pos) {
-        BlockState state = level.getBlockState(NerospaceCommon.requireNonNull(pos));
+        BlockState state = level.getBlockState(java.util.Objects.requireNonNull(pos));
         return state.getBlock() instanceof RocketLaunchPadBlock;
     }
 }

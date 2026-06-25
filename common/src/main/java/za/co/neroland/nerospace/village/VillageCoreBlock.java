@@ -35,7 +35,7 @@ import za.co.neroland.nerospace.registry.ModBlocks;
  */
 public class VillageCoreBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<VillageCoreBlock> CODEC = simpleCodec(VillageCoreBlock::new);
+    public static final MapCodec<VillageCoreBlock> CODEC = simpleCodec(VillageCoreBlock::new);
 
     public VillageCoreBlock(Properties properties) {
         super(properties);
@@ -64,7 +64,7 @@ public class VillageCoreBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.VILLAGE_CORE.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.VILLAGE_CORE.get()),
                 (lvl, pos, st, be) -> be.serverTick(lvl, pos, st));
     }
 
@@ -78,7 +78,7 @@ public class VillageCoreBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
-        if (stack.is(ModBlocks.NEROSTEEL_BLOCK.get().asItem())) {
+        if (stack.is(java.util.Objects.requireNonNull(ModBlocks.NEROSTEEL_BLOCK.get()).asItem())) {
             if (core.isClaimed() && !core.isOwner(player)) {
                 player.sendSystemMessage(Component.translatable(
                         "message.nerospace.village_core.owned", core.getOwnerName()));

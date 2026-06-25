@@ -88,7 +88,7 @@ public class FrostStriderModel extends GreenxertzMobModel<LivingEntityRenderStat
         return LayerDefinition.create(mesh, 64, 64);
     }
 
-    private static void leg(PartDefinition root, @org.jspecify.annotations.NonNull String name, float x, float z) {
+    private static void leg(PartDefinition root, String name, float x, float z) {
         root.addOrReplaceChild(name, CubeListBuilder.create()
                         .texOffs(44, 0).addBox(-1F, 0F, -1F, 2F, 15F, 2F)
                         .texOffs(44, 0).addBox(-1.5F, 15F, -2F, 3F, 2F, 4F),

@@ -21,9 +21,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.entity.AlienVillager;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -58,19 +57,19 @@ public class VillageCoreBlockEntity extends BlockEntity {
     private static final int DARK_THRESHOLD = 4;
     private static final int[][] PLOT_OFFSETS = {{8, 0}, {-8, 0}, {0, 8}, {0, -8}, {8, 8}, {-8, -8}};
 
-    private UUID owner;
-    private @NonNull String ownerName = "";
+    private @Nullable UUID owner;
+    private String ownerName = "";
 
     private int stockpile;
     private int builtCount;
 
-    private Type jobType;
+    private @Nullable Type jobType;
     private int progress;
     private int plotX;
     private int plotY;
     private int plotZ;
     private int buildTick;
-    private transient List<Placement> jobPlacements;
+    private transient @Nullable List<Placement> jobPlacements;
 
     // Production output, quest, timers.
     private int outBread;
@@ -80,7 +79,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
     private int questOrdinal = -1;
 
     public VillageCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.VILLAGE_CORE.get(), pos, state);
+        super(java.util.Objects.requireNonNull(ModBlockEntities.VILLAGE_CORE.get()), pos, state);
     }
 
     // --- Claiming -------------------------------------------------------------
@@ -89,15 +88,15 @@ public class VillageCoreBlockEntity extends BlockEntity {
         return this.owner != null;
     }
 
-    public boolean isOwner(@NonNull Player player) {
+    public boolean isOwner(Player player) {
         return player.getUUID().equals(this.owner);
     }
 
-    public @NonNull String getOwnerName() {
+    public String getOwnerName() {
         return this.ownerName;
     }
 
-    public void claim(@NonNull Player player) {
+    public void claim(Player player) {
         this.owner = player.getUUID();
         this.ownerName = player.getName().getString();
         if (this.questOrdinal < 0) {
@@ -108,7 +107,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
 
     // --- Teach-and-grow -------------------------------------------------------
 
-    public void deposit(@NonNull Player player, @NonNull ItemStack stack) {
+    public void deposit(Player player, ItemStack stack) {
         int add = stack.getCount();
         if (add <= 0) {
             return;
@@ -119,12 +118,12 @@ public class VillageCoreBlockEntity extends BlockEntity {
         setChanged();
     }
 
-    public void onUse(@NonNull Player player) {
+    public void onUse(Player player) {
         if (this.jobType != null) {
             int total = placements().size();
             int pct = total == 0 ? 100 : (int) (100.0 * this.progress / total);
             player.sendSystemMessage(Component.literal(
-                    "Constructing " + label(NerospaceCommon.requireNonNull(this.jobType)) + "… " + pct + "%"));
+                    "Constructing " + label(java.util.Objects.requireNonNull(this.jobType)) + "… " + pct + "%"));
             return;
         }
         Type next = Type.byOrdinalOrNull(this.builtCount);
@@ -164,14 +163,14 @@ public class VillageCoreBlockEntity extends BlockEntity {
     // --- Production + quests + raids ------------------------------------------
 
     /** Sneak-right-click: collect produced goods and read the current quest. */
-    public void collectAndStatus(@NonNull Player player) {
+    public void collectAndStatus(Player player) {
         int bread = this.outBread;
         int ingot = this.outIngot;
         if (bread > 0) {
             give(player, new ItemStack(Items.BREAD, bread));
         }
         if (ingot > 0) {
-            give(player, new ItemStack(ModBlocks.NEROSTEEL_BLOCK.get().asItem(), ingot));
+            give(player, new ItemStack(java.util.Objects.requireNonNull(ModBlocks.NEROSTEEL_BLOCK.get()).asItem(), ingot));
         }
         this.outBread = 0;
         this.outIngot = 0;
@@ -187,13 +186,13 @@ public class VillageCoreBlockEntity extends BlockEntity {
     }
 
     /** Right-click with the quest item: hand it in for the reward. */
-    public boolean tryCompleteQuest(@NonNull Player player, @NonNull ItemStack stack) {
+    public boolean tryCompleteQuest(Player player, ItemStack stack) {
         Quest q = Quest.byOrdinalOrNull(this.questOrdinal);
         if (q == null || !stack.is(q.item()) || stack.getCount() < q.count) {
             return false;
         }
         stack.shrink(q.count);
-        give(player, new ItemStack(NerospaceCommon.requireNonNull(q.rewardItem()), q.reward));
+        give(player, new ItemStack(java.util.Objects.requireNonNull(q.rewardItem()), q.reward));
         grantVillageReputation(player, q.reward);
         player.sendSystemMessage(Component.literal("The villagers thank you. (+" + q.reward + " trust)"));
         rollQuest();
@@ -201,7 +200,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         return true;
     }
 
-    public void serverTick(@NonNull Level level, @NonNull BlockPos pos, BlockState state) {
+    public void serverTick(Level level, BlockPos pos, BlockState state) {
         // Construction.
         if (this.jobType != null) {
             tickConstruction(level);
@@ -227,7 +226,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         }
     }
 
-    private void tickConstruction(@NonNull Level level) {
+    private void tickConstruction(Level level) {
         List<Placement> list = placements();
         if (this.progress >= list.size()) {
             finishJob();
@@ -237,10 +236,10 @@ public class VillageCoreBlockEntity extends BlockEntity {
             return;
         }
         this.buildTick = 0;
-        Placement p = NerospaceCommon.requireNonNull(list.get(this.progress++));
+        Placement p = java.util.Objects.requireNonNull(list.get(this.progress++));
         BlockPos bp = new BlockPos(this.plotX + p.dx(), this.plotY + p.dy(), this.plotZ + p.dz());
         BlockState bs = switch (p.kind()) {
-            case WALL, ROOF -> ModBlocks.NEROSTEEL_BLOCK.get().defaultBlockState();
+            case WALL, ROOF -> java.util.Objects.requireNonNull(ModBlocks.NEROSTEEL_BLOCK.get()).defaultBlockState();
             case LIGHT -> Blocks.GLOWSTONE.defaultBlockState();
             case AIR -> Blocks.AIR.defaultBlockState();
         };
@@ -255,7 +254,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         }
     }
 
-    private void maybeRaid(@NonNull Level level, @NonNull BlockPos pos) {
+    private void maybeRaid(Level level, BlockPos pos) {
         if (!NerospaceConfig.alienRaidsEnabled() || !(level instanceof ServerLevel server)) {
             return;
         }
@@ -272,7 +271,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
             int ox = pos.getX() + (rand.nextBoolean() ? 1 : -1) * (10 + rand.nextInt(8));
             int oz = pos.getZ() + (rand.nextBoolean() ? 1 : -1) * (10 + rand.nextInt(8));
             int oy = level.getHeight(Heightmap.Types.WORLD_SURFACE, ox, oz);
-            ModEntities.XERTZ_STALKER.get().spawn(server, new BlockPos(ox, oy, oz), EntitySpawnReason.EVENT);
+            java.util.Objects.requireNonNull(ModEntities.XERTZ_STALKER.get()).spawn(server, new BlockPos(ox, oy, oz), EntitySpawnReason.EVENT);
         }
     }
 
@@ -284,16 +283,16 @@ public class VillageCoreBlockEntity extends BlockEntity {
         setChanged();
     }
 
-    private @NonNull List<Placement> placements() {
+    private List<Placement> placements() {
         if (this.jobPlacements == null && this.jobType != null) {
-            this.jobPlacements = VillageBuildings.build(NerospaceCommon.requireNonNull(this.jobType));
+            this.jobPlacements = VillageBuildings.build(java.util.Objects.requireNonNull(this.jobType));
         }
         return this.jobPlacements == null
-                ? NerospaceCommon.requireNonNull(List.of())
-                : NerospaceCommon.requireNonNull(this.jobPlacements);
+                ? java.util.Objects.requireNonNull(List.of())
+                : java.util.Objects.requireNonNull(this.jobPlacements);
     }
 
-    private int villageTier(@NonNull Player player) {
+    private int villageTier(Player player) {
         Level currentLevel = this.level;
         if (currentLevel == null) {
             return 0;
@@ -306,7 +305,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         return max;
     }
 
-    private void grantVillageReputation(@NonNull Player player, int amount) {
+    private void grantVillageReputation(Player player, int amount) {
         Level currentLevel = this.level;
         if (currentLevel == null) {
             return;
@@ -323,20 +322,20 @@ public class VillageCoreBlockEntity extends BlockEntity {
         this.questOrdinal = rand.nextInt(Quest.values().length);
     }
 
-    private void give(@NonNull Player player, @NonNull ItemStack stack) {
+    private void give(Player player, ItemStack stack) {
         if (!player.addItem(stack)) {
             player.drop(stack, false);
         }
     }
 
-    private static @NonNull String label(@NonNull Type t) {
+    private static String label(Type t) {
         return switch (t) {
             case HUT -> "Hut";
             case WORKSHOP -> "Workshop";
         };
     }
 
-    private static @NonNull String itemLabel(@NonNull Quest q) {
+    private static String itemLabel(Quest q) {
         return switch (q) {
             case XERTZ_QUARTZ -> "Xertz Quartz";
             case RAW_NEROSTEEL -> "Raw Nerosteel";
@@ -347,10 +346,10 @@ public class VillageCoreBlockEntity extends BlockEntity {
     // --- Persistence ----------------------------------------------------------
 
     @Override
-    protected void saveAdditional(@NonNull ValueOutput output) {
+    protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putString("Owner", this.owner == null ? "" : NerospaceCommon.requireNonNull(this.owner.toString()));
-        output.putString("OwnerName", NerospaceCommon.requireNonNull(this.ownerName));
+        output.putString("Owner", this.owner == null ? "" : java.util.Objects.requireNonNull(this.owner.toString()));
+        output.putString("OwnerName", java.util.Objects.requireNonNull(this.ownerName));
         output.putInt("Stockpile", this.stockpile);
         output.putInt("BuiltCount", this.builtCount);
         output.putInt("JobType", this.jobType == null ? -1 : this.jobType.ordinal());
@@ -364,7 +363,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(@NonNull ValueInput input) {
+    protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         String stored = input.getStringOr("Owner", "");
         if (stored.isEmpty()) {

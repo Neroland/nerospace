@@ -23,7 +23,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class CreativeFluidTankBlockEntity extends BlockEntity {
 
     /** The endless source fluid (default rocket_fuel); {@link Fluids#EMPTY} = unset (drains nothing). */
-    private @org.jspecify.annotations.NonNull Fluid source = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL.get());
+    private Fluid source = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL.get());
 
     /** Endless source/sink of the configured {@link #source} — inserts are voided, drains are endless. */
     private final NerospaceFluidStorage infinite = new NerospaceFluidStorage() {
@@ -62,7 +62,7 @@ public class CreativeFluidTankBlockEntity extends BlockEntity {
     }
 
     /** The fluid this tank endlessly supplies (or {@link Fluids#EMPTY} when cleared). */
-    public @org.jspecify.annotations.NonNull Fluid source() {
+    public Fluid source() {
         return this.source;
     }
 

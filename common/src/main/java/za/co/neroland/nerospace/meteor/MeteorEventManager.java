@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -35,11 +34,11 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public final class MeteorEventManager extends SavedData {
 
-    public static final @org.jspecify.annotations.NonNull Identifier ID = NerospaceCommon.id("meteor_events");
+    public static final Identifier ID = NerospaceCommon.id("meteor_events");
 
     // 26.x NeoForm (pure vanilla) exposes only the 4-arg ctor. Custom mod saved data has no vanilla
     // schema; the command-storage saved-data type is the narrowest generic saved-data fixer.
-    public static final @NonNull SavedDataType<MeteorEventManager> TYPE =
+    public static final SavedDataType<MeteorEventManager> TYPE =
             new SavedDataType<>(ID, MeteorEventManager::new, codec(), DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     // --- Inlined from Config (root shipped defaults) until the config seam lands ---
@@ -73,14 +72,14 @@ public final class MeteorEventManager extends SavedData {
         this.cooldown = cooldown;
     }
 
-    private static @NonNull Codec<@NonNull MeteorEventManager> codec() {
+    private static Codec<MeteorEventManager> codec() {
         return NerospaceCommon.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
                 MeteorSite.CODEC.listOf().fieldOf("sites").forGetter(m -> m.sites),
                 Codec.INT.fieldOf("cooldown").forGetter(m -> m.cooldown)
         ).apply(inst, MeteorEventManager::of)));
     }
 
-    private static @NonNull MeteorEventManager of(List<MeteorSite> sites, Integer cooldown) {
+    private static MeteorEventManager of(List<MeteorSite> sites, Integer cooldown) {
         return new MeteorEventManager(NerospaceCommon.requireNonNull(sites),
                 NerospaceCommon.requireNonNull(cooldown).intValue());
     }

@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
@@ -57,7 +56,7 @@ public final class PipeNetwork {
     /** Rotates over sinks so deliveries spread round-robin across destinations. */
     private int itemRoundRobin;
 
-    private PipeNetwork(@NonNull List<BlockPos> members, @NonNull Set<Long> memberSet) {
+    private PipeNetwork(List<BlockPos> members, Set<Long> memberSet) {
         this.members = members;
         this.memberSet = memberSet;
     }
@@ -67,7 +66,7 @@ public final class PipeNetwork {
     }
 
     /** Flood-fill the connected pipes from {@code seed}, build the network, and adopt every member. */
-    public static @NonNull PipeNetwork getOrBuild(@NonNull ServerLevel level, @NonNull BlockPos seed) {
+    public static PipeNetwork getOrBuild(ServerLevel level, BlockPos seed) {
         List<BlockPos> members = new ArrayList<>();
         Set<Long> seen = new HashSet<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
@@ -102,7 +101,7 @@ public final class PipeNetwork {
     }
 
     /** Move + balance every resource layer. Guarded so it runs at most once per game tick. */
-    public void tick(@NonNull ServerLevel level) {
+    public void tick(ServerLevel level) {
         long gameTime = level.getGameTime();
         if (gameTime == this.lastTick) {
             return;
@@ -131,7 +130,7 @@ public final class PipeNetwork {
 
     // --- Energy ---------------------------------------------------------------
 
-    private void tickEnergy(@NonNull ServerLevel level, @NonNull List<UniversalPipeBlockEntity> pipes) {
+    private void tickEnergy(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
         for (UniversalPipeBlockEntity pipe : pipes) {
             long io = (long) UniversalPipeBlockEntity.MAX_IO * pipe.speedMultiplier();
             BlockPos pos = pipe.getBlockPos();
@@ -185,7 +184,7 @@ public final class PipeNetwork {
 
     // --- Fluid ----------------------------------------------------------------
 
-    private void tickFluid(@NonNull ServerLevel level, @NonNull List<UniversalPipeBlockEntity> pipes) {
+    private void tickFluid(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
         Fluid networkFluid = Fluids.EMPTY;
         for (UniversalPipeBlockEntity pipe : pipes) {
             if (pipe.fluid().getFluid() != Fluids.EMPTY) {
@@ -264,7 +263,7 @@ public final class PipeNetwork {
 
     // --- Gas ------------------------------------------------------------------
 
-    private void tickGas(@NonNull ServerLevel level, @NonNull List<UniversalPipeBlockEntity> pipes) {
+    private void tickGas(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
         GasResource networkGas = GasResource.EMPTY;
         for (UniversalPipeBlockEntity pipe : pipes) {
             if (!pipe.gas().getGas().isEmpty()) {
@@ -343,11 +342,11 @@ public final class PipeNetwork {
 
     // --- Items ----------------------------------------------------------------
 
-    private record Sink(@NonNull BlockPos pipePos, @NonNull Direction outFace, @NonNull Container container,
-            @NonNull Direction side, @NonNull ItemStack filter) {
+    private record Sink(BlockPos pipePos, Direction outFace, Container container,
+            Direction side, ItemStack filter) {
     }
 
-    private void tickItems(@NonNull ServerLevel level, @NonNull List<UniversalPipeBlockEntity> pipes) {
+    private void tickItems(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
         // Collect every sink in the network: a non-pipe Container behind a face whose item mode pushes.
         List<Sink> sinks = new ArrayList<>();
         for (UniversalPipeBlockEntity pipe : pipes) {
@@ -427,8 +426,8 @@ public final class PipeNetwork {
         }
     }
 
-    private void showItemPath(@NonNull ServerLevel level, @NonNull BlockPos source, @NonNull BlockPos target,
-            @NonNull Direction outFace, @NonNull ItemStack moved) {
+    private void showItemPath(ServerLevel level, BlockPos source, BlockPos target,
+            Direction outFace, ItemStack moved) {
         if (moved.isEmpty()) {
             return;
         }
@@ -446,7 +445,7 @@ public final class PipeNetwork {
         }
     }
 
-    private @NonNull List<BlockPos> route(@NonNull BlockPos source, @NonNull BlockPos target) {
+    private List<BlockPos> route(BlockPos source, BlockPos target) {
         if (source.equals(target)) {
             return NerospaceCommon.requireNonNull(List.of(source));
         }
@@ -489,7 +488,7 @@ public final class PipeNetwork {
         return path;
     }
 
-    private static @NonNull Direction directionBetween(@NonNull BlockPos from, @NonNull BlockPos to) {
+    private static Direction directionBetween(BlockPos from, BlockPos to) {
         for (Direction dir : Direction.values()) {
             if (from.relative(dir).equals(to)) {
                 return dir;
@@ -499,9 +498,9 @@ public final class PipeNetwork {
     }
 
     /** Standard sided insertion into a container; returns the un-inserted remainder. */
-    private static @NonNull ItemStack insert(@NonNull Container dst, @NonNull Direction side,
-            @NonNull ItemStack stack) {
-        int @NonNull[] slots = dst instanceof WorldlyContainer w ? w.getSlotsForFace(side) : allSlots(dst);
+    private static ItemStack insert(Container dst, Direction side,
+            ItemStack stack) {
+        int [] slots = dst instanceof WorldlyContainer w ? w.getSlotsForFace(side) : allSlots(dst);
         // Pass 1: merge into matching stacks.
         for (int slot : slots) {
             if (stack.isEmpty()) {
@@ -539,9 +538,9 @@ public final class PipeNetwork {
     }
 
     /** Extract up to {@code maxCount} items matching {@code filter} from one slot of a sided container. */
-    private static @NonNull ItemStack extract(@NonNull Container src, @NonNull Direction side,
-            @NonNull ItemStack filter, int maxCount) {
-        int @NonNull[] slots = src instanceof WorldlyContainer w ? w.getSlotsForFace(side) : allSlots(src);
+    private static ItemStack extract(Container src, Direction side,
+            ItemStack filter, int maxCount) {
+        int [] slots = src instanceof WorldlyContainer w ? w.getSlotsForFace(side) : allSlots(src);
         for (int slot : slots) {
             ItemStack inSlot = src.getItem(slot);
             if (inSlot.isEmpty()) {
@@ -559,8 +558,8 @@ public final class PipeNetwork {
     }
 
     /** Insert into the pipe's own internal buffer (no sided restriction — it is a pass-through). */
-    private static @NonNull ItemStack insertIntoPipe(@NonNull UniversalPipeBlockEntity pipe,
-            @NonNull ItemStack stack) {
+    private static ItemStack insertIntoPipe(UniversalPipeBlockEntity pipe,
+            ItemStack stack) {
         for (int slot = 0; slot < pipe.getContainerSize() && !stack.isEmpty(); slot++) {
             ItemStack inSlot = pipe.getItem(slot);
             if (inSlot.isEmpty()) {
@@ -581,16 +580,16 @@ public final class PipeNetwork {
         return stack;
     }
 
-    private static boolean canPlace(@NonNull Container dst, int slot, @NonNull ItemStack stack,
-            @NonNull Direction side) {
+    private static boolean canPlace(Container dst, int slot, ItemStack stack,
+            Direction side) {
         if (dst instanceof WorldlyContainer w) {
             return w.canPlaceItem(slot, stack) && w.canPlaceItemThroughFace(slot, stack, side);
         }
         return dst.canPlaceItem(slot, stack);
     }
 
-    private static int @NonNull[] allSlots(@NonNull Container c) {
-        int @NonNull[] slots = new int[c.getContainerSize()];
+    private static int [] allSlots(Container c) {
+        int [] slots = new int[c.getContainerSize()];
         for (int i = 0; i < slots.length; i++) {
             slots[i] = i;
         }

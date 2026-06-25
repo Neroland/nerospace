@@ -10,7 +10,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 
 /**
  * Places a {@link RocketEntity} of a fixed {@link RocketTier} onto a {@link RocketLaunchPadBlock}.
@@ -21,8 +20,8 @@ public class RocketItem extends Item {
     private final RocketTier tier;
 
     public RocketItem(Properties properties, RocketTier tier) {
-        super(NerospaceCommon.requireNonNull(properties));
-        this.tier = NerospaceCommon.requireNonNull(tier);
+        super(java.util.Objects.requireNonNull(properties));
+        this.tier = java.util.Objects.requireNonNull(tier);
     }
 
     public RocketTier tier() {

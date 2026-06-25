@@ -24,6 +24,8 @@ import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModTags;
@@ -141,7 +143,7 @@ public final class TerraformConversion {
      * @return {@code false} when the sink ran dry mid-column (stall: re-run this column later);
      *         {@code true} when the column is fully hydrated (possibly needing no water at all)
      */
-    public static boolean hydrateColumn(ServerLevel level, int x, int z, int waterTableY, HydrationSink sink) {
+    public static boolean hydrateColumn(ServerLevel level, int x, int z, int waterTableY, @Nullable HydrationSink sink) {
         LevelChunk chunk = level.getChunkAt(new BlockPos(x, 0, z));
         if (WATER_ENABLED) {
             int maxDepth = WATER_MAX_DEPTH;

@@ -49,7 +49,7 @@ public final class StarGuideGrants {
             return;
         }
         ServerAdvancementManager manager = server.getAdvancements();
-        AdvancementHolder holder = manager.get(NerospaceCommon.id(NerospaceCommon.requireNonNull(path)));
+        AdvancementHolder holder = manager.get(NerospaceCommon.id(java.util.Objects.requireNonNull(path)));
         if (holder == null) {
             return;
         }
@@ -58,7 +58,7 @@ public final class StarGuideGrants {
             return;
         }
         for (String criterion : progress.getRemainingCriteria()) {
-            player.getAdvancements().award(holder, NerospaceCommon.requireNonNull(criterion));
+            player.getAdvancements().award(holder, java.util.Objects.requireNonNull(criterion));
         }
     }
 }

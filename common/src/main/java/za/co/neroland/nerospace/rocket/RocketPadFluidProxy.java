@@ -40,7 +40,7 @@ public final class RocketPadFluidProxy implements NerospaceFluidStorage {
     @Override
     public Fluid getFluid() {
         RocketEntity rocket = rocket();
-        return rocket != null && rocket.getFuel() > 0 ? ModFluids.ROCKET_FUEL.get() : Fluids.EMPTY;
+        return rocket != null && rocket.getFuel() > 0 ? java.util.Objects.requireNonNull(ModFluids.ROCKET_FUEL.get()) : Fluids.EMPTY;
     }
 
     @Override
@@ -57,7 +57,7 @@ public final class RocketPadFluidProxy implements NerospaceFluidStorage {
 
     @Override
     public long fill(Fluid fluid, long amount, boolean simulate) {
-        if (amount <= 0 || fluid != ModFluids.ROCKET_FUEL.get()) {
+        if (amount <= 0 || fluid != java.util.Objects.requireNonNull(ModFluids.ROCKET_FUEL.get())) {
             return 0;
         }
         RocketEntity rocket = rocket();

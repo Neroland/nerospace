@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.forge;
 import java.util.EnumMap;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
@@ -44,24 +44,24 @@ import za.co.neroland.nerospace.storage.GasTankBlockEntity;
 import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 
 /** Forge capability providers for the existing loader-neutral storage seams. */
-@SuppressWarnings("null")
 public final class ForgeCapabilities {
 
     public static final Capability<ForgeEnergyStorageCapability> ENERGY =
-            CapabilityManager.get(new CapabilityToken<>() {});
+            NerospaceCommon.requireNonNull(CapabilityManager.get(new CapabilityToken<>() {}));
     public static final Capability<ForgeFluidStorageCapability> FLUID =
-            CapabilityManager.get(new CapabilityToken<>() {});
+            NerospaceCommon.requireNonNull(CapabilityManager.get(new CapabilityToken<>() {}));
     public static final Capability<ForgeGasStorageCapability> GAS =
-            CapabilityManager.get(new CapabilityToken<>() {});
+            NerospaceCommon.requireNonNull(CapabilityManager.get(new CapabilityToken<>() {}));
 
-    private static final @org.jspecify.annotations.NonNull Identifier MACHINE_CAPS =
+    private static final Identifier MACHINE_CAPS =
             NerospaceCommon.id("machine_caps");
 
     private ForgeCapabilities() {
     }
 
     public static void register() {
-        AttachCapabilitiesEvent.BlockEntities.BUS.addListener(ForgeCapabilities::onAttachBlockEntity);
+        AttachCapabilitiesEvent.BlockEntities.BUS.addListener(
+                event -> onAttachBlockEntity(NerospaceCommon.requireNonNull(event)));
     }
 
     private static void onAttachBlockEntity(AttachCapabilitiesEvent.BlockEntities event) {
@@ -148,11 +148,11 @@ public final class ForgeCapabilities {
         MachineCaps(@Nullable Supplier<NerospaceEnergyStorage> energy,
                 @Nullable Supplier<NerospaceFluidStorage> fluid,
                 @Nullable Supplier<NerospaceGasStorage> gas, @Nullable Container container) {
-            this.energy = energy == null ? LazyOptional.empty() : LazyOptional.of(() -> new EnergyAdapter(energy));
-            this.fluid = fluid == null ? LazyOptional.empty() : LazyOptional.of(() -> new FluidAdapter(fluid));
-            this.gas = gas == null ? LazyOptional.empty() : LazyOptional.of(() -> new GasAdapter(gas));
+            this.energy = energy == null ? LazyOptional.empty() : energyOptional(energy);
+            this.fluid = fluid == null ? LazyOptional.empty() : fluidOptional(fluid);
+            this.gas = gas == null ? LazyOptional.empty() : gasOptional(gas);
             this.container = container;
-            this.itemUnsided = container == null ? null : LazyOptional.of(() -> itemHandler(container, null));
+            this.itemUnsided = container == null ? null : itemOptional(container, null);
         }
 
         @Override
@@ -173,21 +173,44 @@ public final class ForgeCapabilities {
         }
 
         private LazyOptional<IItemHandler> item(@Nullable Direction side) {
-            if (side == null) {
-                return itemUnsided == null ? LazyOptional.empty() : itemUnsided;
+            Container nonNullContainer = container;
+            if (nonNullContainer == null) {
+                return LazyOptional.empty();
             }
-            return itemBySide.computeIfAbsent(side, d -> LazyOptional.of(() -> itemHandler(container, d)));
+            if (side == null) {
+                LazyOptional<IItemHandler> unsided = itemUnsided;
+                return unsided == null ? LazyOptional.empty() : unsided;
+            }
+            return NerospaceCommon.requireNonNull(
+                    itemBySide.computeIfAbsent(side, d -> itemOptional(nonNullContainer, d)));
         }
 
         void invalidate() {
             energy.invalidate();
             fluid.invalidate();
             gas.invalidate();
-            if (itemUnsided != null) {
-                itemUnsided.invalidate();
+            LazyOptional<IItemHandler> unsided = itemUnsided;
+            if (unsided != null) {
+                unsided.invalidate();
             }
             itemBySide.values().forEach(LazyOptional::invalidate);
         }
+    }
+
+    private static LazyOptional<ForgeEnergyStorageCapability> energyOptional(Supplier<NerospaceEnergyStorage> energy) {
+        return LazyOptional.of(() -> new EnergyAdapter(energy));
+    }
+
+    private static LazyOptional<ForgeFluidStorageCapability> fluidOptional(Supplier<NerospaceFluidStorage> fluid) {
+        return LazyOptional.of(() -> new FluidAdapter(fluid));
+    }
+
+    private static LazyOptional<ForgeGasStorageCapability> gasOptional(Supplier<NerospaceGasStorage> gas) {
+        return LazyOptional.of(() -> new GasAdapter(gas));
+    }
+
+    private static LazyOptional<IItemHandler> itemOptional(Container container, @Nullable Direction side) {
+        return LazyOptional.of(() -> itemHandler(container, side));
     }
 
     private record EnergyAdapter(Supplier<NerospaceEnergyStorage> delegate) implements ForgeEnergyStorageCapability {

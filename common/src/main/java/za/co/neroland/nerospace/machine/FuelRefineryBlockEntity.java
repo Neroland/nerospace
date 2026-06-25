@@ -63,15 +63,15 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
     public static final int MB_PER_BATCH = 2_000;
     public static final int WORK_TICKS = 100;
 
-    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {CARBON_SLOT, CATALYST_SLOT};
+    private static final int [] SLOTS = {CARBON_SLOT, CATALYST_SLOT};
 
-    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(ENERGY_BUFFER, ENERGY_MAX_INSERT, 0, this::setChanged);
     private final FluidTank tank = new FluidTank(TANK_CAPACITY, this::setChanged);
     private int progress;
 
     /** Synced to the menu: [0]=energy [1]=energyCap [2]=fuel [3]=fuelCap [4]=progress [5]=maxProgress. */
-    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
+    private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -185,7 +185,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
             if (this.tank.getAmount() <= 0) {
                 break;
             }
-            Direction checkedDir = NerospaceCommon.requireNonNull(dir);
+            Direction checkedDir = java.util.Objects.requireNonNull(dir);
             NerospaceFluidStorage dest = FluidLookup.INSTANCE.find(checkedLevel,
                     checkedPos.relative(checkedDir), checkedDir.getOpposite());
             if (dest == null) {
@@ -236,7 +236,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         return new FuelRefineryMenu(containerId, playerInventory, this, this.dataAccess);
     }
 

@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 
@@ -19,5 +18,5 @@ public interface FluidLookup {
     FluidLookup INSTANCE = Services.load(FluidLookup.class);
 
     @Nullable
-    NerospaceFluidStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side);
+    NerospaceFluidStorage find(Level level, BlockPos pos, @Nullable Direction side);
 }

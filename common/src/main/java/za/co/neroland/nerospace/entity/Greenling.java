@@ -15,6 +15,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.Level;
 
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
@@ -29,17 +31,17 @@ public class Greenling extends PathfinderMob {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.GREENLING_AMBIENT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.GREENLING_AMBIENT.get());
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return ModSounds.GREENLING_HURT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.GREENLING_HURT.get());
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.GREENLING_DEATH.get();
+        return NerospaceCommon.requireNonNull(ModSounds.GREENLING_DEATH.get());
     }
 
     public static AttributeSupplier.Builder createAttributes() {

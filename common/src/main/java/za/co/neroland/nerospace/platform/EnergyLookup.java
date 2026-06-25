@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 
@@ -19,5 +18,5 @@ public interface EnergyLookup {
     EnergyLookup INSTANCE = Services.load(EnergyLookup.class);
 
     @Nullable
-    NerospaceEnergyStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side);
+    NerospaceEnergyStorage find(Level level, BlockPos pos, @Nullable Direction side);
 }

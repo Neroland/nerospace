@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -19,16 +18,16 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public class GlowEyesLayer<S extends LivingEntityRenderState> extends EyesLayer<S, EntityModel<S>> {
 
-    private final @NonNull RenderType type;
+    private final RenderType type;
 
     public GlowEyesLayer(RenderLayerParent<S, EntityModel<S>> parent,
-                         @NonNull Identifier glowTexture) {
+                         Identifier glowTexture) {
         super(parent);
         this.type = NerospaceCommon.requireNonNull(RenderTypes.eyes(glowTexture));
     }
 
     @Override
-    public @NonNull RenderType renderType() {
+    public RenderType renderType() {
         return this.type;
     }
 }

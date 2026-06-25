@@ -12,7 +12,6 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
@@ -47,23 +46,23 @@ public class RocketMenu extends AbstractContainerMenu {
     private static final int FUEL_SLOT_X = 148;
     private static final int FUEL_SLOT_Y = 17;
 
-    private final @org.jspecify.annotations.NonNull ContainerData data;
-    private final @org.jspecify.annotations.NonNull Container fuelContainer;
+    private final ContainerData data;
+    private final Container fuelContainer;
     @Nullable
     private final RocketEntity rocket;
 
     /** Client constructor (referenced by the menu type); rocket state arrives via the synced data. */
-    public RocketMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
+    public RocketMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, null, new SimpleContainerData(DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public RocketMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @Nullable RocketEntity rocket, @org.jspecify.annotations.NonNull ContainerData data) {
-        super(ModMenuTypes.ROCKET.get(), containerId);
+    public RocketMenu(int containerId, Inventory playerInventory, @Nullable RocketEntity rocket, ContainerData data) {
+        super(java.util.Objects.requireNonNull(ModMenuTypes.ROCKET.get()), containerId);
         checkContainerDataCount(data, DATA_COUNT);
         this.rocket = rocket;
         this.data = data;
-        this.fuelContainer = NerospaceCommon.requireNonNull(
+        this.fuelContainer = java.util.Objects.requireNonNull(
                 rocket != null ? rocket.getFuelInput() : new SimpleContainer(1));
 
         this.addSlot(new FuelSlot(this.fuelContainer, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
@@ -186,7 +185,7 @@ public class RocketMenu extends AbstractContainerMenu {
     /** Whether the currently selected destination is the Orbital Station dimension. */
     public boolean isStationDestination() {
         return ModDimensions.STATION_LEVEL.equals(
-                NerospaceCommon.requireNonNull(getTier().destination(getDestinationIndex())));
+                java.util.Objects.requireNonNull(getTier().destination(getDestinationIndex())));
     }
 
     /**
@@ -200,7 +199,7 @@ public class RocketMenu extends AbstractContainerMenu {
 
     /** Fuel-intake slot: only rocket fuel buckets/canisters may be placed. */
     private static class FuelSlot extends Slot {
-        FuelSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
+        FuelSlot(Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 

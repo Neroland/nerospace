@@ -49,16 +49,16 @@ public class HydrationModuleBlockEntity extends BlockEntity implements WorldlyCo
     /** Ticks between melt pulses (cheap; one item per pulse). */
     private static final int WORK_INTERVAL_TICKS = 10;
 
-    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {INPUT_SLOT};
+    private static final int [] SLOTS = {INPUT_SLOT};
 
-    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
     /** Transient link state for the GUI (recomputed each work pulse). */
     private transient boolean linked;
     private transient int linkedHydration;
 
     /** Synced to the menu: [0]=linked [1]=linked terraformer's hydration [2]=hydration cap. */
-    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
+    private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -168,7 +168,7 @@ public class HydrationModuleBlockEntity extends BlockEntity implements WorldlyCo
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         return new HydrationModuleMenu(containerId, playerInventory, this, this.dataAccess);
     }
 

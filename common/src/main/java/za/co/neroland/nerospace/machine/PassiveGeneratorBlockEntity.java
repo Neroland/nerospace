@@ -38,13 +38,13 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
     public static final int CAPACITY = 100_000;
     public static final int FE_PER_TICK = 8;
     public static final int CORE_TICKS = 24_000;
-    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {CORE_SLOT};
+    private static final int [] SLOTS = {CORE_SLOT};
 
-    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, FE_PER_TICK * 64, this::setChanged);
     private int coreTicks;
 
-    private final @org.jspecify.annotations.NonNull ContainerData data = new ContainerData() {
+    private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -130,7 +130,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         return new PassiveGeneratorMenu(containerId, playerInventory, this, this.data);
     }
 

@@ -16,12 +16,12 @@ import za.co.neroland.nerospace.machine.quarry.QuarryMenu;
  */
 public class QuarryScreen extends TexturedContainerScreen<QuarryMenu> {
 
-    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+    private static final Identifier TEXTURE =
             NerospaceCommon.id("textures/gui/quarry.png");
     private static final int ACCENT = MinerTier.TIER_1.accentColor();
     private static final int FLUID = 0xFF4FA8FF;
 
-    public QuarryScreen(QuarryMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
+    public QuarryScreen(QuarryMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 210);
         this.titleLabelX = 8;
         this.inventoryLabelX = 8;

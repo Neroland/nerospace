@@ -23,7 +23,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 /** Oxygen Generator block — ticks its {@link OxygenGeneratorBlockEntity}; right-click opens its gauge GUI. */
 public class OxygenGeneratorBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<OxygenGeneratorBlock> CODEC = simpleCodec(OxygenGeneratorBlock::new);
+    public static final MapCodec<OxygenGeneratorBlock> CODEC = simpleCodec(OxygenGeneratorBlock::new);
 
     public OxygenGeneratorBlock(Properties properties) {
         super(properties);
@@ -56,7 +56,7 @@ public class OxygenGeneratorBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }

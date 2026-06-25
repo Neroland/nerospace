@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -33,7 +32,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class HydrationModuleBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<HydrationModuleBlock> CODEC = simpleCodec(HydrationModuleBlock::new);
+    public static final MapCodec<HydrationModuleBlock> CODEC = simpleCodec(HydrationModuleBlock::new);
     /** The melt window faces the placer. Visual only. */
     public static final EnumProperty<Direction> FACING =
             NerospaceCommon.requireNonNull(BlockStateProperties.HORIZONTAL_FACING);
@@ -61,7 +60,7 @@ public class HydrationModuleBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NonNull BlockState getStateForPlacement(@NonNull BlockPlaceContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction facing = context.getHorizontalDirection().getOpposite();
         return NerospaceCommon.requireNonNull(
                 this.defaultBlockState().setValue(NerospaceCommon.requireNonNull(FACING), facing));
@@ -73,7 +72,7 @@ public class HydrationModuleBlock extends BaseEntityBlock {
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }

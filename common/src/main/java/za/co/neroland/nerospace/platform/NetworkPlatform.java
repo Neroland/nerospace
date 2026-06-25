@@ -3,7 +3,6 @@ package za.co.neroland.nerospace.platform;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-import org.jspecify.annotations.NonNull;
 
 /**
  * Cross-loader packet send seam (the counterpart to NeoForge {@code PacketDistributor} /
@@ -14,8 +13,8 @@ import org.jspecify.annotations.NonNull;
 public interface NetworkPlatform {
 
     /** Server → one client. */
-    void sendToPlayer(@NonNull ServerPlayer player, @NonNull CustomPacketPayload payload);
+    void sendToPlayer(ServerPlayer player, CustomPacketPayload payload);
 
     /** Client → server (call only on the physical client). */
-    void sendToServer(@NonNull CustomPacketPayload payload);
+    void sendToServer(CustomPacketPayload payload);
 }

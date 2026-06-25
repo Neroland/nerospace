@@ -46,7 +46,7 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
     private final GasTank gas = new GasTank(GAS_CAPACITY, this::setChanged);
 
     /** Synced gauge values for the screen: [0]=energy, [1]=energy cap, [2]=oxygen mB, [3]=oxygen cap. */
-    private final @org.jspecify.annotations.NonNull ContainerData data = new ContainerData() {
+    private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -155,13 +155,13 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         Level currentLevel = this.level;
         ContainerLevelAccess access = currentLevel == null
                 ? ContainerLevelAccess.NULL
                 : ContainerLevelAccess.create(currentLevel, this.worldPosition);
         return new OxygenGeneratorMenu(containerId, playerInventory, this.data,
-                za.co.neroland.nerospace.NerospaceCommon.requireNonNull(access));
+                java.util.Objects.requireNonNull(access));
     }
 
     @Override

@@ -8,7 +8,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.network.ModNetwork;
 import za.co.neroland.nerospace.platform.NetworkPlatform;
@@ -29,21 +28,21 @@ public final class NeoForgeNetwork implements NetworkPlatform {
 
     private static void onRegister(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1").optional();
-        for (ModNetwork.Clientbound<? extends @NonNull CustomPacketPayload> cb : ModNetwork.clientbound()) {
+        for (ModNetwork.Clientbound<? extends CustomPacketPayload> cb : ModNetwork.clientbound()) {
             registerClientbound(registrar, cb);
         }
-        for (ModNetwork.Serverbound<? extends @NonNull CustomPacketPayload> sb : ModNetwork.serverbound()) {
+        for (ModNetwork.Serverbound<? extends CustomPacketPayload> sb : ModNetwork.serverbound()) {
             registerServerbound(registrar, sb);
         }
     }
 
-    private static <T extends @NonNull CustomPacketPayload> void registerClientbound(
+    private static <T extends CustomPacketPayload> void registerClientbound(
             PayloadRegistrar registrar, ModNetwork.Clientbound<T> cb) {
         registrar.playToClient(cb.type(), cb.codec(),
                 (payload, context) -> context.enqueueWork(() -> cb.handler().accept(payload)));
     }
 
-    private static <T extends @NonNull CustomPacketPayload> void registerServerbound(
+    private static <T extends CustomPacketPayload> void registerServerbound(
             PayloadRegistrar registrar, ModNetwork.Serverbound<T> sb) {
         registrar.playToServer(sb.type(), sb.codec(),
                 (payload, context) -> context.enqueueWork(() -> {
@@ -54,12 +53,12 @@ public final class NeoForgeNetwork implements NetworkPlatform {
     }
 
     @Override
-    public void sendToPlayer(@NonNull ServerPlayer player, @NonNull CustomPacketPayload payload) {
+    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
         PacketDistributor.sendToPlayer(player, payload);
     }
 
     @Override
-    public void sendToServer(@NonNull CustomPacketPayload payload) {
+    public void sendToServer(CustomPacketPayload payload) {
         ClientPacketDistributor.sendToServer(payload);
     }
 }

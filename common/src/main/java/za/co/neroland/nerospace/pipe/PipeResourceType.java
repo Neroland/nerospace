@@ -3,7 +3,6 @@ package za.co.neroland.nerospace.pipe;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -40,7 +39,7 @@ public enum PipeResourceType implements StringRepresentable {
     }
 
     @Override
-    public @NonNull String getSerializedName() {
+    public String getSerializedName() {
         return NerospaceCommon.requireNonNull(this.name);
     }
 }

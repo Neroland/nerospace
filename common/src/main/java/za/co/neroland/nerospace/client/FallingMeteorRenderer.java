@@ -24,11 +24,11 @@ import za.co.neroland.nerospace.meteor.FallingMeteorEntity;
  */
 public class FallingMeteorRenderer extends EntityRenderer<FallingMeteorEntity, FallingMeteorRenderState> {
 
-    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+    private static final Identifier TEXTURE =
             NerospaceCommon.id("textures/entity/falling_meteor.png");
     private static final int FULL_BRIGHT = 0x00F000F0;
 
-    private final @org.jspecify.annotations.NonNull FallingMeteorModel model;
+    private final FallingMeteorModel model;
 
     public FallingMeteorRenderer(EntityRendererProvider.Context context) {
         super(context);

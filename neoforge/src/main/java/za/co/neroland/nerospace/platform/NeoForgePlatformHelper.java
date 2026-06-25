@@ -10,7 +10,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.neoforge.NeoForgeAttachments;
@@ -95,7 +94,7 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
         player.setData(attachment(NeoForgeAttachments.STAR_GUIDE_SEEN), value);
     }
 
-    private static <T> @NonNull AttachmentType<T> attachment(Supplier<AttachmentType<T>> supplier) {
+    private static <T> AttachmentType<T> attachment(Supplier<AttachmentType<T>> supplier) {
         return NerospaceCommon.requireNonNull(supplier.get());
     }
 }

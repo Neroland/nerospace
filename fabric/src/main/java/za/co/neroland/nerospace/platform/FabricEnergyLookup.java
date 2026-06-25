@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fabric.NerospaceFabric;
@@ -15,7 +14,7 @@ public final class FabricEnergyLookup implements EnergyLookup {
 
     @Nullable
     @Override
-    public NerospaceEnergyStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side) {
+    public NerospaceEnergyStorage find(Level level, BlockPos pos, @Nullable Direction side) {
         return NerospaceFabric.ENERGY.find(level, pos, side);
     }
 }

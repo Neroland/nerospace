@@ -16,6 +16,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.Level;
 
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
@@ -30,17 +32,17 @@ public class XertzStalker extends Monster {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.XERTZ_STALKER_AMBIENT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.XERTZ_STALKER_AMBIENT.get());
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return ModSounds.XERTZ_STALKER_HURT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.XERTZ_STALKER_HURT.get());
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.XERTZ_STALKER_DEATH.get();
+        return NerospaceCommon.requireNonNull(ModSounds.XERTZ_STALKER_DEATH.get());
     }
 
     public static AttributeSupplier.Builder createAttributes() {

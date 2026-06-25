@@ -16,6 +16,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.machine.SolarPanelBlock;
 import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
@@ -57,7 +59,7 @@ public class SolarPanelRenderer
 
     @Override
     public void extractRenderState(SolarPanelBlockEntity panel, SolarPanelRenderState state,
-            float partialTick, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+            float partialTick, Vec3 cameraPos, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(panel, state, partialTick, cameraPos, breakProgress);
         Level level = panel.getLevel();
         if (level == null) {
@@ -83,16 +85,15 @@ public class SolarPanelRenderer
     }
 
     @Override
-    public void submit(SolarPanelRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
-            CameraRenderState cameraState) {
+    public void submit(SolarPanelRenderState state, PoseStack poseStack,
+            SubmitNodeCollector collector, CameraRenderState cameraState) {
         // Full-bright: the PV deck reads as a lit/reflective surface, and (like the quarry renderer)
         // we can't rely on state.lightCoords being populated for submitted custom geometry — when it is
         // left at 0 the deck draws nearly black against the dark housing and looks like it's missing.
         int light = 0x00F000F0;
-        Identifier texture = Identifier.fromNamespaceAndPath(
-                NerospaceCommon.MOD_ID, "textures/block/solar_panel" + tierSuffix(state.tier) + ".png");
         PoseStack checkedPoseStack = NerospaceCommon.requireNonNull(poseStack);
-        Identifier checkedTexture = NerospaceCommon.requireNonNull(texture);
+        Identifier checkedTexture = NerospaceCommon.requireNonNull(Identifier.fromNamespaceAndPath(
+                NerospaceCommon.MOD_ID, "textures/block/solar_panel" + tierSuffix(state.tier) + ".png"));
 
         if (state.footprint > 1) {
             if (!state.anchor) {
@@ -128,9 +129,9 @@ public class SolarPanelRenderer
         float angle = Mth.clamp(state.angle, -cap, cap);
 
         // Central mast (post + N-S torque tube) on the `_base` sprite, supporting the deck at the centre.
-        Identifier baseTexture = Identifier.fromNamespaceAndPath(
-                NerospaceCommon.MOD_ID, "textures/block/solar_panel" + tierSuffix(state.tier) + "_base.png");
-        RenderType baseRt = RenderTypes.entityCutout(baseTexture);
+        Identifier baseTexture = NerospaceCommon.requireNonNull(Identifier.fromNamespaceAndPath(
+                NerospaceCommon.MOD_ID, "textures/block/solar_panel" + tierSuffix(state.tier) + "_base.png"));
+        RenderType baseRt = NerospaceCommon.requireNonNull(RenderTypes.entityCutout(baseTexture));
         collector.order(1).submitCustomGeometry(checkedPoseStack, baseRt, (pose, consumer) -> {
             box(consumer, pose, light, centre - MAST_HALF, HOUSING_TOP, centre - MAST_HALF,
                     centre + MAST_HALF, POST_TOP, centre + MAST_HALF, 0.25F, 0.25F, 0.75F, 0.75F);
@@ -143,7 +144,8 @@ public class SolarPanelRenderer
         checkedPoseStack.pushPose();
         checkedPoseStack.translate(centre, POLE_TOP, centre);
         checkedPoseStack.mulPose(Axis.ZP.rotationDegrees(angle));
-        collector.order(1).submitCustomGeometry(checkedPoseStack, RenderTypes.entityCutout(checkedTexture),
+        collector.order(1).submitCustomGeometry(checkedPoseStack,
+                NerospaceCommon.requireNonNull(RenderTypes.entityCutout(checkedTexture)),
                 (pose, consumer) -> box(consumer, pose, light,
                         -half, -THICK / 2.0F, -half, half, THICK / 2.0F, half,
                         0.0F, 0.0F, 1.0F, 1.0F));

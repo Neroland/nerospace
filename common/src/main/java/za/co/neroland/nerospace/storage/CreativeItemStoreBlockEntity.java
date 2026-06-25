@@ -23,17 +23,17 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class CreativeItemStoreBlockEntity extends BlockEntity implements Container {
 
-    private @org.jspecify.annotations.NonNull ItemStack source = ItemStack.EMPTY;
+    private ItemStack source = ItemStack.EMPTY;
 
     public CreativeItemStoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CREATIVE_ITEM_STORE.get(), pos, state);
     }
 
-    public @org.jspecify.annotations.NonNull ItemStack source() {
+    public ItemStack source() {
         return this.source;
     }
 
-    public void setSource(@org.jspecify.annotations.NonNull ItemStack stack) {
+    public void setSource(ItemStack stack) {
         this.source = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
         setChanged();
     }

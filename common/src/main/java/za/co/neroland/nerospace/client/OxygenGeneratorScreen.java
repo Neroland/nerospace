@@ -14,12 +14,12 @@ import za.co.neroland.nerospace.menu.OxygenGeneratorMenu;
  */
 public class OxygenGeneratorScreen extends TexturedContainerScreen<OxygenGeneratorMenu> {
 
-    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+    private static final Identifier TEXTURE =
             NerospaceCommon.id("textures/gui/oxygen_generator.png");
     private static final int ACCENT = 0xFF3CC8E6; // cyan (power)
     private static final int OXYGEN = 0xFF54D46A; // gas-layer green
 
-    public OxygenGeneratorScreen(OxygenGeneratorMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
+    public OxygenGeneratorScreen(OxygenGeneratorMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;

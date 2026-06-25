@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -21,20 +20,20 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRenderState, EntityModel<LivingEntityRenderState>> {
 
-    private final @NonNull Identifier texture;
+    private final Identifier texture;
     private final float scaleX;
     private final float scaleY;
     private final float scaleZ;
 
     public GreenxertzCreatureRenderer(EntityRendererProvider.Context context,
-                                      EntityModel<LivingEntityRenderState> model, @NonNull Identifier texture,
+                                      EntityModel<LivingEntityRenderState> model, Identifier texture,
                                       float scaleX, float scaleY, float scaleZ, float shadow) {
         this(context, model, texture, scaleX, scaleY, scaleZ, shadow, null);
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public GreenxertzCreatureRenderer(EntityRendererProvider.Context context,
-                                      EntityModel<LivingEntityRenderState> model, @NonNull Identifier texture,
+                                      EntityModel<LivingEntityRenderState> model, Identifier texture,
                                       float scaleX, float scaleY, float scaleZ, float shadow,
                                       Identifier glowTexture) {
         super(context, model, shadow);
@@ -58,7 +57,7 @@ public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRen
     }
 
     @Override
-    public @NonNull Identifier getTextureLocation(LivingEntityRenderState state) {
+    public Identifier getTextureLocation(LivingEntityRenderState state) {
         return this.texture;
     }
 }

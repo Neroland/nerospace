@@ -24,17 +24,17 @@ public class HydrationModuleMenu extends AbstractContainerMenu {
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36;
 
-    private final @org.jspecify.annotations.NonNull Container container;
-    private final @org.jspecify.annotations.NonNull ContainerData data;
+    private final Container container;
+    private final ContainerData data;
 
-    public HydrationModuleMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
+    public HydrationModuleMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(HydrationModuleBlockEntity.SIZE),
                 new SimpleContainerData(HydrationModuleBlockEntity.DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public HydrationModuleMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data) {
-        super(ModMenuTypes.HYDRATION_MODULE.get(), containerId);
+    public HydrationModuleMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
+        super(java.util.Objects.requireNonNull(ModMenuTypes.HYDRATION_MODULE.get()), containerId);
         checkContainerSize(container, HydrationModuleBlockEntity.SIZE);
         checkContainerDataCount(data, HydrationModuleBlockEntity.DATA_COUNT);
         this.container = container;
@@ -97,7 +97,7 @@ public class HydrationModuleMenu extends AbstractContainerMenu {
     }
 
     private static class InputSlot extends Slot {
-        InputSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
+        InputSlot(Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 

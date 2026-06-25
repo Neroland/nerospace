@@ -24,7 +24,7 @@ public final class TerraformResources {
     private static final List<String> ORE_IDS = List.of(
             "nerospace:nerosteel_ore", "nerospace:xertz_quartz_ore", "nerospace:nerosium_ore");
 
-    private static List<Block> cached;
+    private static @Nullable List<Block> cached;
 
     private TerraformResources() {
     }
@@ -41,7 +41,7 @@ public final class TerraformResources {
         }
         List<Block> out = new ArrayList<>();
         for (String id : ORE_IDS) {
-            Identifier rl = Identifier.tryParse(za.co.neroland.nerospace.NerospaceCommon.requireNonNull(id));
+            Identifier rl = Identifier.tryParse(id);
             if (rl == null) {
                 continue;
             }

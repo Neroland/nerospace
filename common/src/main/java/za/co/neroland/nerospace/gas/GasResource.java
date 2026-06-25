@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -43,12 +42,12 @@ public enum GasResource implements StringRepresentable {
     }
 
     @Override
-    public @NonNull String getSerializedName() {
+    public String getSerializedName() {
         return NerospaceCommon.requireNonNull(this.name);
     }
 
     /** Parse a serialized name back to a constant (defaults to {@link #EMPTY}). */
-    public static GasResource byName(@NonNull String name) {
+    public static GasResource byName(String name) {
         for (GasResource gas : values()) {
             if (gas.name.equals(name)) {
                 return gas;

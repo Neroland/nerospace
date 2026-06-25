@@ -35,16 +35,16 @@ public class PipeConfigMenu extends AbstractContainerMenu {
 
     @Nullable
     private final UniversalPipeBlockEntity pipe;
-    private final @org.jspecify.annotations.NonNull ContainerData data;
+    private final ContainerData data;
 
-    public PipeConfigMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
+    public PipeConfigMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, null, new SimpleContainerData(DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public PipeConfigMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory,
-            @Nullable UniversalPipeBlockEntity pipe, @org.jspecify.annotations.NonNull ContainerData data) {
-        super(ModMenuTypes.PIPE_CONFIG.get(), containerId);
+    public PipeConfigMenu(int containerId, Inventory playerInventory,
+            @Nullable UniversalPipeBlockEntity pipe, ContainerData data) {
+        super(java.util.Objects.requireNonNull(ModMenuTypes.PIPE_CONFIG.get()), containerId);
         checkContainerDataCount(data, DATA_COUNT);
         this.pipe = pipe;
         this.data = data;
@@ -63,7 +63,7 @@ public class PipeConfigMenu extends AbstractContainerMenu {
         }
         if (id >= FACE_BASE && id < FACE_BASE + 6) {
             current.cycleMode(Direction.from3DDataValue(id - FACE_BASE),
-                    za.co.neroland.nerospace.NerospaceCommon.requireNonNull(getSelectedType()));
+                    java.util.Objects.requireNonNull(getSelectedType()));
             return true;
         }
         return false;

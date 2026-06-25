@@ -6,7 +6,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.rocket.StationRegistry;
@@ -26,10 +25,10 @@ import za.co.neroland.nerospace.rocket.StationRegistry;
  */
 public record StationSyncPayload(int[] slots, String[] names) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.@NonNull Type<@NonNull StationSyncPayload> TYPE =
+    public static final CustomPacketPayload.Type<StationSyncPayload> TYPE =
             new Type<>(NerospaceCommon.id("station_sync"));
 
-    public static final @NonNull StreamCodec<RegistryFriendlyByteBuf, @NonNull StationSyncPayload> STREAM_CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, StationSyncPayload> STREAM_CODEC =
             StreamCodec.of(StationSyncPayload::write, StationSyncPayload::read);
 
     /** Snapshot the registry's stations in founding order. */
@@ -52,7 +51,7 @@ public record StationSyncPayload(int[] slots, String[] names) implements CustomP
         }
     }
 
-    private static @NonNull StationSyncPayload read(RegistryFriendlyByteBuf buf) {
+    private static StationSyncPayload read(RegistryFriendlyByteBuf buf) {
         int n = buf.readVarInt();
         int[] slots = new int[n];
         String[] names = new String[n];
@@ -64,7 +63,7 @@ public record StationSyncPayload(int[] slots, String[] names) implements CustomP
     }
 
     @Override
-    public CustomPacketPayload.@NonNull Type<? extends @NonNull CustomPacketPayload> type() {
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

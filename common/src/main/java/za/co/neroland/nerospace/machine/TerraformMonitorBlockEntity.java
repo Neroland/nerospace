@@ -46,7 +46,7 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
      * Synced to the menu: [0]=linked [1]=rootedRadius [2]=hydrationRadius [3]=lifeRadius
      * [4]=hydration [5]=stalled [6]=localStage.
      */
-    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
+    private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -105,7 +105,7 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
     /** One readout refresh (public so the gametest can drive it without waiting on the interval). */
     public void refresh(ServerLevel level, BlockPos pos) {
         int oldStage = this.localStage;
-        BlockPos checkedPos = NerospaceCommon.requireNonNull(pos);
+        BlockPos checkedPos = java.util.Objects.requireNonNull(pos);
         this.localStage = TerraformConversion.effectiveStage(level.getChunkAt(checkedPos));
 
         BlockPos nearest = nearestTerraformer(level, pos);
@@ -136,7 +136,7 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
 
     @Nullable
     private BlockPos nearestTerraformer(ServerLevel level, BlockPos pos) {
-        BlockPos[] best = {null};
+        @Nullable BlockPos[] best = {null};
         long[] bestDist = {(long) LINK_RANGE * LINK_RANGE};
         TerraformManager.get(level).forEachMachine((center, r1, r2, r3) -> {
             long dx = center.getX() - pos.getX();
@@ -159,7 +159,7 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         return new TerraformMonitorMenu(containerId, playerInventory, this, this.dataAccess);
     }
 

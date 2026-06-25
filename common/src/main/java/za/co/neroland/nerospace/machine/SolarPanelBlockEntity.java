@@ -61,7 +61,7 @@ public class SolarPanelBlockEntity extends BlockEntity {
     }
 
     public BlockPos anchorPos() {
-        return this.anchorPos == null ? this.worldPosition : this.anchorPos;
+        return this.anchorPos;
     }
 
     public boolean isAnchor() {

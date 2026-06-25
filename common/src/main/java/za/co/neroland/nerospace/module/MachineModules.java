@@ -23,7 +23,7 @@ public final class MachineModules {
     private static final int MAX_FORTUNE = 3;
     private static final double MAX_SPEED = 8.0D;
 
-    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items;
+    private final NonNullList<ItemStack> items;
     private final Runnable onChange;
 
     public MachineModules(int slots, Runnable onChange) {
@@ -32,7 +32,7 @@ public final class MachineModules {
     }
 
     /** The backing slot list (the host machine's Container view routes to it). */
-    public @org.jspecify.annotations.NonNull NonNullList<ItemStack> items() {
+    public NonNullList<ItemStack> items() {
         return this.items;
     }
 
@@ -44,8 +44,8 @@ public final class MachineModules {
         return this.items.get(index);
     }
 
-    public void setStack(int index, @org.jspecify.annotations.NonNull ItemStack stack) {
-        this.items.set(index, za.co.neroland.nerospace.NerospaceCommon.requireNonNull(stack));
+    public void setStack(int index, ItemStack stack) {
+        this.items.set(index, java.util.Objects.requireNonNull(stack));
         this.onChange.run();
     }
 

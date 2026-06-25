@@ -50,7 +50,7 @@ public class HamletFeature extends Feature<NoneFeatureConfiguration> {
         AlienBuild.tower(level, o.getX() - 4, baseY, o.getZ() - 4, 2, 4, false, rand, m);
         AlienBuild.tower(level, o.getX() + 4, baseY, o.getZ() + 4, 2, 4, false, rand, m);
 
-        BlockState core = ModBlocks.VILLAGE_CORE.get().defaultBlockState();
+        BlockState core = java.util.Objects.requireNonNull(ModBlocks.VILLAGE_CORE.get()).defaultBlockState();
         m.set(o.getX(), baseY - 1, o.getZ());
         level.setBlock(m, AlienBuild.crystal(), 2);
         m.set(o.getX(), baseY, o.getZ());

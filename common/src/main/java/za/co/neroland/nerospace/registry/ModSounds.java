@@ -4,7 +4,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
@@ -51,7 +50,7 @@ public final class ModSounds {
     public static final RegistryEntry<SoundEvent> WOOLLY_DRIFT_HURT = register("entity.woolly_drift.hurt");
     public static final RegistryEntry<SoundEvent> WOOLLY_DRIFT_DEATH = register("entity.woolly_drift.death");
 
-    private static RegistryEntry<SoundEvent> register(@NonNull String path) {
+    private static RegistryEntry<SoundEvent> register(String path) {
         Identifier id = NerospaceCommon.id(NerospaceCommon.requireNonNull(path));
         return SOUND_EVENTS.register(path, key -> SoundEvent.createVariableRangeEvent(id));
     }

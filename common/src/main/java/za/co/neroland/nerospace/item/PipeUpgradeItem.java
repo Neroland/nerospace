@@ -8,7 +8,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 
@@ -31,14 +30,14 @@ public class PipeUpgradeItem extends Item {
         CAPACITY
     }
 
-    private final PipeUpgradeItem.@NonNull Kind kind;
+    private final PipeUpgradeItem.Kind kind;
 
-    public PipeUpgradeItem(Properties properties, PipeUpgradeItem.@NonNull Kind kind) {
+    public PipeUpgradeItem(Properties properties, PipeUpgradeItem.Kind kind) {
         super(properties);
         this.kind = kind;
     }
 
-    public PipeUpgradeItem.@NonNull Kind kind() {
+    public PipeUpgradeItem.Kind kind() {
         return this.kind;
     }
 

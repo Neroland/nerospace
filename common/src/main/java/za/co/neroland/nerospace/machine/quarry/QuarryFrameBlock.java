@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
  */
 public class QuarryFrameBlock extends Block {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<QuarryFrameBlock> CODEC = simpleCodec(QuarryFrameBlock::new);
+    public static final MapCodec<QuarryFrameBlock> CODEC = simpleCodec(QuarryFrameBlock::new);
 
     public QuarryFrameBlock(Properties properties) {
         super(properties);

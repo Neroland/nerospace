@@ -28,7 +28,7 @@ import za.co.neroland.nerospace.rocket.RocketTier;
  */
 public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
-    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+    private static final Identifier TEXTURE =
             NerospaceCommon.id("textures/gui/rocket.png");
     private static final int ACCENT = 0xFFE0506A;     // rocket red
     private static final int FUEL = 0xFFF0703C;       // fuel orange-red
@@ -40,7 +40,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private SpaceButton stationButton;
     private final List<SpaceButton> destinationButtons = new ArrayList<>();
 
-    public RocketScreen(RocketMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
+    public RocketScreen(RocketMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;
@@ -122,8 +122,8 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         }
     }
 
-    private static @org.jspecify.annotations.NonNull String shortName(
-            @org.jspecify.annotations.NonNull String full) {
+    private static String shortName(
+            String full) {
         return NerospaceCommon.requireNonNull(switch (full) {
             case "Orbital Station" -> "Station";
             case "Greenxertz" -> "Xertz";

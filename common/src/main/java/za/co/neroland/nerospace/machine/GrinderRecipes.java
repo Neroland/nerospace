@@ -6,7 +6,6 @@ import java.util.List;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -18,11 +17,11 @@ public final class GrinderRecipes {
     }
 
     /** One input → output pairing, for display/integration (JEI). */
-    public record Grinding(@NonNull ItemStack input, @NonNull ItemStack output) {
+    public record Grinding(ItemStack input, ItemStack output) {
     }
 
     /** @return every grinding pairing, derived through {@link #getResult} so the display can't drift. */
-    public static @NonNull List<Grinding> all() {
+    public static List<Grinding> all() {
         List<Grinding> recipes = new ArrayList<>();
         for (Item item : List.of(ModItems.NEROSIUM_ORE_ITEM.get(), ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get(),
                 ModItems.RAW_NEROSIUM.get(), ModItems.NEROSIUM_INGOT.get())) {
@@ -35,7 +34,7 @@ public final class GrinderRecipes {
         return NerospaceCommon.requireNonNull(List.copyOf(recipes));
     }
 
-    public static @NonNull ItemStack getResult(@NonNull ItemStack input) {
+    public static ItemStack getResult(ItemStack input) {
         if (input.isEmpty()) {
             return ItemStack.EMPTY;
         }

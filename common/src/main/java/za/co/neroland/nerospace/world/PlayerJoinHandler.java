@@ -7,7 +7,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 
 /**
  * Greets a player on join with a short welcome pointing at the Star Guide and a clickable link to the
@@ -35,7 +34,7 @@ public final class PlayerJoinHandler {
         Component link = Component.literal(REPO_URL).withStyle(style -> style
                 .withColor(ChatFormatting.AQUA)
                 .withUnderlined(true)
-                .withClickEvent(new ClickEvent.OpenUrl(NerospaceCommon.requireNonNull(URI.create(REPO_URL)))));
+                .withClickEvent(new ClickEvent.OpenUrl(java.util.Objects.requireNonNull(URI.create(REPO_URL)))));
 
         player.sendSystemMessage(Component.empty()
                 .append(Component.translatable("message.nerospace.welcome.link").withStyle(ChatFormatting.GRAY))

@@ -9,7 +9,6 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.ItemLike;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
@@ -29,44 +28,44 @@ public final class AlienTrades {
         MerchantOffers offers = new MerchantOffers();
 
         if (tier >= 1) {
-            offers.add(sell(ModItems.XERTZ_QUARTZ.get(), 12, Items.EMERALD, 1, 16, 1));
+            offers.add(sell(java.util.Objects.requireNonNull(ModItems.XERTZ_QUARTZ.get()), 12, Items.EMERALD, 1, 16, 1));
             offers.add(buy(Items.EMERALD, 1, Items.IRON_INGOT, 3, 16, 1));
             offers.add(buy(Items.EMERALD, 2, Items.BREAD, 6, 16, 1));
         }
         if (tier >= 2) {
-            offers.add(buy(Items.EMERALD, 4, ModItems.NEROSIUM_INGOT.get(), 1, 12, 5));
-            offers.add(buy2(Items.EMERALD, 1, ModItems.RAW_NEROSTEEL.get(), 8,
-                    ModItems.NEROSTEEL_INGOT.get(), 4, 12, 5));
-            offers.add(sell(ModItems.ALIEN_FRAGMENT.get(), 4, Items.EMERALD, 1, 12, 2));
+            offers.add(buy(Items.EMERALD, 4, java.util.Objects.requireNonNull(ModItems.NEROSIUM_INGOT.get()), 1, 12, 5));
+            offers.add(buy2(Items.EMERALD, 1, java.util.Objects.requireNonNull(ModItems.RAW_NEROSTEEL.get()), 8,
+                    java.util.Objects.requireNonNull(ModItems.NEROSTEEL_INGOT.get()), 4, 12, 5));
+            offers.add(sell(java.util.Objects.requireNonNull(ModItems.ALIEN_FRAGMENT.get()), 4, Items.EMERALD, 1, 12, 2));
         }
         if (tier >= 3) {
             offers.add(buy(Items.EMERALD, 8, Items.DIAMOND, 1, 6, 10));
-            offers.add(buy(Items.EMERALD, 5, ModItems.ROCKET_FUEL_CANISTER.get(), 1, 8, 8));
+            offers.add(buy(Items.EMERALD, 5, java.util.Objects.requireNonNull(ModItems.ROCKET_FUEL_CANISTER.get()), 1, 8, 8));
         }
         if (tier >= 4) {
-            offers.add(buy2(Items.EMERALD, 12, ModItems.ALIEN_TECH_SCRAP.get(), 2,
-                    ModItems.ALIEN_CORE.get(), 1, 4, 15));
+            offers.add(buy2(Items.EMERALD, 12, java.util.Objects.requireNonNull(ModItems.ALIEN_TECH_SCRAP.get()), 2,
+                    java.util.Objects.requireNonNull(ModItems.ALIEN_CORE.get()), 1, 4, 15));
             // Exclusive Artificer gear (§6.1).
-            offers.add(buy(Items.EMERALD, 16, ModItems.XERTZ_RESONATOR.get(), 1, 2, 15));
+            offers.add(buy(Items.EMERALD, 16, java.util.Objects.requireNonNull(ModItems.XERTZ_RESONATOR.get()), 1, 2, 15));
         }
         if (tier >= 5) {
             offers.add(buy(Items.EMERALD, 18, Items.DIAMOND, 3, 4, 20));
-            offers.add(buy2(ModItems.ALIEN_CORE.get(), 1, Items.EMERALD, 24,
-                    ModItems.GRAV_STRIDERS.get(), 1, 2, 20));
+            offers.add(buy2(java.util.Objects.requireNonNull(ModItems.ALIEN_CORE.get()), 1, Items.EMERALD, 24,
+                    java.util.Objects.requireNonNull(ModItems.GRAV_STRIDERS.get()), 1, 2, 20));
         }
         return offers;
     }
 
     private static MerchantOffer buy(ItemLike cost, int n, ItemLike result, int rc, int maxUses, int xp) {
-        return new MerchantOffer(new ItemCost(NerospaceCommon.requireNonNull(cost), n),
-                new ItemStack(NerospaceCommon.requireNonNull(result), rc), maxUses, xp, PRICE_MULT);
+        return new MerchantOffer(new ItemCost(java.util.Objects.requireNonNull(cost), n),
+                new ItemStack(java.util.Objects.requireNonNull(result), rc), maxUses, xp, PRICE_MULT);
     }
 
     private static MerchantOffer buy2(ItemLike costA, int a, ItemLike costB, int b,
             ItemLike result, int rc, int maxUses, int xp) {
-        return new MerchantOffer(new ItemCost(NerospaceCommon.requireNonNull(costA), a),
-                Optional.of(new ItemCost(NerospaceCommon.requireNonNull(costB), b)),
-                new ItemStack(NerospaceCommon.requireNonNull(result), rc), maxUses, xp, PRICE_MULT);
+        return new MerchantOffer(new ItemCost(java.util.Objects.requireNonNull(costA), a),
+                Optional.of(new ItemCost(java.util.Objects.requireNonNull(costB), b)),
+                new ItemStack(java.util.Objects.requireNonNull(result), rc), maxUses, xp, PRICE_MULT);
     }
 
     private static MerchantOffer sell(ItemLike cost, int n, ItemLike result, int rc, int maxUses, int xp) {

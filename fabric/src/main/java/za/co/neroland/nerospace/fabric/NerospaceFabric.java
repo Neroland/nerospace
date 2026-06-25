@@ -24,7 +24,6 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
@@ -275,7 +274,7 @@ public final class NerospaceFabric implements ModInitializer {
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
     }
 
-    private static void addOverworldOre(@NonNull String placedFeatureName) {
+    private static void addOverworldOre(String placedFeatureName) {
         ResourceKey<PlacedFeature> key = ResourceKey.create(
                 Registries.PLACED_FEATURE,
                 NerospaceCommon.id(placedFeatureName));

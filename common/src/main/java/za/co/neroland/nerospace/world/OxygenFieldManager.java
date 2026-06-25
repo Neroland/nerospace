@@ -24,7 +24,6 @@ import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -43,9 +42,9 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public final class OxygenFieldManager extends SavedData {
 
-    public static final @org.jspecify.annotations.NonNull Identifier ID = NerospaceCommon.id("oxygen_field");
+    public static final Identifier ID = NerospaceCommon.id("oxygen_field");
 
-    public static final @NonNull SavedDataType<OxygenFieldManager> TYPE = new SavedDataType<>(
+    public static final SavedDataType<OxygenFieldManager> TYPE = new SavedDataType<>(
             ID, OxygenFieldManager::new, codec(), DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     // --- Inlined from Config (root shipped defaults) until the config seam lands ---
@@ -67,15 +66,15 @@ public final class OxygenFieldManager extends SavedData {
         this.field.defaultReturnValue((byte) 0);
     }
 
-    private static @NonNull Codec<OxygenFieldManager> codec() {
-        return NerospaceCommon.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
+    private static Codec<OxygenFieldManager> codec() {
+        return java.util.Objects.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
                 Codec.LONG.listOf().fieldOf("sources").forGetter(m -> new ArrayList<>(m.sources))
         ).apply(inst, OxygenFieldManager::fromSources)));
     }
 
-    private static @NonNull OxygenFieldManager fromSources(List<Long> sources) {
+    private static OxygenFieldManager fromSources(List<Long> sources) {
         OxygenFieldManager m = new OxygenFieldManager();
-        for (long s : NerospaceCommon.requireNonNull(sources)) {
+        for (long s : java.util.Objects.requireNonNull(sources)) {
             m.sources.add(s);
             m.field.put(s, (byte) MAX_CONCENTRATION);
         }
@@ -216,7 +215,7 @@ public final class OxygenFieldManager extends SavedData {
 
         // Seed from the source's holdable air neighbours (the generator block itself is solid).
         for (Direction dir : Direction.values()) {
-            m.setWithOffset(NerospaceCommon.requireNonNull(source), dir);
+            m.setWithOffset(java.util.Objects.requireNonNull(source), dir);
             if (level.hasChunk(m.getX() >> 4, m.getZ() >> 4) && OxygenField.canHold(level, m, level.getBlockState(m))) {
                 long k = m.asLong();
                 if (dist.get(k) < 0) {

@@ -12,8 +12,6 @@ import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-import org.jspecify.annotations.NonNull;
-
 import za.co.neroland.nerospace.NerospaceCommon;
 
 /** Forge {@link RegistrationProvider.Factory}: wraps Forge DeferredRegisters. */
@@ -37,11 +35,11 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
     private static final class Provider<T> implements RegistrationProvider<T> {
 
         private final DeferredRegister<T> register;
-        private final @NonNull ResourceKey<? extends Registry<T>> registryKey;
-        private final @NonNull String modId;
+        private final ResourceKey<? extends Registry<T>> registryKey;
+        private final String modId;
 
-        Provider(DeferredRegister<T> register, @NonNull ResourceKey<? extends Registry<T>> registryKey,
-                @NonNull String modId) {
+        Provider(DeferredRegister<T> register, ResourceKey<? extends Registry<T>> registryKey,
+                String modId) {
             this.register = register;
             this.registryKey = registryKey;
             this.modId = modId;
@@ -49,7 +47,7 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
 
         @Override
         public <I extends T> RegistryEntry<I> register(
-                String name, Function<@NonNull ResourceKey<T>, I> factory) {
+                String name, Function<ResourceKey<T>, I> factory) {
             String nonNullName = NerospaceCommon.requireNonNull(name);
             Identifier id = Identifier.fromNamespaceAndPath(modId, nonNullName);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);

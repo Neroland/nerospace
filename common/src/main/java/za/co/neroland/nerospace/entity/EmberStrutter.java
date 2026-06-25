@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModSounds;
 
@@ -44,16 +45,16 @@ public class EmberStrutter extends TerraformLivestock {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.EMBER_STRUTTER_AMBIENT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.EMBER_STRUTTER_AMBIENT.get());
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return ModSounds.EMBER_STRUTTER_HURT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.EMBER_STRUTTER_HURT.get());
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.EMBER_STRUTTER_DEATH.get();
+        return NerospaceCommon.requireNonNull(ModSounds.EMBER_STRUTTER_DEATH.get());
     }
 }

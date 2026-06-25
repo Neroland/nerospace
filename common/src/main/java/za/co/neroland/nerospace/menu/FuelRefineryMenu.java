@@ -22,17 +22,17 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
     private static final int PLAYER_INV_START = 2;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36;
 
-    private final @org.jspecify.annotations.NonNull Container container;
-    private final @org.jspecify.annotations.NonNull ContainerData data;
+    private final Container container;
+    private final ContainerData data;
 
-    public FuelRefineryMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
+    public FuelRefineryMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(FuelRefineryBlockEntity.SIZE),
                 new SimpleContainerData(FuelRefineryBlockEntity.DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public FuelRefineryMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data) {
-        super(ModMenuTypes.FUEL_REFINERY.get(), containerId);
+    public FuelRefineryMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
+        super(java.util.Objects.requireNonNull(ModMenuTypes.FUEL_REFINERY.get()), containerId);
         checkContainerSize(container, FuelRefineryBlockEntity.SIZE);
         checkContainerDataCount(data, FuelRefineryBlockEntity.DATA_COUNT);
         this.container = container;
@@ -106,7 +106,7 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
     }
 
     private static class FilterSlot extends Slot {
-        FilterSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
+        FilterSlot(Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CreativeItemStoreBlock extends AbstractStorageBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<CreativeItemStoreBlock> CODEC = simpleCodec(CreativeItemStoreBlock::new);
+    public static final MapCodec<CreativeItemStoreBlock> CODEC = simpleCodec(CreativeItemStoreBlock::new);
 
     public CreativeItemStoreBlock(Properties properties) {
         super(properties);

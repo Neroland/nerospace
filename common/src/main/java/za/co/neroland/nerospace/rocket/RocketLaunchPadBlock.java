@@ -14,9 +14,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import org.jspecify.annotations.NonNull;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 
 /**
  * The craftable launch mount: a short pad a rocket is assembled onto. A {@link RocketItem} may only
@@ -29,21 +27,21 @@ public class RocketLaunchPadBlock extends Block {
     /** The plate's top surface, in blocks — rockets stand at pad Y + this. */
     public static final double SURFACE_HEIGHT = 3.0D / 16.0D;
 
-    private static final @NonNull VoxelShape SHAPE = NerospaceCommon.requireNonNull(
+    private static final VoxelShape SHAPE = java.util.Objects.requireNonNull(
             Block.box(0.0D, 0.0D, 0.0D, 16.0D, 3.0D, 16.0D));
 
     public RocketLaunchPadBlock(Properties properties) {
-        super(NerospaceCommon.requireNonNull(properties));
+        super(java.util.Objects.requireNonNull(properties));
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return NerospaceCommon.requireNonNull(SHAPE);
+        return java.util.Objects.requireNonNull(SHAPE);
     }
 
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return NerospaceCommon.requireNonNull(SHAPE);
+        return java.util.Objects.requireNonNull(SHAPE);
     }
 
     @Override

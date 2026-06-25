@@ -16,6 +16,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.Level;
 
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModSounds;
 
 /**
@@ -39,17 +41,17 @@ public class FrostStrider extends Monster {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.FROST_STRIDER_AMBIENT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.FROST_STRIDER_AMBIENT.get());
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return ModSounds.FROST_STRIDER_HURT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.FROST_STRIDER_HURT.get());
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.FROST_STRIDER_DEATH.get();
+        return NerospaceCommon.requireNonNull(ModSounds.FROST_STRIDER_DEATH.get());
     }
 
     public static AttributeSupplier.Builder createAttributes() {

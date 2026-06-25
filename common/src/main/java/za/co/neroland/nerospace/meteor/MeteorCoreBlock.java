@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class MeteorCoreBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<MeteorCoreBlock> CODEC = simpleCodec(MeteorCoreBlock::new);
+    public static final MapCodec<MeteorCoreBlock> CODEC = simpleCodec(MeteorCoreBlock::new);
 
     public MeteorCoreBlock(Properties properties) {
         super(properties);

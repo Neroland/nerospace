@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModSounds;
 
@@ -50,16 +51,16 @@ public class WoollyDrift extends TerraformLivestock {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.WOOLLY_DRIFT_AMBIENT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.WOOLLY_DRIFT_AMBIENT.get());
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return ModSounds.WOOLLY_DRIFT_HURT.get();
+        return NerospaceCommon.requireNonNull(ModSounds.WOOLLY_DRIFT_HURT.get());
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.WOOLLY_DRIFT_DEATH.get();
+        return NerospaceCommon.requireNonNull(ModSounds.WOOLLY_DRIFT_DEATH.get());
     }
 }

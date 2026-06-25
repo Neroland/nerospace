@@ -10,7 +10,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.platform.Services;
@@ -30,44 +29,44 @@ import za.co.neroland.nerospace.platform.Services;
 public final class ModNetwork {
 
     /** A server → client payload + the client-side handler that consumes it. */
-    public record Clientbound<T extends @NonNull CustomPacketPayload>(
-            CustomPacketPayload.@NonNull Type<T> type,
-            @NonNull StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
-            @NonNull Consumer<T> handler) {
+    public record Clientbound<T extends CustomPacketPayload>(
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+            Consumer<T> handler) {
     }
 
     /** A client → server payload + the server-side handler (with the sending player). */
-    public record Serverbound<T extends @NonNull CustomPacketPayload>(
-            CustomPacketPayload.@NonNull Type<T> type,
-            @NonNull StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
-            @NonNull BiConsumer<T, ServerPlayer> handler) {
+    public record Serverbound<T extends CustomPacketPayload>(
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+            BiConsumer<T, ServerPlayer> handler) {
     }
 
-    private static final List<Clientbound<? extends @NonNull CustomPacketPayload>> CLIENTBOUND = new ArrayList<>();
-    private static final List<Serverbound<? extends @NonNull CustomPacketPayload>> SERVERBOUND = new ArrayList<>();
+    private static final List<Clientbound<? extends CustomPacketPayload>> CLIENTBOUND = new ArrayList<>();
+    private static final List<Serverbound<? extends CustomPacketPayload>> SERVERBOUND = new ArrayList<>();
 
     private ModNetwork() {
     }
 
-    public static <T extends @NonNull CustomPacketPayload> void clientbound(
-            CustomPacketPayload.@NonNull Type<T> type,
-            @NonNull StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
-            @NonNull Consumer<T> handler) {
+    public static <T extends CustomPacketPayload> void clientbound(
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+            Consumer<T> handler) {
         CLIENTBOUND.add(new Clientbound<>(type, codec, handler));
     }
 
-    public static <T extends @NonNull CustomPacketPayload> void serverbound(
-            CustomPacketPayload.@NonNull Type<T> type,
-            @NonNull StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
-            @NonNull BiConsumer<T, ServerPlayer> handler) {
+    public static <T extends CustomPacketPayload> void serverbound(
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+            BiConsumer<T, ServerPlayer> handler) {
         SERVERBOUND.add(new Serverbound<>(type, codec, handler));
     }
 
-    public static @NonNull List<Clientbound<? extends @NonNull CustomPacketPayload>> clientbound() {
+    public static List<Clientbound<? extends CustomPacketPayload>> clientbound() {
         return NerospaceCommon.requireNonNull(CLIENTBOUND);
     }
 
-    public static @NonNull List<Serverbound<? extends @NonNull CustomPacketPayload>> serverbound() {
+    public static List<Serverbound<? extends CustomPacketPayload>> serverbound() {
         return NerospaceCommon.requireNonNull(SERVERBOUND);
     }
 
@@ -87,14 +86,14 @@ public final class ModNetwork {
         // Meteor Tracker: server → tracker-holders nearest-site snapshot. The handler runs only on the
         // physical client; ClientMeteorTracker is a pure data holder (no client-only imports), so the
         // method reference is safe to register from common code.
-        ModNetwork.<@NonNull MeteorSyncPayload>clientbound(MeteorSyncPayload.TYPE, MeteorSyncPayload.STREAM_CODEC,
+        ModNetwork.<MeteorSyncPayload>clientbound(MeteorSyncPayload.TYPE, MeteorSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientMeteorTracker::accept);
         // Oxygen field: server → nearby clients range-limited concentration snapshot for the visual layers.
-        ModNetwork.<@NonNull OxygenFieldSyncPayload>clientbound(
+        ModNetwork.<OxygenFieldSyncPayload>clientbound(
                 OxygenFieldSyncPayload.TYPE, OxygenFieldSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientOxygenField::accept);
         // Founded-station names: server → a player opening a rocket, so the "Dock:" cycler shows real names.
-        ModNetwork.<@NonNull StationSyncPayload>clientbound(StationSyncPayload.TYPE, StationSyncPayload.STREAM_CODEC,
+        ModNetwork.<StationSyncPayload>clientbound(StationSyncPayload.TYPE, StationSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientStations::accept);
     }
 }

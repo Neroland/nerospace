@@ -36,7 +36,7 @@ import za.co.neroland.nerospace.registry.ModItems;
  */
 public class StarGuideBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<StarGuideBlock> CODEC = simpleCodec(StarGuideBlock::new);
+    public static final MapCodec<StarGuideBlock> CODEC = simpleCodec(StarGuideBlock::new);
 
     public StarGuideBlock(Properties properties) {
         super(properties);
@@ -64,7 +64,7 @@ public class StarGuideBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.STAR_GUIDE.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.STAR_GUIDE.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 
@@ -72,7 +72,7 @@ public class StarGuideBlock extends BaseEntityBlock {
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
         // Install a Star Guide Book on the bare pedestal.
-        if (stack.is(ModItems.STAR_GUIDE_BOOK.get())
+        if (stack.is(java.util.Objects.requireNonNull(ModItems.STAR_GUIDE_BOOK.get()))
                 && level.getBlockEntity(pos) instanceof StarGuideBlockEntity guide && !guide.hasBook()) {
             if (!level.isClientSide() && guide.installBook(stack)) {
                 level.playSound(null, pos, SoundEvents.BOOK_PUT, SoundSource.BLOCKS, 1.0F, 1.0F);

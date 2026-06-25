@@ -23,7 +23,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 /** Passive Generator block — ticks + opens its {@link PassiveGeneratorBlockEntity}. */
 public class PassiveGeneratorBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<PassiveGeneratorBlock> CODEC = simpleCodec(PassiveGeneratorBlock::new);
+    public static final MapCodec<PassiveGeneratorBlock> CODEC = simpleCodec(PassiveGeneratorBlock::new);
 
     public PassiveGeneratorBlock(Properties properties) {
         super(properties);
@@ -56,7 +56,7 @@ public class PassiveGeneratorBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }

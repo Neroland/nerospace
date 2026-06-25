@@ -10,7 +10,6 @@ import net.minecraft.world.level.ItemLike;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModItems;
-import org.jspecify.annotations.NonNull;
 
 /**
  * The Star Guide content table (chapters → steps, in code). Completion is advancement-driven — each
@@ -26,97 +25,97 @@ import org.jspecify.annotations.NonNull;
 public final class StarGuide {
 
     /** One step of a chapter: icon + lang keys + the advancement that completes it. */
-    public record Step(@NonNull String id, Supplier<? extends ItemLike> icon,
-            @NonNull Identifier advancement) {
+    public record Step(String id, Supplier<? extends ItemLike> icon,
+            Identifier advancement) {
 
-        public @NonNull String titleKey() {
-            return NerospaceCommon.requireNonNull("gui.nerospace.star_guide.step." + this.id);
+        public String titleKey() {
+            return java.util.Objects.requireNonNull("gui.nerospace.star_guide.step." + this.id);
         }
 
-        public @NonNull String textKey() {
-            return NerospaceCommon.requireNonNull("gui.nerospace.star_guide.step." + this.id + ".text");
+        public String textKey() {
+            return java.util.Objects.requireNonNull("gui.nerospace.star_guide.step." + this.id + ".text");
         }
 
-        public @NonNull ItemStack iconStack() {
-            return NerospaceCommon.requireNonNull(new ItemStack(StarGuide.icon(this.icon)));
+        public ItemStack iconStack() {
+            return java.util.Objects.requireNonNull(new ItemStack(StarGuide.icon(this.icon)));
         }
     }
 
     /** A chapter: lang key + ordered steps (≤ 16 so the completion bitmask fits a data slot). */
-    public record Chapter(@NonNull String id, List<Step> steps) {
+    public record Chapter(String id, List<Step> steps) {
 
-        public @NonNull String titleKey() {
-            return NerospaceCommon.requireNonNull("gui.nerospace.star_guide.chapter." + this.id);
+        public String titleKey() {
+            return java.util.Objects.requireNonNull("gui.nerospace.star_guide.chapter." + this.id);
         }
     }
 
-    private static @NonNull Identifier adv(@NonNull String path) {
+    private static Identifier adv(String path) {
         return NerospaceCommon.id(path);
     }
 
-    private static @NonNull ItemLike icon(Supplier<? extends ItemLike> supplier) {
-        return NerospaceCommon.requireNonNull(supplier.get());
+    private static ItemLike icon(Supplier<? extends ItemLike> supplier) {
+        return java.util.Objects.requireNonNull(supplier.get());
     }
 
-    private static StarGuide.@NonNull Step step(@NonNull String id, Supplier<? extends ItemLike> icon,
-            @NonNull String advancementPath) {
-        return new Step(id, icon, NerospaceCommon.requireNonNull(adv(advancementPath)));
+    private static StarGuide.Step step(String id, Supplier<? extends ItemLike> icon,
+            String advancementPath) {
+        return new Step(id, icon, java.util.Objects.requireNonNull(adv(advancementPath)));
     }
 
     /** The chapters (order = chapter index used by menu completion bitmasks). */
     public static final List<Chapter> CHAPTERS = List.of(
             new Chapter("nerosium", List.of(
-                    step("raw_nerosium", () -> ModItems.RAW_NEROSIUM.get(), "guide/raw_nerosium"),
-                    step("nerosium_ingot", () -> ModItems.NEROSIUM_INGOT.get(), "root"),
-                    step("nerosium_pickaxe", () -> ModItems.NEROSIUM_PICKAXE.get(), "guide/nerosium_pickaxe"))),
+                    step("raw_nerosium", () -> java.util.Objects.requireNonNull(ModItems.RAW_NEROSIUM.get()), "guide/raw_nerosium"),
+                    step("nerosium_ingot", () -> java.util.Objects.requireNonNull(ModItems.NEROSIUM_INGOT.get()), "root"),
+                    step("nerosium_pickaxe", () -> java.util.Objects.requireNonNull(ModItems.NEROSIUM_PICKAXE.get()), "guide/nerosium_pickaxe"))),
             new Chapter("machines", List.of(
-                    step("nerosium_grinder", () -> ModBlocks.NEROSIUM_GRINDER.get(), "nerosium_grinder"),
-                    step("nerosium_dust", () -> ModItems.NEROSIUM_DUST.get(), "guide/nerosium_dust"),
-                    step("combustion_generator", () -> ModBlocks.COMBUSTION_GENERATOR.get(), "guide/combustion_generator"))),
+                    step("nerosium_grinder", () -> java.util.Objects.requireNonNull(ModBlocks.NEROSIUM_GRINDER.get()), "nerosium_grinder"),
+                    step("nerosium_dust", () -> java.util.Objects.requireNonNull(ModItems.NEROSIUM_DUST.get()), "guide/nerosium_dust"),
+                    step("combustion_generator", () -> java.util.Objects.requireNonNull(ModBlocks.COMBUSTION_GENERATOR.get()), "guide/combustion_generator"))),
             new Chapter("power_grid", List.of(
-                    step("universal_pipe", () -> ModBlocks.UNIVERSAL_PIPE.get(), "guide/universal_pipe"),
-                    step("battery", () -> ModBlocks.BATTERY.get(), "guide/battery"),
-                    step("passive_generator", () -> ModBlocks.PASSIVE_GENERATOR.get(), "guide/passive_generator"),
-                    step("configurator", () -> ModItems.CONFIGURATOR.get(), "guide/configurator"))),
+                    step("universal_pipe", () -> java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()), "guide/universal_pipe"),
+                    step("battery", () -> java.util.Objects.requireNonNull(ModBlocks.BATTERY.get()), "guide/battery"),
+                    step("passive_generator", () -> java.util.Objects.requireNonNull(ModBlocks.PASSIVE_GENERATOR.get()), "guide/passive_generator"),
+                    step("configurator", () -> java.util.Objects.requireNonNull(ModItems.CONFIGURATOR.get()), "guide/configurator"))),
             new Chapter("rocketry", List.of(
-                    step("rocket_fuel_canister", () -> ModItems.ROCKET_FUEL_CANISTER.get(), "guide/rocket_fuel_canister"),
-                    step("rocket_launch_pad", () -> ModBlocks.ROCKET_LAUNCH_PAD.get(), "guide/rocket_launch_pad"),
-                    step("rocket_tier_1", () -> ModItems.ROCKET_TIER_1.get(), "rocket"),
-                    step("station", () -> ModBlocks.STATION_FLOOR.get(), "station"),
-                    step("station_charter", () -> ModItems.STATION_CHARTER.get(), "guide/station_charter"))),
+                    step("rocket_fuel_canister", () -> java.util.Objects.requireNonNull(ModItems.ROCKET_FUEL_CANISTER.get()), "guide/rocket_fuel_canister"),
+                    step("rocket_launch_pad", () -> java.util.Objects.requireNonNull(ModBlocks.ROCKET_LAUNCH_PAD.get()), "guide/rocket_launch_pad"),
+                    step("rocket_tier_1", () -> java.util.Objects.requireNonNull(ModItems.ROCKET_TIER_1.get()), "rocket"),
+                    step("station", () -> java.util.Objects.requireNonNull(ModBlocks.STATION_FLOOR.get()), "station"),
+                    step("station_charter", () -> java.util.Objects.requireNonNull(ModItems.STATION_CHARTER.get()), "guide/station_charter"))),
             new Chapter("new_worlds", List.of(
-                    step("rocket_tier_2", () -> ModItems.ROCKET_TIER_2.get(), "guide/rocket_tier_2"),
-                    step("greenxertz", () -> ModItems.NEROSTEEL_INGOT.get(), "greenxertz"),
-                    step("nerosteel_ingot", () -> ModItems.RAW_NEROSTEEL.get(), "guide/nerosteel_ingot"),
-                    step("rocket_tier_3", () -> ModItems.ROCKET_TIER_3.get(), "guide/rocket_tier_3"),
-                    step("cindara", () -> ModItems.CINDRITE.get(), "cindara"),
-                    step("cindrite", () -> ModBlocks.CINDRITE_BLOCK.get(), "guide/cindrite"),
-                    step("rocket_tier_4", () -> ModItems.ROCKET_TIER_4.get(), "guide/rocket_tier_4"),
-                    step("glacira", () -> ModItems.GLACITE.get(), "glacira"),
-                    step("glacite", () -> ModBlocks.GLACITE_BLOCK.get(), "guide/glacite"))),
+                    step("rocket_tier_2", () -> java.util.Objects.requireNonNull(ModItems.ROCKET_TIER_2.get()), "guide/rocket_tier_2"),
+                    step("greenxertz", () -> java.util.Objects.requireNonNull(ModItems.NEROSTEEL_INGOT.get()), "greenxertz"),
+                    step("nerosteel_ingot", () -> java.util.Objects.requireNonNull(ModItems.RAW_NEROSTEEL.get()), "guide/nerosteel_ingot"),
+                    step("rocket_tier_3", () -> java.util.Objects.requireNonNull(ModItems.ROCKET_TIER_3.get()), "guide/rocket_tier_3"),
+                    step("cindara", () -> java.util.Objects.requireNonNull(ModItems.CINDRITE.get()), "cindara"),
+                    step("cindrite", () -> java.util.Objects.requireNonNull(ModBlocks.CINDRITE_BLOCK.get()), "guide/cindrite"),
+                    step("rocket_tier_4", () -> java.util.Objects.requireNonNull(ModItems.ROCKET_TIER_4.get()), "guide/rocket_tier_4"),
+                    step("glacira", () -> java.util.Objects.requireNonNull(ModItems.GLACITE.get()), "glacira"),
+                    step("glacite", () -> java.util.Objects.requireNonNull(ModBlocks.GLACITE_BLOCK.get()), "guide/glacite"))),
             new Chapter("mining", List.of(
-                    step("quarry_landmark", () -> ModBlocks.QUARRY_LANDMARK.get(), "guide/quarry_landmark"),
-                    step("frame_casing", () -> ModItems.FRAME_CASING.get(), "guide/frame_casing"),
-                    step("quarry_controller", () -> ModBlocks.QUARRY_CONTROLLER.get(), "guide/quarry_controller"),
-                    step("upgrade_module", () -> ModItems.SPEED_MODULE.get(), "guide/upgrade_module"))),
+                    step("quarry_landmark", () -> java.util.Objects.requireNonNull(ModBlocks.QUARRY_LANDMARK.get()), "guide/quarry_landmark"),
+                    step("frame_casing", () -> java.util.Objects.requireNonNull(ModItems.FRAME_CASING.get()), "guide/frame_casing"),
+                    step("quarry_controller", () -> java.util.Objects.requireNonNull(ModBlocks.QUARRY_CONTROLLER.get()), "guide/quarry_controller"),
+                    step("upgrade_module", () -> java.util.Objects.requireNonNull(ModItems.SPEED_MODULE.get()), "guide/upgrade_module"))),
             new Chapter("vacuum", List.of(
-                    step("oxygen_generator", () -> ModBlocks.OXYGEN_GENERATOR.get(), "guide/oxygen_generator"),
-                    step("gas_tank", () -> ModBlocks.GAS_TANK.get(), "guide/gas_tank"),
-                    step("oxygen_suit", () -> ModItems.OXYGEN_SUIT_HELMET.get(), "guide/oxygen_suit"),
-                    step("oxygen_suit_t2", () -> ModItems.OXYGEN_SUIT_T2_HELMET.get(), "guide/oxygen_suit_t2"),
-                    step("thermal_suit", () -> ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), "guide/thermal_suit"),
-                    step("cryo_suit", () -> ModItems.OXYGEN_SUIT_COLD_HELMET.get(), "guide/cryo_suit"))),
+                    step("oxygen_generator", () -> java.util.Objects.requireNonNull(ModBlocks.OXYGEN_GENERATOR.get()), "guide/oxygen_generator"),
+                    step("gas_tank", () -> java.util.Objects.requireNonNull(ModBlocks.GAS_TANK.get()), "guide/gas_tank"),
+                    step("oxygen_suit", () -> java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HELMET.get()), "guide/oxygen_suit"),
+                    step("oxygen_suit_t2", () -> java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_HELMET.get()), "guide/oxygen_suit_t2"),
+                    step("thermal_suit", () -> java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_HELMET.get()), "guide/thermal_suit"),
+                    step("cryo_suit", () -> java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_HELMET.get()), "guide/cryo_suit"))),
             new Chapter("terraforming", List.of(
-                    step("terraformer", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformer"),
-                    step("terraformed_ground", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformed_ground"),
-                    step("hydration_module", () -> ModBlocks.HYDRATION_MODULE.get(), "guide/hydration_module"),
-                    step("living_world", () -> ModItems.MEADOW_LOPER_SPAWN_EGG.get(), "guide/living_world"),
+                    step("terraformer", () -> java.util.Objects.requireNonNull(ModBlocks.TERRAFORMER.get()), "guide/terraformer"),
+                    step("terraformed_ground", () -> java.util.Objects.requireNonNull(ModBlocks.TERRAFORMER.get()), "guide/terraformed_ground"),
+                    step("hydration_module", () -> java.util.Objects.requireNonNull(ModBlocks.HYDRATION_MODULE.get()), "guide/hydration_module"),
+                    step("living_world", () -> java.util.Objects.requireNonNull(ModItems.MEADOW_LOPER_SPAWN_EGG.get()), "guide/living_world"),
                     // LOPER_HAUNCH not yet ported — substitute the Drift Fleece icon.
-                    step("new_life", () -> ModItems.DRIFT_FLEECE.get(), "guide/new_life"))),
+                    step("new_life", () -> java.util.Objects.requireNonNull(ModItems.DRIFT_FLEECE.get()), "guide/new_life"))),
             new Chapter("meteor_events", List.of(
-                    step("meteor_site", () -> ModItems.ALIEN_FRAGMENT.get(), "guide/alien_fragment"),
-                    step("alien_tech", () -> ModItems.ALIEN_TECH_SCRAP.get(), "guide/alien_tech_scrap"),
-                    step("alien_core", () -> ModItems.ALIEN_CORE.get(), "guide/alien_core"))));
+                    step("meteor_site", () -> java.util.Objects.requireNonNull(ModItems.ALIEN_FRAGMENT.get()), "guide/alien_fragment"),
+                    step("alien_tech", () -> java.util.Objects.requireNonNull(ModItems.ALIEN_TECH_SCRAP.get()), "guide/alien_tech_scrap"),
+                    step("alien_core", () -> java.util.Objects.requireNonNull(ModItems.ALIEN_CORE.get()), "guide/alien_core"))));
 
     public static final int CHAPTER_COUNT = CHAPTERS.size();
 

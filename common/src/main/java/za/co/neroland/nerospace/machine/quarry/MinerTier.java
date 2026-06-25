@@ -51,11 +51,11 @@ public enum MinerTier {
         return this.accentColor;
     }
 
-    public boolean canOperateIn(@org.jspecify.annotations.NonNull ResourceKey<Level> dimension) {
+    public boolean canOperateIn(ResourceKey<Level> dimension) {
         return this.level >= requiredTier(dimension);
     }
 
-    public static int requiredTier(@org.jspecify.annotations.NonNull ResourceKey<Level> dimension) {
+    public static int requiredTier(ResourceKey<Level> dimension) {
         if (dimension.equals(ModDimensions.GLACIRA_LEVEL)) {
             return 3;
         }

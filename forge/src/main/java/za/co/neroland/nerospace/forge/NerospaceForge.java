@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
@@ -43,7 +42,7 @@ import za.co.neroland.nerospace.world.TerraformManager;
 @Mod(NerospaceCommon.MOD_ID)
 public final class NerospaceForge {
 
-    public NerospaceForge(@NonNull FMLJavaModLoadingContext context) {
+    public NerospaceForge(FMLJavaModLoadingContext context) {
         NerospaceCommon.LOGGER.info("[Nerospace] Forge bootstrap");
         BusGroup modBusGroup = context.getModBusGroup();
 

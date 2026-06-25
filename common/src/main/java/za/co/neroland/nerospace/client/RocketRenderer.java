@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 
@@ -24,7 +25,7 @@ import za.co.neroland.nerospace.rocket.RocketEntity;
  */
 public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderState> {
 
-    private static final Identifier @org.jspecify.annotations.NonNull[] TEXTURES = {
+    private static final Identifier [] TEXTURES = {
             NerospaceCommon.id("textures/entity/rocket_t1.png"),
             NerospaceCommon.id("textures/entity/rocket_t2.png"),
             NerospaceCommon.id("textures/entity/rocket_t3.png"),
@@ -33,7 +34,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
     private static final int FULL_BRIGHT = 0x00F000F0;
 
     /** Per-tier geometry: T1 classic, T2 boosters, T3 ring, T4 heavy. */
-    private final RocketModel[] models;
+    private final RocketModel [] models;
 
     public RocketRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -59,8 +60,8 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
     }
 
     @Override
-    public void submit(RocketRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
-                       CameraRenderState cameraState) {
+    public void submit(RocketRenderState state, PoseStack poseStack,
+            SubmitNodeCollector collector, CameraRenderState cameraState) {
         poseStack.pushPose();
         // Standard entity-model orientation: flip Y/X into model space at the tier's scale. The model
         // bottom (fins) sits at model-y 24 = 1.5, so -1.5 plants the fins on the pad at any scale.
@@ -68,9 +69,9 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
         poseStack.scale(-s, -s, s);
         poseStack.translate(0.0F, -1.5F, 0.0F);
 
-        RocketModel model = this.models[Math.min(this.models.length - 1, state.tier)];
+        RocketModel model = NerospaceCommon.requireNonNull(this.models[Math.min(this.models.length - 1, state.tier)]);
         model.setupAnim(state);
-        RenderType renderType = model.renderType(state.texture);
+        RenderType renderType = NerospaceCommon.requireNonNull(model.renderType(state.texture));
         collector.order(0).submitModel(model, state, poseStack, renderType,
                 FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1, null, 0, null);
 

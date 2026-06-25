@@ -36,7 +36,7 @@ public class PipeFilterItem extends Item {
 
     /** The filter set on this stack (EMPTY = unset). */
     public static ItemStack configured(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.FILTER_ITEM.get(), ItemStack.EMPTY);
+        return stack.getOrDefault(java.util.Objects.requireNonNull(ModDataComponents.FILTER_ITEM.get()), ItemStack.EMPTY);
     }
 
     @Override
@@ -64,11 +64,11 @@ public class PipeFilterItem extends Item {
                 ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             if (other.isEmpty()) {
-                self.remove(ModDataComponents.FILTER_ITEM.get());
+                self.remove(java.util.Objects.requireNonNull(ModDataComponents.FILTER_ITEM.get()));
                 serverPlayer.sendSystemMessage(Component.translatable("item.nerospace.pipe_filter.cleared"));
             } else {
                 ItemStack resource = other.copyWithCount(1);
-                self.set(ModDataComponents.FILTER_ITEM.get(), resource);
+                self.set(java.util.Objects.requireNonNull(ModDataComponents.FILTER_ITEM.get()), resource);
                 serverPlayer.sendSystemMessage(Component.translatable(
                         "item.nerospace.pipe_filter.set", resource.getHoverName()));
             }

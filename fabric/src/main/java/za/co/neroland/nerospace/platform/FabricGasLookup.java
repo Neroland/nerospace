@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.fabric.NerospaceFabric;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
@@ -15,7 +14,7 @@ public final class FabricGasLookup implements GasLookup {
 
     @Nullable
     @Override
-    public NerospaceGasStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side) {
+    public NerospaceGasStorage find(Level level, BlockPos pos, @Nullable Direction side) {
         return NerospaceFabric.GAS.find(level, pos, side);
     }
 }

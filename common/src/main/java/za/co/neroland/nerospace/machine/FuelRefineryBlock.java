@@ -24,7 +24,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class FuelRefineryBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<FuelRefineryBlock> CODEC = simpleCodec(FuelRefineryBlock::new);
+    public static final MapCodec<FuelRefineryBlock> CODEC = simpleCodec(FuelRefineryBlock::new);
 
     public FuelRefineryBlock(Properties properties) {
         super(properties);
@@ -46,7 +46,7 @@ public class FuelRefineryBlock extends BaseEntityBlock {
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }

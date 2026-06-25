@@ -7,7 +7,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -33,12 +32,12 @@ public final class FabricRegistrationFactory implements RegistrationProvider.Fac
 
     private static final class Provider<T> implements RegistrationProvider<T> {
 
-        private final @NonNull Registry<T> registry;
-        private final @NonNull ResourceKey<? extends Registry<T>> registryKey;
-        private final @NonNull String modId;
+        private final Registry<T> registry;
+        private final ResourceKey<? extends Registry<T>> registryKey;
+        private final String modId;
 
-        Provider(@NonNull Registry<T> registry, @NonNull ResourceKey<? extends Registry<T>> registryKey,
-                @NonNull String modId) {
+        Provider(Registry<T> registry, ResourceKey<? extends Registry<T>> registryKey,
+                String modId) {
             this.registry = registry;
             this.registryKey = registryKey;
             this.modId = modId;
@@ -46,7 +45,7 @@ public final class FabricRegistrationFactory implements RegistrationProvider.Fac
 
         @Override
         public <I extends T> RegistryEntry<I> register(
-                String name, Function<@NonNull ResourceKey<T>, I> factory) {
+                String name, Function<ResourceKey<T>, I> factory) {
             String nonNullName = NerospaceCommon.requireNonNull(name);
             Identifier id = Identifier.fromNamespaceAndPath(modId, nonNullName);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);

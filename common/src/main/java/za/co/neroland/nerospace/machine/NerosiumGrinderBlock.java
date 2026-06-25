@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -30,7 +29,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 /** Nerosium Grinder block — directional, ticks + opens its {@link NerosiumGrinderBlockEntity}. */
 public class NerosiumGrinderBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<NerosiumGrinderBlock> CODEC = simpleCodec(NerosiumGrinderBlock::new);
+    public static final MapCodec<NerosiumGrinderBlock> CODEC = simpleCodec(NerosiumGrinderBlock::new);
     public static final EnumProperty<Direction> FACING =
             NerospaceCommon.requireNonNull(BlockStateProperties.HORIZONTAL_FACING);
 
@@ -57,7 +56,7 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NonNull BlockState getStateForPlacement(@NonNull BlockPlaceContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction facing = context.getHorizontalDirection().getOpposite();
         return NerospaceCommon.requireNonNull(
                 this.defaultBlockState().setValue(NerospaceCommon.requireNonNull(FACING), facing));
@@ -80,7 +79,7 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }

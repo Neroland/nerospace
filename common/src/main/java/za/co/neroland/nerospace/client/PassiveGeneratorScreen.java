@@ -11,11 +11,11 @@ import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
 /** Screen for the Passive Generator: a power-output gauge over the sci-fi hull panel. */
 public class PassiveGeneratorScreen extends TexturedContainerScreen<PassiveGeneratorMenu> {
 
-    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+    private static final Identifier TEXTURE =
             NerospaceCommon.id("textures/gui/passive_generator.png");
     private static final int ACCENT = 0xFFB327A0; // nerosium magenta
 
-    public PassiveGeneratorScreen(PassiveGeneratorMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
+    public PassiveGeneratorScreen(PassiveGeneratorMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;

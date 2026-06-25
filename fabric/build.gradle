@@ -129,6 +129,8 @@ tasks.register('ecjCheck', JavaExec) {
                 '-proc:none',
                 '-d', 'none',
                 '-properties', rootProject.file('tools/ecj.prefs').absolutePath,
+                '-warn:+nullAnnot,+nullUncheckedConversion,+nullDereference',
+                '-annotationpath', 'CLASSPATH',
                 '-classpath', analysisCp,
         ] + srcDirs
     }

@@ -7,7 +7,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -19,10 +18,10 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public record OxygenFieldSyncPayload(long[] positions, byte[] values) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.@NonNull Type<@NonNull OxygenFieldSyncPayload> TYPE =
+    public static final CustomPacketPayload.Type<OxygenFieldSyncPayload> TYPE =
             new Type<>(NerospaceCommon.id("oxygen_field_sync"));
 
-    public static final @NonNull StreamCodec<RegistryFriendlyByteBuf, @NonNull OxygenFieldSyncPayload> STREAM_CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, OxygenFieldSyncPayload> STREAM_CODEC =
             StreamCodec.of(OxygenFieldSyncPayload::write, OxygenFieldSyncPayload::read);
 
     public static OxygenFieldSyncPayload of(Long2ByteMap field) {
@@ -54,7 +53,7 @@ public record OxygenFieldSyncPayload(long[] positions, byte[] values) implements
         }
     }
 
-    private static @NonNull OxygenFieldSyncPayload read(RegistryFriendlyByteBuf buf) {
+    private static OxygenFieldSyncPayload read(RegistryFriendlyByteBuf buf) {
         int n = buf.readVarInt();
         long[] pos = new long[n];
         byte[] val = new byte[n];
@@ -66,7 +65,7 @@ public record OxygenFieldSyncPayload(long[] positions, byte[] values) implements
     }
 
     @Override
-    public CustomPacketPayload.@NonNull Type<? extends @NonNull CustomPacketPayload> type() {
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

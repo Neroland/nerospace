@@ -24,6 +24,6 @@ public final class AlienGearAbilities {
     /** Grav Striders: while carried anywhere in the inventory, alien grav-tech cushions the wearer's fall. */
     public static boolean negatesFall(Entity entity) {
         return entity instanceof Player player
-                && player.getInventory().hasAnyMatching((ItemStack s) -> s.is(ModItems.GRAV_STRIDERS.get()));
+                && player.getInventory().hasAnyMatching((ItemStack s) -> s.is(java.util.Objects.requireNonNull(ModItems.GRAV_STRIDERS.get())));
     }
 }

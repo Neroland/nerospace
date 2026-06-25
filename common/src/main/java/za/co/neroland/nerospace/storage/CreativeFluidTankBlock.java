@@ -29,7 +29,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public class CreativeFluidTankBlock extends AbstractStorageBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<CreativeFluidTankBlock> CODEC = simpleCodec(CreativeFluidTankBlock::new);
+    public static final MapCodec<CreativeFluidTankBlock> CODEC = simpleCodec(CreativeFluidTankBlock::new);
 
     public CreativeFluidTankBlock(Properties properties) {
         super(NerospaceCommon.requireNonNull(properties));

@@ -25,9 +25,9 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class QuarryLandmarkBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<QuarryLandmarkBlock> CODEC = simpleCodec(QuarryLandmarkBlock::new);
+    public static final MapCodec<QuarryLandmarkBlock> CODEC = simpleCodec(QuarryLandmarkBlock::new);
 
-    private static final @org.jspecify.annotations.NonNull VoxelShape SHAPE =
+    private static final VoxelShape SHAPE =
             NerospaceCommon.requireNonNull(Block.box(5.0D, 0.0D, 5.0D, 11.0D, 12.0D, 11.0D));
 
     public QuarryLandmarkBlock(Properties properties) {
@@ -55,7 +55,7 @@ public class QuarryLandmarkBlock extends BaseEntityBlock {
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (!level.isClientSide()) {
             return null;
         }

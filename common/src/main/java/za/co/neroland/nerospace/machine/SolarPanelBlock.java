@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -38,7 +37,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class SolarPanelBlock extends BaseEntityBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<SolarPanelBlock> CODEC = NerospaceCommon.requireNonNull(
+    public static final MapCodec<SolarPanelBlock> CODEC = NerospaceCommon.requireNonNull(
             RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     SolarTier.CODEC.fieldOf("tier").forGetter(SolarPanelBlock::tier),
@@ -47,15 +46,15 @@ public class SolarPanelBlock extends BaseEntityBlock {
                     properties))));
 
     /** True on the unit's min-corner cell — the only cell that drops the item and renders the deck. */
-    public static final @NonNull BooleanProperty ANCHOR = BooleanProperty.create("anchor");
+    public static final BooleanProperty ANCHOR = BooleanProperty.create("anchor");
 
     /** Re-entrancy guard so cascading a multiblock teardown doesn't recurse or double-drop. */
     private static boolean tearingDown = false;
 
-    private final @NonNull SolarTier tier;
+    private final SolarTier tier;
 
     @SuppressWarnings("this-escape") // registerDefaultState is the idiomatic constructor wiring
-    public SolarPanelBlock(@NonNull SolarTier tier, Properties properties) {
+    public SolarPanelBlock(SolarTier tier, Properties properties) {
         super(NerospaceCommon.requireNonNull(properties));
         this.tier = NerospaceCommon.requireNonNull(tier);
         // Default to an anchor so a raw setBlock places a working unit; fillers are set false on placement.
@@ -63,35 +62,35 @@ public class SolarPanelBlock extends BaseEntityBlock {
                 this.stateDefinition.any().setValue(ANCHOR, true)));
     }
 
-    public @NonNull SolarTier tier() {
+    public SolarTier tier() {
         return this.tier;
     }
 
     @Override
-    protected @NonNull MapCodec<SolarPanelBlock> codec() {
+    protected MapCodec<SolarPanelBlock> codec() {
         return CODEC;
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.@NonNull Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(ANCHOR);
     }
 
     @Override
-    protected @NonNull RenderShape getRenderShape(BlockState state) {
+    protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(@NonNull BlockPos pos, @NonNull BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new SolarPanelBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NonNull Level level, BlockState state,
-            @NonNull BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state,
+            BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }
@@ -104,7 +103,7 @@ public class SolarPanelBlock extends BaseEntityBlock {
     @Override
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        @NonNull BlockState anchor = NerospaceCommon.requireNonNull(
+        BlockState anchor = java.util.Objects.requireNonNull(
                 defaultBlockState().setValue(ANCHOR, true));
         int n = this.tier.footprint;
         if (n <= 1) {
@@ -127,14 +126,14 @@ public class SolarPanelBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void onPlace(@NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos,
-            @NonNull BlockState oldState, boolean movedByPiston) {
+    protected void onPlace(BlockState state, Level level, BlockPos pos,
+            BlockState oldState, boolean movedByPiston) {
         super.onPlace(state, level, pos, oldState, movedByPiston);
         if (level.isClientSide() || this.tier.footprint <= 1 || !state.getValue(ANCHOR)) {
             return;
         }
         int n = this.tier.footprint;
-        @NonNull BlockState part = NerospaceCommon.requireNonNull(
+        BlockState part = java.util.Objects.requireNonNull(
                 defaultBlockState().setValue(ANCHOR, false));
         for (int dx = 0; dx < n; dx++) {
             for (int dz = 0; dz < n; dz++) {
@@ -155,8 +154,8 @@ public class SolarPanelBlock extends BaseEntityBlock {
     // --- Multiblock teardown --------------------------------------------------
 
     @Override
-    public BlockState playerWillDestroy(@NonNull Level level, @NonNull BlockPos pos, @NonNull BlockState state,
-            @NonNull Player player) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state,
+            Player player) {
         if (this.tier.footprint > 1 && !level.isClientSide() && !tearingDown) {
             BlockPos anchor = level.getBlockEntity(pos) instanceof SolarPanelBlockEntity be ? be.anchorPos() : pos;
             tearingDown = true;
@@ -172,7 +171,7 @@ public class SolarPanelBlock extends BaseEntityBlock {
                 }
                 // One item back for the whole unit (the broken cell's own loot is empty for multiblocks).
                 if (!player.getAbilities().instabuild) {
-                    Block.popResource(level, NerospaceCommon.requireNonNull(anchor), new ItemStack(this));
+                    Block.popResource(level, java.util.Objects.requireNonNull(anchor), new ItemStack(this));
                 }
             } finally {
                 tearingDown = false;
@@ -187,7 +186,7 @@ public class SolarPanelBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, @NonNull Level level, @NonNull BlockPos pos,
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos,
             Direction direction) {
         return level.getBlockEntity(pos) instanceof SolarPanelBlockEntity panel ? panel.comparatorSignal() : 0;
     }

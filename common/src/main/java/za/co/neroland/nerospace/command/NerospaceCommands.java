@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.phys.AABB;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.meteor.FallingMeteorEntity;
@@ -78,22 +77,22 @@ public final class NerospaceCommands {
      * Cross-loader registration: each loader calls this from its command hook (NeoForge
      * {@code RegisterCommandsEvent}, Fabric {@code CommandRegistrationCallback}) with the dispatcher.
      */
-    public static void register(com.mojang.brigadier.@NonNull CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void register(com.mojang.brigadier.CommandDispatcher<CommandSourceStack> dispatcher) {
         // Player-only; the executor further restricts to creative. (Commands themselves require the
         // world to have cheats/commands enabled, so this is effectively creative + commands gated.)
         dispatcher.register(
                 Commands.literal("nerospace")
                         .requires(src -> src.getPlayer() != null)
                         .then(Commands.literal("gallery")
-                                .executes(ctx -> runSafely(NerospaceCommon.requireNonNull(ctx.getSource()), "gallery",
+                                .executes(ctx -> runSafely(java.util.Objects.requireNonNull(ctx.getSource()), "gallery",
                                         () -> buildGallery(ctx.getSource())))
                                 .then(Commands.literal("clear")
-                                        .executes(ctx -> runSafely(NerospaceCommon.requireNonNull(ctx.getSource()), "gallery clear",
+                                        .executes(ctx -> runSafely(java.util.Objects.requireNonNull(ctx.getSource()), "gallery clear",
                                                 () -> clearGallery(ctx.getSource()))))));
     }
 
-    private static int runSafely(@NonNull CommandSourceStack source, @NonNull String commandName,
-            @NonNull CommandBody body) {
+    private static int runSafely(CommandSourceStack source, String commandName,
+            CommandBody body) {
         try {
             return body.run();
         } catch (RuntimeException ex) {
@@ -126,12 +125,12 @@ public final class NerospaceCommands {
         // registry filtered to this mod's namespace (same effect as the root's BLOCKS.getEntries()).
         List<Block> blocks = new ArrayList<>();
         for (Block block : BuiltInRegistries.BLOCK) {
-            Block checkedBlock = NerospaceCommon.requireNonNull(block);
+            Block checkedBlock = java.util.Objects.requireNonNull(block);
             Identifier bid = BuiltInRegistries.BLOCK.getKey(checkedBlock);
             if (!NerospaceCommon.MOD_ID.equals(bid.getNamespace())) {
                 continue;
             }
-            if (checkedBlock != ModBlocks.ROCKET_FUEL_BLOCK.get()) { // skip the fluid block (renders oddly free-standing)
+            if (checkedBlock != java.util.Objects.requireNonNull(ModBlocks.ROCKET_FUEL_BLOCK.get())) { // skip the fluid block (renders oddly free-standing)
                 blocks.add(checkedBlock);
             }
         }
@@ -146,8 +145,8 @@ public final class NerospaceCommands {
         int oz = origin.getZ() - 9;
         int fy = origin.getY();
 
-        @NonNull BlockState floor = NerospaceCommon.requireNonNull(
-                ModBlocks.STATION_FLOOR.get().defaultBlockState());
+        BlockState floor = java.util.Objects.requireNonNull(
+                java.util.Objects.requireNonNull(ModBlocks.STATION_FLOOR.get()).defaultBlockState());
 
         // Floor slab under the whole grid (with a 1-block margin).
         for (int gx = -1; gx <= cols * SPACING; gx++) {
@@ -177,29 +176,29 @@ public final class NerospaceCommands {
                 level.setBlockAndUpdate(new BlockPos(sx + dx, fy, sz + dz), floor);
             }
         }
-        @NonNull BlockState lever = NerospaceCommon.requireNonNull(Blocks.LEVER.defaultBlockState()
+        BlockState lever = java.util.Objects.requireNonNull(Blocks.LEVER.defaultBlockState()
                 .setValue(LeverBlock.FACE, AttachFace.FLOOR)
                 .setValue(LeverBlock.FACING, Direction.EAST));
 
         // A: the classic first power line.
-        level.setBlockAndUpdate(new BlockPos(sx, fy + 1, sz), ModBlocks.COMBUSTION_GENERATOR.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(sx + 1, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(sx + 2, fy + 1, sz), ModBlocks.NEROSIUM_GRINDER.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(sx + 1, fy + 1, sz + 1), ModBlocks.PASSIVE_GENERATOR.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(sx, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.COMBUSTION_GENERATOR.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(sx + 1, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(sx + 2, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.NEROSIUM_GRINDER.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(sx + 1, fy + 1, sz + 1), java.util.Objects.requireNonNull(ModBlocks.PASSIVE_GENERATOR.get()).defaultBlockState());
         if (level.getBlockEntity(new BlockPos(sx, fy + 1, sz)) instanceof CombustionGeneratorBlockEntity gen) {
             gen.setItem(CombustionGeneratorBlockEntity.FUEL_SLOT, new ItemStack(Items.COAL, 64));
         }
         if (level.getBlockEntity(new BlockPos(sx + 2, fy + 1, sz)) instanceof NerosiumGrinderBlockEntity grinder) {
-            grinder.setItem(NerosiumGrinderBlockEntity.INPUT_SLOT, new ItemStack(ModItems.RAW_NEROSIUM.get(), 64));
+            grinder.setItem(NerosiumGrinderBlockEntity.INPUT_SLOT, new ItemStack(java.util.Objects.requireNonNull(ModItems.RAW_NEROSIUM.get()), 64));
         }
 
         // B: refining line — power in from the endless battery, fuel out into a Fuel Tank.
         int bx = sx + 6;
-        level.setBlockAndUpdate(new BlockPos(bx, fy + 1, sz), ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(bx + 1, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(bx + 2, fy + 1, sz), ModBlocks.FUEL_REFINERY.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(bx + 3, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(bx + 4, fy + 1, sz), ModBlocks.FUEL_TANK.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(bx, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.CREATIVE_BATTERY.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(bx + 1, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(bx + 2, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.FUEL_REFINERY.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(bx + 3, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(bx + 4, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.FUEL_TANK.get()).defaultBlockState());
         setAllModes(level, new BlockPos(bx + 1, fy + 1, sz), Direction.WEST, PipeIoMode.IN);
         setAllModes(level, new BlockPos(bx + 1, fy + 1, sz), Direction.EAST, PipeIoMode.OUT);
         setAllModes(level, new BlockPos(bx + 3, fy + 1, sz), Direction.WEST, PipeIoMode.IN);
@@ -211,25 +210,25 @@ public final class NerospaceCommands {
 
         // C: oxygen generator behind its lever (off until flipped — then the bubble forms).
         int cx = sx + 13;
-        level.setBlockAndUpdate(new BlockPos(cx, fy + 1, sz), ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(cx + 1, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(cx + 2, fy + 1, sz), ModBlocks.OXYGEN_GENERATOR.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(cx, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.CREATIVE_BATTERY.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(cx + 1, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(cx + 2, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.OXYGEN_GENERATOR.get()).defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(cx + 3, fy + 1, sz), lever);
         setAllModes(level, new BlockPos(cx + 1, fy + 1, sz), Direction.WEST, PipeIoMode.IN);
         setAllModes(level, new BlockPos(cx + 1, fy + 1, sz), Direction.EAST, PipeIoMode.OUT);
 
         // D: terraformer cluster behind its lever, with the full deeper-terraform support crew.
         int tx = sx + 19;
-        level.setBlockAndUpdate(new BlockPos(tx, fy + 1, sz), ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(tx + 1, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(tx + 2, fy + 1, sz), ModBlocks.TERRAFORMER.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(tx + 2, fy + 1, sz + 1), ModBlocks.HYDRATION_MODULE.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(tx + 2, fy + 1, sz - 1), ModBlocks.TERRAFORM_MONITOR.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(tx, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.CREATIVE_BATTERY.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(tx + 1, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(tx + 2, fy + 1, sz), java.util.Objects.requireNonNull(ModBlocks.TERRAFORMER.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(tx + 2, fy + 1, sz + 1), java.util.Objects.requireNonNull(ModBlocks.HYDRATION_MODULE.get()).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(tx + 2, fy + 1, sz - 1), java.util.Objects.requireNonNull(ModBlocks.TERRAFORM_MONITOR.get()).defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(tx + 3, fy + 1, sz), lever);
         setAllModes(level, new BlockPos(tx + 1, fy + 1, sz), Direction.WEST, PipeIoMode.IN);
         setAllModes(level, new BlockPos(tx + 1, fy + 1, sz), Direction.EAST, PipeIoMode.OUT);
         if (level.getBlockEntity(new BlockPos(tx + 2, fy + 1, sz + 1)) instanceof HydrationModuleBlockEntity module) {
-            module.setItem(HydrationModuleBlockEntity.INPUT_SLOT, new ItemStack(ModItems.GLACITE.get(), 64));
+            module.setItem(HydrationModuleBlockEntity.INPUT_SLOT, new ItemStack(java.util.Objects.requireNonNull(ModItems.GLACITE.get()), 64));
         }
 
         // FOUR LIVE PIPE SCENARIOS: creative source → 3 pipes → sink, one row per resource layer.
@@ -238,10 +237,10 @@ public final class NerospaceCommands {
         int px = origin.getX() - 50; // pipe scenarios → WEST (rows run north-south → broadside from the centre)
         int pz = origin.getZ() + 5;
         Block[][] scenarioRows = {
-                {ModBlocks.CREATIVE_BATTERY.get(), ModBlocks.BATTERY.get()},
-                {ModBlocks.CREATIVE_FLUID_TANK.get(), ModBlocks.FLUID_TANK.get()},
-                {ModBlocks.CREATIVE_GAS_TANK.get(), ModBlocks.GAS_TANK.get()},
-                {ModBlocks.CREATIVE_ITEM_STORE.get(), ModBlocks.ITEM_STORE.get()},
+                {java.util.Objects.requireNonNull(ModBlocks.CREATIVE_BATTERY.get()), java.util.Objects.requireNonNull(ModBlocks.BATTERY.get())},
+                {java.util.Objects.requireNonNull(ModBlocks.CREATIVE_FLUID_TANK.get()), java.util.Objects.requireNonNull(ModBlocks.FLUID_TANK.get())},
+                {java.util.Objects.requireNonNull(ModBlocks.CREATIVE_GAS_TANK.get()), java.util.Objects.requireNonNull(ModBlocks.GAS_TANK.get())},
+                {java.util.Objects.requireNonNull(ModBlocks.CREATIVE_ITEM_STORE.get()), java.util.Objects.requireNonNull(ModBlocks.ITEM_STORE.get())},
         };
         for (int row = 0; row < scenarioRows.length; row++) {
             int rz = pz - row * 3;
@@ -253,7 +252,7 @@ public final class NerospaceCommands {
             level.setBlockAndUpdate(new BlockPos(px, fy + 1, rz), scenarioRows[row][0].defaultBlockState());
             for (int dx = 1; dx <= 3; dx++) {
                 level.setBlockAndUpdate(new BlockPos(px + dx, fy + 1, rz),
-                        ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+                        java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()).defaultBlockState());
             }
             level.setBlockAndUpdate(new BlockPos(px + 4, fy + 1, rz), scenarioRows[row][1].defaultBlockState());
             setAllModes(level, new BlockPos(px + 1, fy + 1, rz), Direction.WEST, PipeIoMode.IN);
@@ -262,7 +261,7 @@ public final class NerospaceCommands {
         // Pre-configure the endless sources so the rows run on arrival.
         // (The multiloader Creative Fluid Tank is a fixed endless rocket_fuel source — it has no setSource.)
         if (level.getBlockEntity(new BlockPos(px, fy + 1, pz - 9)) instanceof CreativeItemStoreBlockEntity store) {
-            store.setSource(new ItemStack(ModItems.NEROSIUM_INGOT.get()));
+            store.setSource(new ItemStack(java.util.Objects.requireNonNull(ModItems.NEROSIUM_INGOT.get())));
         }
 
         // Suit displays (every variant) + a LOADED Star Guide pedestal (book installed → hologram runs).
@@ -279,22 +278,22 @@ public final class NerospaceCommands {
             }
         }
         spawnSuitStand(level, new BlockPos(ax + suit0, fy + 1, az), Component.literal("Oxygen Suit"), SUIT_YAW,
-                ModItems.OXYGEN_SUIT_HELMET.get(), ModItems.OXYGEN_SUIT_CHESTPLATE.get(),
-                ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_BOOTS.get());
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HELMET.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_CHESTPLATE.get()),
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_LEGGINGS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_BOOTS.get()));
         spawnSuitStand(level, new BlockPos(ax + suit1, fy + 1, az), Component.literal("Tier 2 Oxygen Suit"), SUIT_YAW,
-                ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
-                ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get());
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_HELMET.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get()),
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_BOOTS.get()));
         spawnSuitStand(level, new BlockPos(ax + suit2, fy + 1, az), Component.literal("Thermal Suit"), SUIT_YAW,
-                ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(),
-                ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_HEAT_BOOTS.get());
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_HELMET.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get()),
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get()));
         spawnSuitStand(level, new BlockPos(ax + suit3, fy + 1, az), Component.literal("Cryo Suit"), SUIT_YAW,
-                ModItems.OXYGEN_SUIT_COLD_HELMET.get(), ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get(),
-                ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get(), ModItems.OXYGEN_SUIT_COLD_BOOTS.get());
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_HELMET.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get()),
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_BOOTS.get()));
         BlockPos guidePos = new BlockPos(ax + guideX, fy + 1, az);
-        level.setBlockAndUpdate(guidePos, ModBlocks.STAR_GUIDE.get().defaultBlockState());
+        level.setBlockAndUpdate(guidePos, java.util.Objects.requireNonNull(ModBlocks.STAR_GUIDE.get()).defaultBlockState());
         if (level.getBlockEntity(guidePos)
                 instanceof za.co.neroland.nerospace.progression.StarGuideBlockEntity guide) {
-            guide.installBook(new ItemStack(ModItems.STAR_GUIDE_BOOK.get()));
+            guide.installBook(new ItemStack(java.util.Objects.requireNonNull(ModItems.STAR_GUIDE_BOOK.get())));
         }
 
         // ROCKET ROW: every tier on the pad formation it actually requires (RocketItem gating):
@@ -307,19 +306,19 @@ public final class NerospaceCommands {
                 level.setBlockAndUpdate(new BlockPos(rx + dx, fy, rz0 + dz), floor);
             }
         }
-        @NonNull BlockState pad = NerospaceCommon.requireNonNull(
-                ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState());
+        BlockState pad = java.util.Objects.requireNonNull(
+                java.util.Objects.requireNonNull(ModBlocks.ROCKET_LAUNCH_PAD.get()).defaultBlockState());
         // T1 (3x3 + the classic pad-side Fuel Tank).
         fillPad(level, new BlockPos(rx, fy + 1, rz0), 3, pad);
-        level.setBlockAndUpdate(new BlockPos(rx + 3, fy + 1, rz0 + 1), ModBlocks.FUEL_TANK.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(rx + 3, fy + 1, rz0 + 1), java.util.Objects.requireNonNull(ModBlocks.FUEL_TANK.get()).defaultBlockState());
         spawnRocket(level, rx + 1, fy + 1, rz0 + 1, RocketTier.TIER_1);
         // T2 (3x3).
         fillPad(level, new BlockPos(rx + 8, fy + 1, rz0), 3, pad);
         spawnRocket(level, rx + 9, fy + 1, rz0 + 1, RocketTier.TIER_2);
         // T3 (3x3 ringed with Station Wall).
         fillPad(level, new BlockPos(rx + 16, fy + 1, rz0), 3, pad);
-        @NonNull BlockState wall = NerospaceCommon.requireNonNull(
-                ModBlocks.STATION_WALL.get().defaultBlockState());
+        BlockState wall = java.util.Objects.requireNonNull(
+                java.util.Objects.requireNonNull(ModBlocks.STATION_WALL.get()).defaultBlockState());
         for (int dx = -1; dx <= 3; dx++) {
             for (int dz = -1; dz <= 3; dz++) {
                 if (dx == -1 || dx == 3 || dz == -1 || dz == 3) {
@@ -331,9 +330,9 @@ public final class NerospaceCommands {
         // T4 (Heavy Launch Complex: 5x5 + gantry + fuel tank).
         fillPad(level, new BlockPos(rx + 24, fy + 1, rz0 - 1), 5, pad);
         level.setBlockAndUpdate(new BlockPos(rx + 23, fy + 1, rz0 + 1),
-                ModBlocks.LAUNCH_GANTRY.get().defaultBlockState());
+                java.util.Objects.requireNonNull(ModBlocks.LAUNCH_GANTRY.get()).defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(rx + 29, fy + 1, rz0 + 1),
-                ModBlocks.FUEL_TANK.get().defaultBlockState());
+                java.util.Objects.requireNonNull(ModBlocks.FUEL_TANK.get()).defaultBlockState());
         spawnRocket(level, rx + 26, fy + 1, rz0 + 1, RocketTier.TIER_4);
 
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
@@ -345,15 +344,15 @@ public final class NerospaceCommands {
             }
         }
         List<EntityType<? extends Mob>> creatures = List.of(
-                ModEntities.XERTZ_STALKER.get(), ModEntities.QUARTZ_CRAWLER.get(),
-                ModEntities.GREENLING.get(), ModEntities.CINDER_STALKER.get(),
-                ModEntities.FROST_STRIDER.get(), ModEntities.ALIEN_VILLAGER.get(),
+                java.util.Objects.requireNonNull(ModEntities.XERTZ_STALKER.get()), java.util.Objects.requireNonNull(ModEntities.QUARTZ_CRAWLER.get()),
+                java.util.Objects.requireNonNull(ModEntities.GREENLING.get()), java.util.Objects.requireNonNull(ModEntities.CINDER_STALKER.get()),
+                java.util.Objects.requireNonNull(ModEntities.FROST_STRIDER.get()), java.util.Objects.requireNonNull(ModEntities.ALIEN_VILLAGER.get()),
                 // Terraform livestock (DEEPER_TERRAFORM_DESIGN.md §5).
-                ModEntities.MEADOW_LOPER.get(), ModEntities.EMBER_STRUTTER.get(),
-                ModEntities.WOOLLY_DRIFT.get());
+                java.util.Objects.requireNonNull(ModEntities.MEADOW_LOPER.get()), java.util.Objects.requireNonNull(ModEntities.EMBER_STRUTTER.get()),
+                java.util.Objects.requireNonNull(ModEntities.WOOLLY_DRIFT.get()));
         // One frozen (NoAI) row only — AI mobs wander, which breaks reproducible screenshots.
         for (int i = 0; i < creatures.size(); i++) {
-            spawnShowcase(level, NerospaceCommon.requireNonNull(creatures.get(i)),
+            spawnShowcase(level, java.util.Objects.requireNonNull(creatures.get(i)),
                     new BlockPos(mx + i * 4, fy + 1, mz + 1), true);
         }
 
@@ -364,8 +363,8 @@ public final class NerospaceCommands {
         // QUARRY (MINER_DESIGN): two NE displays.
         //  1. Landmark-only — three landmarks in an L (shows the projected marker lasers).
         //  2. Fully operating — a powered quarry mid-dig: frame ring, drill head, a real pit forming.
-        @NonNull BlockState landmark = NerospaceCommon.requireNonNull(
-                ModBlocks.QUARRY_LANDMARK.get().defaultBlockState());
+        BlockState landmark = java.util.Objects.requireNonNull(
+                java.util.Objects.requireNonNull(ModBlocks.QUARRY_LANDMARK.get()).defaultBlockState());
         int lx = origin.getX() + 28; // landmark-only display (NE, nearer the centre)
         int lz = origin.getZ() - 40;
         for (int dx = -1; dx <= 7; dx++) {
@@ -473,7 +472,7 @@ public final class NerospaceCommands {
      * connector (the panel grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX,
      * baseZ)}, extending east (+X) and south (+Z); panels sit on the floor with the tracking deck above.
      */
-    private static void buildSolarArrays(@NonNull ServerLevel level, @NonNull BlockState floor,
+    private static void buildSolarArrays(ServerLevel level, BlockState floor,
             int baseX, int baseZ, int fy) {
         int sy = fy + 1;
         for (int dx = -2; dx <= 20; dx++) {
@@ -483,16 +482,16 @@ public final class NerospaceCommands {
         }
 
         // Front row: one of each tier (multiblock anchors auto-fill their N×N footprint via onPlace).
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX, sy, baseZ);
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 2, sy, baseZ); // fills +2..3
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 5, sy, baseZ); // fills +5..7
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL.get()), baseX, sy, baseZ);
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T2.get()), baseX + 2, sy, baseZ); // fills +2..3
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T3.get()), baseX + 5, sy, baseZ); // fills +5..7
 
         // Cable hookup: T3 panel -> Universal Pipe -> Battery (solar output charges the battery).
         level.setBlockAndUpdate(new BlockPos(baseX + 10, sy, baseZ),
-                ModBlocks.BATTERY.get().defaultBlockState());
+                java.util.Objects.requireNonNull(ModBlocks.BATTERY.get()).defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(baseX + 11, sy, baseZ),
-                ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 12, sy, baseZ);
+                java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()).defaultBlockState());
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T3.get()), baseX + 12, sy, baseZ);
         setAllModes(level, new BlockPos(baseX + 11, sy, baseZ), Direction.EAST, PipeIoMode.IN);
         setAllModes(level, new BlockPos(baseX + 11, sy, baseZ), Direction.WEST, PipeIoMode.OUT);
 
@@ -500,21 +499,21 @@ public final class NerospaceCommands {
         // T1: a 3x3 field of nine single panels → one continuous tracking surface.
         for (int dx = 0; dx <= 2; dx++) {
             for (int dz = 4; dz <= 6; dz++) {
-                placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + dx, sy, baseZ + dz);
+                placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL.get()), baseX + dx, sy, baseZ + dz);
             }
         }
         // T2: four 2x2 units → a 4x4 field.
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 5, sy, baseZ + 4);
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 7, sy, baseZ + 4);
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 5, sy, baseZ + 6);
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 7, sy, baseZ + 6);
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T2.get()), baseX + 5, sy, baseZ + 4);
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T2.get()), baseX + 7, sy, baseZ + 4);
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T2.get()), baseX + 5, sy, baseZ + 6);
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T2.get()), baseX + 7, sy, baseZ + 6);
         // T3: two 3x3 units → a 6x3 field.
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 11, sy, baseZ + 4); // fills +11..13
-        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 14, sy, baseZ + 4); // fills +14..16
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T3.get()), baseX + 11, sy, baseZ + 4); // fills +11..13
+        placeSolar(level, java.util.Objects.requireNonNull(ModBlocks.SOLAR_PANEL_T3.get()), baseX + 14, sy, baseZ + 4); // fills +14..16
     }
 
     /** Place a solar panel anchor; multiblock tiers auto-expand their footprint in {@code onPlace}. */
-    private static void placeSolar(@NonNull ServerLevel level, @NonNull Block block, int x, int y, int z) {
+    private static void placeSolar(ServerLevel level, Block block, int x, int y, int z) {
         level.setBlockAndUpdate(new BlockPos(x, y, z), block.defaultBlockState());
     }
 
@@ -522,8 +521,8 @@ public final class NerospaceCommands {
      * Build one powered gallery quarry claim: landmarks form a {@code (side+1) x (side+1)} region,
      * with the controller one block outside the west frame edge and enough casings to build the ring.
      */
-    private static void buildGalleryQuarry(@NonNull ServerLevel level, @NonNull BlockState floor, int qx, int qz,
-            int fy, int side, @NonNull Component label) {
+    private static void buildGalleryQuarry(ServerLevel level, BlockState floor, int qx, int qz,
+            int fy, int side, Component label) {
         int refY = fy + 1;
         int mid = side / 2;
         for (int dx = -5; dx <= side + 1; dx++) {   // ground: power pad (west) + under the region
@@ -531,22 +530,22 @@ public final class NerospaceCommands {
                 level.setBlockAndUpdate(new BlockPos(qx + dx, fy, qz + dz), floor);
             }
         }
-        BlockState landmark = ModBlocks.QUARRY_LANDMARK.get().defaultBlockState();
+        BlockState landmark = java.util.Objects.requireNonNull(ModBlocks.QUARRY_LANDMARK.get()).defaultBlockState();
         level.setBlockAndUpdate(new BlockPos(qx, refY, qz), landmark);
         level.setBlockAndUpdate(new BlockPos(qx + side, refY, qz), landmark);
         level.setBlockAndUpdate(new BlockPos(qx, refY, qz + side), landmark);
 
         BlockPos quarryPos = new BlockPos(qx - 1, refY, qz + mid);
         level.setBlockAndUpdate(new BlockPos(qx - 3, refY, qz + mid),
-                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+                java.util.Objects.requireNonNull(ModBlocks.CREATIVE_BATTERY.get()).defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(qx - 2, refY, qz + mid),
-                ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        level.setBlockAndUpdate(quarryPos, ModBlocks.QUARRY_CONTROLLER.get().defaultBlockState());
+                java.util.Objects.requireNonNull(ModBlocks.UNIVERSAL_PIPE.get()).defaultBlockState());
+        level.setBlockAndUpdate(quarryPos, java.util.Objects.requireNonNull(ModBlocks.QUARRY_CONTROLLER.get()).defaultBlockState());
         setAllModes(level, new BlockPos(qx - 2, refY, qz + mid), Direction.WEST, PipeIoMode.IN);
         setAllModes(level, new BlockPos(qx - 2, refY, qz + mid), Direction.EAST, PipeIoMode.OUT);
         if (level.getBlockEntity(quarryPos) instanceof QuarryControllerBlockEntity quarry) {
             for (int i = 0; i < QuarryControllerBlockEntity.FRAME_SLOTS; i++) {
-                quarry.setItem(i, new ItemStack(ModItems.FRAME_CASING.get(), 64));
+                quarry.setItem(i, new ItemStack(java.util.Objects.requireNonNull(ModItems.FRAME_CASING.get()), 64));
             }
         }
         spawnLabelStand(level, new BlockPos(qx + mid, fy + 1, qz - 1), label);
@@ -557,13 +556,13 @@ public final class NerospaceCommands {
      * raised rim, a loot-pre-rolled {@code meteor_core} nestled in the centre, and a frozen
      * {@link FallingMeteorEntity} hovering above (spins + trails, but never falls — gallery only).
      */
-    private static void buildMeteorSite(@NonNull ServerLevel level, @NonNull BlockState floor, int cx, int cz, int fy) {
+    private static void buildMeteorSite(ServerLevel level, BlockState floor, int cx, int cz, int fy) {
         for (int dx = -3; dx <= 3; dx++) {
             for (int dz = -3; dz <= 3; dz++) {
                 level.setBlockAndUpdate(new BlockPos(cx + dx, fy, cz + dz), floor);
             }
         }
-        @NonNull BlockState rock = NerospaceCommon.requireNonNull(ModBlocks.METEOR_ROCK.get().defaultBlockState());
+        BlockState rock = java.util.Objects.requireNonNull(ModBlocks.METEOR_ROCK.get().defaultBlockState());
         for (int dx = -2; dx <= 2; dx++) {
             for (int dz = -2; dz <= 2; dz++) {
                 level.setBlockAndUpdate(new BlockPos(cx + dx, fy + 1, cz + dz), rock); // crater floor
@@ -573,7 +572,7 @@ public final class NerospaceCommands {
             }
         }
         BlockPos corePos = new BlockPos(cx, fy + 2, cz);
-        level.setBlockAndUpdate(corePos, ModBlocks.METEOR_CORE.get().defaultBlockState());
+        level.setBlockAndUpdate(corePos, java.util.Objects.requireNonNull(ModBlocks.METEOR_CORE.get()).defaultBlockState());
         if (level.getBlockEntity(corePos) instanceof MeteorCoreBlockEntity core) {
             core.generateLoot(level.getRandom().nextLong());
         }
@@ -581,8 +580,8 @@ public final class NerospaceCommands {
     }
 
     /** A full {@code size x size} square of launch pads with min-corner {@code corner}. */
-    private static void fillPad(@NonNull ServerLevel level, @NonNull BlockPos corner, int size,
-            @NonNull BlockState pad) {
+    private static void fillPad(ServerLevel level, BlockPos corner, int size,
+            BlockState pad) {
         for (int dx = 0; dx < size; dx++) {
             for (int dz = 0; dz < size; dz++) {
                 level.setBlockAndUpdate(corner.offset(dx, 0, dz), pad);
@@ -591,14 +590,14 @@ public final class NerospaceCommands {
     }
 
     /** A rocket standing on the pad surface of the pad block at {@code (x, y, z)}. */
-    private static void spawnRocket(@NonNull ServerLevel level, int x, int y, int z, @NonNull RocketTier tier) {
+    private static void spawnRocket(ServerLevel level, int x, int y, int z, RocketTier tier) {
         level.addFreshEntity(new RocketEntity(level,
                 x + 0.5D, y + RocketLaunchPadBlock.SURFACE_HEIGHT, z + 0.5D, tier));
     }
 
     /** An invulnerable, named armor stand wearing the given four-piece suit. */
-    private static void spawnSuitStand(@NonNull ServerLevel level, @NonNull BlockPos pos, @NonNull Component name,
-            float yaw, @NonNull Item helmet, @NonNull Item chestplate, @NonNull Item leggings, @NonNull Item boots) {
+    private static void spawnSuitStand(ServerLevel level, BlockPos pos, Component name,
+            float yaw, Item helmet, Item chestplate, Item leggings, Item boots) {
         // Build the stand via its constructor (the de-obf EntityType.ARMOR_STAND constant isn't on the
         // 26.2 classpath) and add it to the world directly.
         ArmorStand stand = new ArmorStand(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
@@ -616,7 +615,7 @@ public final class NerospaceCommands {
     }
 
     /** Small floating label for gallery display clusters. */
-    private static void spawnLabelStand(@NonNull ServerLevel level, @NonNull BlockPos pos, @NonNull Component name) {
+    private static void spawnLabelStand(ServerLevel level, BlockPos pos, Component name) {
         ArmorStand stand = new ArmorStand(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         stand.setCustomName(name);
         stand.setCustomNameVisible(true);
@@ -627,17 +626,17 @@ public final class NerospaceCommands {
     }
 
     /** Set one face of the pipe at {@code pos} to {@code mode} for ALL four resource layers. */
-    private static void setAllModes(@NonNull ServerLevel level, @NonNull BlockPos pos, @NonNull Direction face,
-            @NonNull PipeIoMode mode) {
+    private static void setAllModes(ServerLevel level, BlockPos pos, Direction face,
+            PipeIoMode mode) {
         if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
             for (PipeResourceType type : PipeResourceType.VALUES) {
-                pipe.setMode(face, NerospaceCommon.requireNonNull(type), mode);
+                pipe.setMode(face, java.util.Objects.requireNonNull(type), mode);
             }
         }
     }
 
-    private static void spawnShowcase(@NonNull ServerLevel level, @NonNull EntityType<? extends Mob> type,
-            @NonNull BlockPos pos, boolean noAi) {
+    private static void spawnShowcase(ServerLevel level, EntityType<? extends Mob> type,
+            BlockPos pos, boolean noAi) {
         Mob mob = type.spawn(level, pos, EntitySpawnReason.COMMAND);
         if (mob != null) {
             mob.setNoAi(noAi);

@@ -17,7 +17,6 @@ import za.co.neroland.nerospace.forge.ForgePlayerDataCapability;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /** Forge implementation of {@link IPlatformHelper}. */
-@SuppressWarnings("null")
 public final class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
@@ -42,14 +41,14 @@ public final class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public Path getConfigDir() {
-        return FMLPaths.CONFIGDIR.get();
+        return NerospaceCommon.requireNonNull(FMLPaths.CONFIGDIR.get());
     }
 
     @Override
     public String getModVersion() {
-        return ModList.getModContainerById(NerospaceCommon.MOD_ID)
+        return NerospaceCommon.requireNonNull(ModList.getModContainerById(NerospaceCommon.MOD_ID)
                 .map(c -> c.getModInfo().getVersion().toString())
-                .orElse("unknown");
+                .orElse("unknown"));
     }
 
     @Override
@@ -66,33 +65,33 @@ public final class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public boolean isTerraformed(LevelChunk chunk) {
-        return chunk.getCapability(ForgeAttachments.CHUNK_DATA, null)
+        return chunk.getCapability(ForgeAttachments.CHUNK_DATA)
                 .map(ForgeChunkDataCapability::isTerraformed)
                 .orElse(Boolean.FALSE);
     }
 
     @Override
     public void setTerraformed(LevelChunk chunk, boolean value) {
-        chunk.getCapability(ForgeAttachments.CHUNK_DATA, null).ifPresent(data -> data.setTerraformed(value));
+        chunk.getCapability(ForgeAttachments.CHUNK_DATA).ifPresent(data -> data.setTerraformed(value));
     }
 
     @Override
     public int getTerraformStage(LevelChunk chunk) {
-        return chunk.getCapability(ForgeAttachments.CHUNK_DATA, null)
+        return chunk.getCapability(ForgeAttachments.CHUNK_DATA)
                 .map(ForgeChunkDataCapability::getTerraformStage)
                 .orElse(0);
     }
 
     @Override
     public void setTerraformStage(LevelChunk chunk, int value) {
-        chunk.getCapability(ForgeAttachments.CHUNK_DATA, null).ifPresent(data -> data.setTerraformStage(value));
+        chunk.getCapability(ForgeAttachments.CHUNK_DATA).ifPresent(data -> data.setTerraformStage(value));
     }
 
     @Override
     public List<Integer> getStarGuideSeen(Player player) {
-        return player.getCapability(ForgeAttachments.PLAYER_DATA)
+        return NerospaceCommon.requireNonNull(player.getCapability(ForgeAttachments.PLAYER_DATA)
                 .map(ForgePlayerDataCapability::getStarGuideSeen)
-                .orElse(List.of());
+                .orElse(List.of()));
     }
 
     @Override

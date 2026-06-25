@@ -210,7 +210,7 @@ public class FallingMeteorEntity extends Entity {
     }
 
     /** Bedrock and other unbreakable blocks (destroy speed &lt; 0) are left untouched. */
-    private static boolean isProtected(ServerLevel level, @org.jspecify.annotations.NonNull BlockPos pos) {
+    private static boolean isProtected(ServerLevel level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         return state.is(Blocks.BEDROCK) || state.getDestroySpeed(level, pos) < 0.0F;
     }

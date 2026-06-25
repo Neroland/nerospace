@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 /** Creative Gas Tank block — holds a {@link CreativeGasTankBlockEntity}. */
 public class CreativeGasTankBlock extends AbstractStorageBlock {
 
-    public static final @org.jspecify.annotations.NonNull MapCodec<CreativeGasTankBlock> CODEC = simpleCodec(CreativeGasTankBlock::new);
+    public static final MapCodec<CreativeGasTankBlock> CODEC = simpleCodec(CreativeGasTankBlock::new);
 
     public CreativeGasTankBlock(Properties properties) {
         super(properties);

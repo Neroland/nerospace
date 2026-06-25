@@ -17,9 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-import org.jspecify.annotations.NonNull;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
@@ -145,7 +143,7 @@ public final class OxygenManager {
      * player is within {@link #SAFE_RADIUS} of a Rocket Launch Pad — a permanent pressurised safe zone at
      * the landing site (the pad is not a field source, so it stays a simple radius check).
      */
-    private static boolean isBreathable(ServerLevel level, @NonNull BlockPos center) {
+    private static boolean isBreathable(ServerLevel level, BlockPos center) {
         // Terraformed ground is permanently breathable (the Terraformer flags the chunk).
         if (Services.PLATFORM.isTerraformed(level.getChunkAt(center))) {
             return true;
@@ -156,8 +154,8 @@ public final class OxygenManager {
         for (BlockPos pos : BlockPos.betweenClosed(
                 center.offset(-SAFE_RADIUS, -SAFE_RADIUS, -SAFE_RADIUS),
                 center.offset(SAFE_RADIUS, SAFE_RADIUS, SAFE_RADIUS))) {
-            BlockPos checkPos = NerospaceCommon.requireNonNull(pos);
-            if (level.getBlockState(checkPos).is(ModBlocks.ROCKET_LAUNCH_PAD.get())) {
+            BlockPos checkPos = java.util.Objects.requireNonNull(pos);
+            if (level.getBlockState(checkPos).is(java.util.Objects.requireNonNull(ModBlocks.ROCKET_LAUNCH_PAD.get()))) {
                 return true;
             }
         }
@@ -185,11 +183,11 @@ public final class OxygenManager {
             if (want <= 0) {
                 break;
             }
-            BlockPos checkPos = NerospaceCommon.requireNonNull(pos);
+            BlockPos checkPos = java.util.Objects.requireNonNull(pos);
             BlockState state = level.getBlockState(checkPos);
-            if (!state.is(ModBlocks.GAS_TANK.get())
-                    && !state.is(ModBlocks.CREATIVE_GAS_TANK.get())
-                    && !state.is(ModBlocks.OXYGEN_GENERATOR.get())) {
+            if (!state.is(java.util.Objects.requireNonNull(ModBlocks.GAS_TANK.get()))
+                    && !state.is(java.util.Objects.requireNonNull(ModBlocks.CREATIVE_GAS_TANK.get()))
+                    && !state.is(java.util.Objects.requireNonNull(ModBlocks.OXYGEN_GENERATOR.get()))) {
                 continue;
             }
             NerospaceGasStorage store = GasLookup.INSTANCE.find(level, checkPos.immutable(), null);
@@ -226,17 +224,17 @@ public final class OxygenManager {
     /** Whether the player wears a full set of Oxygen Suit pieces (any tier / hazard variant counts). */
     private static boolean isFullSuit(Player player) {
         return isSuitPiece(player.getItemBySlot(EquipmentSlot.HEAD),
-                        ModItems.OXYGEN_SUIT_HELMET.get(), ModItems.OXYGEN_SUIT_T2_HELMET.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_COLD_HELMET.get())
+                        java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HELMET.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_HELMET.get()),
+                        java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_HELMET.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_HELMET.get()))
                 && isSuitPiece(player.getItemBySlot(EquipmentSlot.CHEST),
-                        ModItems.OXYGEN_SUIT_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())
+                        java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_CHESTPLATE.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get()),
+                        java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get()))
                 && isSuitPiece(player.getItemBySlot(EquipmentSlot.LEGS),
-                        ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())
+                        java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_LEGGINGS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get()),
+                        java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get()))
                 && isSuitPiece(player.getItemBySlot(EquipmentSlot.FEET),
-                        ModItems.OXYGEN_SUIT_BOOTS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(), ModItems.OXYGEN_SUIT_COLD_BOOTS.get());
+                        java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_BOOTS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_BOOTS.get()),
+                        java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_BOOTS.get()));
     }
 
     private static boolean isSuitPiece(ItemStack worn, Item... options) {
@@ -265,8 +263,8 @@ public final class OxygenManager {
      * Oxygen Suit set (base / heat / cold) reads TIER_1, otherwise NONE. Client-safe (armour slots only).
      */
     public static SuitTier suitTier(Player player) {
-        if (isFullSet(player, ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
-                ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get())) {
+        if (isFullSet(player, java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_HELMET.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get()),
+                java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_LEGGINGS.get()), java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_T2_BOOTS.get()))) {
             return SuitTier.TIER_2;
         }
         return isFullSuit(player) ? SuitTier.TIER_1 : SuitTier.NONE;
@@ -281,7 +279,7 @@ public final class OxygenManager {
     }
 
     /** The hazard a dimension carries: Cindara runs hot, Glacira runs cold. (Public for the HUD.) */
-    public static HazardShield hazardFor(@NonNull ResourceKey<Level> dimension) {
+    public static HazardShield hazardFor(ResourceKey<Level> dimension) {
         if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
             return HazardShield.HEAT;
         }
@@ -319,16 +317,16 @@ public final class OxygenManager {
 
     /** Which hazard variant a single worn piece belongs to (NONE for plain/T2/non-suit items). */
     private static HazardShield pieceVariant(ItemStack worn) {
-        if (worn.is(ModItems.OXYGEN_SUIT_HEAT_HELMET.get())
-                || worn.is(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get())
-                || worn.is(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get())
-                || worn.is(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get())) {
+        if (worn.is(java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_HELMET.get()))
+                || worn.is(java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get()))
+                || worn.is(java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get()))
+                || worn.is(java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get()))) {
             return HazardShield.HEAT;
         }
-        if (worn.is(ModItems.OXYGEN_SUIT_COLD_HELMET.get())
-                || worn.is(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())
-                || worn.is(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())
-                || worn.is(ModItems.OXYGEN_SUIT_COLD_BOOTS.get())) {
+        if (worn.is(java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_HELMET.get()))
+                || worn.is(java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get()))
+                || worn.is(java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get()))
+                || worn.is(java.util.Objects.requireNonNull(ModItems.OXYGEN_SUIT_COLD_BOOTS.get()))) {
             return HazardShield.COLD;
         }
         return HazardShield.NONE;

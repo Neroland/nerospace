@@ -14,7 +14,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jspecify.annotations.Nullable;
 
-import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -31,16 +30,16 @@ public class StationCoreBlockEntity extends BlockEntity {
 
     /** −1 until {@link #bindStation} — a core placed outside the founding flow anchors nothing. */
     private int slot = -1;
-    private @org.jspecify.annotations.NonNull String stationName = "";
+    private String stationName = "";
 
     public StationCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.STATION_CORE.get(), pos, state);
+        super(java.util.Objects.requireNonNull(ModBlockEntities.STATION_CORE.get()), pos, state);
     }
 
     /** Binds this core to its founded station (called by the founding flow / tests). */
     public void bindStation(int slot, String name) {
         this.slot = slot;
-        this.stationName = NerospaceCommon.requireNonNull(name);
+        this.stationName = java.util.Objects.requireNonNull(name);
         setChanged();
     }
 
@@ -72,7 +71,7 @@ public class StationCoreBlockEntity extends BlockEntity {
         }
         StationRegistry.StationEntry removed =
                 StationRegistry.get(serverLevel.getServer()).unregister(this.slot);
-        ItemStack charter = new ItemStack(ModItems.STATION_CHARTER.get());
+        ItemStack charter = new ItemStack(java.util.Objects.requireNonNull(ModItems.STATION_CHARTER.get()));
         String name = removed != null ? removed.name() : this.stationName;
         if (name != null && !name.isBlank()) {
             setComponent(charter, DataComponents.CUSTOM_NAME, Component.literal(name));
@@ -84,7 +83,7 @@ public class StationCoreBlockEntity extends BlockEntity {
 
     private static <T extends @Nullable Object> void setComponent(
             ItemStack stack, DataComponentType<T> type, T value) {
-        stack.set(NerospaceCommon.requireNonNull(type), value);
+        stack.set(java.util.Objects.requireNonNull(type), value);
     }
 
     // --- Persistence ---------------------------------------------------------------------------
@@ -93,7 +92,7 @@ public class StationCoreBlockEntity extends BlockEntity {
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putInt("Slot", this.slot);
-        output.putString("StationName", NerospaceCommon.requireNonNull(this.stationName));
+        output.putString("StationName", java.util.Objects.requireNonNull(this.stationName));
     }
 
     @Override

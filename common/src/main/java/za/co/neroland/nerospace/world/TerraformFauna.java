@@ -38,12 +38,12 @@ public final class TerraformFauna {
     public static EntityType<?> livestockFor(ServerLevel level) {
         ResourceKey<Level> dimension = level.dimension();
         if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
-            return ModEntities.EMBER_STRUTTER.get();
+            return java.util.Objects.requireNonNull(ModEntities.EMBER_STRUTTER.get());
         }
         if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
-            return ModEntities.WOOLLY_DRIFT.get();
+            return java.util.Objects.requireNonNull(ModEntities.WOOLLY_DRIFT.get());
         }
-        return ModEntities.MEADOW_LOPER.get();
+        return java.util.Objects.requireNonNull(ModEntities.MEADOW_LOPER.get());
     }
 
     /** Maybe seed a starter pair on a freshly Living column (sparse, population-capped). */

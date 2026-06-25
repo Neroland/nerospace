@@ -21,6 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
@@ -53,7 +55,7 @@ public class UniversalPipeRenderer
 
     @Override
     public void extractRenderState(UniversalPipeBlockEntity pipe, UniversalPipeRenderState state,
-            float partialTick, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+            float partialTick, Vec3 cameraPos, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(pipe, state, partialTick, cameraPos, breakProgress);
         Level level = pipe.getLevel();
         if (level == null) {
@@ -72,7 +74,8 @@ public class UniversalPipeRenderer
         state.streamColors[1] = PipeResourceType.FLUID.color();
         state.streamColors[2] = PipeResourceType.GAS.color();
 
-        PipeResourceType[] layerTypes = {PipeResourceType.ENERGY, PipeResourceType.FLUID, PipeResourceType.GAS};
+        PipeResourceType [] layerTypes =
+                {PipeResourceType.ENERGY, PipeResourceType.FLUID, PipeResourceType.GAS};
         boolean[] layerHas = {hasEnergy, hasFluid, hasGas};
         for (Direction dir : Direction.values()) {
             int d = dir.get3DDataValue();
@@ -89,20 +92,21 @@ public class UniversalPipeRenderer
         pipe.clientItemTime = now;
         float step = 1.0F / pipe.itemTicksPerBlock();
 
-        List<TravellingItem> items = pipe.travelling();
+        List<TravellingItem> items = NerospaceCommon.requireNonNull(pipe.travelling());
         int count = Math.min(MAX_RENDERED_ITEMS, items.size());
         state.visibleItems = count;
         for (int i = 0; i < count; i++) {
-            TravellingItem item = items.get(i);
+            TravellingItem item = NerospaceCommon.requireNonNull(items.get(i));
             if (!item.isParked()) {
                 item.advance(dt * step * 0.999F); // hold just shy of 1.0 until the server expires it
             }
             UniversalPipeRenderState.TravellingItemEntry entry = state.entry(i);
 
             float t = item.progress();
-            float fx = item.from().getStepX();
-            float fy = item.from().getStepY();
-            float fz = item.from().getStepZ();
+            Direction from = NerospaceCommon.requireNonNull(item.from());
+            float fx = from.getStepX();
+            float fy = from.getStepY();
+            float fz = from.getStepZ();
             Direction to = item.to(); // local so the null check holds for the analyzer
             if (item.isParked() || to == null) {
                 entry.x = 0.5F;
@@ -155,16 +159,17 @@ public class UniversalPipeRenderer
     }
 
     @Override
-    public void submit(UniversalPipeRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
-            CameraRenderState cameraState) {
+    public void submit(UniversalPipeRenderState state, PoseStack poseStack,
+            SubmitNodeCollector collector, CameraRenderState cameraState) {
         // Travelling items.
         for (int i = 0; i < state.visibleItems; i++) {
-            UniversalPipeRenderState.TravellingItemEntry entry = state.items.get(i);
+            UniversalPipeRenderState.TravellingItemEntry entry = NerospaceCommon.requireNonNull(state.items.get(i));
             poseStack.pushPose();
             poseStack.translate(entry.x, entry.y - 0.12F, entry.z);
             poseStack.mulPose(Axis.YP.rotationDegrees(entry.spin));
             poseStack.scale(0.55F, 0.55F, 0.55F);
-            entry.renderState.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            NerospaceCommon.requireNonNull(entry.renderState)
+                    .submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
 
@@ -182,7 +187,7 @@ public class UniversalPipeRenderer
                 (pose, consumer) -> renderStreams(state, pose, consumer));
     }
 
-    private static void renderStreams(UniversalPipeRenderState state, PoseStack.@org.jspecify.annotations.NonNull Pose pose, VertexConsumer consumer) {
+    private static void renderStreams(UniversalPipeRenderState state, PoseStack.Pose pose, VertexConsumer consumer) {
         for (Direction dir : Direction.values()) {
             int d = dir.get3DDataValue();
             for (int l = 0; l < 3; l++) {
@@ -210,7 +215,7 @@ public class UniversalPipeRenderer
     }
 
     /** Two crossed quads centred on the point, aligned along the arm's axis (visible from all sides). */
-    private static void crossQuads(PoseStack.@org.jspecify.annotations.NonNull Pose pose, VertexConsumer consumer, Direction dir,
+    private static void crossQuads(PoseStack.Pose pose, VertexConsumer consumer, Direction dir,
             float cx, float cy, float cz, int r, int g, int b, int a) {
         float s = STREAM_HALF;
         float vx = dir.getStepX() * s * 1.8F;
@@ -228,7 +233,7 @@ public class UniversalPipeRenderer
         quad(pose, consumer, cx, cy, cz, vx, vy, vz, u2x, u2y, u2z, r, g, b, a);
     }
 
-    private static void quad(PoseStack.@org.jspecify.annotations.NonNull Pose pose, VertexConsumer consumer,
+    private static void quad(PoseStack.Pose pose, VertexConsumer consumer,
             float cx, float cy, float cz, float vx, float vy, float vz,
             float ux, float uy, float uz, int r, int g, int b, int a) {
         consumer.addVertex(pose, cx - vx - ux, cy - vy - uy, cz - vz - uz).setColor(r, g, b, a);

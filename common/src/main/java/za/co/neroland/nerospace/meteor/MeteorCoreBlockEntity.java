@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -36,10 +35,10 @@ public class MeteorCoreBlockEntity extends BlockEntity {
     /** Inlined from {@code Config.METEOR_LOOT_BONUS_ROLLS} (root default) until the config seam lands. */
     private static final int METEOR_LOOT_BONUS_ROLLS = 3;
 
-    private static final @NonNull Codec<List<@NonNull ItemStack>> LOOT_CODEC =
+    private static final Codec<List<ItemStack>> LOOT_CODEC =
             NerospaceCommon.requireNonNull(NerospaceCommon.ITEM_STACK_CODEC.listOf());
 
-    private final List<@NonNull ItemStack> loot = new ArrayList<>();
+    private final List<ItemStack> loot = new ArrayList<>();
 
     public MeteorCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.METEOR_CORE.get(), pos, state);
