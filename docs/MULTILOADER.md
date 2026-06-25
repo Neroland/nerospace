@@ -115,4 +115,4 @@ layout with explicit ServiceLoader seams instead of Architectury APIs.
 
 Classic Forge was previously documented as blocked because no compatible 26.2 Forge userdev was available
 and older ForgeGradle paths rejected the repo's Gradle version. That note is obsolete: ForgeGradle 7 works
-with this repo's Gradle 9.5.1 wrapper, and Forge 26.1.2/26.2 artifacts are now published.
+with this repo's Gradle 9.6.0 wrapper, and Forge 26.1.2/26.2 artifacts are now published.

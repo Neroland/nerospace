@@ -8,16 +8,16 @@ Builds Nerospace on **NeoForge, MinecraftForge/Forge, and Fabric** from one shar
 > lives under `legacy/` (frozen, not built or shipped). Full history:
 > [`docs/MULTILOADER.md`](../docs/MULTILOADER.md) and [`post_port.md`](../post_port.md).
 
-## Status (verified 2026-06-23)
+## Status (verified 2026-06-25)
 
 Built from public artifacts on this machine:
 
 | Cell | Toolchain | 26.2 | 26.1.2 |
 | --- | --- | --- | --- |
 | `common` | ModDevGradle (NeoForm) | ✅ builds (`26.2-1`) | NeoForm `26.1.2-1` |
-| `fabric` | Fabric Loom `1.17.12` | ✅ **builds** (`fabric-api 0.152.2+26.2`) | ✅ builds (`fabric-api 0.151.0+26.1.2`; needs access widener — see below) |
-| `neoforge` | ModDevGradle (NeoForge) | ✅ builds (`26.2.0.6-beta`, on public NeoForged Maven) | NeoForge `26.1.2.76` |
-| `forge` | ForgeGradle `7.0.29` (Forge) | ✅ builds (`26.2-65.0.0`) | ✅ builds (`26.1.2-64.0.10`) |
+| `fabric` | Fabric Loom `1.17.12` | ✅ **builds** (`fabric-api 0.153.0+26.2`) | ✅ builds (`fabric-api 0.153.0+26.1.2`; needs access widener — see below) |
+| `neoforge` | ModDevGradle (NeoForge) | ✅ builds (`26.2.0.7-beta`, on public NeoForged Maven) | NeoForge `26.1.2.76` |
+| `forge` | ForgeGradle `7.0.30` (Forge) | ✅ builds (`26.2-65.0.0`) | ✅ builds (`26.1.2-64.0.10`) |
 
 All six Stonecutter cells are wired as real projects:
 `:neoforge:26.1.2`, `:neoforge:26.2`, `:forge:26.1.2`, `:forge:26.2`,
@@ -42,7 +42,7 @@ Shared game logic lives **once** in `common`; its source is pulled into `fabric`
 
 ```text
 <repo root>/
-├── gradlew(.bat) + gradle/        the wrapper, Gradle 9.5.1 (Loom 1.17 needs >= 9.4)
+├── gradlew(.bat) + gradle/        the wrapper, Gradle 9.6.0 (Loom 1.17 needs >= 9.4)
 ├── settings.gradle                plugin versions + Stonecutter version tree (fabric/neoforge/forge × 26.1.2/26.2)
 ├── stonecutter.gradle             the REAL root build script (splices common source into each node)
 ├── build.gradle                   inert (Stonecutter repoints buildFileName to stonecutter.gradle)
@@ -57,7 +57,7 @@ Shared game logic lives **once** in `common`; its source is pulled into `fabric`
 
 ## Building
 
-Run from the **repo root** with its Gradle 9.5.1 wrapper (Loom 1.17 needs ≥ 9.4):
+Run from the **repo root** with its Gradle 9.6.0 wrapper (Loom 1.17 needs ≥ 9.4):
 
 ```bash
 # Stonecutter: each loader x MC version is its OWN node — the node path picks the version.
@@ -78,7 +78,7 @@ Jars land in `<loader>/versions/<mc>/build/libs/` (relative to the repo root).
 ## All six cells build
 
 NeoForge's own loader userdev for 26.2 is on the public Maven as a beta
-(`neo_version_26.2=26.2.0.6-beta` is pinned and resolves from the NeoForged
+(`neo_version_26.2=26.2.0.7-beta` is pinned and resolves from the NeoForged
 Maven). If a future pin ever fails to resolve, **self-build it**:
 
 ```bash
@@ -93,7 +93,7 @@ lands on Maven, it's a **one-line change** (the version pin) — no refactor.
 
 Forge's 26.x userdev artifacts are published on the official Forge Maven:
 `forge_version_26.1.2=26.1.2-64.0.10` and `forge_version_26.2=26.2-65.0.0`.
-Forge uses ForgeGradle 7 and Gradle 9.5.1.
+Forge uses ForgeGradle 7 and Gradle 9.6.0.
 
 ## CI / VS Code
 
@@ -115,7 +115,7 @@ is per-loader — there is no Architectury API `DeferredRegister` here).
 The promotion described here was carried out in `post_port.md` Phase 1–2: the
 standalone single-loader build was retired to `legacy/` (Phase 1) and the
 multiloader was flattened onto the repo root (Phase 2). `tools/` now targets
-`common/` directly. The four Stonecutter cells are the source of truth; `legacy/`
+`common/` directly. The six Stonecutter cells are the source of truth; `legacy/`
 is frozen until the port is 120% confirmed.
 
 ## Sources
@@ -124,16 +124,16 @@ is frozen until the port is 120% confirmed.
 - [jaredlll08/MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template) · [official Fabric example (de-obf)](https://github.com/FabricMC/fabric-example-mod)
 - [NeoForm](https://projects.neoforged.net/neoforged/neoform) · [NeoForge](https://projects.neoforged.net/neoforged/neoforge) · [Forge downloads](https://files.minecraftforge.net/) · [Fabric develop](https://fabricmc.net/develop)
 
-## Build matrix status (2026-06-23)
+## Build matrix status (2026-06-25)
 
 All six loader × version cells build from **public artifacts**, and CI
 (`.github/workflows/multiloader.yml`) builds all six strictly (any failure fails the run):
 
 | | 26.1.2 | 26.2 |
 | --- | --- | --- |
-| **neoforge** | ✅ `26.1.2.76` | ✅ `26.2.0.6-beta` (public Maven) |
+| **neoforge** | ✅ `26.1.2.76` | ✅ `26.2.0.7-beta` (public Maven) |
 | **forge** | ✅ `26.1.2-64.0.10` | ✅ `26.2-65.0.0` |
-| **fabric** | ✅ (access widener) | ✅ `fabric-api 0.152.2+26.2` |
+| **fabric** | ✅ `fabric-api 0.153.0+26.1.2` (access widener) | ✅ `fabric-api 0.153.0+26.2` |
 
 Fabric @ 26.1.2 needs `fabric/src/main/resources/nerospace.accesswidener` because vanilla
 MC 26.1.2 kept `BlockEntityType`'s constructor + `BlockEntitySupplier` private (Mojang made them

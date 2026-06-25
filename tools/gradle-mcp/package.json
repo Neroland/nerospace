@@ -6,6 +6,6 @@
   "type": "commonjs",
   "bin": { "nerospace-gradle-mcp": "server.js" },
   "dependencies": {
-    "markdownlint": "^0.37.0"
+    "markdownlint": "^0.41.0"
   }
 }
