@@ -2,8 +2,11 @@ package za.co.neroland.nerospace.pipe;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
@@ -337,7 +340,7 @@ public final class PipeNetwork {
 
     // --- Items ----------------------------------------------------------------
 
-    private record Sink(Container container, Direction side, ItemStack filter) {
+    private record Sink(BlockPos pipePos, Direction outFace, Container container, Direction side, ItemStack filter) {
     }
 
     private void tickItems(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
@@ -353,12 +356,44 @@ public final class PipeNetwork {
                 }
                 BlockEntity be = level.getBlockEntity(np);
                 if (be instanceof Container dst && !(be instanceof UniversalPipeBlockEntity)) {
-                    sinks.add(new Sink(dst, dir.getOpposite(), pipe.filter(dir)));
+                    sinks.add(new Sink(pos, dir, dst, dir.getOpposite(), pipe.filter(dir)));
                 }
             }
         }
 
-        // 1. Drain every pipe's buffer toward the network's sinks (any source can reach any sink).
+        // 1. Extraction pulse: pull from sources into pipe buffers (backpressure — only if the pipe has room).
+        if ((level.getGameTime() % ITEM_EXTRACT_PERIOD) == 0L) {
+            for (UniversalPipeBlockEntity pipe : pipes) {
+                int extractMax = ITEM_EXTRACT_AMOUNT * pipe.speedMultiplier();
+                BlockPos pos = pipe.getBlockPos();
+                for (Direction dir : Direction.values()) {
+                    BlockPos np = pos.relative(dir);
+                    if (this.memberSet.contains(np.asLong())
+                            || !pipe.mode(dir, PipeResourceType.ITEM).canPull()) {
+                        continue;
+                    }
+                    BlockEntity be = level.getBlockEntity(np);
+                    if (!(be instanceof Container src) || be instanceof UniversalPipeBlockEntity) {
+                        continue;
+                    }
+                    ItemStack pulled = extract(src, dir.getOpposite(), pipe.filter(dir), extractMax);
+                    if (pulled.isEmpty()) {
+                        continue;
+                    }
+                    ItemStack toBuffer = pulled.copy();
+                    ItemStack leftover = insertIntoPipe(pipe, toBuffer);
+                    int accepted = pulled.getCount() - leftover.getCount();
+                    if (accepted > 0 && sinks.isEmpty()) {
+                        pipe.showTravelling(pulled.copyWithCount(accepted), dir, null);
+                    }
+                    if (!leftover.isEmpty()) {
+                        insert(src, dir.getOpposite(), leftover); // pipe full — put the remainder back, never drop
+                    }
+                }
+            }
+        }
+
+        // 2. Drain every pipe's buffer toward the network's sinks (any source can reach any sink).
         if (!sinks.isEmpty()) {
             for (UniversalPipeBlockEntity pipe : pipes) {
                 for (int slot = 0; slot < pipe.getContainerSize(); slot++) {
@@ -373,44 +408,86 @@ public final class PipeNetwork {
                         if (!sink.filter().isEmpty() && !ItemStack.isSameItemSameComponents(sink.filter(), stack)) {
                             continue;
                         }
+                        ItemStack before = stack.copy();
+                        int beforeCount = stack.getCount();
                         stack = insert(sink.container(), sink.side(), stack);
+                        int moved = beforeCount - stack.getCount();
+                        if (moved > 0) {
+                            showItemPath(level, pipe.getBlockPos(), sink.pipePos(), sink.outFace(),
+                                    before.copyWithCount(moved));
+                        }
                     }
                     pipe.setItem(slot, stack);
                 }
             }
         }
+    }
 
-        // 2. Extraction pulse: pull from sources into pipe buffers (backpressure — only if the pipe has room).
-        if ((level.getGameTime() % ITEM_EXTRACT_PERIOD) != 0L) {
+    private void showItemPath(ServerLevel level, BlockPos source, BlockPos target, Direction outFace, ItemStack moved) {
+        if (moved.isEmpty()) {
             return;
         }
-        for (UniversalPipeBlockEntity pipe : pipes) {
-            int extractMax = ITEM_EXTRACT_AMOUNT * pipe.speedMultiplier();
-            BlockPos pos = pipe.getBlockPos();
+        List<BlockPos> path = route(source, target);
+        for (int i = 0; i < path.size(); i++) {
+            BlockPos pos = path.get(i);
+            if (!(level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe)) {
+                continue;
+            }
+            Direction nextFace = i == path.size() - 1 ? outFace : directionBetween(pos, path.get(i + 1));
+            Direction inFace = i == 0 ? nextFace.getOpposite() : directionBetween(pos, path.get(i - 1));
+            pipe.showTravelling(moved, inFace, nextFace);
+        }
+    }
+
+    private List<BlockPos> route(BlockPos source, BlockPos target) {
+        if (source.equals(target)) {
+            return List.of(source);
+        }
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        Map<Long, BlockPos> previous = new HashMap<>();
+        Set<Long> seen = new HashSet<>();
+        queue.add(source);
+        seen.add(source.asLong());
+
+        while (!queue.isEmpty()) {
+            BlockPos pos = queue.poll();
+            if (pos.equals(target)) {
+                break;
+            }
             for (Direction dir : Direction.values()) {
-                BlockPos np = pos.relative(dir);
-                if (this.memberSet.contains(np.asLong())
-                        || !pipe.mode(dir, PipeResourceType.ITEM).canPull()) {
+                BlockPos next = pos.relative(dir);
+                long key = next.asLong();
+                if (!this.memberSet.contains(key) || !seen.add(key)) {
                     continue;
                 }
-                BlockEntity be = level.getBlockEntity(np);
-                if (!(be instanceof Container src) || be instanceof UniversalPipeBlockEntity) {
-                    continue;
-                }
-                ItemStack pulled = extract(src, dir.getOpposite(), pipe.filter(dir), extractMax);
-                if (pulled.isEmpty()) {
-                    continue;
-                }
-                // Cosmetic: show the item travelling through the pipe (the BER animates pipe.travelling()).
-                if (pipe.travelling().size() < UniversalPipeBlockEntity.MAX_TRAVELLING) {
-                    pipe.travelling().add(new TravellingItem(pulled.copy(), dir, dir.getOpposite(), 0.0F));
-                }
-                ItemStack leftover = insertIntoPipe(pipe, pulled);
-                if (!leftover.isEmpty()) {
-                    insert(src, dir.getOpposite(), leftover); // pipe full — put the remainder back, never drop
-                }
+                previous.put(key, pos);
+                queue.add(next);
             }
         }
+        if (!seen.contains(target.asLong())) {
+            return List.of(source);
+        }
+
+        List<BlockPos> path = new ArrayList<>();
+        BlockPos cursor = target;
+        while (cursor != null) {
+            path.add(cursor);
+            if (cursor.equals(source)) {
+                break;
+            }
+            cursor = previous.get(cursor.asLong());
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
+    private static Direction directionBetween(BlockPos from, BlockPos to) {
+        for (Direction dir : Direction.values()) {
+            if (from.relative(dir).equals(to)) {
+                return dir;
+            }
+        }
+        return Direction.NORTH;
     }
 
     /** Standard sided insertion into a container; returns the un-inserted remainder. */

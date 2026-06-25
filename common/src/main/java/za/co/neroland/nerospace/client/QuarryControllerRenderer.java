@@ -52,7 +52,7 @@ public class QuarryControllerRenderer
 
     @Override
     public int getViewDistance() {
-        return 128; // regions can stretch well past the default 64 from the controller
+        return 512; // max-size claims can put the gantry far from the controller block
     }
 
     @Override
@@ -62,6 +62,11 @@ public class QuarryControllerRenderer
         // occlusion-culled (e.g. when the camera is down in the pit) and the gantry vanishes. (The root
         // also widened getRenderBoundingBox; that override isn't on the de-obf BER signature here, but
         // shouldRenderOffScreen alone keeps the gantry visible within getViewDistance.)
+        return true;
+    }
+
+    @Override
+    public boolean shouldRender(QuarryControllerBlockEntity blockEntity, Vec3 cameraPos) {
         return true;
     }
 

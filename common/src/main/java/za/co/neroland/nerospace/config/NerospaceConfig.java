@@ -27,6 +27,7 @@ public final class NerospaceConfig {
     private static final String KEY_OXYGEN_CAPACITY = "oxygenCapacityMultiplier";
     private static final String KEY_FUEL_COST = "fuelCostMultiplier";
     private static final String KEY_MACHINE_SPEED = "machineSpeedMultiplier";
+    private static final String KEY_QUARRY_MAX_SIDE = "quarryMaxSide";
     private static final String KEY_ALIEN_RAIDS = "alienRaidsEnabled";
     private static final String KEY_TERRAFORMER_FORCE_LOAD = "terraformerForceLoadEnabled";
 
@@ -46,6 +47,8 @@ public final class NerospaceConfig {
     private static volatile double fuelCostMultiplier = 1.0D;
     /** Scales machine work speed (inverse: higher ⇒ shorter work intervals). Clamped 0.1×..10×. */
     private static volatile double machineSpeedMultiplier = 1.0D;
+    /** Max claimed quarry footprint side in blocks. Default 64x64; players can lower it for server balance. */
+    private static volatile int quarryMaxSide = 64;
     /** Whether alien villages can be raided by hostile mobs at night. ON by default; players opt out. */
     private static volatile boolean alienRaidsEnabled = true;
     /**
@@ -81,6 +84,11 @@ public final class NerospaceConfig {
 
     public static double machineSpeedMultiplier() {
         return machineSpeedMultiplier;
+    }
+
+    /** Configured quarry footprint side, clamped to a practical 4..64 block range. */
+    public static int quarryMaxSide() {
+        return quarryMaxSide;
     }
 
     /** Whether config-gated night raids on alien villages are enabled (default true; opt-out). */
@@ -143,6 +151,8 @@ public final class NerospaceConfig {
                         props.getProperty(KEY_FUEL_COST), fuelCostMultiplier));
                 machineSpeedMultiplier = clampMultiplier(parseDouble(
                         props.getProperty(KEY_MACHINE_SPEED), machineSpeedMultiplier));
+                quarryMaxSide = clampInt(parseInt(
+                        props.getProperty(KEY_QUARRY_MAX_SIDE), quarryMaxSide), 4, 64);
                 alienRaidsEnabled = Boolean.parseBoolean(
                         props.getProperty(KEY_ALIEN_RAIDS, Boolean.toString(alienRaidsEnabled)).trim());
                 terraformerForceLoadEnabled = Boolean.parseBoolean(
@@ -168,6 +178,22 @@ public final class NerospaceConfig {
         }
     }
 
+    /** Lenient integer parse — falls back to {@code fallback} on null/blank/invalid input. */
+    private static int parseInt(String value, int fallback) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    private static int clampInt(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
     /** Writes the default config file with an explanatory comment (best-effort). */
     private static void write(Path file) {
         Properties props = new Properties();
@@ -177,6 +203,7 @@ public final class NerospaceConfig {
         props.setProperty(KEY_OXYGEN_CAPACITY, Double.toString(oxygenCapacityMultiplier));
         props.setProperty(KEY_FUEL_COST, Double.toString(fuelCostMultiplier));
         props.setProperty(KEY_MACHINE_SPEED, Double.toString(machineSpeedMultiplier));
+        props.setProperty(KEY_QUARRY_MAX_SIDE, Integer.toString(quarryMaxSide));
         props.setProperty(KEY_ALIEN_RAIDS, Boolean.toString(alienRaidsEnabled));
         props.setProperty(KEY_TERRAFORMER_FORCE_LOAD, Boolean.toString(terraformerForceLoadEnabled));
         try {
@@ -190,6 +217,7 @@ public final class NerospaceConfig {
                         + "scales how fast air drains. oxygenCapacityMultiplier: scales air capacity. "
                         + "fuelCostMultiplier: scales fuel burned per rocket launch. "
                         + "machineSpeedMultiplier: scales machine work speed (higher = faster). "
+                        + "quarryMaxSide: max quarry landmark claim side in blocks (4..64, default 64). "
                         + "All multipliers 0.1..10, default 1. alienRaidsEnabled: allow hostile mobs to "
                         + "raid alien villages at night (true by default; set false to opt out). "
                         + "terraformerForceLoadEnabled: when true, a running Terraformer keeps a small "

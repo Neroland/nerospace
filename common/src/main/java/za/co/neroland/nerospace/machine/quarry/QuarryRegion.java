@@ -3,8 +3,10 @@ package za.co.neroland.nerospace.machine.quarry;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
@@ -78,13 +80,38 @@ public final class QuarryRegion {
         return x == this.minX || x == this.maxX || z == this.minZ || z == this.maxZ;
     }
 
+    public boolean acceptsController(BlockPos pos) {
+        int x = pos.getX();
+        int z = pos.getZ();
+        if (pos.getY() != this.refY) {
+            return false;
+        }
+        if (containsColumn(x, z)) {
+            return isPerimeter(x, z);
+        }
+        boolean besideWestOrEast = (x == this.minX - 1 || x == this.maxX + 1)
+                && z >= this.minZ && z <= this.maxZ;
+        boolean besideNorthOrSouth = (z == this.minZ - 1 || z == this.maxZ + 1)
+                && x >= this.minX && x <= this.maxX;
+        return besideWestOrEast || besideNorthOrSouth;
+    }
+
     public List<BlockPos> framePositions() {
         List<BlockPos> out = new ArrayList<>();
         for (int x = this.minX; x <= this.maxX; x++) {
-            for (int z = this.minZ; z <= this.maxZ; z++) {
-                if (isPerimeter(x, z)) {
-                    out.add(new BlockPos(x, this.refY, z));
-                }
+            out.add(new BlockPos(x, this.refY, this.minZ));
+        }
+        for (int z = this.minZ + 1; z <= this.maxZ; z++) {
+            out.add(new BlockPos(this.maxX, this.refY, z));
+        }
+        if (this.maxZ > this.minZ) {
+            for (int x = this.maxX - 1; x >= this.minX; x--) {
+                out.add(new BlockPos(x, this.refY, this.maxZ));
+            }
+        }
+        if (this.maxX > this.minX) {
+            for (int z = this.maxZ - 1; z > this.minZ; z--) {
+                out.add(new BlockPos(this.minX, this.refY, z));
             }
         }
         return out;
@@ -135,21 +162,83 @@ public final class QuarryRegion {
 
         int w = maxX - minX + 1;
         int l = maxZ - minZ + 1;
-        if (cluster.size() < 2 || w < 2 || l < 2 || w > maxSide || l > maxSide) {
+        if (cluster.size() < 3 || w < 2 || l < 2 || w > maxSide || l > maxSide) {
             return null;
         }
         return new QuarryRegion(minX, minZ, maxX, maxZ, refY);
     }
 
     @Nullable
-    public static BlockPos findNearbyLandmark(Level level, BlockPos origin, int range) {
-        for (Direction dir : Direction.Plane.HORIZONTAL) {
-            BlockPos found = projectToLandmark(level, origin, dir, range);
-            if (found != null) {
-                return found;
+    public static QuarryRegion findClaim(Level level, BlockPos origin, int maxSide) {
+        QuarryRegion best = null;
+        int bestScore = Integer.MAX_VALUE;
+        int bestArea = Integer.MAX_VALUE;
+        List<BlockPos> landmarks = collectNearbyLandmarks(level, origin, maxSide);
+        Map<Integer, List<BlockPos>> byX = new HashMap<>();
+        Map<Integer, List<BlockPos>> byZ = new HashMap<>();
+        for (BlockPos pos : landmarks) {
+            byX.computeIfAbsent(pos.getX(), ignored -> new ArrayList<>()).add(pos);
+            byZ.computeIfAbsent(pos.getZ(), ignored -> new ArrayList<>()).add(pos);
+        }
+        for (BlockPos corner : landmarks) {
+            List<BlockPos> xMates = byZ.getOrDefault(corner.getZ(), List.of());
+            List<BlockPos> zMates = byX.getOrDefault(corner.getX(), List.of());
+            for (BlockPos xMate : xMates) {
+                if (xMate.getX() == corner.getX()) {
+                    continue;
+                }
+                for (BlockPos zMate : zMates) {
+                    if (zMate.getZ() == corner.getZ()) {
+                        continue;
+                    }
+                    QuarryRegion found = new QuarryRegion(corner.getX(), corner.getZ(),
+                            xMate.getX(), zMate.getZ(), origin.getY());
+                    int w = found.width();
+                    int l = found.length();
+                    if (w < 2 || l < 2 || w > maxSide || l > maxSide || !found.acceptsController(origin)) {
+                        continue;
+                    }
+                    int score = found.controllerDistance(origin);
+                    int area = w * l;
+                    if (score < bestScore || (score == bestScore && area < bestArea)) {
+                        best = found;
+                        bestScore = score;
+                        bestArea = area;
+                    }
+                }
             }
         }
-        return null;
+        return best;
+    }
+
+    private static List<BlockPos> collectNearbyLandmarks(Level level, BlockPos origin, int maxSide) {
+        List<BlockPos> out = new ArrayList<>();
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        for (int dx = -maxSide; dx <= maxSide; dx++) {
+            for (int dz = -maxSide; dz <= maxSide; dz++) {
+                cursor.set(origin.getX() + dx, origin.getY(), origin.getZ() + dz);
+                if (isLandmark(level, cursor)) {
+                    out.add(cursor.immutable());
+                }
+            }
+        }
+        return out;
+    }
+
+    private int controllerDistance(BlockPos pos) {
+        int dx = 0;
+        if (pos.getX() < this.minX) {
+            dx = this.minX - pos.getX();
+        } else if (pos.getX() > this.maxX) {
+            dx = pos.getX() - this.maxX;
+        }
+        int dz = 0;
+        if (pos.getZ() < this.minZ) {
+            dz = this.minZ - pos.getZ();
+        } else if (pos.getZ() > this.maxZ) {
+            dz = pos.getZ() - this.maxZ;
+        }
+        return dx + dz;
     }
 
     @Nullable

@@ -81,6 +81,10 @@ public class FallingMeteorEntity extends Entity {
     public static FallingMeteorEntity spawnFrozen(ServerLevel level, double x, double y, double z) {
         FallingMeteorEntity meteor = new FallingMeteorEntity(ModEntities.FALLING_METEOR.get(), level);
         meteor.frozen = true;
+        meteor.targetX = (int) Math.floor(x);
+        meteor.targetY = (int) Math.floor(y);
+        meteor.targetZ = (int) Math.floor(z);
+        meteor.lootSeed = level.getRandom().nextLong();
         meteor.setPos(x, y, z);
         level.addFreshEntity(meteor);
         return meteor;
@@ -227,6 +231,7 @@ public class FallingMeteorEntity extends Entity {
         this.targetY = input.getIntOr("TargetY", 0);
         this.targetZ = input.getIntOr("TargetZ", 0);
         this.lootSeed = input.getLongOr("LootSeed", 0L);
+        this.frozen = input.getBooleanOr("Frozen", false);
     }
 
     @Override
@@ -235,5 +240,6 @@ public class FallingMeteorEntity extends Entity {
         output.putInt("TargetY", this.targetY);
         output.putInt("TargetZ", this.targetZ);
         output.putLong("LootSeed", this.lootSeed);
+        output.putBoolean("Frozen", this.frozen);
     }
 }
