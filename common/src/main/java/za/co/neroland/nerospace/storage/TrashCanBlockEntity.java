@@ -40,7 +40,7 @@ public class TrashCanBlockEntity extends BlockEntity implements WorldlyContainer
 
     /** GUI drop buffer: reports the slot empty so every insert is accepted, then holds the inserted stack,
      *  discarding the previously-held one. Separate from the automation void-sink (hoppers / pipes) above. */
-    private final Container guiBuffer = new Container() {
+    private final @org.jspecify.annotations.NonNull Container guiBuffer = new Container() {
         @Override
         public int getContainerSize() {
             return 1;

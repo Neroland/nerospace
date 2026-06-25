@@ -5,6 +5,10 @@ import com.mojang.serialization.Codec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * A gas the mod's logistics can store and move — the resource side of the dedicated gas layer. Ported
  * cross-loader as a plain vanilla enum (the root project built it on NeoForge's transfer
@@ -39,12 +43,12 @@ public enum GasResource implements StringRepresentable {
     }
 
     @Override
-    public String getSerializedName() {
-        return this.name;
+    public @NonNull String getSerializedName() {
+        return NerospaceCommon.requireNonNull(this.name);
     }
 
     /** Parse a serialized name back to a constant (defaults to {@link #EMPTY}). */
-    public static GasResource byName(String name) {
+    public static GasResource byName(@NonNull String name) {
         for (GasResource gas : values()) {
             if (gas.name.equals(name)) {
                 return gas;

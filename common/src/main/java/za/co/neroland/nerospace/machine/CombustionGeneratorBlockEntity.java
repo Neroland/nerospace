@@ -42,7 +42,8 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
     public static final int SIZE = 1;
     public static final int CAPACITY = 100_000;
     public static final int FE_PER_TICK = 20;
-    private static final int[] FUEL_SLOTS = IntStream.range(0, SIZE).toArray();
+    private static final int @org.jspecify.annotations.NonNull[] FUEL_SLOTS =
+            za.co.neroland.nerospace.NerospaceCommon.requireNonNull(IntStream.range(0, SIZE).toArray());
 
     private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, FE_PER_TICK * 64, this::setChanged);
@@ -50,7 +51,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
     private int maxBurnTime;
 
     /** Synced to the menu: [0]=energy [1]=capacity [2]=burnTime [3]=maxBurnTime. */
-    private final ContainerData data = new ContainerData() {
+    private final @org.jspecify.annotations.NonNull ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {

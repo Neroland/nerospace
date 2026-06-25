@@ -23,6 +23,8 @@ import net.minecraft.world.entity.SpawnPlacementType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
 import za.co.neroland.nerospace.gear.AlienGearAbilities;
@@ -47,7 +49,7 @@ import za.co.neroland.nerospace.world.TerraformManager;
 @Mod(NerospaceCommon.MOD_ID)
 public final class NerospaceNeoForge {
 
-    public NerospaceNeoForge(IEventBus modEventBus, ModContainer modContainer) {
+    public NerospaceNeoForge(@NonNull IEventBus modEventBus, ModContainer modContainer) {
         NerospaceCommon.LOGGER.info("[Nerospace] NeoForge bootstrap");
         NerospaceCommon.init();
         // Anonymous, Nerospace-only crash reporting (opt-out via config/nerospace.properties; off in dev).
@@ -103,7 +105,9 @@ public final class NerospaceNeoForge {
     }
 
     private void onCreateEntityAttributes(EntityAttributeCreationEvent event) {
-        ModEntityAttributes.forEach((type, builder) -> event.put(type, builder.build()));
+        ModEntityAttributes.forEach((type, builder) -> event.put(
+                NerospaceCommon.requireNonNull(type),
+                NerospaceCommon.requireNonNull(builder).build()));
     }
 
     private void onRegisterSpawnPlacements(RegisterSpawnPlacementsEvent event) {
@@ -111,7 +115,11 @@ public final class NerospaceNeoForge {
             @Override
             public <T extends Mob> void register(EntityType<T> type, SpawnPlacementType placementType,
                     Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate) {
-                event.register(type, placementType, heightmap, predicate,
+                event.register(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(placementType),
+                        NerospaceCommon.requireNonNull(heightmap),
+                        NerospaceCommon.requireNonNull(predicate),
                         RegisterSpawnPlacementsEvent.Operation.REPLACE);
             }
         });

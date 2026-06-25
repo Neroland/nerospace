@@ -76,7 +76,7 @@ public class AlienVillager extends PathfinderMob implements Merchant {
 
     private static final @NonNull EntityDataAccessor<Integer> DATA_PLANET =
             NerospaceCommon.requireNonNull(SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.INT));
-    private static final @NonNull EntityDataAccessor<@org.jspecify.annotations.Nullable String> DATA_BIOME =
+    private static final EntityDataAccessor<String> DATA_BIOME =
             NerospaceCommon.requireNonNull(SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.STRING));
     private static final @NonNull EntityDataAccessor<Integer> DATA_COLOR_SEED =
             NerospaceCommon.requireNonNull(SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.INT));
@@ -109,7 +109,7 @@ public class AlienVillager extends PathfinderMob implements Merchant {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_PLANET, Planet.GREENXERTZ.ordinal());
-        builder.define(DATA_BIOME, "");
+        builder.define(NerospaceCommon.requireNonNull(DATA_BIOME), "");
         builder.define(DATA_COLOR_SEED, 0);
         builder.define(DATA_DISPLAY_TIER, 0);
     }
@@ -348,11 +348,12 @@ public class AlienVillager extends PathfinderMob implements Merchant {
     }
 
     public @NonNull String getBiomeId() {
-        return NerospaceCommon.requireNonNull(this.entityData.get(DATA_BIOME));
+        String biomeId = this.entityData.get(NerospaceCommon.requireNonNull(DATA_BIOME));
+        return NerospaceCommon.requireNonNull(biomeId);
     }
 
     public void setBiomeId(String id) {
-        this.entityData.set(DATA_BIOME, id);
+        this.entityData.set(NerospaceCommon.requireNonNull(DATA_BIOME), id);
     }
 
     public int getColorSeed() {

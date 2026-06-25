@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -27,7 +28,7 @@ public class StationCoreBlockEntity extends BlockEntity {
 
     /** −1 until {@link #bindStation} — a core placed outside the founding flow anchors nothing. */
     private int slot = -1;
-    private String stationName = "";
+    private @org.jspecify.annotations.NonNull String stationName = "";
 
     public StationCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STATION_CORE.get(), pos, state);
@@ -36,7 +37,7 @@ public class StationCoreBlockEntity extends BlockEntity {
     /** Binds this core to its founded station (called by the founding flow / tests). */
     public void bindStation(int slot, String name) {
         this.slot = slot;
-        this.stationName = name;
+        this.stationName = NerospaceCommon.requireNonNull(name);
         setChanged();
     }
 
@@ -71,7 +72,7 @@ public class StationCoreBlockEntity extends BlockEntity {
         ItemStack charter = new ItemStack(ModItems.STATION_CHARTER.get());
         String name = removed != null ? removed.name() : this.stationName;
         if (name != null && !name.isBlank()) {
-            charter.set(DataComponents.CUSTOM_NAME, Component.literal(name));
+            charter.set(DataComponents.CUSTOM_NAME, NerospaceCommon.requireNonNull(Component.literal(name)));
         }
         Containers.dropItemStack(serverLevel,
                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, charter);
@@ -84,7 +85,7 @@ public class StationCoreBlockEntity extends BlockEntity {
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putInt("Slot", this.slot);
-        output.putString("StationName", this.stationName);
+        output.putString("StationName", NerospaceCommon.requireNonNull(this.stationName));
     }
 
     @Override

@@ -29,7 +29,8 @@ public final class ModCreativeTab {
             key -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
                     .title(Component.translatable("itemGroup.nerospace"))
                     .icon(() -> new ItemStack(ModItems.NEROSIUM_INGOT.get()))
-                    .displayItems((params, output) -> ModItems.creativeContents().forEach(output::accept))
+                    .displayItems((params, output) -> ModItems.creativeContents().forEach(
+                            item -> output.accept(NerospaceCommon.requireNonNull(item))))
                     .build());
 
     private ModCreativeTab() {

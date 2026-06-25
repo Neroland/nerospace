@@ -43,7 +43,8 @@ public class SolarPanelBlock extends BaseEntityBlock {
             instance.group(
                     SolarTier.CODEC.fieldOf("tier").forGetter(SolarPanelBlock::tier),
                     propertiesCodec()
-            ).apply(instance, SolarPanelBlock::new)));
+            ).apply(instance, (tier, properties) -> new SolarPanelBlock(NerospaceCommon.requireNonNull(tier),
+                    properties))));
 
     /** True on the unit's min-corner cell — the only cell that drops the item and renders the deck. */
     public static final @NonNull BooleanProperty ANCHOR = BooleanProperty.create("anchor");

@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -22,17 +23,17 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class CreativeItemStoreBlockEntity extends BlockEntity implements Container {
 
-    private ItemStack source = ItemStack.EMPTY;
+    private @org.jspecify.annotations.NonNull ItemStack source = ItemStack.EMPTY;
 
     public CreativeItemStoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CREATIVE_ITEM_STORE.get(), pos, state);
     }
 
-    public ItemStack source() {
+    public @org.jspecify.annotations.NonNull ItemStack source() {
         return this.source;
     }
 
-    public void setSource(ItemStack stack) {
+    public void setSource(@org.jspecify.annotations.NonNull ItemStack stack) {
         this.source = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
         setChanged();
     }
@@ -40,14 +41,13 @@ public class CreativeItemStoreBlockEntity extends BlockEntity implements Contain
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.store("Source", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.source);
+        output.store("Source", NerospaceCommon.ITEM_STACK_CODEC, NerospaceCommon.requireNonNull(this.source));
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        this.source = za.co.neroland.nerospace.NerospaceCommon.orElse(
-                input.read("Source", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY);
+        this.source = NerospaceCommon.orElse(input.read("Source", NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY);
     }
 
     // --- Container: a single endless-source slot --------------------------------
@@ -92,7 +92,8 @@ public class CreativeItemStoreBlockEntity extends BlockEntity implements Contain
 
     @Override
     public boolean stillValid(Player player) {
-        return this.level != null && this.level.getBlockEntity(this.worldPosition) == this;
+        var currentLevel = this.level;
+        return currentLevel != null && currentLevel.getBlockEntity(this.worldPosition) == this;
     }
 
     @Override

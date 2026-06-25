@@ -73,7 +73,7 @@ public class QuarryMenu extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack moved = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot == null || !slot.hasItem()) {
+        if (!slot.hasItem()) {
             return ItemStack.EMPTY;
         }
         ItemStack raw = slot.getItem();

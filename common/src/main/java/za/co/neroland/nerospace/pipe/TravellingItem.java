@@ -33,7 +33,10 @@ public final class TravellingItem {
             Direction.CODEC.optionalFieldOf("to").forGetter(t -> Optional.ofNullable(t.to)),
             Codec.FLOAT.fieldOf("progress").forGetter(t -> t.progress))
             .apply(i, (stack, from, to, progress) ->
-                    new TravellingItem(stack, from, to.orElse(null), progress))));
+                    new TravellingItem(NerospaceCommon.requireNonNull(stack),
+                            NerospaceCommon.requireNonNull(from),
+                            to.map(NerospaceCommon::requireNonNull).orElse(null),
+                            NerospaceCommon.requireNonNull(progress).floatValue()))));
 
     private final @NonNull ItemStack stack;
     private final @NonNull Direction from;

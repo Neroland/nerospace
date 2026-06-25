@@ -19,14 +19,15 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
 public class TrashCanMenu extends AbstractContainerMenu {
 
     private static final int TRASH_SLOT = 0;
-    private final Container trash;
+    private final @org.jspecify.annotations.NonNull Container trash;
 
     /** Client constructor (dummy buffer; the server slot drives the real trashing). */
     public TrashCanMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(id, playerInventory, new SimpleContainer(1));
     }
 
-    public TrashCanMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory, Container trash) {
+    public TrashCanMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory,
+            @org.jspecify.annotations.NonNull Container trash) {
         super(ModMenuTypes.TRASH_CAN.get(), id);
         checkContainerSize(trash, 1);
         this.trash = trash;

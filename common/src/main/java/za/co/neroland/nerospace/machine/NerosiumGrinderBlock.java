@@ -31,13 +31,14 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class NerosiumGrinderBlock extends BaseEntityBlock {
 
     public static final @org.jspecify.annotations.NonNull MapCodec<NerosiumGrinderBlock> CODEC = simpleCodec(NerosiumGrinderBlock::new);
-    public static final @NonNull EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING =
+            NerospaceCommon.requireNonNull(BlockStateProperties.HORIZONTAL_FACING);
 
     @SuppressWarnings("this-escape")
     public NerosiumGrinderBlock(Properties properties) {
-        super(properties);
+        super(NerospaceCommon.requireNonNull(properties));
         this.registerDefaultState(NerospaceCommon.requireNonNull(
-                this.stateDefinition.any().setValue(FACING, Direction.NORTH)));
+                this.stateDefinition.any().setValue(NerospaceCommon.requireNonNull(FACING), Direction.NORTH)));
     }
 
     @Override
@@ -57,8 +58,9 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
 
     @Override
     public @NonNull BlockState getStateForPlacement(@NonNull BlockPlaceContext context) {
+        Direction facing = context.getHorizontalDirection().getOpposite();
         return NerospaceCommon.requireNonNull(
-                this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()));
+                this.defaultBlockState().setValue(NerospaceCommon.requireNonNull(FACING), facing));
     }
 
     @Nullable

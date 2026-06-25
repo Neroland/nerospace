@@ -46,7 +46,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_INSERT, 0, this::setChanged);
     private int progress;
 
-    private final ContainerData data = new ContainerData() {
+    private final @org.jspecify.annotations.NonNull ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -120,7 +120,8 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         if (output.isEmpty()) {
             return true;
         }
-        return ItemStack.isSameItemSameComponents(output, result)
+        return ItemStack.isSameItemSameComponents(za.co.neroland.nerospace.NerospaceCommon.requireNonNull(output),
+                za.co.neroland.nerospace.NerospaceCommon.requireNonNull(result))
                 && output.getCount() + result.getCount() <= output.getMaxStackSize();
     }
 

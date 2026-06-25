@@ -21,6 +21,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
 import za.co.neroland.nerospace.gear.AlienGearAbilities;
@@ -41,7 +43,7 @@ import za.co.neroland.nerospace.world.TerraformManager;
 @Mod(NerospaceCommon.MOD_ID)
 public final class NerospaceForge {
 
-    public NerospaceForge(FMLJavaModLoadingContext context) {
+    public NerospaceForge(@NonNull FMLJavaModLoadingContext context) {
         NerospaceCommon.LOGGER.info("[Nerospace] Forge bootstrap");
         BusGroup modBusGroup = context.getModBusGroup();
 
@@ -78,7 +80,7 @@ public final class NerospaceForge {
             }
         });
         RegisterCommandsEvent.BUS.addListener(event ->
-                NerospaceCommands.register(event.getDispatcher()));
+                NerospaceCommands.register(NerospaceCommon.requireNonNull(event.getDispatcher())));
         ChunkEvent.Load.BUS.addListener(event -> {
             if (event.getLevel() instanceof ServerLevel serverLevel && event.getChunk() instanceof LevelChunk chunk) {
                 TerraformManager.get(serverLevel).onChunkLoaded(serverLevel, chunk);
@@ -89,7 +91,9 @@ public final class NerospaceForge {
     }
 
     private void onCreateEntityAttributes(EntityAttributeCreationEvent event) {
-        ModEntityAttributes.forEach((type, builder) -> event.put(type, builder.build()));
+        ModEntityAttributes.forEach((type, builder) -> event.put(
+                NerospaceCommon.requireNonNull(type),
+                NerospaceCommon.requireNonNull(builder).build()));
     }
 
     private void onRegisterSpawnPlacements(SpawnPlacementRegisterEvent event) {
@@ -97,7 +101,11 @@ public final class NerospaceForge {
             @Override
             public <T extends Mob> void register(EntityType<T> type, SpawnPlacementType placementType,
                     Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate) {
-                event.register(type, placementType, heightmap, predicate,
+                event.register(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(placementType),
+                        NerospaceCommon.requireNonNull(heightmap),
+                        NerospaceCommon.requireNonNull(predicate),
                         SpawnPlacementRegisterEvent.Operation.REPLACE);
             }
         });

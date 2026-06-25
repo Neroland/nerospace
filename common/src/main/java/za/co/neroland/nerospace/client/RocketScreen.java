@@ -56,9 +56,10 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         int x = this.leftPos + 28;
         for (int i = 0; i < ALL_DESTINATIONS.size(); i++) {
             final int index = i;
+            String destinationName = NerospaceCommon.requireNonNull(Destinations.name(
+                    NerospaceCommon.requireNonNull(ALL_DESTINATIONS.get(i))));
             SpaceButton node = new SpaceButton(x, this.topPos + 36, 34, 14,
-                    Component.literal(shortName(NerospaceCommon.requireNonNull(Destinations.name(
-                            NerospaceCommon.requireNonNull(ALL_DESTINATIONS.get(i)))))), ACCENT,
+                    Component.literal(shortName(destinationName)), ACCENT,
                     b -> onSelectDestination(index));
             this.addRenderableWidget(node);
             this.destinationButtons.add(node);
@@ -121,12 +122,13 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         }
     }
 
-    private static String shortName(@org.jspecify.annotations.NonNull String full) {
-        return switch (full) {
+    private static @org.jspecify.annotations.NonNull String shortName(
+            @org.jspecify.annotations.NonNull String full) {
+        return NerospaceCommon.requireNonNull(switch (full) {
             case "Orbital Station" -> "Station";
             case "Greenxertz" -> "Xertz";
             default -> full;
-        };
+        });
     }
 
     private void onSelectDestination(int index) {

@@ -91,24 +91,26 @@ public class SolarPanelRenderer
         int light = 0x00F000F0;
         Identifier texture = Identifier.fromNamespaceAndPath(
                 NerospaceCommon.MOD_ID, "textures/block/solar_panel" + tierSuffix(state.tier) + ".png");
+        PoseStack checkedPoseStack = NerospaceCommon.requireNonNull(poseStack);
+        Identifier checkedTexture = NerospaceCommon.requireNonNull(texture);
 
         if (state.footprint > 1) {
             if (!state.anchor) {
                 return; // one big panel per multiblock — only the anchor (min-corner) draws the deck
             }
-            submitMultiblockDeck(state, poseStack, collector, light, texture);
+            submitMultiblockDeck(state, checkedPoseStack, collector, light, checkedTexture);
             return;
         }
 
         // Tier 1: a centred 1×1 deck on the model's T-pole, pitching east-west to follow the sun.
-        poseStack.pushPose();
-        poseStack.translate(0.5F, POLE_TOP, 0.5F);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.angle));
-        collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture),
+        checkedPoseStack.pushPose();
+        checkedPoseStack.translate(0.5F, POLE_TOP, 0.5F);
+        checkedPoseStack.mulPose(Axis.ZP.rotationDegrees(state.angle));
+        collector.order(1).submitCustomGeometry(checkedPoseStack, RenderTypes.entityCutout(checkedTexture),
                 (pose, consumer) -> box(consumer, pose, light,
                         -0.5F, -THICK / 2.0F, -0.5F, 0.5F, THICK / 2.0F, 0.5F,
                         0.0F, 0.0F, 1.0F, 1.0F));
-        poseStack.popPose();
+        checkedPoseStack.popPose();
     }
 
     /**
@@ -118,6 +120,8 @@ public class SolarPanelRenderer
      */
     private void submitMultiblockDeck(SolarPanelRenderState state, PoseStack poseStack,
             SubmitNodeCollector collector, int light, Identifier texture) {
+        PoseStack checkedPoseStack = NerospaceCommon.requireNonNull(poseStack);
+        Identifier checkedTexture = NerospaceCommon.requireNonNull(texture);
         int n = state.footprint;
         float centre = n / 2.0F;
         float cap = maxTiltFor(n);
@@ -127,7 +131,7 @@ public class SolarPanelRenderer
         Identifier baseTexture = Identifier.fromNamespaceAndPath(
                 NerospaceCommon.MOD_ID, "textures/block/solar_panel" + tierSuffix(state.tier) + "_base.png");
         RenderType baseRt = RenderTypes.entityCutout(baseTexture);
-        collector.order(1).submitCustomGeometry(poseStack, baseRt, (pose, consumer) -> {
+        collector.order(1).submitCustomGeometry(checkedPoseStack, baseRt, (pose, consumer) -> {
             box(consumer, pose, light, centre - MAST_HALF, HOUSING_TOP, centre - MAST_HALF,
                     centre + MAST_HALF, POST_TOP, centre + MAST_HALF, 0.25F, 0.25F, 0.75F, 0.75F);
             box(consumer, pose, light, centre - MAST_HALF, POST_TOP, centre - TUBE_HALF,
@@ -136,14 +140,14 @@ public class SolarPanelRenderer
 
         // The single deck, pivoting east-west about the central mast; fills the footprint edge-to-edge.
         float half = centre;
-        poseStack.pushPose();
-        poseStack.translate(centre, POLE_TOP, centre);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(angle));
-        collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture),
+        checkedPoseStack.pushPose();
+        checkedPoseStack.translate(centre, POLE_TOP, centre);
+        checkedPoseStack.mulPose(Axis.ZP.rotationDegrees(angle));
+        collector.order(1).submitCustomGeometry(checkedPoseStack, RenderTypes.entityCutout(checkedTexture),
                 (pose, consumer) -> box(consumer, pose, light,
                         -half, -THICK / 2.0F, -half, half, THICK / 2.0F, half,
                         0.0F, 0.0F, 1.0F, 1.0F));
-        poseStack.popPose();
+        checkedPoseStack.popPose();
     }
 
     /** Once a world's data-driven clock markers are found missing, stop calling the throwing path. */
@@ -221,11 +225,12 @@ public class SolarPanelRenderer
 
     private static void vertex(VertexConsumer c, PoseStack.Pose pose, float x, float y, float z,
             float u, float v, int light, float nx, float ny, float nz) {
-        c.addVertex(pose, x, y, z)
+        PoseStack.Pose checkedPose = NerospaceCommon.requireNonNull(pose);
+        c.addVertex(checkedPose, x, y, z)
                 .setColor(255, 255, 255, 255)
                 .setUv(u, v)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(light)
-                .setNormal(pose, nx, ny, nz);
+                .setNormal(checkedPose, nx, ny, nz);
     }
 }

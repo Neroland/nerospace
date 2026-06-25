@@ -18,13 +18,15 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /** Fluid Tank block — holds a {@link FluidTankBlockEntity}; right-click empty-handed to read its contents. */
 public class FluidTankBlock extends BaseEntityBlock {
 
     public static final @org.jspecify.annotations.NonNull MapCodec<FluidTankBlock> CODEC = simpleCodec(FluidTankBlock::new);
 
     public FluidTankBlock(Properties properties) {
-        super(properties);
+        super(NerospaceCommon.requireNonNull(properties));
     }
 
     @Override
@@ -52,7 +54,8 @@ public class FluidTankBlock extends BaseEntityBlock {
             } else {
                 serverPlayer.sendSystemMessage(Component.translatable("block.nerospace.tank.readout",
                         tank.getTank().getAmount(), tank.getTank().getCapacity(),
-                        BuiltInRegistries.FLUID.getKey(tank.getTank().getFluid()).getPath()));
+                        BuiltInRegistries.FLUID.getKey(
+                                NerospaceCommon.requireNonNull(tank.getTank().getFluid())).getPath()));
             }
         }
         return InteractionResult.SUCCESS;

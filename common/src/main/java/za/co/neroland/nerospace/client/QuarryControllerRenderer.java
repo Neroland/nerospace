@@ -76,7 +76,8 @@ public class QuarryControllerRenderer
         BlockEntityRenderer.super.extractRenderState(be, s, partialTick, cameraPos, breakProgress);
         QuarryRegion r = be.renderRegion();
         QuarryControllerBlockEntity.State st = be.renderState();
-        if (r == null || st == QuarryControllerBlockEntity.State.IDLE || be.getLevel() == null) {
+        var level = be.getLevel();
+        if (r == null || st == QuarryControllerBlockEntity.State.IDLE || level == null) {
             s.active = false;
             return;
         }
@@ -107,7 +108,7 @@ public class QuarryControllerRenderer
             ty = r.refY() + 0.5;
             tz = cz;
         }
-        long tick = be.getLevel().getGameTime();
+        long tick = level.getGameTime();
         if (!be.dispInit) {
             be.dispX = be.prevDispX = tx;
             be.dispY = be.prevDispY = ty;
@@ -204,12 +205,13 @@ public class QuarryControllerRenderer
 
     private static void tv(VertexConsumer c, PoseStack.Pose pose, float x, float y, float z,
             float u, float v, float nx, float ny, float nz, int r, int g, int b) {
-        c.addVertex(pose, x, y, z)
+        PoseStack.Pose checkedPose = NerospaceCommon.requireNonNull(pose);
+        c.addVertex(checkedPose, x, y, z)
                 .setColor(r, g, b, 255)
                 .setUv(u, v)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(FULL_BRIGHT)
-                .setNormal(pose, nx, ny, nz);
+                .setNormal(checkedPose, nx, ny, nz);
     }
 
     /** A textured quad (4 corners, one normal, UV from (0,0) to (uMax,vMax)), drawn white. */

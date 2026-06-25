@@ -92,7 +92,7 @@ public class XertzStalkerModel extends GreenxertzMobModel<LivingEntityRenderStat
         return LayerDefinition.create(mesh, 64, 64);
     }
 
-    private static void arm(PartDefinition root, String name, float x, float roll) {
+    private static void arm(PartDefinition root, @org.jspecify.annotations.NonNull String name, float x, float roll) {
         root.addOrReplaceChild(name, CubeListBuilder.create()
                         .texOffs(44, 0).addBox(-1.5F, 0F, -1.5F, 3F, 7F, 3F)
                         .texOffs(44, 0).addBox(-1.5F, 7F, -1.5F, 3F, 6F, 3F)
@@ -100,7 +100,7 @@ public class XertzStalkerModel extends GreenxertzMobModel<LivingEntityRenderStat
                 PartPose.offsetAndRotation(x, 5F, 0F, 0F, 0F, roll));
     }
 
-    private static void leg(PartDefinition root, String name, float x) {
+    private static void leg(PartDefinition root, @org.jspecify.annotations.NonNull String name, float x) {
         root.addOrReplaceChild(name, CubeListBuilder.create()
                         .texOffs(44, 0).addBox(-2F, 0F, -2F, 4F, 6F, 4F)
                         .texOffs(44, 0).addBox(-1.5F, 6F, -1.5F, 3F, 3F, 3F)

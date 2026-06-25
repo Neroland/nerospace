@@ -575,7 +575,8 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
 
     @Override
     public boolean stillValid(Player player) {
-        if (this.level == null || this.level.getBlockEntity(this.worldPosition) != this) {
+        Level currentLevel = this.level;
+        if (currentLevel == null || currentLevel.getBlockEntity(this.worldPosition) != this) {
             return false;
         }
         return player.distanceToSqr(this.worldPosition.getX() + 0.5,

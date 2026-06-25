@@ -23,17 +23,17 @@ public final class FabricNetwork implements NetworkPlatform {
 
     /** Mod-init (both sides): payload types + serverbound receivers. */
     public static void registerCommon() {
-        for (ModNetwork.Clientbound<?> cb : ModNetwork.clientbound()) {
+        for (ModNetwork.Clientbound<? extends @NonNull CustomPacketPayload> cb : ModNetwork.clientbound()) {
             registerClientboundType(cb);
         }
-        for (ModNetwork.Serverbound<?> sb : ModNetwork.serverbound()) {
+        for (ModNetwork.Serverbound<? extends @NonNull CustomPacketPayload> sb : ModNetwork.serverbound()) {
             registerServerbound(sb);
         }
     }
 
     /** Client-init: clientbound receivers (client-only API). */
     public static void registerClient() {
-        for (ModNetwork.Clientbound<?> cb : ModNetwork.clientbound()) {
+        for (ModNetwork.Clientbound<? extends @NonNull CustomPacketPayload> cb : ModNetwork.clientbound()) {
             registerClientReceiver(cb);
         }
     }

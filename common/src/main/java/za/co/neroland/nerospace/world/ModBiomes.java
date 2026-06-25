@@ -19,22 +19,23 @@ import za.co.neroland.nerospace.NerospaceCommon;
 public final class ModBiomes {
 
     /** Intermediate terraformed look (stages 1–2): neon emerald/turquoise. */
-    public static final ResourceKey<Biome> TERRAFORMED = key("terraformed");
+    public static final @org.jspecify.annotations.NonNull ResourceKey<Biome> TERRAFORMED = key("terraformed");
 
     /** Greenxertz mature stage-3 biome: natural lush meadow. */
-    public static final ResourceKey<Biome> TERRAFORMED_MEADOW = key("terraformed_meadow");
+    public static final @org.jspecify.annotations.NonNull ResourceKey<Biome> TERRAFORMED_MEADOW = key("terraformed_meadow");
 
     /** Cindara mature stage-3 biome: warm gold-green savanna. */
-    public static final ResourceKey<Biome> TERRAFORMED_SAVANNA = key("terraformed_savanna");
+    public static final @org.jspecify.annotations.NonNull ResourceKey<Biome> TERRAFORMED_SAVANNA = key("terraformed_savanna");
 
     /** Glacira mature stage-3 biome: cold sage-green tundra. */
-    public static final ResourceKey<Biome> TERRAFORMED_TUNDRA = key("terraformed_tundra");
+    public static final @org.jspecify.annotations.NonNull ResourceKey<Biome> TERRAFORMED_TUNDRA = key("terraformed_tundra");
 
     private ModBiomes() {
     }
 
-    private static ResourceKey<Biome> key(String name) {
+    private static @org.jspecify.annotations.NonNull ResourceKey<Biome> key(
+            @org.jspecify.annotations.NonNull String name) {
         return ResourceKey.create(Registries.BIOME,
-                NerospaceCommon.id(name));
+                NerospaceCommon.id(NerospaceCommon.requireNonNull(name)));
     }
 }

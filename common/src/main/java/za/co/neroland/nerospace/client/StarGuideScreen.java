@@ -123,7 +123,8 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
         for (int i = 0; i < this.chapterButtons.size(); i++) {
             int total = StarGuide.CHAPTERS.get(i).steps().size();
             boolean allDone = Integer.bitCount(this.menu.completionMask(i)) >= total;
-            this.chapterButtons.get(i).setSelected(i == this.selectedChapter || allDone);
+            NerospaceCommon.requireNonNull(this.chapterButtons.get(i))
+                    .setSelected(i == this.selectedChapter || allDone);
         }
 
         // Dotted trajectory line linking the chapter's nodes in order (the progression path).
@@ -146,7 +147,7 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
         for (int i = 0; i < this.stepButtons.size(); i++) {
             boolean done = this.menu.isStepComplete(this.selectedChapter, i);
             boolean seen = this.menu.isStepSeen(this.selectedChapter, i);
-            SpaceButton node = this.stepButtons.get(i);
+            SpaceButton node = NerospaceCommon.requireNonNull(this.stepButtons.get(i));
             node.setSelected(done && (seen || pulseOn));
             if (done) {
                 g.fill(node.getX() + node.getWidth() - 5, node.getY() + 2, // completion pip
@@ -171,11 +172,12 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
                 Component.translatable(NerospaceCommon.requireNonNull(step.textKey())), 146);
         int lineHeight = lines.size() > 8 ? 9 : 10;
         int y = 112;
-        for (@NonNull FormattedCharSequence line : lines) {
+        for (FormattedCharSequence line : lines) {
             if (y + this.font.lineHeight > 193) {
                 break;
             }
-            g.text(this.font, line, this.leftPos + 82, this.topPos + y, 0xFFB6C6D8, false);
+            g.text(this.font, NerospaceCommon.requireNonNull(line),
+                    this.leftPos + 82, this.topPos + y, 0xFFB6C6D8, false);
             y += lineHeight;
         }
     }

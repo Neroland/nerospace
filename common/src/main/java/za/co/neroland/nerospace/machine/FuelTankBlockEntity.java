@@ -68,7 +68,8 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
 
     public static final int CANISTER_SLOT = 0;
     public static final int SIZE = 1;
-    private static final int @org.jspecify.annotations.NonNull[] SLOTS = IntStream.range(0, SIZE).toArray();
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS =
+            za.co.neroland.nerospace.NerospaceCommon.requireNonNull(IntStream.range(0, SIZE).toArray());
 
     private int fxTick;
 
@@ -242,7 +243,8 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.tank.getRawFluid()).toString());
+        output.putString("Fluid", BuiltInRegistries.FLUID.getKey(
+                za.co.neroland.nerospace.NerospaceCommon.requireNonNull(this.tank.getRawFluid())).toString());
         output.putInt("Amount", this.tank.getRawAmount());
         output.store("Canister", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(CANISTER_SLOT));
     }
@@ -250,7 +252,8 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
+        Fluid fluid = za.co.neroland.nerospace.NerospaceCommon.requireNonNull(
+                BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty"))));
         this.tank.setRaw(fluid, input.getIntOr("Amount", 0));
         this.items.set(CANISTER_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
                 input.read("Canister", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));

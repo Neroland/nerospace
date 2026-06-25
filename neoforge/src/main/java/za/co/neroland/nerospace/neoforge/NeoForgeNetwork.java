@@ -29,20 +29,22 @@ public final class NeoForgeNetwork implements NetworkPlatform {
 
     private static void onRegister(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1").optional();
-        for (ModNetwork.Clientbound<?> cb : ModNetwork.clientbound()) {
+        for (ModNetwork.Clientbound<? extends @NonNull CustomPacketPayload> cb : ModNetwork.clientbound()) {
             registerClientbound(registrar, cb);
         }
-        for (ModNetwork.Serverbound<?> sb : ModNetwork.serverbound()) {
+        for (ModNetwork.Serverbound<? extends @NonNull CustomPacketPayload> sb : ModNetwork.serverbound()) {
             registerServerbound(registrar, sb);
         }
     }
 
-    private static <T extends @NonNull CustomPacketPayload> void registerClientbound(PayloadRegistrar registrar, ModNetwork.Clientbound<T> cb) {
+    private static <T extends @NonNull CustomPacketPayload> void registerClientbound(
+            PayloadRegistrar registrar, ModNetwork.Clientbound<T> cb) {
         registrar.playToClient(cb.type(), cb.codec(),
                 (payload, context) -> context.enqueueWork(() -> cb.handler().accept(payload)));
     }
 
-    private static <T extends @NonNull CustomPacketPayload> void registerServerbound(PayloadRegistrar registrar, ModNetwork.Serverbound<T> sb) {
+    private static <T extends @NonNull CustomPacketPayload> void registerServerbound(
+            PayloadRegistrar registrar, ModNetwork.Serverbound<T> sb) {
         registrar.playToServer(sb.type(), sb.codec(),
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer serverPlayer) {

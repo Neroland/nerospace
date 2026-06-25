@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -20,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.TravellingItem;
@@ -76,7 +78,7 @@ public class UniversalPipeRenderer
             int d = dir.get3DDataValue();
             state.connections[d] = pipe.getBlockState().getValue(UniversalPipeBlock.CONNECTIONS[d]);
             for (int l = 0; l < 3; l++) {
-                PipeIoMode mode = pipe.mode(dir, layerTypes[l]);
+                PipeIoMode mode = pipe.mode(dir, NerospaceCommon.requireNonNull(layerTypes[l]));
                 state.streams[d][l] = state.connections[d] && layerHas[l] && mode.isConnected();
                 state.inward[d][l] = mode == PipeIoMode.IN;
             }
@@ -118,9 +120,10 @@ public class UniversalPipeRenderer
                 entry.z = 0.5F + to.getStepZ() * k;
             }
             entry.spin = (now * 4.0F + i * 45.0F) % 360.0F;
+            ItemStackRenderState renderState = NerospaceCommon.requireNonNull(entry.renderState);
 
             Minecraft.getInstance().getItemModelResolver().updateForTopItem(
-                    entry.renderState, item.stack(), ItemDisplayContext.GROUND, level, null,
+                    renderState, NerospaceCommon.requireNonNull(item.stack()), ItemDisplayContext.GROUND, level, null,
                     (int) pipe.getBlockPos().asLong() + i);
         }
 
@@ -136,8 +139,9 @@ public class UniversalPipeRenderer
             entry.y = 0.5F + (lane / 2) * 0.12F;
             entry.z = 0.5F;
             entry.spin = (now * 2.0F + i * 45.0F) % 360.0F;
+            ItemStackRenderState renderState = NerospaceCommon.requireNonNull(entry.renderState);
             Minecraft.getInstance().getItemModelResolver().updateForTopItem(
-                    entry.renderState, stack, ItemDisplayContext.GROUND, level, null,
+                    renderState, NerospaceCommon.requireNonNull(stack), ItemDisplayContext.GROUND, level, null,
                     (int) pipe.getBlockPos().asLong() + i + 31);
         }
     }

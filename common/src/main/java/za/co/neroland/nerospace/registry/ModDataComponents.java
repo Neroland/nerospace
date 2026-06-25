@@ -26,7 +26,7 @@ public final class ModDataComponents {
     /** Index into the pipe resource layers — which layer the Configurator is editing. */
     public static final RegistryEntry<DataComponentType<Integer>> SELECTED_PIPE_TYPE =
             COMPONENTS.register("selected_pipe_type", key -> DataComponentType.<Integer>builder()
-                    .persistent(Codec.intRange(0, 3))
+                    .persistent(NerospaceCommon.requireNonNull(Codec.intRange(0, 3)))
                     .networkSynchronized(ByteBufCodecs.VAR_INT)
                     .build());
 

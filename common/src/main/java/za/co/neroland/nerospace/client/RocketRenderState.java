@@ -11,7 +11,7 @@ public class RocketRenderState extends EntityRenderState {
     /** Per-tier hull scale (see {@code RocketEntity.visualScale}). */
     public float scale = 1.6F;
     /** Per-tier hull texture. */
-    public Identifier texture =
+    public @org.jspecify.annotations.NonNull Identifier texture =
             NerospaceCommon.id("textures/entity/rocket_t1.png");
     /** Tier ordinal — picks the per-tier geometry. */
     public int tier;

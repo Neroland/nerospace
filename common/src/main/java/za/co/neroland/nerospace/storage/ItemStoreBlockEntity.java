@@ -21,6 +21,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -32,7 +33,8 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class ItemStoreBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
     public static final int SIZE = 27;
-    private static final int @org.jspecify.annotations.NonNull[] ALL_SLOTS = IntStream.range(0, SIZE).toArray();
+    private static final int @org.jspecify.annotations.NonNull[] ALL_SLOTS =
+            NerospaceCommon.requireNonNull(IntStream.range(0, SIZE).toArray());
 
     private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
@@ -120,7 +122,8 @@ public class ItemStoreBlockEntity extends BlockEntity implements WorldlyContaine
 
     @Override
     public boolean stillValid(Player player) {
-        if (this.level == null || this.level.getBlockEntity(this.worldPosition) != this) {
+        var currentLevel = this.level;
+        if (currentLevel == null || currentLevel.getBlockEntity(this.worldPosition) != this) {
             return false;
         }
         return player.distanceToSqr(

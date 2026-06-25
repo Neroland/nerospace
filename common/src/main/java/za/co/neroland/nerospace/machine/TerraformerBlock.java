@@ -34,13 +34,14 @@ public class TerraformerBlock extends BaseEntityBlock {
 
     public static final @org.jspecify.annotations.NonNull MapCodec<TerraformerBlock> CODEC = simpleCodec(TerraformerBlock::new);
     /** The core lens faces the placer. Visual only. */
-    public static final @NonNull EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING =
+            NerospaceCommon.requireNonNull(BlockStateProperties.HORIZONTAL_FACING);
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public TerraformerBlock(Properties properties) {
-        super(properties);
+        super(NerospaceCommon.requireNonNull(properties));
         this.registerDefaultState(NerospaceCommon.requireNonNull(
-                this.stateDefinition.any().setValue(FACING, Direction.NORTH)));
+                this.stateDefinition.any().setValue(NerospaceCommon.requireNonNull(FACING), Direction.NORTH)));
     }
 
     @Override
@@ -60,8 +61,9 @@ public class TerraformerBlock extends BaseEntityBlock {
 
     @Override
     public @NonNull BlockState getStateForPlacement(@NonNull BlockPlaceContext context) {
+        Direction facing = context.getHorizontalDirection().getOpposite();
         return NerospaceCommon.requireNonNull(
-                this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()));
+                this.defaultBlockState().setValue(NerospaceCommon.requireNonNull(FACING), facing));
     }
 
     @Override

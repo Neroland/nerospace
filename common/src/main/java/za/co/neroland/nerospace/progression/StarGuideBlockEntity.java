@@ -97,7 +97,7 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
         Player nearest = serverLevel.getNearestPlayer(
                 pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, HOLOGRAM_PLAYER_RANGE, false);
         @NonNull ItemStack next = nearest instanceof ServerPlayer serverPlayer
-                ? StarGuideProgress.nextStepIcon(serverPlayer)
+                ? za.co.neroland.nerospace.NerospaceCommon.requireNonNull(StarGuideProgress.nextStepIcon(serverPlayer))
                 : ItemStack.EMPTY;
         if (!ItemStack.isSameItemSameComponents(next, this.hologram)) {
             this.hologram = next;

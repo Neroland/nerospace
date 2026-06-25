@@ -44,7 +44,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, FE_PER_TICK * 64, this::setChanged);
     private int coreTicks;
 
-    private final ContainerData data = new ContainerData() {
+    private final @org.jspecify.annotations.NonNull ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {

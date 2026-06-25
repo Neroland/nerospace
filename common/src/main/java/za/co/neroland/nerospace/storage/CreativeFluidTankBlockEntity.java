@@ -10,6 +10,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -22,7 +23,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class CreativeFluidTankBlockEntity extends BlockEntity {
 
     /** The endless source fluid (default rocket_fuel); {@link Fluids#EMPTY} = unset (drains nothing). */
-    private Fluid source = ModFluids.ROCKET_FUEL.get();
+    private @org.jspecify.annotations.NonNull Fluid source = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL.get());
 
     /** Endless source/sink of the configured {@link #source} — inserts are voided, drains are endless. */
     private final NerospaceFluidStorage infinite = new NerospaceFluidStorage() {
@@ -61,12 +62,12 @@ public class CreativeFluidTankBlockEntity extends BlockEntity {
     }
 
     /** The fluid this tank endlessly supplies (or {@link Fluids#EMPTY} when cleared). */
-    public Fluid source() {
+    public @org.jspecify.annotations.NonNull Fluid source() {
         return this.source;
     }
 
     /** Choose the endless source fluid (e.g. from a bucket); {@link Fluids#EMPTY} clears it. */
-    public void setSource(Fluid source) {
+    public void setSource(@org.jetbrains.annotations.Nullable Fluid source) {
         this.source = source == null ? Fluids.EMPTY : source;
         setChanged();
     }
@@ -74,13 +75,13 @@ public class CreativeFluidTankBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putString("Source", BuiltInRegistries.FLUID.getKey(this.source).toString());
+        output.putString("Source", BuiltInRegistries.FLUID.getKey(NerospaceCommon.requireNonNull(this.source)).toString());
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        this.source = BuiltInRegistries.FLUID.getValue(
-                Identifier.parse(input.getStringOr("Source", "minecraft:empty")));
+        this.source = NerospaceCommon.requireNonNull(BuiltInRegistries.FLUID.getValue(
+                Identifier.parse(input.getStringOr("Source", "minecraft:empty"))));
     }
 }

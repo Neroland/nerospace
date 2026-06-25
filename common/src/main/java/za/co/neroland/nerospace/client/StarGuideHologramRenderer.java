@@ -12,8 +12,10 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.progression.StarGuideBlockEntity;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -40,11 +42,13 @@ public class StarGuideHologramRenderer
     public void extractRenderState(StarGuideBlockEntity guide, StarGuideHologramRenderState state,
             float partialTick, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(guide, state, partialTick, cameraPos, breakProgress);
-        state.visible = guide.hasBook() && guide.getLevel() != null;
-        if (!state.visible) {
+        Level level = guide.getLevel();
+        if (!guide.hasBook() || level == null) {
+            state.visible = false;
             return;
         }
-        float now = guide.getLevel().getGameTime() + partialTick;
+        state.visible = true;
+        float now = level.getGameTime() + partialTick;
         state.spin = (now * 1.5F) % 360.0F;
         state.bob = Mth.sin(now * 0.06F) * 0.05F;
 
@@ -53,7 +57,7 @@ public class StarGuideHologramRenderer
             icon = new ItemStack(ModItems.STAR_GUIDE_BOOK.get()); // all complete (or no player near)
         }
         Minecraft.getInstance().getItemModelResolver().updateForTopItem(
-                state.renderState, icon, ItemDisplayContext.GROUND, guide.getLevel(), null,
+                NerospaceCommon.requireNonNull(state.renderState), icon, ItemDisplayContext.GROUND, level, null,
                 (int) guide.getBlockPos().asLong());
     }
 

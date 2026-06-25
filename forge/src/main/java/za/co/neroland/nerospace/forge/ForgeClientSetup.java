@@ -72,14 +72,18 @@ public final class ForgeClientSetup {
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
             @Override
             public <E extends Entity> void register(EntityType<? extends E> type, EntityRendererProvider<E> provider) {
-                event.registerEntityRenderer(type, provider);
+                event.registerEntityRenderer(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(provider));
             }
         });
         ClientBlockEntityRenderers.registerAll(new ClientBlockEntityRenderers.Sink() {
             @Override
             public <T extends BlockEntity, S extends BlockEntityRenderState> void register(
                     BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider) {
-                event.registerBlockEntityRenderer(type, provider);
+                event.registerBlockEntityRenderer(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(provider));
             }
         });
     }

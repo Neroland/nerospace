@@ -23,9 +23,11 @@ public final class ModFluids {
             RegistrationProvider.get(Registries.FLUID, NerospaceCommon.MOD_ID);
 
     public static final RegistryEntry<Fluid> ROCKET_FUEL =
-            FLUIDS.register("rocket_fuel", key -> FluidFactory.INSTANCE.createSource());
+            FLUIDS.register("rocket_fuel", key -> NerospaceCommon.requireNonNull(
+                    FluidFactory.INSTANCE.createSource()));
     public static final RegistryEntry<Fluid> ROCKET_FUEL_FLOWING =
-            FLUIDS.register("flowing_rocket_fuel", key -> FluidFactory.INSTANCE.createFlowing());
+            FLUIDS.register("flowing_rocket_fuel", key -> NerospaceCommon.requireNonNull(
+                    FluidFactory.INSTANCE.createFlowing()));
 
     private ModFluids() {
     }

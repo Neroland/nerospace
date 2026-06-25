@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -33,7 +34,7 @@ public class FuelTankBlock extends BaseEntityBlock {
     public static final @org.jspecify.annotations.NonNull MapCodec<FuelTankBlock> CODEC = simpleCodec(FuelTankBlock::new);
 
     public FuelTankBlock(Properties properties) {
-        super(properties);
+        super(NerospaceCommon.requireNonNull(properties));
     }
 
     @Override
@@ -120,6 +121,7 @@ public class FuelTankBlock extends BaseEntityBlock {
     }
 
     private static void playGlug(Level level, BlockPos pos) {
-        level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 0.7F, 1.0F);
+        level.playSound(null, NerospaceCommon.requireNonNull(pos), SoundEvents.BUCKET_EMPTY,
+                SoundSource.BLOCKS, 0.7F, 1.0F);
     }
 }

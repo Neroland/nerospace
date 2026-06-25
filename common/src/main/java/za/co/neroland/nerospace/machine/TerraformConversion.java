@@ -248,7 +248,8 @@ public final class TerraformConversion {
     private static boolean writeBiomeColumn(ServerLevel level, LevelChunk chunk, int x, int z,
             ResourceKey<Biome> biomeKey) {
         Holder<Biome> terra = level.registryAccess()
-                .lookupOrThrow(Registries.BIOME).getOrThrow(biomeKey);
+                .lookupOrThrow(Registries.BIOME).getOrThrow(
+                        za.co.neroland.nerospace.NerospaceCommon.requireNonNull(biomeKey));
         int bx = (x & 15) >> 2;   // biome cells are 4-block resolution (0..3 within a section)
         int bz = (z & 15) >> 2;
         boolean changed = false;

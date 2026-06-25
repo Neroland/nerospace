@@ -11,6 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * A hidden developer diagnostic block: it is deliberately left OUT of the creative menu (no entry in
  * {@code ModItems.creativeTabItems}), so the only way to get one is {@code /give @s nerospace:sentry_test}.
@@ -26,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public class SentryTestBlock extends Block {
 
     public SentryTestBlock(Properties properties) {
-        super(properties);
+        super(NerospaceCommon.requireNonNull(properties));
     }
 
     @Override

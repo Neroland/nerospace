@@ -31,6 +31,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
@@ -68,12 +69,12 @@ public class UniversalPipeBlock extends BaseEntityBlock {
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public UniversalPipeBlock(Properties properties) {
-        super(properties);
-        BlockState base = this.stateDefinition.any();
+        super(NerospaceCommon.requireNonNull(properties));
+        BlockState base = NerospaceCommon.requireNonNull(this.stateDefinition.any());
         for (BooleanProperty prop : CONNECTIONS) {
-            base = base.setValue(prop, false);
+            base = NerospaceCommon.requireNonNull(base.setValue(prop, false));
         }
-        registerDefaultState(base);
+        registerDefaultState(NerospaceCommon.requireNonNull(base));
     }
 
     private static @NonNull VoxelShape @NonNull[] buildShapes() {
@@ -153,7 +154,8 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     public static @NonNull BlockState withConnections(@NonNull BlockState state, @NonNull Level level,
             @NonNull BlockPos pos) {
         for (Direction dir : Direction.values()) {
-            state = state.setValue(CONNECTIONS[dir.get3DDataValue()], canConnect(level, pos, dir));
+            state = NerospaceCommon.requireNonNull(
+                    state.setValue(CONNECTIONS[dir.get3DDataValue()], canConnect(level, pos, dir)));
         }
         return state;
     }

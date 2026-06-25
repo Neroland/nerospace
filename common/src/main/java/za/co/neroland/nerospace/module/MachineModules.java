@@ -44,8 +44,8 @@ public final class MachineModules {
         return this.items.get(index);
     }
 
-    public void setStack(int index, ItemStack stack) {
-        this.items.set(index, stack);
+    public void setStack(int index, @org.jspecify.annotations.NonNull ItemStack stack) {
+        this.items.set(index, za.co.neroland.nerospace.NerospaceCommon.requireNonNull(stack));
         this.onChange.run();
     }
 

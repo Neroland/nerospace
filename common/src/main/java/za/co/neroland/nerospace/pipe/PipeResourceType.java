@@ -3,6 +3,10 @@ package za.co.neroland.nerospace.pipe;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * The four resource layers a Universal Pipe carries simultaneously over its one connection graph.
  * Each has a display colour (ARGB) used by the streams in the pipe renderer and the Configurator UI.
@@ -36,7 +40,7 @@ public enum PipeResourceType implements StringRepresentable {
     }
 
     @Override
-    public String getSerializedName() {
-        return this.name;
+    public @NonNull String getSerializedName() {
+        return NerospaceCommon.requireNonNull(this.name);
     }
 }

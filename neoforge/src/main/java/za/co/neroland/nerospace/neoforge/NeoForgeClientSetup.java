@@ -1,5 +1,7 @@
 package za.co.neroland.nerospace.neoforge;
 
+import java.util.function.Supplier;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -10,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -20,6 +23,8 @@ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.fluid.FluidTintSources;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
+
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
@@ -82,8 +87,9 @@ public final class NeoForgeClientSetup {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null
-                && OxygenFieldEvents.FIELD_DIMENSIONS.contains(mc.player.level().dimension())) {
+        var player = mc.player;
+        if (player != null
+                && OxygenFieldEvents.FIELD_DIMENSIONS.contains(player.level().dimension())) {
             event.setCanceled(true);
         }
     }
@@ -92,14 +98,18 @@ public final class NeoForgeClientSetup {
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
             @Override
             public <E extends Entity> void register(EntityType<? extends E> type, EntityRendererProvider<E> provider) {
-                event.registerEntityRenderer(type, provider);
+                event.registerEntityRenderer(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(provider));
             }
         });
         ClientBlockEntityRenderers.registerAll(new ClientBlockEntityRenderers.Sink() {
             @Override
             public <T extends BlockEntity, S extends BlockEntityRenderState> void register(
                     BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider) {
-                event.registerBlockEntityRenderer(type, provider);
+                event.registerBlockEntityRenderer(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(provider));
             }
         });
     }
@@ -125,8 +135,10 @@ public final class NeoForgeClientSetup {
     private static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
         Material still = new Material(NerospaceCommon.id("block/rocket_fuel_still"));
         Material flow = new Material(NerospaceCommon.id("block/rocket_fuel_flow"));
+        @NonNull Supplier<? extends Fluid> source = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL);
+        @NonNull Supplier<? extends Fluid> flowing = NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL_FLOWING);
         event.register(
                 new FluidModel.Unbaked(still, flow, still, FluidTintSources.constant(0xFFFFFFFF)),
-                ModFluids.ROCKET_FUEL, ModFluids.ROCKET_FUEL_FLOWING);
+                source, flowing);
     }
 }

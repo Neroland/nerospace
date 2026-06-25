@@ -1,5 +1,9 @@
 package za.co.neroland.nerospace.platform;
 
+import java.util.function.Supplier;
+
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
@@ -12,6 +16,8 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModItems;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * NeoForge {@link FluidFactory}: the rocket-fuel fluid as a {@link BaseFlowingFluid} backed by a
@@ -32,15 +38,26 @@ public final class NeoForgeFluidFactory implements FluidFactory {
                     .viscosity(1500)
                     .canConvertToSource(false)));
 
-    private static final BaseFlowingFluid.Properties PROPERTIES = new BaseFlowingFluid.Properties(
-            ROCKET_FUEL_TYPE, ModFluids.ROCKET_FUEL, ModFluids.ROCKET_FUEL_FLOWING)
-            .bucket(ModItems.ROCKET_FUEL_BUCKET)
-            .block(ModBlocks.ROCKET_FUEL_BLOCK)
+    private static final @NonNull Supplier<? extends FluidType> ROCKET_FUEL_TYPE_SUPPLIER =
+            NerospaceCommon.requireNonNull(ROCKET_FUEL_TYPE);
+    private static final @NonNull Supplier<? extends Fluid> ROCKET_FUEL =
+            NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL);
+    private static final @NonNull Supplier<? extends Fluid> ROCKET_FUEL_FLOWING =
+            NerospaceCommon.requireNonNull(ModFluids.ROCKET_FUEL_FLOWING);
+    private static final @NonNull Supplier<? extends Item> ROCKET_FUEL_BUCKET =
+            NerospaceCommon.requireNonNull(ModItems.ROCKET_FUEL_BUCKET);
+    private static final @NonNull Supplier<? extends LiquidBlock> ROCKET_FUEL_BLOCK =
+            NerospaceCommon.requireNonNull(ModBlocks.ROCKET_FUEL_BLOCK);
+
+    private static final BaseFlowingFluid.@NonNull Properties PROPERTIES = new BaseFlowingFluid.Properties(
+            ROCKET_FUEL_TYPE_SUPPLIER, ROCKET_FUEL, ROCKET_FUEL_FLOWING)
+            .bucket(ROCKET_FUEL_BUCKET)
+            .block(ROCKET_FUEL_BLOCK)
             .slopeFindDistance(2)
             .levelDecreasePerBlock(2);
 
     /** Attach the FluidType DeferredRegister to the mod event bus (call from the entry point). */
-    public static void registerFluidTypes(IEventBus modEventBus) {
+    public static void registerFluidTypes(@NonNull IEventBus modEventBus) {
         FLUID_TYPES.register(modEventBus);
     }
 

@@ -21,10 +21,10 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public record MeteorSyncPayload(boolean present, long pos, int state) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.@NonNull Type<MeteorSyncPayload> TYPE =
+    public static final CustomPacketPayload.@NonNull Type<@NonNull MeteorSyncPayload> TYPE =
             new Type<>(NerospaceCommon.id("meteor_sync"));
 
-    public static final @NonNull StreamCodec<RegistryFriendlyByteBuf, MeteorSyncPayload> STREAM_CODEC = StreamCodec.composite(
+    public static final @NonNull StreamCodec<RegistryFriendlyByteBuf, @NonNull MeteorSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL, MeteorSyncPayload::present,
             ByteBufCodecs.VAR_LONG, MeteorSyncPayload::pos,
             ByteBufCodecs.VAR_INT, MeteorSyncPayload::state,
@@ -32,12 +32,12 @@ public record MeteorSyncPayload(boolean present, long pos, int state) implements
 
     public static final MeteorSyncPayload ABSENT = new MeteorSyncPayload(false, 0L, 0);
 
-    private static MeteorSyncPayload of(Boolean present, Long pos, Integer state) {
+    private static @NonNull MeteorSyncPayload of(Boolean present, Long pos, Integer state) {
         return new MeteorSyncPayload(present.booleanValue(), pos.longValue(), state.intValue());
     }
 
     @Override
-    public CustomPacketPayload.@NonNull Type<? extends CustomPacketPayload> type() {
+    public CustomPacketPayload.@NonNull Type<? extends @NonNull CustomPacketPayload> type() {
         return TYPE;
     }
 }

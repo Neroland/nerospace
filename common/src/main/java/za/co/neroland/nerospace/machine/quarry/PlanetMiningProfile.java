@@ -16,14 +16,14 @@ public record PlanetMiningProfile(double speedMultiplier, double bonusDropChance
     private static final PlanetMiningProfile CINDARA = new PlanetMiningProfile(0.8D, 0.0D);
     private static final PlanetMiningProfile GLACIRA = new PlanetMiningProfile(0.7D, 0.0D);
 
-    public static PlanetMiningProfile forDimension(ResourceKey<Level> dimension) {
-        if (ModDimensions.GREENXERTZ_LEVEL.equals(dimension)) {
+    public static PlanetMiningProfile forDimension(@org.jspecify.annotations.NonNull ResourceKey<Level> dimension) {
+        if (dimension.equals(ModDimensions.GREENXERTZ_LEVEL)) {
             return GREENXERTZ;
         }
-        if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
+        if (dimension.equals(ModDimensions.CINDARA_LEVEL)) {
             return CINDARA;
         }
-        if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
+        if (dimension.equals(ModDimensions.GLACIRA_LEVEL)) {
             return GLACIRA;
         }
         return DEFAULT;

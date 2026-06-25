@@ -27,10 +27,10 @@ public final class ForgeNetwork implements NetworkPlatform {
                         .payloadChannel()
                         .play()
                         .bidirectional();
-        for (ModNetwork.Clientbound<?> cb : ModNetwork.clientbound()) {
+        for (ModNetwork.Clientbound<? extends @NonNull CustomPacketPayload> cb : ModNetwork.clientbound()) {
             registerClientbound(play, cb);
         }
-        for (ModNetwork.Serverbound<?> sb : ModNetwork.serverbound()) {
+        for (ModNetwork.Serverbound<? extends @NonNull CustomPacketPayload> sb : ModNetwork.serverbound()) {
             registerServerbound(play, sb);
         }
         channel = play.build();

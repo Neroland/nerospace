@@ -302,7 +302,8 @@ public final class ModBlocks {
                             .strength(100.0F).noLootTable()));
 
     private static RegistryEntry<Block> block(String name, UnaryOperator<BlockBehaviour.Properties> props) {
-        return BLOCKS.register(name, key -> new Block(props.apply(BlockBehaviour.Properties.of().setId(key))));
+        return BLOCKS.register(name, key -> new Block(
+                NerospaceCommon.requireNonNull(props.apply(BlockBehaviour.Properties.of().setId(key)))));
     }
 
     private ModBlocks() {

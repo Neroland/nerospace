@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
-
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -30,14 +29,14 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class CombustionGeneratorBlock extends BaseEntityBlock {
 
     public static final @org.jspecify.annotations.NonNull MapCodec<CombustionGeneratorBlock> CODEC = simpleCodec(CombustionGeneratorBlock::new);
-    public static final @org.jspecify.annotations.NonNull EnumProperty<Direction> FACING =
+    public static final EnumProperty<Direction> FACING =
             NerospaceCommon.requireNonNull(BlockStateProperties.HORIZONTAL_FACING);
 
     @SuppressWarnings("this-escape")
     public CombustionGeneratorBlock(Properties properties) {
         super(NerospaceCommon.requireNonNull(properties));
         this.registerDefaultState(NerospaceCommon.requireNonNull(
-                this.stateDefinition.any().setValue(FACING, Direction.NORTH)));
+                this.stateDefinition.any().setValue(NerospaceCommon.requireNonNull(FACING), Direction.NORTH)));
     }
 
     @Override
@@ -57,8 +56,9 @@ public class CombustionGeneratorBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction facing = context.getHorizontalDirection().getOpposite();
         return NerospaceCommon.requireNonNull(
-                this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()));
+                this.defaultBlockState().setValue(NerospaceCommon.requireNonNull(FACING), facing));
     }
 
     @Nullable

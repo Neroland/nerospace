@@ -245,7 +245,7 @@ public final class QuarryRegion {
     private static BlockPos projectToLandmark(Level level, BlockPos from, Direction dir, int range) {
         BlockPos.MutableBlockPos cursor = from.mutable();
         for (int step = 1; step <= range; step++) {
-            cursor.move(dir);
+            cursor.move(za.co.neroland.nerospace.NerospaceCommon.requireNonNull(dir));
             if (isLandmark(level, cursor)) {
                 return cursor.immutable();
             }
@@ -254,7 +254,7 @@ public final class QuarryRegion {
     }
 
     private static boolean isLandmark(Level level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
+        BlockState state = level.getBlockState(za.co.neroland.nerospace.NerospaceCommon.requireNonNull(pos));
         return state.getBlock() instanceof QuarryLandmarkBlock;
     }
 

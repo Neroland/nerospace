@@ -8,7 +8,6 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -18,7 +17,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
  * Authored purely in Java, and (per the cross-loader convention) baked directly from
  * {@code createBodyLayer().bakeRoot()} by the renderer, so no model-layer registry is required.
  */
-public class FallingMeteorModel extends EntityModel<EntityRenderState> {
+public class FallingMeteorModel extends EntityModel<FallingMeteorRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
             NerospaceCommon.id("falling_meteor"), "main");

@@ -10,6 +10,7 @@ import net.minecraft.world.level.ItemLike;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModItems;
+import org.jspecify.annotations.NonNull;
 
 /**
  * The Star Guide content table (chapters → steps, in code). Completion is advancement-driven — each
@@ -25,35 +26,37 @@ import za.co.neroland.nerospace.registry.ModItems;
 public final class StarGuide {
 
     /** One step of a chapter: icon + lang keys + the advancement that completes it. */
-    public record Step(String id, Supplier<? extends ItemLike> icon, Identifier advancement) {
+    public record Step(@NonNull String id, Supplier<? extends @NonNull ItemLike> icon,
+        @NonNull Identifier advancement) {
 
-        public String titleKey() {
-            return "gui.nerospace.star_guide.step." + this.id;
+        public @NonNull String titleKey() {
+            return NerospaceCommon.requireNonNull("gui.nerospace.star_guide.step." + this.id);
         }
 
-        public String textKey() {
-            return "gui.nerospace.star_guide.step." + this.id + ".text";
+        public @NonNull String textKey() {
+            return NerospaceCommon.requireNonNull("gui.nerospace.star_guide.step." + this.id + ".text");
         }
 
-        public ItemStack iconStack() {
-            return new ItemStack(this.icon.get());
+        public @NonNull ItemStack iconStack() {
+            return NerospaceCommon.requireNonNull(new ItemStack(NerospaceCommon.requireNonNull(this.icon.get())));
         }
     }
 
     /** A chapter: lang key + ordered steps (≤ 16 so the completion bitmask fits a data slot). */
-    public record Chapter(String id, List<Step> steps) {
+    public record Chapter(@NonNull String id, List<Step> steps) {
 
-        public String titleKey() {
-            return "gui.nerospace.star_guide.chapter." + this.id;
+        public @NonNull String titleKey() {
+            return NerospaceCommon.requireNonNull("gui.nerospace.star_guide.chapter." + this.id);
         }
     }
 
-    private static Identifier adv(String path) {
+    private static @NonNull Identifier adv(@NonNull String path) {
         return NerospaceCommon.id(path);
     }
 
-    private static Step step(String id, Supplier<? extends ItemLike> icon, String advancementPath) {
-        return new Step(id, icon, adv(advancementPath));
+    private static StarGuide.@NonNull Step step(@NonNull String id, Supplier<? extends @NonNull ItemLike> icon,
+            @NonNull String advancementPath) {
+        return new Step(id, icon, NerospaceCommon.requireNonNull(adv(advancementPath)));
     }
 
     /** The chapters (order = chapter index used by menu completion bitmasks). */

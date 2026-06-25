@@ -41,12 +41,12 @@ public final class TerraformResources {
         }
         List<Block> out = new ArrayList<>();
         for (String id : ORE_IDS) {
-            Identifier rl = Identifier.tryParse(id);
+            Identifier rl = Identifier.tryParse(za.co.neroland.nerospace.NerospaceCommon.requireNonNull(id));
             if (rl == null) {
                 continue;
             }
             Block block = BuiltInRegistries.BLOCK.getValue(rl);
-            if (block != null && block != Blocks.AIR) {
+            if (block != Blocks.AIR) {
                 out.add(block);
             }
         }

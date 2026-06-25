@@ -345,7 +345,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         int placedThisTick = 0;
         boolean changed = false;
         while (this.frameIndex < ring.size() && placedThisTick < FRAME_BLOCKS_PER_STEP) {
-            BlockPos fp = ring.get(this.frameIndex);
+            BlockPos fp = NerospaceCommon.requireNonNull(ring.get(this.frameIndex));
             BlockState existing = level.getBlockState(fp);
             if (existing.getBlock() instanceof QuarryFrameBlock) {
                 this.frameIndex++;
@@ -707,8 +707,9 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
             return;
         }
         for (BlockPos fp : region.framePositions()) {
-            if (level.getBlockState(fp).getBlock() instanceof QuarryFrameBlock) {
-                level.removeBlock(fp, false);
+            BlockPos framePos = NerospaceCommon.requireNonNull(fp);
+            if (level.getBlockState(framePos).getBlock() instanceof QuarryFrameBlock) {
+                level.removeBlock(framePos, false);
             }
         }
     }

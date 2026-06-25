@@ -9,6 +9,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -31,14 +32,16 @@ public class FluidTankBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.tank.getRawFluid()).toString());
+        output.putString("Fluid", BuiltInRegistries.FLUID.getKey(
+                NerospaceCommon.requireNonNull(this.tank.getRawFluid())).toString());
         output.putInt("Amount", this.tank.getRawAmount());
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
+        Fluid fluid = NerospaceCommon.requireNonNull(BuiltInRegistries.FLUID.getValue(
+                Identifier.parse(input.getStringOr("Fluid", "minecraft:empty"))));
         this.tank.setRaw(fluid, input.getIntOr("Amount", 0));
     }
 }

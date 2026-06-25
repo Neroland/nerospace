@@ -14,6 +14,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -83,8 +84,8 @@ public abstract class RocketFuelFluid extends FlowingFluid {
 
     @Override
     protected BlockState createLegacyBlock(FluidState state) {
-        return ModBlocks.ROCKET_FUEL_BLOCK.get().defaultBlockState()
-                .setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
+        return NerospaceCommon.requireNonNull(ModBlocks.ROCKET_FUEL_BLOCK.get().defaultBlockState()
+                .setValue(LiquidBlock.LEVEL, getLegacyLevel(state)));
     }
 
     public static final class Source extends RocketFuelFluid {

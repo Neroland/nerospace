@@ -81,7 +81,8 @@ public class SolarPanelBlockEntity extends BlockEntity {
         if (anchor.equals(this.worldPosition)) {
             return this;
         }
-        return this.level != null && this.level.getBlockEntity(anchor) instanceof SolarPanelBlockEntity a
+        Level currentLevel = this.level;
+        return currentLevel != null && currentLevel.getBlockEntity(anchor) instanceof SolarPanelBlockEntity a
                 ? a : null;
     }
 

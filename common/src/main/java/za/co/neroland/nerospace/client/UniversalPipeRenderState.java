@@ -6,6 +6,8 @@ import java.util.List;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * Render state for the Universal Pipe: the item stacks physically travelling through the segment, with
  * their in-block offsets pre-computed during extraction. Entries are pooled and reused frame to frame.
@@ -37,7 +39,7 @@ public class UniversalPipeRenderState extends BlockEntityRenderState {
     public int visibleItems;
 
     public static final class TravellingItemEntry {
-        public final ItemStackRenderState renderState = new ItemStackRenderState();
+        public final @NonNull ItemStackRenderState renderState = new ItemStackRenderState();
         public float x;
         public float y;
         public float z;

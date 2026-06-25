@@ -20,6 +20,8 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * Creative Fluid Tank block — an endless source of one configured fluid (defaults to rocket_fuel).
  * Right-click with a filled bucket to choose the source fluid (the bucket is kept), sneak-empty-hand to
@@ -30,7 +32,7 @@ public class CreativeFluidTankBlock extends AbstractStorageBlock {
     public static final @org.jspecify.annotations.NonNull MapCodec<CreativeFluidTankBlock> CODEC = simpleCodec(CreativeFluidTankBlock::new);
 
     public CreativeFluidTankBlock(Properties properties) {
-        super(properties);
+        super(NerospaceCommon.requireNonNull(properties));
     }
 
     @Override
@@ -81,6 +83,6 @@ public class CreativeFluidTankBlock extends AbstractStorageBlock {
 
     /** A display name for a fluid, derived from its registry id (version-stable; no loader fluid-type API). */
     private static Component fluidName(Fluid fluid) {
-        return Component.literal(BuiltInRegistries.FLUID.getKey(fluid).getPath());
+        return Component.literal(BuiltInRegistries.FLUID.getKey(NerospaceCommon.requireNonNull(fluid)).getPath());
     }
 }

@@ -2,6 +2,10 @@ package za.co.neroland.nerospace.pipe;
 
 import net.minecraft.util.StringRepresentable;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * Per-face, per-resource-type input/output mode of a Universal Pipe. Every face holds one of these for
  * each {@link PipeResourceType}, so a single face can (e.g.) take fluid IN while sending energy OUT.
@@ -40,7 +44,7 @@ public enum PipeIoMode implements StringRepresentable {
     }
 
     @Override
-    public String getSerializedName() {
-        return this.name;
+    public @NonNull String getSerializedName() {
+        return NerospaceCommon.requireNonNull(this.name);
     }
 }

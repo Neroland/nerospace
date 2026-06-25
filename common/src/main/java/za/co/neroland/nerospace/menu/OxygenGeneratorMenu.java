@@ -20,14 +20,15 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
 public class OxygenGeneratorMenu extends AbstractContainerMenu {
 
     private final @org.jspecify.annotations.NonNull ContainerData data;
-    private final ContainerLevelAccess access;
+    private final @org.jspecify.annotations.NonNull ContainerLevelAccess access;
 
     /** Client constructor (referenced by the {@code MenuType}); dummy data syncs from the server. */
     public OxygenGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(id, playerInventory, new SimpleContainerData(4), ContainerLevelAccess.NULL);
     }
 
-    public OxygenGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull ContainerData data, ContainerLevelAccess access) {
+    public OxygenGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull ContainerData data,
+            @org.jspecify.annotations.NonNull ContainerLevelAccess access) {
         super(ModMenuTypes.OXYGEN_GENERATOR.get(), id);
         this.data = data;
         this.access = access;

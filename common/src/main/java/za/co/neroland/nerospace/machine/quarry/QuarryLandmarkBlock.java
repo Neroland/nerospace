@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -26,10 +27,11 @@ public class QuarryLandmarkBlock extends BaseEntityBlock {
 
     public static final @org.jspecify.annotations.NonNull MapCodec<QuarryLandmarkBlock> CODEC = simpleCodec(QuarryLandmarkBlock::new);
 
-    private static final VoxelShape SHAPE = Block.box(5.0D, 0.0D, 5.0D, 11.0D, 12.0D, 11.0D);
+    private static final @org.jspecify.annotations.NonNull VoxelShape SHAPE =
+            NerospaceCommon.requireNonNull(Block.box(5.0D, 0.0D, 5.0D, 11.0D, 12.0D, 11.0D));
 
     public QuarryLandmarkBlock(Properties properties) {
-        super(properties);
+        super(NerospaceCommon.requireNonNull(properties));
     }
 
     @Override

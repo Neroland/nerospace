@@ -69,14 +69,18 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
             @Override
             public <E extends Entity> void register(EntityType<? extends E> type, EntityRendererProvider<E> provider) {
-                EntityRendererRegistry.register(type, provider);
+                EntityRendererRegistry.register(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(provider));
             }
         });
         ClientBlockEntityRenderers.registerAll(new ClientBlockEntityRenderers.Sink() {
             @Override
             public <T extends BlockEntity, S extends BlockEntityRenderState> void register(
                     BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider) {
-                BlockEntityRendererRegistry.register(type, provider);
+                BlockEntityRendererRegistry.register(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(provider));
             }
         });
 
@@ -102,8 +106,9 @@ public final class NerospaceFabricClient implements ClientModInitializer {
                 (graphics, delta) -> OxygenHud.render(graphics));
         HudElementRegistry.replaceElement(VanillaHudElements.AIR_BAR, original -> (graphics, delta) -> {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null
-                    && OxygenFieldEvents.FIELD_DIMENSIONS.contains(mc.player.level().dimension())) {
+            var player = mc.player;
+            if (player != null
+                    && OxygenFieldEvents.FIELD_DIMENSIONS.contains(player.level().dimension())) {
                 return; // suppress vanilla air bubbles on airless dims
             }
             original.extractRenderState(graphics, delta);

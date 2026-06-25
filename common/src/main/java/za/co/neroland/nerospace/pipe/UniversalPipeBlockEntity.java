@@ -443,10 +443,9 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
         this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);
         this.travelling.clear();
-        this.travelling.addAll(za.co.neroland.nerospace.NerospaceCommon.orElse(
-                input.read("Travelling", za.co.neroland.nerospace.NerospaceCommon.requireNonNull(
-                        TravellingItem.CODEC.listOf())),
-                List.of()));
+        for (TravellingItem item : input.listOrEmpty("Travelling", TravellingItem.CODEC)) {
+            this.travelling.add(za.co.neroland.nerospace.NerospaceCommon.requireNonNull(item));
+        }
     }
 
     // --- Client sync (travelling-item visuals ride the block-entity update packet) ------------

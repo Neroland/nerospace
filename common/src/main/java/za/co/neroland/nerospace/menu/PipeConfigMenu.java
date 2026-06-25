@@ -62,7 +62,8 @@ public class PipeConfigMenu extends AbstractContainerMenu {
             return true;
         }
         if (id >= FACE_BASE && id < FACE_BASE + 6) {
-            current.cycleMode(Direction.from3DDataValue(id - FACE_BASE), getSelectedType());
+            current.cycleMode(Direction.from3DDataValue(id - FACE_BASE),
+                    za.co.neroland.nerospace.NerospaceCommon.requireNonNull(getSelectedType()));
             return true;
         }
         return false;

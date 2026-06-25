@@ -4,6 +4,8 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.util.StringRepresentable;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.config.NerospaceConfig;
 
 /**
@@ -24,7 +26,7 @@ public enum SolarTier implements StringRepresentable {
 
     public static final Codec<SolarTier> CODEC = StringRepresentable.fromEnum(SolarTier::values);
 
-    private final String name;
+    private final @NonNull String name;
     /** 1-based tier number. */
     public final int tier;
     /** Footprint edge length in blocks: T1 = 1 (1×1), T2 = 2, T3 = 3 (parity; placement is 1×1 for now). */
@@ -32,7 +34,7 @@ public enum SolarTier implements StringRepresentable {
     private final int baseFePerTick;
     private final int baseBuffer;
 
-    SolarTier(String name, int tier, int footprint, int baseFePerTick, int baseBuffer) {
+    SolarTier(@NonNull String name, int tier, int footprint, int baseFePerTick, int baseBuffer) {
         this.name = name;
         this.tier = tier;
         this.footprint = footprint;
@@ -56,7 +58,7 @@ public enum SolarTier implements StringRepresentable {
     }
 
     @Override
-    public String getSerializedName() {
+    public @NonNull String getSerializedName() {
         return this.name;
     }
 }
