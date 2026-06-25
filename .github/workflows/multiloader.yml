@@ -65,6 +65,16 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      # Forge's userdev decompile (ForgeGradle Mavenizer) is heavy on a COLD runner: it strips,
+      # merges and decompiles vanilla, then patches/remaps. The decompiled sources + the per-node
+      # mavenizer repo can need ~10 GB; the default runner image leaves little headroom. Reclaim
+      # space the build never uses so a cold decompile can't fail on "No space left on device".
+      - name: Free up runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+                      /usr/local/share/boost "${AGENT_TOOLSDIRECTORY:-/opt/hostedtoolcache}" || true
+          df -h /
+
       - name: Setup JDK 25
         uses: actions/setup-java@v5
         with:
@@ -80,6 +90,17 @@ jobs:
       - name: Build ${{ matrix.loader }} for MC ${{ matrix.mc }}
         # Stonecutter: each loader x MC version is its own node (:loader:version:build).
         # The old `-Pminecraft_version` axis is gone — the node path selects the version.
+        #
+        # JAVA_TOOL_OPTIONS gives the Forge Mavenizer's DECOMPILER SUBPROCESS a real heap. That
+        # subprocess (a child JVM the Mavenizer launches with its own bundled JDK) is NOT bound by
+        # `org.gradle.jvmargs`; left to its default it sizes to a fraction of physical RAM, which is
+        # plenty on a dev box but too small on a 16 GB runner -> cold `decompile` OOMs (the regression:
+        # earlier runs only passed because the decompile output was restored from the Gradle cache).
+        # Every cell configures the :forge nodes, so the decompiler can run in any job -> set it here
+        # for the whole matrix. The Gradle daemon keeps its explicit -Xmx3G (a later -Xmx wins), so
+        # only the otherwise-unbounded child JVMs pick this up.
+        env:
+          JAVA_TOOL_OPTIONS: "-Xmx6g"
         run: >-
           ./gradlew :${{ matrix.loader }}:${{ matrix.mc }}:build
           --stacktrace

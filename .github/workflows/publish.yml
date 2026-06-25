@@ -89,6 +89,14 @@ jobs:
         with:
           fetch-depth: 1
 
+      # Reclaim space the build never uses so a cold Forge decompile can't fail on a full disk
+      # (the decompiled sources + per-node mavenizer repos can need ~10 GB). See multiloader.yml.
+      - name: Free up runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+                      /usr/local/share/boost "${AGENT_TOOLSDIRECTORY:-/opt/hostedtoolcache}" || true
+          df -h /
+
       - name: Setup JDK 25
         uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
@@ -104,7 +112,14 @@ jobs:
       # Build all six cells (loader x MC version). Each produces a distinctly named jar under
       # <loader>/versions/<mc>/build/libs. Forge's distributable is the jarJar output
       # ("*-all.jar", with embedded Sentry); the plain Forge jar is not shipped.
+      #
+      # JAVA_TOOL_OPTIONS gives the Forge Mavenizer's decompiler SUBPROCESS a real heap on a cold
+      # runner (it is a child JVM not bound by org.gradle.jvmargs; its default sizes to a fraction
+      # of physical RAM, too small on a 16 GB runner -> cold `decompile` OOMs). See the matching
+      # note in multiloader.yml. The daemon keeps its explicit -Xmx3G; only the child JVMs use this.
       - name: Build all cells
+        env:
+          JAVA_TOOL_OPTIONS: "-Xmx6g"
         run: >-
           ./gradlew
           :fabric:26.1.2:build :fabric:26.2:build
