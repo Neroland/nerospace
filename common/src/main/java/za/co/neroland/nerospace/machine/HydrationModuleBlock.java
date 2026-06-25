@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
+import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -40,7 +41,7 @@ public class HydrationModuleBlock extends BaseEntityBlock {
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public HydrationModuleBlock(Properties properties) {
         super(NerospaceCommon.requireNonNull(properties));
-        this.registerDefaultState(NerospaceCommon.requireNonNull(
+        this.registerDefaultState(java.util.Objects.requireNonNull(
                 this.stateDefinition.any().setValue(NerospaceCommon.requireNonNull(FACING), Direction.NORTH)));
     }
 
@@ -76,7 +77,7 @@ public class HydrationModuleBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.HYDRATION_MODULE.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.HYDRATION_MODULE.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 

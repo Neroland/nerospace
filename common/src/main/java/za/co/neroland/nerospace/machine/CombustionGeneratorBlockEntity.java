@@ -118,7 +118,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
                 new ItemStack(Items.CHARCOAL),
                 new ItemStack(Items.COAL_BLOCK),
                 new ItemStack(Items.BLAZE_ROD),
-                new ItemStack(ModItems.ROCKET_FUEL_CANISTER.get()));
+                new ItemStack(java.util.Objects.requireNonNull(ModItems.ROCKET_FUEL_CANISTER.get())));
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {

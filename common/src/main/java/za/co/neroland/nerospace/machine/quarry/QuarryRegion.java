@@ -140,9 +140,10 @@ public final class QuarryRegion {
         int refY = seed.getY();
 
         while (!queue.isEmpty() && cluster.size() < MAX_LANDMARKS) {
-            BlockPos pos = queue.poll();
+            BlockPos pos = java.util.Objects.requireNonNull(queue.poll());
             for (Direction dir : Direction.Plane.HORIZONTAL) {
-                BlockPos linked = projectToLandmark(level, pos, dir, maxSide);
+                Direction checkedDir = java.util.Objects.requireNonNull(dir);
+                BlockPos linked = projectToLandmark(level, pos, checkedDir, maxSide);
                 if (linked != null && cluster.add(linked)) {
                     queue.add(linked);
                 }

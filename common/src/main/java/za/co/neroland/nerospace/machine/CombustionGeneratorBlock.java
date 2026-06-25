@@ -35,7 +35,7 @@ public class CombustionGeneratorBlock extends BaseEntityBlock {
     @SuppressWarnings("this-escape")
     public CombustionGeneratorBlock(Properties properties) {
         super(NerospaceCommon.requireNonNull(properties));
-        this.registerDefaultState(NerospaceCommon.requireNonNull(
+        this.registerDefaultState(java.util.Objects.requireNonNull(
                 this.stateDefinition.any().setValue(NerospaceCommon.requireNonNull(FACING), Direction.NORTH)));
     }
 
@@ -78,11 +78,11 @@ public class CombustionGeneratorBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.COMBUSTION_GENERATOR.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.COMBUSTION_GENERATOR.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 

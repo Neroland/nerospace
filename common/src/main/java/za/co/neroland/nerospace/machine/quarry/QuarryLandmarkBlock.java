@@ -15,6 +15,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -59,7 +61,7 @@ public class QuarryLandmarkBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.QUARRY_LANDMARK.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.QUARRY_LANDMARK.get()),
                 (lvl, pos, st, be) -> be.clientTick(lvl, pos, st));
     }
 }

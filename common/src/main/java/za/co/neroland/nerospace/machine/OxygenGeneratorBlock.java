@@ -56,11 +56,11 @@ public class OxygenGeneratorBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.OXYGEN_GENERATOR.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.OXYGEN_GENERATOR.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 

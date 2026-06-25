@@ -70,6 +70,6 @@ public enum MinerTier {
         if (ordinal < 0 || ordinal >= values.length) {
             return TIER_1;
         }
-        return values[ordinal];
+        return java.util.Objects.requireNonNull(values[ordinal]);
     }
 }

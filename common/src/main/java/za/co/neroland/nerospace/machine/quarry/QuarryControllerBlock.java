@@ -15,6 +15,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -25,7 +27,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class QuarryControllerBlock extends BaseEntityBlock {
 
     public static final MapCodec<QuarryControllerBlock> CODEC =
-            simpleCodec(props -> new QuarryControllerBlock(props, MinerTier.TIER_1));
+            simpleCodec(props -> new QuarryControllerBlock(props, java.util.Objects.requireNonNull(MinerTier.TIER_1)));
 
     private final MinerTier tier;
 
@@ -62,7 +64,7 @@ public class QuarryControllerBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.QUARRY_CONTROLLER.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.QUARRY_CONTROLLER.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 

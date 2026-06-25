@@ -43,7 +43,7 @@ public class SolarPanelBlock extends BaseEntityBlock {
                     SolarTier.CODEC.fieldOf("tier").forGetter(SolarPanelBlock::tier),
                     propertiesCodec()
             ).apply(instance, (tier, properties) -> new SolarPanelBlock(NerospaceCommon.requireNonNull(tier),
-                    properties))));
+                    java.util.Objects.requireNonNull(properties)))));
 
     /** True on the unit's min-corner cell — the only cell that drops the item and renders the deck. */
     public static final BooleanProperty ANCHOR = BooleanProperty.create("anchor");
@@ -89,12 +89,12 @@ public class SolarPanelBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state,
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
             BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.SOLAR_PANEL.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.SOLAR_PANEL.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 

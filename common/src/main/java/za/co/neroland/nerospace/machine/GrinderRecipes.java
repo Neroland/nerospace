@@ -41,10 +41,10 @@ public final class GrinderRecipes {
         if (input.is(ModItems.NEROSIUM_ORE_ITEM.get())
                 || input.is(ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get())
                 || input.is(ModItems.RAW_NEROSIUM.get())) {
-            return new ItemStack(ModItems.NEROSIUM_DUST.get(), 2);
+            return new ItemStack(java.util.Objects.requireNonNull(ModItems.NEROSIUM_DUST.get()), 2);
         }
         if (input.is(ModItems.NEROSIUM_INGOT.get())) {
-            return new ItemStack(ModItems.NEROSIUM_DUST.get(), 1);
+            return new ItemStack(java.util.Objects.requireNonNull(ModItems.NEROSIUM_DUST.get()), 1);
         }
         return ItemStack.EMPTY;
     }

@@ -36,7 +36,7 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
     @SuppressWarnings("this-escape")
     public NerosiumGrinderBlock(Properties properties) {
         super(NerospaceCommon.requireNonNull(properties));
-        this.registerDefaultState(NerospaceCommon.requireNonNull(
+        this.registerDefaultState(java.util.Objects.requireNonNull(
                 this.stateDefinition.any().setValue(NerospaceCommon.requireNonNull(FACING), Direction.NORTH)));
     }
 
@@ -79,11 +79,11 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.NEROSIUM_GRINDER.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.NEROSIUM_GRINDER.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 }

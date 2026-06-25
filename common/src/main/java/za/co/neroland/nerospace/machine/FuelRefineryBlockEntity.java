@@ -103,7 +103,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
     }
 
     private static Fluid rocketFuel() {
-        return ModFluids.ROCKET_FUEL.get();
+        return java.util.Objects.requireNonNull(ModFluids.ROCKET_FUEL.get());
     }
 
     private static boolean slotAccepts(int index, ItemStack stack) {

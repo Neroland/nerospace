@@ -16,6 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -50,7 +52,7 @@ public class FuelRefineryBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.FUEL_REFINERY.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.FUEL_REFINERY.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 

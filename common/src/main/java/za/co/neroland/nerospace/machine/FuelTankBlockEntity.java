@@ -103,7 +103,7 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
     }
 
     private static Fluid rocketFuel() {
-        return ModFluids.ROCKET_FUEL.get();
+        return java.util.Objects.requireNonNull(ModFluids.ROCKET_FUEL.get());
     }
 
     // --- MenuProvider -------------------------------------------------------

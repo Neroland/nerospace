@@ -21,8 +21,8 @@ import org.jetbrains.annotations.Nullable;
 public final class TerraformResources {
 
     /** Inlined from {@code Config.TERRAFORM_RESOURCE_ORES} default until the config seam lands. */
-    private static final List<String> ORE_IDS = List.of(
-            "nerospace:nerosteel_ore", "nerospace:xertz_quartz_ore", "nerospace:nerosium_ore");
+    private static final List<String> ORE_IDS = java.util.Objects.requireNonNull(List.of(
+            "nerospace:nerosteel_ore", "nerospace:xertz_quartz_ore", "nerospace:nerosium_ore"));
 
     private static @Nullable List<Block> cached;
 
@@ -36,12 +36,13 @@ public final class TerraformResources {
     }
 
     private static synchronized List<Block> resolve() {
-        if (cached != null) {
-            return cached;
+        List<Block> local = cached;
+        if (local != null) {
+            return local;
         }
         List<Block> out = new ArrayList<>();
         for (String id : ORE_IDS) {
-            Identifier rl = Identifier.tryParse(id);
+            Identifier rl = Identifier.tryParse(java.util.Objects.requireNonNull(id));
             if (rl == null) {
                 continue;
             }

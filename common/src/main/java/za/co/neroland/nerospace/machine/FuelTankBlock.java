@@ -20,6 +20,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -57,7 +59,7 @@ public class FuelTankBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             return null;
         }
-        return createTickerHelper(type, ModBlockEntities.FUEL_TANK.get(),
+        return createTickerHelper(type, java.util.Objects.requireNonNull(ModBlockEntities.FUEL_TANK.get()),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 
@@ -91,7 +93,7 @@ public class FuelTankBlock extends BaseEntityBlock {
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
                     player.getInventory().placeItemBackInInventory(
-                            new ItemStack(ModItems.ROCKET_FUEL_BUCKET.get()));
+                            new ItemStack(java.util.Objects.requireNonNull(ModItems.ROCKET_FUEL_BUCKET.get())));
                 }
                 playGlug(level, pos);
             }
