@@ -39,7 +39,6 @@ import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
 import za.co.neroland.nerospace.machine.HydrationModuleBlockEntity;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
-import za.co.neroland.nerospace.machine.quarry.QuarryRegion;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
@@ -369,11 +368,14 @@ public final class NerospaceCommands {
         level.setBlockAndUpdate(new BlockPos(lx + 6, fy + 1, lz), landmark);
         level.setBlockAndUpdate(new BlockPos(lx, fy + 1, lz + 6), landmark);
 
-        // Operating quarries: staged straight into a deep mid-dig so the frame, gantry, drill head and
-        // interior-only excavation all read at a glance. Two sizes — a standard 9x9 and a big 17x17 to
-        // stress-test rendering + mining over a large area.
-        buildGalleryQuarry(level, floor, origin.getX() + 42, origin.getZ() - 40, fy, 8, 8);
-        buildGalleryQuarry(level, floor, origin.getX() + 64, origin.getZ() - 56, fy, 16, 12);
+        // Live quarry claim/build displays: three sizes with landmarks + adjacent controllers. The
+        // frames are intentionally NOT pre-placed; watch them build at the real animation speed.
+        buildGalleryQuarry(level, floor, origin.getX() + 42, origin.getZ() - 40, fy, 8,
+                Component.literal("Miner T1 - 9x9"));
+        buildGalleryQuarry(level, floor, origin.getX() + 58, origin.getZ() - 56, fy, 16,
+                Component.literal("Miner T2 - 17x17"));
+        buildGalleryQuarry(level, floor, origin.getX() + 86, origin.getZ() - 72, fy, 32,
+                Component.literal("Miner T3 - 33x33"));
 
         // SOLAR ARRAYS (SOLAR_PANEL_DESIGN, SW bearing): one unit per tier, then a multi-unit seam-joined
         // field per tier (so the per-cell trackers reading as one surface is visible), plus a
@@ -386,7 +388,8 @@ public final class NerospaceCommands {
                 + "those two), 4 live pipe scenarios (energy/fluid/gas/items), all 4 suit variants, "
                 + "a loaded Star Guide pedestal, all 4 rocket tiers on their required pads (3x3, "
                 + "3x3, walled ring, Heavy Launch Complex), 8 creatures (frozen for clean shots), "
-                + "a meteor crash site (crater + loot core + hovering meteor), and the solar arrays "
+                + "a meteor crash site (crater + loot core + hovering meteor), live quarry build "
+                + "displays for 3 miner tiers, and the solar arrays "
                 + "(T1/T2/T3 single units + a seam-joined field per tier + a cabled hookup showing "
                 + "the power connector)."), false);
         return Command.SINGLE_SUCCESS;
@@ -418,8 +421,8 @@ public final class NerospaceCommands {
         // plus margin, so the clear covers every cluster — else reruns stack creatures/rockets/stands.
         // The floor sits at oy, so clearing oy..topY to air restores the original flat ground at oy-1.
         int minX = ox - 56;
-        int maxX = ox + 62;
-        int minZ = oz - 58;
+        int maxX = ox + 126;
+        int minZ = oz - 84;
         int maxZ = oz + 56;
         int topY = oy + 16;
 
@@ -457,8 +460,8 @@ public final class NerospaceCommands {
      * Solar showcase (SW). Front row: one of each tier as a single unit — a 1×1 T1, a 2×2 T2 (one big
      * panel) and a 3×3 T3 (one big panel). Behind it: several units of each tier side by side — nine T1
      * panels (a seam-joined 3×3 field), four T2 units and two T3 units — so multiple arrays tiling is
-     * visible. A Creative Battery → Universal Pipe → T1 panel line shows the dynamic power connector (the
-     * panel grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX,
+     * visible. A Tier 3 panel → Universal Pipe → Battery line shows live charging and the dynamic cable
+     * connector (the panel grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX,
      * baseZ)}, extending east (+X) and south (+Z); panels sit on the floor with the tracking deck above.
      */
     private static void buildSolarArrays(ServerLevel level, BlockState floor, int baseX, int baseZ, int fy) {
@@ -474,12 +477,14 @@ public final class NerospaceCommands {
         placeSolar(level, ModBlocks.SOLAR_PANEL_T2.get(), baseX + 2, sy, baseZ); // fills +2..3
         placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 5, sy, baseZ); // fills +5..7
 
-        // Cable hookup: Creative Battery → Universal Pipe → T1 panel (lights the panel's west connector).
+        // Cable hookup: T3 panel -> Universal Pipe -> Battery (solar output charges the battery).
         level.setBlockAndUpdate(new BlockPos(baseX + 10, sy, baseZ),
-                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+                ModBlocks.BATTERY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(baseX + 11, sy, baseZ),
                 ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
-        placeSolar(level, ModBlocks.SOLAR_PANEL.get(), baseX + 12, sy, baseZ);
+        placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 12, sy, baseZ);
+        setAllModes(level, new BlockPos(baseX + 11, sy, baseZ), Direction.EAST, PipeIoMode.IN);
+        setAllModes(level, new BlockPos(baseX + 11, sy, baseZ), Direction.WEST, PipeIoMode.OUT);
 
         // Multi-unit seam-joined fields, set back (+Z) so footprints don't touch the front row.
         // T1: a 3x3 field of nine single panels → one continuous tracking surface.
@@ -504,46 +509,37 @@ public final class NerospaceCommands {
     }
 
     /**
-     * Build one staged, fully-powered gallery quarry: a {@code (side+1) x (side+1)} region with its
-     * frame ring, a west-side creative battery + pipe feed, an interior-only pre-carved pit
-     * {@code pitDepth} deep (the columns under the frame stay, matching real mining), dropped straight
-     * into MINING so the gantry + drill animate immediately.
+     * Build one powered gallery quarry claim: landmarks form a {@code (side+1) x (side+1)} region,
+     * with the controller one block outside the west frame edge and enough casings to build the ring.
      */
     private static void buildGalleryQuarry(ServerLevel level, BlockState floor, int qx, int qz, int fy,
-            int side, int pitDepth) {
+            int side, Component label) {
         int refY = fy + 1;
         int mid = side / 2;
-        for (int dx = -5; dx <= side; dx++) {   // ground: power pad (west) + under the region
+        for (int dx = -5; dx <= side + 1; dx++) {   // ground: power pad (west) + under the region
             for (int dz = -1; dz <= side; dz++) {
                 level.setBlockAndUpdate(new BlockPos(qx + dx, fy, qz + dz), floor);
             }
         }
-        QuarryRegion region = new QuarryRegion(qx, qz, qx + side, qz + side, refY);
-        BlockState frameBlock = ModBlocks.QUARRY_FRAME.get().defaultBlockState();
-        for (BlockPos fp : region.framePositions()) {
-            level.setBlockAndUpdate(fp, frameBlock);
-        }
-        // Pre-carve a starter pit — INTERIOR only, leaving the columns under the frame intact.
-        for (int x = qx + 1; x <= qx + side - 1; x++) {
-            for (int z = qz + 1; z <= qz + side - 1; z++) {
-                for (int y = refY - 1; y >= refY - pitDepth; y--) {
-                    level.setBlockAndUpdate(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState());
-                }
-            }
-        }
-        BlockPos quarryPos = new BlockPos(qx - 2, refY, qz + mid);
-        level.setBlockAndUpdate(new BlockPos(qx - 4, refY, qz + mid),
-                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+        BlockState landmark = ModBlocks.QUARRY_LANDMARK.get().defaultBlockState();
+        level.setBlockAndUpdate(new BlockPos(qx, refY, qz), landmark);
+        level.setBlockAndUpdate(new BlockPos(qx + side, refY, qz), landmark);
+        level.setBlockAndUpdate(new BlockPos(qx, refY, qz + side), landmark);
+
+        BlockPos quarryPos = new BlockPos(qx - 1, refY, qz + mid);
         level.setBlockAndUpdate(new BlockPos(qx - 3, refY, qz + mid),
+                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(qx - 2, refY, qz + mid),
                 ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
         level.setBlockAndUpdate(quarryPos, ModBlocks.QUARRY_CONTROLLER.get().defaultBlockState());
-        setAllModes(level, new BlockPos(qx - 3, refY, qz + mid), Direction.WEST, PipeIoMode.IN);
-        setAllModes(level, new BlockPos(qx - 3, refY, qz + mid), Direction.EAST, PipeIoMode.OUT);
+        setAllModes(level, new BlockPos(qx - 2, refY, qz + mid), Direction.WEST, PipeIoMode.IN);
+        setAllModes(level, new BlockPos(qx - 2, refY, qz + mid), Direction.EAST, PipeIoMode.OUT);
         if (level.getBlockEntity(quarryPos) instanceof QuarryControllerBlockEntity quarry) {
-            quarry.setItem(QuarryControllerBlockEntity.FRAME_SLOT,
-                    new ItemStack(ModItems.FRAME_CASING.get(), 64));
-            // (The root's quarry.stageDisplay preview-region call isn't in the ported BE — omitted; cosmetic.)
+            for (int i = 0; i < QuarryControllerBlockEntity.FRAME_SLOTS; i++) {
+                quarry.setItem(i, new ItemStack(ModItems.FRAME_CASING.get(), 64));
+            }
         }
+        spawnLabelStand(level, new BlockPos(qx + mid, fy + 1, qz - 1), label);
     }
 
     /**
@@ -605,6 +601,17 @@ public final class NerospaceCommands {
         stand.setYRot(yaw); // uniform facing so the row reads as a clean line, angled a few degrees off straight-on
         stand.setYBodyRot(yaw);
         stand.setYHeadRot(yaw);
+        level.addFreshEntity(stand);
+    }
+
+    /** Small floating label for gallery display clusters. */
+    private static void spawnLabelStand(ServerLevel level, BlockPos pos, Component name) {
+        ArmorStand stand = new ArmorStand(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        stand.setCustomName(name);
+        stand.setCustomNameVisible(true);
+        stand.setInvisible(true);
+        stand.setNoGravity(true);
+        stand.setInvulnerable(true);
         level.addFreshEntity(stand);
     }
 

@@ -43,7 +43,8 @@ public class DestinationCompassItem extends Item {
 
     private void teleport(ServerPlayer player) {
         ServerLevel current = player.level();
-        ServerLevel dest = current.getServer().getLevel(this.destination);
+        boolean returning = current.dimension().equals(this.destination);
+        ServerLevel dest = current.getServer().getLevel(returning ? Level.OVERWORLD : this.destination);
         if (dest == null) {
             return;
         }
@@ -55,7 +56,7 @@ public class DestinationCompassItem extends Item {
         dest.getChunk(blockX >> 4, blockZ >> 4);
 
         double y;
-        if (this.destination.equals(ModDimensions.STATION_LEVEL)) {
+        if (!returning && this.destination.equals(ModDimensions.STATION_LEVEL)) {
             // The station is void; drop a small platform so the player doesn't fall.
             int platformY = 64;
             BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
@@ -70,7 +71,9 @@ public class DestinationCompassItem extends Item {
         }
 
         player.teleportTo(dest, x, y, z, Set.of(), player.getYRot(), player.getXRot(), true);
-        player.sendSystemMessage(Component.translatable(
-                "item.nerospace.destination_compass.travel", Destinations.name(this.destination)));
+        player.sendSystemMessage(returning
+                ? Component.translatable("item.nerospace.destination_compass.return")
+                : Component.translatable("item.nerospace.destination_compass.travel",
+                        Destinations.name(this.destination)));
     }
 }

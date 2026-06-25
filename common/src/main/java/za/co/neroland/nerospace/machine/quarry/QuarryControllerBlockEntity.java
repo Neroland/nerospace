@@ -73,8 +73,9 @@ import za.co.neroland.nerospace.registry.ModItems;
 public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
     public static final int OUTPUT_SLOTS = 12;
+    public static final int FRAME_SLOTS = 4;
     public static final int FRAME_SLOT = 0;
-    private static final int OUTPUT_START = 1;
+    private static final int OUTPUT_START = FRAME_SLOTS;
     public static final int ENERGY_MAX_INSERT = 10_000;
     public static final int DATA_COUNT = 7;
     private static final int SCAN_BUDGET_PER_TICK = 4096;
@@ -84,6 +85,9 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     private static final int FLUID_CAPACITY = 16_000;
     private static final int ENERGY_PER_BLOCK = 40;
     private static final int MINE_INTERVAL = 8;
+    private static final int CLAIM_SCAN_INTERVAL = 5;
+    private static final int FRAME_BUILD_INTERVAL = 10;
+    private static final int FRAME_BLOCKS_PER_STEP = 1;
 
     public enum State {
         IDLE, BUILDING_FRAME, MINING, DONE, PAUSED
@@ -95,8 +99,8 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
 
     private final EnergyBuffer energy = new EnergyBuffer(ENERGY_BUFFER, ENERGY_MAX_INSERT, 0, this::setChanged);
     private final FluidTank fluidBuffer = new FluidTank(FLUID_CAPACITY, this::setChanged);
-    /** Frame casing at index 0, mined output at indices {@code [1, OUTPUT_SLOTS]}. */
-    private final NonNullList<ItemStack> items = NonNullList.withSize(1 + OUTPUT_SLOTS, ItemStack.EMPTY);
+    /** Frame casings at indices {@code [0, FRAME_SLOTS)}, mined output after that. */
+    private final NonNullList<ItemStack> items = NonNullList.withSize(FRAME_SLOTS + OUTPUT_SLOTS, ItemStack.EMPTY);
     private final MachineModules modules;
     private final OutputFilter filter = OutputFilter.KEEP_ALL;
 
@@ -164,7 +168,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         this.tier = blockState.getBlock() instanceof QuarryControllerBlock controller
                 ? controller.tier() : MinerTier.TIER_1;
         this.moduleSlots = this.tier.moduleSlots();
-        this.containerSize = 1 + this.moduleSlots + OUTPUT_SLOTS; // frame + modules + output
+        this.containerSize = FRAME_SLOTS + this.moduleSlots + OUTPUT_SLOTS; // frames + modules + output
         this.modules = new MachineModules(this.moduleSlots, this::setChanged);
     }
 
@@ -217,7 +221,11 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         }
         switch (this.state) {
             case IDLE -> tryActivate(serverLevel, pos);
-            case BUILDING_FRAME -> buildFrame(serverLevel);
+            case BUILDING_FRAME -> {
+                if (serverLevel.getGameTime() % FRAME_BUILD_INTERVAL == 0L) {
+                    buildFrame(serverLevel);
+                }
+            }
             case MINING -> {
                 if (serverLevel.getGameTime() % miningInterval(serverLevel) == 0L) {
                     mine(serverLevel);
@@ -269,20 +277,15 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     }
 
     private void tryActivate(ServerLevel level, BlockPos pos) {
-        if (level.getGameTime() % 20L != 0L) {
+        if (level.getGameTime() % CLAIM_SCAN_INTERVAL != 0L) {
             return;
         }
         if (!this.tier.canOperateIn(level.dimension())) {
             setPaused("wrong_planet");
             return;
         }
-        BlockPos seed = QuarryRegion.findNearbyLandmark(level, pos, this.tier.maxAreaSide());
-        if (seed == null) {
-            return;
-        }
-        QuarryRegion found = QuarryRegion.fromLandmarks(level, seed, this.tier.maxAreaSide());
+        QuarryRegion found = QuarryRegion.findClaim(level, pos, effectiveMaxSide());
         if (found == null) {
-            setPaused("bad_region");
             return;
         }
         this.region = found;
@@ -297,12 +300,26 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         setChanged();
     }
 
+    private int effectiveMaxSide() {
+        return Math.min(this.tier.maxAreaSide(), NerospaceConfig.quarryMaxSide());
+    }
+
     private int frameTotal() {
         QuarryRegion rg = this.region;
         if (this.frameTotal < 0 && rg != null) {
             this.frameTotal = rg.framePositions().size();
         }
         return Math.max(0, this.frameTotal);
+    }
+
+    private ItemStack nextFrameCasing() {
+        for (int i = 0; i < FRAME_SLOTS; i++) {
+            ItemStack stack = this.items.get(i);
+            if (!stack.isEmpty()) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     private void consumeLandmarks(ServerLevel level, QuarryRegion region) {
@@ -325,7 +342,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         List<BlockPos> ring = region.framePositions();
         int placedThisTick = 0;
         boolean changed = false;
-        while (this.frameIndex < ring.size() && placedThisTick < 8) {
+        while (this.frameIndex < ring.size() && placedThisTick < FRAME_BLOCKS_PER_STEP) {
             BlockPos fp = ring.get(this.frameIndex);
             BlockState existing = level.getBlockState(fp);
             if (existing.getBlock() instanceof QuarryFrameBlock) {
@@ -336,7 +353,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
                 this.frameIndex++;
                 continue;
             }
-            ItemStack casing = this.items.get(FRAME_SLOT);
+            ItemStack casing = nextFrameCasing();
             if (casing.isEmpty()) {
                 setPaused("need_material");
                 return;
@@ -702,7 +719,9 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         output.putInt("Energy", this.energy.getRaw());
         output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.fluidBuffer.getRawFluid()).toString());
         output.putInt("FluidAmount", this.fluidBuffer.getRawAmount());
-        output.store("Frame", ItemStack.OPTIONAL_CODEC, this.items.get(FRAME_SLOT));
+        for (int i = 0; i < FRAME_SLOTS; i++) {
+            output.store("Frame" + i, ItemStack.OPTIONAL_CODEC, this.items.get(i));
+        }
         for (int i = 0; i < OUTPUT_SLOTS; i++) {
             output.store("Out" + i, ItemStack.OPTIONAL_CODEC, this.items.get(OUTPUT_START + i));
         }
@@ -736,6 +755,9 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
         this.fluidBuffer.setRaw(fluid, input.getIntOr("FluidAmount", 0));
         this.items.set(FRAME_SLOT, input.read("Frame", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        for (int i = 0; i < FRAME_SLOTS; i++) {
+            this.items.set(i, input.read("Frame" + i, ItemStack.OPTIONAL_CODEC).orElse(this.items.get(i)));
+        }
         for (int i = 0; i < OUTPUT_SLOTS; i++) {
             this.items.set(OUTPUT_START + i, input.read("Out" + i, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         }
@@ -781,21 +803,21 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         return new QuarryMenu(containerId, playerInventory, this, this.dataAccess, this.moduleSlots);
     }
 
-    // --- WorldlyContainer (combined view: [0]=frame, [1..M]=modules, [M+1..]=output) ----
-    // Frame + output live in `items` (index 0 + 1..OUTPUT_SLOTS); modules live in `modules`.
+    // --- WorldlyContainer (combined view: [frames], [modules], [output]) ----
+    // Frame + output live in `items`; modules live in `modules`.
 
     private NonNullList<ItemStack> routeList(int slot) {
-        return (slot >= OUTPUT_START && slot <= this.moduleSlots) ? this.modules.items() : this.items;
+        return (slot >= FRAME_SLOTS && slot < FRAME_SLOTS + this.moduleSlots) ? this.modules.items() : this.items;
     }
 
     private int routeIndex(int slot) {
-        if (slot == FRAME_SLOT) {
-            return 0;
+        if (slot < FRAME_SLOTS) {
+            return slot;
         }
-        if (slot <= this.moduleSlots) {
-            return slot - 1;                 // modules: 0..moduleSlots-1
+        if (slot < FRAME_SLOTS + this.moduleSlots) {
+            return slot - FRAME_SLOTS;       // modules: 0..moduleSlots-1
         }
-        return slot - this.moduleSlots;      // output: items[1..OUTPUT_SLOTS]
+        return OUTPUT_START + slot - FRAME_SLOTS - this.moduleSlots;
     }
 
     @Override
@@ -814,15 +836,15 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return slot > this.moduleSlots; // output slots only
+        return slot >= FRAME_SLOTS + this.moduleSlots; // output slots only
     }
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        if (slot == FRAME_SLOT) {
+        if (slot < FRAME_SLOTS) {
             return stack.is(ModItems.FRAME_CASING.get());
         }
-        if (slot <= this.moduleSlots) {
+        if (slot < FRAME_SLOTS + this.moduleSlots) {
             return UpgradeModuleItem.isModule(stack);
         }
         return false; // output slots: take only

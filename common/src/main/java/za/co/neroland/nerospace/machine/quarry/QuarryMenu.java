@@ -15,7 +15,7 @@ import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /**
- * Menu for the quarry controller. Combined inventory: slot 0 = frame casing, 1..M = module cards, then
+ * Menu for the quarry controller. Combined inventory: frame casing slots, module cards, then
  * the output buffer; followed by the player inventory. Status is synced through {@link ContainerData}.
  */
 public class QuarryMenu extends AbstractContainerMenu {
@@ -30,7 +30,8 @@ public class QuarryMenu extends AbstractContainerMenu {
     /** Client constructor (Tier-1 layout). */
     public QuarryMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory,
-                new SimpleContainer(1 + TIER1_MODULE_SLOTS + QuarryControllerBlockEntity.OUTPUT_SLOTS),
+                new SimpleContainer(QuarryControllerBlockEntity.FRAME_SLOTS + TIER1_MODULE_SLOTS
+                        + QuarryControllerBlockEntity.OUTPUT_SLOTS),
                 new SimpleContainerData(QuarryControllerBlockEntity.DATA_COUNT),
                 TIER1_MODULE_SLOTS);
     }
@@ -44,12 +45,15 @@ public class QuarryMenu extends AbstractContainerMenu {
         this.moduleSlots = moduleSlots;
         this.machineSlots = container.getContainerSize();
 
-        this.addSlot(new FrameSlot(container, QuarryControllerBlockEntity.FRAME_SLOT, 8, 20));
+        for (int i = 0; i < QuarryControllerBlockEntity.FRAME_SLOTS; i++) {
+            this.addSlot(new FrameSlot(container, i, 8 + i * 18, 20));
+        }
         for (int i = 0; i < moduleSlots; i++) {
-            this.addSlot(new ModuleSlot(container, 1 + i, 26 + i * 18, 20));
+            this.addSlot(new ModuleSlot(container, QuarryControllerBlockEntity.FRAME_SLOTS + i,
+                    98 + i * 18, 20));
         }
 
-        int outStart = 1 + moduleSlots;
+        int outStart = QuarryControllerBlockEntity.FRAME_SLOTS + moduleSlots;
         for (int i = 0; i < QuarryControllerBlockEntity.OUTPUT_SLOTS; i++) {
             int row = i / 6;
             int col = i % 6;
@@ -84,11 +88,12 @@ public class QuarryMenu extends AbstractContainerMenu {
         } else {
             if (raw.is(ModItems.FRAME_CASING.get())) {
                 if (!this.moveItemStackTo(raw, QuarryControllerBlockEntity.FRAME_SLOT,
-                        QuarryControllerBlockEntity.FRAME_SLOT + 1, false)) {
+                        QuarryControllerBlockEntity.FRAME_SLOT + QuarryControllerBlockEntity.FRAME_SLOTS, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (UpgradeModuleItem.isModule(raw)) {
-                if (!this.moveItemStackTo(raw, 1, 1 + this.moduleSlots, false)) {
+                int moduleStart = QuarryControllerBlockEntity.FRAME_SLOTS;
+                if (!this.moveItemStackTo(raw, moduleStart, moduleStart + this.moduleSlots, false)) {
                     return ItemStack.EMPTY;
                 }
             } else {

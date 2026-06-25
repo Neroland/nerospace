@@ -13,8 +13,8 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  */
 public enum MinerTier {
 
-    TIER_1(1, 16, 1, 2, 0xFFE0405A),
-    TIER_2(2, 32, 2, 4, 0xFFB060E0),
+    TIER_1(1, 64, 1, 2, 0xFFE0405A),
+    TIER_2(2, 64, 2, 4, 0xFFB060E0),
     TIER_3(3, 64, 4, 8, 0xFFE0C040);
 
     private final int level;

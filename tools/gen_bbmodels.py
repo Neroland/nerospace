@@ -58,7 +58,7 @@ BLOCKS = ["nerosium_ore", "deepslate_nerosium_ore", "nerosium_block",
           "solar_panel_t3", "solar_panel_t3_base",
           "meteor_rock", "meteor_core"]
 ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
-         "raw_nerosteel", "nerosteel_ingot", "xertz_quartz", "greenxertz_navigator",
+         "raw_nerosteel", "nerosteel_ingot", "xertz_quartz",
          "rocket_fuel_canister", "rocket_tier_1", "rocket_tier_2", "rocket_tier_3",
          "rocket_tier_4",
          "cindrite", "rocket_fuel_bucket", "glacite",

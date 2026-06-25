@@ -32,7 +32,6 @@ import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.gear.XertzResonatorItem;
 import za.co.neroland.nerospace.item.ConfiguratorItem;
 import za.co.neroland.nerospace.item.DestinationCompassItem;
-import za.co.neroland.nerospace.item.GreenxertzNavigatorItem;
 import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
 import za.co.neroland.nerospace.item.PipeFilterItem;
 import za.co.neroland.nerospace.item.PipeUpgradeItem;
@@ -173,8 +172,6 @@ public final class ModItems {
             key -> new RocketItem(new Item.Properties().stacksTo(1).setId(key), RocketTier.TIER_4));
 
     // --- Creative travel devices --------------------------------------------
-    public static final RegistryEntry<Item> GREENXERTZ_NAVIGATOR = ITEMS.register("greenxertz_navigator",
-            key -> new GreenxertzNavigatorItem(new Item.Properties().stacksTo(1).setId(key)));
     public static final RegistryEntry<Item> STATION_COMPASS = ITEMS.register("station_compass",
             key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.STATION_LEVEL));
     public static final RegistryEntry<Item> GREENXERTZ_COMPASS = ITEMS.register("greenxertz_compass",
@@ -311,8 +308,8 @@ public final class ModItems {
                 CreativeModeTabs.TOOLS_AND_UTILITIES,
                 List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get(), XERTZ_RESONATOR.get(),
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
-                        GREENXERTZ_NAVIGATOR.get(), STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(),
-                        CINDARA_COMPASS.get(), GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get(),
+                        STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(), CINDARA_COMPASS.get(),
+                        GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get(),
                         CONFIGURATOR.get(), PIPE_FILTER.get(), SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get(),
                         STAR_GUIDE_BOOK.get(), STATION_CHARTER.get()),
                 CreativeModeTabs.SPAWN_EGGS,

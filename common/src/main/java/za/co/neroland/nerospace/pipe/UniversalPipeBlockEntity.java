@@ -342,7 +342,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
      */
     private void maybeSyncClient(Level level, BlockPos pos, BlockState state) {
         boolean items = !this.travelling.isEmpty();
-        boolean content = this.energy.getAmount() > 0 || this.gas.getAmount() > 0 || this.fluid.getAmount() > 0;
+        boolean content = this.energy.getAmount() > 0 || this.gas.getAmount() > 0 || this.fluid.getAmount() > 0
+                || hasBufferedItems();
         long now = level.getGameTime();
         boolean send = (items && now % SYNC_INTERVAL == 0)
                 || (content && now % CONTENT_SYNC_INTERVAL == 0)
@@ -369,6 +370,24 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             return;
         }
         this.travelling.add(new TravellingItem(moved.copy(), outFace.getOpposite(), outFace, 0.0F));
+        setChanged();
+    }
+
+    public boolean hasBufferedItems() {
+        for (ItemStack stack : this.items) {
+            if (!stack.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Network-level visual packet for an item routed through this segment. */
+    void showTravelling(ItemStack moved, Direction inFace, @Nullable Direction outFace) {
+        if (moved.isEmpty() || this.travelling.size() >= MAX_TRAVELLING) {
+            return;
+        }
+        this.travelling.add(new TravellingItem(moved.copy(), inFace, outFace, 0.0F));
         setChanged();
     }
 
