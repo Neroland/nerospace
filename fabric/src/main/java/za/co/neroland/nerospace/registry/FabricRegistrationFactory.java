@@ -46,11 +46,11 @@ public final class FabricRegistrationFactory implements RegistrationProvider.Fac
 
         @Override
         public <I extends T> RegistryEntry<I> register(
-                String name, Function<@NonNull ResourceKey<T>, @NonNull I> factory) {
+                String name, Function<@NonNull ResourceKey<T>, I> factory) {
             String nonNullName = NerospaceCommon.requireNonNull(name);
             Identifier id = Identifier.fromNamespaceAndPath(modId, nonNullName);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);
-            I value = factory.apply(key);
+            I value = NerospaceCommon.requireNonNull(factory.apply(key));
             Registry.register(registry, key, value);
             return new RegistryEntry<>() {
                 @Override

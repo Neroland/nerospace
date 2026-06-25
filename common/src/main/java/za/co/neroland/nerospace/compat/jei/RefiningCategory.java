@@ -29,9 +29,9 @@ import za.co.neroland.nerospace.registry.ModBlocks;
  * and batch maths; the FE cost and cycle time derive from the refinery's constants + the live
  * {@link NerospaceConfig} machine-speed multiplier.
  */
-public class RefiningCategory extends AbstractRecipeCategory<RefiningCategory.RefiningRecipe> {
+public class RefiningCategory extends AbstractRecipeCategory<RefiningCategory.@NonNull RefiningRecipe> {
 
-    public static final @NonNull IRecipeType<RefiningRecipe> TYPE =
+    public static final @NonNull IRecipeType<RefiningCategory.@NonNull RefiningRecipe> TYPE =
             IRecipeType.create(NerospaceCommon.MOD_ID, "refining", RefiningRecipe.class);
 
     /** The refinery's one recipe: any carbon stack + any catalyst stack → one tank batch. */

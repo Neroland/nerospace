@@ -4,6 +4,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.CombustionGeneratorMenu;
 import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
@@ -79,7 +81,7 @@ public final class ModMenuTypes {
             MENUS.register("terraform_monitor",
                     key -> new MenuType<>(TerraformMonitorMenu::new, FeatureFlags.VANILLA_SET));
 
-    public static final RegistryEntry<MenuType<StarGuideMenu>> STAR_GUIDE =
+    public static final RegistryEntry<MenuType<? extends @NonNull StarGuideMenu>> STAR_GUIDE =
             MENUS.register("star_guide",
                     key -> new MenuType<>(StarGuideMenu::new, FeatureFlags.VANILLA_SET));
 

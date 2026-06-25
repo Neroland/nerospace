@@ -80,7 +80,9 @@ public class StationCharterItem extends Item {
         }
 
         serverPlayer.teleportTo(station, centre.getX() + 0.5, centre.getY() + 1.0, centre.getZ() + 0.5,
-                Set.of(), serverPlayer.getYRot(), serverPlayer.getXRot(), true);
+                za.co.neroland.nerospace.NerospaceCommon.requireNonNull(
+                        Set.<net.minecraft.world.entity.Relative>of()),
+                serverPlayer.getYRot(), serverPlayer.getXRot(), true);
         StarGuideGrants.grant(serverPlayer, "guide/station_charter");
         serverPlayer.sendSystemMessage(Component.translatable(
                 "item.nerospace.station_charter.founded", entry.name()));

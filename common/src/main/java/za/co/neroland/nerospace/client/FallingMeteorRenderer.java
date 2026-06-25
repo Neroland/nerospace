@@ -28,7 +28,7 @@ public class FallingMeteorRenderer extends EntityRenderer<FallingMeteorEntity, F
             NerospaceCommon.id("textures/entity/falling_meteor.png");
     private static final int FULL_BRIGHT = 0x00F000F0;
 
-    private final FallingMeteorModel model;
+    private final @org.jspecify.annotations.NonNull FallingMeteorModel model;
 
     public FallingMeteorRenderer(EntityRendererProvider.Context context) {
         super(context);

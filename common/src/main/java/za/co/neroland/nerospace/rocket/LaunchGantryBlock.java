@@ -10,6 +10,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * The Launch Gantry module: placed on a 5x5 pad's border ring it forms the Heavy Launch Complex
  * (Tier 3 without the Station-Wall ring; Tier 4 launch infrastructure). Right-click boards the rocket
@@ -18,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class LaunchGantryBlock extends Block {
 
     public LaunchGantryBlock(Properties properties) {
-        super(properties);
+        super(NerospaceCommon.requireNonNull(properties));
     }
 
     @Override

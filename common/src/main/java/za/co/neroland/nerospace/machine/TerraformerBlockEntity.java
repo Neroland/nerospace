@@ -88,15 +88,18 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     private transient boolean hydrationStalled;
 
     /** Transient per-stage caches of the current ring's column offsets (recomputed on load). */
-    private final transient List<int[]>[] rings = newRingCache();
+    private final transient List<@org.jspecify.annotations.Nullable List<int[]>> rings = newRingCache();
     private final transient int[] ringsFor = {-1, -1, -1};
 
     /** Chunks we currently keep force-loaded (opt-in, config-gated) — {@link #packChunk} long keys. */
     private final transient Set<Long> forcedChunks = new HashSet<>();
 
-    @SuppressWarnings("unchecked")
-    private static List<int[]>[] newRingCache() {
-        return (List<int[]>[]) new List<?>[3];
+    private static List<@org.jspecify.annotations.Nullable List<int[]>> newRingCache() {
+        List<@org.jspecify.annotations.Nullable List<int[]>> cache = new ArrayList<>(3);
+        cache.add(null);
+        cache.add(null);
+        cache.add(null);
+        return cache;
     }
 
     /**
@@ -373,11 +376,12 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     /** The cached ring offsets for {@code stage} at {@code r} (cache invalidates on radius change). */
     private List<int[]> ring(int stage, int r) {
         int slot = stage - 1;
-        if (this.rings[slot] != null && this.ringsFor[slot] == r) {
-            return this.rings[slot];
+        List<int[]> cached = this.rings.get(slot);
+        if (cached != null && this.ringsFor[slot] == r) {
+            return cached;
         }
         List<int[]> out = ringOffsets(r);
-        this.rings[slot] = out;
+        this.rings.set(slot, out);
         this.ringsFor[slot] = r;
         return out;
     }

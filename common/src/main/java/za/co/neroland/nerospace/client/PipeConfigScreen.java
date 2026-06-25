@@ -56,8 +56,9 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
         super.extractContents(extractor, mouseX, mouseY, partialTick);
 
         // Selected layer.
+        Component selectedType = NerospaceCommon.requireNonNull(this.menu.getSelectedType().label());
         Component selectedLayer = NerospaceCommon.requireNonNull(
-                Component.literal("Layer: ").append(this.menu.getSelectedType().label()));
+                Component.literal("Layer: ").append(selectedType));
         extractor.text(this.font, selectedLayer,
                 this.leftPos + 8, this.topPos + 22, TITLE, false);
         // Per-face mode for the selected layer.

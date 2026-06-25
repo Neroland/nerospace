@@ -26,8 +26,8 @@ import org.jspecify.annotations.NonNull;
 public final class StarGuide {
 
     /** One step of a chapter: icon + lang keys + the advancement that completes it. */
-    public record Step(@NonNull String id, Supplier<? extends @NonNull ItemLike> icon,
-        @NonNull Identifier advancement) {
+    public record Step(@NonNull String id, Supplier<? extends ItemLike> icon,
+            @NonNull Identifier advancement) {
 
         public @NonNull String titleKey() {
             return NerospaceCommon.requireNonNull("gui.nerospace.star_guide.step." + this.id);
@@ -38,7 +38,7 @@ public final class StarGuide {
         }
 
         public @NonNull ItemStack iconStack() {
-            return NerospaceCommon.requireNonNull(new ItemStack(NerospaceCommon.requireNonNull(this.icon.get())));
+            return NerospaceCommon.requireNonNull(new ItemStack(StarGuide.icon(this.icon)));
         }
     }
 
@@ -54,7 +54,11 @@ public final class StarGuide {
         return NerospaceCommon.id(path);
     }
 
-    private static StarGuide.@NonNull Step step(@NonNull String id, Supplier<? extends @NonNull ItemLike> icon,
+    private static @NonNull ItemLike icon(Supplier<? extends ItemLike> supplier) {
+        return NerospaceCommon.requireNonNull(supplier.get());
+    }
+
+    private static StarGuide.@NonNull Step step(@NonNull String id, Supplier<? extends ItemLike> icon,
             @NonNull String advancementPath) {
         return new Step(id, icon, NerospaceCommon.requireNonNull(adv(advancementPath)));
     }

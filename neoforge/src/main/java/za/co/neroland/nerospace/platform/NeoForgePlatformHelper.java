@@ -1,11 +1,16 @@
 package za.co.neroland.nerospace.platform;
 
+import java.util.function.Supplier;
+
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.api.distmarker.Dist;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
+
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.neoforge.NeoForgeAttachments;
@@ -52,41 +57,45 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public int getOxygen(Player player) {
-        return player.getData(NeoForgeAttachments.OXYGEN.get());
+        return player.getData(attachment(NeoForgeAttachments.OXYGEN));
     }
 
     @Override
     public void setOxygen(Player player, int value) {
-        player.setData(NeoForgeAttachments.OXYGEN.get(), value);
+        player.setData(attachment(NeoForgeAttachments.OXYGEN), value);
     }
 
     @Override
     public boolean isTerraformed(LevelChunk chunk) {
-        return chunk.getData(NeoForgeAttachments.TERRAFORMED.get());
+        return chunk.getData(attachment(NeoForgeAttachments.TERRAFORMED));
     }
 
     @Override
     public void setTerraformed(LevelChunk chunk, boolean value) {
-        chunk.setData(NeoForgeAttachments.TERRAFORMED.get(), value);
+        chunk.setData(attachment(NeoForgeAttachments.TERRAFORMED), value);
     }
 
     @Override
     public int getTerraformStage(LevelChunk chunk) {
-        return chunk.getData(NeoForgeAttachments.TERRAFORM_STAGE.get());
+        return chunk.getData(attachment(NeoForgeAttachments.TERRAFORM_STAGE));
     }
 
     @Override
     public void setTerraformStage(LevelChunk chunk, int value) {
-        chunk.setData(NeoForgeAttachments.TERRAFORM_STAGE.get(), value);
+        chunk.setData(attachment(NeoForgeAttachments.TERRAFORM_STAGE), value);
     }
 
     @Override
     public java.util.List<Integer> getStarGuideSeen(Player player) {
-        return player.getData(NeoForgeAttachments.STAR_GUIDE_SEEN.get());
+        return player.getData(attachment(NeoForgeAttachments.STAR_GUIDE_SEEN));
     }
 
     @Override
     public void setStarGuideSeen(Player player, java.util.List<Integer> value) {
-        player.setData(NeoForgeAttachments.STAR_GUIDE_SEEN.get(), value);
+        player.setData(attachment(NeoForgeAttachments.STAR_GUIDE_SEEN), value);
+    }
+
+    private static <T> @NonNull AttachmentType<T> attachment(Supplier<AttachmentType<T>> supplier) {
+        return NerospaceCommon.requireNonNull(supplier.get());
     }
 }

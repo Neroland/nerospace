@@ -51,10 +51,9 @@ public final class ForgeNetwork implements NetworkPlatform {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private static <T extends @NonNull CustomPacketPayload> StreamCodec<RegistryFriendlyByteBuf, T> registryCodec(
             StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
-        return (StreamCodec<RegistryFriendlyByteBuf, T>) codec;
+        return StreamCodec.of(codec::encode, codec::decode);
     }
 
     @Override

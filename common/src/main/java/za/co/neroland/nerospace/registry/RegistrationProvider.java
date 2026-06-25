@@ -31,7 +31,7 @@ public interface RegistrationProvider<T> {
         return Factory.INSTANCE.create(registryKey, modId);
     }
 
-    <I extends T> RegistryEntry<I> register(String name, Function<@NonNull ResourceKey<T>, @NonNull I> factory);
+    <I extends T> RegistryEntry<I> register(String name, Function<@NonNull ResourceKey<T>, I> factory);
 
     /** A registered entry: a {@link Supplier} of the value plus its id. */
     interface RegistryEntry<R> extends Supplier<R> {

@@ -7,6 +7,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
@@ -21,7 +24,7 @@ import za.co.neroland.nerospace.registry.ModItems;
 public final class MeteorLoot {
 
     /** A single weighted entry: an item, how many to give, and its selection weight. */
-    private record Entry(ItemLike item, int min, int max, int weight) {
+    private record Entry(@NonNull ItemLike item, int min, int max, int weight) {
         int roll(RandomSource rng) {
             return this.min >= this.max ? this.min : this.min + rng.nextInt(this.max - this.min + 1);
         }
@@ -60,7 +63,7 @@ public final class MeteorLoot {
             for (Entry e : pool) {
                 pick -= e.weight();
                 if (pick < 0) {
-                    out.add(new ItemStack(e.item(), e.roll(rng)));
+                    out.add(new ItemStack(NerospaceCommon.requireNonNull(e.item()), e.roll(rng)));
                     break;
                 }
             }

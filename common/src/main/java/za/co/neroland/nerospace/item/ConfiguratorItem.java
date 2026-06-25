@@ -12,6 +12,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
@@ -36,16 +39,17 @@ public class ConfiguratorItem extends Item {
         super(properties);
     }
 
-    private static PipeResourceType selectedType(ItemStack stack) {
+    private static @NonNull PipeResourceType selectedType(ItemStack stack) {
         int ordinal = stack.getOrDefault(ModDataComponents.SELECTED_PIPE_TYPE.get(), 0);
-        return PipeResourceType.VALUES[Math.floorMod(ordinal, PipeResourceType.VALUES.length)];
+        return NerospaceCommon.requireNonNull(
+                PipeResourceType.VALUES[Math.floorMod(ordinal, PipeResourceType.VALUES.length)]);
     }
 
-    private static PipeResourceType cycleSelectedType(ItemStack stack) {
+    private static @NonNull PipeResourceType cycleSelectedType(ItemStack stack) {
         int next = Math.floorMod(stack.getOrDefault(ModDataComponents.SELECTED_PIPE_TYPE.get(), 0) + 1,
                 PipeResourceType.VALUES.length);
         stack.set(ModDataComponents.SELECTED_PIPE_TYPE.get(), next);
-        return PipeResourceType.VALUES[next];
+        return NerospaceCommon.requireNonNull(PipeResourceType.VALUES[next]);
     }
 
     @Override

@@ -49,11 +49,11 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
 
         @Override
         public <I extends T> RegistryEntry<I> register(
-                String name, Function<@NonNull ResourceKey<T>, @NonNull I> factory) {
+                String name, Function<@NonNull ResourceKey<T>, I> factory) {
             String nonNullName = NerospaceCommon.requireNonNull(name);
             Identifier id = Identifier.fromNamespaceAndPath(modId, nonNullName);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);
-            Supplier<I> supplier = () -> factory.apply(key);
+            Supplier<I> supplier = () -> NerospaceCommon.requireNonNull(factory.apply(key));
             RegistryObject<I> holder = register.register(nonNullName, supplier);
             return new RegistryEntry<>() {
                 @Override

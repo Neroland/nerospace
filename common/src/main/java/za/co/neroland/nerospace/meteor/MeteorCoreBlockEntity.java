@@ -88,7 +88,8 @@ public class MeteorCoreBlockEntity extends BlockEntity {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.loot.clear();
-        this.loot.addAll(NerospaceCommon.orElse(input.read("Loot", LOOT_CODEC),
-                NerospaceCommon.requireNonNull(List.of())));
+        for (ItemStack stack : input.listOrEmpty("Loot", NerospaceCommon.ITEM_STACK_CODEC)) {
+            this.loot.add(NerospaceCommon.requireNonNull(stack));
+        }
     }
 }
