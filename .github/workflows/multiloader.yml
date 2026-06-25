@@ -74,21 +74,31 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # Forge's userdev decompile (ForgeGradle Mavenizer) produces ~1.2 GB under
+      # ~/.gradle/caches/minecraftforge. setup-gradle does cache GRADLE_USER_HOME, but its key is
+      # branch-scoped and tied to the full Gradle-files hash, so a new branch/commit (e.g. the #6
+      # merge) misses it and re-runs the heavy COLD decompile — which is the step that was failing.
+      # Cache that output explicitly under a STABLE key (only the forge_version_* pins in
+      # gradle.properties move it), with a restore-keys fallback, so the decompile restores on every
+      # branch instead of re-running cold. Seed it once on the default branch and all branches read it.
+      - name: Cache Forge userdev (Mavenizer decompile)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches/minecraftforge
+            .gradle/mavenizer
+          key: mcmaven-${{ runner.os }}-${{ hashFiles('gradle.properties') }}
+          restore-keys: |
+            mcmaven-${{ runner.os }}-
+
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
       - name: Build ${{ matrix.loader }} for MC ${{ matrix.mc }}
         # Stonecutter: each loader x MC version is its own node (:loader:version:build).
         # The old `-Pminecraft_version` axis is gone — the node path selects the version.
+        # This workflow only VERIFIES that each cell builds; it uploads no artifacts (the Publish
+        # workflow owns distributables). A green build here is the whole signal.
         run: >-
           ./gradlew :${{ matrix.loader }}:${{ matrix.mc }}:build
           --stacktrace
-
-      - name: Upload ${{ matrix.loader }} ${{ matrix.mc }} jars
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nerospace-${{ matrix.loader }}-${{ matrix.mc }}
-          # Stonecutter node output lives under versions/<mc>/build/libs.
-          path: ${{ matrix.loader }}/versions/${{ matrix.mc }}/build/libs/*.jar
-          if-no-files-found: ignore
