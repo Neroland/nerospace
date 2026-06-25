@@ -99,6 +99,17 @@ jobs:
         # The old `-Pminecraft_version` axis is gone — the node path selects the version.
         # This workflow only VERIFIES that each cell builds; it uploads no artifacts (the Publish
         # workflow owns distributables). A green build here is the whole signal.
+        #
+        # The Forge Mavenizer decompiles vanilla in a FORKED JVM that has no explicit -Xmx, so it
+        # defaults to ~1/4 of physical RAM — ample on a dev box, too small on a CI runner, so the
+        # COLD `decompile` OOMs (this only needs to succeed ONCE; the cache step above then keeps it
+        # warm on every later run). JAVA_TOOL_OPTIONS is read by every forked JVM at startup, so it
+        # reaches that decompiler fork. The Gradle daemon keeps its explicit -Xmx3G (a later -Xmx
+        # wins), so only the otherwise-unbounded forks pick this up.
+        # NOTE: this is intentionally the ONLY change vs the failed attempt — that one also `rm -rf`'d
+        # the runner tool cache, the likely cause of its fast failure; that step is gone.
+        env:
+          JAVA_TOOL_OPTIONS: "-Xmx6g"
         run: >-
           ./gradlew :${{ matrix.loader }}:${{ matrix.mc }}:build
           --stacktrace
