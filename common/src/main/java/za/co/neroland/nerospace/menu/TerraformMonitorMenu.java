@@ -20,16 +20,16 @@ public class TerraformMonitorMenu extends AbstractContainerMenu {
 
     @Nullable
     private final TerraformMonitorBlockEntity monitor;
-    private final ContainerData data;
+    private final @org.jspecify.annotations.NonNull ContainerData data;
 
-    public TerraformMonitorMenu(int containerId, Inventory playerInventory) {
+    public TerraformMonitorMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(containerId, playerInventory, null,
                 new SimpleContainerData(TerraformMonitorBlockEntity.DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public TerraformMonitorMenu(int containerId, Inventory playerInventory,
-            @Nullable TerraformMonitorBlockEntity monitor, ContainerData data) {
+    public TerraformMonitorMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory,
+            @Nullable TerraformMonitorBlockEntity monitor, @org.jspecify.annotations.NonNull ContainerData data) {
         super(ModMenuTypes.TERRAFORM_MONITOR.get(), containerId);
         checkContainerDataCount(data, TerraformMonitorBlockEntity.DATA_COUNT);
         this.monitor = monitor;

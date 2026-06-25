@@ -32,9 +32,9 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class ItemStoreBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
     public static final int SIZE = 27;
-    private static final int[] ALL_SLOTS = IntStream.range(0, SIZE).toArray();
+    private static final int @org.jspecify.annotations.NonNull[] ALL_SLOTS = IntStream.range(0, SIZE).toArray();
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
     public ItemStoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ITEM_STORE.get(), pos, state);
@@ -61,7 +61,7 @@ public class ItemStoreBlockEntity extends BlockEntity implements WorldlyContaine
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return ChestMenu.threeRows(containerId, playerInventory, this);
     }
 

@@ -155,7 +155,7 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new OxygenGeneratorMenu(containerId, playerInventory, this.data,
                 ContainerLevelAccess.create(this.level, this.worldPosition));
     }

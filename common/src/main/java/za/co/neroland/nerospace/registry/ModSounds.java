@@ -50,7 +50,7 @@ public final class ModSounds {
     public static final RegistryEntry<SoundEvent> WOOLLY_DRIFT_DEATH = register("entity.woolly_drift.death");
 
     private static RegistryEntry<SoundEvent> register(String path) {
-        Identifier id = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path);
+        Identifier id = NerospaceCommon.id(path);
         return SOUND_EVENTS.register(path, key -> SoundEvent.createVariableRangeEvent(id));
     }
 

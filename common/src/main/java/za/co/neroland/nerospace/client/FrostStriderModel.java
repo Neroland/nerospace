@@ -9,7 +9,6 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -25,7 +24,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
 public class FrostStriderModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "frost_strider"), "main");
+            NerospaceCommon.id("frost_strider"), "main");
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public FrostStriderModel(ModelPart root) {

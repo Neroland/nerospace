@@ -41,6 +41,9 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.village.AlienTrades;
@@ -71,16 +74,17 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         }
     }
 
-    private static final EntityDataAccessor<Integer> DATA_PLANET =
-            SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<String> DATA_BIOME =
-            SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<Integer> DATA_COLOR_SEED =
-            SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> DATA_DISPLAY_TIER =
-            SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.INT);
+    private static final @NonNull EntityDataAccessor<Integer> DATA_PLANET =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.INT));
+    private static final @NonNull EntityDataAccessor<@org.jspecify.annotations.Nullable String> DATA_BIOME =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.STRING));
+    private static final @NonNull EntityDataAccessor<Integer> DATA_COLOR_SEED =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.INT));
+    private static final @NonNull EntityDataAccessor<Integer> DATA_DISPLAY_TIER =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(AlienVillager.class, EntityDataSerializers.INT));
 
-    private static final Codec<Map<String, Integer>> REP_CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT);
+    private static final @NonNull Codec<Map<String, Integer>> REP_CODEC =
+            NerospaceCommon.requireNonNull(Codec.unboundedMap(Codec.STRING, Codec.INT));
 
     private boolean variantAssigned;
 
@@ -127,8 +131,8 @@ public class AlienVillager extends PathfinderMob implements Merchant {
                 assignVariant();
                 this.variantAssigned = true;
             }
-            if (this.tradingPlayer != null
-                    && (this.tradingPlayer.isRemoved() || this.distanceToSqr(this.tradingPlayer) > 100.0D)) {
+            Player player = this.tradingPlayer;
+            if (player != null && (player.isRemoved() || this.distanceToSqr(NerospaceCommon.requireNonNull(player)) > 100.0D)) {
                 this.setTradingPlayer(null);
             }
         }
@@ -183,7 +187,8 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         rebuildOffers(player);
         this.setTradingPlayer(player);
         OptionalInt opt = player.openMenu(new SimpleMenuProvider(
-                (id, inv, p) -> new MerchantMenu(id, inv, this), this.getDisplayName()));
+                (id, inv, p) -> new MerchantMenu(id, inv, this),
+                NerospaceCommon.requireNonNull(this.getDisplayName())));
         if (opt.isPresent()) {
             player.sendMerchantOffers(opt.getAsInt(), this.getOffers(), 1, this.getVillagerXp(),
                     this.showProgressBar(), false);
@@ -280,7 +285,7 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         if (this.offers == null) {
             rebuildOffers(this.tradingPlayer);
         }
-        return this.offers;
+        return NerospaceCommon.requireNonNull(this.offers);
     }
 
     @Override
@@ -342,8 +347,8 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         this.entityData.set(DATA_PLANET, planet.ordinal());
     }
 
-    public String getBiomeId() {
-        return this.entityData.get(DATA_BIOME);
+    public @NonNull String getBiomeId() {
+        return NerospaceCommon.requireNonNull(this.entityData.get(DATA_BIOME));
     }
 
     public void setBiomeId(String id) {
@@ -364,7 +369,7 @@ public class AlienVillager extends PathfinderMob implements Merchant {
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.putInt("Planet", this.entityData.get(DATA_PLANET));
-        output.putString("HomeBiome", getBiomeId());
+        output.putString("HomeBiome", NerospaceCommon.requireNonNull(getBiomeId()));
         output.putInt("ColorSeed", getColorSeed());
         output.putBoolean("VariantAssigned", this.variantAssigned);
         output.putInt("VillagerXp", this.villagerXp);

@@ -40,9 +40,9 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
     public static final int MAX_INSERT = 500;
     public static final int ENERGY_PER_TICK = 20;
     public static final int MAX_PROGRESS = 200;
-    private static final int[] SLOTS = {INPUT_SLOT, OUTPUT_SLOT};
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {INPUT_SLOT, OUTPUT_SLOT};
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_INSERT, 0, this::setChanged);
     private int progress;
 
@@ -127,8 +127,8 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.store("Input", ItemStack.OPTIONAL_CODEC, this.items.get(INPUT_SLOT));
-        output.store("Output", ItemStack.OPTIONAL_CODEC, this.items.get(OUTPUT_SLOT));
+        output.store("Input", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(INPUT_SLOT));
+        output.store("Output", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(OUTPUT_SLOT));
         output.putInt("Progress", this.progress);
         output.putInt("Energy", this.energy.getRaw());
     }
@@ -136,8 +136,10 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        this.items.set(INPUT_SLOT, input.read("Input", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
-        this.items.set(OUTPUT_SLOT, input.read("Output", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(INPUT_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Input", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
+        this.items.set(OUTPUT_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Output", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
         this.progress = input.getIntOr("Progress", 0);
         this.energy.setRaw(input.getIntOr("Energy", 0));
     }
@@ -149,7 +151,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new NerosiumGrinderMenu(containerId, playerInventory, this, this.data);
     }
 

@@ -35,15 +35,15 @@ public class PipeConfigMenu extends AbstractContainerMenu {
 
     @Nullable
     private final UniversalPipeBlockEntity pipe;
-    private final ContainerData data;
+    private final @org.jspecify.annotations.NonNull ContainerData data;
 
-    public PipeConfigMenu(int containerId, Inventory playerInventory) {
+    public PipeConfigMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(containerId, playerInventory, null, new SimpleContainerData(DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public PipeConfigMenu(int containerId, Inventory playerInventory,
-            @Nullable UniversalPipeBlockEntity pipe, ContainerData data) {
+    public PipeConfigMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory,
+            @Nullable UniversalPipeBlockEntity pipe, @org.jspecify.annotations.NonNull ContainerData data) {
         super(ModMenuTypes.PIPE_CONFIG.get(), containerId);
         checkContainerDataCount(data, DATA_COUNT);
         this.pipe = pipe;

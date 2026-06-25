@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 /** Battery block — holds a {@link BatteryBlockEntity} energy buffer; right-click empty-handed to read its charge. */
 public class BatteryBlock extends BaseEntityBlock {
 
-    public static final MapCodec<BatteryBlock> CODEC = simpleCodec(BatteryBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<BatteryBlock> CODEC = simpleCodec(BatteryBlock::new);
 
     public BatteryBlock(Properties properties) {
         super(properties);

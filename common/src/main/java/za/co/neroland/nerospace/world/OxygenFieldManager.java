@@ -20,8 +20,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
+
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -34,16 +37,16 @@ import za.co.neroland.nerospace.NerospaceCommon;
  * <p>The live field is held in memory (always loaded with the level) and re-converges from its sources
  * within a few seconds of load, so only the source set is persisted (via the {@link SavedDataType}
  * codec). Cross-loader port notes: the oxygen-field config keys are inlined to the root's shipped
- * defaults (config seam deferred); {@code SavedDataType} on NeoForm exposes only the 4-arg ctor
- * (DataFixTypes is null for new mod data). {@link #snapshotAround} feeds the deferred client visual
+ * defaults (config seam deferred); {@code SavedDataType} on NeoForm exposes only the 4-arg ctor.
+ * {@link #snapshotAround} feeds the deferred client visual
  * layer (sync payload + overlay).</p>
  */
 public final class OxygenFieldManager extends SavedData {
 
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_field");
+    public static final @org.jspecify.annotations.NonNull Identifier ID = NerospaceCommon.id("oxygen_field");
 
-    public static final SavedDataType<OxygenFieldManager> TYPE = new SavedDataType<>(
-            ID, OxygenFieldManager::new, codec(), null);
+    public static final @NonNull SavedDataType<OxygenFieldManager> TYPE = new SavedDataType<>(
+            ID, OxygenFieldManager::new, codec(), DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     // --- Inlined from Config (root shipped defaults) until the config seam lands ---
     private static final int MAX_CONCENTRATION = 15;
@@ -64,15 +67,15 @@ public final class OxygenFieldManager extends SavedData {
         this.field.defaultReturnValue((byte) 0);
     }
 
-    private static Codec<OxygenFieldManager> codec() {
-        return RecordCodecBuilder.create(inst -> inst.group(
+    private static @NonNull Codec<OxygenFieldManager> codec() {
+        return NerospaceCommon.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
                 Codec.LONG.listOf().fieldOf("sources").forGetter(m -> new ArrayList<>(m.sources))
-        ).apply(inst, OxygenFieldManager::fromSources));
+        ).apply(inst, OxygenFieldManager::fromSources)));
     }
 
-    private static OxygenFieldManager fromSources(List<Long> sources) {
+    private static @NonNull OxygenFieldManager fromSources(List<Long> sources) {
         OxygenFieldManager m = new OxygenFieldManager();
-        for (long s : sources) {
+        for (long s : NerospaceCommon.requireNonNull(sources)) {
             m.sources.add(s);
             m.field.put(s, (byte) MAX_CONCENTRATION);
         }
@@ -213,7 +216,7 @@ public final class OxygenFieldManager extends SavedData {
 
         // Seed from the source's holdable air neighbours (the generator block itself is solid).
         for (Direction dir : Direction.values()) {
-            m.setWithOffset(source, dir);
+            m.setWithOffset(NerospaceCommon.requireNonNull(source), dir);
             if (level.hasChunk(m.getX() >> 4, m.getZ() >> 4) && OxygenField.canHold(level, m, level.getBlockState(m))) {
                 long k = m.asLong();
                 if (dist.get(k) < 0) {

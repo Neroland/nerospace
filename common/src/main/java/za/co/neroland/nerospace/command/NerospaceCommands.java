@@ -31,6 +31,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.phys.AABB;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.meteor.FallingMeteorEntity;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity;
@@ -76,21 +78,22 @@ public final class NerospaceCommands {
      * Cross-loader registration: each loader calls this from its command hook (NeoForge
      * {@code RegisterCommandsEvent}, Fabric {@code CommandRegistrationCallback}) with the dispatcher.
      */
-    public static void register(com.mojang.brigadier.CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void register(com.mojang.brigadier.@NonNull CommandDispatcher<CommandSourceStack> dispatcher) {
         // Player-only; the executor further restricts to creative. (Commands themselves require the
         // world to have cheats/commands enabled, so this is effectively creative + commands gated.)
         dispatcher.register(
                 Commands.literal("nerospace")
                         .requires(src -> src.getPlayer() != null)
                         .then(Commands.literal("gallery")
-                                .executes(ctx -> runSafely(ctx.getSource(), "gallery",
+                                .executes(ctx -> runSafely(NerospaceCommon.requireNonNull(ctx.getSource()), "gallery",
                                         () -> buildGallery(ctx.getSource())))
                                 .then(Commands.literal("clear")
-                                        .executes(ctx -> runSafely(ctx.getSource(), "gallery clear",
+                                        .executes(ctx -> runSafely(NerospaceCommon.requireNonNull(ctx.getSource()), "gallery clear",
                                                 () -> clearGallery(ctx.getSource()))))));
     }
 
-    private static int runSafely(CommandSourceStack source, String commandName, CommandBody body) {
+    private static int runSafely(@NonNull CommandSourceStack source, @NonNull String commandName,
+            @NonNull CommandBody body) {
         try {
             return body.run();
         } catch (RuntimeException ex) {
@@ -123,12 +126,13 @@ public final class NerospaceCommands {
         // registry filtered to this mod's namespace (same effect as the root's BLOCKS.getEntries()).
         List<Block> blocks = new ArrayList<>();
         for (Block block : BuiltInRegistries.BLOCK) {
-            Identifier bid = BuiltInRegistries.BLOCK.getKey(block);
+            Block checkedBlock = NerospaceCommon.requireNonNull(block);
+            Identifier bid = BuiltInRegistries.BLOCK.getKey(checkedBlock);
             if (!NerospaceCommon.MOD_ID.equals(bid.getNamespace())) {
                 continue;
             }
-            if (block != ModBlocks.ROCKET_FUEL_BLOCK.get()) { // skip the fluid block (renders oddly free-standing)
-                blocks.add(block);
+            if (checkedBlock != ModBlocks.ROCKET_FUEL_BLOCK.get()) { // skip the fluid block (renders oddly free-standing)
+                blocks.add(checkedBlock);
             }
         }
 
@@ -142,7 +146,8 @@ public final class NerospaceCommands {
         int oz = origin.getZ() - 9;
         int fy = origin.getY();
 
-        BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
+        @NonNull BlockState floor = NerospaceCommon.requireNonNull(
+                ModBlocks.STATION_FLOOR.get().defaultBlockState());
 
         // Floor slab under the whole grid (with a 1-block margin).
         for (int gx = -1; gx <= cols * SPACING; gx++) {
@@ -172,9 +177,9 @@ public final class NerospaceCommands {
                 level.setBlockAndUpdate(new BlockPos(sx + dx, fy, sz + dz), floor);
             }
         }
-        BlockState lever = Blocks.LEVER.defaultBlockState()
+        @NonNull BlockState lever = NerospaceCommon.requireNonNull(Blocks.LEVER.defaultBlockState()
                 .setValue(LeverBlock.FACE, AttachFace.FLOOR)
-                .setValue(LeverBlock.FACING, Direction.EAST);
+                .setValue(LeverBlock.FACING, Direction.EAST));
 
         // A: the classic first power line.
         level.setBlockAndUpdate(new BlockPos(sx, fy + 1, sz), ModBlocks.COMBUSTION_GENERATOR.get().defaultBlockState());
@@ -302,7 +307,8 @@ public final class NerospaceCommands {
                 level.setBlockAndUpdate(new BlockPos(rx + dx, fy, rz0 + dz), floor);
             }
         }
-        BlockState pad = ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState();
+        @NonNull BlockState pad = NerospaceCommon.requireNonNull(
+                ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState());
         // T1 (3x3 + the classic pad-side Fuel Tank).
         fillPad(level, new BlockPos(rx, fy + 1, rz0), 3, pad);
         level.setBlockAndUpdate(new BlockPos(rx + 3, fy + 1, rz0 + 1), ModBlocks.FUEL_TANK.get().defaultBlockState());
@@ -312,7 +318,8 @@ public final class NerospaceCommands {
         spawnRocket(level, rx + 9, fy + 1, rz0 + 1, RocketTier.TIER_2);
         // T3 (3x3 ringed with Station Wall).
         fillPad(level, new BlockPos(rx + 16, fy + 1, rz0), 3, pad);
-        BlockState wall = ModBlocks.STATION_WALL.get().defaultBlockState();
+        @NonNull BlockState wall = NerospaceCommon.requireNonNull(
+                ModBlocks.STATION_WALL.get().defaultBlockState());
         for (int dx = -1; dx <= 3; dx++) {
             for (int dz = -1; dz <= 3; dz++) {
                 if (dx == -1 || dx == 3 || dz == -1 || dz == 3) {
@@ -346,7 +353,8 @@ public final class NerospaceCommands {
                 ModEntities.WOOLLY_DRIFT.get());
         // One frozen (NoAI) row only — AI mobs wander, which breaks reproducible screenshots.
         for (int i = 0; i < creatures.size(); i++) {
-            spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz + 1), true);
+            spawnShowcase(level, NerospaceCommon.requireNonNull(creatures.get(i)),
+                    new BlockPos(mx + i * 4, fy + 1, mz + 1), true);
         }
 
         // METEOR SITE (meteor-events-design.md): a small crater of meteor_rock around a loot-bearing
@@ -356,7 +364,8 @@ public final class NerospaceCommands {
         // QUARRY (MINER_DESIGN): two NE displays.
         //  1. Landmark-only — three landmarks in an L (shows the projected marker lasers).
         //  2. Fully operating — a powered quarry mid-dig: frame ring, drill head, a real pit forming.
-        BlockState landmark = ModBlocks.QUARRY_LANDMARK.get().defaultBlockState();
+        @NonNull BlockState landmark = NerospaceCommon.requireNonNull(
+                ModBlocks.QUARRY_LANDMARK.get().defaultBlockState());
         int lx = origin.getX() + 28; // landmark-only display (NE, nearer the centre)
         int lz = origin.getZ() - 40;
         for (int dx = -1; dx <= 7; dx++) {
@@ -464,7 +473,8 @@ public final class NerospaceCommands {
      * connector (the panel grows a stub toward the cable so the hookup butts up with no gap). Built at {@code (baseX,
      * baseZ)}, extending east (+X) and south (+Z); panels sit on the floor with the tracking deck above.
      */
-    private static void buildSolarArrays(ServerLevel level, BlockState floor, int baseX, int baseZ, int fy) {
+    private static void buildSolarArrays(@NonNull ServerLevel level, @NonNull BlockState floor,
+            int baseX, int baseZ, int fy) {
         int sy = fy + 1;
         for (int dx = -2; dx <= 20; dx++) {
             for (int dz = -2; dz <= 10; dz++) {
@@ -504,7 +514,7 @@ public final class NerospaceCommands {
     }
 
     /** Place a solar panel anchor; multiblock tiers auto-expand their footprint in {@code onPlace}. */
-    private static void placeSolar(ServerLevel level, Block block, int x, int y, int z) {
+    private static void placeSolar(@NonNull ServerLevel level, @NonNull Block block, int x, int y, int z) {
         level.setBlockAndUpdate(new BlockPos(x, y, z), block.defaultBlockState());
     }
 
@@ -512,8 +522,8 @@ public final class NerospaceCommands {
      * Build one powered gallery quarry claim: landmarks form a {@code (side+1) x (side+1)} region,
      * with the controller one block outside the west frame edge and enough casings to build the ring.
      */
-    private static void buildGalleryQuarry(ServerLevel level, BlockState floor, int qx, int qz, int fy,
-            int side, Component label) {
+    private static void buildGalleryQuarry(@NonNull ServerLevel level, @NonNull BlockState floor, int qx, int qz,
+            int fy, int side, @NonNull Component label) {
         int refY = fy + 1;
         int mid = side / 2;
         for (int dx = -5; dx <= side + 1; dx++) {   // ground: power pad (west) + under the region
@@ -547,13 +557,13 @@ public final class NerospaceCommands {
      * raised rim, a loot-pre-rolled {@code meteor_core} nestled in the centre, and a frozen
      * {@link FallingMeteorEntity} hovering above (spins + trails, but never falls — gallery only).
      */
-    private static void buildMeteorSite(ServerLevel level, BlockState floor, int cx, int cz, int fy) {
+    private static void buildMeteorSite(@NonNull ServerLevel level, @NonNull BlockState floor, int cx, int cz, int fy) {
         for (int dx = -3; dx <= 3; dx++) {
             for (int dz = -3; dz <= 3; dz++) {
                 level.setBlockAndUpdate(new BlockPos(cx + dx, fy, cz + dz), floor);
             }
         }
-        BlockState rock = ModBlocks.METEOR_ROCK.get().defaultBlockState();
+        @NonNull BlockState rock = NerospaceCommon.requireNonNull(ModBlocks.METEOR_ROCK.get().defaultBlockState());
         for (int dx = -2; dx <= 2; dx++) {
             for (int dz = -2; dz <= 2; dz++) {
                 level.setBlockAndUpdate(new BlockPos(cx + dx, fy + 1, cz + dz), rock); // crater floor
@@ -571,7 +581,8 @@ public final class NerospaceCommands {
     }
 
     /** A full {@code size x size} square of launch pads with min-corner {@code corner}. */
-    private static void fillPad(ServerLevel level, BlockPos corner, int size, BlockState pad) {
+    private static void fillPad(@NonNull ServerLevel level, @NonNull BlockPos corner, int size,
+            @NonNull BlockState pad) {
         for (int dx = 0; dx < size; dx++) {
             for (int dz = 0; dz < size; dz++) {
                 level.setBlockAndUpdate(corner.offset(dx, 0, dz), pad);
@@ -580,14 +591,14 @@ public final class NerospaceCommands {
     }
 
     /** A rocket standing on the pad surface of the pad block at {@code (x, y, z)}. */
-    private static void spawnRocket(ServerLevel level, int x, int y, int z, RocketTier tier) {
+    private static void spawnRocket(@NonNull ServerLevel level, int x, int y, int z, @NonNull RocketTier tier) {
         level.addFreshEntity(new RocketEntity(level,
                 x + 0.5D, y + RocketLaunchPadBlock.SURFACE_HEIGHT, z + 0.5D, tier));
     }
 
     /** An invulnerable, named armor stand wearing the given four-piece suit. */
-    private static void spawnSuitStand(ServerLevel level, BlockPos pos, Component name, float yaw,
-            Item helmet, Item chestplate, Item leggings, Item boots) {
+    private static void spawnSuitStand(@NonNull ServerLevel level, @NonNull BlockPos pos, @NonNull Component name,
+            float yaw, @NonNull Item helmet, @NonNull Item chestplate, @NonNull Item leggings, @NonNull Item boots) {
         // Build the stand via its constructor (the de-obf EntityType.ARMOR_STAND constant isn't on the
         // 26.2 classpath) and add it to the world directly.
         ArmorStand stand = new ArmorStand(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
@@ -605,7 +616,7 @@ public final class NerospaceCommands {
     }
 
     /** Small floating label for gallery display clusters. */
-    private static void spawnLabelStand(ServerLevel level, BlockPos pos, Component name) {
+    private static void spawnLabelStand(@NonNull ServerLevel level, @NonNull BlockPos pos, @NonNull Component name) {
         ArmorStand stand = new ArmorStand(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         stand.setCustomName(name);
         stand.setCustomNameVisible(true);
@@ -616,15 +627,17 @@ public final class NerospaceCommands {
     }
 
     /** Set one face of the pipe at {@code pos} to {@code mode} for ALL four resource layers. */
-    private static void setAllModes(ServerLevel level, BlockPos pos, Direction face, PipeIoMode mode) {
+    private static void setAllModes(@NonNull ServerLevel level, @NonNull BlockPos pos, @NonNull Direction face,
+            @NonNull PipeIoMode mode) {
         if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
             for (PipeResourceType type : PipeResourceType.VALUES) {
-                pipe.setMode(face, type, mode);
+                pipe.setMode(face, NerospaceCommon.requireNonNull(type), mode);
             }
         }
     }
 
-    private static void spawnShowcase(ServerLevel level, EntityType<? extends Mob> type, BlockPos pos, boolean noAi) {
+    private static void spawnShowcase(@NonNull ServerLevel level, @NonNull EntityType<? extends Mob> type,
+            @NonNull BlockPos pos, boolean noAi) {
         Mob mob = type.spawn(level, pos, EntitySpawnReason.COMMAND);
         if (mob != null) {
             mob.setNoAi(noAi);

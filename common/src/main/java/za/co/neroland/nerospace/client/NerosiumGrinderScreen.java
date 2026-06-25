@@ -11,11 +11,11 @@ import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
 /** Screen for the Nerosium Grinder: a power gauge and a grind-progress arrow over the sci-fi hull panel. */
 public class NerosiumGrinderScreen extends TexturedContainerScreen<NerosiumGrinderMenu> {
 
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/nerosium_grinder.png");
+    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+            NerospaceCommon.id("textures/gui/nerosium_grinder.png");
     private static final int ACCENT = 0xFFD23A8C; // nerosium magenta
 
-    public NerosiumGrinderScreen(NerosiumGrinderMenu menu, Inventory playerInventory, Component title) {
+    public NerosiumGrinderScreen(NerosiumGrinderMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;

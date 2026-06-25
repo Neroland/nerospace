@@ -9,6 +9,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.ItemLike;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
@@ -57,13 +58,15 @@ public final class AlienTrades {
     }
 
     private static MerchantOffer buy(ItemLike cost, int n, ItemLike result, int rc, int maxUses, int xp) {
-        return new MerchantOffer(new ItemCost(cost, n), new ItemStack(result, rc), maxUses, xp, PRICE_MULT);
+        return new MerchantOffer(new ItemCost(NerospaceCommon.requireNonNull(cost), n),
+                new ItemStack(NerospaceCommon.requireNonNull(result), rc), maxUses, xp, PRICE_MULT);
     }
 
     private static MerchantOffer buy2(ItemLike costA, int a, ItemLike costB, int b,
             ItemLike result, int rc, int maxUses, int xp) {
-        return new MerchantOffer(new ItemCost(costA, a), Optional.of(new ItemCost(costB, b)),
-                new ItemStack(result, rc), maxUses, xp, PRICE_MULT);
+        return new MerchantOffer(new ItemCost(NerospaceCommon.requireNonNull(costA), a),
+                Optional.of(new ItemCost(NerospaceCommon.requireNonNull(costB), b)),
+                new ItemStack(NerospaceCommon.requireNonNull(result), rc), maxUses, xp, PRICE_MULT);
     }
 
     private static MerchantOffer sell(ItemLike cost, int n, ItemLike result, int rc, int maxUses, int xp) {

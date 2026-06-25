@@ -1,6 +1,8 @@
 package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
@@ -27,16 +29,18 @@ public final class MeteorTrackerHud {
 
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null || mc.isPaused()) {
+        LocalPlayer player = mc.player;
+        ClientLevel level = mc.level;
+        if (player == null || level == null || mc.isPaused()) {
             return;
         }
-        boolean holding = mc.player.getMainHandItem().is(ModItems.METEOR_TRACKER.get())
-                || mc.player.getOffhandItem().is(ModItems.METEOR_TRACKER.get());
+        boolean holding = player.getMainHandItem().is(ModItems.METEOR_TRACKER.get())
+                || player.getOffhandItem().is(ModItems.METEOR_TRACKER.get());
         if (!holding) {
             return;
         }
         if (!ClientMeteorTracker.isPresent()) {
-            mc.player.sendOverlayMessage(Component.translatable("item.nerospace.meteor_tracker.none"));
+            player.sendOverlayMessage(Component.translatable("item.nerospace.meteor_tracker.none"));
             return;
         }
         BlockPos target = ClientMeteorTracker.pos();
@@ -44,7 +48,7 @@ public final class MeteorTrackerHud {
             // isPresent() was true above, but pos() is @Nullable — guard the deref explicitly.
             return;
         }
-        Vec3 p = mc.player.position();
+        Vec3 p = player.position();
         double dx = target.getX() + 0.5D - p.x;
         double dz = target.getZ() + 0.5D - p.z;
         int dist = (int) Math.round(Math.sqrt(dx * dx + dz * dz));
@@ -54,7 +58,7 @@ public final class MeteorTrackerHud {
         Component state = Component.translatable(ClientMeteorTracker.state() == MeteorSite.LANDED
                 ? "item.nerospace.meteor_tracker.landed"
                 : "item.nerospace.meteor_tracker.incoming");
-        mc.player.sendOverlayMessage(
+        player.sendOverlayMessage(
                 Component.translatable("item.nerospace.meteor_tracker.readout", state, heading, dist));
     }
 }

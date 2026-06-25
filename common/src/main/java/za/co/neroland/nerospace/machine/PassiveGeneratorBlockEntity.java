@@ -38,9 +38,9 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
     public static final int CAPACITY = 100_000;
     public static final int FE_PER_TICK = 8;
     public static final int CORE_TICKS = 24_000;
-    private static final int[] SLOTS = {CORE_SLOT};
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {CORE_SLOT};
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, FE_PER_TICK * 64, this::setChanged);
     private int coreTicks;
 
@@ -112,7 +112,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
         super.saveAdditional(output);
         output.putInt("Energy", this.energy.getRaw());
         output.putInt("CoreTicks", this.coreTicks);
-        output.store("Core", ItemStack.OPTIONAL_CODEC, this.items.get(CORE_SLOT));
+        output.store("Core", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(CORE_SLOT));
     }
 
     @Override
@@ -120,7 +120,8 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
         super.loadAdditional(input);
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.coreTicks = input.getIntOr("CoreTicks", 0);
-        this.items.set(CORE_SLOT, input.read("Core", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(CORE_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Core", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
     }
 
     @Override
@@ -129,7 +130,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new PassiveGeneratorMenu(containerId, playerInventory, this, this.data);
     }
 

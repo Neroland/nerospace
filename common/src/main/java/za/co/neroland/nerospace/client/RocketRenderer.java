@@ -24,11 +24,11 @@ import za.co.neroland.nerospace.rocket.RocketEntity;
  */
 public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderState> {
 
-    private static final Identifier[] TEXTURES = {
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/entity/rocket_t1.png"),
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/entity/rocket_t2.png"),
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/entity/rocket_t3.png"),
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/entity/rocket_t4.png"),
+    private static final Identifier @org.jspecify.annotations.NonNull[] TEXTURES = {
+            NerospaceCommon.id("textures/entity/rocket_t1.png"),
+            NerospaceCommon.id("textures/entity/rocket_t2.png"),
+            NerospaceCommon.id("textures/entity/rocket_t3.png"),
+            NerospaceCommon.id("textures/entity/rocket_t4.png"),
     };
     private static final int FULL_BRIGHT = 0x00F000F0;
 
@@ -55,7 +55,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
         super.extractRenderState(rocket, state, partialTick);
         state.scale = rocket.visualScale();
         state.tier = Math.min(TEXTURES.length - 1, rocket.getTier().ordinal());
-        state.texture = TEXTURES[state.tier];
+        state.texture = NerospaceCommon.requireNonNull(TEXTURES[state.tier]);
     }
 
     @Override

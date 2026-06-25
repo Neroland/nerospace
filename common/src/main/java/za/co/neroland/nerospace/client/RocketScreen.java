@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -27,8 +28,8 @@ import za.co.neroland.nerospace.rocket.RocketTier;
  */
 public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/rocket.png");
+    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+            NerospaceCommon.id("textures/gui/rocket.png");
     private static final int ACCENT = 0xFFE0506A;     // rocket red
     private static final int FUEL = 0xFFF0703C;       // fuel orange-red
 
@@ -39,7 +40,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private SpaceButton stationButton;
     private final List<SpaceButton> destinationButtons = new ArrayList<>();
 
-    public RocketScreen(RocketMenu menu, Inventory playerInventory, Component title) {
+    public RocketScreen(RocketMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;
@@ -56,7 +57,8 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         for (int i = 0; i < ALL_DESTINATIONS.size(); i++) {
             final int index = i;
             SpaceButton node = new SpaceButton(x, this.topPos + 36, 34, 14,
-                    Component.literal(shortName(Destinations.name(ALL_DESTINATIONS.get(i)))), ACCENT,
+                    Component.literal(shortName(NerospaceCommon.requireNonNull(Destinations.name(
+                            NerospaceCommon.requireNonNull(ALL_DESTINATIONS.get(i)))))), ACCENT,
                     b -> onSelectDestination(index));
             this.addRenderableWidget(node);
             this.destinationButtons.add(node);
@@ -84,7 +86,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         int reachable = this.menu.getTier().destinations().size();
         int selected = this.menu.getDestinationIndex();
         for (int i = 0; i < this.destinationButtons.size(); i++) {
-            SpaceButton node = this.destinationButtons.get(i);
+            SpaceButton node = NerospaceCommon.requireNonNull(this.destinationButtons.get(i));
             node.active = i < reachable && reachable > 1;
             node.visible = i < reachable;
             node.setSelected(i == selected);
@@ -104,7 +106,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
         // A dotted trajectory arc from the pad to the selected node.
         if (selected >= 0 && selected < this.destinationButtons.size()) {
-            SpaceButton target = this.destinationButtons.get(selected);
+            SpaceButton target = NerospaceCommon.requireNonNull(this.destinationButtons.get(selected));
             int x0 = this.leftPos + 26;
             int y0 = this.topPos + 45;
             int x1 = target.getX() + target.getWidth() / 2;
@@ -119,7 +121,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         }
     }
 
-    private static String shortName(String full) {
+    private static String shortName(@org.jspecify.annotations.NonNull String full) {
         return switch (full) {
             case "Orbital Station" -> "Station";
             case "Greenxertz" -> "Xertz";
@@ -140,8 +142,9 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     }
 
     private void sendButton(int id) {
-        if (this.minecraft != null && this.minecraft.gameMode != null) {
-            this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, id);
+        MultiPlayerGameMode gameMode = this.minecraft.gameMode;
+        if (gameMode != null) {
+            gameMode.handleInventoryButtonClick(this.menu.containerId, id);
         }
     }
 }

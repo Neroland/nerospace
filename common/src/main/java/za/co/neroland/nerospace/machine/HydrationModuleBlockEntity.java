@@ -49,16 +49,16 @@ public class HydrationModuleBlockEntity extends BlockEntity implements WorldlyCo
     /** Ticks between melt pulses (cheap; one item per pulse). */
     private static final int WORK_INTERVAL_TICKS = 10;
 
-    private static final int[] SLOTS = {INPUT_SLOT};
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {INPUT_SLOT};
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
     /** Transient link state for the GUI (recomputed each work pulse). */
     private transient boolean linked;
     private transient int linkedHydration;
 
     /** Synced to the menu: [0]=linked [1]=linked terraformer's hydration [2]=hydration cap. */
-    private final ContainerData dataAccess = new ContainerData() {
+    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -149,13 +149,14 @@ public class HydrationModuleBlockEntity extends BlockEntity implements WorldlyCo
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.store("Input", ItemStack.OPTIONAL_CODEC, this.items.get(INPUT_SLOT));
+        output.store("Input", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(INPUT_SLOT));
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        this.items.set(INPUT_SLOT, input.read("Input", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(INPUT_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Input", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
     }
 
     // --- MenuProvider -------------------------------------------------------
@@ -167,7 +168,7 @@ public class HydrationModuleBlockEntity extends BlockEntity implements WorldlyCo
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new HydrationModuleMenu(containerId, playerInventory, this, this.dataAccess);
     }
 

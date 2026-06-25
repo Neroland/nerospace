@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.neoforge.NeoForgeCapabilities;
@@ -14,7 +15,8 @@ public final class NeoForgeEnergyLookup implements EnergyLookup {
 
     @Nullable
     @Override
-    public NerospaceEnergyStorage find(Level level, BlockPos pos, @Nullable Direction side) {
-        return level.getCapability(NeoForgeCapabilities.ENERGY, pos, side);
+    public NerospaceEnergyStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side) {
+        NerospaceEnergyStorage storage = level.getCapability(NeoForgeCapabilities.ENERGY, pos, side);
+        return storage;
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.TerraformMonitorMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.world.TerraformManager;
@@ -45,7 +46,7 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
      * Synced to the menu: [0]=linked [1]=rootedRadius [2]=hydrationRadius [3]=lifeRadius
      * [4]=hydration [5]=stalled [6]=localStage.
      */
-    private final ContainerData dataAccess = new ContainerData() {
+    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -104,7 +105,8 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
     /** One readout refresh (public so the gametest can drive it without waiting on the interval). */
     public void refresh(ServerLevel level, BlockPos pos) {
         int oldStage = this.localStage;
-        this.localStage = TerraformConversion.effectiveStage(level.getChunkAt(pos));
+        BlockPos checkedPos = NerospaceCommon.requireNonNull(pos);
+        this.localStage = TerraformConversion.effectiveStage(level.getChunkAt(checkedPos));
 
         BlockPos nearest = nearestTerraformer(level, pos);
         this.linked = nearest != null;
@@ -128,7 +130,7 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
         }
 
         if (oldStage != this.localStage) {
-            level.updateNeighbourForOutputSignal(pos, getBlockState().getBlock());
+            level.updateNeighbourForOutputSignal(checkedPos, getBlockState().getBlock());
         }
     }
 
@@ -157,13 +159,14 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new TerraformMonitorMenu(containerId, playerInventory, this, this.dataAccess);
     }
 
     /** Menu range check (no Container interface — the Monitor has no inventory). */
     public boolean stillValid(Player player) {
-        if (this.level == null || this.level.getBlockEntity(this.worldPosition) != this) {
+        Level currentLevel = this.level;
+        if (currentLevel == null || currentLevel.getBlockEntity(this.worldPosition) != this) {
             return false;
         }
         return player.distanceToSqr(this.worldPosition.getX() + 0.5,

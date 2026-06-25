@@ -22,16 +22,16 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
     private static final int PLAYER_INV_START = 2;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36;
 
-    private final Container container;
-    private final ContainerData data;
+    private final @org.jspecify.annotations.NonNull Container container;
+    private final @org.jspecify.annotations.NonNull ContainerData data;
 
-    public FuelRefineryMenu(int containerId, Inventory playerInventory) {
+    public FuelRefineryMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(FuelRefineryBlockEntity.SIZE),
                 new SimpleContainerData(FuelRefineryBlockEntity.DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public FuelRefineryMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
+    public FuelRefineryMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data) {
         super(ModMenuTypes.FUEL_REFINERY.get(), containerId);
         checkContainerSize(container, FuelRefineryBlockEntity.SIZE);
         checkContainerDataCount(data, FuelRefineryBlockEntity.DATA_COUNT);
@@ -52,7 +52,7 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack moved = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack raw = slot.getItem();
             moved = raw.copy();
             if (index == CARBON_SLOT || index == CATALYST_SLOT) {
@@ -106,7 +106,7 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
     }
 
     private static class FilterSlot extends Slot {
-        FilterSlot(Container container, int slot, int x, int y) {
+        FilterSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 

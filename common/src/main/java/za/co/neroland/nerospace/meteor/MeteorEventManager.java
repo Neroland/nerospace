@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
@@ -33,13 +35,12 @@ import za.co.neroland.nerospace.NerospaceCommon;
  */
 public final class MeteorEventManager extends SavedData {
 
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "meteor_events");
+    public static final @org.jspecify.annotations.NonNull Identifier ID = NerospaceCommon.id("meteor_events");
 
-    // 26.x NeoForm (pure vanilla) exposes only the 4-arg ctor (Identifier, Supplier, Codec,
-    // DataFixTypes); the 3-arg form the standalone NeoForge mod uses is a loader convenience. New mod
-    // data has no datafixer schema, so DataFixTypes is null (no fixes to apply).
-    public static final SavedDataType<MeteorEventManager> TYPE =
-            new SavedDataType<>(ID, MeteorEventManager::new, codec(), null);
+    // 26.x NeoForm (pure vanilla) exposes only the 4-arg ctor. Custom mod saved data has no vanilla
+    // schema; the command-storage saved-data type is the narrowest generic saved-data fixer.
+    public static final @NonNull SavedDataType<MeteorEventManager> TYPE =
+            new SavedDataType<>(ID, MeteorEventManager::new, codec(), DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     // --- Inlined from Config (root shipped defaults) until the config seam lands ---
     /** Whether meteors fall naturally near players. */
@@ -72,11 +73,16 @@ public final class MeteorEventManager extends SavedData {
         this.cooldown = cooldown;
     }
 
-    private static Codec<MeteorEventManager> codec() {
-        return RecordCodecBuilder.create(inst -> inst.group(
+    private static @NonNull Codec<@NonNull MeteorEventManager> codec() {
+        return NerospaceCommon.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
                 MeteorSite.CODEC.listOf().fieldOf("sites").forGetter(m -> m.sites),
                 Codec.INT.fieldOf("cooldown").forGetter(m -> m.cooldown)
-        ).apply(inst, MeteorEventManager::new));
+        ).apply(inst, MeteorEventManager::of)));
+    }
+
+    private static @NonNull MeteorEventManager of(List<MeteorSite> sites, Integer cooldown) {
+        return new MeteorEventManager(NerospaceCommon.requireNonNull(sites),
+                NerospaceCommon.requireNonNull(cooldown).intValue());
     }
 
     public static MeteorEventManager get(ServerLevel level) {
@@ -151,16 +157,17 @@ public final class MeteorEventManager extends SavedData {
     /** Called by {@link FallingMeteorEntity} on impact: flip the matching site to LANDED (or add one). */
     public void onImpact(BlockPos pos) {
         for (MeteorSite site : this.sites) {
-            if (site.state != MeteorSite.LANDED && site.blockPos().closerThan(pos, 8.0D)) {
+            BlockPos checkedPos = NerospaceCommon.requireNonNull(pos);
+            if (site.state != MeteorSite.LANDED && site.blockPos().closerThan(checkedPos, 8.0D)) {
                 site.state = MeteorSite.LANDED;
                 site.timer = LANDED_EXPIRY_TICKS;
-                site.pos = pos.asLong();
+                site.pos = checkedPos.asLong();
                 setDirty();
                 return;
             }
         }
         // Creative-spawned (or unscheduled) meteor: add a transient landed site for the tracker.
-        this.sites.add(new MeteorSite(pos.asLong(), MeteorSite.LANDED, LANDED_EXPIRY_TICKS));
+        this.sites.add(new MeteorSite(NerospaceCommon.requireNonNull(pos).asLong(), MeteorSite.LANDED, LANDED_EXPIRY_TICKS));
         setDirty();
     }
 
@@ -170,7 +177,7 @@ public final class MeteorEventManager extends SavedData {
         MeteorSite best = null;
         double bestSq = Double.MAX_VALUE;
         for (MeteorSite site : this.sites) {
-            double sq = site.blockPos().distSqr(from);
+            double sq = site.blockPos().distSqr(NerospaceCommon.requireNonNull(from));
             if (sq < bestSq) {
                 bestSq = sq;
                 best = site;

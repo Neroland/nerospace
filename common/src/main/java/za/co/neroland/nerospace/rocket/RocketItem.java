@@ -10,6 +10,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * Places a {@link RocketEntity} of a fixed {@link RocketTier} onto a {@link RocketLaunchPadBlock}.
  * Using it anywhere else does nothing, so a launch pad is required to deploy a rocket.
@@ -19,8 +21,8 @@ public class RocketItem extends Item {
     private final RocketTier tier;
 
     public RocketItem(Properties properties, RocketTier tier) {
-        super(properties);
-        this.tier = tier;
+        super(NerospaceCommon.requireNonNull(properties));
+        this.tier = NerospaceCommon.requireNonNull(tier);
     }
 
     public RocketTier tier() {

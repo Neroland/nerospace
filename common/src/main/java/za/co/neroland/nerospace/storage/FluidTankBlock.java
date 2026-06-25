@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 /** Fluid Tank block — holds a {@link FluidTankBlockEntity}; right-click empty-handed to read its contents. */
 public class FluidTankBlock extends BaseEntityBlock {
 
-    public static final MapCodec<FluidTankBlock> CODEC = simpleCodec(FluidTankBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<FluidTankBlock> CODEC = simpleCodec(FluidTankBlock::new);
 
     public FluidTankBlock(Properties properties) {
         super(properties);

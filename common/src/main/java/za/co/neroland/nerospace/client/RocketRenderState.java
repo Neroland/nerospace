@@ -12,7 +12,7 @@ public class RocketRenderState extends EntityRenderState {
     public float scale = 1.6F;
     /** Per-tier hull texture. */
     public Identifier texture =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/entity/rocket_t1.png");
+            NerospaceCommon.id("textures/entity/rocket_t1.png");
     /** Tier ordinal — picks the per-tier geometry. */
     public int tier;
 }

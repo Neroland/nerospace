@@ -9,6 +9,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 
 /**
  * One stack of items visibly travelling through a Universal Pipe segment (the cosmetic half of the
@@ -23,32 +26,33 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class TravellingItem {
 
-    public static final Codec<TravellingItem> CODEC = RecordCodecBuilder.create(i -> i.group(
-            ItemStack.CODEC.fieldOf("item").forGetter(t -> t.stack),
+    public static final @NonNull Codec<TravellingItem> CODEC = NerospaceCommon.requireNonNull(
+            RecordCodecBuilder.create(i -> i.group(
+            NerospaceCommon.ITEM_STACK_CODEC.fieldOf("item").forGetter(t -> NerospaceCommon.requireNonNull(t.stack)),
             Direction.CODEC.fieldOf("from").forGetter(t -> t.from),
             Direction.CODEC.optionalFieldOf("to").forGetter(t -> Optional.ofNullable(t.to)),
             Codec.FLOAT.fieldOf("progress").forGetter(t -> t.progress))
             .apply(i, (stack, from, to, progress) ->
-                    new TravellingItem(stack, from, to.orElse(null), progress)));
+                    new TravellingItem(stack, from, to.orElse(null), progress))));
 
-    private final ItemStack stack;
-    private final Direction from;
+    private final @NonNull ItemStack stack;
+    private final @NonNull Direction from;
     @Nullable
     private final Direction to;
     private float progress;
 
-    public TravellingItem(ItemStack stack, Direction from, @Nullable Direction to, float progress) {
+    public TravellingItem(@NonNull ItemStack stack, @NonNull Direction from, @Nullable Direction to, float progress) {
         this.stack = stack;
         this.from = from;
         this.to = to;
         this.progress = progress;
     }
 
-    public ItemStack stack() {
+    public @NonNull ItemStack stack() {
         return this.stack;
     }
 
-    public Direction from() {
+    public @NonNull Direction from() {
         return this.from;
     }
 

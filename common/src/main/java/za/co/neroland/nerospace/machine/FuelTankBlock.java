@@ -30,7 +30,7 @@ import za.co.neroland.nerospace.registry.ModItems;
  */
 public class FuelTankBlock extends BaseEntityBlock {
 
-    public static final MapCodec<FuelTankBlock> CODEC = simpleCodec(FuelTankBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<FuelTankBlock> CODEC = simpleCodec(FuelTankBlock::new);
 
     public FuelTankBlock(Properties properties) {
         super(properties);

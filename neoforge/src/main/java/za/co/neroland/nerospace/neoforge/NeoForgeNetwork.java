@@ -8,6 +8,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.network.ModNetwork;
 import za.co.neroland.nerospace.platform.NetworkPlatform;
 
@@ -35,12 +37,12 @@ public final class NeoForgeNetwork implements NetworkPlatform {
         }
     }
 
-    private static <T extends CustomPacketPayload> void registerClientbound(PayloadRegistrar registrar, ModNetwork.Clientbound<T> cb) {
+    private static <T extends @NonNull CustomPacketPayload> void registerClientbound(PayloadRegistrar registrar, ModNetwork.Clientbound<T> cb) {
         registrar.playToClient(cb.type(), cb.codec(),
                 (payload, context) -> context.enqueueWork(() -> cb.handler().accept(payload)));
     }
 
-    private static <T extends CustomPacketPayload> void registerServerbound(PayloadRegistrar registrar, ModNetwork.Serverbound<T> sb) {
+    private static <T extends @NonNull CustomPacketPayload> void registerServerbound(PayloadRegistrar registrar, ModNetwork.Serverbound<T> sb) {
         registrar.playToServer(sb.type(), sb.codec(),
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer serverPlayer) {
@@ -50,12 +52,12 @@ public final class NeoForgeNetwork implements NetworkPlatform {
     }
 
     @Override
-    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
+    public void sendToPlayer(@NonNull ServerPlayer player, @NonNull CustomPacketPayload payload) {
         PacketDistributor.sendToPlayer(player, payload);
     }
 
     @Override
-    public void sendToServer(CustomPacketPayload payload) {
+    public void sendToServer(@NonNull CustomPacketPayload payload) {
         ClientPacketDistributor.sendToServer(payload);
     }
 }

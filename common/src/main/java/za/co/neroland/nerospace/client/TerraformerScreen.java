@@ -14,11 +14,11 @@ import za.co.neroland.nerospace.menu.TerraformerMenu;
  */
 public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> {
 
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/terraformer.png");
+    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+            NerospaceCommon.id("textures/gui/terraformer.png");
     private static final int ACCENT = 0xFF54D46A;     // green (terraform)
 
-    public TerraformerScreen(TerraformerMenu menu, Inventory playerInventory, Component title) {
+    public TerraformerScreen(TerraformerMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;

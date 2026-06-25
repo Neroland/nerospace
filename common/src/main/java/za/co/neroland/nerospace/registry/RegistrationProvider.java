@@ -7,6 +7,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.platform.Services;
 
 /**
@@ -29,14 +31,14 @@ public interface RegistrationProvider<T> {
         return Factory.INSTANCE.create(registryKey, modId);
     }
 
-    <I extends T> RegistryEntry<I> register(String name, Function<ResourceKey<T>, I> factory);
+    <I extends T> RegistryEntry<I> register(String name, Function<@NonNull ResourceKey<T>, @NonNull I> factory);
 
     /** A registered entry: a {@link Supplier} of the value plus its id. */
     interface RegistryEntry<R> extends Supplier<R> {
         @Override
-        R get();
+        @NonNull R get();
 
-        Identifier id();
+        @NonNull Identifier id();
     }
 
     /** Loader-provided bridge to the platform registry. */

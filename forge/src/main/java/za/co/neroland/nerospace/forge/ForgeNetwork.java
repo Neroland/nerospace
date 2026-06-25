@@ -3,12 +3,13 @@ package za.co.neroland.nerospace.forge;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.Channel;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.payload.PayloadFlow;
+
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.network.ModNetwork;
@@ -21,7 +22,7 @@ public final class ForgeNetwork implements NetworkPlatform {
 
     public static void register() {
         PayloadFlow<RegistryFriendlyByteBuf, CustomPacketPayload> play =
-                ChannelBuilder.named(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "main"))
+                ChannelBuilder.named(NerospaceCommon.id("main"))
                         .optional()
                         .payloadChannel()
                         .play()
@@ -35,13 +36,13 @@ public final class ForgeNetwork implements NetworkPlatform {
         channel = play.build();
     }
 
-    private static <T extends CustomPacketPayload> void registerClientbound(
+    private static <T extends @NonNull CustomPacketPayload> void registerClientbound(
             PayloadFlow<RegistryFriendlyByteBuf, CustomPacketPayload> play, ModNetwork.Clientbound<T> cb) {
         play.addMain(cb.type(), registryCodec(cb.codec()),
                 (payload, context) -> cb.handler().accept(payload));
     }
 
-    private static <T extends CustomPacketPayload> void registerServerbound(
+    private static <T extends @NonNull CustomPacketPayload> void registerServerbound(
             PayloadFlow<RegistryFriendlyByteBuf, CustomPacketPayload> play, ModNetwork.Serverbound<T> sb) {
         play.addMain(sb.type(), registryCodec(sb.codec()), (payload, context) -> {
             if (context.getSender() instanceof ServerPlayer serverPlayer) {
@@ -51,20 +52,20 @@ public final class ForgeNetwork implements NetworkPlatform {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends CustomPacketPayload> StreamCodec<RegistryFriendlyByteBuf, T> registryCodec(
+    private static <T extends @NonNull CustomPacketPayload> StreamCodec<RegistryFriendlyByteBuf, T> registryCodec(
             StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
         return (StreamCodec<RegistryFriendlyByteBuf, T>) codec;
     }
 
     @Override
-    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
+    public void sendToPlayer(@NonNull ServerPlayer player, @NonNull CustomPacketPayload payload) {
         if (channel != null) {
             channel.send(payload, PacketDistributor.PLAYER.with(player));
         }
     }
 
     @Override
-    public void sendToServer(CustomPacketPayload payload) {
+    public void sendToServer(@NonNull CustomPacketPayload payload) {
         if (channel != null) {
             channel.send(payload, PacketDistributor.SERVER.noArg());
         }

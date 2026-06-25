@@ -40,13 +40,14 @@ public class CreativeItemStoreBlockEntity extends BlockEntity implements Contain
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.store("Source", ItemStack.OPTIONAL_CODEC, this.source);
+        output.store("Source", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.source);
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        this.source = input.read("Source", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        this.source = za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Source", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY);
     }
 
     // --- Container: a single endless-source slot --------------------------------

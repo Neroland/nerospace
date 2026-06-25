@@ -49,7 +49,7 @@ public final class StarGuide {
     }
 
     private static Identifier adv(String path) {
-        return Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path);
+        return NerospaceCommon.id(path);
     }
 
     private static Step step(String id, Supplier<? extends ItemLike> icon, String advancementPath) {

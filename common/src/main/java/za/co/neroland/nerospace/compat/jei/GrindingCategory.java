@@ -13,6 +13,8 @@ import mezz.jei.api.recipe.types.IRecipeType;
 
 import net.minecraft.network.chat.Component;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.machine.GrinderRecipes;
@@ -27,23 +29,26 @@ import za.co.neroland.nerospace.registry.ModBlocks;
  */
 public class GrindingCategory extends AbstractRecipeCategory<GrinderRecipes.Grinding> {
 
-    public static final IRecipeType<GrinderRecipes.Grinding> TYPE =
+    public static final @NonNull IRecipeType<GrinderRecipes.Grinding> TYPE =
             IRecipeType.create(NerospaceCommon.MOD_ID, "grinding", GrinderRecipes.Grinding.class);
 
-    public GrindingCategory(IGuiHelper guiHelper) {
+    public GrindingCategory(@NonNull IGuiHelper guiHelper) {
         super(TYPE, Component.translatable("jei.nerospace.category.grinding"),
                 guiHelper.createDrawableItemLike(ModBlocks.NEROSIUM_GRINDER.get()), 90, 52);
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, GrinderRecipes.Grinding recipe, IFocusGroup focuses) {
-        builder.addInputSlot(1, 5).setStandardSlotBackground().add(recipe.input());
-        builder.addOutputSlot(66, 5).setOutputSlotBackground().add(recipe.output());
+    public void setRecipe(@NonNull IRecipeLayoutBuilder builder, GrinderRecipes.Grinding recipe,
+            @NonNull IFocusGroup focuses) {
+        GrinderRecipes.Grinding checkedRecipe = NerospaceCommon.requireNonNull(recipe);
+        builder.addInputSlot(1, 5).setStandardSlotBackground().add(checkedRecipe.input());
+        builder.addOutputSlot(66, 5).setOutputSlotBackground().add(checkedRecipe.output());
     }
 
     @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, GrinderRecipes.Grinding recipe,
-            IFocusGroup focuses) {
+    public void createRecipeExtras(@NonNull IRecipeExtrasBuilder builder, GrinderRecipes.Grinding recipe,
+            @NonNull IFocusGroup focuses) {
+        NerospaceCommon.requireNonNull(recipe);
         int ticks = NerospaceConfig.scaleInterval(NerosiumGrinderBlockEntity.MAX_PROGRESS,
                 NerospaceConfig.machineSpeedMultiplier());
         builder.addAnimatedRecipeArrow(ticks).setPosition(28, 5);

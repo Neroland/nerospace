@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CreativeFluidTankBlock extends AbstractStorageBlock {
 
-    public static final MapCodec<CreativeFluidTankBlock> CODEC = simpleCodec(CreativeFluidTankBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<CreativeFluidTankBlock> CODEC = simpleCodec(CreativeFluidTankBlock::new);
 
     public CreativeFluidTankBlock(Properties properties) {
         super(properties);

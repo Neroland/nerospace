@@ -1,13 +1,15 @@
 package za.co.neroland.nerospace.neoforge;
 
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
+
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -30,27 +32,27 @@ import za.co.neroland.nerospace.rocket.RocketPadItemContainer;
 public final class NeoForgeCapabilities {
 
     /** Mod-owned energy capability; mirrors the Fabric {@code BlockApiLookup} of the same id. */
-    public static final BlockCapability<NerospaceEnergyStorage, Direction> ENERGY =
-            BlockCapability.createSided(
-                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "energy"),
-                    NerospaceEnergyStorage.class);
+    public static final @NonNull BlockCapability<NerospaceEnergyStorage, @Nullable Direction> ENERGY =
+            NerospaceCommon.requireNonNull(BlockCapability.createSided(
+                    NerospaceCommon.id("energy"),
+                    NerospaceEnergyStorage.class));
 
     /** Mod-owned fluid capability; mirrors the Fabric {@code BlockApiLookup} of the same id. */
-    public static final BlockCapability<NerospaceFluidStorage, Direction> FLUID =
-            BlockCapability.createSided(
-                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "fluid"),
-                    NerospaceFluidStorage.class);
+    public static final @NonNull BlockCapability<NerospaceFluidStorage, @Nullable Direction> FLUID =
+            NerospaceCommon.requireNonNull(BlockCapability.createSided(
+                    NerospaceCommon.id("fluid"),
+                    NerospaceFluidStorage.class));
 
     /** Mod-owned gas capability; mirrors the Fabric {@code BlockApiLookup} of the same id. */
-    public static final BlockCapability<NerospaceGasStorage, Direction> GAS =
-            BlockCapability.createSided(
-                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "gas"),
-                    NerospaceGasStorage.class);
+    public static final @NonNull BlockCapability<NerospaceGasStorage, @Nullable Direction> GAS =
+            NerospaceCommon.requireNonNull(BlockCapability.createSided(
+                    NerospaceCommon.id("gas"),
+                    NerospaceGasStorage.class));
 
     private NeoForgeCapabilities() {
     }
 
-    public static void register(IEventBus modEventBus) {
+    public static void register(@NonNull IEventBus modEventBus) {
         modEventBus.addListener(NeoForgeCapabilities::onRegisterCapabilities);
     }
 
@@ -59,8 +61,8 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.ITEM_STORE.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
 
         event.registerBlockEntity(
                 ENERGY,
@@ -76,8 +78,8 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.COMBUSTION_GENERATOR.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
         event.registerBlockEntity(
                 ENERGY,
                 ModBlockEntities.COMBUSTION_GENERATOR.get(),
@@ -87,8 +89,8 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.NEROSIUM_GRINDER.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
         event.registerBlockEntity(
                 ENERGY,
                 ModBlockEntities.NEROSIUM_GRINDER.get(),
@@ -98,8 +100,8 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.PASSIVE_GENERATOR.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
         event.registerBlockEntity(
                 ENERGY,
                 ModBlockEntities.PASSIVE_GENERATOR.get(),
@@ -121,8 +123,8 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.UNIVERSAL_PIPE.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
 
         event.registerBlockEntity(
                 GAS,
@@ -152,23 +154,23 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.TERRAFORMER.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
 
         // Hydration Module: glacite in (no energy of its own).
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.HYDRATION_MODULE.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
 
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.TRASH_CAN.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
         event.registerBlockEntity(
                 FLUID,
                 ModBlockEntities.TRASH_CAN.get(),
@@ -195,7 +197,7 @@ public final class NeoForgeCapabilities {
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.CREATIVE_ITEM_STORE.get(),
-                (be, side) -> VanillaContainerWrapper.of(be));
+                (be, side) -> VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
 
         // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
         event.registerBlockEntity(
@@ -206,8 +208,8 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.FUEL_TANK.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
 
         // Fuel Refinery: grid power in, refined fuel out, coal + blaze powder in.
         event.registerBlockEntity(
@@ -222,8 +224,8 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.FUEL_REFINERY.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
 
         // Quarry controller: grid power in, mined output + sucked fluid out, frame casings in.
         event.registerBlockEntity(
@@ -238,8 +240,8 @@ public final class NeoForgeCapabilities {
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.QUARRY_CONTROLLER.get(),
                 (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
+                        ? new WorldlyContainerWrapper(NerospaceCommon.requireNonNull(be), side)
+                        : VanillaContainerWrapper.of(NerospaceCommon.requireNonNull(be)));
 
         // Rocket launch pad: a fluid sink that forwards rocket_fuel into a docked rocket (pipe / Fuel Tank
         // refuelling automation), plus an item sink that forwards fuel canisters into the rocket's intake.

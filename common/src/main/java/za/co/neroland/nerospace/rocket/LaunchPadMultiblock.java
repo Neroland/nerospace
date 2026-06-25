@@ -14,6 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * Geometry helpers for the launch-pad multiblock. A "launch pad" in survival is not a single block:
  * any horizontally-connected cluster of {@link RocketLaunchPadBlock} blocks (sharing one Y level)
@@ -37,7 +39,7 @@ public final class LaunchPadMultiblock {
     @Nullable
     public static BlockPos adjacentPad(Level level, BlockPos origin) {
         for (Direction dir : Direction.Plane.HORIZONTAL) {
-            BlockPos candidate = origin.relative(dir);
+            BlockPos candidate = origin.relative(NerospaceCommon.requireNonNull(dir));
             if (isPad(level, candidate)) {
                 return candidate;
             }
@@ -58,9 +60,9 @@ public final class LaunchPadMultiblock {
         queue.add(start.immutable());
         found.add(start.immutable());
         while (!queue.isEmpty() && found.size() < MAX_PADS) {
-            BlockPos pos = queue.poll();
+            BlockPos pos = NerospaceCommon.requireNonNull(queue.poll());
             for (Direction dir : Direction.Plane.HORIZONTAL) {
-                BlockPos next = pos.relative(dir);
+                BlockPos next = pos.relative(NerospaceCommon.requireNonNull(dir));
                 if (!found.contains(next) && isPad(level, next)) {
                     BlockPos immutable = next.immutable();
                     found.add(immutable);
@@ -233,7 +235,7 @@ public final class LaunchPadMultiblock {
     }
 
     private static boolean isPad(Level level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
+        BlockState state = level.getBlockState(NerospaceCommon.requireNonNull(pos));
         return state.getBlock() instanceof RocketLaunchPadBlock;
     }
 }

@@ -10,6 +10,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * A connected run of same-tier solar panel <b>units</b> treated as ONE machine: total storage is the
  * sum of every unit's buffer and total generation the sum of every unit's (sky-/weather-/dimension-
@@ -63,7 +65,7 @@ public final class SolarArray {
 
         int visited = 0;
         while (!queue.isEmpty() && visited < MAX_CELLS) {
-            BlockPos pos = queue.poll();
+            BlockPos pos = NerospaceCommon.requireNonNull(queue.poll());
             if (!(level.getBlockEntity(pos) instanceof SolarPanelBlockEntity cell) || cell.tier() != tier) {
                 continue;
             }
@@ -73,7 +75,7 @@ public final class SolarArray {
                 anchors.add(anchor);
             }
             for (Direction dir : Direction.values()) {
-                BlockPos np = pos.relative(dir);
+                BlockPos np = pos.relative(NerospaceCommon.requireNonNull(dir));
                 if (seen.add(np.asLong())
                         && level.getBlockEntity(np) instanceof SolarPanelBlockEntity neighbour
                         && neighbour.tier() == tier) {
@@ -84,7 +86,7 @@ public final class SolarArray {
 
         SolarArray array = new SolarArray(tier, anchors);
         for (BlockPos anchor : anchors) {
-            if (level.getBlockEntity(anchor) instanceof SolarPanelBlockEntity a) {
+            if (level.getBlockEntity(NerospaceCommon.requireNonNull(anchor)) instanceof SolarPanelBlockEntity a) {
                 a.adopt(array);
             }
         }
@@ -101,7 +103,7 @@ public final class SolarArray {
 
         List<SolarPanelBlockEntity> units = new ArrayList<>(this.anchors.size());
         for (BlockPos anchor : this.anchors) {
-            if (level.getBlockEntity(anchor) instanceof SolarPanelBlockEntity a
+            if (level.getBlockEntity(NerospaceCommon.requireNonNull(anchor)) instanceof SolarPanelBlockEntity a
                     && a.isAnchor() && a.tier() == this.tier) {
                 units.add(a);
             } else {

@@ -22,19 +22,22 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /** Nerosium Grinder block — directional, ticks + opens its {@link NerosiumGrinderBlockEntity}. */
 public class NerosiumGrinderBlock extends BaseEntityBlock {
 
-    public static final MapCodec<NerosiumGrinderBlock> CODEC = simpleCodec(NerosiumGrinderBlock::new);
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final @org.jspecify.annotations.NonNull MapCodec<NerosiumGrinderBlock> CODEC = simpleCodec(NerosiumGrinderBlock::new);
+    public static final @NonNull EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     @SuppressWarnings("this-escape")
     public NerosiumGrinderBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(NerospaceCommon.requireNonNull(
+                this.stateDefinition.any().setValue(FACING, Direction.NORTH)));
     }
 
     @Override
@@ -53,8 +56,9 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    public @NonNull BlockState getStateForPlacement(@NonNull BlockPlaceContext context) {
+        return NerospaceCommon.requireNonNull(
+                this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()));
     }
 
     @Nullable

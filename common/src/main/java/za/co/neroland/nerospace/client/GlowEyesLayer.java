@@ -8,6 +8,10 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * Emissive glow layer for the Greenxertz/Cindara creatures: re-renders the model with a full-bright
  * {@code eyes} render type using a per-creature glow texture (transparent except the eyes / crystal /
@@ -15,16 +19,16 @@ import net.minecraft.resources.Identifier;
  */
 public class GlowEyesLayer<S extends LivingEntityRenderState> extends EyesLayer<S, EntityModel<S>> {
 
-    private final RenderType type;
+    private final @NonNull RenderType type;
 
     public GlowEyesLayer(RenderLayerParent<S, EntityModel<S>> parent,
-                         Identifier glowTexture) {
+                         @NonNull Identifier glowTexture) {
         super(parent);
-        this.type = RenderTypes.eyes(glowTexture);
+        this.type = NerospaceCommon.requireNonNull(RenderTypes.eyes(glowTexture));
     }
 
     @Override
-    public RenderType renderType() {
+    public @NonNull RenderType renderType() {
         return this.type;
     }
 }

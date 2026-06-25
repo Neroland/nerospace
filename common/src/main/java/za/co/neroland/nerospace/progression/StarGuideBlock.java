@@ -36,7 +36,7 @@ import za.co.neroland.nerospace.registry.ModItems;
  */
 public class StarGuideBlock extends BaseEntityBlock {
 
-    public static final MapCodec<StarGuideBlock> CODEC = simpleCodec(StarGuideBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<StarGuideBlock> CODEC = simpleCodec(StarGuideBlock::new);
 
     public StarGuideBlock(Properties properties) {
         super(properties);

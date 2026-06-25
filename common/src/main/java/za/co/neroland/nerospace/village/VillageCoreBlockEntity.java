@@ -21,6 +21,9 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.entity.AlienVillager;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -56,7 +59,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
     private static final int[][] PLOT_OFFSETS = {{8, 0}, {-8, 0}, {0, 8}, {0, -8}, {8, 8}, {-8, -8}};
 
     private UUID owner;
-    private String ownerName = "";
+    private @NonNull String ownerName = "";
 
     private int stockpile;
     private int builtCount;
@@ -86,15 +89,15 @@ public class VillageCoreBlockEntity extends BlockEntity {
         return this.owner != null;
     }
 
-    public boolean isOwner(Player player) {
+    public boolean isOwner(@NonNull Player player) {
         return player.getUUID().equals(this.owner);
     }
 
-    public String getOwnerName() {
+    public @NonNull String getOwnerName() {
         return this.ownerName;
     }
 
-    public void claim(Player player) {
+    public void claim(@NonNull Player player) {
         this.owner = player.getUUID();
         this.ownerName = player.getName().getString();
         if (this.questOrdinal < 0) {
@@ -105,7 +108,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
 
     // --- Teach-and-grow -------------------------------------------------------
 
-    public void deposit(Player player, ItemStack stack) {
+    public void deposit(@NonNull Player player, @NonNull ItemStack stack) {
         int add = stack.getCount();
         if (add <= 0) {
             return;
@@ -116,11 +119,12 @@ public class VillageCoreBlockEntity extends BlockEntity {
         setChanged();
     }
 
-    public void onUse(Player player) {
+    public void onUse(@NonNull Player player) {
         if (this.jobType != null) {
             int total = placements().size();
             int pct = total == 0 ? 100 : (int) (100.0 * this.progress / total);
-            player.sendSystemMessage(Component.literal("Constructing " + label(this.jobType) + "… " + pct + "%"));
+            player.sendSystemMessage(Component.literal(
+                    "Constructing " + label(NerospaceCommon.requireNonNull(this.jobType)) + "… " + pct + "%"));
             return;
         }
         Type next = Type.byOrdinalOrNull(this.builtCount);
@@ -145,8 +149,9 @@ public class VillageCoreBlockEntity extends BlockEntity {
         int[] off = PLOT_OFFSETS[Math.min(this.builtCount, PLOT_OFFSETS.length - 1)];
         this.plotX = this.worldPosition.getX() + off[0];
         this.plotZ = this.worldPosition.getZ() + off[1];
-        this.plotY = this.level != null
-                ? this.level.getHeight(Heightmap.Types.WORLD_SURFACE, this.plotX, this.plotZ)
+        Level currentLevel = this.level;
+        this.plotY = currentLevel != null
+                ? currentLevel.getHeight(Heightmap.Types.WORLD_SURFACE, this.plotX, this.plotZ)
                 : this.worldPosition.getY();
         this.jobType = next;
         this.progress = 0;
@@ -159,7 +164,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
     // --- Production + quests + raids ------------------------------------------
 
     /** Sneak-right-click: collect produced goods and read the current quest. */
-    public void collectAndStatus(Player player) {
+    public void collectAndStatus(@NonNull Player player) {
         int bread = this.outBread;
         int ingot = this.outIngot;
         if (bread > 0) {
@@ -182,13 +187,13 @@ public class VillageCoreBlockEntity extends BlockEntity {
     }
 
     /** Right-click with the quest item: hand it in for the reward. */
-    public boolean tryCompleteQuest(Player player, ItemStack stack) {
+    public boolean tryCompleteQuest(@NonNull Player player, @NonNull ItemStack stack) {
         Quest q = Quest.byOrdinalOrNull(this.questOrdinal);
         if (q == null || !stack.is(q.item()) || stack.getCount() < q.count) {
             return false;
         }
         stack.shrink(q.count);
-        give(player, new ItemStack(q.rewardItem(), q.reward));
+        give(player, new ItemStack(NerospaceCommon.requireNonNull(q.rewardItem()), q.reward));
         grantVillageReputation(player, q.reward);
         player.sendSystemMessage(Component.literal("The villagers thank you. (+" + q.reward + " trust)"));
         rollQuest();
@@ -196,7 +201,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         return true;
     }
 
-    public void serverTick(Level level, BlockPos pos, BlockState state) {
+    public void serverTick(@NonNull Level level, @NonNull BlockPos pos, BlockState state) {
         // Construction.
         if (this.jobType != null) {
             tickConstruction(level);
@@ -222,7 +227,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         }
     }
 
-    private void tickConstruction(Level level) {
+    private void tickConstruction(@NonNull Level level) {
         List<Placement> list = placements();
         if (this.progress >= list.size()) {
             finishJob();
@@ -232,7 +237,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
             return;
         }
         this.buildTick = 0;
-        Placement p = list.get(this.progress++);
+        Placement p = NerospaceCommon.requireNonNull(list.get(this.progress++));
         BlockPos bp = new BlockPos(this.plotX + p.dx(), this.plotY + p.dy(), this.plotZ + p.dz());
         BlockState bs = switch (p.kind()) {
             case WALL, ROOF -> ModBlocks.NEROSTEEL_BLOCK.get().defaultBlockState();
@@ -250,7 +255,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         }
     }
 
-    private void maybeRaid(Level level, BlockPos pos) {
+    private void maybeRaid(@NonNull Level level, @NonNull BlockPos pos) {
         if (!NerospaceConfig.alienRaidsEnabled() || !(level instanceof ServerLevel server)) {
             return;
         }
@@ -279,54 +284,59 @@ public class VillageCoreBlockEntity extends BlockEntity {
         setChanged();
     }
 
-    private List<Placement> placements() {
+    private @NonNull List<Placement> placements() {
         if (this.jobPlacements == null && this.jobType != null) {
-            this.jobPlacements = VillageBuildings.build(this.jobType);
+            this.jobPlacements = VillageBuildings.build(NerospaceCommon.requireNonNull(this.jobType));
         }
-        return this.jobPlacements == null ? List.of() : this.jobPlacements;
+        return this.jobPlacements == null
+                ? NerospaceCommon.requireNonNull(List.of())
+                : NerospaceCommon.requireNonNull(this.jobPlacements);
     }
 
-    private int villageTier(Player player) {
-        if (this.level == null) {
+    private int villageTier(@NonNull Player player) {
+        Level currentLevel = this.level;
+        if (currentLevel == null) {
             return 0;
         }
         AABB box = new AABB(this.worldPosition).inflate(SCAN_RADIUS);
         int max = 0;
-        for (AlienVillager v : this.level.getEntitiesOfClass(AlienVillager.class, box)) {
+        for (AlienVillager v : currentLevel.getEntitiesOfClass(AlienVillager.class, box)) {
             max = Math.max(max, v.getTier(player));
         }
         return max;
     }
 
-    private void grantVillageReputation(Player player, int amount) {
-        if (this.level == null) {
+    private void grantVillageReputation(@NonNull Player player, int amount) {
+        Level currentLevel = this.level;
+        if (currentLevel == null) {
             return;
         }
         AABB box = new AABB(this.worldPosition).inflate(SCAN_RADIUS);
-        for (AlienVillager v : this.level.getEntitiesOfClass(AlienVillager.class, box)) {
+        for (AlienVillager v : currentLevel.getEntitiesOfClass(AlienVillager.class, box)) {
             v.addReputation(player, amount);
         }
     }
 
     private void rollQuest() {
-        RandomSource rand = this.level != null ? this.level.getRandom() : RandomSource.create();
+        Level currentLevel = this.level;
+        RandomSource rand = currentLevel != null ? currentLevel.getRandom() : RandomSource.create();
         this.questOrdinal = rand.nextInt(Quest.values().length);
     }
 
-    private void give(Player player, ItemStack stack) {
+    private void give(@NonNull Player player, @NonNull ItemStack stack) {
         if (!player.addItem(stack)) {
             player.drop(stack, false);
         }
     }
 
-    private static String label(Type t) {
+    private static @NonNull String label(@NonNull Type t) {
         return switch (t) {
             case HUT -> "Hut";
             case WORKSHOP -> "Workshop";
         };
     }
 
-    private static String itemLabel(Quest q) {
+    private static @NonNull String itemLabel(@NonNull Quest q) {
         return switch (q) {
             case XERTZ_QUARTZ -> "Xertz Quartz";
             case RAW_NEROSTEEL -> "Raw Nerosteel";
@@ -337,10 +347,10 @@ public class VillageCoreBlockEntity extends BlockEntity {
     // --- Persistence ----------------------------------------------------------
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
+    protected void saveAdditional(@NonNull ValueOutput output) {
         super.saveAdditional(output);
-        output.putString("Owner", this.owner == null ? "" : this.owner.toString());
-        output.putString("OwnerName", this.ownerName);
+        output.putString("Owner", this.owner == null ? "" : NerospaceCommon.requireNonNull(this.owner.toString()));
+        output.putString("OwnerName", NerospaceCommon.requireNonNull(this.ownerName));
         output.putInt("Stockpile", this.stockpile);
         output.putInt("BuiltCount", this.builtCount);
         output.putInt("JobType", this.jobType == null ? -1 : this.jobType.ordinal());
@@ -354,7 +364,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
+    protected void loadAdditional(@NonNull ValueInput input) {
         super.loadAdditional(input);
         String stored = input.getStringOr("Owner", "");
         if (stored.isEmpty()) {

@@ -68,15 +68,15 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
 
     public static final int CANISTER_SLOT = 0;
     public static final int SIZE = 1;
-    private static final int[] SLOTS = IntStream.range(0, SIZE).toArray();
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS = IntStream.range(0, SIZE).toArray();
 
     private int fxTick;
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final FluidTank tank = new FluidTank(CAPACITY, this::setChanged);
 
     /** Synced to the open menu: [0]=fuel, [1]=capacity. */
-    private final ContainerData dataAccess = new ContainerData() {
+    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return index == 0 ? (int) tank.getAmount() : (int) tank.getCapacity();
@@ -102,7 +102,7 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
     }
 
     private static Fluid rocketFuel() {
-        return (Fluid) ModFluids.ROCKET_FUEL.get();
+        return ModFluids.ROCKET_FUEL.get();
     }
 
     // --- MenuProvider -------------------------------------------------------
@@ -114,7 +114,7 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new FuelTankMenu(containerId, playerInventory, this.dataAccess);
     }
 
@@ -244,7 +244,7 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
         super.saveAdditional(output);
         output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.tank.getRawFluid()).toString());
         output.putInt("Amount", this.tank.getRawAmount());
-        output.store("Canister", ItemStack.OPTIONAL_CODEC, this.items.get(CANISTER_SLOT));
+        output.store("Canister", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(CANISTER_SLOT));
     }
 
     @Override
@@ -252,7 +252,8 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
         super.loadAdditional(input);
         Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
         this.tank.setRaw(fluid, input.getIntOr("Amount", 0));
-        this.items.set(CANISTER_SLOT, input.read("Canister", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(CANISTER_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Canister", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
     }
 
     // --- WorldlyContainer: canister in only ---------------------------------

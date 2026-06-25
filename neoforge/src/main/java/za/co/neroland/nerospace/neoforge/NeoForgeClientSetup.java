@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -69,7 +68,7 @@ public final class NeoForgeClientSetup {
     /** Register the bespoke oxygen/hazard HUD gauge on top of the vanilla HUD (shared draw in {@code common}). */
     private static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(
-                Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_hud"),
+                NerospaceCommon.id("oxygen_hud"),
                 (g, delta) -> OxygenHud.render(g));
     }
 
@@ -124,8 +123,8 @@ public final class NeoForgeClientSetup {
 
     /** Rocket fuel renders as itself (amber still/flow) instead of the default missing art. */
     private static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
-        Material still = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still"));
-        Material flow = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow"));
+        Material still = new Material(NerospaceCommon.id("block/rocket_fuel_still"));
+        Material flow = new Material(NerospaceCommon.id("block/rocket_fuel_flow"));
         event.register(
                 new FluidModel.Unbaked(still, flow, still, FluidTintSources.constant(0xFFFFFFFF)),
                 ModFluids.ROCKET_FUEL, ModFluids.ROCKET_FUEL_FLOWING);

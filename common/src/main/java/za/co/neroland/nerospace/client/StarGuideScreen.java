@@ -10,6 +10,8 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.progression.StarGuide;
 import za.co.neroland.nerospace.progression.StarGuideMenu;
@@ -25,18 +27,18 @@ import za.co.neroland.nerospace.progression.StarGuideMenu;
  */
 public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
 
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/star_guide.png");
+    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+            NerospaceCommon.id("textures/gui/star_guide.png");
     /** Star Guide accent: nerosium purple (the mod's signpost block). */
     private static final int ACCENT = 0xFFB05AE0;
     private static final int DONE = 0xFF58D08A;
 
-    private final List<SpaceButton> chapterButtons = new ArrayList<>();
-    private final List<SpaceButton> stepButtons = new ArrayList<>();
+    private final List<@NonNull SpaceButton> chapterButtons = new ArrayList<>();
+    private final List<@NonNull SpaceButton> stepButtons = new ArrayList<>();
     private int selectedChapter;
     private int selectedStep;
 
-    public StarGuideScreen(StarGuideMenu menu, Inventory playerInventory, Component title) {
+    public StarGuideScreen(@NonNull StarGuideMenu menu, @NonNull Inventory playerInventory, @NonNull Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 240, 200);
         this.titleLabelX = 10;
         this.inventoryLabelY = 10_000; // no player inventory on this panel
@@ -49,7 +51,8 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
         for (int i = 0; i < StarGuide.CHAPTER_COUNT; i++) {
             final int chapter = i;
             SpaceButton button = new SpaceButton(this.leftPos + 8, this.topPos + 22 + i * 17, 66, 14,
-                    Component.translatable(StarGuide.CHAPTERS.get(i).titleKey()), ACCENT,
+                    Component.translatable(NerospaceCommon.requireNonNull(StarGuide.CHAPTERS.get(i).titleKey())),
+                    ACCENT,
                     b -> selectChapter(chapter));
             this.addRenderableWidget(button);
             this.chapterButtons.add(button);
@@ -64,13 +67,16 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     }
 
     private void rebuildStepButtons() {
-        this.stepButtons.forEach(this::removeWidget);
+        for (SpaceButton button : this.stepButtons) {
+            this.removeWidget(button);
+        }
         this.stepButtons.clear();
         List<StarGuide.Step> steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps();
         for (int i = 0; i < steps.size(); i++) {
             final int step = i;
             SpaceButton node = new SpaceButton(stepX(i), stepY(i), 42, 14,
-                    Component.literal(String.valueOf(i + 1)), ACCENT, b -> selectStep(step));
+                    Component.literal(NerospaceCommon.requireNonNull(String.valueOf(i + 1))), ACCENT,
+                    b -> selectStep(step));
             this.addRenderableWidget(node);
             this.stepButtons.add(node);
         }
@@ -102,8 +108,9 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     private void selectStep(int step) {
         this.selectedStep = step;
         // Report "seen" so the completed-pulse stops (server writes the STAR_GUIDE_SEEN attachment).
-        if (this.minecraft != null && this.minecraft.gameMode != null) {
-            this.minecraft.gameMode.handleInventoryButtonClick(
+        var gameMode = this.minecraft.gameMode;
+        if (gameMode != null) {
+            gameMode.handleInventoryButtonClick(
                     this.menu.containerId, this.selectedChapter * 16 + step);
         }
     }
@@ -150,7 +157,7 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
         // Guide-text panel for the selected step.
         StarGuide.Step step = steps.get(Math.min(this.selectedStep, steps.size() - 1));
         boolean stepDone = this.menu.isStepComplete(this.selectedChapter, this.selectedStep);
-        Component title = Component.translatable(step.titleKey());
+        Component title = Component.translatable(NerospaceCommon.requireNonNull(step.titleKey()));
         label(g, title, 82, 100, stepDone ? DONE : 0xFFE6D2FF);
         if (stepDone) {
             Component complete = Component.translatable("gui.nerospace.star_guide.complete");
@@ -161,10 +168,10 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
         }
         // Description: wrapped to the text panel.
         List<FormattedCharSequence> lines = this.font.split(
-                Component.translatable(step.textKey()), 146);
+                Component.translatable(NerospaceCommon.requireNonNull(step.textKey())), 146);
         int lineHeight = lines.size() > 8 ? 9 : 10;
         int y = 112;
-        for (FormattedCharSequence line : lines) {
+        for (@NonNull FormattedCharSequence line : lines) {
             if (y + this.font.lineHeight > 193) {
                 break;
             }

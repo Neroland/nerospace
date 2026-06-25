@@ -67,9 +67,9 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     /** Opt-in (config) force-load window: a (2R+1)² chunk square centred on the machine (R=2 → 25 chunks). */
     private static final int FORCE_LOAD_RADIUS = 2;
 
-    private static final int[] SLOTS = {UPGRADE_SLOT};
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {UPGRADE_SLOT};
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(ENERGY_BUFFER, ENERGY_MAX_INSERT, 0, this::setChanged);
 
     /** Machine tier (1..3): more columns per cycle, and Tier 3 unlocks ore seeding. */
@@ -103,7 +103,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
      * Synced to the menu: [0]=energy [1]=capacity [2]=tier [3]=radius [4]=hydration
      * [5]=hydrationCap [6]=hydrationRadius [7]=lifeRadius [8]=hydrationStalled.
      */
-    private final ContainerData dataAccess = new ContainerData() {
+    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -479,7 +479,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
         output.putInt("LifeRadius", this.lifeRadius);
         output.putInt("LifeCursor", this.lifeCursor);
         output.putInt("Hydration", this.hydration);
-        output.store("Upgrade", ItemStack.OPTIONAL_CODEC, this.items.get(UPGRADE_SLOT));
+        output.store("Upgrade", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(UPGRADE_SLOT));
     }
 
     @Override
@@ -495,7 +495,8 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
         this.lifeCursor = input.getIntOr("LifeCursor", 0);
         this.hydration = input.getIntOr("Hydration", 0);
         this.ringsFor[0] = this.ringsFor[1] = this.ringsFor[2] = -1;
-        this.items.set(UPGRADE_SLOT, input.read("Upgrade", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(UPGRADE_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Upgrade", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
     }
 
     // --- MenuProvider -------------------------------------------------------
@@ -507,7 +508,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new TerraformerMenu(containerId, playerInventory, this, this.dataAccess);
     }
 

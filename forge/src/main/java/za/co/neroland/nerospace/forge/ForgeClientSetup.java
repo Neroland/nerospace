@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -65,7 +64,7 @@ public final class ForgeClientSetup {
 
     private static void onAddGuiLayers(AddGuiOverlayLayersEvent event) {
         event.getLayeredDraw().add(
-                Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_hud"),
+                NerospaceCommon.id("oxygen_hud"),
                 (g, delta) -> OxygenHud.render(g));
     }
 
@@ -103,8 +102,8 @@ public final class ForgeClientSetup {
     }
 
     private static void onBakeFluidModels(ModelEvent.BakeFluidModels event) {
-        Material still = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still"));
-        Material flow = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow"));
+        Material still = new Material(NerospaceCommon.id("block/rocket_fuel_still"));
+        Material flow = new Material(NerospaceCommon.id("block/rocket_fuel_flow"));
         FluidModel model = new FluidModel.Unbaked(still, flow, still, BlockTintSources.constant(0xFFFFFFFF))
                 .bake(event.materials(), () -> NerospaceCommon.MOD_ID + ":rocket_fuel");
         event.register(ModFluids.ROCKET_FUEL.get(), model);

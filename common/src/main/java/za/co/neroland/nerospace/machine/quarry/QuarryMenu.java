@@ -22,13 +22,13 @@ public class QuarryMenu extends AbstractContainerMenu {
 
     private static final int TIER1_MODULE_SLOTS = 1;
 
-    private final Container container;
-    private final ContainerData data;
+    private final @org.jspecify.annotations.NonNull Container container;
+    private final @org.jspecify.annotations.NonNull ContainerData data;
     private final int machineSlots;
     private final int moduleSlots;
 
     /** Client constructor (Tier-1 layout). */
-    public QuarryMenu(int containerId, Inventory playerInventory) {
+    public QuarryMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(containerId, playerInventory,
                 new SimpleContainer(QuarryControllerBlockEntity.FRAME_SLOTS + TIER1_MODULE_SLOTS
                         + QuarryControllerBlockEntity.OUTPUT_SLOTS),
@@ -38,7 +38,7 @@ public class QuarryMenu extends AbstractContainerMenu {
 
     /** Server constructor. */
     @SuppressWarnings("this-escape")
-    public QuarryMenu(int containerId, Inventory playerInventory, Container container, ContainerData data, int moduleSlots) {
+    public QuarryMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data, int moduleSlots) {
         super(ModMenuTypes.QUARRY_CONTROLLER.get(), containerId);
         this.container = container;
         this.data = data;
@@ -147,7 +147,7 @@ public class QuarryMenu extends AbstractContainerMenu {
     // --- Slot kinds -------------------------------------------------------------
 
     private static final class FrameSlot extends Slot {
-        FrameSlot(Container container, int slot, int x, int y) {
+        FrameSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 
@@ -158,7 +158,7 @@ public class QuarryMenu extends AbstractContainerMenu {
     }
 
     private static final class ModuleSlot extends Slot {
-        ModuleSlot(Container container, int slot, int x, int y) {
+        ModuleSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 
@@ -169,7 +169,7 @@ public class QuarryMenu extends AbstractContainerMenu {
     }
 
     private static final class OutputSlot extends Slot {
-        OutputSlot(Container container, int slot, int x, int y) {
+        OutputSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 

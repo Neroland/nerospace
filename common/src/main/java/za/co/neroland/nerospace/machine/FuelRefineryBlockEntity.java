@@ -25,6 +25,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -62,15 +63,15 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
     public static final int MB_PER_BATCH = 2_000;
     public static final int WORK_TICKS = 100;
 
-    private static final int[] SLOTS = {CARBON_SLOT, CATALYST_SLOT};
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {CARBON_SLOT, CATALYST_SLOT};
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(ENERGY_BUFFER, ENERGY_MAX_INSERT, 0, this::setChanged);
     private final FluidTank tank = new FluidTank(TANK_CAPACITY, this::setChanged);
     private int progress;
 
     /** Synced to the menu: [0]=energy [1]=energyCap [2]=fuel [3]=fuelCap [4]=progress [5]=maxProgress. */
-    private final ContainerData dataAccess = new ContainerData() {
+    private final @org.jspecify.annotations.NonNull ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -102,7 +103,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
     }
 
     private static Fluid rocketFuel() {
-        return (Fluid) ModFluids.ROCKET_FUEL.get();
+        return ModFluids.ROCKET_FUEL.get();
     }
 
     private static boolean slotAccepts(int index, ItemStack stack) {
@@ -174,6 +175,8 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
 
     /** Pushes up to {@link #EJECT_RATE} mB of the stored fuel into each adjacent {@link NerospaceFluidStorage}. */
     private void pushFluid(Level level, BlockPos pos) {
+        Level checkedLevel = NerospaceCommon.requireNonNull(level);
+        BlockPos checkedPos = NerospaceCommon.requireNonNull(pos);
         Fluid fluid = this.tank.getFluid();
         if (this.tank.getAmount() <= 0 || fluid == Fluids.EMPTY) {
             return;
@@ -182,7 +185,9 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
             if (this.tank.getAmount() <= 0) {
                 break;
             }
-            NerospaceFluidStorage dest = FluidLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
+            Direction checkedDir = NerospaceCommon.requireNonNull(dir);
+            NerospaceFluidStorage dest = FluidLookup.INSTANCE.find(checkedLevel,
+                    checkedPos.relative(checkedDir), checkedDir.getOpposite());
             if (dest == null) {
                 continue;
             }
@@ -201,11 +206,12 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putInt("Energy", this.energy.getRaw());
-        output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.tank.getRawFluid()).toString());
+        output.putString("Fluid", BuiltInRegistries.FLUID.getKey(
+                NerospaceCommon.requireNonNull(this.tank.getRawFluid())).toString());
         output.putInt("Amount", this.tank.getRawAmount());
         output.putInt("Progress", this.progress);
-        output.store("Carbon", ItemStack.OPTIONAL_CODEC, this.items.get(CARBON_SLOT));
-        output.store("Catalyst", ItemStack.OPTIONAL_CODEC, this.items.get(CATALYST_SLOT));
+        output.store("Carbon", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(CARBON_SLOT));
+        output.store("Catalyst", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(CATALYST_SLOT));
     }
 
     @Override
@@ -215,8 +221,10 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
         Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
         this.tank.setRaw(fluid, input.getIntOr("Amount", 0));
         this.progress = input.getIntOr("Progress", 0);
-        this.items.set(CARBON_SLOT, input.read("Carbon", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
-        this.items.set(CATALYST_SLOT, input.read("Catalyst", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(CARBON_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Carbon", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
+        this.items.set(CATALYST_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Catalyst", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
     }
 
     // --- MenuProvider -------------------------------------------------------
@@ -228,7 +236,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new FuelRefineryMenu(containerId, playerInventory, this, this.dataAccess);
     }
 
@@ -291,7 +299,8 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
 
     @Override
     public boolean stillValid(Player player) {
-        if (this.level == null || this.level.getBlockEntity(this.worldPosition) != this) {
+        Level currentLevel = this.level;
+        if (currentLevel == null || currentLevel.getBlockEntity(this.worldPosition) != this) {
             return false;
         }
         return player.distanceToSqr(this.worldPosition.getX() + 0.5,

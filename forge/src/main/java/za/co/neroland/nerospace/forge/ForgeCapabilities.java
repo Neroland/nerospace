@@ -54,8 +54,8 @@ public final class ForgeCapabilities {
     public static final Capability<ForgeGasStorageCapability> GAS =
             CapabilityManager.get(new CapabilityToken<>() {});
 
-    private static final Identifier MACHINE_CAPS =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "machine_caps");
+    private static final @org.jspecify.annotations.NonNull Identifier MACHINE_CAPS =
+            NerospaceCommon.id("machine_caps");
 
     private ForgeCapabilities() {
     }

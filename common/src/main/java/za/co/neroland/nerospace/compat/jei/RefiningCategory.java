@@ -15,6 +15,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.fluid.ModFluids;
@@ -29,36 +31,40 @@ import za.co.neroland.nerospace.registry.ModBlocks;
  */
 public class RefiningCategory extends AbstractRecipeCategory<RefiningCategory.RefiningRecipe> {
 
-    public static final IRecipeType<RefiningRecipe> TYPE =
+    public static final @NonNull IRecipeType<RefiningRecipe> TYPE =
             IRecipeType.create(NerospaceCommon.MOD_ID, "refining", RefiningRecipe.class);
 
     /** The refinery's one recipe: any carbon stack + any catalyst stack → one tank batch. */
-    public record RefiningRecipe(List<ItemStack> carbon, List<ItemStack> catalyst) {
+    public record RefiningRecipe(@NonNull List<ItemStack> carbon,
+            @NonNull List<ItemStack> catalyst) {
         /** Mirrors {@link FuelRefineryBlockEntity}'s slot filters (coal/charcoal + blaze powder). */
-        public static RefiningRecipe standard() {
+        public static @NonNull RefiningRecipe standard() {
             return new RefiningRecipe(
-                    List.of(new ItemStack(Items.COAL), new ItemStack(Items.CHARCOAL)),
-                    List.of(new ItemStack(Items.BLAZE_POWDER)));
+                    NerospaceCommon.requireNonNull(List.of(new ItemStack(Items.COAL), new ItemStack(Items.CHARCOAL))),
+                    NerospaceCommon.requireNonNull(List.of(new ItemStack(Items.BLAZE_POWDER))));
         }
     }
 
-    public RefiningCategory(IGuiHelper guiHelper) {
+    public RefiningCategory(@NonNull IGuiHelper guiHelper) {
         super(TYPE, Component.translatable("jei.nerospace.category.refining"),
                 guiHelper.createDrawableItemLike(ModBlocks.FUEL_REFINERY.get()), 90, 62);
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, RefiningRecipe recipe, IFocusGroup focuses) {
+    public void setRecipe(@NonNull IRecipeLayoutBuilder builder, RefiningRecipe recipe,
+            @NonNull IFocusGroup focuses) {
+        RefiningRecipe checkedRecipe = NerospaceCommon.requireNonNull(recipe);
         int mb = FuelRefineryBlockEntity.MB_PER_BATCH;
-        builder.addInputSlot(1, 1).setStandardSlotBackground().addItemStacks(recipe.carbon());
-        builder.addInputSlot(1, 21).setStandardSlotBackground().addItemStacks(recipe.catalyst());
+        builder.addInputSlot(1, 1).setStandardSlotBackground().addItemStacks(checkedRecipe.carbon());
+        builder.addInputSlot(1, 21).setStandardSlotBackground().addItemStacks(checkedRecipe.catalyst());
         builder.addOutputSlot(66, 11).setStandardSlotBackground()
                 .setFluidRenderer(Math.max(1, mb), false, 16, 16)
                 .add(ModFluids.ROCKET_FUEL.get(), mb);
     }
 
     @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, RefiningRecipe recipe, IFocusGroup focuses) {
+    public void createRecipeExtras(@NonNull IRecipeExtrasBuilder builder, RefiningRecipe recipe,
+            @NonNull IFocusGroup focuses) {
         int ticks = NerospaceConfig.scaleInterval(FuelRefineryBlockEntity.WORK_TICKS,
                 NerospaceConfig.machineSpeedMultiplier());
         builder.addAnimatedRecipeArrow(ticks).setPosition(28, 11);

@@ -22,6 +22,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -42,9 +43,9 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
     /** Players within this radius drive the hologram's next-step lookup. */
     private static final double HOLOGRAM_PLAYER_RANGE = 12.0D;
 
-    private ItemStack book = ItemStack.EMPTY;
+    private @NonNull ItemStack book = ItemStack.EMPTY;
     /** Icon of the nearest player's next incomplete step (client-synced; EMPTY = show the book). */
-    private ItemStack hologram = ItemStack.EMPTY;
+    private @NonNull ItemStack hologram = ItemStack.EMPTY;
 
     public StarGuideBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STAR_GUIDE.get(), pos, state);
@@ -55,7 +56,7 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /** Installs one book item (lectern-style). @return true if the pedestal accepted it. */
-    public boolean installBook(ItemStack stack) {
+    public boolean installBook(@NonNull ItemStack stack) {
         if (hasBook() || stack.isEmpty()) {
             return false;
         }
@@ -65,7 +66,7 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /** Removes and returns the installed book (EMPTY when the pedestal is bare). */
-    public ItemStack removeBook() {
+    public @NonNull ItemStack removeBook() {
         ItemStack removed = this.book;
         this.book = ItemStack.EMPTY;
         this.hologram = ItemStack.EMPTY;
@@ -73,12 +74,12 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
         return removed;
     }
 
-    public ItemStack getBook() {
+    public @NonNull ItemStack getBook() {
         return this.book;
     }
 
     /** The hologram stack the client renderer floats above the pedestal. */
-    public ItemStack getHologram() {
+    public @NonNull ItemStack getHologram() {
         return this.hologram;
     }
 
@@ -88,14 +89,14 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
 
     // --- Ticking (server): refresh the hologram from the nearest player's progress -----------
 
-    public void tick(Level level, BlockPos pos, BlockState state) {
+    public void tick(@NonNull Level level, @NonNull BlockPos pos, BlockState state) {
         if (!(level instanceof ServerLevel serverLevel) || !hasBook()
                 || level.getGameTime() % HOLOGRAM_INTERVAL != 0L) {
             return;
         }
         Player nearest = serverLevel.getNearestPlayer(
                 pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, HOLOGRAM_PLAYER_RANGE, false);
-        ItemStack next = nearest instanceof ServerPlayer serverPlayer
+        @NonNull ItemStack next = nearest instanceof ServerPlayer serverPlayer
                 ? StarGuideProgress.nextStepIcon(serverPlayer)
                 : ItemStack.EMPTY;
         if (!ItemStack.isSameItemSameComponents(next, this.hologram)) {
@@ -106,8 +107,9 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
 
     private void markChangedAndSync() {
         setChanged();
-        if (this.level != null && !this.level.isClientSide()) {
-            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+        Level currentLevel = this.level;
+        if (currentLevel != null && !currentLevel.isClientSide()) {
+            currentLevel.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 
@@ -115,8 +117,8 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
-        if (this.level instanceof ServerLevel && hasBook()) {
-            Containers.dropItemStack(this.level,
+        if (this.level instanceof ServerLevel serverLevel && hasBook()) {
+            Containers.dropItemStack(serverLevel,
                     pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, removeBook());
         }
     }
@@ -124,17 +126,19 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
     // --- Persistence + client sync -----------------------------------------------------------
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
+    protected void saveAdditional(@NonNull ValueOutput output) {
         super.saveAdditional(output);
-        output.store("Book", ItemStack.OPTIONAL_CODEC, this.book);
-        output.store("Hologram", ItemStack.OPTIONAL_CODEC, this.hologram);
+        output.store("Book", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.book);
+        output.store("Hologram", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.hologram);
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
+    protected void loadAdditional(@NonNull ValueInput input) {
         super.loadAdditional(input);
-        this.book = input.read("Book", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
-        this.hologram = input.read("Hologram", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        this.book = za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Book", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY);
+        this.hologram = za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Hologram", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY);
     }
 
     @Override
@@ -150,13 +154,13 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
     // --- MenuProvider --------------------------------------------------------------------------
 
     @Override
-    public Component getDisplayName() {
+    public @NonNull Component getDisplayName() {
         return Component.translatable("container.nerospace.star_guide");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new StarGuideMenu(containerId, playerInventory, player);
     }
 }

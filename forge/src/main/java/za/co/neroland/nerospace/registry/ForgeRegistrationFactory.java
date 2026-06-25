@@ -12,6 +12,8 @@ import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
+import org.jspecify.annotations.NonNull;
+
 /** Forge {@link RegistrationProvider.Factory}: wraps Forge DeferredRegisters. */
 public final class ForgeRegistrationFactory implements RegistrationProvider.Factory {
 
@@ -41,7 +43,7 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
         }
 
         @Override
-        public <I extends T> RegistryEntry<I> register(String name, Function<ResourceKey<T>, I> factory) {
+        public <I extends T> RegistryEntry<I> register(String name, Function<@NonNull ResourceKey<T>, @NonNull I> factory) {
             Identifier id = Identifier.fromNamespaceAndPath(modId, name);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);
             Supplier<I> supplier = () -> factory.apply(key);

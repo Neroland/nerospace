@@ -8,6 +8,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * Base class for Nerospace machine screens ("spacified"). Draws a sci-fi hull panel (256x256 PNG at
  * {@code assets/nerospace/textures/gui/<name>.png}, top-left {@code imageWidth x imageHeight} = the
@@ -24,14 +28,15 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
     protected static final int TITLE = 0xFFD6ECFF;     // bright label
     protected static final int SUBTLE = 0xFF8DA0B4;    // dim label
 
-    private final Identifier background;
+    private final @NonNull Identifier background;
     /** Machine accent colour (ARGB). */
     protected final int accent;
 
-    protected TexturedContainerScreen(T menu, Inventory playerInventory, Component title, Identifier background,
+    protected TexturedContainerScreen(T menu, @org.jspecify.annotations.NonNull Inventory playerInventory,
+                                      Component title, Identifier background,
                                       int accent, int width, int height) {
-        super(menu, playerInventory, title, width, height);
-        this.background = background;
+        super(menu, playerInventory, NerospaceCommon.requireNonNull(title), width, height);
+        this.background = NerospaceCommon.requireNonNull(background);
         this.accent = accent;
     }
 
@@ -49,8 +54,10 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor extractor, int mouseX, int mouseY) {
-        extractor.text(this.font, this.title, this.titleLabelX, this.titleLabelY, TITLE, false);
-        extractor.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, SUBTLE, false);
+        extractor.text(this.font, NerospaceCommon.requireNonNull(this.title), this.titleLabelX, this.titleLabelY,
+                TITLE, false);
+        extractor.text(this.font, NerospaceCommon.requireNonNull(this.playerInventoryTitle), this.inventoryLabelX,
+                this.inventoryLabelY, SUBTLE, false);
     }
 
     // --- Drawing helpers (panel-relative dx/dy) -----------------------------
@@ -129,11 +136,12 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
 
     /** Left-aligned label text at a panel-relative position. */
     protected void label(GuiGraphicsExtractor g, Component text, int dx, int dy, int color) {
-        g.text(this.font, text, this.leftPos + dx, this.topPos + dy, color, false);
+        g.text(this.font, NerospaceCommon.requireNonNull(text), this.leftPos + dx, this.topPos + dy, color, false);
     }
 
     /** Centred label text within {@code [dx, dx+width)}. */
     protected void labelCentered(GuiGraphicsExtractor g, Component text, int dx, int width, int dy, int color) {
-        g.centeredText(this.font, text, this.leftPos + dx + width / 2, this.topPos + dy, color);
+        g.centeredText(this.font, NerospaceCommon.requireNonNull(text), this.leftPos + dx + width / 2,
+                this.topPos + dy, color);
     }
 }

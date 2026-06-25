@@ -2,19 +2,21 @@
 # Mirrors what VS Code's Java language server reports for this project, so the
 # assistant can see (and fix) the same Problems-panel diagnostics from the build.
 #
-# Null analysis: VS Code enables annotation-based null analysis automatically when
-# org.jetbrains.annotations is on the classpath — replicate that here.
+# Null analysis: VS Code enables annotation-based null analysis automatically from the node
+# classpath. The generated Eclipse projects use JSpecify for Fabric/vanilla APIs, while
+# parts of the codebase still use JetBrains/javax/jakarta annotations.
 org.eclipse.jdt.core.compiler.annotation.nullanalysis=enabled
-org.eclipse.jdt.core.compiler.annotation.nullable=org.jetbrains.annotations.Nullable
-org.eclipse.jdt.core.compiler.annotation.nonnull=org.jetbrains.annotations.NotNull
-org.eclipse.jdt.core.compiler.annotation.nonnullbydefault=org.eclipse.jdt.annotation.NonNullByDefault
+org.eclipse.jdt.core.compiler.annotation.nullable=org.jspecify.annotations.Nullable
+org.eclipse.jdt.core.compiler.annotation.nonnull=org.jspecify.annotations.NonNull
+org.eclipse.jdt.core.compiler.annotation.nonnullbydefault=org.jspecify.annotations.NullMarked
 # Recognise the other @Nullable/@Nonnull flavours the codebase uses (VS Code's "automatic" mode
 # does this for us; the batch compiler needs them listed). Without javax here, @Nullable fields
 # like GalleryCaptureHarness#current were silently not analysed.
-org.eclipse.jdt.core.compiler.annotation.nullable.secondary=javax.annotation.Nullable,jakarta.annotation.Nullable
-org.eclipse.jdt.core.compiler.annotation.nonnull.secondary=javax.annotation.Nonnull,jakarta.annotation.Nonnull
+org.eclipse.jdt.core.compiler.annotation.nullable.secondary=org.jetbrains.annotations.Nullable,javax.annotation.Nullable,jakarta.annotation.Nullable
+org.eclipse.jdt.core.compiler.annotation.nonnull.secondary=org.jetbrains.annotations.NotNull,javax.annotation.Nonnull,jakarta.annotation.Nonnull
+org.eclipse.jdt.core.compiler.annotation.nonnullbydefault.secondary=org.eclipse.jdt.annotation.NonNullByDefault,javax.annotation.ParametersAreNonnullByDefault
 org.eclipse.jdt.core.compiler.annotation.inheritNullAnnotations=enabled
-org.eclipse.jdt.core.compiler.problem.missingNonNullByDefaultAnnotation=ignore
+org.eclipse.jdt.core.compiler.annotation.missingNonNullByDefaultAnnotation=ignore
 # Null analysis severities. These are kept at `warning` (NOT `ignore`) so ecjCheck surfaces exactly
 # what VS Code's Problems panel shows — nothing is hidden. In particular nullUncheckedConversion and
 # nullSpecViolation arise where Mojang/NeoForge's @NonNull-annotated codec generics (RecordCodecBuilder,
@@ -26,6 +28,7 @@ org.eclipse.jdt.core.compiler.problem.missingNonNullByDefaultAnnotation=ignore
 org.eclipse.jdt.core.compiler.problem.nullSpecViolation=warning
 org.eclipse.jdt.core.compiler.problem.nullAnnotationInferenceConflict=warning
 org.eclipse.jdt.core.compiler.problem.nullUncheckedConversion=warning
+org.eclipse.jdt.core.compiler.problem.nonnullParameterAnnotationDropped=warning
 org.eclipse.jdt.core.compiler.problem.potentialNullReference=warning
 org.eclipse.jdt.core.compiler.problem.redundantNullCheck=warning
 org.eclipse.jdt.core.compiler.problem.nullReference=warning

@@ -4,7 +4,10 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.network.ModNetwork;
 import za.co.neroland.nerospace.platform.NetworkPlatform;
@@ -35,31 +38,33 @@ public final class FabricNetwork implements NetworkPlatform {
         }
     }
 
-    private static <T extends CustomPacketPayload> void registerClientboundType(ModNetwork.Clientbound<T> cb) {
+    private static <T extends @NonNull CustomPacketPayload> void registerClientboundType(ModNetwork.Clientbound<T> cb) {
         PayloadTypeRegistry.clientboundPlay().register(cb.type(), cb.codec());
     }
 
-    private static <T extends CustomPacketPayload> void registerServerbound(ModNetwork.Serverbound<T> sb) {
+    private static <T extends @NonNull CustomPacketPayload> void registerServerbound(ModNetwork.Serverbound<T> sb) {
         PayloadTypeRegistry.serverboundPlay().register(sb.type(), sb.codec());
         ServerPlayNetworking.registerGlobalReceiver(sb.type(), (payload, context) -> {
             ServerPlayer player = context.player();
-            ((net.minecraft.server.level.ServerLevel) player.level()).getServer()
-                    .execute(() -> sb.handler().accept(payload, player));
+            MinecraftServer server = player.level().getServer();
+            if (server != null) {
+                server.execute(() -> sb.handler().accept(payload, player));
+            }
         });
     }
 
-    private static <T extends CustomPacketPayload> void registerClientReceiver(ModNetwork.Clientbound<T> cb) {
+    private static <T extends @NonNull CustomPacketPayload> void registerClientReceiver(ModNetwork.Clientbound<T> cb) {
         ClientPlayNetworking.registerGlobalReceiver(cb.type(), (payload, context) ->
                 context.client().execute(() -> cb.handler().accept(payload)));
     }
 
     @Override
-    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
+    public void sendToPlayer(@NonNull ServerPlayer player, @NonNull CustomPacketPayload payload) {
         ServerPlayNetworking.send(player, payload);
     }
 
     @Override
-    public void sendToServer(CustomPacketPayload payload) {
+    public void sendToServer(@NonNull CustomPacketPayload payload) {
         ClientPlayNetworking.send(payload);
     }
 }

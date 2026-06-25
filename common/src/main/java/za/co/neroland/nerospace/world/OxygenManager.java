@@ -17,6 +17,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
@@ -142,7 +145,7 @@ public final class OxygenManager {
      * player is within {@link #SAFE_RADIUS} of a Rocket Launch Pad — a permanent pressurised safe zone at
      * the landing site (the pad is not a field source, so it stays a simple radius check).
      */
-    private static boolean isBreathable(ServerLevel level, BlockPos center) {
+    private static boolean isBreathable(ServerLevel level, @NonNull BlockPos center) {
         // Terraformed ground is permanently breathable (the Terraformer flags the chunk).
         if (Services.PLATFORM.isTerraformed(level.getChunkAt(center))) {
             return true;
@@ -153,7 +156,8 @@ public final class OxygenManager {
         for (BlockPos pos : BlockPos.betweenClosed(
                 center.offset(-SAFE_RADIUS, -SAFE_RADIUS, -SAFE_RADIUS),
                 center.offset(SAFE_RADIUS, SAFE_RADIUS, SAFE_RADIUS))) {
-            if (level.getBlockState(pos).is(ModBlocks.ROCKET_LAUNCH_PAD.get())) {
+            BlockPos checkPos = NerospaceCommon.requireNonNull(pos);
+            if (level.getBlockState(checkPos).is(ModBlocks.ROCKET_LAUNCH_PAD.get())) {
                 return true;
             }
         }
@@ -181,13 +185,14 @@ public final class OxygenManager {
             if (want <= 0) {
                 break;
             }
-            BlockState state = level.getBlockState(pos);
+            BlockPos checkPos = NerospaceCommon.requireNonNull(pos);
+            BlockState state = level.getBlockState(checkPos);
             if (!state.is(ModBlocks.GAS_TANK.get())
                     && !state.is(ModBlocks.CREATIVE_GAS_TANK.get())
                     && !state.is(ModBlocks.OXYGEN_GENERATOR.get())) {
                 continue;
             }
-            NerospaceGasStorage store = GasLookup.INSTANCE.find(level, pos.immutable(), null);
+            NerospaceGasStorage store = GasLookup.INSTANCE.find(level, checkPos.immutable(), null);
             if (store == null) {
                 continue;
             }
@@ -276,7 +281,7 @@ public final class OxygenManager {
     }
 
     /** The hazard a dimension carries: Cindara runs hot, Glacira runs cold. (Public for the HUD.) */
-    public static HazardShield hazardFor(ResourceKey<Level> dimension) {
+    public static HazardShield hazardFor(@NonNull ResourceKey<Level> dimension) {
         if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
             return HazardShield.HEAT;
         }

@@ -29,6 +29,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.FluidLookup;
@@ -50,20 +51,20 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class UniversalPipeBlock extends BaseEntityBlock {
 
-    public static final MapCodec<UniversalPipeBlock> CODEC = simpleCodec(UniversalPipeBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<UniversalPipeBlock> CODEC = simpleCodec(UniversalPipeBlock::new);
 
-    public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
-    public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
-    public static final BooleanProperty EAST = BlockStateProperties.EAST;
-    public static final BooleanProperty WEST = BlockStateProperties.WEST;
-    public static final BooleanProperty UP = BlockStateProperties.UP;
-    public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
+    public static final @NonNull BooleanProperty NORTH = BlockStateProperties.NORTH;
+    public static final @NonNull BooleanProperty SOUTH = BlockStateProperties.SOUTH;
+    public static final @NonNull BooleanProperty EAST = BlockStateProperties.EAST;
+    public static final @NonNull BooleanProperty WEST = BlockStateProperties.WEST;
+    public static final @NonNull BooleanProperty UP = BlockStateProperties.UP;
+    public static final @NonNull BooleanProperty DOWN = BlockStateProperties.DOWN;
 
     /** Connection property per direction, ordered by {@link Direction#get3DDataValue()}. */
-    public static final BooleanProperty[] CONNECTIONS = {DOWN, UP, NORTH, SOUTH, WEST, EAST};
+    public static final @NonNull BooleanProperty @NonNull[] CONNECTIONS = {DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
     /** Voxel shapes indexed by the 6-bit connection mask (bit = direction 3D data value). */
-    private static final VoxelShape[] SHAPES = buildShapes();
+    private static final @NonNull VoxelShape @NonNull[] SHAPES = buildShapes();
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public UniversalPipeBlock(Properties properties) {
@@ -75,9 +76,9 @@ public class UniversalPipeBlock extends BaseEntityBlock {
         registerDefaultState(base);
     }
 
-    private static VoxelShape[] buildShapes() {
-        VoxelShape core = Block.box(4, 4, 4, 12, 12, 12);
-        VoxelShape[] arms = {
+    private static @NonNull VoxelShape @NonNull[] buildShapes() {
+        @NonNull VoxelShape core = Block.box(4, 4, 4, 12, 12, 12);
+        @NonNull VoxelShape @NonNull[] arms = {
                 Block.box(4, 0, 4, 12, 4, 12),   // down
                 Block.box(4, 12, 4, 12, 16, 12), // up
                 Block.box(4, 4, 0, 12, 12, 4),   // north
@@ -85,9 +86,9 @@ public class UniversalPipeBlock extends BaseEntityBlock {
                 Block.box(0, 4, 4, 4, 12, 12),   // west
                 Block.box(12, 4, 4, 16, 12, 12), // east
         };
-        VoxelShape[] shapes = new VoxelShape[64];
+        @NonNull VoxelShape @NonNull[] shapes = new @NonNull VoxelShape[64];
         for (int mask = 0; mask < 64; mask++) {
-            VoxelShape shape = core;
+            @NonNull VoxelShape shape = core;
             for (int d = 0; d < 6; d++) {
                 if ((mask & (1 << d)) != 0) {
                     shape = Shapes.or(shape, arms[d]);
@@ -98,7 +99,7 @@ public class UniversalPipeBlock extends BaseEntityBlock {
         return shapes;
     }
 
-    private static int connectionMask(BlockState state) {
+    private static int connectionMask(@NonNull BlockState state) {
         int mask = 0;
         for (int d = 0; d < 6; d++) {
             if (state.getValue(CONNECTIONS[d])) {
@@ -119,7 +120,8 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(@NonNull BlockState state, BlockGetter level, BlockPos pos,
+            CollisionContext context) {
         return SHAPES[connectionMask(state)];
     }
 
@@ -132,7 +134,7 @@ public class UniversalPipeBlock extends BaseEntityBlock {
 
     /** True when the neighbour on {@code dir} is another pipe, a vanilla item container, or exposes an
      *  energy/fluid/gas storage through the cross-loader lookup seams. */
-    public static boolean canConnect(Level level, BlockPos pos, Direction dir) {
+    public static boolean canConnect(@NonNull Level level, @NonNull BlockPos pos, @NonNull Direction dir) {
         BlockPos np = pos.relative(dir);
         BlockEntity be = level.getBlockEntity(np);
         if (be instanceof UniversalPipeBlockEntity) {
@@ -148,7 +150,8 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     }
 
     /** Recompute all six connection properties of {@code state} against the world. */
-    public static BlockState withConnections(BlockState state, Level level, BlockPos pos) {
+    public static @NonNull BlockState withConnections(@NonNull BlockState state, @NonNull Level level,
+            @NonNull BlockPos pos) {
         for (Direction dir : Direction.values()) {
             state = state.setValue(CONNECTIONS[dir.get3DDataValue()], canConnect(level, pos, dir));
         }
@@ -164,7 +167,8 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     // --- Block entity -----------------------------------------------------------
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(@NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos,
+            @NonNull Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
             if (player.isShiftKeyDown()) {

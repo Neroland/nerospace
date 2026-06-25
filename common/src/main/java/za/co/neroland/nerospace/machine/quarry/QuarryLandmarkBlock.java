@@ -24,7 +24,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class QuarryLandmarkBlock extends BaseEntityBlock {
 
-    public static final MapCodec<QuarryLandmarkBlock> CODEC = simpleCodec(QuarryLandmarkBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<QuarryLandmarkBlock> CODEC = simpleCodec(QuarryLandmarkBlock::new);
 
     private static final VoxelShape SHAPE = Block.box(5.0D, 0.0D, 5.0D, 11.0D, 12.0D, 11.0D);
 

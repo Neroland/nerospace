@@ -11,11 +11,11 @@ import za.co.neroland.nerospace.menu.CombustionGeneratorMenu;
 /** Screen for the Combustion Generator: a power-output gauge over the sci-fi hull panel. */
 public class CombustionGeneratorScreen extends TexturedContainerScreen<CombustionGeneratorMenu> {
 
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/combustion_generator.png");
+    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+            NerospaceCommon.id("textures/gui/combustion_generator.png");
     private static final int ACCENT = 0xFFF0A83C; // amber (combustion)
 
-    public CombustionGeneratorScreen(CombustionGeneratorMenu menu, Inventory playerInventory, Component title) {
+    public CombustionGeneratorScreen(CombustionGeneratorMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;

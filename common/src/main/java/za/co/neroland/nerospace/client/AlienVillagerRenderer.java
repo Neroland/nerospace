@@ -7,6 +7,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.entity.AlienVillager;
 
@@ -18,15 +20,15 @@ import za.co.neroland.nerospace.entity.AlienVillager;
 public class AlienVillagerRenderer
         extends MobRenderer<AlienVillager, AlienVillagerRenderState, EntityModel<AlienVillagerRenderState>> {
 
-    private static Identifier tex(String n) {
-        return Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/entity/" + n + ".png");
+    private static @NonNull Identifier tex(@NonNull String n) {
+        return NerospaceCommon.id("textures/entity/" + n + ".png");
     }
 
-    private static final Identifier BASE = tex("alien_villager");
-    private static final Identifier MEADOW = tex("alien_villager_meadow");
-    private static final Identifier CINDARA = tex("alien_villager_cindara");
-    private static final Identifier GLACIRA = tex("alien_villager_glacira");
-    private static final Identifier GLOW = tex("alien_villager_glow");
+    private static final @NonNull Identifier BASE = tex("alien_villager");
+    private static final @NonNull Identifier MEADOW = tex("alien_villager_meadow");
+    private static final @NonNull Identifier CINDARA = tex("alien_villager_cindara");
+    private static final @NonNull Identifier GLACIRA = tex("alien_villager_glacira");
+    private static final @NonNull Identifier GLOW = tex("alien_villager_glow");
 
     @SuppressWarnings("this-escape")
     public AlienVillagerRenderer(EntityRendererProvider.Context context) {

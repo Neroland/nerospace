@@ -3,6 +3,8 @@ package za.co.neroland.nerospace.meteor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mojang.serialization.Codec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -15,6 +17,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -31,7 +36,10 @@ public class MeteorCoreBlockEntity extends BlockEntity {
     /** Inlined from {@code Config.METEOR_LOOT_BONUS_ROLLS} (root default) until the config seam lands. */
     private static final int METEOR_LOOT_BONUS_ROLLS = 3;
 
-    private final List<ItemStack> loot = new ArrayList<>();
+    private static final @NonNull Codec<List<@NonNull ItemStack>> LOOT_CODEC =
+            NerospaceCommon.requireNonNull(NerospaceCommon.ITEM_STACK_CODEC.listOf());
+
+    private final List<@NonNull ItemStack> loot = new ArrayList<>();
 
     public MeteorCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.METEOR_CORE.get(), pos, state);
@@ -42,7 +50,8 @@ public class MeteorCoreBlockEntity extends BlockEntity {
         if (!this.loot.isEmpty()) {
             return;
         }
-        this.loot.addAll(MeteorLoot.roll(RandomSource.create(seed), METEOR_LOOT_BONUS_ROLLS));
+        MeteorLoot.roll(RandomSource.create(seed), METEOR_LOOT_BONUS_ROLLS).forEach(stack ->
+                this.loot.add(NerospaceCommon.requireNonNull(stack)));
         setChanged();
     }
 
@@ -72,13 +81,14 @@ public class MeteorCoreBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.store("Loot", ItemStack.OPTIONAL_CODEC.listOf(), this.loot);
+        output.store("Loot", LOOT_CODEC, this.loot);
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.loot.clear();
-        this.loot.addAll(input.read("Loot", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of()));
+        this.loot.addAll(NerospaceCommon.orElse(input.read("Loot", LOOT_CODEC),
+                NerospaceCommon.requireNonNull(List.of())));
     }
 }

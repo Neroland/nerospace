@@ -31,7 +31,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class TrashCanBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
     private static final int SIZE = 1;
-    private static final int[] SLOTS = {0};
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {0};
 
     /** Last item dropped in through the GUI; voided only when the NEXT stack is inserted (so closing the
      *  screen never trashes it). Held purely as a reference — it is never shown or retrievable. */
@@ -162,7 +162,7 @@ public class TrashCanBlockEntity extends BlockEntity implements WorldlyContainer
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new TrashCanMenu(containerId, playerInventory, this.guiBuffer);
     }
 

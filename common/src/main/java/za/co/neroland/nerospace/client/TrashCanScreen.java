@@ -14,7 +14,7 @@ import za.co.neroland.nerospace.menu.TrashCanMenu;
  */
 public class TrashCanScreen extends AbstractContainerScreen<TrashCanMenu> {
 
-    public TrashCanScreen(TrashCanMenu menu, Inventory playerInventory, Component title) {
+    public TrashCanScreen(TrashCanMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
     }
 

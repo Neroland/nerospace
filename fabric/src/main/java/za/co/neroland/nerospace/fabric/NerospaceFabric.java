@@ -14,7 +14,6 @@ import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
@@ -57,19 +56,19 @@ public final class NerospaceFabric implements ModInitializer {
     /** Mod-owned energy lookup; mirrors the NeoForge energy BlockCapability of the same id. */
     public static final BlockApiLookup<NerospaceEnergyStorage, Direction> ENERGY =
             BlockApiLookup.get(
-                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "energy"),
+                    NerospaceCommon.id("energy"),
                     NerospaceEnergyStorage.class, Direction.class);
 
     /** Mod-owned fluid lookup; mirrors the NeoForge fluid BlockCapability of the same id. */
     public static final BlockApiLookup<NerospaceFluidStorage, Direction> FLUID =
             BlockApiLookup.get(
-                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "fluid"),
+                    NerospaceCommon.id("fluid"),
                     NerospaceFluidStorage.class, Direction.class);
 
     /** Mod-owned gas lookup; mirrors the NeoForge gas BlockCapability of the same id. */
     public static final BlockApiLookup<NerospaceGasStorage, Direction> GAS =
             BlockApiLookup.get(
-                    Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "gas"),
+                    NerospaceCommon.id("gas"),
                     NerospaceGasStorage.class, Direction.class);
 
     @Override
@@ -88,14 +87,20 @@ public final class NerospaceFabric implements ModInitializer {
         addOverworldOre("nerosteel_ore_overworld_placed");
 
         // Default attributes for the ported mobs (counterpart to NeoForge's EntityAttributeCreationEvent).
-        ModEntityAttributes.forEach(FabricDefaultAttributeRegistry::register);
+        ModEntityAttributes.forEach((type, builder) -> FabricDefaultAttributeRegistry.register(
+                NerospaceCommon.requireNonNull(type),
+                NerospaceCommon.requireNonNull(builder)));
 
         // Natural-spawn placement rules (counterpart to NeoForge's RegisterSpawnPlacementsEvent).
         ModSpawnPlacements.registerAll(new ModSpawnPlacements.Sink() {
             @Override
             public <T extends Mob> void register(EntityType<T> type, SpawnPlacementType placementType,
                     Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate) {
-                SpawnPlacements.register(type, placementType, heightmap, predicate);
+                SpawnPlacements.register(
+                        NerospaceCommon.requireNonNull(type),
+                        NerospaceCommon.requireNonNull(placementType),
+                        NerospaceCommon.requireNonNull(heightmap),
+                        NerospaceCommon.requireNonNull(predicate));
             }
         });
 
@@ -129,7 +134,7 @@ public final class NerospaceFabric implements ModInitializer {
         // Item-storage capability (Fabric Transfer API) — counterpart to NeoForge
         // Capabilities.Item.BLOCK; lets mod pipes move items in/out of the item store.
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.ITEM_STORE.get());
 
         ENERGY.registerForBlockEntity(
@@ -141,21 +146,21 @@ public final class NerospaceFabric implements ModInitializer {
                 ModBlockEntities.FLUID_TANK.get());
 
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.COMBUSTION_GENERATOR.get());
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.COMBUSTION_GENERATOR.get());
 
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.NEROSIUM_GRINDER.get());
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.NEROSIUM_GRINDER.get());
 
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.PASSIVE_GENERATOR.get());
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
@@ -171,7 +176,7 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getFluidTank(),
                 ModBlockEntities.UNIVERSAL_PIPE.get());
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.UNIVERSAL_PIPE.get());
 
         GAS.registerForBlockEntity(
@@ -194,16 +199,16 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.TERRAFORMER.get());
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.TERRAFORMER.get());
 
         // Hydration Module: glacite in (no energy of its own).
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.HYDRATION_MODULE.get());
 
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.TRASH_CAN.get());
         FLUID.registerForBlockEntity(
                 (be, direction) -> be.getFluid(),
@@ -224,7 +229,7 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getTank(),
                 ModBlockEntities.CREATIVE_GAS_TANK.get());
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.CREATIVE_ITEM_STORE.get());
 
         // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
@@ -232,7 +237,7 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getTank(),
                 ModBlockEntities.FUEL_TANK.get());
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.FUEL_TANK.get());
 
         // Fuel Refinery: grid power in, refined fuel out, coal + blaze powder in.
@@ -243,7 +248,7 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getTank(),
                 ModBlockEntities.FUEL_REFINERY.get());
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.FUEL_REFINERY.get());
 
         // Quarry controller: grid power in, mined output + sucked fluid out, frame casings in.
@@ -254,7 +259,7 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getTank(),
                 ModBlockEntities.QUARRY_CONTROLLER.get());
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
+                (be, direction) -> ContainerStorage.of(NerospaceCommon.requireNonNull(be), direction),
                 ModBlockEntities.QUARRY_CONTROLLER.get());
 
         // Rocket launch pad: a fluid sink forwarding rocket_fuel into a docked rocket (refuelling
@@ -271,7 +276,7 @@ public final class NerospaceFabric implements ModInitializer {
     private static void addOverworldOre(String placedFeatureName) {
         ResourceKey<PlacedFeature> key = ResourceKey.create(
                 Registries.PLACED_FEATURE,
-                Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, placedFeatureName));
+                NerospaceCommon.id(placedFeatureName));
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInOverworld(),
                 GenerationStep.Decoration.UNDERGROUND_ORES,

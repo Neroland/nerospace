@@ -6,7 +6,6 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.resources.Identifier;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 
@@ -17,7 +16,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
 public final class RocketT3Model {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "rocket_t3"), "main");
+            NerospaceCommon.id("rocket_t3"), "main");
 
     private RocketT3Model() {
     }

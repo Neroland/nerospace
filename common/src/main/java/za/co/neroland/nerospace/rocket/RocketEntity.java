@@ -3,6 +3,7 @@ package za.co.neroland.nerospace.rocket;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -39,6 +40,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModBlocks;
@@ -65,18 +68,18 @@ import za.co.neroland.nerospace.registry.ModItems;
  */
 public class RocketEntity extends Entity implements MenuProvider {
 
-    private static final EntityDataAccessor<Integer> DATA_FUEL =
-            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> DATA_TIER =
-            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_LAUNCHING =
-            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final @NonNull EntityDataAccessor<Integer> DATA_FUEL =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT));
+    private static final @NonNull EntityDataAccessor<Integer> DATA_TIER =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT));
+    private static final @NonNull EntityDataAccessor<Boolean> DATA_LAUNCHING =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.BOOLEAN));
     /** Index into the current tier's destination list. */
-    private static final EntityDataAccessor<Integer> DATA_DEST =
-            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    private static final @NonNull EntityDataAccessor<Integer> DATA_DEST =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT));
     /** Selected founded-station slot for the Orbital Station destination ({@code -1} = the origin platform). */
-    private static final EntityDataAccessor<Integer> DATA_STATION =
-            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    private static final @NonNull EntityDataAccessor<Integer> DATA_STATION =
+            NerospaceCommon.requireNonNull(SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT));
 
     /** Ticks of ascent before the rider is transported. */
     public static final int LAUNCH_DURATION = 100;
@@ -114,7 +117,7 @@ public class RocketEntity extends Entity implements MenuProvider {
      * Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex,
      * [5]=stationSlot (−1 = origin; only meaningful for the Orbital Station destination).
      */
-    private final ContainerData dataAccess = new ContainerData() {
+    private final @NonNull ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -314,7 +317,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     public int addFuel(int amount) {
         int room = Math.max(0, getTier().fuelCapacity() - (int) this.fuelTank.getAmount());
         int toFill = Math.min(amount, room);
-        int filled = (int) this.fuelTank.fill((Fluid) ModFluids.ROCKET_FUEL.get(), toFill, false);
+        int filled = (int) this.fuelTank.fill(ModFluids.ROCKET_FUEL.get(), toFill, false);
         return amount - filled;
     }
 
@@ -466,6 +469,10 @@ public class RocketEntity extends Entity implements MenuProvider {
         Entity passenger = this.getFirstPassenger();
         if (passenger instanceof ServerPlayer player && level() instanceof ServerLevel current) {
             MinecraftServer server = current.getServer();
+            if (server == null) {
+                setLaunching(false);
+                return;
+            }
             ServerLevel destination = server.getLevel(targetKey);
             if (destination != null) {
                 player.stopRiding();
@@ -499,7 +506,9 @@ public class RocketEntity extends Entity implements MenuProvider {
                     arrivalMessage = Component.translatable("entity.nerospace.rocket.arrived");
                 }
 
-                player.teleportTo(destination, arrivalX, arrivalY, arrivalZ, Set.of(), player.getYRot(), player.getXRot(), true);
+                player.teleportTo(destination, arrivalX, arrivalY, arrivalZ,
+                        NerospaceCommon.requireNonNull(Set.<net.minecraft.world.entity.Relative>of()),
+                        player.getYRot(), player.getXRot(), true);
                 player.sendSystemMessage(arrivalMessage);
             }
         }
@@ -588,7 +597,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         return new ItemStack(itemForTier());
     }
 
-    private net.minecraft.world.item.Item itemForTier() {
+    private net.minecraft.world.item.@NonNull Item itemForTier() {
         return switch (getTier()) {
             case TIER_1 -> ModItems.ROCKET_TIER_1.get();
             case TIER_2 -> ModItems.ROCKET_TIER_2.get();
@@ -623,7 +632,9 @@ public class RocketEntity extends Entity implements MenuProvider {
         Fluid fluid = BuiltInRegistries.FLUID.getValue(
                 Identifier.parse(input.getStringOr("FuelFluid", "minecraft:empty")));
         this.fuelTank.setRaw(fluid, input.getIntOr("FuelAmount", 0));
-        this.fuelInput.setItem(0, input.read("FuelInput", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.fuelInput.setItem(0,
+                NerospaceCommon.orElse(input.read("FuelInput",
+                        za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
         syncFuel();
         setLaunching(input.getBooleanOr("Launching", false));
         this.launchTicks = input.getIntOr("LaunchTicks", 0);
@@ -634,9 +645,10 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.putInt("Tier", getTier().ordinal());
         output.putInt("Destination", getDestinationIndex());
         output.putInt("StationSlot", getStationSlot());
-        output.putString("FuelFluid", BuiltInRegistries.FLUID.getKey(this.fuelTank.getRawFluid()).toString());
+        output.putString("FuelFluid",
+                BuiltInRegistries.FLUID.getKey(NerospaceCommon.requireNonNull(this.fuelTank.getRawFluid())).toString());
         output.putInt("FuelAmount", this.fuelTank.getRawAmount());
-        output.store("FuelInput", ItemStack.OPTIONAL_CODEC, this.fuelInput.getItem(0));
+        output.store("FuelInput", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.fuelInput.getItem(0));
         output.putBoolean("Launching", isLaunching());
         output.putInt("LaunchTicks", this.launchTicks);
     }
@@ -644,13 +656,13 @@ public class RocketEntity extends Entity implements MenuProvider {
     // --- MenuProvider -------------------------------------------------------
 
     @Override
-    public Component getDisplayName() {
+    public @NonNull Component getDisplayName() {
         return Component.translatable("container.nerospace.rocket");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new RocketMenu(containerId, playerInventory, this, this.dataAccess);
     }
 

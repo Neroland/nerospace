@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class RocketPadItemContainer implements WorldlyContainer {
 
-    private static final int[] SLOTS = {0};
+    private static final int @org.jspecify.annotations.NonNull[] SLOTS = {0};
 
     private final Level level;
     private final BlockPos padPos;

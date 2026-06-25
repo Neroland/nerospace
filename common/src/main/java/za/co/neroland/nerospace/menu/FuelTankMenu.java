@@ -15,16 +15,16 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
  */
 public class FuelTankMenu extends AbstractContainerMenu {
 
-    private final ContainerData data;
+    private final @org.jspecify.annotations.NonNull ContainerData data;
 
     /** Client constructor (referenced by the {@code MenuType}). */
-    public FuelTankMenu(int containerId, Inventory playerInventory) {
+    public FuelTankMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainerData(2));
     }
 
     /** Server constructor. */
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public FuelTankMenu(int containerId, Inventory playerInventory, ContainerData data) {
+    public FuelTankMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull ContainerData data) {
         super(ModMenuTypes.FUEL_TANK.get(), containerId);
         checkContainerDataCount(data, 2);
         this.data = data;

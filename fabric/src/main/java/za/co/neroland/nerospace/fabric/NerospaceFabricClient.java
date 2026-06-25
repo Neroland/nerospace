@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -99,7 +98,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
      */
     private static void registerOxygenHud() {
         HudElementRegistry.addLast(
-                Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_hud"),
+                NerospaceCommon.id("oxygen_hud"),
                 (graphics, delta) -> OxygenHud.render(graphics));
         HudElementRegistry.replaceElement(VanillaHudElements.AIR_BAR, original -> (graphics, delta) -> {
             Minecraft mc = Minecraft.getInstance();
@@ -119,8 +118,8 @@ public final class NerospaceFabricClient implements ClientModInitializer {
      * {@code BlockTintSources.constant(...)} (the Fabric-rendering-fluids-v1 module ships in fabric-api).
      */
     private static void registerFluidRendering() {
-        Material still = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still"));
-        Material flow = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow"));
+        Material still = new Material(NerospaceCommon.id("block/rocket_fuel_still"));
+        Material flow = new Material(NerospaceCommon.id("block/rocket_fuel_flow"));
         FluidModel.Unbaked model = new FluidModel.Unbaked(still, flow, still, BlockTintSources.constant(0xFFFFFFFF));
         FluidRenderingRegistry.register(ModFluids.ROCKET_FUEL.get(), ModFluids.ROCKET_FUEL_FLOWING.get(), model);
     }

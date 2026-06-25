@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -42,11 +43,12 @@ public final class ClientOxygenVisuals {
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
-        if (level == null || mc.player == null || mc.isPaused()) {
+        LocalPlayer player = mc.player;
+        if (level == null || player == null || mc.isPaused()) {
             return;
         }
 
-        BlockPos playerPos = mc.player.blockPosition();
+        BlockPos playerPos = player.blockPosition();
 
         // Boundary sound: crossfade an ambient note when the player crosses the breathable boundary.
         boolean breathingNow = ClientOxygenField.concentrationAt(playerPos.above()) >= BREATHABLE_THRESHOLD

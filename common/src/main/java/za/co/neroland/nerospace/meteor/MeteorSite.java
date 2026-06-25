@@ -23,7 +23,7 @@ public final class MeteorSite {
             Codec.LONG.fieldOf("pos").forGetter(s -> s.pos),
             Codec.INT.fieldOf("state").forGetter(s -> s.state),
             Codec.INT.fieldOf("timer").forGetter(s -> s.timer)
-    ).apply(inst, MeteorSite::new));
+    ).apply(inst, MeteorSite::of));
 
     public long pos;
     public int state;
@@ -33,6 +33,10 @@ public final class MeteorSite {
         this.pos = pos;
         this.state = state;
         this.timer = timer;
+    }
+
+    private static MeteorSite of(Long pos, Integer state, Integer timer) {
+        return new MeteorSite(pos.longValue(), state.intValue(), timer.intValue());
     }
 
     public BlockPos blockPos() {

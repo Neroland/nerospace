@@ -31,8 +31,8 @@ import za.co.neroland.nerospace.world.OxygenManager;
  */
 public final class OxygenHud {
 
-    private static final Identifier ICON =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/oxygen_hud_icon.png");
+    private static final @org.jspecify.annotations.NonNull Identifier ICON =
+            NerospaceCommon.id("textures/gui/oxygen_hud_icon.png");
 
     private static final int INK = 0xFF05080D;
     private static final int TROUGH = 0xFF0B1119;

@@ -44,7 +44,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
     public static final int FE_PER_TICK = 20;
     private static final int[] FUEL_SLOTS = IntStream.range(0, SIZE).toArray();
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+    private final @org.jspecify.annotations.NonNull NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, FE_PER_TICK * 64, this::setChanged);
     private int burnTime;
     private int maxBurnTime;
@@ -149,7 +149,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         output.putInt("Energy", this.energy.getRaw());
         output.putInt("BurnTime", this.burnTime);
         output.putInt("MaxBurnTime", this.maxBurnTime);
-        output.store("Fuel", ItemStack.OPTIONAL_CODEC, this.items.get(FUEL_SLOT));
+        output.store("Fuel", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC, this.items.get(FUEL_SLOT));
     }
 
     @Override
@@ -158,7 +158,8 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.burnTime = input.getIntOr("BurnTime", 0);
         this.maxBurnTime = input.getIntOr("MaxBurnTime", 0);
-        this.items.set(FUEL_SLOT, input.read("Fuel", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(FUEL_SLOT, za.co.neroland.nerospace.NerospaceCommon.orElse(
+                input.read("Fuel", za.co.neroland.nerospace.NerospaceCommon.ITEM_STACK_CODEC), ItemStack.EMPTY));
     }
 
     // --- MenuProvider ---------------------------------------------------------
@@ -168,7 +169,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, Player player) {
         return new CombustionGeneratorMenu(containerId, playerInventory, this, this.data);
     }
 

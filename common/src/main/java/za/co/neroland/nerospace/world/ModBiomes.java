@@ -1,7 +1,6 @@
 package za.co.neroland.nerospace.world;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
 
@@ -36,6 +35,6 @@ public final class ModBiomes {
 
     private static ResourceKey<Biome> key(String name) {
         return ResourceKey.create(Registries.BIOME,
-                Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, name));
+                NerospaceCommon.id(name));
     }
 }

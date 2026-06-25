@@ -1,10 +1,12 @@
 package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.PipeConfigMenu;
 
 /**
@@ -26,8 +28,8 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
     private static final int FIRST_ROW_Y = 40;
     private static final int ROW_STEP = 18;
 
-    public PipeConfigScreen(PipeConfigMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, 176, 152);
+    public PipeConfigScreen(PipeConfigMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
+        super(menu, playerInventory, NerospaceCommon.requireNonNull(title), 176, 152);
         this.titleLabelX = 8;
         this.titleLabelY = 6;
     }
@@ -70,8 +72,9 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
     }
 
     private void sendButton(int id) {
-        if (this.minecraft != null && this.minecraft.gameMode != null) {
-            this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, id);
+        MultiPlayerGameMode gameMode = this.minecraft.gameMode;
+        if (gameMode != null) {
+            gameMode.handleInventoryButtonClick(this.menu.containerId, id);
         }
     }
 }

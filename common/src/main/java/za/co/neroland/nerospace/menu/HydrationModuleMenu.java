@@ -24,16 +24,16 @@ public class HydrationModuleMenu extends AbstractContainerMenu {
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36;
 
-    private final Container container;
-    private final ContainerData data;
+    private final @org.jspecify.annotations.NonNull Container container;
+    private final @org.jspecify.annotations.NonNull ContainerData data;
 
-    public HydrationModuleMenu(int containerId, Inventory playerInventory) {
+    public HydrationModuleMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(HydrationModuleBlockEntity.SIZE),
                 new SimpleContainerData(HydrationModuleBlockEntity.DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public HydrationModuleMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
+    public HydrationModuleMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data) {
         super(ModMenuTypes.HYDRATION_MODULE.get(), containerId);
         checkContainerSize(container, HydrationModuleBlockEntity.SIZE);
         checkContainerDataCount(data, HydrationModuleBlockEntity.DATA_COUNT);
@@ -54,7 +54,7 @@ public class HydrationModuleMenu extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack moved = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack raw = slot.getItem();
             moved = raw.copy();
             if (index == INPUT_SLOT) {
@@ -97,7 +97,7 @@ public class HydrationModuleMenu extends AbstractContainerMenu {
     }
 
     private static class InputSlot extends Slot {
-        InputSlot(Container container, int slot, int x, int y) {
+        InputSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 

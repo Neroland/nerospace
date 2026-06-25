@@ -7,6 +7,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * Fabric {@link RegistrationProvider.Factory}: registers eagerly via
  * {@code Registry.register}. The factory supplies the entry's {@link ResourceKey}
@@ -37,7 +39,7 @@ public final class FabricRegistrationFactory implements RegistrationProvider.Fac
         }
 
         @Override
-        public <I extends T> RegistryEntry<I> register(String name, Function<ResourceKey<T>, I> factory) {
+        public <I extends T> RegistryEntry<I> register(String name, Function<@NonNull ResourceKey<T>, @NonNull I> factory) {
             Identifier id = Identifier.fromNamespaceAndPath(modId, name);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);
             I value = factory.apply(key);

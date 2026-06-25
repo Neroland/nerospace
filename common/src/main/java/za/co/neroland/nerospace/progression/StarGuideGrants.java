@@ -2,7 +2,7 @@ package za.co.neroland.nerospace.progression;
 
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -44,8 +44,12 @@ public final class StarGuideGrants {
 
     /** Awards an impossible-criterion guide advancement directly (routes around the deferred ModCriteria). */
     public static void grant(ServerPlayer player, String path) {
-        ServerAdvancementManager manager = player.level().getServer().getAdvancements();
-        AdvancementHolder holder = manager.get(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path));
+        MinecraftServer server = player.level().getServer();
+        if (server == null) {
+            return;
+        }
+        ServerAdvancementManager manager = server.getAdvancements();
+        AdvancementHolder holder = manager.get(NerospaceCommon.id(NerospaceCommon.requireNonNull(path)));
         if (holder == null) {
             return;
         }
@@ -54,7 +58,7 @@ public final class StarGuideGrants {
             return;
         }
         for (String criterion : progress.getRemainingCriteria()) {
-            player.getAdvancements().award(holder, criterion);
+            player.getAdvancements().award(holder, NerospaceCommon.requireNonNull(criterion));
         }
     }
 }

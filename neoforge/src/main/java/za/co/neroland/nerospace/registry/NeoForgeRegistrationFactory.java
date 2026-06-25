@@ -12,6 +12,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * NeoForge {@link RegistrationProvider.Factory}: each provider wraps a
  * {@link DeferredRegister}. The registers are collected as they are created
@@ -50,7 +52,7 @@ public final class NeoForgeRegistrationFactory implements RegistrationProvider.F
         }
 
         @Override
-        public <I extends T> RegistryEntry<I> register(String name, Function<ResourceKey<T>, I> factory) {
+        public <I extends T> RegistryEntry<I> register(String name, Function<@NonNull ResourceKey<T>, @NonNull I> factory) {
             Identifier id = Identifier.fromNamespaceAndPath(modId, name);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);
             Supplier<I> supplier = () -> factory.apply(key);

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.function.UnaryOperator;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
@@ -19,13 +18,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
@@ -122,7 +122,7 @@ public final class ModItems {
     public static final RegistryEntry<Item> ROCKET_FUEL_CANISTER = item("rocket_fuel_canister");
     /** A real bucket of the {@code rocket_fuel} fluid; places the liquid block / fills tanks. */
     public static final RegistryEntry<BucketItem> ROCKET_FUEL_BUCKET = ITEMS.register("rocket_fuel_bucket",
-            key -> new BucketItem((Fluid) ModFluids.ROCKET_FUEL.get(), new Item.Properties().stacksTo(1).setId(key)));
+            key -> new BucketItem(ModFluids.ROCKET_FUEL.get(), new Item.Properties().stacksTo(1).setId(key)));
     public static final RegistryEntry<Item> FRAME_CASING = item("frame_casing");
     public static final RegistryEntry<Item> GRAV_STRIDERS = item("grav_striders");
     public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");
@@ -202,26 +202,28 @@ public final class ModItems {
     public static final RegistryEntry<Item> WOOLLY_DRIFT_SPAWN_EGG = spawnEgg("woolly_drift_spawn_egg", ModEntities.WOOLLY_DRIFT);
 
     // --- Tool + armor materials --------------------------------------------
-    public static final ToolMaterial NEROSIUM_TOOL_MATERIAL = new ToolMaterial(
+    public static final @NonNull ToolMaterial NEROSIUM_TOOL_MATERIAL = new ToolMaterial(
             BlockTags.INCORRECT_FOR_IRON_TOOL, 350, 7.0F, 2.5F, 15, cTag("ingots/nerosium"));
 
-    public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_ASSET = equipAsset("oxygen_suit");
-    public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_T2_ASSET = equipAsset("oxygen_suit_t2");
-    public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_HEAT_ASSET = equipAsset("oxygen_suit_heat");
-    public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_COLD_ASSET = equipAsset("oxygen_suit_cold");
+    public static final @NonNull ResourceKey<EquipmentAsset> OXYGEN_SUIT_ASSET = equipAsset("oxygen_suit");
+    public static final @NonNull ResourceKey<EquipmentAsset> OXYGEN_SUIT_T2_ASSET = equipAsset("oxygen_suit_t2");
+    public static final @NonNull ResourceKey<EquipmentAsset> OXYGEN_SUIT_HEAT_ASSET = equipAsset("oxygen_suit_heat");
+    public static final @NonNull ResourceKey<EquipmentAsset> OXYGEN_SUIT_COLD_ASSET = equipAsset("oxygen_suit_cold");
 
-    private static final Map<ArmorType, Integer> T1_DEFENSE =
-            Map.of(ArmorType.HELMET, 3, ArmorType.CHESTPLATE, 7, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 3);
-    private static final Map<ArmorType, Integer> T2_DEFENSE =
-            Map.of(ArmorType.HELMET, 4, ArmorType.CHESTPLATE, 8, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 4);
+    private static final @NonNull Map<ArmorType, Integer> T1_DEFENSE =
+            NerospaceCommon.requireNonNull(
+                    Map.of(ArmorType.HELMET, 3, ArmorType.CHESTPLATE, 7, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 3));
+    private static final @NonNull Map<ArmorType, Integer> T2_DEFENSE =
+            NerospaceCommon.requireNonNull(
+                    Map.of(ArmorType.HELMET, 4, ArmorType.CHESTPLATE, 8, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 4));
 
-    public static final ArmorMaterial OXYGEN_SUIT_MATERIAL = new ArmorMaterial(
+    public static final @NonNull ArmorMaterial OXYGEN_SUIT_MATERIAL = new ArmorMaterial(
             28, T1_DEFENSE, 12, SoundEvents.ARMOR_EQUIP_IRON, 1.5F, 0.0F, cTag("ingots/nerosteel"), OXYGEN_SUIT_ASSET);
-    public static final ArmorMaterial OXYGEN_SUIT_T2_MATERIAL = new ArmorMaterial(
+    public static final @NonNull ArmorMaterial OXYGEN_SUIT_T2_MATERIAL = new ArmorMaterial(
             36, T2_DEFENSE, 14, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, 0.0F, cTag("gems/cindrite"), OXYGEN_SUIT_T2_ASSET);
-    public static final ArmorMaterial OXYGEN_SUIT_HEAT_MATERIAL = new ArmorMaterial(
+    public static final @NonNull ArmorMaterial OXYGEN_SUIT_HEAT_MATERIAL = new ArmorMaterial(
             36, T2_DEFENSE, 14, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, 0.0F, cTag("gems/cindrite"), OXYGEN_SUIT_HEAT_ASSET);
-    public static final ArmorMaterial OXYGEN_SUIT_COLD_MATERIAL = new ArmorMaterial(
+    public static final @NonNull ArmorMaterial OXYGEN_SUIT_COLD_MATERIAL = new ArmorMaterial(
             36, T2_DEFENSE, 14, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, 0.0F, cTag("gems/glacite"), OXYGEN_SUIT_COLD_ASSET);
 
     // --- Tools + armor items -----------------------------------------------
@@ -251,10 +253,10 @@ public final class ModItems {
     }
 
     private static RegistryEntry<Item> item(String name, UnaryOperator<Item.Properties> cfg) {
-        return ITEMS.register(name, key -> new Item(cfg.apply(new Item.Properties().setId(key))));
+        return ITEMS.register(name, key -> new Item(NerospaceCommon.requireNonNull(cfg.apply(new Item.Properties().setId(key)))));
     }
 
-    private static RegistryEntry<Item> armor(String name, ArmorMaterial material, ArmorType type) {
+    private static RegistryEntry<Item> armor(String name, @NonNull ArmorMaterial material, @NonNull ArmorType type) {
         return item(name, p -> p.humanoidArmor(material, type));
     }
 
@@ -273,12 +275,14 @@ public final class ModItems {
         return ITEMS.register(name, key -> new UpgradeModuleItem(new Item.Properties().setId(key), type));
     }
 
-    private static TagKey<Item> cTag(String path) {
-        return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", path));
+    private static @NonNull TagKey<Item> cTag(String path) {
+        return NerospaceCommon.requireNonNull(
+                TagKey.create(Registries.ITEM, NerospaceCommon.id("c", NerospaceCommon.requireNonNull(path))));
     }
 
-    private static ResourceKey<EquipmentAsset> equipAsset(String name) {
-        return ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, name));
+    private static @NonNull ResourceKey<EquipmentAsset> equipAsset(String name) {
+        return NerospaceCommon.requireNonNull(
+                ResourceKey.create(EquipmentAssets.ROOT_ID, NerospaceCommon.id(NerospaceCommon.requireNonNull(name))));
     }
 
     /** Items grouped by the vanilla creative tab they should appear in. */

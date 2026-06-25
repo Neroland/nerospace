@@ -16,6 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundChunksBiomesPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -35,16 +36,15 @@ import za.co.neroland.nerospace.machine.TerraformConversion;
  * catch-up works even while the terraformer's own chunk is unloaded. The stage radii are OPTIONAL in
  * the codec (default 0) so pre-stage saves parse unchanged.</p>
  *
- * <p>Cross-loader port note: the multiloader's third {@link SavedData} (4-arg {@code SavedDataType},
- * DataFixTypes null); the chunk-load catch-up is driven per-loader (NeoForge {@code ChunkEvent.Load},
- * Fabric {@code ServerChunkEvents.CHUNK_LOAD}).</p>
+ * <p>Cross-loader port note: the multiloader's third {@link SavedData}; the chunk-load catch-up is
+ * driven per-loader (NeoForge {@code ChunkEvent.Load}, Fabric {@code ServerChunkEvents.CHUNK_LOAD}).</p>
  */
 public final class TerraformManager extends SavedData {
 
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "terraformers");
+    public static final @org.jspecify.annotations.NonNull Identifier ID = NerospaceCommon.id("terraformers");
 
-    public static final SavedDataType<TerraformManager> TYPE = new SavedDataType<>(
-            ID, TerraformManager::new, codec(), null);
+    public static final @org.jspecify.annotations.NonNull SavedDataType<TerraformManager> TYPE = new SavedDataType<>(
+            ID, TerraformManager::new, codec(), DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     /** Terraformer centre (packed BlockPos) → current horizontal stage-1 radius. */
     private final Long2IntOpenHashMap radius = new Long2IntOpenHashMap();
@@ -63,8 +63,8 @@ public final class TerraformManager extends SavedData {
     }
 
     /** Public for the save-compat gametest, which decodes a legacy (pre-stage) payload through it. */
-    public static Codec<TerraformManager> codec() {
-        return RecordCodecBuilder.create(inst -> inst.group(
+    public static @org.jspecify.annotations.NonNull Codec<TerraformManager> codec() {
+        return NerospaceCommon.requireNonNull(RecordCodecBuilder.create(inst -> inst.group(
                 Codec.LONG.listOf().fieldOf("positions").forGetter(m -> new ArrayList<>(m.radius.keySet())),
                 Codec.INT.listOf().fieldOf("radii").forGetter(m -> m.inKeyOrder(m.radius, 0)),
                 Codec.INT.listOf().fieldOf("tiers").forGetter(m -> m.inKeyOrder(m.tier, 1)),
@@ -73,7 +73,7 @@ public final class TerraformManager extends SavedData {
                         .forGetter(m -> m.inKeyOrder(m.hydrationRadius, 0)),
                 Codec.INT.listOf().optionalFieldOf("life_radii", List.of())
                         .forGetter(m -> m.inKeyOrder(m.lifeRadius, 0))
-        ).apply(inst, TerraformManager::fromLists));
+        ).apply(inst, TerraformManager::fromLists)));
     }
 
     /** The map's values in {@link #radius} key order (the codec's shared ordering), with a default. */

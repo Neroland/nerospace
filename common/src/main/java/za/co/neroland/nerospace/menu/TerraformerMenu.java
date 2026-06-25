@@ -25,16 +25,16 @@ public class TerraformerMenu extends AbstractContainerMenu {
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36;
 
-    private final Container container;
-    private final ContainerData data;
+    private final @org.jspecify.annotations.NonNull Container container;
+    private final @org.jspecify.annotations.NonNull ContainerData data;
 
-    public TerraformerMenu(int containerId, Inventory playerInventory) {
+    public TerraformerMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(TerraformerBlockEntity.SIZE),
                 new SimpleContainerData(TerraformerBlockEntity.DATA_COUNT));
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
-    public TerraformerMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
+    public TerraformerMenu(int containerId, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data) {
         super(ModMenuTypes.TERRAFORMER.get(), containerId);
         checkContainerSize(container, TerraformerBlockEntity.SIZE);
         checkContainerDataCount(data, TerraformerBlockEntity.DATA_COUNT);
@@ -55,7 +55,7 @@ public class TerraformerMenu extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack moved = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack raw = slot.getItem();
             moved = raw.copy();
             if (index == UPGRADE_SLOT) {
@@ -126,7 +126,7 @@ public class TerraformerMenu extends AbstractContainerMenu {
     }
 
     private static class UpgradeSlot extends Slot {
-        UpgradeSlot(Container container, int slot, int x, int y) {
+        UpgradeSlot(@org.jspecify.annotations.NonNull Container container, int slot, int x, int y) {
             super(container, slot, x, y);
         }
 

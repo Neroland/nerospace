@@ -9,7 +9,6 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -23,7 +22,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
 public class EmberStrutterModel extends GreenxertzMobModel<LivingEntityRenderState> {
 
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "ember_strutter"), "main");
+            NerospaceCommon.id("ember_strutter"), "main");
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public EmberStrutterModel(ModelPart root) {

@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.compat.jei;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.IModPlugin;
@@ -10,6 +11,8 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 
 import net.minecraft.resources.Identifier;
+
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.machine.GrinderRecipes;
@@ -28,15 +31,15 @@ import za.co.neroland.nerospace.registry.ModBlocks;
 @JeiPlugin
 public class NerospaceJeiPlugin implements IModPlugin {
 
-    private static final Identifier UID = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "jei_plugin");
+    private static final @org.jspecify.annotations.NonNull Identifier UID = NerospaceCommon.id("jei_plugin");
 
     @Override
-    public Identifier getPluginUid() {
+    public @NonNull Identifier getPluginUid() {
         return UID;
     }
 
     @Override
-    public void registerCategories(IRecipeCategoryRegistration registration) {
+    public void registerCategories(@NonNull IRecipeCategoryRegistration registration) {
         IGuiHelper guiHelper = registration.getJeiHelpers().getGuiHelper();
         registration.addRecipeCategories(
                 new GrindingCategory(guiHelper),
@@ -45,16 +48,22 @@ public class NerospaceJeiPlugin implements IModPlugin {
     }
 
     @Override
-    public void registerRecipes(IRecipeRegistration registration) {
+    public void registerRecipes(@NonNull IRecipeRegistration registration) {
         registration.addRecipes(GrindingCategory.TYPE, GrinderRecipes.all());
-        registration.addRecipes(RefiningCategory.TYPE, List.of(RefiningCategory.RefiningRecipe.standard()));
+        registration.addRecipes(RefiningCategory.TYPE, refiningRecipes());
         registration.addRecipes(CombustionFuelCategory.TYPE, CombustionFuelCategory.allFuels());
     }
 
     @Override
-    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
+    public void registerRecipeCatalysts(@NonNull IRecipeCatalystRegistration registration) {
         registration.addCraftingStation(GrindingCategory.TYPE, ModBlocks.NEROSIUM_GRINDER.get());
         registration.addCraftingStation(RefiningCategory.TYPE, ModBlocks.FUEL_REFINERY.get());
         registration.addCraftingStation(CombustionFuelCategory.TYPE, ModBlocks.COMBUSTION_GENERATOR.get());
+    }
+
+    private static @NonNull List<RefiningCategory.@NonNull RefiningRecipe> refiningRecipes() {
+        List<RefiningCategory.@NonNull RefiningRecipe> recipes = new ArrayList<>(1);
+        recipes.add(RefiningCategory.RefiningRecipe.standard());
+        return recipes;
     }
 }

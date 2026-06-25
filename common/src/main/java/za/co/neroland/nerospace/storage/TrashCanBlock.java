@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 /** Trash Can block — holds a {@link TrashCanBlockEntity} void sink. */
 public class TrashCanBlock extends BaseEntityBlock {
 
-    public static final MapCodec<TrashCanBlock> CODEC = simpleCodec(TrashCanBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<TrashCanBlock> CODEC = simpleCodec(TrashCanBlock::new);
 
     public TrashCanBlock(Properties properties) {
         super(properties);

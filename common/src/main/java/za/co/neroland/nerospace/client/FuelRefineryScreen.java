@@ -14,12 +14,12 @@ import za.co.neroland.nerospace.menu.FuelRefineryMenu;
  */
 public class FuelRefineryScreen extends TexturedContainerScreen<FuelRefineryMenu> {
 
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/fuel_refinery.png");
+    private static final @org.jspecify.annotations.NonNull Identifier TEXTURE =
+            NerospaceCommon.id("textures/gui/fuel_refinery.png");
     private static final int ACCENT = 0xFFF0A030;     // fuel orange
     private static final int FLAME = 0xFFF0703C;      // refining heat
 
-    public FuelRefineryScreen(FuelRefineryMenu menu, Inventory playerInventory, Component title) {
+    public FuelRefineryScreen(FuelRefineryMenu menu, @org.jspecify.annotations.NonNull Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
         this.inventoryLabelX = 10;

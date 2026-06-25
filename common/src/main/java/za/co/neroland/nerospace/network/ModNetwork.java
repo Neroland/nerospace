@@ -10,6 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.platform.Services;
 
 /**
@@ -47,12 +48,16 @@ public final class ModNetwork {
     }
 
     public static <T extends CustomPacketPayload> void clientbound(
-            CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, Consumer<T> handler) {
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+            Consumer<T> handler) {
         CLIENTBOUND.add(new Clientbound<>(type, codec, handler));
     }
 
     public static <T extends CustomPacketPayload> void serverbound(
-            CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, ServerPlayer> handler) {
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+            BiConsumer<T, ServerPlayer> handler) {
         SERVERBOUND.add(new Serverbound<>(type, codec, handler));
     }
 
@@ -66,12 +71,13 @@ public final class ModNetwork {
 
     /** Server → one client. */
     public static void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
-        Services.NETWORK.sendToPlayer(player, payload);
+        Services.NETWORK.sendToPlayer(NerospaceCommon.requireNonNull(player),
+                NerospaceCommon.requireNonNull(payload));
     }
 
     /** Client → server (call only on the physical client). */
     public static void sendToServer(CustomPacketPayload payload) {
-        Services.NETWORK.sendToServer(payload);
+        Services.NETWORK.sendToServer(NerospaceCommon.requireNonNull(payload));
     }
 
     /** Called from common init so the payload lists are populated before each loader registers them. */

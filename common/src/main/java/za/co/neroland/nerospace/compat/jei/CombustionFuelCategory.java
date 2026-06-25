@@ -14,6 +14,8 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
@@ -26,40 +28,45 @@ import za.co.neroland.nerospace.registry.ModBlocks;
  */
 public class CombustionFuelCategory extends AbstractRecipeCategory<CombustionFuelCategory.CombustionFuel> {
 
-    public static final IRecipeType<CombustionFuel> TYPE =
+    public static final @NonNull IRecipeType<CombustionFuel> TYPE =
             IRecipeType.create(NerospaceCommon.MOD_ID, "combustion_fuel", CombustionFuel.class);
 
     /** One accepted fuel and its burn duration in ticks. */
-    public record CombustionFuel(ItemStack fuel, int burnTicks) {
+    public record CombustionFuel(@NonNull ItemStack fuel, int burnTicks) {
     }
 
     /** Every accepted fuel, paired with its burn value straight from the generator's lookup. */
-    public static List<CombustionFuel> allFuels() {
-        return CombustionGeneratorBlockEntity.knownFuels().stream()
-                .map(stack -> new CombustionFuel(stack, CombustionGeneratorBlockEntity.fuelValue(stack)))
-                .toList();
+    public static @NonNull List<CombustionFuel> allFuels() {
+        return NerospaceCommon.requireNonNull(CombustionGeneratorBlockEntity.knownFuels().stream()
+                .map(stack -> new CombustionFuel(NerospaceCommon.requireNonNull(stack),
+                        CombustionGeneratorBlockEntity.fuelValue(stack)))
+                .toList());
     }
 
-    public CombustionFuelCategory(IGuiHelper guiHelper) {
+    public CombustionFuelCategory(@NonNull IGuiHelper guiHelper) {
         super(TYPE, Component.translatable("jei.nerospace.category.combustion"),
                 guiHelper.createDrawableItemLike(ModBlocks.COMBUSTION_GENERATOR.get()), 90, 52);
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, CombustionFuel recipe, IFocusGroup focuses) {
-        builder.addInputSlot(1, 5).setStandardSlotBackground().add(recipe.fuel());
+    public void setRecipe(@NonNull IRecipeLayoutBuilder builder, CombustionFuel recipe,
+            @NonNull IFocusGroup focuses) {
+        CombustionFuel checkedRecipe = NerospaceCommon.requireNonNull(recipe);
+        builder.addInputSlot(1, 5).setStandardSlotBackground().add(checkedRecipe.fuel());
     }
 
     @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, CombustionFuel recipe, IFocusGroup focuses) {
-        builder.addAnimatedRecipeFlame(recipe.burnTicks()).setPosition(30, 7);
+    public void createRecipeExtras(@NonNull IRecipeExtrasBuilder builder, CombustionFuel recipe,
+            @NonNull IFocusGroup focuses) {
+        CombustionFuel checkedRecipe = NerospaceCommon.requireNonNull(recipe);
+        builder.addAnimatedRecipeFlame(checkedRecipe.burnTicks()).setPosition(30, 7);
         int fePerTick = NerospaceConfig.scale(CombustionGeneratorBlockEntity.FE_PER_TICK,
                 NerospaceConfig.energyRateMultiplier());
         builder.addText(List.of(
                         Component.translatable("jei.nerospace.stat.energy_generated",
-                                String.format(Locale.ROOT, "%,d", (long) recipe.burnTicks() * fePerTick)),
+                                String.format(Locale.ROOT, "%,d", (long) checkedRecipe.burnTicks() * fePerTick)),
                         Component.translatable("jei.nerospace.stat.time",
-                                String.format(Locale.ROOT, "%.1f", recipe.burnTicks() / 20.0))),
+                                String.format(Locale.ROOT, "%.1f", checkedRecipe.burnTicks() / 20.0))),
                         getWidth(), 20)
                 .setPosition(0, 32)
                 .setTextAlignment(HorizontalAlignment.CENTER)

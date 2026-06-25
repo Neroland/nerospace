@@ -24,7 +24,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class QuarryControllerBlock extends BaseEntityBlock {
 
-    public static final MapCodec<QuarryControllerBlock> CODEC =
+    public static final @org.jspecify.annotations.NonNull MapCodec<QuarryControllerBlock> CODEC =
             simpleCodec(props -> new QuarryControllerBlock(props, MinerTier.TIER_1));
 
     private final MinerTier tier;

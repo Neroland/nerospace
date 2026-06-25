@@ -17,6 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.pipe.PipeIoMode;
@@ -52,12 +53,13 @@ public class UniversalPipeRenderer
     public void extractRenderState(UniversalPipeBlockEntity pipe, UniversalPipeRenderState state,
             float partialTick, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(pipe, state, partialTick, cameraPos, breakProgress);
-        if (pipe.getLevel() == null) {
+        Level level = pipe.getLevel();
+        if (level == null) {
             state.visibleItems = 0;
             clearStreams(state);
             return;
         }
-        float now = pipe.getLevel().getGameTime() + partialTick;
+        float now = level.getGameTime() + partialTick;
         state.time = now;
 
         // Stream layers from the buffered contents + face modes + connection blockstate.
@@ -118,7 +120,7 @@ public class UniversalPipeRenderer
             entry.spin = (now * 4.0F + i * 45.0F) % 360.0F;
 
             Minecraft.getInstance().getItemModelResolver().updateForTopItem(
-                    entry.renderState, item.stack(), ItemDisplayContext.GROUND, pipe.getLevel(), null,
+                    entry.renderState, item.stack(), ItemDisplayContext.GROUND, level, null,
                     (int) pipe.getBlockPos().asLong() + i);
         }
 
@@ -135,7 +137,7 @@ public class UniversalPipeRenderer
             entry.z = 0.5F;
             entry.spin = (now * 2.0F + i * 45.0F) % 360.0F;
             Minecraft.getInstance().getItemModelResolver().updateForTopItem(
-                    entry.renderState, stack, ItemDisplayContext.GROUND, pipe.getLevel(), null,
+                    entry.renderState, stack, ItemDisplayContext.GROUND, level, null,
                     (int) pipe.getBlockPos().asLong() + i + 31);
         }
     }
@@ -176,7 +178,7 @@ public class UniversalPipeRenderer
                 (pose, consumer) -> renderStreams(state, pose, consumer));
     }
 
-    private static void renderStreams(UniversalPipeRenderState state, PoseStack.Pose pose, VertexConsumer consumer) {
+    private static void renderStreams(UniversalPipeRenderState state, PoseStack.@org.jspecify.annotations.NonNull Pose pose, VertexConsumer consumer) {
         for (Direction dir : Direction.values()) {
             int d = dir.get3DDataValue();
             for (int l = 0; l < 3; l++) {
@@ -204,7 +206,7 @@ public class UniversalPipeRenderer
     }
 
     /** Two crossed quads centred on the point, aligned along the arm's axis (visible from all sides). */
-    private static void crossQuads(PoseStack.Pose pose, VertexConsumer consumer, Direction dir,
+    private static void crossQuads(PoseStack.@org.jspecify.annotations.NonNull Pose pose, VertexConsumer consumer, Direction dir,
             float cx, float cy, float cz, int r, int g, int b, int a) {
         float s = STREAM_HALF;
         float vx = dir.getStepX() * s * 1.8F;
@@ -222,7 +224,7 @@ public class UniversalPipeRenderer
         quad(pose, consumer, cx, cy, cz, vx, vy, vz, u2x, u2y, u2z, r, g, b, a);
     }
 
-    private static void quad(PoseStack.Pose pose, VertexConsumer consumer,
+    private static void quad(PoseStack.@org.jspecify.annotations.NonNull Pose pose, VertexConsumer consumer,
             float cx, float cy, float cz, float vx, float vy, float vz,
             float ux, float uy, float uz, int r, int g, int b, int a) {
         consumer.addVertex(pose, cx - vx - ux, cy - vy - uy, cz - vz - uz).setColor(r, g, b, a);

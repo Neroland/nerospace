@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class StationCoreBlock extends BaseEntityBlock {
 
-    public static final MapCodec<StationCoreBlock> CODEC = simpleCodec(StationCoreBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<StationCoreBlock> CODEC = simpleCodec(StationCoreBlock::new);
 
     public StationCoreBlock(Properties properties) {
         super(properties);

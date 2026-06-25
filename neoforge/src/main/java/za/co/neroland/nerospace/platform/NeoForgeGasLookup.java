@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.neoforge.NeoForgeCapabilities;
@@ -14,7 +15,8 @@ public final class NeoForgeGasLookup implements GasLookup {
 
     @Nullable
     @Override
-    public NerospaceGasStorage find(Level level, BlockPos pos, @Nullable Direction side) {
-        return level.getCapability(NeoForgeCapabilities.GAS, pos, side);
+    public NerospaceGasStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side) {
+        NerospaceGasStorage storage = level.getCapability(NeoForgeCapabilities.GAS, pos, side);
+        return storage;
     }
 }

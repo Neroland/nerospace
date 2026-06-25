@@ -17,15 +17,15 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
 public class CombustionGeneratorMenu extends AbstractContainerMenu {
 
     private static final int MACHINE_SLOTS = CombustionGeneratorBlockEntity.SIZE;
-    private final Container container;
-    private final ContainerData data;
+    private final @org.jspecify.annotations.NonNull Container container;
+    private final @org.jspecify.annotations.NonNull ContainerData data;
 
     /** Client constructor (dummy container/data; slots + data sync from the server). */
-    public CombustionGeneratorMenu(int id, Inventory playerInventory) {
+    public CombustionGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory) {
         this(id, playerInventory, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(4));
     }
 
-    public CombustionGeneratorMenu(int id, Inventory playerInventory, Container container, ContainerData data) {
+    public CombustionGeneratorMenu(int id, @org.jspecify.annotations.NonNull Inventory playerInventory, @org.jspecify.annotations.NonNull Container container, @org.jspecify.annotations.NonNull ContainerData data) {
         super(ModMenuTypes.COMBUSTION_GENERATOR.get(), id);
         checkContainerSize(container, MACHINE_SLOTS);
         this.container = container;
@@ -65,7 +65,7 @@ public class CombustionGeneratorMenu extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack result = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack stack = slot.getItem();
             result = stack.copy();
             int invStart = MACHINE_SLOTS;

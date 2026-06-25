@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 /** Gas Tank block — holds a {@link GasTankBlockEntity}; right-click empty-handed to read its contents. */
 public class GasTankBlock extends BaseEntityBlock {
 
-    public static final MapCodec<GasTankBlock> CODEC = simpleCodec(GasTankBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<GasTankBlock> CODEC = simpleCodec(GasTankBlock::new);
 
     public GasTankBlock(Properties properties) {
         super(properties);

@@ -5,6 +5,7 @@ import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -16,6 +17,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.rocket.Destinations;
@@ -26,11 +30,11 @@ import za.co.neroland.nerospace.rocket.Destinations;
  */
 public class DestinationCompassItem extends Item {
 
-    private final ResourceKey<Level> destination;
+    private final @NonNull ResourceKey<Level> destination;
 
-    public DestinationCompassItem(Properties properties, ResourceKey<Level> destination) {
-        super(properties);
-        this.destination = destination;
+    public DestinationCompassItem(Properties properties, @NonNull ResourceKey<Level> destination) {
+        super(NerospaceCommon.requireNonNull(properties));
+        this.destination = NerospaceCommon.requireNonNull(destination);
     }
 
     @Override
@@ -44,7 +48,11 @@ public class DestinationCompassItem extends Item {
     private void teleport(ServerPlayer player) {
         ServerLevel current = player.level();
         boolean returning = current.dimension().equals(this.destination);
-        ServerLevel dest = current.getServer().getLevel(returning ? Level.OVERWORLD : this.destination);
+        MinecraftServer server = current.getServer();
+        if (server == null) {
+            return;
+        }
+        ServerLevel dest = server.getLevel(NerospaceCommon.requireNonNull(returning ? Level.OVERWORLD : this.destination));
         if (dest == null) {
             return;
         }
@@ -70,7 +78,7 @@ public class DestinationCompassItem extends Item {
             y = dest.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockX, blockZ) + 1.0D;
         }
 
-        player.teleportTo(dest, x, y, z, Set.of(), player.getYRot(), player.getXRot(), true);
+        player.teleportTo(dest, x, y, z, NerospaceCommon.requireNonNull(Set.of()), player.getYRot(), player.getXRot(), true);
         player.sendSystemMessage(returning
                 ? Component.translatable("item.nerospace.destination_compass.return")
                 : Component.translatable("item.nerospace.destination_compass.travel",

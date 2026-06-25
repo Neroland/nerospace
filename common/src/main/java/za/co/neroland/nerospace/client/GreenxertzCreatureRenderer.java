@@ -9,6 +9,10 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
+
 /**
  * Shared renderer for the Greenxertz/Cindara creatures. As of Phase 10 each creature has its OWN
  * model geometry (a distinct {@link EntityModel} passed in — tall stalker, low six-legged crawler,
@@ -17,24 +21,24 @@ import net.minecraft.world.entity.Mob;
  */
 public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRenderState, EntityModel<LivingEntityRenderState>> {
 
-    private final Identifier texture;
+    private final @NonNull Identifier texture;
     private final float scaleX;
     private final float scaleY;
     private final float scaleZ;
 
     public GreenxertzCreatureRenderer(EntityRendererProvider.Context context,
-                                      EntityModel<LivingEntityRenderState> model, Identifier texture,
+                                      EntityModel<LivingEntityRenderState> model, @NonNull Identifier texture,
                                       float scaleX, float scaleY, float scaleZ, float shadow) {
         this(context, model, texture, scaleX, scaleY, scaleZ, shadow, null);
     }
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public GreenxertzCreatureRenderer(EntityRendererProvider.Context context,
-                                      EntityModel<LivingEntityRenderState> model, Identifier texture,
+                                      EntityModel<LivingEntityRenderState> model, @NonNull Identifier texture,
                                       float scaleX, float scaleY, float scaleZ, float shadow,
                                       Identifier glowTexture) {
         super(context, model, shadow);
-        this.texture = texture;
+        this.texture = NerospaceCommon.requireNonNull(texture);
         this.scaleX = scaleX;
         this.scaleY = scaleY;
         this.scaleZ = scaleZ;
@@ -54,7 +58,7 @@ public class GreenxertzCreatureRenderer extends MobRenderer<Mob, LivingEntityRen
     }
 
     @Override
-    public Identifier getTextureLocation(LivingEntityRenderState state) {
+    public @NonNull Identifier getTextureLocation(LivingEntityRenderState state) {
         return this.texture;
     }
 }

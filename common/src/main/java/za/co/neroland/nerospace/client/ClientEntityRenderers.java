@@ -5,6 +5,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
+import org.jspecify.annotations.NonNull;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModEntities;
 
@@ -56,12 +58,12 @@ public final class ClientEntityRenderers {
         sink.register(ModEntities.FALLING_METEOR.get(), FallingMeteorRenderer::new);
     }
 
-    private static Identifier tex(String name) {
-        return Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/entity/" + name + ".png");
+    private static @NonNull Identifier tex(@NonNull String name) {
+        return NerospaceCommon.id("textures/entity/" + name + ".png");
     }
 
-    private static Identifier glow(String name) {
-        return Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/entity/" + name + "_glow.png");
+    private static @NonNull Identifier glow(@NonNull String name) {
+        return NerospaceCommon.id("textures/entity/" + name + "_glow.png");
     }
 
     private ClientEntityRenderers() {

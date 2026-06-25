@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.neoforge.NeoForgeCapabilities;
@@ -14,7 +15,8 @@ public final class NeoForgeFluidLookup implements FluidLookup {
 
     @Nullable
     @Override
-    public NerospaceFluidStorage find(Level level, BlockPos pos, @Nullable Direction side) {
-        return level.getCapability(NeoForgeCapabilities.FLUID, pos, side);
+    public NerospaceFluidStorage find(@NonNull Level level, @NonNull BlockPos pos, @Nullable Direction side) {
+        NerospaceFluidStorage storage = level.getCapability(NeoForgeCapabilities.FLUID, pos, side);
+        return storage;
     }
 }

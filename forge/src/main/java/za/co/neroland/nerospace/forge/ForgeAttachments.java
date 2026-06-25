@@ -29,10 +29,10 @@ public final class ForgeAttachments {
     public static final Capability<ForgeChunkDataCapability> CHUNK_DATA =
             CapabilityManager.get(new CapabilityToken<>() {});
 
-    private static final Identifier PLAYER_DATA_ID =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "player_data");
-    private static final Identifier CHUNK_DATA_ID =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "chunk_data");
+    private static final @org.jspecify.annotations.NonNull Identifier PLAYER_DATA_ID =
+            NerospaceCommon.id("player_data");
+    private static final @org.jspecify.annotations.NonNull Identifier CHUNK_DATA_ID =
+            NerospaceCommon.id("chunk_data");
 
     private ForgeAttachments() {
     }

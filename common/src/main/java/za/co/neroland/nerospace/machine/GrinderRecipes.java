@@ -6,6 +6,9 @@ import java.util.List;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import org.jspecify.annotations.NonNull;
+
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /** In-code grinding recipes (ores/raw -> 2 dust; ingot -> 1 dust). Isolated for a later datapack swap. */
@@ -15,24 +18,24 @@ public final class GrinderRecipes {
     }
 
     /** One input → output pairing, for display/integration (JEI). */
-    public record Grinding(ItemStack input, ItemStack output) {
+    public record Grinding(@NonNull ItemStack input, @NonNull ItemStack output) {
     }
 
     /** @return every grinding pairing, derived through {@link #getResult} so the display can't drift. */
-    public static List<Grinding> all() {
+    public static @NonNull List<Grinding> all() {
         List<Grinding> recipes = new ArrayList<>();
         for (Item item : List.of(ModItems.NEROSIUM_ORE_ITEM.get(), ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get(),
                 ModItems.RAW_NEROSIUM.get(), ModItems.NEROSIUM_INGOT.get())) {
-            ItemStack input = new ItemStack(item);
+            ItemStack input = new ItemStack(NerospaceCommon.requireNonNull(item));
             ItemStack output = getResult(input);
             if (!output.isEmpty()) {
                 recipes.add(new Grinding(input, output));
             }
         }
-        return List.copyOf(recipes);
+        return NerospaceCommon.requireNonNull(List.copyOf(recipes));
     }
 
-    public static ItemStack getResult(ItemStack input) {
+    public static @NonNull ItemStack getResult(@NonNull ItemStack input) {
         if (input.isEmpty()) {
             return ItemStack.EMPTY;
         }

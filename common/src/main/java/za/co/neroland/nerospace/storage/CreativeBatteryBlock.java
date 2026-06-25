@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 /** Creative Battery block — holds a {@link CreativeBatteryBlockEntity}. */
 public class CreativeBatteryBlock extends BaseEntityBlock {
 
-    public static final MapCodec<CreativeBatteryBlock> CODEC = simpleCodec(CreativeBatteryBlock::new);
+    public static final @org.jspecify.annotations.NonNull MapCodec<CreativeBatteryBlock> CODEC = simpleCodec(CreativeBatteryBlock::new);
 
     public CreativeBatteryBlock(Properties properties) {
         super(properties);
