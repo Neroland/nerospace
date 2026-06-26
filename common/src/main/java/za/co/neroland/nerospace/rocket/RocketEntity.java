@@ -568,6 +568,16 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
     }
 
+    /** Lands a fresh rocket of {@code tier} on the destination pad carrying {@code fuel} — pad-to-pad travel. */
+    private static void landRocketOn(ServerLevel level, BlockPos pad, RocketTier tier, int fuel) {
+        RocketEntity landed = new RocketEntity(level, pad.getX() + 0.5D,
+                pad.getY() + RocketLaunchPadBlock.SURFACE_HEIGHT, pad.getZ() + 0.5D, tier);
+        if (fuel > 0) {
+            landed.addFuel(fuel);
+        }
+        level.addFreshEntity(landed);
+    }
+
     private void spawnLaunchParticles() {
         double bx = this.getX();
         double by = this.getY();
@@ -618,9 +628,31 @@ public class RocketEntity extends Entity implements MenuProvider {
                             : Component.translatable("entity.nerospace.rocket.arrived");
                 }
 
-                ReturnSitePlacement.Arrival arrival =
-                        ReturnSitePlacement.place(destination, targetKey, preferred, getTier(), carriedFuel);
-                player.teleportTo(destination, arrival.x(), arrival.y(), arrival.z(),
+                // Pad-to-pad travel: land on the nearest registered pad in the destination dimension
+                // (for the Orbital Station this is the pad you built near your Station Core — wherever you
+                // moved it). The rocket lands with you, fuelled with the remainder, ready to fly onward.
+                PadRegistry.PadNode pad = PadRegistry.get(server).nearest(targetKey, preferred);
+                double ax;
+                double ay;
+                double az;
+                if (pad != null) {
+                    BlockPos p = pad.pos();
+                    destination.getChunk(p.getX() >> 4, p.getZ() >> 4);
+                    landRocketOn(destination, p, getTier(), carriedFuel);
+                    ax = p.getX() + 0.5D;
+                    ay = p.getY() + 1.0D;
+                    az = p.getZ() + 0.5D;
+                    arrivalMessage = Component.translatable("entity.nerospace.rocket.pad_arrived", pad.name());
+                } else {
+                    // No registered pad there yet — fall back to an auto-built return site (Landing Pod /
+                    // Docking Port) so a first trip to a fresh world never strands the player.
+                    ReturnSitePlacement.Arrival arrival =
+                            ReturnSitePlacement.place(destination, targetKey, preferred, getTier(), carriedFuel);
+                    ax = arrival.x();
+                    ay = arrival.y();
+                    az = arrival.z();
+                }
+                player.teleportTo(destination, ax, ay, az,
                         Set.of(), player.getYRot(), player.getXRot(), true);
                 player.sendSystemMessage(arrivalMessage);
                 // Life support: dump the rocket's remaining oxygen into the rider as a slow-draining
