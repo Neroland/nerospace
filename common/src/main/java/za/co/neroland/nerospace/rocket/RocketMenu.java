@@ -43,8 +43,8 @@ public class RocketMenu extends AbstractContainerMenu {
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
 
-    private static final int FUEL_SLOT_X = 148;
-    private static final int FUEL_SLOT_Y = 17;
+    private static final int FUEL_SLOT_X = 186;
+    private static final int FUEL_SLOT_Y = 30;
 
     private final ContainerData data;
     private final Container fuelContainer;
@@ -65,7 +65,7 @@ public class RocketMenu extends AbstractContainerMenu {
         this.fuelContainer = rocket != null ? rocket.getFuelInput() : new SimpleContainer(1);
 
         this.addSlot(new FuelSlot(this.fuelContainer, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
-        this.addStandardInventorySlots(playerInventory, 8, 84);
+        this.addStandardInventorySlots(playerInventory, 26, 138);
         this.addDataSlots(data);
     }
 
@@ -76,7 +76,12 @@ public class RocketMenu extends AbstractContainerMenu {
             return false;
         }
         if (id == BUTTON_LAUNCH) {
-            current.startLaunch();
+            // Pressing Launch is what boards the player; if the ascent starts, close the console so they
+            // watch the lift-off from inside the rocket.
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                    && current.boardAndLaunch(serverPlayer)) {
+                serverPlayer.closeContainer();
+            }
             return true;
         }
         if (id == BUTTON_CYCLE_DEST) {

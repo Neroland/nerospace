@@ -37,10 +37,19 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
 
     @Override
     public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
-        extractor.blit(RenderPipelines.GUI_TEXTURED, this.background, this.leftPos, this.topPos,
-                0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
+        drawPanel(extractor);
         super.extractContents(extractor, mouseX, mouseY, partialTick);
         extractForeground(extractor);
+    }
+
+    /**
+     * Draws the screen's backing panel. Default blits the {@code background} PNG (top-left
+     * {@code imageWidth x imageHeight} of a 256x256 sheet); subclasses that want a fully procedural hull
+     * (no texture asset) override this and paint with {@code fill}s.
+     */
+    protected void drawPanel(GuiGraphicsExtractor extractor) {
+        extractor.blit(RenderPipelines.GUI_TEXTURED, this.background, this.leftPos, this.topPos,
+                0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
     }
 
     /** Subclass hook: draw gauges + readouts on top of the panel (absolute coords via leftPos/topPos). */

@@ -122,7 +122,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 0 -> getFuel();
                 case 1 -> getTier().fuelCapacity();
                 case 2 -> getTier().ordinal();
-                case 3 -> canLaunch() ? 1 : 0;
+                case 3 -> isLaunchReady() ? 1 : 0;
                 case 4 -> getDestinationIndex();
                 case 5 -> getStationSlot();
                 case 6 -> destinationMask();
@@ -376,13 +376,37 @@ public class RocketEntity extends Entity implements MenuProvider {
         return amount - filled;
     }
 
-    /** Whether a launch could be started right now (fuelled, has a rider, and a destination selected). */
-    public boolean canLaunch() {
+    /**
+     * Whether the rocket is ready to fly — fuelled, a destination selected, and on a valid pad —
+     * independent of whether anyone is aboard yet. Drives the UI Launch button (the player boards by
+     * pressing it, so the button must light up before they enter).
+     */
+    public boolean isLaunchReady() {
         return !isLaunching()
                 && selectedDestination() != null
                 && getFuel() >= requiredFuelForLaunch()
-                && this.getFirstPassenger() instanceof Player
                 && isOnValidPad();
+    }
+
+    /** Whether a launch could be started right now (launch-ready AND a player is aboard). */
+    public boolean canLaunch() {
+        return isLaunchReady() && this.getFirstPassenger() instanceof Player;
+    }
+
+    /**
+     * Boards {@code player} (if the rocket is empty) and begins the launch — the UI Launch button calls
+     * this so pressing Launch is what puts the player in the rocket. Server-side.
+     * @return {@code true} if the ascent actually started.
+     */
+    public boolean boardAndLaunch(ServerPlayer player) {
+        if (level().isClientSide() || isLaunching()) {
+            return false;
+        }
+        if (this.getFirstPassenger() == null) {
+            player.startRiding(this);
+        }
+        startLaunch();
+        return isLaunching();
     }
 
     private int requiredFuelForLaunch() {
@@ -646,17 +670,13 @@ public class RocketEntity extends Entity implements MenuProvider {
             return InteractionResult.SUCCESS;
         }
 
-        if (!level().isClientSide()) {
-            if (this.getFirstPassenger() == null) {
-                player.startRiding(this);
-            }
-            if (player instanceof ServerPlayer serverPlayer) {
-                // Push the founded-station names so the in-rocket "Dock:" cycler can label them.
-                za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
-                        za.co.neroland.nerospace.network.StationSyncPayload.of(
-                                StationRegistry.get(serverPlayer.level().getServer())));
-                serverPlayer.openMenu(this);
-            }
+        if (!level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            // Open the flight console WITHOUT boarding — the player only enters the rocket when they press
+            // Launch (RocketMenu.boardAndLaunch). Push the founded-station names for the dock cycler first.
+            za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
+                    za.co.neroland.nerospace.network.StationSyncPayload.of(
+                            StationRegistry.get(serverPlayer.level().getServer())));
+            serverPlayer.openMenu(this);
         }
         return InteractionResult.SUCCESS;
     }
