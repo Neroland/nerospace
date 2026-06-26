@@ -27,10 +27,10 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     private static final int POWER = 0xFFF5C542;
 
     private static final int W = 176;
-    private static final int H = 200;
+    private static final int H = 206;
     // Material slots (must match LaunchControllerMenu).
     private static final int[] SLOT_X = {44, 70, 96};
-    private static final int SLOT_Y = 40;
+    private static final int SLOT_Y = 44;
 
     private final List<SpaceButton> tierButtons = new ArrayList<>();
     private SpaceButton modeButton;
@@ -59,11 +59,11 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         this.modeButton = new SpaceButton(this.leftPos + W - 52, this.topPos + 3, 48, 11,
                 Component.empty(), POWER, btn -> sendButton(LaunchControllerMenu.BUTTON_TOGGLE_MODE));
         this.addRenderableWidget(this.modeButton);
-        this.previewButton = new SpaceButton(this.leftPos + 8, this.topPos + 92, W - 16, 12,
+        this.previewButton = new SpaceButton(this.leftPos + 8, this.topPos + 98, W - 16, 12,
                 Component.translatable("gui.nerospace.launch_controller.preview"), O2,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_TOGGLE_HOLOGRAM));
         this.addRenderableWidget(this.previewButton);
-        this.buildButton = new SpaceButton(this.leftPos + 8, this.topPos + 104, W - 16, 12,
+        this.buildButton = new SpaceButton(this.leftPos + 8, this.topPos + 112, W - 16, 12,
                 Component.translatable("gui.nerospace.launch_controller.build"), ACCENT,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_BUILD));
         this.addRenderableWidget(this.buildButton);
@@ -144,12 +144,12 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         // Resource hub levels (fed by pipes/cables → pumped into the docked rocket) — full-width bars.
         int gx = 46;
         int gw = W - gx - 8;
-        label(g, Component.literal("Fuel"), 8, 67, 0xFFFFC9B0);
-        hGauge(g, gx, 67, gw, 5, this.menu.fuelFrac(), FUEL);
-        label(g, Component.literal("O2"), 8, 76, 0xFFBFEFFF);
-        hGauge(g, gx, 76, gw, 5, this.menu.oxygenFrac(), O2);
-        label(g, Component.literal("Power"), 8, 85, 0xFFF6DC8A);
-        hGauge(g, gx, 85, gw, 5, this.menu.powerFrac(), POWER);
+        label(g, Component.literal("Fuel"), 8, 73, 0xFFFFC9B0);
+        hGauge(g, gx, 73, gw, 5, this.menu.fuelFrac(), FUEL);
+        label(g, Component.literal("O2"), 8, 81, 0xFFBFEFFF);
+        hGauge(g, gx, 81, gw, 5, this.menu.oxygenFrac(), O2);
+        label(g, Component.literal("Power"), 8, 89, 0xFFF6DC8A);
+        hGauge(g, gx, 89, gw, 5, this.menu.powerFrac(), POWER);
     }
 
     private void drawLaunchMode(GuiGraphicsExtractor g, boolean rocket) {

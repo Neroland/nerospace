@@ -14,19 +14,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerospace.progression.StarGuideGrants;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.rocket.StationCoreBlockEntity;
 import za.co.neroland.nerospace.rocket.StationRegistry;
+import za.co.neroland.nerospace.rocket.StationStructure;
 
 /**
  * The Station Charter — founds a player station. Right-click to allocate the next station slot in the
- * {@code nerospace:station} void dimension, lay a 7×7 landing pad, anchor a bound {@link
- * StationCoreBlockEntity}, and travel there. Rename the charter in an anvil to name the station;
- * breaking the Station Core unregisters it and pops the charter back (re-foundable elsewhere).
+ * {@code nerospace:station} void dimension, build an enclosed station room (7×7 deck, station-wall
+ * pillars, glass window bands, lit ceiling), anchor a bound {@link StationCoreBlockEntity}, and travel
+ * there. Rename the charter in an anvil to name the station; breaking the Station Core unregisters it
+ * and pops the charter back (re-foundable elsewhere).
  *
  * <p>Cross-loader note: the standalone mod founds via the rocket's FOUND launch node; the multiloader
  * rocket deferred its station-selection rows, so founding is driven from the charter directly here
@@ -34,9 +35,6 @@ import za.co.neroland.nerospace.rocket.StationRegistry;
  * {@code ModCriteria} the same way the terraform advancements are).</p>
  */
 public class StationCharterItem extends Item {
-
-    /** 7×7 landing pad (radius 3), matching the standalone mod's station platform. */
-    private static final int PLATFORM_RADIUS = 3;
 
     public StationCharterItem(Properties properties) {
         super(properties);
@@ -72,8 +70,7 @@ public class StationCharterItem extends Item {
         held.shrink(1);
 
         BlockPos centre = entry.center();
-        station.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
-        buildStationPlatform(station, centre);
+        StationStructure.build(station, centre);
         station.setBlockAndUpdate(centre, ModBlocks.STATION_CORE.get().defaultBlockState());
         if (station.getBlockEntity(centre) instanceof StationCoreBlockEntity core) {
             core.bindStation(entry.slot(), entry.name());
@@ -85,15 +82,5 @@ public class StationCharterItem extends Item {
         serverPlayer.sendSystemMessage(Component.translatable(
                 "item.nerospace.station_charter.founded", entry.name()));
         return InteractionResult.SUCCESS;
-    }
-
-    /** Lay a 7×7 station-floor landing pad so the arriving rider has solid ground in the void. */
-    private static void buildStationPlatform(ServerLevel level, BlockPos centre) {
-        BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
-        for (int dx = -PLATFORM_RADIUS; dx <= PLATFORM_RADIUS; dx++) {
-            for (int dz = -PLATFORM_RADIUS; dz <= PLATFORM_RADIUS; dz++) {
-                level.setBlockAndUpdate(new BlockPos(centre.getX() + dx, centre.getY(), centre.getZ() + dz), floor);
-            }
-        }
     }
 }

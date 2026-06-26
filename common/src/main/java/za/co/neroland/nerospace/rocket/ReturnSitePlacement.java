@@ -15,7 +15,6 @@ import za.co.neroland.nerospace.registry.ModDimensions;
 public final class ReturnSitePlacement {
 
     private static final int SEARCH_RADIUS = 6;
-    private static final int PLATFORM_RADIUS = 3;
 
     public record Arrival(BlockPos site, double x, double y, double z) {
     }
@@ -32,8 +31,7 @@ public final class ReturnSitePlacement {
     }
 
     private static Arrival placeStationDock(ServerLevel level, BlockPos centre, RocketTier tier, int carriedFuelMb) {
-        level.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
-        buildStationPlatform(level, centre);
+        StationStructure.build(level, centre);
         BlockPos site = findOrPlace(level, ModBlocks.DOCKING_PORT.get(), centre.above(), true);
         seed(level, site, tier, carriedFuelMb);
         return arrival(site);
@@ -138,18 +136,6 @@ public final class ReturnSitePlacement {
             for (int dz = -1; dz <= 1; dz++) {
                 BlockPos pos = new BlockPos(site.getX() + dx, y, site.getZ() + dz);
                 if (replaceable(level, pos)) {
-                    level.setBlockAndUpdate(pos, floor);
-                }
-            }
-        }
-    }
-
-    private static void buildStationPlatform(ServerLevel level, BlockPos centre) {
-        BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
-        for (int dx = -PLATFORM_RADIUS; dx <= PLATFORM_RADIUS; dx++) {
-            for (int dz = -PLATFORM_RADIUS; dz <= PLATFORM_RADIUS; dz++) {
-                BlockPos pos = new BlockPos(centre.getX() + dx, centre.getY(), centre.getZ() + dz);
-                if (level.getBlockEntity(pos) == null && !level.getBlockState(pos).is(ModBlocks.STATION_CORE.get())) {
                     level.setBlockAndUpdate(pos, floor);
                 }
             }
