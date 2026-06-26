@@ -33,5 +33,7 @@ public final class ClientBlockEntityRenderers {
         sink.register(ModBlockEntities.UNIVERSAL_PIPE.get(), context -> new UniversalPipeRenderer());
         // Quarry controller: the gantry crane + spinning drill head tracking the dig.
         sink.register(ModBlockEntities.QUARRY_CONTROLLER.get(), context -> new QuarryControllerRenderer());
+        // Launch gantry: the service tower that reclines to release a launching rocket, then swings back.
+        sink.register(ModBlockEntities.LAUNCH_GANTRY.get(), context -> new LaunchGantryRenderer());
     }
 }
