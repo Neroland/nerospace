@@ -25,9 +25,11 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
     public static final int BUTTON_BUILD = 0;
     /** Pick target tier {@code n} via button id {@code n} (1..4). */
     public static final int TIER_BASE = 0;
+    /** Toggle the holographic pad preview. */
+    public static final int BUTTON_TOGGLE_HOLOGRAM = 5;
 
     private static final int SLOTS = 3;
-    private static final int DATA_COUNT = 5;
+    private static final int DATA_COUNT = 6;
 
     private final Container container;
     private final ContainerData data;
@@ -73,6 +75,10 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
             current.build(player);
             return true;
         }
+        if (id == BUTTON_TOGGLE_HOLOGRAM) {
+            current.toggleHologram();
+            return true;
+        }
         if (id >= 1 && id <= 4) {
             current.setTargetTier(id);
             return true;
@@ -98,6 +104,10 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
 
     public boolean canBuild() {
         return this.data.get(4) != 0;
+    }
+
+    public boolean isHologram() {
+        return this.data.get(5) != 0;
     }
 
     @Override

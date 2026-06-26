@@ -21,7 +21,6 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     private static final Identifier TEXTURE =
             Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/rocket.png");
     private static final int ACCENT = 0xFF54D46A; // build green
-    private static final int GOOD = 0xFF54D46A;
 
     private static final int W = 176;
     private static final int H = 186;
@@ -30,6 +29,7 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     private static final int SLOT_Y = 40;
 
     private final List<SpaceButton> tierButtons = new ArrayList<>();
+    private SpaceButton previewButton;
     private SpaceButton buildButton;
 
     public LaunchControllerScreen(LaunchControllerMenu menu, Inventory playerInventory, Component title) {
@@ -49,7 +49,11 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
             this.addRenderableWidget(b);
             this.tierButtons.add(b);
         }
-        this.buildButton = new SpaceButton(this.leftPos + 8, this.topPos + 74, W - 16, 16,
+        this.previewButton = new SpaceButton(this.leftPos + 8, this.topPos + 70, W - 16, 12,
+                Component.translatable("gui.nerospace.launch_controller.preview"), 0xFF3CC8E6,
+                btn -> sendButton(LaunchControllerMenu.BUTTON_TOGGLE_HOLOGRAM));
+        this.addRenderableWidget(this.previewButton);
+        this.buildButton = new SpaceButton(this.leftPos + 8, this.topPos + 84, W - 16, 15,
                 Component.translatable("gui.nerospace.launch_controller.build"), ACCENT,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_BUILD));
         this.addRenderableWidget(this.buildButton);
@@ -92,13 +96,13 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
                         this.menu.neededPads(), this.menu.neededWall(), this.menu.neededGantry()),
                 8, 60, 0xFFCFE7FF);
 
+        if (this.previewButton != null) {
+            this.previewButton.setSelected(this.menu.isHologram());
+        }
         boolean canBuild = this.menu.canBuild();
         if (this.buildButton != null) {
             this.buildButton.active = canBuild;
         }
-        label(g, Component.translatable(canBuild
-                        ? "gui.nerospace.launch_controller.ready" : "gui.nerospace.launch_controller.load"),
-                8, 94, canBuild ? GOOD : SUBTLE);
     }
 
     private void sendButton(int id) {

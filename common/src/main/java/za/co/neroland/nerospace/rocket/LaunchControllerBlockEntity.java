@@ -1,11 +1,18 @@
 package za.co.neroland.nerospace.rocket;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -44,6 +51,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     private static final int PAD_OFFSET = 3;
 
     private int targetTier = 1;
+    private boolean hologram;
     private final SimpleContainer inputs = new SimpleContainer(SLOTS);
 
     private long cacheTick = -1L;
@@ -60,6 +68,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
                 case 2 -> needed[1];
                 case 3 -> needed[2];
                 case 4 -> canBuild ? 1 : 0;
+                case 5 -> hologram ? 1 : 0;
                 default -> 0;
             };
         }
@@ -71,7 +80,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
 
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
     };
 
@@ -95,7 +104,24 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     public void setTargetTier(int tier) {
         this.targetTier = Math.max(1, Math.min(4, tier));
         this.cacheTick = -1L;
+        markChangedAndSync();
+    }
+
+    public boolean isHologram() {
+        return this.hologram;
+    }
+
+    /** Toggle the holographic pad preview (server-side, synced to the client renderer). */
+    public void toggleHologram() {
+        this.hologram = !this.hologram;
+        markChangedAndSync();
+    }
+
+    private void markChangedAndSync() {
         setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+        }
     }
 
     /** Whether an item belongs in {@code slot} (pad / wall / gantry). */
@@ -142,6 +168,31 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
             map.put(cell(facing, right, PAD_OFFSET + 3, 0), ModBlocks.LAUNCH_GANTRY.get());
         }
         return map;
+    }
+
+    /**
+     * Ghost cells for the holographic preview: each still-missing target position, as an offset from the
+     * controller ({@code [dx, dy, dz, argb]}) coloured by block type. Empty when the hologram is off.
+     * Client-safe (reads the synced block states around the controller).
+     */
+    public List<int[]> previewCells() {
+        if (!this.hologram || this.level == null) {
+            return List.of();
+        }
+        List<int[]> cells = new ArrayList<>();
+        BlockPos base = getBlockPos();
+        for (Map.Entry<BlockPos, Block> entry : targets(this.targetTier).entrySet()) {
+            BlockState current = this.level.getBlockState(entry.getKey());
+            if (current.is(entry.getValue())) {
+                continue; // already placed — no ghost needed
+            }
+            Block block = entry.getValue();
+            int color = block == ModBlocks.STATION_WALL.get() ? 0xFF3CC8E6
+                    : (block == ModBlocks.LAUNCH_GANTRY.get() ? 0xFFE0506A : 0xFF54D46A);
+            BlockPos rel = entry.getKey().subtract(base);
+            cells.add(new int[] {rel.getX(), rel.getY(), rel.getZ(), color});
+        }
+        return cells;
     }
 
     private int slotFor(Block block) {
@@ -212,7 +263,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
             placed++;
         }
         this.cacheTick = -1L;
-        setChanged();
+        markChangedAndSync();
         if (placed > 0) {
             player.sendSystemMessage(Component.translatable("block.nerospace.launch_controller.built", placed, this.targetTier));
         } else {
@@ -239,6 +290,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putInt("TargetTier", this.targetTier);
+        output.putBoolean("Hologram", this.hologram);
         output.store("Pad", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_PAD));
         output.store("Wall", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_WALL));
         output.store("Gantry", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_GANTRY));
@@ -248,8 +300,19 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.targetTier = Math.max(1, Math.min(4, input.getIntOr("TargetTier", 1)));
+        this.hologram = input.getBooleanOr("Hologram", false);
         this.inputs.setItem(SLOT_PAD, input.read("Pad", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.inputs.setItem(SLOT_WALL, input.read("Wall", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.inputs.setItem(SLOT_GANTRY, input.read("Gantry", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
     }
 }

@@ -56,6 +56,7 @@
   "block.nerospace.launch_controller.built": "Built %s block(s) — Tier %s launch pad",
   "block.nerospace.launch_controller.nothing": "Nothing to place — the pad is already formed for this tier, or you're out of materials",
   "gui.nerospace.launch_controller.build": "Build Pad",
+  "gui.nerospace.launch_controller.preview": "Toggle Hologram",
   "gui.nerospace.launch_controller.pad": "Pad",
   "gui.nerospace.launch_controller.wall": "Wall",
   "gui.nerospace.launch_controller.gantry": "Gantry",
