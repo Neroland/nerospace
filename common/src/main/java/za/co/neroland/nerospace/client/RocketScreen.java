@@ -35,6 +35,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private static final int ACCENT = 0xFFE0506A; // rocket red
     private static final int FUEL = 0xFFF0703C;   // fuel orange-red
     private static final int O2 = 0xFF3CC8E6;     // oxygen cyan
+    private static final int POWER = 0xFFF5C542;  // power amber
     private static final int GOOD = 0xFF54D46A;   // ready green
 
     private static final int W = 212;
@@ -141,19 +142,18 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
         drawViewport(g, now);
 
-        // Fuel.
+        // Three compact tank gauges: fuel, oxygen (life support), and power.
         int fpct = this.menu.getFuelPercent();
-        label(g, Component.translatable("gui.nerospace.rocket.fuel_label"), RX, 24, SUBTLE);
-        fluidGauge(g, RX, 34, GW, 8, fpct / 100f, FUEL);
-        label(g, Component.translatable("gui.nerospace.rocket.fuel_value",
-                fpct, this.menu.getFuel(), this.menu.getCapacity()), RX, 46, 0xFFFFC9B0);
+        label(g, Component.translatable("gui.nerospace.rocket.fuel_line", fpct), RX, 22, 0xFFFFC9B0);
+        fluidGauge(g, RX, 31, GW, 6, fpct / 100f, FUEL);
 
-        // Oxygen (life support).
         int opct = this.menu.getOxygenPercent();
-        label(g, Component.translatable("gui.nerospace.rocket.oxygen_label"), RX, 62, SUBTLE);
-        fluidGauge(g, RX, 72, GW, 8, opct / 100f, O2);
-        label(g, Component.translatable("gui.nerospace.rocket.oxygen_value",
-                opct, this.menu.getOxygen(), this.menu.getOxygenCapacity()), RX, 84, 0xFFBFEFFF);
+        label(g, Component.translatable("gui.nerospace.rocket.oxygen_line", opct), RX, 44, 0xFFBFEFFF);
+        fluidGauge(g, RX, 53, GW, 6, opct / 100f, O2);
+
+        int ppct = this.menu.getPowerPercent();
+        label(g, Component.translatable("gui.nerospace.rocket.power_line", ppct), RX, 66, 0xFFF6DC8A);
+        segGauge(g, RX, 75, GW, 6, ppct / 100f, POWER);
 
         // Status light — report the ACTUAL blocker: an insufficient pad, an empty tank, or all-clear.
         boolean padValid = this.menu.isPadValid();
@@ -170,7 +170,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             statusKey = "gui.nerospace.rocket.pad_ready";
             statusColor = GOOD;
         }
-        label(g, Component.translatable(statusKey), RX, 100, statusColor);
+        label(g, Component.translatable(statusKey), RX, 90, statusColor);
 
         // Destination node states from the live tier mask.
         int mask = this.menu.getDestinationMask();

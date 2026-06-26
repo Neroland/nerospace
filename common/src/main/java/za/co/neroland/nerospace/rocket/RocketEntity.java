@@ -77,6 +77,9 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Onboard oxygen (life-support) store, in millibuckets — the server-authoritative value, synced for the UI. */
     private static final EntityDataAccessor<Integer> DATA_OXYGEN =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    /** Onboard power buffer, in FE — loaded by a Launch Controller, synced for the UI. */
+    private static final EntityDataAccessor<Integer> DATA_POWER =
+            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
 
     /** Ticks of ascent before the rider is transported. */
     public static final int LAUNCH_DURATION = 100;
@@ -129,6 +132,8 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 7 -> getOxygen();
                 case 8 -> getTier().oxygenCapacity();
                 case 9 -> isOnValidPad() ? 1 : 0;
+                case 10 -> getPower();
+                case 11 -> getTier().powerCapacity();
                 default -> 0;
             };
         }
@@ -140,7 +145,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 10;
+            return 12;
         }
     };
 
@@ -199,6 +204,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         builder.define(DATA_DEST, 0);
         builder.define(DATA_STATION, -1);
         builder.define(DATA_OXYGEN, 0);
+        builder.define(DATA_POWER, 0);
     }
 
     public int getFuel() {
@@ -367,6 +373,30 @@ public class RocketEntity extends Entity implements MenuProvider {
             this.entityData.set(DATA_OXYGEN, getOxygen() - removed);
         }
         return removed;
+    }
+
+    /** Current onboard power, in FE. */
+    public int getPower() {
+        return this.entityData.get(DATA_POWER);
+    }
+
+    /** Current power as a 0–100 percentage of the tier capacity (for the UI readout). */
+    public int getPowerPercent() {
+        int capacity = getTier().powerCapacity();
+        return capacity == 0 ? 0 : Math.min(100, getPower() * 100 / capacity);
+    }
+
+    /** Fills the onboard power buffer (server-side), capped at the tier capacity. @return FE not accepted. */
+    public int addPower(int amount) {
+        if (level().isClientSide() || amount <= 0) {
+            return amount;
+        }
+        int room = Math.max(0, getTier().powerCapacity() - getPower());
+        int fill = Math.min(amount, room);
+        if (fill > 0) {
+            this.entityData.set(DATA_POWER, getPower() + fill);
+        }
+        return amount - fill;
     }
 
     /** @return millibuckets of fuel that could not be accepted (overflow). Caps at the tier capacity. */
@@ -782,6 +812,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 Destinations.sanitizeIndex(getTier(), level().dimension(), destination));
         this.entityData.set(DATA_STATION, input.getIntOr("StationSlot", -1));
         this.entityData.set(DATA_OXYGEN, input.getIntOr("Oxygen", 0));
+        this.entityData.set(DATA_POWER, input.getIntOr("Power", 0));
         Fluid fluid = BuiltInRegistries.FLUID.getValue(
                 Identifier.parse(input.getStringOr("FuelFluid", "minecraft:empty")));
         this.fuelTank.setRaw(fluid, input.getIntOr("FuelAmount", 0));
@@ -798,6 +829,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.putBoolean("GlobalDestination", true);
         output.putInt("StationSlot", getStationSlot());
         output.putInt("Oxygen", getOxygen());
+        output.putInt("Power", getPower());
         output.putString("FuelFluid", BuiltInRegistries.FLUID.getKey(this.fuelTank.getRawFluid()).toString());
         output.putInt("FuelAmount", this.fuelTank.getRawAmount());
         output.store("FuelInput", ItemStack.OPTIONAL_CODEC, this.fuelInput.getItem(0));

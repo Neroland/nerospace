@@ -32,11 +32,11 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  */
 public enum RocketTier {
 
-    TIER_1(1, 3_000, 1_000, 2_000, List.of(ModDimensions.STATION_LEVEL)),
-    TIER_2(2, 6_000, 2_000, 4_000, List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL)),
-    TIER_3(3, 12_000, 4_000, 8_000, List.of(
+    TIER_1(1, 3_000, 1_000, 2_000, 4_000, List.of(ModDimensions.STATION_LEVEL)),
+    TIER_2(2, 6_000, 2_000, 4_000, 8_000, List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL)),
+    TIER_3(3, 12_000, 4_000, 8_000, 16_000, List.of(
             ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL)),
-    TIER_4(4, 24_000, 8_000, 16_000, List.of(
+    TIER_4(4, 24_000, 8_000, 16_000, 30_000, List.of(
             ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
             ModDimensions.GLACIRA_LEVEL));
 
@@ -44,14 +44,16 @@ public enum RocketTier {
     private final int fuelCapacity;
     private final int fuelPerLaunch;
     private final int oxygenCapacity;
+    private final int powerCapacity;
     private final List<ResourceKey<Level>> destinations;
 
-    RocketTier(int level, int fuelCapacity, int fuelPerLaunch, int oxygenCapacity,
+    RocketTier(int level, int fuelCapacity, int fuelPerLaunch, int oxygenCapacity, int powerCapacity,
             List<ResourceKey<Level>> destinations) {
         this.level = level;
         this.fuelCapacity = fuelCapacity;
         this.fuelPerLaunch = fuelPerLaunch;
         this.oxygenCapacity = oxygenCapacity;
+        this.powerCapacity = powerCapacity;
         this.destinations = destinations;
     }
 
@@ -72,6 +74,11 @@ public enum RocketTier {
      */
     public int oxygenCapacity() {
         return this.oxygenCapacity;
+    }
+
+    /** Onboard power buffer capacity, in FE — loaded by a Launch Controller and carried for the trip. */
+    public int powerCapacity() {
+        return this.powerCapacity;
     }
 
     /** Fuel consumed by a single launch, in millibuckets (config-scaled, clamped to the tank so a launch is always possible). */

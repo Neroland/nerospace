@@ -186,6 +186,11 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> be.getGas(),
                 ModBlockEntities.OXYGEN_GENERATOR.get());
 
+        // Launch Controller resource hub: fuel + oxygen + power inputs (pumped into the docked rocket).
+        FLUID.registerForBlockEntity((be, direction) -> be.getTank(), ModBlockEntities.LAUNCH_CONTROLLER.get());
+        GAS.registerForBlockEntity((be, direction) -> be.getGas(), ModBlockEntities.LAUNCH_CONTROLLER.get());
+        ENERGY.registerForBlockEntity((be, direction) -> be.getEnergy(), ModBlockEntities.LAUNCH_CONTROLLER.get());
+
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.SOLAR_PANEL.get());

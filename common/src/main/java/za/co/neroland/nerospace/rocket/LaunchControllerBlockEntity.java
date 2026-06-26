@@ -21,15 +21,27 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.energy.EnergyBuffer;
+import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerospace.fluid.FluidTank;
+import za.co.neroland.nerospace.fluid.ModFluids;
+import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
+import za.co.neroland.nerospace.gas.GasResource;
+import za.co.neroland.nerospace.gas.GasTank;
+import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.menu.LaunchControllerMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
@@ -50,9 +62,22 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     /** How far ahead of the controller the pad centre sits (clears the wall ring off the controller). */
     private static final int PAD_OFFSET = 3;
 
+    /** Tank capacities + per-tick transfer rates into the docked rocket. */
+    private static final int FUEL_CAP = 16_000;
+    private static final int OXY_CAP = 8_000;
+    private static final int POWER_CAP = 20_000;
+    private static final int FUEL_RATE = 80;
+    private static final int OXY_RATE = 40;
+    private static final int POWER_RATE = 200;
+
     private int targetTier = 1;
     private boolean hologram;
     private final SimpleContainer inputs = new SimpleContainer(SLOTS);
+
+    /** Resource hub: fuel + oxygen + power, fed by pipes/cables and pumped into the rocket on the pad. */
+    private final FluidTank fuelTank = new FluidTank(FUEL_CAP, this::setChanged);
+    private final GasTank oxygenTank = new GasTank(OXY_CAP, this::setChanged);
+    private final EnergyBuffer energy = new EnergyBuffer(POWER_CAP, 1_000, 1_000, this::setChanged);
 
     private long cacheTick = -1L;
     private final int[] needed = new int[3]; // [pad, wall, gantry]
@@ -69,6 +94,12 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
                 case 3 -> needed[2];
                 case 4 -> canBuild ? 1 : 0;
                 case 5 -> hologram ? 1 : 0;
+                case 6 -> (int) fuelTank.getAmount();
+                case 7 -> FUEL_CAP;
+                case 8 -> (int) oxygenTank.getAmount();
+                case 9 -> OXY_CAP;
+                case 10 -> energy.getRaw();
+                case 11 -> POWER_CAP;
                 default -> 0;
             };
         }
@@ -80,7 +111,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
 
         @Override
         public int getCount() {
-            return 6;
+            return 12;
         }
     };
 
@@ -271,6 +302,53 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
         }
     }
 
+    // --- Resource hub (fed by pipes/cables; pumped into the docked rocket) ---
+
+    public NerospaceFluidStorage getTank() {
+        return this.fuelTank;
+    }
+
+    public NerospaceGasStorage getGas() {
+        return this.oxygenTank;
+    }
+
+    public NerospaceEnergyStorage getEnergy() {
+        return this.energy;
+    }
+
+    /** Server tick: top up the rocket docked on the pad in front with fuel, oxygen and power. */
+    public void tick(Level level, BlockPos pos, BlockState state) {
+        if (level.isClientSide()) {
+            return;
+        }
+        Direction facing = state.getValue(LaunchControllerBlock.FACING);
+        RocketEntity rocket = LaunchPadMultiblock.dockedRocket(level, pos.relative(facing, PAD_OFFSET));
+        if (rocket == null) {
+            return;
+        }
+        int fuel = (int) this.fuelTank.drain(FUEL_RATE, false);
+        if (fuel > 0) {
+            int overflow = rocket.addFuel(fuel);
+            if (overflow > 0) {
+                this.fuelTank.fill(ModFluids.ROCKET_FUEL.get(), overflow, false);
+            }
+        }
+        int oxy = (int) this.oxygenTank.drain(OXY_RATE, false);
+        if (oxy > 0) {
+            int overflow = rocket.addOxygen(oxy);
+            if (overflow > 0) {
+                this.oxygenTank.fill(GasResource.OXYGEN, overflow, false);
+            }
+        }
+        int power = (int) this.energy.extract(POWER_RATE, true);
+        if (power > 0) {
+            int used = power - rocket.addPower(power);
+            if (used > 0) {
+                this.energy.extract(used, false);
+            }
+        }
+    }
+
     // --- MenuProvider --------------------------------------------------------
 
     @Override
@@ -294,6 +372,11 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
         output.store("Pad", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_PAD));
         output.store("Wall", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_WALL));
         output.store("Gantry", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_GANTRY));
+        output.putString("FuelFluid", BuiltInRegistries.FLUID.getKey(this.fuelTank.getRawFluid()).toString());
+        output.putInt("FuelAmount", this.fuelTank.getRawAmount());
+        output.putString("Gas", this.oxygenTank.getRawGas().getSerializedName());
+        output.putInt("GasAmount", this.oxygenTank.getRawAmount());
+        output.putInt("Power", this.energy.getRaw());
     }
 
     @Override
@@ -304,6 +387,10 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
         this.inputs.setItem(SLOT_PAD, input.read("Pad", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.inputs.setItem(SLOT_WALL, input.read("Wall", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.inputs.setItem(SLOT_GANTRY, input.read("Gantry", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("FuelFluid", "minecraft:empty")));
+        this.fuelTank.setRaw(fluid, input.getIntOr("FuelAmount", 0));
+        this.oxygenTank.setRaw(GasResource.byName(input.getStringOr("Gas", "empty")), input.getIntOr("GasAmount", 0));
+        this.energy.setRaw(input.getIntOr("Power", 0));
     }
 
     @Override

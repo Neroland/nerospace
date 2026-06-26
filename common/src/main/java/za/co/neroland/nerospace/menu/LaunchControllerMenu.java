@@ -29,7 +29,7 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
     public static final int BUTTON_TOGGLE_HOLOGRAM = 5;
 
     private static final int SLOTS = 3;
-    private static final int DATA_COUNT = 6;
+    private static final int DATA_COUNT = 12;
 
     private final Container container;
     private final ContainerData data;
@@ -108,6 +108,23 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
 
     public boolean isHologram() {
         return this.data.get(5) != 0;
+    }
+
+    public float fuelFrac() {
+        return frac(6, 7);
+    }
+
+    public float oxygenFrac() {
+        return frac(8, 9);
+    }
+
+    public float powerFrac() {
+        return frac(10, 11);
+    }
+
+    private float frac(int amount, int cap) {
+        int c = this.data.get(cap);
+        return c <= 0 ? 0f : Math.min(1f, this.data.get(amount) / (float) c);
     }
 
     @Override

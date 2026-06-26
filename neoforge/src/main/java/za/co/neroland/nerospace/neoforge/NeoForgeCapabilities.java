@@ -139,6 +139,11 @@ public final class NeoForgeCapabilities {
                 ModBlockEntities.OXYGEN_GENERATOR.get(),
                 (be, side) -> be.getGas());
 
+        // Launch Controller resource hub: fuel in, oxygen in, power in (then pumped into the rocket).
+        event.registerBlockEntity(FLUID, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getTank());
+        event.registerBlockEntity(GAS, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getGas());
+        event.registerBlockEntity(ENERGY, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getEnergy());
+
         event.registerBlockEntity(
                 ENERGY,
                 ModBlockEntities.SOLAR_PANEL.get(),

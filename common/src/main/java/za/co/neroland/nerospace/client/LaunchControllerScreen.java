@@ -91,6 +91,14 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         label(g, Component.translatable("gui.nerospace.launch_controller.wall"), SLOT_X[1] - 2, SLOT_Y - 10, SUBTLE);
         label(g, Component.translatable("gui.nerospace.launch_controller.gantry"), SLOT_X[2] - 4, SLOT_Y - 10, SUBTLE);
 
+        // Onboard resource hub levels (fed by pipes/cables → pumped into the rocket).
+        label(g, Component.literal("F"), 112, 40, 0xFFFFC9B0);
+        hGauge(g, 120, 40, 48, 5, this.menu.fuelFrac(), 0xFFF0703C);
+        label(g, Component.literal("O"), 112, 48, 0xFFBFEFFF);
+        hGauge(g, 120, 48, 48, 5, this.menu.oxygenFrac(), 0xFF3CC8E6);
+        label(g, Component.literal("P"), 112, 56, 0xFFF6DC8A);
+        hGauge(g, 120, 56, 48, 5, this.menu.powerFrac(), 0xFFF5C542);
+
         // Needed readout (what the chosen tier still wants).
         label(g, Component.translatable("gui.nerospace.launch_controller.needed",
                         this.menu.neededPads(), this.menu.neededWall(), this.menu.neededGantry()),
