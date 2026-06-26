@@ -60,7 +60,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     public static final int SLOT_GANTRY = 2;
     private static final int SLOTS = 3;
     /** How far ahead of the controller the pad centre sits (clears the wall ring off the controller). */
-    private static final int PAD_OFFSET = 3;
+    private static final int PAD_OFFSET = 6;
 
     /** Tank capacities + per-tick transfer rates into the docked rocket. */
     private static final int FUEL_CAP = 16_000;
@@ -72,7 +72,18 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
 
     private int targetTier = 1;
     private boolean hologram;
+    private int mode; // 0 = pad build, 1 = launch
     private final SimpleContainer inputs = new SimpleContainer(SLOTS);
+
+    // Cached readout of the rocket docked on the pad (server-side, refreshed per tick for the launch UI).
+    private boolean rocketPresent;
+    private int rocketTier;
+    private int rocketFuelPct;
+    private int rocketO2Pct;
+    private int rocketPowerPct;
+    private int rocketDest;
+    private int rocketMask;
+    private boolean rocketLaunchable;
 
     /** Resource hub: fuel + oxygen + power, fed by pipes/cables and pumped into the rocket on the pad. */
     private final FluidTank fuelTank = new FluidTank(FUEL_CAP, this::setChanged);
@@ -100,6 +111,15 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
                 case 9 -> OXY_CAP;
                 case 10 -> energy.getRaw();
                 case 11 -> POWER_CAP;
+                case 12 -> mode;
+                case 13 -> rocketPresent ? 1 : 0;
+                case 14 -> rocketTier;
+                case 15 -> rocketFuelPct;
+                case 16 -> rocketO2Pct;
+                case 17 -> rocketPowerPct;
+                case 18 -> rocketDest;
+                case 19 -> rocketMask;
+                case 20 -> rocketLaunchable ? 1 : 0;
                 default -> 0;
             };
         }
@@ -111,7 +131,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
 
         @Override
         public int getCount() {
-            return 12;
+            return 21;
         }
     };
 
@@ -203,7 +223,8 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
 
     /**
      * Ghost cells for the holographic preview: each still-missing target position, as an offset from the
-     * controller ({@code [dx, dy, dz, argb]}) coloured by block type. Empty when the hologram is off.
+     * controller and a block TYPE ({@code [dx, dy, dz, type]} — 0 = Launch Pad, 1 = Station Wall,
+     * 2 = Launch Gantry) so the renderer can draw the real block. Empty when the hologram is off.
      * Client-safe (reads the synced block states around the controller).
      */
     public List<int[]> previewCells() {
@@ -218,10 +239,10 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
                 continue; // already placed — no ghost needed
             }
             Block block = entry.getValue();
-            int color = block == ModBlocks.STATION_WALL.get() ? 0xFF3CC8E6
-                    : (block == ModBlocks.LAUNCH_GANTRY.get() ? 0xFFE0506A : 0xFF54D46A);
+            int type = block == ModBlocks.STATION_WALL.get() ? 1
+                    : (block == ModBlocks.LAUNCH_GANTRY.get() ? 2 : 0);
             BlockPos rel = entry.getKey().subtract(base);
-            cells.add(new int[] {rel.getX(), rel.getY(), rel.getZ(), color});
+            cells.add(new int[] {rel.getX(), rel.getY(), rel.getZ(), type});
         }
         return cells;
     }
@@ -265,6 +286,58 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
                 && this.needed[1] <= this.inputs.getItem(SLOT_WALL).getCount()
                 && this.needed[2] <= this.inputs.getItem(SLOT_GANTRY).getCount()
                 && (this.needed[0] + this.needed[1] + this.needed[2]) > 0;
+
+        // Cache the docked rocket's state for the launch-mode UI.
+        RocketEntity rocket = dockedRocket();
+        this.rocketPresent = rocket != null;
+        if (rocket != null) {
+            this.rocketTier = rocket.getTier().ordinal();
+            this.rocketFuelPct = rocket.getFuelPercent();
+            this.rocketO2Pct = rocket.getOxygenPercent();
+            this.rocketPowerPct = rocket.getPowerPercent();
+            this.rocketDest = rocket.getDestinationIndex();
+            this.rocketMask = rocket.destinationMask();
+            this.rocketLaunchable = rocket.isLaunchReady();
+        } else {
+            this.rocketLaunchable = false;
+        }
+    }
+
+    /** The non-launching rocket docked on the pad this controller builds, or {@code null}. */
+    @Nullable
+    private RocketEntity dockedRocket() {
+        if (this.level == null) {
+            return null;
+        }
+        Direction facing = getBlockState().getValue(LaunchControllerBlock.FACING);
+        return LaunchPadMultiblock.dockedRocket(this.level, getBlockPos().relative(facing, PAD_OFFSET));
+    }
+
+    // --- Launch mode ---------------------------------------------------------
+
+    public int getMode() {
+        return this.mode;
+    }
+
+    /** Toggle between pad-build mode (0) and launch mode (1). */
+    public void toggleMode() {
+        this.mode = this.mode == 0 ? 1 : 0;
+        this.cacheTick = -1L;
+        setChanged();
+    }
+
+    /** Cycle the docked rocket's destination (launch mode). */
+    public void cycleRocketDestination() {
+        RocketEntity rocket = dockedRocket();
+        if (rocket != null) {
+            rocket.cycleDestination();
+        }
+    }
+
+    /** Board the player onto the docked rocket and launch it. @return true if the ascent started. */
+    public boolean launchRocket(net.minecraft.server.level.ServerPlayer player) {
+        RocketEntity rocket = dockedRocket();
+        return rocket != null && rocket.boardAndLaunch(player);
     }
 
     /** Places every still-missing block of the target formation, consuming from the slots. Server-side. */
@@ -369,6 +442,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
         super.saveAdditional(output);
         output.putInt("TargetTier", this.targetTier);
         output.putBoolean("Hologram", this.hologram);
+        output.putInt("Mode", this.mode);
         output.store("Pad", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_PAD));
         output.store("Wall", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_WALL));
         output.store("Gantry", ItemStack.OPTIONAL_CODEC, this.inputs.getItem(SLOT_GANTRY));
@@ -384,6 +458,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
         super.loadAdditional(input);
         this.targetTier = Math.max(1, Math.min(4, input.getIntOr("TargetTier", 1)));
         this.hologram = input.getBooleanOr("Hologram", false);
+        this.mode = input.getIntOr("Mode", 0) == 1 ? 1 : 0;
         this.inputs.setItem(SLOT_PAD, input.read("Pad", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.inputs.setItem(SLOT_WALL, input.read("Wall", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.inputs.setItem(SLOT_GANTRY, input.read("Gantry", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));

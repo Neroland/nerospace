@@ -12,25 +12,32 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.LaunchControllerMenu;
 
 /**
- * The Launch Controller console: pick a target pad tier, load Launch Pads / Station Wall / a Launch
- * Gantry into the three slots, and Build lays the formation out in the world. Fully procedural hull
- * (no texture), matching the rocket console styling.
+ * The Launch Controller console with two modes. <b>Build mode</b>: pick a target pad tier, load Launch
+ * Pads / Station Wall / a Launch Gantry, preview the layout as a hologram, and Build lays it out in the
+ * world. <b>Launch mode</b>: read the docked rocket's fuel/oxygen/power, pick its destination, and launch
+ * it straight from the controller. Fully procedural hull (no texture).
  */
 public class LaunchControllerScreen extends TexturedContainerScreen<LaunchControllerMenu> {
 
     private static final Identifier TEXTURE =
             Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/rocket.png");
     private static final int ACCENT = 0xFF54D46A; // build green
+    private static final int FUEL = 0xFFF0703C;
+    private static final int O2 = 0xFF3CC8E6;
+    private static final int POWER = 0xFFF5C542;
 
     private static final int W = 176;
-    private static final int H = 186;
+    private static final int H = 200;
     // Material slots (must match LaunchControllerMenu).
     private static final int[] SLOT_X = {44, 70, 96};
     private static final int SLOT_Y = 40;
 
     private final List<SpaceButton> tierButtons = new ArrayList<>();
+    private SpaceButton modeButton;
     private SpaceButton previewButton;
     private SpaceButton buildButton;
+    private SpaceButton destButton;
+    private SpaceButton launchButton;
 
     public LaunchControllerScreen(LaunchControllerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, W, H);
@@ -49,14 +56,24 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
             this.addRenderableWidget(b);
             this.tierButtons.add(b);
         }
-        this.previewButton = new SpaceButton(this.leftPos + 8, this.topPos + 70, W - 16, 12,
-                Component.translatable("gui.nerospace.launch_controller.preview"), 0xFF3CC8E6,
+        this.modeButton = new SpaceButton(this.leftPos + W - 52, this.topPos + 3, 48, 11,
+                Component.empty(), POWER, btn -> sendButton(LaunchControllerMenu.BUTTON_TOGGLE_MODE));
+        this.addRenderableWidget(this.modeButton);
+        this.previewButton = new SpaceButton(this.leftPos + 8, this.topPos + 92, W - 16, 12,
+                Component.translatable("gui.nerospace.launch_controller.preview"), O2,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_TOGGLE_HOLOGRAM));
         this.addRenderableWidget(this.previewButton);
-        this.buildButton = new SpaceButton(this.leftPos + 8, this.topPos + 84, W - 16, 15,
+        this.buildButton = new SpaceButton(this.leftPos + 8, this.topPos + 104, W - 16, 12,
                 Component.translatable("gui.nerospace.launch_controller.build"), ACCENT,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_BUILD));
         this.addRenderableWidget(this.buildButton);
+        this.destButton = new SpaceButton(this.leftPos + 8, this.topPos + 90, W - 16, 12,
+                Component.empty(), ACCENT, btn -> sendButton(LaunchControllerMenu.BUTTON_CYCLE_DEST));
+        this.addRenderableWidget(this.destButton);
+        this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + 104, W - 16, 12,
+                Component.translatable("gui.nerospace.rocket.launch"), ACCENT,
+                btn -> sendButton(LaunchControllerMenu.BUTTON_LAUNCH));
+        this.addRenderableWidget(this.launchButton);
     }
 
     @Override
@@ -67,8 +84,10 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         g.fill(l, t, l + W, t + H, 0xFF0E1724);
         g.fill(l, t, l + W, t + 16, 0xFF14283C);
         g.fill(l, t + 16, l + W, t + 17, ACCENT);
-        for (int sx : SLOT_X) {
-            slotWell(g, sx, SLOT_Y);
+        if (!this.menu.isLaunchMode()) {
+            for (int sx : SLOT_X) {
+                slotWell(g, sx, SLOT_Y);
+            }
         }
     }
 
@@ -81,36 +100,73 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
 
     @Override
     protected void extractForeground(GuiGraphicsExtractor g) {
+        boolean launch = this.menu.isLaunchMode();
+        this.modeButton.setMessage(Component.translatable(launch
+                ? "gui.nerospace.launch_controller.mode_launch"
+                : "gui.nerospace.launch_controller.mode_build"));
+        this.modeButton.setSelected(launch);
+
+        // Build-mode widgets.
         int tier = this.menu.targetTier();
         for (int i = 0; i < this.tierButtons.size(); i++) {
-            this.tierButtons.get(i).setSelected(i + 1 == tier);
+            SpaceButton b = this.tierButtons.get(i);
+            b.visible = !launch;
+            b.setSelected(i + 1 == tier);
         }
+        this.previewButton.visible = !launch;
+        this.previewButton.setSelected(this.menu.isHologram());
+        this.buildButton.visible = !launch;
+        this.buildButton.active = this.menu.canBuild();
 
-        // Slot captions.
-        label(g, Component.translatable("gui.nerospace.launch_controller.pad"), SLOT_X[0] - 2, SLOT_Y - 10, SUBTLE);
-        label(g, Component.translatable("gui.nerospace.launch_controller.wall"), SLOT_X[1] - 2, SLOT_Y - 10, SUBTLE);
-        label(g, Component.translatable("gui.nerospace.launch_controller.gantry"), SLOT_X[2] - 4, SLOT_Y - 10, SUBTLE);
+        // Launch-mode widgets.
+        boolean rocket = this.menu.rocketPresent();
+        this.destButton.visible = launch && rocket;
+        this.launchButton.visible = launch && rocket;
 
-        // Onboard resource hub levels (fed by pipes/cables → pumped into the rocket).
-        label(g, Component.literal("F"), 112, 40, 0xFFFFC9B0);
-        hGauge(g, 120, 40, 48, 5, this.menu.fuelFrac(), 0xFFF0703C);
-        label(g, Component.literal("O"), 112, 48, 0xFFBFEFFF);
-        hGauge(g, 120, 48, 48, 5, this.menu.oxygenFrac(), 0xFF3CC8E6);
-        label(g, Component.literal("P"), 112, 56, 0xFFF6DC8A);
-        hGauge(g, 120, 56, 48, 5, this.menu.powerFrac(), 0xFFF5C542);
+        if (!launch) {
+            drawBuildMode(g);
+        } else {
+            drawLaunchMode(g, rocket);
+        }
+    }
 
-        // Needed readout (what the chosen tier still wants).
+    private void drawBuildMode(GuiGraphicsExtractor g) {
+        // Material slot labels, centred above their wells.
+        label(g, Component.translatable("gui.nerospace.launch_controller.pad"), SLOT_X[0], SLOT_Y - 11, SUBTLE);
+        label(g, Component.translatable("gui.nerospace.launch_controller.wall"), SLOT_X[1], SLOT_Y - 11, SUBTLE);
+        label(g, Component.translatable("gui.nerospace.launch_controller.gantry"), SLOT_X[2] - 4, SLOT_Y - 11, SUBTLE);
+
+        // What's still needed for the selected tier.
         label(g, Component.translatable("gui.nerospace.launch_controller.needed",
                         this.menu.neededPads(), this.menu.neededWall(), this.menu.neededGantry()),
-                8, 60, 0xFFCFE7FF);
+                8, SLOT_Y + 20, 0xFFCFE7FF);
 
-        if (this.previewButton != null) {
-            this.previewButton.setSelected(this.menu.isHologram());
+        // Resource hub levels (fed by pipes/cables → pumped into the docked rocket) — full-width bars.
+        int gx = 46;
+        int gw = W - gx - 8;
+        label(g, Component.literal("Fuel"), 8, 67, 0xFFFFC9B0);
+        hGauge(g, gx, 67, gw, 5, this.menu.fuelFrac(), FUEL);
+        label(g, Component.literal("O2"), 8, 76, 0xFFBFEFFF);
+        hGauge(g, gx, 76, gw, 5, this.menu.oxygenFrac(), O2);
+        label(g, Component.literal("Power"), 8, 85, 0xFFF6DC8A);
+        hGauge(g, gx, 85, gw, 5, this.menu.powerFrac(), POWER);
+    }
+
+    private void drawLaunchMode(GuiGraphicsExtractor g, boolean rocket) {
+        if (!rocket) {
+            label(g, Component.translatable("gui.nerospace.launch_controller.no_rocket"), 8, 42, SUBTLE);
+            return;
         }
-        boolean canBuild = this.menu.canBuild();
-        if (this.buildButton != null) {
-            this.buildButton.active = canBuild;
-        }
+        label(g, Component.translatable("gui.nerospace.rocket.title", this.menu.rocketTier()), 8, 22, TITLE);
+        label(g, Component.translatable("gui.nerospace.rocket.fuel_label"), 8, 32, 0xFFFFC9B0);
+        hGauge(g, 8, 41, W - 16, 6, this.menu.rocketFuelFrac(), FUEL);
+        label(g, Component.translatable("gui.nerospace.rocket.oxygen_label"), 8, 50, 0xFFBFEFFF);
+        hGauge(g, 8, 59, W - 16, 6, this.menu.rocketOxygenFrac(), O2);
+        label(g, Component.literal("POWER"), 8, 68, 0xFFF6DC8A);
+        hGauge(g, 8, 77, W - 16, 6, this.menu.rocketPowerFrac(), POWER);
+
+        this.destButton.setMessage(Component.literal("» " + this.menu.rocketDestName()));
+        this.launchButton.active = this.menu.rocketLaunchable();
     }
 
     private void sendButton(int id) {

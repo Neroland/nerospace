@@ -27,9 +27,15 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
     public static final int TIER_BASE = 0;
     /** Toggle the holographic pad preview. */
     public static final int BUTTON_TOGGLE_HOLOGRAM = 5;
+    /** Switch between pad-build and launch modes. */
+    public static final int BUTTON_TOGGLE_MODE = 6;
+    /** Cycle the docked rocket's destination (launch mode). */
+    public static final int BUTTON_CYCLE_DEST = 7;
+    /** Launch the docked rocket (launch mode). */
+    public static final int BUTTON_LAUNCH = 8;
 
     private static final int SLOTS = 3;
-    private static final int DATA_COUNT = 12;
+    private static final int DATA_COUNT = 21;
 
     private final Container container;
     private final ContainerData data;
@@ -56,11 +62,11 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 104 + row * 18));
+                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 118 + row * 18));
             }
         }
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 162));
+            this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 176));
         }
         this.addDataSlots(data);
     }
@@ -77,6 +83,21 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
         }
         if (id == BUTTON_TOGGLE_HOLOGRAM) {
             current.toggleHologram();
+            return true;
+        }
+        if (id == BUTTON_TOGGLE_MODE) {
+            current.toggleMode();
+            return true;
+        }
+        if (id == BUTTON_CYCLE_DEST) {
+            current.cycleRocketDestination();
+            return true;
+        }
+        if (id == BUTTON_LAUNCH) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                    && current.launchRocket(serverPlayer)) {
+                serverPlayer.closeContainer(); // watch the ascent
+            }
             return true;
         }
         if (id >= 1 && id <= 4) {
@@ -125,6 +146,43 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
     private float frac(int amount, int cap) {
         int c = this.data.get(cap);
         return c <= 0 ? 0f : Math.min(1f, this.data.get(amount) / (float) c);
+    }
+
+    // --- Launch mode ---------------------------------------------------------
+
+    public boolean isLaunchMode() {
+        return this.data.get(12) == 1;
+    }
+
+    public boolean rocketPresent() {
+        return this.data.get(13) != 0;
+    }
+
+    public int rocketTier() {
+        return this.data.get(14) + 1; // ordinal → 1-based tier
+    }
+
+    public float rocketFuelFrac() {
+        return this.data.get(15) / 100f;
+    }
+
+    public float rocketOxygenFrac() {
+        return this.data.get(16) / 100f;
+    }
+
+    public float rocketPowerFrac() {
+        return this.data.get(17) / 100f;
+    }
+
+    public boolean rocketLaunchable() {
+        return this.data.get(20) != 0;
+    }
+
+    /** Display name of the docked rocket's selected destination. */
+    public String rocketDestName() {
+        net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> key =
+                za.co.neroland.nerospace.rocket.Destinations.byIndex(this.data.get(18));
+        return key == null ? "—" : za.co.neroland.nerospace.rocket.Destinations.name(key);
     }
 
     @Override

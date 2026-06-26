@@ -45,6 +45,8 @@ import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.rocket.LaunchControllerBlock;
+import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.rocket.RocketTier;
@@ -409,6 +411,32 @@ public final class NerospaceCommands {
         // field per tier (so the per-cell trackers reading as one surface is visible), plus a
         // battery → universal cable → panel hookup that lights the panel's power connector.
         buildSolarArrays(level, floor, origin.getX() - 50, origin.getZ() + 36, fy);
+
+        // LAUNCH CONTROLLER (Launch Controller slices): the glowing "computer brain" console that builds
+        // the pad from loaded blocks and previews it. Shown with materials loaded + the hologram ON (a
+        // Tier-3 ghost footprint projects in front), facing south over open floor.
+        int lcx = origin.getX() - 30;
+        int lcz = origin.getZ() - 18;
+        for (int dx = -1; dx <= 8; dx++) {
+            for (int dz = -1; dz <= 9; dz++) {
+                level.setBlockAndUpdate(new BlockPos(lcx + dx, fy, lcz + dz), floor);
+            }
+        }
+        BlockPos ctrlPos = new BlockPos(lcx + 3, fy + 1, lcz);
+        level.setBlockAndUpdate(ctrlPos, ModBlocks.LAUNCH_CONTROLLER.get().defaultBlockState()
+                .setValue(LaunchControllerBlock.FACING, Direction.SOUTH));
+        LaunchControllerBlock.assemble(level, ctrlPos, Direction.SOUTH);
+        if (level.getBlockEntity(ctrlPos) instanceof LaunchControllerBlockEntity controller) {
+            controller.getInputs().setItem(0, new ItemStack(ModBlocks.ROCKET_LAUNCH_PAD.get().asItem(), 64));
+            controller.getInputs().setItem(1, new ItemStack(ModBlocks.STATION_WALL.get().asItem(), 64));
+            controller.getInputs().setItem(2, new ItemStack(ModBlocks.LAUNCH_GANTRY.get().asItem(), 4));
+            controller.setTargetTier(3);
+            if (!controller.isHologram()) {
+                controller.toggleHologram();
+            }
+        }
+        spawnLabelStand(level, new BlockPos(lcx + 3, fy + 4, lcz),
+                Component.literal("Launch Controller — pad builder + launch hub (hologram on)"));
 
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
                 + blocks.size() + " blocks, 4 RUNNING machine clusters (grinder line, fuel refinery "
