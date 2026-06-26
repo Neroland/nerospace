@@ -120,6 +120,7 @@ public final class NeoForgeClientSetup {
         event.register(ModMenuTypes.HYDRATION_MODULE.get(), HydrationModuleScreen::new);
         event.register(ModMenuTypes.TERRAFORM_MONITOR.get(), TerraformMonitorScreen::new);
         event.register(ModMenuTypes.STAR_GUIDE.get(), StarGuideScreen::new);
+        event.register(ModMenuTypes.LAUNCH_CONTROLLER.get(), za.co.neroland.nerospace.client.LaunchControllerScreen::new);
     }
 
     /** Rocket fuel renders as itself (amber still/flow) instead of the default missing art. */

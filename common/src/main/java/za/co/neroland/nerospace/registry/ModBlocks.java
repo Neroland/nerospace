@@ -30,6 +30,7 @@ import za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlock;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.progression.StarGuideBlock;
+import za.co.neroland.nerospace.rocket.LaunchControllerBlock;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
 import za.co.neroland.nerospace.rocket.DockingPortBlock;
 import za.co.neroland.nerospace.rocket.LandingPodBlock;
@@ -295,6 +296,11 @@ public final class ModBlocks {
             key -> new LaunchGantryBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<LaunchControllerBlock> LAUNCH_CONTROLLER = BLOCKS.register("launch_controller",
+            key -> new LaunchControllerBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
 
     public static final RegistryEntry<LandingPodBlock> LANDING_POD = BLOCKS.register("landing_pod",
             key -> new LandingPodBlock(BlockBehaviour.Properties.of()

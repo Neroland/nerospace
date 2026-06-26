@@ -10,6 +10,7 @@ import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
 import za.co.neroland.nerospace.menu.FuelRefineryMenu;
 import za.co.neroland.nerospace.menu.FuelTankMenu;
 import za.co.neroland.nerospace.menu.HydrationModuleMenu;
+import za.co.neroland.nerospace.menu.LaunchControllerMenu;
 import za.co.neroland.nerospace.menu.OxygenGeneratorMenu;
 import za.co.neroland.nerospace.menu.TrashCanMenu;
 import za.co.neroland.nerospace.machine.quarry.QuarryMenu;
@@ -82,6 +83,10 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<StarGuideMenu>> STAR_GUIDE =
             MENUS.register("star_guide",
                     key -> new MenuType<>(StarGuideMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistryEntry<MenuType<LaunchControllerMenu>> LAUNCH_CONTROLLER =
+            MENUS.register("launch_controller",
+                    key -> new MenuType<>(LaunchControllerMenu::new, FeatureFlags.VANILLA_SET));
 
     private ModMenuTypes() {
     }
