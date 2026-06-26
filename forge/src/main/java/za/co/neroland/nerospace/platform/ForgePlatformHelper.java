@@ -52,6 +52,14 @@ public final class ForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
+    public List<String> getLoadedModIds() {
+        return ModList.getMods().stream()
+                .map(m -> m.getModId() + " " + m.getVersion())
+                .sorted()
+                .toList();
+    }
+
+    @Override
     public int getOxygen(Player player) {
         return player.getCapability(ForgeAttachments.PLAYER_DATA)
                 .map(ForgePlayerDataCapability::getOxygen)

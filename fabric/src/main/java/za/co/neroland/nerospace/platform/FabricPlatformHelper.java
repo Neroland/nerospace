@@ -47,6 +47,14 @@ public final class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
+    public java.util.List<String> getLoadedModIds() {
+        return FabricLoader.getInstance().getAllMods().stream()
+                .map(m -> m.getMetadata().getId() + " " + m.getMetadata().getVersion().getFriendlyString())
+                .sorted()
+                .toList();
+    }
+
+    @Override
     public int getOxygen(Player player) {
         return player.getAttachedOrCreate(FabricAttachments.OXYGEN);
     }

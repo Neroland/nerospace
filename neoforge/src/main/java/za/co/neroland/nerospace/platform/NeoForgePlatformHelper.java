@@ -51,6 +51,14 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
+    public java.util.List<String> getLoadedModIds() {
+        return ModList.get().getMods().stream()
+                .map(m -> m.getModId() + " " + m.getVersion())
+                .sorted()
+                .toList();
+    }
+
+    @Override
     public int getOxygen(Player player) {
         return player.getData(NeoForgeAttachments.OXYGEN.get());
     }

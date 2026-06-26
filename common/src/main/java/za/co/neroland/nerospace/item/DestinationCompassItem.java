@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.rocket.Destinations;
 
@@ -71,6 +72,8 @@ public class DestinationCompassItem extends Item {
         }
 
         player.teleportTo(dest, x, y, z, Set.of(), player.getYRot(), player.getXRot(), true);
+        NerospaceTelemetry.breadcrumb("travel",
+                "compass dim=" + (returning ? "overworld" : Destinations.name(this.destination)));
         player.sendSystemMessage(returning
                 ? Component.translatable("item.nerospace.destination_compass.return")
                 : Component.translatable("item.nerospace.destination_compass.travel",
