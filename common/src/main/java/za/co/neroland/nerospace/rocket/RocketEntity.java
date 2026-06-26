@@ -314,7 +314,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     public int addFuel(int amount) {
         int room = Math.max(0, getTier().fuelCapacity() - (int) this.fuelTank.getAmount());
         int toFill = Math.min(amount, room);
-        int filled = (int) this.fuelTank.fill((Fluid) ModFluids.ROCKET_FUEL.get(), toFill, false);
+        int filled = (int) this.fuelTank.fill(ModFluids.ROCKET_FUEL.get(), toFill, false);
         return amount - filled;
     }
 

@@ -19,7 +19,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
@@ -122,7 +121,7 @@ public final class ModItems {
     public static final RegistryEntry<Item> ROCKET_FUEL_CANISTER = item("rocket_fuel_canister");
     /** A real bucket of the {@code rocket_fuel} fluid; places the liquid block / fills tanks. */
     public static final RegistryEntry<BucketItem> ROCKET_FUEL_BUCKET = ITEMS.register("rocket_fuel_bucket",
-            key -> new BucketItem((Fluid) ModFluids.ROCKET_FUEL.get(), new Item.Properties().stacksTo(1).setId(key)));
+            key -> new BucketItem(ModFluids.ROCKET_FUEL.get(), new Item.Properties().stacksTo(1).setId(key)));
     public static final RegistryEntry<Item> FRAME_CASING = item("frame_casing");
     public static final RegistryEntry<Item> GRAV_STRIDERS = item("grav_striders");
     public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");

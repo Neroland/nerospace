@@ -8,7 +8,8 @@
 	],
 	"settings": {
 		"java.import.gradle.enabled": false,
-		"java.compile.nullAnalysis.mode": "automatic",
+		"//nullAnalysis": "Annotation-based null analysis is DISABLED to match tools/ecj.prefs (the single source of truth; ./gradlew eclipse writes it into each node's .settings/org.eclipse.jdt.core.prefs). ~99% of its diagnostics were unfixable Mojang/NeoForge interop ('needs unchecked conversion to @NonNull', BER/JEI 'illegal redefinition'); genuine @Nullable deref bugs are already fixed in code. The jspecify @NullMarked/@Nullable annotations stay in the source as documentation. To re-enable: set this to 'automatic' and flip nullanalysis=enabled in tools/ecj.prefs.",
+		"java.compile.nullAnalysis.mode": "disabled",
 		"java.debug.settings.onBuildFailureProceed": true,
 		"java.configuration.maven.notCoveredPluginExecutionSeverity": "ignore"
 	}

@@ -21,7 +21,6 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /** Forge entity/chunk capability data backing oxygen, terraform state, and Star Guide seen masks. */
-@SuppressWarnings("null")
 public final class ForgeAttachments {
 
     public static final Capability<ForgePlayerDataCapability> PLAYER_DATA =

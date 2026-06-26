@@ -17,7 +17,6 @@ import za.co.neroland.nerospace.forge.ForgePlayerDataCapability;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /** Forge implementation of {@link IPlatformHelper}. */
-@SuppressWarnings("null")
 public final class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
