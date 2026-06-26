@@ -43,29 +43,14 @@ public class RocketItem extends Item {
         }
 
         if (!level.isClientSide()) {
-            // Multiblock gating: deploying needs a properly formed 3x3 pad; a Tier 3 rocket
-            // additionally needs the pad ringed with Station Wall (the same checks re-run at launch).
+            // Pad-tier gating: the pad formation must provide a tier >= this rocket's tier. A single pad
+            // serves Tier 1, a 3x3 serves Tier 2, a Station-Wall-ringed 3x3 serves Tier 3, and a 5x5
+            // Heavy Launch Complex serves Tier 4 (the same check re-runs at launch).
             Player player = context.getPlayer();
             java.util.Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level, pos);
-            if (!LaunchPadMultiblock.isFullThreeByThree(pads)) {
+            if (LaunchPadMultiblock.padTier(level, pads) < this.tier.level()) {
                 if (player != null) {
-                    player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_incomplete"));
-                }
-                return InteractionResult.SUCCESS;
-            }
-            // Tier 3 needs the Station-Wall ring OR a Heavy Launch Complex (5x5 + gantry).
-            if (this.tier == RocketTier.TIER_3
-                    && !LaunchPadMultiblock.hasStationWallRing(level, pads)
-                    && !LaunchPadMultiblock.isHeavyComplex(level, pads)) {
-                if (player != null) {
-                    player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_ring_required"));
-                }
-                return InteractionResult.SUCCESS;
-            }
-            // Tier 4 needs the Heavy Launch Complex specifically (no ring shortcut).
-            if (this.tier == RocketTier.TIER_4 && !LaunchPadMultiblock.isHeavyComplex(level, pads)) {
-                if (player != null) {
-                    player.sendSystemMessage(Component.translatable("item.nerospace.rocket.pad_heavy_required"));
+                    player.sendSystemMessage(Component.translatable(this.tier.padRequirementKey()));
                 }
                 return InteractionResult.SUCCESS;
             }

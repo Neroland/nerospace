@@ -15,8 +15,17 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  * target in the in-rocket UI. The tier's <em>signature</em> destination (the newest one it unlocks)
  * is the last entry and the default selection.
  *
- * <p>Progression: Tier 1 reaches the Orbital Station; Tier 2 adds Greenxertz; Tier 3 adds Cindara;
- * Tier 4 adds Glacira (and deploys only on the Heavy Launch Complex).</p>
+ * <p><b>Destination progression:</b> Tier 1 reaches the Orbital Station; Tier 2 adds Greenxertz;
+ * Tier 3 adds Cindara; Tier 4 adds Glacira.</p>
+ *
+ * <p><b>Launch-pad progression</b> (the footprint a rocket of this tier must stand on — a higher pad
+ * always satisfies a lower-tier rocket, see {@link LaunchPadMultiblock#padTier}):</p>
+ * <ul>
+ *   <li>Tier 1 — a single Launch Pad block.</li>
+ *   <li>Tier 2 — a complete 3x3 pad.</li>
+ *   <li>Tier 3 — a 3x3 pad ringed with Station Wall (5x5 outline).</li>
+ *   <li>Tier 4 — a 5x5 Heavy Launch Complex (a Launch Gantry on the ring).</li>
+ * </ul>
  *
  * <p>Cross-loader port note: the root scales these by {@code Config}/{@code Tuning} multipliers; the
  * multiloader inlines the base values (identity multiplier) until the config seam is ported.</p>
@@ -81,6 +90,19 @@ public enum RocketTier {
         }
         int clamped = Math.floorMod(index, this.destinations.size());
         return this.destinations.get(clamped);
+    }
+
+    /**
+     * Lang key explaining the launch pad this tier requires, shown when a deploy or launch is gated by
+     * an insufficient pad. Mirrors the {@link LaunchPadMultiblock#padTier} progression.
+     */
+    public String padRequirementKey() {
+        return switch (this.level) {
+            case 4 -> "item.nerospace.rocket.pad_heavy_required";
+            case 3 -> "item.nerospace.rocket.pad_ring_required";
+            case 2 -> "item.nerospace.rocket.pad_incomplete";
+            default -> "item.nerospace.rocket.pad_none";
+        };
     }
 
     /** Safe lookup by ordinal for persistence/synced data. */

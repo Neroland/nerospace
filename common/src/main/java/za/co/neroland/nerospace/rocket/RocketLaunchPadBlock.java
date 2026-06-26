@@ -53,23 +53,18 @@ public class RocketLaunchPadBlock extends Block {
             return InteractionResult.SUCCESS;
         }
         Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level, pos);
-        BlockPos corner5 = LaunchPadMultiblock.fullSquareCorner(pads, 5);
-        boolean full3 = LaunchPadMultiblock.isFullThreeByThree(pads);
-        boolean heavy = LaunchPadMultiblock.isHeavyComplex(level, pads);
-        boolean ring = LaunchPadMultiblock.hasStationWallRing(level, pads);
-
-        String formed = heavy ? "heavy" : (corner5 != null ? "5x5" : (full3 ? "3x3" : "none"));
+        int tier = LaunchPadMultiblock.padTier(level, pads);
+        // Summary line: cluster size + the highest rocket tier this pad can launch.
         player.sendSystemMessage(Component.translatable(
-                "block.nerospace.rocket_launch_pad.report." + formed, pads.size()));
-        if (corner5 != null && !heavy) {
-            player.sendSystemMessage(Component.translatable(
-                    "block.nerospace.rocket_launch_pad.report.need_gantry"));
-        }
-        if (full3 || heavy) {
-            player.sendSystemMessage(Component.translatable(heavy || ring
-                    ? "block.nerospace.rocket_launch_pad.report.t3_ready"
-                    : "block.nerospace.rocket_launch_pad.report.t3_not_ready"));
-        }
+                "block.nerospace.rocket_launch_pad.report.summary", pads.size(), tier));
+        // Next-tier build hint (or "max" once the Heavy Launch Complex is formed).
+        String hint = switch (tier) {
+            case 1 -> "block.nerospace.rocket_launch_pad.report.next_t2";
+            case 2 -> "block.nerospace.rocket_launch_pad.report.next_t3";
+            case 3 -> "block.nerospace.rocket_launch_pad.report.next_t4";
+            default -> "block.nerospace.rocket_launch_pad.report.max";
+        };
+        player.sendSystemMessage(Component.translatable(hint));
         return InteractionResult.SUCCESS;
     }
 }

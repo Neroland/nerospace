@@ -351,9 +351,9 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     /**
-     * Launch-pad gating (re-checked at launch): the rocket must stand ON a complete 3x3 pad that
-     * contains the rocket's position. A Tier 3 rocket additionally needs that pad ringed with Station
-     * Wall OR a Heavy Launch Complex; a Tier 4 rocket needs the Heavy Launch Complex specifically.
+     * Launch-pad gating (re-checked at launch): the pad formation the rocket stands on must provide a
+     * tier at least equal to the rocket's tier. Tier 1 = a single pad, Tier 2 = a 3x3, Tier 3 = a 3x3
+     * ringed with Station Wall, Tier 4 = a 5x5 Heavy Launch Complex. See {@link LaunchPadMultiblock#padTier}.
      */
     public boolean isOnValidPad() {
         if (isOnReturnSite()) {
@@ -379,15 +379,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     private boolean isValidPadCluster(Set<BlockPos> pads, BlockPos origin) {
-        if (LaunchPadMultiblock.fullSquareCornerContaining(pads, 3, origin) == null) {
-            return false;
-        }
-        if (getTier() == RocketTier.TIER_4) {
-            return LaunchPadMultiblock.isHeavyComplexContaining(level(), pads, origin);
-        }
-        return getTier() != RocketTier.TIER_3
-                || LaunchPadMultiblock.hasStationWallRingAround(level(), pads, origin)
-                || LaunchPadMultiblock.isHeavyComplexContaining(level(), pads, origin);
+        return LaunchPadMultiblock.padTierContaining(level(), pads, origin) >= getTier().level();
     }
 
     /** Where to look for the pad under the rocket. The rocket stands ON the pad's 3px plate. */
@@ -428,16 +420,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (level().isClientSide() || !canLaunch()) {
             if (!level().isClientSide() && !isLaunching() && !isOnValidPad()
                     && this.getFirstPassenger() instanceof ServerPlayer rider) {
-                Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level(), padScanOrigin());
-                String message;
-                if (!LaunchPadMultiblock.isFullThreeByThree(pads)) {
-                    message = "item.nerospace.rocket.pad_incomplete";
-                } else if (getTier() == RocketTier.TIER_4) {
-                    message = "item.nerospace.rocket.pad_heavy_required";
-                } else {
-                    message = "item.nerospace.rocket.pad_ring_required";
-                }
-                rider.sendSystemMessage(Component.translatable(message));
+                rider.sendSystemMessage(Component.translatable(getTier().padRequirementKey()));
             }
             return;
         }

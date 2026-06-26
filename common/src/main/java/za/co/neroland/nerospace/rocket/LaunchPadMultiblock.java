@@ -76,6 +76,55 @@ public final class LaunchPadMultiblock {
         return fullSquareCorner(pads, 3) != null;
     }
 
+    // --- Pad tier --------------------------------------------------------------
+
+    /**
+     * The pad tier a cluster provides at its best (cluster-wide); used at deploy time. The
+     * progression escalates the footprint each tier:
+     * <ul>
+     *   <li><b>Tier 1</b> — any single Launch Pad block.</li>
+     *   <li><b>Tier 2</b> — a complete 3x3 pad.</li>
+     *   <li><b>Tier 3</b> — a 3x3 pad ringed with Station Wall (5x5 outline).</li>
+     *   <li><b>Tier 4</b> — a 5x5 Heavy Launch Complex (a Launch Gantry on the ring).</li>
+     * </ul>
+     * A higher pad always satisfies a lower-tier rocket: launch/deploy is gated on
+     * {@code padTier >= rocketTier.level()}.
+     *
+     * @return the best tier 1..4 the cluster forms, or 0 if {@code pads} is empty.
+     */
+    public static int padTier(Level level, Set<BlockPos> pads) {
+        if (pads.isEmpty()) {
+            return 0;
+        }
+        if (isHeavyComplex(level, pads)) {
+            return 4;
+        }
+        if (hasStationWallRing(level, pads)) {
+            return 3;
+        }
+        if (isFullThreeByThree(pads)) {
+            return 2;
+        }
+        return 1;
+    }
+
+    /** {@link #padTier} but the qualifying formation must CONTAIN {@code pos} (launch gating). */
+    public static int padTierContaining(Level level, Set<BlockPos> pads, BlockPos pos) {
+        if (pads.isEmpty()) {
+            return 0;
+        }
+        if (isHeavyComplexContaining(level, pads, pos)) {
+            return 4;
+        }
+        if (hasStationWallRingAround(level, pads, pos)) {
+            return 3;
+        }
+        if (fullSquareCornerContaining(pads, 3, pos) != null) {
+            return 2;
+        }
+        return pads.contains(pos) ? 1 : 0;
+    }
+
     /** The min-corner of the first complete aligned {@code size x size} square in {@code pads}, or {@code null}. */
     @Nullable
     public static BlockPos fullSquareCorner(Set<BlockPos> pads, int size) {
