@@ -292,9 +292,11 @@ public final class NerospaceCommands {
             guide.installBook(new ItemStack(ModItems.STAR_GUIDE_BOOK.get()));
         }
 
-        // ROCKET ROW: every tier on the pad formation it actually requires (RocketItem gating):
-        //   T1 + T2: a full 3x3 pad.  T3: a 3x3 pad ringed with Station Wall.
-        //   T4: the Heavy Launch Complex — full 5x5 pad + a Launch Gantry on its border ring.
+        // ROCKET ROW: every tier on the distinct pad footprint it now requires (the Phase-1 pad-tier
+        // progression): T1 a SINGLE pad, T2 a full 3x3, T3 a 3x3 ringed with Station Wall, T4 the Heavy
+        // Launch Complex (full 5x5 + a Launch Gantry on the ring — which renders as the animated service
+        // tower). Each rocket arrives with full fuel AND a full onboard oxygen tank (open the console to
+        // see the dual gauges).
         int rx = origin.getX() - 14; // rocket row → NORTH (the hero spoke)
         int rz0 = origin.getZ() - 49;
         for (int dx = -2; dx <= 31; dx++) {
@@ -303,13 +305,15 @@ public final class NerospaceCommands {
             }
         }
         BlockState pad = ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState();
-        // T1 (3x3 + the classic pad-side Fuel Tank).
-        fillPad(level, new BlockPos(rx, fy + 1, rz0), 3, pad);
+        // T1 (a single pad — the entry tier — with the classic pad-side Fuel Tank).
+        level.setBlockAndUpdate(new BlockPos(rx + 1, fy + 1, rz0 + 1), pad);
         level.setBlockAndUpdate(new BlockPos(rx + 3, fy + 1, rz0 + 1), ModBlocks.FUEL_TANK.get().defaultBlockState());
         spawnRocket(level, rx + 1, fy + 1, rz0 + 1, RocketTier.TIER_1);
+        spawnLabelStand(level, new BlockPos(rx + 1, fy + 5, rz0 + 1), Component.literal("Tier 1 — single pad"));
         // T2 (3x3).
         fillPad(level, new BlockPos(rx + 8, fy + 1, rz0), 3, pad);
         spawnRocket(level, rx + 9, fy + 1, rz0 + 1, RocketTier.TIER_2);
+        spawnLabelStand(level, new BlockPos(rx + 9, fy + 6, rz0 + 1), Component.literal("Tier 2 — 3x3 pad"));
         // T3 (3x3 ringed with Station Wall).
         fillPad(level, new BlockPos(rx + 16, fy + 1, rz0), 3, pad);
         BlockState wall = ModBlocks.STATION_WALL.get().defaultBlockState();
@@ -321,13 +325,37 @@ public final class NerospaceCommands {
             }
         }
         spawnRocket(level, rx + 17, fy + 1, rz0 + 1, RocketTier.TIER_3);
-        // T4 (Heavy Launch Complex: 5x5 + gantry + fuel tank).
+        spawnLabelStand(level, new BlockPos(rx + 17, fy + 6, rz0 + 1), Component.literal("Tier 3 — Station Wall ring"));
+        // T4 (Heavy Launch Complex: 5x5 + gantry + fuel tank). The gantry renders as the animated
+        // service tower — it reclines to release the rocket on launch, then swings back upright.
         fillPad(level, new BlockPos(rx + 24, fy + 1, rz0 - 1), 5, pad);
         level.setBlockAndUpdate(new BlockPos(rx + 23, fy + 1, rz0 + 1),
                 ModBlocks.LAUNCH_GANTRY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(rx + 29, fy + 1, rz0 + 1),
                 ModBlocks.FUEL_TANK.get().defaultBlockState());
         spawnRocket(level, rx + 26, fy + 1, rz0 + 1, RocketTier.TIER_4);
+        spawnLabelStand(level, new BlockPos(rx + 26, fy + 7, rz0 + 1),
+                Component.literal("Tier 4 — Heavy Launch Complex (animated gantry tower)"));
+
+        // ROCKET O2 FUELLING (Phase 2): an endless Gas Tank → gas pipe → launch pad charges a docked
+        // rocket's onboard oxygen tank live (the rocket starts with empty O2 so the line visibly fills it).
+        int o2x = rx + 4;
+        int o2z = rz0 + 4;
+        level.setBlockAndUpdate(new BlockPos(o2x, fy + 1, o2z), ModBlocks.CREATIVE_GAS_TANK.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(o2x + 1, fy + 1, o2z), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(o2x + 2, fy + 1, o2z), pad);
+        setAllModes(level, new BlockPos(o2x + 1, fy + 1, o2z), Direction.WEST, PipeIoMode.IN);
+        setAllModes(level, new BlockPos(o2x + 1, fy + 1, o2z), Direction.EAST, PipeIoMode.OUT);
+        spawnRocket(level, o2x + 2, fy + 1, o2z, RocketTier.TIER_1, RocketTier.TIER_1.fuelCapacity(), 0);
+        spawnLabelStand(level, new BlockPos(o2x + 1, fy + 4, o2z), Component.literal("Rocket O2 Fuelling"));
+
+        // TRAVEL NODE (Phase 5): a launch pad doubles as a named pad-to-pad landing node — apply a Name
+        // Tag to commission it (a rocket then lands here). Shown as a labelled standalone pad.
+        int tnx = rx + 30;
+        int tnz = rz0 + 4;
+        level.setBlockAndUpdate(new BlockPos(tnx, fy + 1, tnz), pad);
+        spawnLabelStand(level, new BlockPos(tnx, fy + 3, tnz),
+                Component.literal("Travel Node — Name-Tag a pad to register"));
 
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
         int mx = origin.getX() + 18; // creatures → SOUTH-EAST
@@ -386,8 +414,9 @@ public final class NerospaceCommands {
                 + blocks.size() + " blocks, 4 RUNNING machine clusters (grinder line, fuel refinery "
                 + "line, oxygen generator + lever, terraformer crew + lever — flip a lever to start "
                 + "those two), 4 live pipe scenarios (energy/fluid/gas/items), all 4 suit variants, "
-                + "a loaded Star Guide pedestal, all 4 rocket tiers on their required pads (3x3, "
-                + "3x3, walled ring, Heavy Launch Complex), 8 creatures (frozen for clean shots), "
+                + "a loaded Star Guide pedestal, all 4 rocket tiers on their distinct pads (single, "
+                + "3x3, walled ring, Heavy Launch Complex w/ animated gantry) with full fuel + oxygen "
+                + "tanks, a live rocket-O2 fuelling line and a travel-node pad, 8 creatures (frozen for clean shots), "
                 + "a meteor crash site (crater + loot core + hovering meteor), live quarry build "
                 + "displays for 3 miner tiers, and the solar arrays "
                 + "(T1/T2/T3 single units + a seam-joined field per tier + a cabled hookup showing "
@@ -579,10 +608,22 @@ public final class NerospaceCommands {
         }
     }
 
-    /** A rocket standing on the pad surface of the pad block at {@code (x, y, z)}. */
+    /** A rocket standing on the pad surface of the pad block at {@code (x, y, z)}, tanks topped off. */
     private static void spawnRocket(ServerLevel level, int x, int y, int z, RocketTier tier) {
-        level.addFreshEntity(new RocketEntity(level,
-                x + 0.5D, y + RocketLaunchPadBlock.SURFACE_HEIGHT, z + 0.5D, tier));
+        spawnRocket(level, x, y, z, tier, tier.fuelCapacity(), tier.oxygenCapacity());
+    }
+
+    /** A rocket with explicit fuel + onboard oxygen (mB) — used to showcase the dual-tank console. */
+    private static void spawnRocket(ServerLevel level, int x, int y, int z, RocketTier tier, int fuel, int oxygen) {
+        RocketEntity rocket = new RocketEntity(level,
+                x + 0.5D, y + RocketLaunchPadBlock.SURFACE_HEIGHT, z + 0.5D, tier);
+        if (fuel > 0) {
+            rocket.addFuel(fuel);
+        }
+        if (oxygen > 0) {
+            rocket.addOxygen(oxygen);
+        }
+        level.addFreshEntity(rocket);
     }
 
     /** An invulnerable, named armor stand wearing the given four-piece suit. */
