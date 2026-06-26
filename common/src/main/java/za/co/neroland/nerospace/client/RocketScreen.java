@@ -38,13 +38,18 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private static final int GOOD = 0xFF54D46A;   // ready green
 
     private static final int W = 212;
-    private static final int H = 230;
+    private static final int H = 244;
 
     // Viewport (panel-relative).
     private static final int VX = 8;
     private static final int VY = 20;
     private static final int VW = 92;
-    private static final int VH = 92;
+    private static final int VH = 86;
+
+    // Stacked control rows below the viewport / instruments (panel-relative Y).
+    private static final int DEST_ROW_Y = 110;   // destination node row
+    private static final int DOCK_ROW_Y = 127;   // dock cycler (only for the Orbital Station)
+    private static final int LAUNCH_ROW_Y = 142; // launch button
     // Right instrument column (panel-relative).
     private static final int RX = 108;
     private static final int GW = 72;
@@ -78,7 +83,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         int x = this.leftPos + Math.max(8, (W - rowW) / 2);
         for (int i = 0; i < count; i++) {
             final int index = i;
-            SpaceButton node = new SpaceButton(x, this.topPos + 116, nodeW, 15,
+            SpaceButton node = new SpaceButton(x, this.topPos + DEST_ROW_Y, nodeW, 15,
                     Component.literal(shortName(Destinations.name(ALL_DESTINATIONS.get(i)))), ACCENT,
                     b -> onSelectDestination(index));
             this.addRenderableWidget(node);
@@ -86,12 +91,13 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             x += nodeW + gap;
         }
 
-        // Dock cycler overlaid at the top of the viewport — only for the Orbital Station destination.
-        this.stationButton = new SpaceButton(this.leftPos + VX + 2, this.topPos + VY + 2, VW - 4, 12,
+        // Dock cycler: its own full-width row (only shown for the Orbital Station destination), so the
+        // long "Dock: <name>" label has room and never spills over the instrument column.
+        this.stationButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 11,
                 Component.empty(), ACCENT, b -> onCycleStation());
         this.addRenderableWidget(this.stationButton);
 
-        this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + 132, W - 16, 16,
+        this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + LAUNCH_ROW_Y, W - 16, 16,
                 Component.translatable("gui.nerospace.rocket.launch"), ACCENT, b -> onLaunch());
         this.addRenderableWidget(this.launchButton);
     }

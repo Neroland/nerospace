@@ -65,7 +65,7 @@ public class RocketMenu extends AbstractContainerMenu {
         this.fuelContainer = rocket != null ? rocket.getFuelInput() : new SimpleContainer(1);
 
         this.addSlot(new FuelSlot(this.fuelContainer, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
-        this.addStandardInventorySlots(playerInventory, 26, 138);
+        this.addStandardInventorySlots(playerInventory, 26, 164);
         this.addDataSlots(data);
     }
 

@@ -43,17 +43,13 @@ public class RocketItem extends Item {
         }
 
         if (!level.isClientSide()) {
-            // Pad-tier gating: the pad formation must provide a tier >= this rocket's tier. A single pad
-            // serves Tier 1, a 3x3 serves Tier 2, a Station-Wall-ringed 3x3 serves Tier 3, and a 5x5
-            // Heavy Launch Complex serves Tier 4 (the same check re-runs at launch).
+            // Deploy is allowed on ANY launch pad — you can set the rocket down and build the pad up
+            // around it. The tier-appropriate footprint (single pad = T1, 3x3 = T2, Station-Wall ring =
+            // T3, Heavy Launch Complex = T4) is enforced only at LAUNCH (see RocketEntity#isOnValidPad),
+            // so a half-built pad never blocks placement — only lift-off — and the message below reports
+            // the tier the pad currently reads as.
             Player player = context.getPlayer();
             java.util.Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level, pos);
-            if (LaunchPadMultiblock.padTier(level, pads) < this.tier.level()) {
-                if (player != null) {
-                    player.sendSystemMessage(Component.translatable(this.tier.padRequirementKey()));
-                }
-                return InteractionResult.SUCCESS;
-            }
 
             // One rocket per pad: reject a second deploy onto an occupied cluster.
             if (LaunchPadMultiblock.rocketAbove(level, pads) != null) {
@@ -80,7 +76,11 @@ public class RocketItem extends Item {
                 stack.shrink(1);
             }
             if (player != null) {
-                player.sendSystemMessage(Component.translatable("item.nerospace.rocket.deployed"));
+                int padTier = LaunchPadMultiblock.padTier(level, pads);
+                player.sendSystemMessage(padTier >= this.tier.level()
+                        ? Component.translatable("item.nerospace.rocket.deployed")
+                        : Component.translatable("item.nerospace.rocket.deployed_need_pad",
+                                padTier, this.tier.level()));
             }
         }
 

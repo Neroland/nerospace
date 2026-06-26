@@ -492,6 +492,15 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (level().isClientSide() || !canLaunch()) {
             if (!level().isClientSide() && !isLaunching() && !isOnValidPad()
                     && this.getFirstPassenger() instanceof ServerPlayer rider) {
+                // Report the tier the pad under the rocket actually reads as (the same scan isOnValidPad
+                // uses), so a player whose pad "looks right" can see exactly what the game detects.
+                int detected = 0;
+                for (BlockPos origin : padScanOrigins()) {
+                    detected = Math.max(detected, LaunchPadMultiblock.padTierContaining(
+                            level(), LaunchPadMultiblock.connectedPads(level(), origin), origin));
+                }
+                rider.sendSystemMessage(Component.translatable(
+                        "item.nerospace.rocket.launch_pad_tier", detected, getTier().level()));
                 rider.sendSystemMessage(Component.translatable(getTier().padRequirementKey()));
             }
             return;

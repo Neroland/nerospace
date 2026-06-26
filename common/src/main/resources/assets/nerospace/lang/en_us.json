@@ -334,6 +334,8 @@
   "item.nerospace.raw_nerosium": "Raw Nerosium",
   "item.nerospace.raw_nerosteel": "Raw Nerosteel",
   "item.nerospace.rocket.deployed": "Rocket deployed on the launch pad",
+  "item.nerospace.rocket.deployed_need_pad": "Rocket deployed. This pad reads as Tier %s — a Tier %s rocket needs a larger pad to launch (right-click an empty pad to see what to build).",
+  "item.nerospace.rocket.launch_pad_tier": "This launch pad reads as Tier %s, but this is a Tier %s rocket.",
   "item.nerospace.rocket.pad_heavy_required": "A Tier 4 rocket launches only from a Heavy Launch Complex (full 5x5 pad with a Launch Gantry on the ring)",
   "item.nerospace.rocket.pad_incomplete": "A Tier 2 rocket needs a full 3x3 of Launch Pad blocks (a Tier 1 rocket launches from a single pad)",
   "item.nerospace.rocket.pad_none": "Stand the rocket on a Launch Pad block to launch",
