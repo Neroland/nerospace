@@ -93,6 +93,17 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     private int launchTicks;
 
+    /** Where this rocket lifted off from (transient — used when it completes its launch this session). */
+    @Nullable
+    private net.minecraft.resources.ResourceKey<Level> launchOriginDim;
+    @Nullable
+    private BlockPos launchOriginPad;
+
+    /** The pad this rocket should fly back to (set on a return rocket) — its launch origin. Persisted. */
+    private String returnDim = "";
+    @Nullable
+    private BlockPos returnPos;
+
     /**
      * The authoritative fuel store, synced to the client via {@link #DATA_FUEL} for the GUI. Physical
      * capacity is the largest tier's; {@link #addFuel} caps top-ups to the current tier's capacity.
@@ -611,6 +622,10 @@ public class RocketEntity extends Entity implements MenuProvider {
             }
             return;
         }
+        // Remember the pad we're lifting off from so the return rocket can fly straight back to it.
+        this.launchOriginDim = level().dimension();
+        BlockPos originPad = validPadScanOrigin();
+        this.launchOriginPad = originPad != null ? originPad.immutable() : blockPosition();
         setLaunching(true);
         this.launchTicks = 0;
         level().playSound(null, this.getX(), this.getY(), this.getZ(),
@@ -684,12 +699,20 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     /** Lands a fresh rocket of {@code tier} on the destination pad carrying {@code fuel} — pad-to-pad travel. */
-    private static void landRocketOn(ServerLevel level, BlockPos pad, RocketTier tier, int fuel) {
+    /** Sets the pad this rocket should fly back to (its launch origin), so a return trip lands there. */
+    public void setReturnTarget(@Nullable net.minecraft.resources.ResourceKey<Level> dim, @Nullable BlockPos pos) {
+        this.returnDim = dim != null ? dim.identifier().toString() : "";
+        this.returnPos = pos != null ? pos.immutable() : null;
+    }
+
+    private static void landRocketOn(ServerLevel level, BlockPos pad, RocketTier tier, int fuel,
+            @Nullable net.minecraft.resources.ResourceKey<Level> originDim, @Nullable BlockPos originPad) {
         RocketEntity landed = new RocketEntity(level, pad.getX() + 0.5D,
                 pad.getY() + RocketLaunchPadBlock.SURFACE_HEIGHT, pad.getZ() + 0.5D, tier);
         if (fuel > 0) {
             landed.addFuel(fuel);
         }
+        landed.setReturnTarget(originDim, originPad); // remember where the rider came from
         level.addFreshEntity(landed);
     }
 
@@ -723,14 +746,19 @@ public class RocketEntity extends Entity implements MenuProvider {
             if (destination != null) {
                 player.stopRiding();
 
+                net.minecraft.resources.ResourceKey<Level> originDim = this.launchOriginDim;
+                BlockPos originPad = this.launchOriginPad;
+
                 BlockPos preferred;
+                BlockPos directPad = null; // a specific pad to land on directly (bypasses the registry search)
                 Component arrivalMessage;
                 if (targetKey.equals(ModDimensions.STATION_LEVEL)) {
                     // Ensure the selected station (room + airlock + Tier-2 pad) exists, then land on its
                     // pad — the airlock connects the pad back to the Station Core room.
                     int slot = getStationSlot();
                     StationRegistry.StationEntry entry = slot == -2
-                            ? StationRegistry.get(server).found(null) // found a brand-new station from the rocket
+                            // found a brand-new station from the rocket, owned by the rider
+                            ? StationRegistry.get(server).found(null, player.getUUID().toString())
                             : (slot >= 0 ? StationRegistry.get(server).get(slot) : null);
                     BlockPos core = entry != null ? entry.center() : new BlockPos(0, PLATFORM_Y, 0);
                     StationStructure.build(destination, core); // ensure room + airlock + registered pad exist
@@ -739,37 +767,51 @@ public class RocketEntity extends Entity implements MenuProvider {
                             ? Component.translatable("entity.nerospace.rocket.station_arrived", entry.name())
                             : Component.translatable("entity.nerospace.rocket.docked");
                 } else {
-                    // Land on the chosen registered pad, or (auto) nearest to the player's position.
                     java.util.List<PadRegistry.PadNode> dimPads = PadRegistry.get(server).inDimension(targetKey);
                     int padIdx = getPadIndex();
+                    preferred = new BlockPos(Mth.floor(player.getX()), 0, Mth.floor(player.getZ()));
+                    BlockPos returnTo = this.returnPos;
                     if (padIdx >= 0 && padIdx < dimPads.size()) {
-                        preferred = dimPads.get(padIdx).pos();
-                    } else {
-                        preferred = new BlockPos(Mth.floor(player.getX()), 0, Mth.floor(player.getZ()));
+                        directPad = dimPads.get(padIdx).pos(); // explicitly chosen pad
+                    } else if (returnTo != null
+                            && targetKey.identifier().toString().equals(this.returnDim)) {
+                        // Auto: fly straight back to the pad you launched from (if it's still there).
+                        destination.getChunk(returnTo.getX() >> 4, returnTo.getZ() >> 4);
+                        if (destination.getBlockState(returnTo)
+                                .is(za.co.neroland.nerospace.registry.ModBlocks.ROCKET_LAUNCH_PAD.get())) {
+                            directPad = returnTo;
+                        } else {
+                            preferred = returnTo;
+                        }
                     }
                     arrivalMessage = targetKey.equals(Level.OVERWORLD)
                             ? Component.translatable("entity.nerospace.rocket.home_arrived")
                             : Component.translatable("entity.nerospace.rocket.arrived");
                 }
 
-                // Pad-to-pad travel: land on the nearest registered pad in the destination dimension
-                // (for the Orbital Station this is the pad you built near your Station Core — wherever you
-                // moved it). The rocket lands with you, fuelled with the remainder, ready to fly onward.
-                PadRegistry.PadNode pad = PadRegistry.get(server).nearest(targetKey, preferred);
+                // Resolve the landing pad: a chosen/return pad directly, else the nearest registered pad in
+                // the destination, else (no launch pad there) an auto-built Landing Pod.
+                BlockPos landPos = directPad;
+                if (landPos == null) {
+                    PadRegistry.PadNode pad = PadRegistry.get(server).nearest(targetKey, preferred);
+                    if (pad != null) {
+                        landPos = pad.pos();
+                        arrivalMessage = Component.translatable("entity.nerospace.rocket.pad_arrived", pad.name());
+                    }
+                }
+
                 double ax;
                 double ay;
                 double az;
-                if (pad != null) {
-                    BlockPos p = pad.pos();
-                    destination.getChunk(p.getX() >> 4, p.getZ() >> 4);
-                    landRocketOn(destination, p, getTier(), carriedFuel);
-                    ax = p.getX() + 0.5D;
-                    ay = p.getY() + 1.0D;
-                    az = p.getZ() + 0.5D;
-                    arrivalMessage = Component.translatable("entity.nerospace.rocket.pad_arrived", pad.name());
+                if (landPos != null) {
+                    destination.getChunk(landPos.getX() >> 4, landPos.getZ() >> 4);
+                    landRocketOn(destination, landPos, getTier(), carriedFuel, originDim, originPad);
+                    ax = landPos.getX() + 0.5D;
+                    ay = landPos.getY() + 1.0D;
+                    az = landPos.getZ() + 0.5D;
                 } else {
-                    // No registered pad there yet — fall back to an auto-built return site (Landing Pod /
-                    // Docking Port) so a first trip to a fresh world never strands the player.
+                    // No launch pad in the destination — auto-build a Landing Pod so a first trip never
+                    // strands the player. (Only used when the destination genuinely has no pad.)
                     ReturnSitePlacement.Arrival arrival =
                             ReturnSitePlacement.place(destination, targetKey, preferred, getTier(), carriedFuel);
                     ax = arrival.x();
@@ -896,6 +938,11 @@ public class RocketEntity extends Entity implements MenuProvider {
                 Destinations.sanitizeIndex(getTier(), level().dimension(), destination));
         this.entityData.set(DATA_STATION, input.getIntOr("StationSlot", -1));
         this.entityData.set(DATA_PAD, input.getIntOr("Pad", -1));
+        this.returnDim = input.getStringOr("ReturnDim", "");
+        if (input.getBooleanOr("HasReturn", false)) {
+            this.returnPos = new BlockPos(input.getIntOr("ReturnX", 0),
+                    input.getIntOr("ReturnY", 0), input.getIntOr("ReturnZ", 0));
+        }
         this.entityData.set(DATA_OXYGEN, input.getIntOr("Oxygen", 0));
         this.entityData.set(DATA_POWER, input.getIntOr("Power", 0));
         Fluid fluid = BuiltInRegistries.FLUID.getValue(
@@ -914,6 +961,14 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.putBoolean("GlobalDestination", true);
         output.putInt("StationSlot", getStationSlot());
         output.putInt("Pad", getPadIndex());
+        BlockPos returnTo = this.returnPos;
+        output.putString("ReturnDim", this.returnDim);
+        output.putBoolean("HasReturn", returnTo != null);
+        if (returnTo != null) {
+            output.putInt("ReturnX", returnTo.getX());
+            output.putInt("ReturnY", returnTo.getY());
+            output.putInt("ReturnZ", returnTo.getZ());
+        }
         output.putInt("Oxygen", getOxygen());
         output.putInt("Power", getPower());
         output.putString("FuelFluid", BuiltInRegistries.FLUID.getKey(this.fuelTank.getRawFluid()).toString());

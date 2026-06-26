@@ -90,5 +90,9 @@ public final class ModNetwork {
         // Station Charter: client (naming screen) → server, founds the named station without teleporting.
         serverbound(FoundStationPayload.TYPE, FoundStationPayload.STREAM_CODEC,
                 (payload, player) -> za.co.neroland.nerospace.item.StationCharterItem.foundFromUi(player, payload.name()));
+        // Station Core rename: client (rename screen) → server, renames the station by slot.
+        serverbound(RenameStationPayload.TYPE, RenameStationPayload.STREAM_CODEC,
+                (payload, player) -> za.co.neroland.nerospace.item.StationCharterItem.renameStation(
+                        player, payload.slot(), payload.name()));
     }
 }

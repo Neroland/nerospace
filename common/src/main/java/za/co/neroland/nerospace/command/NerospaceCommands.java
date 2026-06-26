@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -45,11 +46,15 @@ import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.rocket.LaunchControllerBlock;
 import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
+import za.co.neroland.nerospace.rocket.PadRegistry;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.rocket.RocketTier;
+import za.co.neroland.nerospace.rocket.StationRegistry;
+import za.co.neroland.nerospace.rocket.StationStructure;
 import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 
@@ -89,7 +94,86 @@ public final class NerospaceCommands {
                                         () -> buildGallery(ctx.getSource())))
                                 .then(Commands.literal("clear")
                                         .executes(ctx -> runSafely(ctx.getSource(), "gallery clear",
-                                                () -> clearGallery(ctx.getSource()))))));
+                                                () -> clearGallery(ctx.getSource())))))
+                        .then(Commands.literal("station")
+                                .then(Commands.literal("list")
+                                        .executes(ctx -> runSafely(ctx.getSource(), "station list",
+                                                () -> listStations(ctx.getSource()))))
+                                .then(Commands.literal("remove")
+                                        .executes(ctx -> runSafely(ctx.getSource(), "station remove",
+                                                () -> removeStation(ctx.getSource(), -1)))
+                                        .then(Commands.argument("slot", IntegerArgumentType.integer(0))
+                                                .executes(ctx -> runSafely(ctx.getSource(), "station remove",
+                                                        () -> removeStation(ctx.getSource(),
+                                                                IntegerArgumentType.getInteger(ctx, "slot"))))))));
+    }
+
+    /** {@code /nerospace station list} — show founded stations (slot + name). */
+    private static int listStations(CommandSourceStack source) {
+        java.util.List<StationRegistry.StationEntry> all = StationRegistry.get(source.getServer()).all();
+        if (all.isEmpty()) {
+            source.sendSuccess(() -> Component.translatable("command.nerospace.station.list_empty"), false);
+            return 1;
+        }
+        source.sendSuccess(() -> Component.translatable("command.nerospace.station.list_header"), false);
+        for (StationRegistry.StationEntry e : all) {
+            source.sendSuccess(() -> Component.translatable("command.nerospace.station.list_entry",
+                    e.slot(), e.name()), false);
+        }
+        return 1;
+    }
+
+    /**
+     * {@code /nerospace station remove [slot]} — decommission a station (only its founder or a server
+     * op). With no slot it targets the station whose Station Core you're standing on. Unregisters the
+     * station, removes the (otherwise unbreakable) Core, and drops its landing-pad travel node.
+     */
+    private static int removeStation(CommandSourceStack source, int slot) {
+        ServerPlayer player = source.getPlayer();
+        if (player == null) {
+            source.sendFailure(Component.literal("Run this as a player."));
+            return 0;
+        }
+        StationRegistry registry = StationRegistry.get(source.getServer());
+        StationRegistry.StationEntry entry = slot >= 0 ? registry.get(slot) : stationAtPlayer(source, player);
+        if (entry == null) {
+            source.sendFailure(Component.translatable("command.nerospace.station.none"));
+            return 0;
+        }
+        // The founder may remove their own station; a creative-mode admin may remove any.
+        if (!StationRegistry.canManage(entry, player) && !player.getAbilities().instabuild) {
+            source.sendFailure(Component.translatable("item.nerospace.station_charter.not_owner"));
+            return 0;
+        }
+        ServerLevel station = source.getServer().getLevel(ModDimensions.STATION_LEVEL);
+        if (station != null) {
+            BlockPos centre = entry.center();
+            station.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
+            station.removeBlock(centre, false); // bypasses the unbreakable Core
+        }
+        registry.unregister(entry.slot());
+        PadRegistry.get(source.getServer())
+                .unregisterAt(ModDimensions.STATION_LEVEL, StationStructure.padCenter(entry.center()));
+        source.sendSuccess(() -> Component.translatable("item.nerospace.station_charter.removed", entry.name()), true);
+        return 1;
+    }
+
+    /** The founded station whose Core the player is standing on/near (within 8 blocks, station dim). */
+    private static StationRegistry.StationEntry stationAtPlayer(CommandSourceStack source, ServerPlayer player) {
+        if (!player.level().dimension().equals(ModDimensions.STATION_LEVEL)) {
+            return null;
+        }
+        BlockPos at = player.blockPosition();
+        StationRegistry.StationEntry best = null;
+        double bestSq = 64.0; // within 8 blocks of the Core
+        for (StationRegistry.StationEntry e : StationRegistry.get(source.getServer()).all()) {
+            double sq = e.center().distSqr(at);
+            if (sq <= bestSq) {
+                bestSq = sq;
+                best = e;
+            }
+        }
+        return best;
     }
 
     private static int runSafely(CommandSourceStack source, String commandName, CommandBody body) {

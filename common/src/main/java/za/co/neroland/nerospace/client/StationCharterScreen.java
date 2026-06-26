@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.client;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -10,11 +11,13 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.menu.StationCharterMenu;
 import za.co.neroland.nerospace.network.FoundStationPayload;
 import za.co.neroland.nerospace.network.ModNetwork;
+import za.co.neroland.nerospace.network.RenameStationPayload;
 
 /**
- * The Station Charter naming console: type a name and press Found to create a new station (the name
- * persists with its Station Core). It does <b>not</b> teleport you — fly a rocket to visit. Built on the
- * shared procedural hull; the name is sent to the server as a {@link FoundStationPayload}.
+ * The station naming console: type a name and confirm. In <b>found</b> mode it creates a new station (the
+ * name persists with its Station Core) without teleporting — fly a rocket to visit. In <b>rename</b> mode
+ * (opened by right-clicking a Station Core) it renames that station. Built on the shared procedural hull;
+ * the name is sent to the server as a {@link FoundStationPayload} or {@link RenameStationPayload}.
  */
 public class StationCharterScreen extends TexturedContainerScreen<StationCharterMenu> {
 
@@ -41,14 +44,33 @@ public class StationCharterScreen extends TexturedContainerScreen<StationCharter
         this.nameBox.setHint(Component.translatable("gui.nerospace.station_charter.hint"));
         this.addRenderableWidget(this.nameBox);
         this.setInitialFocus(this.nameBox);
+        this.nameBox.setFocused(true);
 
-        SpaceButton found = new SpaceButton(this.leftPos + 12, this.topPos + 52, W - 24, 16,
-                Component.translatable("gui.nerospace.station_charter.found"), ACCENT, b -> confirm());
-        this.addRenderableWidget(found);
+        SpaceButton confirm = new SpaceButton(this.leftPos + 12, this.topPos + 52, W - 24, 16,
+                Component.translatable("gui.nerospace.station_charter.confirm"), ACCENT, b -> confirm());
+        this.addRenderableWidget(confirm);
+    }
+
+    /** Let the focused name box swallow all typing (incl. the inventory key) so it never closes the screen. */
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == 256) { // Escape
+            this.onClose();
+            return true;
+        }
+        if (this.nameBox != null && (this.nameBox.keyPressed(event) || this.nameBox.canConsumeInput())) {
+            return true;
+        }
+        return super.keyPressed(event);
     }
 
     private void confirm() {
-        ModNetwork.sendToServer(new FoundStationPayload(this.nameBox.getValue()));
+        String name = this.nameBox.getValue();
+        if (this.menu.mode() == StationCharterMenu.MODE_RENAME) {
+            ModNetwork.sendToServer(new RenameStationPayload(this.menu.slot(), name));
+        } else {
+            ModNetwork.sendToServer(new FoundStationPayload(name));
+        }
         this.onClose();
     }
 
@@ -64,6 +86,9 @@ public class StationCharterScreen extends TexturedContainerScreen<StationCharter
 
     @Override
     protected void extractForeground(GuiGraphicsExtractor g) {
-        label(g, Component.translatable("gui.nerospace.station_charter.title"), 12, 5, TITLE);
+        String key = this.menu.mode() == StationCharterMenu.MODE_RENAME
+                ? "gui.nerospace.station_charter.rename"
+                : "gui.nerospace.station_charter.title";
+        label(g, Component.translatable(key), 12, 5, TITLE);
     }
 }

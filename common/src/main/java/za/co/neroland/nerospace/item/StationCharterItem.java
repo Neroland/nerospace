@@ -16,6 +16,8 @@ import za.co.neroland.nerospace.menu.StationCharterMenu;
 import za.co.neroland.nerospace.progression.StarGuideGrants;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.rocket.PadRegistry;
+import za.co.neroland.nerospace.rocket.StationCoreBlockEntity;
 import za.co.neroland.nerospace.rocket.StationRegistry;
 import za.co.neroland.nerospace.rocket.StationStructure;
 
@@ -71,7 +73,8 @@ public class StationCharterItem extends Item {
             return;
         }
         String trimmed = name == null ? "" : name.trim();
-        StationRegistry.StationEntry entry = registry.found(trimmed.isBlank() ? null : trimmed);
+        StationRegistry.StationEntry entry =
+                registry.found(trimmed.isBlank() ? null : trimmed, player.getUUID().toString());
         if (entry == null) {
             player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.full"));
             return;
@@ -80,5 +83,35 @@ public class StationCharterItem extends Item {
         StationStructure.build(station, entry.center());
         StarGuideGrants.grant(player, "guide/station_charter");
         player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.founded", entry.name()));
+    }
+
+    /** Server-side rename (from a Station Core's rename screen): updates registry + Core + landing pad. */
+    public static void renameStation(ServerPlayer player, int slot, String name) {
+        MinecraftServer server = player.level().getServer();
+        if (server == null) {
+            return;
+        }
+        String trimmed = name == null ? "" : name.trim();
+        if (trimmed.isBlank()) {
+            return;
+        }
+        StationRegistry registry = StationRegistry.get(server);
+        if (!StationRegistry.canManage(registry.get(slot), player)) {
+            player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.not_owner"));
+            return;
+        }
+        StationRegistry.StationEntry entry = registry.rename(slot, trimmed);
+        if (entry == null) {
+            return;
+        }
+        ServerLevel station = server.getLevel(ModDimensions.STATION_LEVEL);
+        if (station != null) {
+            if (station.getBlockEntity(entry.center()) instanceof StationCoreBlockEntity core) {
+                core.bindStation(slot, trimmed);
+            }
+            PadRegistry.get(server).register(trimmed + " Landing", ModDimensions.STATION_LEVEL,
+                    StationStructure.padCenter(entry.center()));
+        }
+        player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.renamed", trimmed));
     }
 }

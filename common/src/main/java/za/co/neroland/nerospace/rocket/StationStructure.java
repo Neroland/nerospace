@@ -27,9 +27,15 @@ public final class StationStructure {
     private StationStructure() {
     }
 
+    /** The Tier-2 landing-pad centre for a station at {@code centre} (deterministic from the layout). */
+    public static BlockPos padCenter(BlockPos centre) {
+        return new BlockPos(centre.getX() + RADIUS + AIRLOCK_LEN + 2, centre.getY(), centre.getZ());
+    }
+
     /**
-     * Builds (or repairs) the station around {@code centre} and returns the centre of its Tier-2 landing
-     * pad — the spot a rocket arriving at this station should touch down on.
+     * Generates the station around {@code centre} <b>once</b>, returning the centre of its Tier-2 landing
+     * pad. If a Station Core already stands at {@code centre} the station is left completely untouched —
+     * player-placed/-removed blocks are preserved — and only the travel-pad node is kept registered.
      */
     public static BlockPos build(ServerLevel level, BlockPos centre) {
         BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
@@ -46,6 +52,13 @@ public final class StationStructure {
             for (int zz = cz - r; zz <= cz + r; zz += r) {
                 level.getChunk(xx >> 4, zz >> 4);
             }
+        }
+
+        // Already generated — never rebuild (preserve the player's changes); just keep the pad node live.
+        if (level.getBlockState(centre).is(ModBlocks.STATION_CORE.get())) {
+            BlockPos existing = padCenter(centre);
+            registerPad(level, centre, existing);
+            return existing;
         }
 
         // --- Room: floor, lit ceiling, walls + window bands -----------------------------------
@@ -101,24 +114,32 @@ public final class StationStructure {
 
         BlockPos padCentre = new BlockPos(padCx, cy, cz);
 
-        // Anchor the founded station: place + bind the (unbreakable) Station Core, and register the pad.
-        StationRegistry.StationEntry entry = null;
-        for (StationRegistry.StationEntry e : StationRegistry.get(level.getServer()).all()) {
-            if (e.center().equals(centre)) {
-                entry = e;
-                break;
-            }
-        }
+        // Anchor the founded station: place + bind the (unbreakable) Station Core.
+        StationRegistry.StationEntry entry = entryAt(level, centre);
         if (entry != null) {
-            if (!level.getBlockState(centre).is(ModBlocks.STATION_CORE.get())) {
-                level.setBlockAndUpdate(centre, ModBlocks.STATION_CORE.get().defaultBlockState());
-            }
+            level.setBlockAndUpdate(centre, ModBlocks.STATION_CORE.get().defaultBlockState());
             if (level.getBlockEntity(centre) instanceof StationCoreBlockEntity core) {
                 core.bindStation(entry.slot(), entry.name());
             }
         }
+        registerPad(level, centre, padCentre);
+        return padCentre;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    private static StationRegistry.StationEntry entryAt(ServerLevel level, BlockPos centre) {
+        for (StationRegistry.StationEntry e : StationRegistry.get(level.getServer()).all()) {
+            if (e.center().equals(centre)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    /** Keeps the station's landing pad registered as a travel node, named after the station. */
+    private static void registerPad(ServerLevel level, BlockPos centre, BlockPos padCentre) {
+        StationRegistry.StationEntry entry = entryAt(level, centre);
         String label = entry != null ? entry.name() : "Station";
         PadRegistry.get(level.getServer()).register(label + " Landing", level.dimension(), padCentre);
-        return padCentre;
     }
 }

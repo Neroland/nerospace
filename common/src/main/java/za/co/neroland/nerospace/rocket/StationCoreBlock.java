@@ -50,10 +50,25 @@ public class StationCoreBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StationCoreBlockEntity core) {
-            player.sendSystemMessage(core.isBound()
-                    ? Component.translatable("block.nerospace.station_core.bound", core.stationName())
-                    : Component.translatable("block.nerospace.station_core.unbound"));
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StationCoreBlockEntity core
+                && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            if (core.isBound()) {
+                final int slot = core.stationSlot();
+                StationRegistry.StationEntry entry =
+                        StationRegistry.get(serverPlayer.level().getServer()).get(slot);
+                if (!StationRegistry.canManage(entry, serverPlayer)) {
+                    // Only the founder (or a server op) may rename a station.
+                    serverPlayer.sendSystemMessage(
+                            Component.translatable("item.nerospace.station_charter.not_owner"));
+                } else {
+                    serverPlayer.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                            (id, inv, p) -> new za.co.neroland.nerospace.menu.StationCharterMenu(
+                                    id, inv, za.co.neroland.nerospace.menu.StationCharterMenu.MODE_RENAME, slot),
+                            Component.translatable("gui.nerospace.station_charter.rename")));
+                }
+            } else {
+                player.sendSystemMessage(Component.translatable("block.nerospace.station_core.unbound"));
+            }
         }
         return InteractionResult.SUCCESS;
     }
