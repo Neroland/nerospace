@@ -35,10 +35,12 @@ public class RocketMenu extends AbstractContainerMenu {
     public static final int BUTTON_CYCLE_DEST = 1;
     /** Cycles which founded station the Orbital Station destination docks at (origin → each station → origin). */
     public static final int BUTTON_CYCLE_STATION = 2;
+    /** Cycles the landing pad within the selected destination dimension (nearest → each pad → nearest). */
+    public static final int BUTTON_CYCLE_PAD = 3;
     /** Select destination {@code n} via button id {@code SELECT_DEST_BASE + n}. */
     public static final int SELECT_DEST_BASE = 100;
 
-    private static final int DATA_COUNT = 12;
+    private static final int DATA_COUNT = 14;
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
@@ -90,6 +92,10 @@ public class RocketMenu extends AbstractContainerMenu {
         }
         if (id == BUTTON_CYCLE_STATION) {
             current.cycleStation();
+            return true;
+        }
+        if (id == BUTTON_CYCLE_PAD) {
+            current.cyclePad();
             return true;
         }
         if (id >= SELECT_DEST_BASE) {
@@ -232,12 +238,36 @@ public class RocketMenu extends AbstractContainerMenu {
         return ModDimensions.STATION_LEVEL.equals(Destinations.byIndex(getDestinationIndex()));
     }
 
+    /** Whether the destination is a normal dimension (shows the pad cycler instead of the dock cycler). */
+    public boolean isPadDestination() {
+        return Destinations.byIndex(getDestinationIndex()) != null && !isStationDestination();
+    }
+
+    /** Selected landing-pad index within the destination dimension ({@code -1} = nearest/auto). */
+    public int getPadIndex() {
+        return this.data.get(12);
+    }
+
+    /** Display label for the selected landing pad (stable, int-only — real names live server-side). */
+    public String getPadName() {
+        int idx = getPadIndex();
+        return idx < 0 ? "Nearest pad" : "Pad " + (idx + 1);
+    }
+
+    /** Fuel this launch will burn (millibuckets), computed from the trip distance + dimension surcharge. */
+    public int getFuelCost() {
+        return this.data.get(13);
+    }
+
     /**
      * Display label for the selected docking target. The custom charter name lives server-side (it can't
      * ride the int-only {@link ContainerData}), so the client shows the stable founding-order label.
      */
     public String getStationName() {
         int slot = getStationSlot();
+        if (slot == -2) {
+            return "New Station";
+        }
         return slot < 0 ? "Origin Platform" : "Station " + (slot + 1);
     }
 

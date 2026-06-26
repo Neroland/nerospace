@@ -101,6 +101,7 @@ public final class ForgeClientSetup {
         MenuScreens.register(ModMenuTypes.TERRAFORM_MONITOR.get(), TerraformMonitorScreen::new);
         MenuScreens.register(ModMenuTypes.STAR_GUIDE.get(), StarGuideScreen::new);
         MenuScreens.register(ModMenuTypes.LAUNCH_CONTROLLER.get(), za.co.neroland.nerospace.client.LaunchControllerScreen::new);
+        MenuScreens.register(ModMenuTypes.STATION_CHARTER.get(), za.co.neroland.nerospace.client.StationCharterScreen::new);
     }
 
     private static void onBakeFluidModels(ModelEvent.BakeFluidModels event) {

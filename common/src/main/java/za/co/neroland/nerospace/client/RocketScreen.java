@@ -63,6 +63,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
     private SpaceButton launchButton;
     private SpaceButton stationButton;
+    private SpaceButton padButton;
     private final List<SpaceButton> destinationButtons = new ArrayList<>();
 
     public RocketScreen(RocketMenu menu, Inventory playerInventory, Component title) {
@@ -97,6 +98,11 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         this.stationButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 11,
                 Component.empty(), ACCENT, b -> onCycleStation());
         this.addRenderableWidget(this.stationButton);
+
+        // Pad cycler — shares the dock row; shown for normal-dimension destinations instead of the dock cycler.
+        this.padButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 11,
+                Component.empty(), O2, b -> onCyclePad());
+        this.addRenderableWidget(this.padButton);
 
         this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + LAUNCH_ROW_Y, W - 16, 16,
                 Component.translatable("gui.nerospace.rocket.launch"), ACCENT, b -> onLaunch());
@@ -184,9 +190,11 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             node.setSelected(i == selected);
         }
 
-        // Dock cycler (only when the Orbital Station is the chosen destination).
+        // Dock / pad cycler (share the same row): the dock cycler for the Orbital Station, the pad cycler
+        // for every other destination.
+        boolean stationDest = this.menu.isStationDestination();
+        boolean padDest = this.menu.isPadDestination();
         if (this.stationButton != null) {
-            boolean stationDest = this.menu.isStationDestination();
             this.stationButton.visible = stationDest;
             this.stationButton.active = stationDest;
             if (stationDest) {
@@ -194,6 +202,17 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
                         ClientStations.name(this.menu.getStationSlot())));
             }
         }
+        if (this.padButton != null) {
+            this.padButton.visible = padDest;
+            this.padButton.active = padDest;
+            if (padDest) {
+                this.padButton.setMessage(Component.translatable("gui.nerospace.rocket.pad",
+                        this.menu.getPadName()));
+            }
+        }
+
+        // Calculated fuel cost for the current trip.
+        label(g, Component.translatable("gui.nerospace.rocket.cost", this.menu.getFuelCost()), RX, 99, 0xFFCFE7FF);
 
         // Launch button: enabled when ready, with a soft ready-pulse on its border.
         if (this.launchButton != null) {
@@ -321,6 +340,10 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
     private void onCycleStation() {
         sendButton(RocketMenu.BUTTON_CYCLE_STATION);
+    }
+
+    private void onCyclePad() {
+        sendButton(RocketMenu.BUTTON_CYCLE_PAD);
     }
 
     private void onLaunch() {

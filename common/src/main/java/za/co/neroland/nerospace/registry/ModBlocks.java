@@ -116,8 +116,8 @@ public final class ModBlocks {
     /** The founded-station anchor. Placed only by founding (no block item / loot table); breaking it pops the charter. */
     public static final RegistryEntry<StationCoreBlock> STATION_CORE = BLOCKS.register("station_core",
             key -> new StationCoreBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_CYAN).strength(4.0F, 1200.0F)
-                    .requiresCorrectToolForDrops().lightLevel(s -> 10).sound(SoundType.METAL)));
+                    .setId(key).mapColor(MapColor.COLOR_CYAN).strength(-1.0F, 3_600_000.0F)
+                    .lightLevel(s -> 12).sound(SoundType.METAL).noLootTable()));
 
     /**
      * Hidden developer diagnostic block — give-only ({@code /give @s nerospace:sentry_test}; NOT listed in

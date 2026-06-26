@@ -1,38 +1,33 @@
 package za.co.neroland.nerospace.item;
 
-import java.util.Set;
-
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import za.co.neroland.nerospace.menu.StationCharterMenu;
 import za.co.neroland.nerospace.progression.StarGuideGrants;
-import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
-import za.co.neroland.nerospace.rocket.StationCoreBlockEntity;
+import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.rocket.StationRegistry;
 import za.co.neroland.nerospace.rocket.StationStructure;
 
 /**
- * The Station Charter — founds a player station. Right-click to allocate the next station slot in the
- * {@code nerospace:station} void dimension, build an enclosed station room (7×7 deck, station-wall
- * pillars, glass window bands, lit ceiling), anchor a bound {@link StationCoreBlockEntity}, and travel
- * there. Rename the charter in an anvil to name the station; breaking the Station Core unregisters it
- * and pops the charter back (re-foundable elsewhere).
+ * The Station Charter — founds a player station. Right-click opens a naming console; type a name and
+ * confirm to allocate the next station slot in the {@code nerospace:station} void dimension and build the
+ * station there (enclosed room, airlock, Tier-2 landing pad, and an anchored unbreakable Station Core
+ * bound to the name). It does <b>not</b> teleport you — fly a rocket to the Orbital Station to visit, so
+ * the rocket stays the means of travel. The name persists with the Station Core.
  *
- * <p>Cross-loader note: the standalone mod founds via the rocket's FOUND launch node; the multiloader
- * rocket deferred its station-selection rows, so founding is driven from the charter directly here
- * (the {@code guide/station_charter} advancement is code-granted, routing around the deferred
- * {@code ModCriteria} the same way the terraform advancements are).</p>
+ * <p>The naming screen sends the name back as a {@code FoundStationPayload}; {@link #foundFromUi} does the
+ * server-side founding (consuming one charter).</p>
  */
 public class StationCharterItem extends Item {
 
@@ -42,45 +37,48 @@ public class StationCharterItem extends Item {
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        if (level.isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
-            return InteractionResult.SUCCESS;
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(new SimpleMenuProvider(
+                    (id, inv, p) -> new StationCharterMenu(id, inv),
+                    Component.translatable("gui.nerospace.station_charter.title")));
         }
-        MinecraftServer server = serverPlayer.level().getServer();
+        return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * Server-side founding from the naming screen: allocate the station slot, build it, consume one
+     * charter from the player's hands. No teleport.
+     */
+    public static void foundFromUi(ServerPlayer player, String name) {
+        MinecraftServer server = player.level().getServer();
         if (server == null) {
-            return InteractionResult.PASS;
+            return;
         }
         ServerLevel station = server.getLevel(ModDimensions.STATION_LEVEL);
         if (station == null) {
-            return InteractionResult.PASS;
+            return;
         }
-
+        ItemStack held = player.getMainHandItem();
+        if (!held.is(ModItems.STATION_CHARTER.get())) {
+            held = player.getOffhandItem();
+            if (!held.is(ModItems.STATION_CHARTER.get())) {
+                return; // no charter to spend
+            }
+        }
         StationRegistry registry = StationRegistry.get(server);
         if (registry.isFull()) {
-            serverPlayer.sendSystemMessage(Component.translatable("item.nerospace.station_charter.full"));
-            return InteractionResult.SUCCESS;
+            player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.full"));
+            return;
         }
-
-        ItemStack held = player.getItemInHand(hand);
-        Component customName = held.get(DataComponents.CUSTOM_NAME);
-        StationRegistry.StationEntry entry = registry.found(customName == null ? null : customName.getString());
+        String trimmed = name == null ? "" : name.trim();
+        StationRegistry.StationEntry entry = registry.found(trimmed.isBlank() ? null : trimmed);
         if (entry == null) {
-            serverPlayer.sendSystemMessage(Component.translatable("item.nerospace.station_charter.full"));
-            return InteractionResult.SUCCESS;
+            player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.full"));
+            return;
         }
         held.shrink(1);
-
-        BlockPos centre = entry.center();
-        StationStructure.build(station, centre);
-        station.setBlockAndUpdate(centre, ModBlocks.STATION_CORE.get().defaultBlockState());
-        if (station.getBlockEntity(centre) instanceof StationCoreBlockEntity core) {
-            core.bindStation(entry.slot(), entry.name());
-        }
-
-        serverPlayer.teleportTo(station, centre.getX() + 0.5, centre.getY() + 1.0, centre.getZ() + 0.5,
-                Set.of(), serverPlayer.getYRot(), serverPlayer.getXRot(), true);
-        StarGuideGrants.grant(serverPlayer, "guide/station_charter");
-        serverPlayer.sendSystemMessage(Component.translatable(
-                "item.nerospace.station_charter.founded", entry.name()));
-        return InteractionResult.SUCCESS;
+        StationStructure.build(station, entry.center());
+        StarGuideGrants.grant(player, "guide/station_charter");
+        player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.founded", entry.name()));
     }
 }

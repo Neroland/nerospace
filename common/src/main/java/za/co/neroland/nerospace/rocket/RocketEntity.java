@@ -74,6 +74,9 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Selected founded-station slot for the Orbital Station destination ({@code -1} = the origin platform). */
     private static final EntityDataAccessor<Integer> DATA_STATION =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    /** Selected pad index into {@link PadRegistry#inDimension} of the destination dim ({@code -1} = nearest/auto). */
+    private static final EntityDataAccessor<Integer> DATA_PAD =
+            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
     /** Onboard oxygen (life-support) store, in millibuckets — the server-authoritative value, synced for the UI. */
     private static final EntityDataAccessor<Integer> DATA_OXYGEN =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
@@ -134,6 +137,8 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 9 -> isOnValidPad() ? 1 : 0;
                 case 10 -> getPower();
                 case 11 -> getTier().powerCapacity();
+                case 12 -> getPadIndex();
+                case 13 -> Math.min(32000, currentFuelCost());
                 default -> 0;
             };
         }
@@ -145,7 +150,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 12;
+            return 14;
         }
     };
 
@@ -203,6 +208,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         builder.define(DATA_LAUNCHING, false);
         builder.define(DATA_DEST, 0);
         builder.define(DATA_STATION, -1);
+        builder.define(DATA_PAD, -1);
         builder.define(DATA_OXYGEN, 0);
         builder.define(DATA_POWER, 0);
     }
@@ -252,15 +258,24 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** The currently selected destination level, or {@code null} if this tier can't fly anywhere. */
     @Nullable
     public net.minecraft.resources.ResourceKey<Level> selectedDestination() {
-        if (!Destinations.isAvailable(getTier(), level().dimension(), getDestinationIndex())) {
+        int index = getDestinationIndex();
+        if ((destinationMask() & (1 << index)) == 0) {
             return null;
         }
-        return Destinations.byIndex(getDestinationIndex());
+        return Destinations.byIndex(index);
     }
 
     /** Bitmask of global destinations currently available to this rocket. */
     public int destinationMask() {
-        return Destinations.availableMask(getTier(), level().dimension());
+        int mask = Destinations.availableMask(getTier(), level().dimension());
+        // Same-dimension hops: allow the current dimension as a destination when it has registered pads.
+        if (level() instanceof ServerLevel server) {
+            int self = Destinations.indexOf(level().dimension());
+            if (self >= 0 && !PadRegistry.get(server.getServer()).inDimension(level().dimension()).isEmpty()) {
+                mask |= (1 << self);
+            }
+        }
+        return mask;
     }
 
     /** Cycles to the next destination available to this tier (server-side; from the menu button). */
@@ -274,6 +289,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             int next = Math.floorMod(current + step, Destinations.all().size());
             if ((mask & (1 << next)) != 0) {
                 this.entityData.set(DATA_DEST, next);
+                this.entityData.set(DATA_PAD, -1); // pads differ per dimension — reset the sub-selection
                 return;
             }
         }
@@ -284,8 +300,9 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (level().isClientSide() || isLaunching()) {
             return;
         }
-        if (Destinations.isAvailable(getTier(), level().dimension(), index)) {
+        if ((destinationMask() & (1 << index)) != 0) {
             this.entityData.set(DATA_DEST, index);
+            this.entityData.set(DATA_PAD, -1);
         }
     }
 
@@ -307,10 +324,11 @@ public class RocketEntity extends Entity implements MenuProvider {
         java.util.List<StationRegistry.StationEntry> all = StationRegistry.get(server.getServer()).all();
         int current = getStationSlot();
         int next;
-        if (all.isEmpty()) {
+        // Cycle: Origin (−1) → each founded station → New Station (−2) → Origin.
+        if (current == -2) {
             next = -1;
-        } else if (current < 0) {
-            next = all.get(0).slot();
+        } else if (current == -1) {
+            next = all.isEmpty() ? -2 : all.get(0).slot();
         } else {
             int idx = -1;
             for (int i = 0; i < all.size(); i++) {
@@ -319,9 +337,75 @@ public class RocketEntity extends Entity implements MenuProvider {
                     break;
                 }
             }
-            next = (idx < 0 || idx + 1 >= all.size()) ? -1 : all.get(idx + 1).slot();
+            next = (idx < 0 || idx + 1 >= all.size()) ? -2 : all.get(idx + 1).slot();
         }
         this.entityData.set(DATA_STATION, next);
+    }
+
+    // --- Landing-pad selection + distance-based fuel -------------------------
+
+    /** Selected pad index into the destination dimension's registered pads ({@code -1} = nearest/auto). */
+    public int getPadIndex() {
+        return this.entityData.get(DATA_PAD);
+    }
+
+    /** Cycles the landing pad within the selected destination dimension: nearest → each pad → nearest. */
+    public void cyclePad() {
+        if (!(level() instanceof ServerLevel server) || isLaunching()) {
+            return;
+        }
+        net.minecraft.resources.ResourceKey<Level> target = selectedDestination();
+        if (target == null) {
+            return;
+        }
+        java.util.List<PadRegistry.PadNode> pads = PadRegistry.get(server.getServer()).inDimension(target);
+        if (pads.isEmpty()) {
+            this.entityData.set(DATA_PAD, -1);
+            return;
+        }
+        int next = getPadIndex() + 1;
+        this.entityData.set(DATA_PAD, next >= pads.size() ? -1 : next);
+    }
+
+    /** The block position this rocket will land at for its current destination + sub-selection. */
+    @Nullable
+    public BlockPos selectedTargetPos(net.minecraft.server.MinecraftServer server) {
+        net.minecraft.resources.ResourceKey<Level> target = selectedDestination();
+        if (target == null) {
+            return null;
+        }
+        if (target.equals(ModDimensions.STATION_LEVEL)) {
+            int slot = getStationSlot();
+            StationRegistry.StationEntry entry = slot >= 0 ? StationRegistry.get(server).get(slot) : null;
+            return entry != null ? entry.center() : new BlockPos(0, PLATFORM_Y, 0);
+        }
+        java.util.List<PadRegistry.PadNode> pads = PadRegistry.get(server).inDimension(target);
+        int idx = getPadIndex();
+        if (idx >= 0 && idx < pads.size()) {
+            return pads.get(idx).pos();
+        }
+        BlockPos near = new BlockPos(Mth.floor(getX()), 0, Mth.floor(getZ()));
+        PadRegistry.PadNode nearest = PadRegistry.get(server).nearest(target, near);
+        return nearest != null ? nearest.pos() : near;
+    }
+
+    /**
+     * The fuel this launch will burn: a base cost plus distance (same-dimension hops) or a flat
+     * cross-dimension surcharge. Server-authoritative; the client reads the synced value for the UI.
+     */
+    public int currentFuelCost() {
+        net.minecraft.resources.ResourceKey<Level> target = selectedDestination();
+        if (target == null) {
+            return Integer.MAX_VALUE;
+        }
+        boolean crossDim = !target.equals(level().dimension());
+        net.minecraft.server.MinecraftServer server = level().getServer();
+        int dist = 0;
+        if (!crossDim && server != null) {
+            BlockPos tp = selectedTargetPos(server);
+            dist = tp == null ? 0 : RocketTravel.distance(blockPosition(), tp);
+        }
+        return RocketTravel.cost(crossDim, dist);
     }
 
     public boolean isLaunching() {
@@ -441,16 +525,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     private int requiredFuelForLaunch() {
-        net.minecraft.resources.ResourceKey<Level> target = selectedDestination();
-        if (target == null) {
-            return Integer.MAX_VALUE;
-        }
-        int outbound = getTier().fuelPerLaunch();
-        return Destinations.needsReturnReserve(target) ? outbound + returnReserveFuel() : outbound;
-    }
-
-    private int returnReserveFuel() {
-        return getTier().fuelPerLaunch();
+        return currentFuelCost();
     }
 
     /**
@@ -637,7 +712,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             return;
         }
 
-        int outboundFuel = getTier().fuelPerLaunch();
+        int outboundFuel = currentFuelCost();
         int carriedFuel = Math.max(0, getFuel() - outboundFuel);
         this.fuelTank.drain(outboundFuel, false);
 
@@ -651,18 +726,27 @@ public class RocketEntity extends Entity implements MenuProvider {
                 BlockPos preferred;
                 Component arrivalMessage;
                 if (targetKey.equals(ModDimensions.STATION_LEVEL)) {
-                    // Dock at the selected founded station, or the shared origin platform when none is chosen.
+                    // Ensure the selected station (room + airlock + Tier-2 pad) exists, then land on its
+                    // pad — the airlock connects the pad back to the Station Core room.
                     int slot = getStationSlot();
-                    StationRegistry.StationEntry entry =
-                            slot >= 0 ? StationRegistry.get(server).get(slot) : null;
-                    preferred = entry != null ? entry.center() : new BlockPos(0, PLATFORM_Y, 0);
+                    StationRegistry.StationEntry entry = slot == -2
+                            ? StationRegistry.get(server).found(null) // found a brand-new station from the rocket
+                            : (slot >= 0 ? StationRegistry.get(server).get(slot) : null);
+                    BlockPos core = entry != null ? entry.center() : new BlockPos(0, PLATFORM_Y, 0);
+                    StationStructure.build(destination, core); // ensure room + airlock + registered pad exist
+                    preferred = core; // land on the nearest registered pad to the core (within ~32 blocks)
                     arrivalMessage = entry != null
                             ? Component.translatable("entity.nerospace.rocket.station_arrived", entry.name())
                             : Component.translatable("entity.nerospace.rocket.docked");
                 } else {
-                    int blockX = Mth.floor(player.getX());
-                    int blockZ = Mth.floor(player.getZ());
-                    preferred = new BlockPos(blockX, 0, blockZ);
+                    // Land on the chosen registered pad, or (auto) nearest to the player's position.
+                    java.util.List<PadRegistry.PadNode> dimPads = PadRegistry.get(server).inDimension(targetKey);
+                    int padIdx = getPadIndex();
+                    if (padIdx >= 0 && padIdx < dimPads.size()) {
+                        preferred = dimPads.get(padIdx).pos();
+                    } else {
+                        preferred = new BlockPos(Mth.floor(player.getX()), 0, Mth.floor(player.getZ()));
+                    }
                     arrivalMessage = targetKey.equals(Level.OVERWORLD)
                             ? Component.translatable("entity.nerospace.rocket.home_arrived")
                             : Component.translatable("entity.nerospace.rocket.arrived");
@@ -811,6 +895,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.entityData.set(DATA_DEST,
                 Destinations.sanitizeIndex(getTier(), level().dimension(), destination));
         this.entityData.set(DATA_STATION, input.getIntOr("StationSlot", -1));
+        this.entityData.set(DATA_PAD, input.getIntOr("Pad", -1));
         this.entityData.set(DATA_OXYGEN, input.getIntOr("Oxygen", 0));
         this.entityData.set(DATA_POWER, input.getIntOr("Power", 0));
         Fluid fluid = BuiltInRegistries.FLUID.getValue(
@@ -828,6 +913,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.putInt("Destination", getDestinationIndex());
         output.putBoolean("GlobalDestination", true);
         output.putInt("StationSlot", getStationSlot());
+        output.putInt("Pad", getPadIndex());
         output.putInt("Oxygen", getOxygen());
         output.putInt("Power", getPower());
         output.putString("FuelFluid", BuiltInRegistries.FLUID.getKey(this.fuelTank.getRawFluid()).toString());

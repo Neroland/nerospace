@@ -16,6 +16,7 @@ import za.co.neroland.nerospace.menu.TrashCanMenu;
 import za.co.neroland.nerospace.machine.quarry.QuarryMenu;
 import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
 import za.co.neroland.nerospace.menu.PipeConfigMenu;
+import za.co.neroland.nerospace.menu.StationCharterMenu;
 import za.co.neroland.nerospace.menu.TerraformMonitorMenu;
 import za.co.neroland.nerospace.menu.TerraformerMenu;
 import za.co.neroland.nerospace.progression.StarGuideMenu;
@@ -87,6 +88,10 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<LaunchControllerMenu>> LAUNCH_CONTROLLER =
             MENUS.register("launch_controller",
                     key -> new MenuType<>(LaunchControllerMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistryEntry<MenuType<StationCharterMenu>> STATION_CHARTER =
+            MENUS.register("station_charter",
+                    key -> new MenuType<>(StationCharterMenu::new, FeatureFlags.VANILLA_SET));
 
     private ModMenuTypes() {
     }

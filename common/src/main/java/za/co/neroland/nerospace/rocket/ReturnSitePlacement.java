@@ -31,10 +31,9 @@ public final class ReturnSitePlacement {
     }
 
     private static Arrival placeStationDock(ServerLevel level, BlockPos centre, RocketTier tier, int carriedFuelMb) {
-        StationStructure.build(level, centre);
-        BlockPos site = findOrPlace(level, ModBlocks.DOCKING_PORT.get(), centre.above(), true);
-        seed(level, site, tier, carriedFuelMb);
-        return arrival(site);
+        // Build (or repair) the station and land on its Tier-2 airlock pad — no docking port.
+        BlockPos pad = StationStructure.build(level, centre);
+        return arrival(pad);
     }
 
     private static Arrival placeLandingPod(ServerLevel level, int x, int z, RocketTier tier, int carriedFuelMb) {
@@ -66,25 +65,6 @@ public final class ReturnSitePlacement {
         ensureTinyFoundation(level, site);
         seed(level, site, tier, carriedFuelMb);
         return arrival(site);
-    }
-
-    private static BlockPos findOrPlace(ServerLevel level, Block block, BlockPos preferred, boolean station) {
-        BlockPos site = null;
-        for (int radius = 0; radius <= SEARCH_RADIUS && site == null; radius++) {
-            for (int dx = -radius; dx <= radius && site == null; dx++) {
-                for (int dz = -radius; dz <= radius && site == null; dz++) {
-                    if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) {
-                        continue;
-                    }
-                    site = existingOrPlaceable(level, preferred.offset(dx, 0, dz), block);
-                }
-            }
-        }
-        if (site == null) {
-            site = preferred.above(station ? 1 : 8);
-        }
-        placeSite(level, site, block, station);
-        return site;
     }
 
     private static BlockPos existingOrPlaceable(ServerLevel level, BlockPos pos, Block block) {
