@@ -139,6 +139,11 @@ tasks.register('ecjCheck', JavaExec) {
                 '-proc:none',
                 '-d', 'none',
                 '-properties', rootProject.file('tools/ecj.prefs').absolutePath,
+                // No '-warn:' override — tools/ecj.prefs is the single source of truth for severities.
+                // A CLI -warn:+token forces a category ON regardless of the prefs `ignore`, so the
+                // framework-interop nullness categories would re-appear. nullanalysis=enabled in the
+                // prefs already turns annotation-based analysis on for the genuine categories.
+                '-annotationpath', 'CLASSPATH',
                 '-classpath', analysisCp,
         ] + srcDirs
     }
