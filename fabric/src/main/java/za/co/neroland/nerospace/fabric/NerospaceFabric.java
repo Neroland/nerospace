@@ -35,6 +35,7 @@ import za.co.neroland.nerospace.meteor.MeteorEvents;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.rocket.RocketPadFluidProxy;
+import za.co.neroland.nerospace.rocket.RocketPadGasProxy;
 import za.co.neroland.nerospace.rocket.RocketPadItemContainer;
 import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.world.PlayerJoinHandler;
@@ -262,6 +263,10 @@ public final class NerospaceFabric implements ModInitializer {
         // the BLOCK (no block entity) — the proxies find the rocket above the pad.
         FLUID.registerForBlocks(
                 (world, pos, state, blockEntity, side) -> new RocketPadFluidProxy(world, pos),
+                ModBlocks.ROCKET_LAUNCH_PAD.get());
+        // Gas sink: forwards oxygen into a docked rocket's onboard life-support tank.
+        GAS.registerForBlocks(
+                (world, pos, state, blockEntity, side) -> new RocketPadGasProxy(world, pos),
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
         ItemStorage.SIDED.registerForBlocks(
                 (world, pos, state, blockEntity, side) -> ContainerStorage.of(new RocketPadItemContainer(world, pos), side),

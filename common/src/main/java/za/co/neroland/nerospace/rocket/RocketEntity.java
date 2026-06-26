@@ -74,6 +74,9 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Selected founded-station slot for the Orbital Station destination ({@code -1} = the origin platform). */
     private static final EntityDataAccessor<Integer> DATA_STATION =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    /** Onboard oxygen (life-support) store, in millibuckets — the server-authoritative value, synced for the UI. */
+    private static final EntityDataAccessor<Integer> DATA_OXYGEN =
+            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
 
     /** Ticks of ascent before the rider is transported. */
     public static final int LAUNCH_DURATION = 100;
@@ -109,7 +112,8 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /**
      * Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex,
-     * [5]=stationSlot (−1 = origin), [6]=destinationMask.
+     * [5]=stationSlot (−1 = origin), [6]=destinationMask, [7]=oxygen, [8]=oxygenCapacity. All values stay
+     * &lt; 32767 so they survive the 16-bit ContainerData sync.
      */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -122,6 +126,8 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 4 -> getDestinationIndex();
                 case 5 -> getStationSlot();
                 case 6 -> destinationMask();
+                case 7 -> getOxygen();
+                case 8 -> getTier().oxygenCapacity();
                 default -> 0;
             };
         }
@@ -133,7 +139,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 7;
+            return 9;
         }
     };
 
@@ -191,6 +197,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         builder.define(DATA_LAUNCHING, false);
         builder.define(DATA_DEST, 0);
         builder.define(DATA_STATION, -1);
+        builder.define(DATA_OXYGEN, 0);
     }
 
     public int getFuel() {
@@ -319,6 +326,47 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     // --- Fuel / launch logic ------------------------------------------------
+
+    // --- Onboard oxygen (life support) --------------------------------------
+
+    /** Current onboard oxygen, in millibuckets. */
+    public int getOxygen() {
+        return this.entityData.get(DATA_OXYGEN);
+    }
+
+    /** Current oxygen as a 0–100 percentage of the tier capacity (for the UI readout). */
+    public int getOxygenPercent() {
+        int capacity = getTier().oxygenCapacity();
+        return capacity == 0 ? 0 : Math.min(100, getOxygen() * 100 / capacity);
+    }
+
+    /**
+     * Fills the onboard oxygen tank (server-side), capped at the tier capacity.
+     * @return millibuckets that could not be accepted (overflow).
+     */
+    public int addOxygen(int amount) {
+        if (level().isClientSide() || amount <= 0) {
+            return amount;
+        }
+        int room = Math.max(0, getTier().oxygenCapacity() - getOxygen());
+        int fill = Math.min(amount, room);
+        if (fill > 0) {
+            this.entityData.set(DATA_OXYGEN, getOxygen() + fill);
+        }
+        return amount - fill;
+    }
+
+    /** Draws oxygen from the onboard tank (server-side). @return millibuckets actually removed. */
+    public int drainOxygen(int amount) {
+        if (level().isClientSide() || amount <= 0) {
+            return 0;
+        }
+        int removed = Math.min(amount, getOxygen());
+        if (removed > 0) {
+            this.entityData.set(DATA_OXYGEN, getOxygen() - removed);
+        }
+        return removed;
+    }
 
     /** @return millibuckets of fuel that could not be accepted (overflow). Caps at the tier capacity. */
     public int addFuel(int amount) {
@@ -551,6 +599,9 @@ public class RocketEntity extends Entity implements MenuProvider {
                 player.teleportTo(destination, arrival.x(), arrival.y(), arrival.z(),
                         Set.of(), player.getYRot(), player.getXRot(), true);
                 player.sendSystemMessage(arrivalMessage);
+                // Life support: dump the rocket's remaining oxygen into the rider as a slow-draining
+                // surface reserve (this also tops their suit/personal O2 to full on arrival).
+                za.co.neroland.nerospace.world.OxygenManager.grantArrivalReserve(player, getOxygen());
             }
         }
 
@@ -668,6 +719,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.entityData.set(DATA_DEST,
                 Destinations.sanitizeIndex(getTier(), level().dimension(), destination));
         this.entityData.set(DATA_STATION, input.getIntOr("StationSlot", -1));
+        this.entityData.set(DATA_OXYGEN, input.getIntOr("Oxygen", 0));
         Fluid fluid = BuiltInRegistries.FLUID.getValue(
                 Identifier.parse(input.getStringOr("FuelFluid", "minecraft:empty")));
         this.fuelTank.setRaw(fluid, input.getIntOr("FuelAmount", 0));
@@ -683,6 +735,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.putInt("Destination", getDestinationIndex());
         output.putBoolean("GlobalDestination", true);
         output.putInt("StationSlot", getStationSlot());
+        output.putInt("Oxygen", getOxygen());
         output.putString("FuelFluid", BuiltInRegistries.FLUID.getKey(this.fuelTank.getRawFluid()).toString());
         output.putInt("FuelAmount", this.fuelTank.getRawAmount());
         output.store("FuelInput", ItemStack.OPTIONAL_CODEC, this.fuelInput.getItem(0));

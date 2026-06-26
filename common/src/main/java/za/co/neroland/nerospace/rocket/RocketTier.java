@@ -32,23 +32,26 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  */
 public enum RocketTier {
 
-    TIER_1(1, 3_000, 1_000, List.of(ModDimensions.STATION_LEVEL)),
-    TIER_2(2, 6_000, 2_000, List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL)),
-    TIER_3(3, 12_000, 4_000, List.of(
+    TIER_1(1, 3_000, 1_000, 2_000, List.of(ModDimensions.STATION_LEVEL)),
+    TIER_2(2, 6_000, 2_000, 4_000, List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL)),
+    TIER_3(3, 12_000, 4_000, 8_000, List.of(
             ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL)),
-    TIER_4(4, 24_000, 8_000, List.of(
+    TIER_4(4, 24_000, 8_000, 16_000, List.of(
             ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
             ModDimensions.GLACIRA_LEVEL));
 
     private final int level;
     private final int fuelCapacity;
     private final int fuelPerLaunch;
+    private final int oxygenCapacity;
     private final List<ResourceKey<Level>> destinations;
 
-    RocketTier(int level, int fuelCapacity, int fuelPerLaunch, List<ResourceKey<Level>> destinations) {
+    RocketTier(int level, int fuelCapacity, int fuelPerLaunch, int oxygenCapacity,
+            List<ResourceKey<Level>> destinations) {
         this.level = level;
         this.fuelCapacity = fuelCapacity;
         this.fuelPerLaunch = fuelPerLaunch;
+        this.oxygenCapacity = oxygenCapacity;
         this.destinations = destinations;
     }
 
@@ -60,6 +63,15 @@ public enum RocketTier {
     /** Fuel tank capacity, in millibuckets. */
     public int fuelCapacity() {
         return this.fuelCapacity;
+    }
+
+    /**
+     * Onboard oxygen (life-support) tank capacity, in millibuckets. Loaded before launch from an Oxygen
+     * Generator via a gas pipe into the launch pad; keeps the rider breathing during ascent and seeds a
+     * slow-draining surface reserve on arrival. Bigger tiers carry far more (longer off-world stays).
+     */
+    public int oxygenCapacity() {
+        return this.oxygenCapacity;
     }
 
     /** Fuel consumed by a single launch, in millibuckets (config-scaled, clamped to the tank so a launch is always possible). */

@@ -25,6 +25,7 @@ import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.rocket.RocketEntity;
 
 /**
  * Oxygen / atmosphere survival (Phase 8c, simplified cross-loader port). On airless Nerospace
@@ -65,6 +66,15 @@ public final class OxygenManager {
     /** Drain factor on a hazard dimension without the matching suit variant (SUIT_HAZARD_DESIGN.md §2). */
     private static final int HAZARD_DRAIN_MULTIPLIER = 4;
 
+    /** Oxygen (mB) a ridden rocket's life-support tank spends per check keeping the rider breathing. */
+    private static final int RIDE_DRAIN_PER_CHECK = 2;
+    /**
+     * The rocket arrival reserve (oxygen carried over from the rocket's onboard tank, held as overfill above
+     * the normal tank) drains at {@code 1 / this} of the normal exposed rate — so a rocket trip buys a long
+     * surface stay before ordinary suit/bare drain resumes.
+     */
+    private static final int RESERVE_DRAIN_DIVISOR = 100;
+
     /** Airlock refill: scan radius around a suited player for a Gas Tank / Oxygen Generator holding O2. */
     private static final int AIRLOCK_RADIUS = 4;
     /** Air units a suit's tank regains per check from an in-range oxygen store (drain offsets it nicely). */
@@ -94,16 +104,39 @@ public final class OxygenManager {
                 && !player.getAbilities().instabuild
                 && !player.isSpectator();
         if (!airless) {
-            Services.PLATFORM.setOxygen(player, max);
-            mirrorToAirSupply(player, max, max);
+            // Breathable dimension: ensure a full tank but never wipe a carried-over arrival reserve.
+            int kept = Math.max(Services.PLATFORM.getOxygen(player), max);
+            Services.PLATFORM.setOxygen(player, kept);
+            mirrorToAirSupply(player, Math.min(kept, max), max);
             return;
         }
 
-        int oxygen = Math.min(Services.PLATFORM.getOxygen(player), max);
+        // Riding the rocket on an airless world: the onboard tank is life support — keep the rider's air
+        // full and trickle the rocket's oxygen down (the bulk is saved for the arrival surface reserve).
+        if (player.getVehicle() instanceof RocketEntity rocket && rocket.getOxygen() > 0) {
+            if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
+                rocket.drainOxygen(RIDE_DRAIN_PER_CHECK);
+            }
+            int kept = Math.max(Services.PLATFORM.getOxygen(player), max);
+            Services.PLATFORM.setOxygen(player, kept);
+            mirrorToAirSupply(player, Math.min(kept, max), max);
+            return;
+        }
+
+        // May exceed max while a rocket arrival reserve is still held (overfill above the normal tank).
+        int oxygen = Services.PLATFORM.getOxygen(player);
 
         if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
             if (isBreathable(level, player.blockPosition())) {
-                oxygen = max;
+                oxygen = Math.max(oxygen, max); // breathe ambient; any reserve is left untouched
+            } else if (oxygen > max) {
+                // Arrival reserve: deplete at ~1/RESERVE_DRAIN_DIVISOR of the exposed rate (a long stay),
+                // flooring at the normal tank so ordinary drain resumes once the reserve is spent.
+                int normalDrain = NerospaceConfig.scale(suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK,
+                        NerospaceConfig.oxygenDrainMultiplier()) * hazardDrainMultiplier(level, player);
+                int reserveDrain = Math.max(1, normalDrain / RESERVE_DRAIN_DIVISOR);
+                oxygen = Math.max(max, oxygen - reserveDrain);
+                hazardFeedback(level, player);
             } else {
                 // An uncountered dimension hazard (Cindara heat / Glacira cold) multiplies the drain.
                 int drain = NerospaceConfig.scale(suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK,
@@ -119,7 +152,7 @@ public final class OxygenManager {
             Services.PLATFORM.setOxygen(player, oxygen);
         }
 
-        mirrorToAirSupply(player, oxygen, max);
+        mirrorToAirSupply(player, Math.min(oxygen, max), max);
 
         if (oxygen <= 0 && player.tickCount % DAMAGE_INTERVAL_TICKS == 0) {
             player.hurtServer(level, level.damageSources().generic(), SUFFOCATION_DAMAGE);
@@ -127,6 +160,24 @@ public final class OxygenManager {
                 player.sendSystemMessage(Component.translatable("message.nerospace.greenxertz.no_air"));
             }
         }
+    }
+
+    /** The player's normal oxygen tank size (suit or bare lungs), config-scaled. */
+    public static int maxOxygenFor(Player player) {
+        return NerospaceConfig.scale(isFullSuit(player) ? OXYGEN_SUIT_MAX : OXYGEN_MAX,
+                NerospaceConfig.oxygenCapacityMultiplier());
+    }
+
+    /**
+     * Grants a rocket arrival reserve: tops the rider's personal/suit oxygen to full and adds the rocket's
+     * remaining onboard oxygen as overfill on top. The overfill drains at {@link #RESERVE_DRAIN_DIVISOR} of
+     * the normal rate (see {@link #tick}), so a fuelled rocket buys a long surface stay. Server-side.
+     */
+    public static void grantArrivalReserve(ServerPlayer player, int oxygenMb) {
+        if (oxygenMb <= 0) {
+            return;
+        }
+        Services.PLATFORM.setOxygen(player, maxOxygenFor(player) + oxygenMb);
     }
 
     /** Maps oxygen onto the vanilla air-supply bar (full oxygen → no bubbles shown). */

@@ -38,7 +38,7 @@ public class RocketMenu extends AbstractContainerMenu {
     /** Select destination {@code n} via button id {@code SELECT_DEST_BASE + n}. */
     public static final int SELECT_DEST_BASE = 100;
 
-    private static final int DATA_COUNT = 7;
+    private static final int DATA_COUNT = 9;
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
@@ -161,6 +161,22 @@ public class RocketMenu extends AbstractContainerMenu {
     public int getFuelPercent() {
         int capacity = getCapacity();
         return capacity == 0 ? 0 : Math.min(100, getFuel() * 100 / capacity);
+    }
+
+    /** Onboard oxygen (life-support) in millibuckets. */
+    public int getOxygen() {
+        return this.data.get(7);
+    }
+
+    /** Onboard oxygen tank capacity for the current tier, in millibuckets. */
+    public int getOxygenCapacity() {
+        return this.data.get(8);
+    }
+
+    /** Current oxygen as a 0–100 percentage of the tier capacity. */
+    public int getOxygenPercent() {
+        int capacity = getOxygenCapacity();
+        return capacity == 0 ? 0 : Math.min(100, getOxygen() * 100 / capacity);
     }
 
     /** Display name of the currently selected destination. */
