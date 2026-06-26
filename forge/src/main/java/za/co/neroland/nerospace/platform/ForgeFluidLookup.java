@@ -13,7 +13,6 @@ import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.rocket.RocketPadFluidProxy;
 
 /** Forge query of the mod's fluid capability. */
-@SuppressWarnings("null")
 public final class ForgeFluidLookup implements FluidLookup {
 
     @Nullable

@@ -11,7 +11,6 @@ import za.co.neroland.nerospace.forge.ForgeCapabilities;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 
 /** Forge query of the mod's gas capability. */
-@SuppressWarnings("null")
 public final class ForgeGasLookup implements GasLookup {
 
     @Nullable

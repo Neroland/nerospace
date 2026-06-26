@@ -44,8 +44,8 @@ public final class StructureSpacing {
             return false;
         }
         int span = Math.max(1, CELL_CHUNKS - 4);
-        int ax = 2 + (int) Math.floorMod(h >>> 8, span);
-        int az = 2 + (int) Math.floorMod(h >>> 24, span);
+        int ax = 2 + Math.floorMod(h >>> 8, span);
+        int az = 2 + Math.floorMod(h >>> 24, span);
         return Math.floorMod(cx, CELL_CHUNKS) == ax && Math.floorMod(cz, CELL_CHUNKS) == az;
     }
 

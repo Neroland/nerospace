@@ -51,7 +51,7 @@ public final class EnergyBuffer implements NerospaceEnergyStorage {
 
     /** Internal generation (bypasses the insert limit) — for generators. */
     public void generate(int amount) {
-        int add = (int) Math.max(0, Math.min(amount, this.capacity - this.amount));
+        int add = Math.max(0, Math.min(amount, this.capacity - this.amount));
         if (add > 0) {
             this.amount += add;
             this.onChanged.run();
@@ -60,7 +60,7 @@ public final class EnergyBuffer implements NerospaceEnergyStorage {
 
     /** Internal consumption (bypasses the extract limit) — for machines. */
     public void consume(int amount) {
-        int removed = (int) Math.max(0, Math.min(amount, this.amount));
+        int removed = Math.max(0, Math.min(amount, this.amount));
         if (removed > 0) {
             this.amount -= removed;
             this.onChanged.run();

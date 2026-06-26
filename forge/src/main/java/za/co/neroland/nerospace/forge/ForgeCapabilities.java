@@ -44,7 +44,6 @@ import za.co.neroland.nerospace.storage.GasTankBlockEntity;
 import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 
 /** Forge capability providers for the existing loader-neutral storage seams. */
-@SuppressWarnings("null")
 public final class ForgeCapabilities {
 
     public static final Capability<ForgeEnergyStorageCapability> ENERGY =

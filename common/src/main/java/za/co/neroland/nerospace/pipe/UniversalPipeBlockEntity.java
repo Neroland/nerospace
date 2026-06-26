@@ -29,7 +29,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -45,7 +44,6 @@ import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.item.PipeUpgradeItem;
 import za.co.neroland.nerospace.menu.PipeConfigMenu;
 import za.co.neroland.nerospace.platform.EnergyLookup;
-import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -226,11 +224,6 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         setChanged();
     }
 
-    private boolean passesFilter(Direction dir, ItemStack candidate) {
-        ItemStack f = this.faceFilters[dir.get3DDataValue()];
-        return f.isEmpty() || ItemStack.isSameItemSameComponents(f, candidate);
-    }
-
     // --- Upgrades (Speed / Capacity) -----------------------------------------
 
     public boolean installUpgrade(PipeUpgradeItem.Kind kind) {
@@ -364,15 +357,6 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         return this.travelling;
     }
 
-    /** Spawn a cosmetic packet crossing the segment toward {@code outFace} (does not affect the transfer). */
-    private void spawnTravelling(ItemStack moved, Direction outFace) {
-        if (moved.isEmpty() || this.travelling.size() >= MAX_TRAVELLING) {
-            return;
-        }
-        this.travelling.add(new TravellingItem(moved.copy(), outFace.getOpposite(), outFace, 0.0F));
-        setChanged();
-    }
-
     public boolean hasBufferedItems() {
         for (ItemStack stack : this.items) {
             if (!stack.isEmpty()) {
@@ -389,235 +373,6 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         }
         this.travelling.add(new TravellingItem(moved.copy(), inFace, outFace, 0.0F));
         setChanged();
-    }
-
-    private void relayEnergy(Level level, BlockPos pos) {
-        long io = (long) MAX_IO * speedMultiplier();
-        for (Direction dir : Direction.values()) {
-            if (!mode(dir, PipeResourceType.ENERGY).canPull()) {
-                continue;
-            }
-            NerospaceEnergyStorage neighbour = EnergyLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
-            if (neighbour == null) {
-                continue;
-            }
-            long room = this.energy.getCapacity() - this.energy.getAmount();
-            if (room > 0) {
-                long moved = neighbour.extract(Math.min(room, io), false);
-                if (moved > 0) {
-                    this.energy.insert(moved, false);
-                }
-            }
-        }
-        for (Direction dir : Direction.values()) {
-            if (this.energy.getAmount() <= 0) {
-                break;
-            }
-            if (!mode(dir, PipeResourceType.ENERGY).canPush()) {
-                continue;
-            }
-            NerospaceEnergyStorage neighbour = EnergyLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
-            if (neighbour == null) {
-                continue;
-            }
-            long offered = this.energy.extract(Math.min(this.energy.getAmount(), io), true);
-            long accepted = neighbour.insert(offered, false);
-            if (accepted > 0) {
-                this.energy.extract(accepted, false);
-            }
-        }
-    }
-
-    private void relayGas(Level level, BlockPos pos) {
-        long io = (long) GAS_MAX_IO * speedMultiplier();
-        for (Direction dir : Direction.values()) {
-            long room = this.gas.getCapacity() - this.gas.getAmount();
-            if (room <= 0) {
-                break;
-            }
-            if (!mode(dir, PipeResourceType.GAS).canPull()) {
-                continue;
-            }
-            NerospaceGasStorage neighbour = GasLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
-            if (neighbour == null) {
-                continue;
-            }
-            GasResource ngas = neighbour.getGas();
-            if (ngas.isEmpty() || (!this.gas.getGas().isEmpty() && this.gas.getGas() != ngas)) {
-                continue;
-            }
-            long available = neighbour.drain(Math.min(room, io), true);
-            long moved = this.gas.fill(ngas, available, false);
-            if (moved > 0) {
-                neighbour.drain(moved, false);
-            }
-        }
-        for (Direction dir : Direction.values()) {
-            if (this.gas.getAmount() <= 0) {
-                break;
-            }
-            if (!mode(dir, PipeResourceType.GAS).canPush()) {
-                continue;
-            }
-            NerospaceGasStorage neighbour = GasLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
-            if (neighbour == null) {
-                continue;
-            }
-            GasResource g = this.gas.getGas();
-            long offered = this.gas.drain(Math.min(this.gas.getAmount(), io), true);
-            long accepted = neighbour.fill(g, offered, false);
-            if (accepted > 0) {
-                this.gas.drain(accepted, false);
-            }
-        }
-    }
-
-    private void relayFluid(Level level, BlockPos pos) {
-        long io = (long) FLUID_MAX_IO * speedMultiplier();
-        for (Direction dir : Direction.values()) {
-            long room = this.fluid.getCapacity() - this.fluid.getAmount();
-            if (room <= 0) {
-                break;
-            }
-            if (!mode(dir, PipeResourceType.FLUID).canPull()) {
-                continue;
-            }
-            NerospaceFluidStorage neighbour = FluidLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
-            if (neighbour == null) {
-                continue;
-            }
-            Fluid nfluid = neighbour.getFluid();
-            if (nfluid == Fluids.EMPTY || (this.fluid.getFluid() != Fluids.EMPTY && this.fluid.getFluid() != nfluid)) {
-                continue;
-            }
-            long available = neighbour.drain(Math.min(room, io), true);
-            long moved = this.fluid.fill(nfluid, available, false);
-            if (moved > 0) {
-                neighbour.drain(moved, false);
-            }
-        }
-        for (Direction dir : Direction.values()) {
-            if (this.fluid.getAmount() <= 0) {
-                break;
-            }
-            if (!mode(dir, PipeResourceType.FLUID).canPush()) {
-                continue;
-            }
-            NerospaceFluidStorage neighbour = FluidLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
-            if (neighbour == null) {
-                continue;
-            }
-            Fluid f = this.fluid.getFluid();
-            long offered = this.fluid.drain(Math.min(this.fluid.getAmount(), io), true);
-            long accepted = neighbour.fill(f, offered, false);
-            if (accepted > 0) {
-                this.fluid.drain(accepted, false);
-            }
-        }
-    }
-
-    private void relayItems(Level level, BlockPos pos) {
-        int perTick = speedMultiplier();
-        // Pull from each non-pipe neighbour whose face ITEM mode allows pulling; the pipe's face filter
-        // (if any) restricts what enters. Sources feed the line — pipes are never pulled from.
-        for (Direction dir : Direction.values()) {
-            if (!mode(dir, PipeResourceType.ITEM).canPull()) {
-                continue;
-            }
-            BlockEntity be = level.getBlockEntity(pos.relative(dir));
-            if (be instanceof Container src && !(be instanceof UniversalPipeBlockEntity)) {
-                for (int i = 0; i < perTick; i++) {
-                    if (moveOneFiltered(src, dir.getOpposite(), this, dir, dir).isEmpty()) {
-                        break;
-                    }
-                }
-            }
-        }
-        // Push into each neighbour (incl. other pipes) whose face ITEM mode allows pushing.
-        for (Direction dir : Direction.values()) {
-            if (!mode(dir, PipeResourceType.ITEM).canPush()) {
-                continue;
-            }
-            BlockEntity be = level.getBlockEntity(pos.relative(dir));
-            if (be instanceof Container dst) {
-                for (int i = 0; i < perTick; i++) {
-                    ItemStack moved = moveOneFiltered(this, dir, dst, dir.getOpposite(), dir);
-                    if (moved.isEmpty()) {
-                        break;
-                    }
-                    // Cosmetic: echo the (already-completed) transfer as a packet crossing toward this face.
-                    spawnTravelling(moved, dir);
-                }
-            }
-        }
-    }
-
-    private static int[] slotsFor(Container c, Direction face) {
-        if (c instanceof WorldlyContainer wc) {
-            return wc.getSlotsForFace(face);
-        }
-        int[] all = new int[c.getContainerSize()];
-        for (int i = 0; i < all.length; i++) {
-            all[i] = i;
-        }
-        return all;
-    }
-
-    private static boolean placeable(Container into, int slot, ItemStack stack, Direction face) {
-        if (!into.canPlaceItem(slot, stack)) {
-            return false;
-        }
-        return !(into instanceof WorldlyContainer wc) || wc.canPlaceItemThroughFace(slot, stack, face);
-    }
-
-    /**
-     * Move a single item from {@code from} (extracted through {@code fromFace}) into {@code into},
-     * honouring this pipe's item filter on {@code filterFace} (the face the item passes through here).
-     *
-     * @return a single-item copy of what moved (for the travelling-item visual), or {@code EMPTY} if nothing moved.
-     */
-    private ItemStack moveOneFiltered(Container from, Direction fromFace, Container into, Direction intoFace,
-            Direction filterFace) {
-        for (int fs : slotsFor(from, fromFace)) {
-            ItemStack stack = from.getItem(fs);
-            if (stack.isEmpty()) {
-                continue;
-            }
-            if (!passesFilter(filterFace, stack)) {
-                continue;
-            }
-            if (from instanceof WorldlyContainer wc && !wc.canTakeItemThroughFace(fs, stack, fromFace)) {
-                continue;
-            }
-            ItemStack one = stack.copyWithCount(1);
-            if (insertOne(into, one, intoFace)) {
-                from.removeItem(fs, 1);
-                from.setChanged();
-                return one;
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
-    private static boolean insertOne(Container into, ItemStack one, Direction face) {
-        for (int s : slotsFor(into, face)) {
-            ItemStack ex = into.getItem(s);
-            int max = Math.min(into.getMaxStackSize(), one.getMaxStackSize());
-            if (!ex.isEmpty() && ex.getCount() < max
-                    && ItemStack.isSameItemSameComponents(ex, one) && placeable(into, s, one, face)) {
-                ex.grow(1);
-                into.setChanged();
-                return true;
-            }
-        }
-        for (int s : slotsFor(into, face)) {
-            if (into.getItem(s).isEmpty() && placeable(into, s, one, face)) {
-                into.setItem(s, one);
-                into.setChanged();
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
