@@ -30,6 +30,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.config.NerospaceConfig;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.menu.TerraformerMenu;
@@ -277,6 +278,11 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
      * predecessor's radius; a stage-2 column that needs water it can't pay for stalls in place.
      */
     private boolean workStage(ServerLevel level, BlockPos center, int stage, Set<LevelChunk> biomeChanged) {
+        return NerospaceTelemetry.trace("terraform.work", "stage" + stage,
+                () -> workStage0(level, center, stage, biomeChanged));
+    }
+
+    private boolean workStage0(ServerLevel level, BlockPos center, int stage, Set<LevelChunk> biomeChanged) {
         int cost = NerospaceConfig.scale(stageCost(stage), NerospaceConfig.fuelCostMultiplier());
         int budget = stageBudget(stage);
         boolean changed = false;

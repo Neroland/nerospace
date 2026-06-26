@@ -32,6 +32,12 @@ public interface IPlatformHelper {
     /** This mod's version string (for telemetry release tags), or "unknown" if unavailable. */
     String getModVersion();
 
+    /**
+     * The ids + versions of every loaded mod ("modid version"), sorted, for crash mod-conflict
+     * triage in telemetry. These are public manifest strings only — no personal data.
+     */
+    java.util.List<String> getLoadedModIds();
+
     // --- Per-player oxygen (data-attachment seam) ---------------------------
     // NeoForge backs this with an AttachmentType registered via DeferredRegister; Fabric with the
     // data-attachment API. The value defaults to {@code OxygenManager.OXYGEN_MAX} and persists.

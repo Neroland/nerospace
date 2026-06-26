@@ -210,9 +210,11 @@ public final class NerospaceConfig {
             Files.createDirectories(file.getParent());
             try (OutputStream out = Files.newOutputStream(file)) {
                 props.store(out, "Nerospace config. telemetryEnabled: send anonymous, Nerospace-only "
-                        + "crash reports (Sentry, EU servers) — stack trace + mod/MC/loader/OS/Java "
-                        + "versions only; no IP, username, UUID, world data or chat; file paths are "
-                        + "scrubbed of your account name. Set to false to opt out. See PRIVACY.md. "
+                        + "crash reports (Sentry, EU servers) — stack trace, mod/MC/loader/OS/Java "
+                        + "versions, your other installed mods, this mod's config settings, recent "
+                        + "in-game actions, and anonymous stability/timing data; no IP, username, UUID, "
+                        + "world data or chat; file paths are scrubbed of your account name. Set to "
+                        + "false to opt out of all of it. See PRIVACY.md. "
                         + "energyRateMultiplier: scales FE/tick of all generators. oxygenDrainMultiplier: "
                         + "scales how fast air drains. oxygenCapacityMultiplier: scales air capacity. "
                         + "fuelCostMultiplier: scales fuel burned per rocket launch. "

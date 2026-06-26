@@ -17,6 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerospace.progression.StarGuideGrants;
+import za.co.neroland.nerospace.rocket.Destinations;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.rocket.StationCoreBlockEntity;
@@ -81,6 +83,8 @@ public class StationCharterItem extends Item {
 
         serverPlayer.teleportTo(station, centre.getX() + 0.5, centre.getY() + 1.0, centre.getZ() + 0.5,
                 Set.of(), serverPlayer.getYRot(), serverPlayer.getXRot(), true);
+        NerospaceTelemetry.breadcrumb("station",
+                "founded slot=" + entry.slot() + " dim=" + Destinations.name(station.dimension()));
         StarGuideGrants.grant(serverPlayer, "guide/station_charter");
         serverPlayer.sendSystemMessage(Component.translatable(
                 "item.nerospace.station_charter.founded", entry.name()));
