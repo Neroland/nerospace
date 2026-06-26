@@ -112,8 +112,8 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /**
      * Synced to the menu: [0]=fuel, [1]=capacity, [2]=tierOrdinal, [3]=launchable, [4]=destinationIndex,
-     * [5]=stationSlot (−1 = origin), [6]=destinationMask, [7]=oxygen, [8]=oxygenCapacity. All values stay
-     * &lt; 32767 so they survive the 16-bit ContainerData sync.
+     * [5]=stationSlot (−1 = origin), [6]=destinationMask, [7]=oxygen, [8]=oxygenCapacity, [9]=padValid.
+     * All values stay &lt; 32767 so they survive the 16-bit ContainerData sync.
      */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -128,6 +128,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 case 6 -> destinationMask();
                 case 7 -> getOxygen();
                 case 8 -> getTier().oxygenCapacity();
+                case 9 -> isOnValidPad() ? 1 : 0;
                 default -> 0;
             };
         }
@@ -139,7 +140,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
         @Override
         public int getCount() {
-            return 9;
+            return 10;
         }
     };
 

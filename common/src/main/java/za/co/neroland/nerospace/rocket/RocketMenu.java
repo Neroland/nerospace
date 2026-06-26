@@ -38,7 +38,7 @@ public class RocketMenu extends AbstractContainerMenu {
     /** Select destination {@code n} via button id {@code SELECT_DEST_BASE + n}. */
     public static final int SELECT_DEST_BASE = 100;
 
-    private static final int DATA_COUNT = 9;
+    private static final int DATA_COUNT = 10;
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
@@ -156,6 +156,11 @@ public class RocketMenu extends AbstractContainerMenu {
 
     public boolean isLaunchable() {
         return this.data.get(3) != 0;
+    }
+
+    /** Whether the rocket is standing on a pad that meets its tier (independent of fuel/destination). */
+    public boolean isPadValid() {
+        return this.data.get(9) != 0;
     }
 
     public int getDestinationIndex() {

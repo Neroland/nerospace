@@ -155,11 +155,22 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         label(g, Component.translatable("gui.nerospace.rocket.oxygen_value",
                 opct, this.menu.getOxygen(), this.menu.getOxygenCapacity()), RX, 84, 0xFFBFEFFF);
 
-        // Pad-readiness light.
+        // Status light — report the ACTUAL blocker: an insufficient pad, an empty tank, or all-clear.
+        boolean padValid = this.menu.isPadValid();
         boolean ready = this.menu.isLaunchable();
-        label(g, Component.translatable(ready
-                        ? "gui.nerospace.rocket.pad_ready" : "gui.nerospace.rocket.pad_blocked"),
-                RX, 100, ready ? GOOD : ACCENT);
+        String statusKey;
+        int statusColor;
+        if (!padValid) {
+            statusKey = "gui.nerospace.rocket.pad_blocked";
+            statusColor = ACCENT;
+        } else if (!ready) {
+            statusKey = "gui.nerospace.rocket.needs_fuel";
+            statusColor = 0xFFF0A83C; // amber: pad's fine, just needs fuelling
+        } else {
+            statusKey = "gui.nerospace.rocket.pad_ready";
+            statusColor = GOOD;
+        }
+        label(g, Component.translatable(statusKey), RX, 100, statusColor);
 
         // Destination node states from the live tier mask.
         int mask = this.menu.getDestinationMask();
