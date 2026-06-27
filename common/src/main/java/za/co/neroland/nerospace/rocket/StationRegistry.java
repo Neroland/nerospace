@@ -144,6 +144,28 @@ public final class StationRegistry extends SavedData {
         return renamed;
     }
 
+    /**
+     * POPIA/GDPR erasure: anonymises every station founded by {@code uuid} — clears the stored owner UUID
+     * (the only player-keyed field) while keeping the physical station, which is server-global, shared
+     * content. Afterwards those stations are unowned/legacy (anyone may manage them). Never logs the UUID.
+     * @return how many stations were anonymised.
+     */
+    public int forgetPlayer(java.util.UUID uuid) {
+        String target = uuid.toString();
+        int changed = 0;
+        for (Map.Entry<Integer, StationEntry> e : this.stations.entrySet()) {
+            StationEntry entry = e.getValue();
+            if (target.equals(entry.owner())) {
+                e.setValue(new StationEntry(entry.slot(), entry.name(), entry.center(), ""));
+                changed++;
+            }
+        }
+        if (changed > 0) {
+            setDirty();
+        }
+        return changed;
+    }
+
     /** Unregisters {@code slot}; @return the removed entry, or {@code null} if it wasn't registered. */
     @Nullable
     public StationEntry unregister(int slot) {

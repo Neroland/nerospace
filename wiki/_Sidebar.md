@@ -3,6 +3,7 @@
 - [Home](Home)
 - [Star Guide](Star-Guide)
 - [Planet Gravity](Planet-Gravity)
+- [Neroland Core](Neroland-Core)
 
 **Blocks — Ores**
 

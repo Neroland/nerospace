@@ -20,6 +20,9 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
+import za.co.neroland.nerolandcore.platform.ForgeEnergyLookup;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
@@ -140,6 +143,9 @@ public final class ForgeCapabilities {
     private static final class MachineCaps implements ICapabilityProvider {
 
         private final LazyOptional<ForgeEnergyStorageCapability> energy;
+        // Same storage exposed on Neroland Core's shared nerolandcore:energy capability (cross-mod power
+        // network). NerospaceEnergyStorage IS a NeroEnergyStorage, so no adapter is needed.
+        private final LazyOptional<NeroEnergyStorage> coreEnergy;
         private final LazyOptional<ForgeFluidStorageCapability> fluid;
         private final LazyOptional<ForgeGasStorageCapability> gas;
         @Nullable
@@ -152,6 +158,7 @@ public final class ForgeCapabilities {
                 @Nullable Supplier<NerospaceFluidStorage> fluid,
                 @Nullable Supplier<NerospaceGasStorage> gas, @Nullable Container container) {
             this.energy = energy == null ? LazyOptional.empty() : LazyOptional.of(() -> new EnergyAdapter(energy));
+            this.coreEnergy = energy == null ? LazyOptional.empty() : LazyOptional.<NeroEnergyStorage>of(energy::get);
             this.fluid = fluid == null ? LazyOptional.empty() : LazyOptional.of(() -> new FluidAdapter(fluid));
             this.gas = gas == null ? LazyOptional.empty() : LazyOptional.of(() -> new GasAdapter(gas));
             this.container = container;
@@ -162,6 +169,9 @@ public final class ForgeCapabilities {
         public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
             if (cap == ENERGY) {
                 return energy.cast();
+            }
+            if (cap == ForgeEnergyLookup.ENERGY) {
+                return coreEnergy.cast();
             }
             if (cap == FLUID) {
                 return fluid.cast();
@@ -184,6 +194,7 @@ public final class ForgeCapabilities {
 
         void invalidate() {
             energy.invalidate();
+            coreEnergy.invalidate();
             fluid.invalidate();
             gas.invalidate();
             if (itemUnsided != null) {

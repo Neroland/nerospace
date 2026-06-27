@@ -25,6 +25,8 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
+import za.co.neroland.nerolandcore.platform.FabricEnergyLookup;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -278,6 +280,30 @@ public final class NerospaceFabric implements ModInitializer {
         ItemStorage.SIDED.registerForBlocks(
                 (world, pos, state, blockEntity, side) -> ContainerStorage.of(new RocketPadItemContainer(world, pos), side),
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
+
+        registerCoreEnergy();
+    }
+
+    /**
+     * Cross-mod energy network (Neroland Core): expose every Nerospace energy block-entity on Core's
+     * shared {@code nerolandcore:energy} lookup too, so machines from any Nero mod interoperate on one
+     * power network. {@link NerospaceEnergyStorage} extends {@code NeroEnergyStorage}, so the existing
+     * {@code getEnergy()} providers satisfy Core's lookup unchanged. The mod's own {@link #ENERGY} stays
+     * registered above for back-compat.
+     */
+    private static void registerCoreEnergy() {
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.BATTERY.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.COMBUSTION_GENERATOR.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.NEROSIUM_GRINDER.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.PASSIVE_GENERATOR.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.UNIVERSAL_PIPE.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.OXYGEN_GENERATOR.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.LAUNCH_CONTROLLER.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.SOLAR_PANEL.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.TERRAFORMER.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.CREATIVE_BATTERY.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.FUEL_REFINERY.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.QUARRY_CONTROLLER.get());
     }
 
     private static void addOverworldOre(String placedFeatureName) {

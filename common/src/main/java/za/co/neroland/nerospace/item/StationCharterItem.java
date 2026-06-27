@@ -84,6 +84,8 @@ public class StationCharterItem extends Item {
         StationStructure.build(station, entry.center());
         NerospaceTelemetry.breadcrumb("station", "founded slot=" + entry.slot());
         StarGuideGrants.grant(player, "guide/station_charter");
+        // Founding an off-world base opens Neroland Core's shared FIRST_COLONY gate (one-directional).
+        StarGuideGrants.driveFirstColony(player);
         player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.founded", entry.name()));
     }
 
