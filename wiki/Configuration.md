@@ -1,7 +1,7 @@
 # Configuration
 
 Nerospace's config (`config/nerospace-common.toml`) is deliberately small: the mod owns its base
-balance numbers in code, and packs tune them through **five multipliers**. Everything else in the
+balance numbers in code, and packs tune them through **six multipliers**. Everything else in the
 file is genuinely absolute — booleans, radii, performance caps, advanced simulation tuning and
 client visual preferences.
 
@@ -9,9 +9,9 @@ client visual preferences.
 > `combustionGeneratorFePerTick`, …) was removed without migration. Delete your old
 > `nerospace-common.toml` and let it regenerate.
 
-## The five multipliers
+## The six multipliers
 
-All five default to `1.0` and are clamped to **0.1 – 10.0**. Internally every scaled value is
+All six default to `1.0` and are clamped to **0.1 – 10.0**. Internally every scaled value is
 clamped to at least 1, so extreme settings can never zero a rate, divide by zero, or stall
 progression (e.g. the rocket launch cost is additionally clamped to the tank size, so a launch is
 always possible with a full tank).
@@ -23,6 +23,7 @@ always possible with a full tank).
 | `energyRateMultiplier` | The energy & storage economy: generator output, energy pipe throughput, and every buffer/tank capacity (battery, fluid/gas/fuel tanks, pipe buffers, machine buffers, rocket fuel tanks). | combustion 60 FE/t · passive 10 FE/t · energy pipe 4,000 FE/t & 8,000 FE · fluid/gas pipe 4,000 mB · battery 200,000 FE · fluid/gas tank 16,000 mB · fuel tank 32,000 mB · machine buffers 10k–100k FE · rocket tanks 3,000/6,000/12,000 mB |
 | `fuelCostMultiplier` | Consumable costs: rocket fuel per launch (clamped to tank size), airlock oxygen-gas per air unit, machine energy costs. | launch 1,000/2,000/4,000 mB (T1/T2/T3) · airlock 5 mB/air · Terraformer 12 FE/block · Grinder 30 FE/t · O₂ Generator 2 FE/mB |
 | `machineSpeedMultiplier` | Machine working speed: grinder craft time, oxygen make/emit rate, fuel tank pump rate, airlock refill rate, fluid/gas pipe throughput, item pipe travel & extraction, Terraformer work interval. | grinder 100 t/item · O₂ make 5 / emit 2 mB/t · pump 40 / 160 (3×3) mB/t · refill 20 air/check · fluid pipe 500 / gas pipe 250 mB/t · item pipe 10 t/block, pulse every 10 t · Terraformer cycle every 8 t |
+| `gravityMultiplier` | A global scale on every world's [gravity](Planet-Gravity) — players, mobs, dropped items, projectiles, and falling meteors. <1 = floatier everywhere, >1 = heavier. | Per-dimension defaults: Station ~0.1× · Glacira ~0.4× · Greenxertz ~0.6× · Cindara ~0.8× · Overworld & terraformed ground 1.0× |
 
 Examples: `oxygenDrainMultiplier = 2.0` halves how long air lasts; `machineSpeedMultiplier = 2.0`
 makes the grinder craft in 50 ticks and the Terraformer work twice as often;

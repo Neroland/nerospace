@@ -5,6 +5,23 @@ All notable changes to **Nerospace** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+**Planetary gravity**
+
+- Each world now has its own **gravity**. The Orbital Station is near-weightless, **Glacira** is a
+  floaty low-gravity moon, **Greenxertz** is light, and **Cindara** sits closer to normal — so movement,
+  jump height, and falling all feel different from planet to planet. Gravity affects everything: you,
+  mobs, dropped items, arrows, falling blocks, and incoming meteors (which descend more slowly on
+  low-gravity worlds). Individual biomes can carry a lighter or heavier pull than their planet's baseline,
+  and **terraforming a planet restores normal, Earth-like gravity** to the ground you reclaim.
+- New config option **`gravityMultiplier`** (`config/nerospace.properties`, range 0.1–10, default 1.0):
+  a global scale on all gravity — set it below 1 for an even floatier game, or above 1 for a heavier one.
+- Creative/op debug command **`/nerospace gravity`** reports the gravity in effect where you're standing
+  (value, source, and your current gravity stat) for tuning and bug reports.
+
 ## [1.0.0-alpha.1] - 2026-06-15
 
 First public **alpha** of Nerospace, for Minecraft 26.1.2 on NeoForge. This pre-release carries

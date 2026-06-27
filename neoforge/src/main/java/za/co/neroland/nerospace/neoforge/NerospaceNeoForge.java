@@ -38,6 +38,7 @@ import za.co.neroland.nerospace.world.OxygenManager;
 import za.co.neroland.nerospace.world.PlayerJoinHandler;
 import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
+import za.co.neroland.nerospace.world.gravity.GravityManager;
 
 /**
  * NeoForge entry point. Runs shared init (building the DeferredRegisters via the
@@ -73,6 +74,7 @@ public final class NerospaceNeoForge {
             MeteorEvents.tick(event.getServer());
             OxygenFieldEvents.tick(event.getServer());
             TerraformDrift.tick(event.getServer());
+            GravityManager.tick(event.getServer());
         });
         // Artificer gear: Grav Striders cushion the wearer — negate fall damage while carried.
         NeoForge.EVENT_BUS.addListener((LivingFallEvent event) -> {

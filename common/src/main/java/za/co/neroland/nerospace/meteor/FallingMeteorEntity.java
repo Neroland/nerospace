@@ -17,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModEntities;
+import za.co.neroland.nerospace.world.gravity.GravityManager;
 
 /**
  * A meteor falling from the sky (meteor-events design §4). A non-living, AI-less {@link Entity}
@@ -125,13 +126,17 @@ public class FallingMeteorEntity extends Entity {
         Vec3 delta = target.subtract(pos);
         double dist = delta.length();
 
+        // Descent speed scales with local gravity (GRAVITY_DESIGN.md §5b) — meteors fall slower on
+        // low-gravity worlds. Clamped to a floor so an extreme factor can never stall the meteor mid-air.
+        double speed = Math.max(0.25D, SPEED * GravityManager.factorAt((ServerLevel) level(), blockPosition()));
+
         // Impact when we reach the target column or drop to/below the crater surface.
-        if (dist <= SPEED || pos.y <= this.targetY + 0.5D) {
+        if (dist <= speed || pos.y <= this.targetY + 0.5D) {
             resolveImpact((ServerLevel) level());
             return;
         }
 
-        Vec3 step = delta.scale(SPEED / dist);
+        Vec3 step = delta.scale(speed / dist);
         this.setDeltaMovement(step); // for client interpolation / rotation cues
         this.setPos(pos.x + step.x, pos.y + step.y, pos.z + step.z);
     }

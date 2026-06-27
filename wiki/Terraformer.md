@@ -55,6 +55,11 @@ N B N
   sparse **grown trees** (oak/birch, acacia, spruce by planet), and seeds starter pairs of the
   planet's livestock (population-capped).
 
+- **Gravity:** terraformed ground returns to **normal, Earth-like [gravity](Planet-Gravity)** — so
+
+  reclaiming a low-gravity moon makes the land you've converted feel like home (an explicit biome
+  gravity tag, if a pack sets one, still wins).
+
 - **Cosmetic drift:** settled land keeps sprouting sparse ground cover on its own — pure garnish,
 
   budgeted and toggleable (`terraformDriftEnabled`).
