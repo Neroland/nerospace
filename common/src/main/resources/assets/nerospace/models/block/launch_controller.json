@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nerospace:block/controller_top",
+    "bottom": "nerospace:block/controller_body",
+    "side": "nerospace:block/controller_body",
+    "particle": "nerospace:block/controller_body"
+  }
+}

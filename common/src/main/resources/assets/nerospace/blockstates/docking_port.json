@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "inflated=false": {
+      "model": "nerospace:block/docking_port"
+    },
+    "inflated=true": {
+      "model": "nerospace:block/docking_port"
+    }
+  }
+}

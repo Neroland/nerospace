@@ -54,6 +54,21 @@ N N N
 
   land. Build an [Oxygen Generator](Oxygen-Generator) base for anything beyond the landing area.
 
+## Pad-to-pad travel
+
+Launch pads double as the waypoints of rocket travel.
+
+- **Register a pad:** right-click a pad with a **Name Tag** to commission it as a named travel node
+  (the tag's name labels it, or "Pad N"). Registered pads become landing targets.
+- **Pick where you land:** in the rocket UI you choose a destination (Home / a planet / the Orbital
+  Station), then cycle a **pad selector** to land on a specific registered pad there — or *Nearest* to
+  auto-pick. You can also hop **pad-to-pad within the same dimension**.
+- **Calculated fuel:** a launch burns a base cost plus **distance** (for a same-world hop) or a flat
+  **cross-dimension surcharge**. The cost is shown live in the console; the launch is blocked until the
+  tank covers it.
+- **Return home:** a rocket remembers the pad it launched from, so flying back lands you on **that
+  exact pad**. A **Landing Pod** is only auto-built when the destination genuinely has no launch pad.
+
 ## Details
 
 - ID: `nerospace:rocket_launch_pad` · Tool: pickaxe, iron tier · Drops: itself

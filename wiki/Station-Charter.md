@@ -4,11 +4,13 @@ Found your own orbital station — name included.
 
 ## Overview
 
-The Station Charter is how players create **additional stations** beyond the shared
-[Orbital Station](Home): carry one aboard a rocket, pick the **FOUND** node in the rocket UI, and
-launch. The charter is consumed and a brand-new station platform is built in orbit, anchored by a
-**[Station Core](Station-Core)** — and from then on it appears as a destination in every rocket's UI,
-for every player and every rocket tier.
+The Station Charter creates **additional stations** beyond the shared [Orbital Station](Home).
+Right-click it to open a naming console, type a name, and confirm — a brand-new station is built in
+orbit and anchored by a **[Station Core](Station-Core)**. From then on it appears as a destination in
+every rocket's UI, for every player and every rocket tier.
+
+The charter does **not** teleport you — fly a rocket to the Orbital Station to visit, so the rocket
+stays the way you travel.
 
 ## Obtaining
 
@@ -24,26 +26,20 @@ W W W
 
 ## How it works
 
-- **Naming:** rename the charter in an **anvil** before flying — that becomes the station's name.
-
-  An unnamed charter founds "Station N".
-
-- **Founding:** board any rocket with the charter in your inventory; the rocket UI shows the
-
-  **FOUND** node next to the station selector. Select it and launch. The charter is consumed, the
-  platform + bound Station Core are placed, and the station registers as a destination.
-
-- **Capacity:** up to **64** founded stations per world. Founding also grants the *founded station*
-
-  advancement and ticks the Star Guide's rocketry chapter.
-
-- **Unregistering:** breaking the station's [Station Core](Station-Core) removes it from the
-
-  destination list.
-
-- **Privacy note:** stations store no owner data — any player may fly to (or unregister) any
-
-  station.
+- **Found:** right-click the charter to open the **naming screen**, type a name, and press *Found
+  Station*. One charter is consumed and the station is built remotely. A blank name auto-names
+  "Station N".
+- **What's built:** an enclosed observation room (station-wall pillars, glass window bands, lit
+  ceiling) with an **airlock** running out to a **Tier-2 landing pad** — the spot a rocket touches
+  down on when you fly there.
+- **From the rocket too:** the in-rocket dock selector includes a **New Station** option — pick it and
+  launch to found a fresh station and fly there in one trip.
+- **Visiting:** fly a rocket, choose **Orbital Station**, then cycle the dock selector to the station
+  you want.
+- **Capacity:** up to **64** stations per world. Founding grants the *founded station* advancement and
+  ticks the Star Guide.
+- **Ownership:** only you (the founder) can **rename** or **remove** your station; anyone may **fly**
+  to it. Your ID is stored locally for that check only — never logged or shared.
 
 ## Details
 

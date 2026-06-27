@@ -54,6 +54,7 @@
 **Blocks — Structures**
 
 - [Rocket Launch Pad](Rocket-Launch-Pad)
+- [Launch Controller](Launch-Controller)
 - [Launch Gantry](Launch-Gantry)
 - [Station Floor](Station-Floor)
 - [Station Wall](Station-Wall)

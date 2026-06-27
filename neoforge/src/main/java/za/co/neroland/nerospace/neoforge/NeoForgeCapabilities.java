@@ -16,6 +16,7 @@ import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.rocket.RocketPadFluidProxy;
+import za.co.neroland.nerospace.rocket.RocketPadGasProxy;
 import za.co.neroland.nerospace.rocket.RocketPadItemContainer;
 
 /**
@@ -138,6 +139,11 @@ public final class NeoForgeCapabilities {
                 ModBlockEntities.OXYGEN_GENERATOR.get(),
                 (be, side) -> be.getGas());
 
+        // Launch Controller resource hub: fuel in, oxygen in, power in (then pumped into the rocket).
+        event.registerBlockEntity(FLUID, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getTank());
+        event.registerBlockEntity(GAS, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getGas());
+        event.registerBlockEntity(ENERGY, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getEnergy());
+
         event.registerBlockEntity(
                 ENERGY,
                 ModBlockEntities.SOLAR_PANEL.get(),
@@ -247,6 +253,12 @@ public final class NeoForgeCapabilities {
         event.registerBlock(
                 FLUID,
                 (level, pos, state, blockEntity, side) -> new RocketPadFluidProxy(level, pos),
+                ModBlocks.ROCKET_LAUNCH_PAD.get());
+        // Gas sink: forwards oxygen into a docked rocket's onboard life-support tank (Oxygen Generator /
+        // gas pipe → pad → rocket), the gas analogue of the fuel proxy above.
+        event.registerBlock(
+                GAS,
+                (level, pos, state, blockEntity, side) -> new RocketPadGasProxy(level, pos),
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
         event.registerBlock(
                 Capabilities.Item.BLOCK,

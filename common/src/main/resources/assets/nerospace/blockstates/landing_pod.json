@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "inflated=false": {
+      "model": "nerospace:block/landing_pod_deflated"
+    },
+    "inflated=true": {
+      "model": "nerospace:block/landing_pod"
+    }
+  }
+}

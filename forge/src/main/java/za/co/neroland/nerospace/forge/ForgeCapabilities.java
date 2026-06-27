@@ -117,6 +117,10 @@ public final class ForgeCapabilities {
         } else if (be instanceof QuarryControllerBlockEntity machine) {
             energy = machine::getEnergy;
             fluid = machine::getTank;
+        } else if (be instanceof za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity controller) {
+            energy = controller::getEnergy;
+            fluid = controller::getTank;
+            gas = controller::getGas;
         }
 
         Container container = be instanceof Container c ? c : null;

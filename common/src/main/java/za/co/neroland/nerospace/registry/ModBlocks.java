@@ -29,7 +29,11 @@ import za.co.neroland.nerospace.machine.quarry.QuarryLandmarkBlock;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlock;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlock;
 import za.co.neroland.nerospace.progression.StarGuideBlock;
+import za.co.neroland.nerospace.rocket.LaunchControllerBlock;
+import za.co.neroland.nerospace.rocket.LaunchControllerPartBlock;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlock;
+import za.co.neroland.nerospace.rocket.DockingPortBlock;
+import za.co.neroland.nerospace.rocket.LandingPodBlock;
 import za.co.neroland.nerospace.rocket.StationCoreBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
@@ -111,8 +115,8 @@ public final class ModBlocks {
     /** The founded-station anchor. Placed only by founding (no block item / loot table); breaking it pops the charter. */
     public static final RegistryEntry<StationCoreBlock> STATION_CORE = BLOCKS.register("station_core",
             key -> new StationCoreBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_CYAN).strength(4.0F, 1200.0F)
-                    .requiresCorrectToolForDrops().lightLevel(s -> 10).sound(SoundType.METAL)));
+                    .setId(key).mapColor(MapColor.COLOR_CYAN).strength(-1.0F, 3_600_000.0F)
+                    .lightLevel(s -> 12).sound(SoundType.METAL).noLootTable()));
 
     /**
      * Hidden developer diagnostic block — give-only ({@code /give @s nerospace:sentry_test}; NOT listed in
@@ -291,6 +295,27 @@ public final class ModBlocks {
     public static final RegistryEntry<LaunchGantryBlock> LAUNCH_GANTRY = BLOCKS.register("launch_gantry",
             key -> new LaunchGantryBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<LaunchControllerBlock> LAUNCH_CONTROLLER = BLOCKS.register("launch_controller",
+            key -> new LaunchControllerBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_BLACK).strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noLootTable()));
+
+    /** Solid filler cube of the Launch Controller multiblock (3×2). Not a separate item. */
+    public static final RegistryEntry<LaunchControllerPartBlock> LAUNCH_CONTROLLER_PART = BLOCKS.register("launch_controller_part",
+            key -> new LaunchControllerPartBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_BLACK).strength(3.5F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noLootTable()));
+
+    public static final RegistryEntry<LandingPodBlock> LANDING_POD = BLOCKS.register("landing_pod",
+            key -> new LandingPodBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
+    public static final RegistryEntry<DockingPortBlock> DOCKING_PORT = BLOCKS.register("docking_port",
+            key -> new DockingPortBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_CYAN).strength(3.5F, 8.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     // Rocket fuel world block (placed by the bucket). LiquidBlock holds the source fluid, resolved

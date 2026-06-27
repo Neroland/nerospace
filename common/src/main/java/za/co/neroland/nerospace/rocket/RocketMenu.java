@@ -18,7 +18,7 @@ import za.co.neroland.nerospace.registry.ModMenuTypes;
 /**
  * Menu for the in-rocket UI. Carries the player inventory, a single fuel-intake slot (drop a fuel
  * bucket/canister to fuel the rocket), and five synced data values describing the rocket (fuel,
- * capacity, tier, launch-readiness, destination index).
+ * capacity, tier, launch-readiness, destination index and available-destination mask).
  *
  * <p>Buttons route through {@link #clickMenuButton} so no custom packet is needed: Launch, the cycle
  * button, and direct destination selection ({@code SELECT_DEST_BASE + index}) are all handled
@@ -35,16 +35,18 @@ public class RocketMenu extends AbstractContainerMenu {
     public static final int BUTTON_CYCLE_DEST = 1;
     /** Cycles which founded station the Orbital Station destination docks at (origin → each station → origin). */
     public static final int BUTTON_CYCLE_STATION = 2;
+    /** Cycles the landing pad within the selected destination dimension (nearest → each pad → nearest). */
+    public static final int BUTTON_CYCLE_PAD = 3;
     /** Select destination {@code n} via button id {@code SELECT_DEST_BASE + n}. */
     public static final int SELECT_DEST_BASE = 100;
 
-    private static final int DATA_COUNT = 6;
+    private static final int DATA_COUNT = 14;
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INV_START = 1;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
 
-    private static final int FUEL_SLOT_X = 148;
-    private static final int FUEL_SLOT_Y = 17;
+    private static final int FUEL_SLOT_X = 186;
+    private static final int FUEL_SLOT_Y = 30;
 
     private final ContainerData data;
     private final Container fuelContainer;
@@ -65,7 +67,7 @@ public class RocketMenu extends AbstractContainerMenu {
         this.fuelContainer = rocket != null ? rocket.getFuelInput() : new SimpleContainer(1);
 
         this.addSlot(new FuelSlot(this.fuelContainer, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
-        this.addStandardInventorySlots(playerInventory, 8, 84);
+        this.addStandardInventorySlots(playerInventory, 26, 164);
         this.addDataSlots(data);
     }
 
@@ -76,7 +78,12 @@ public class RocketMenu extends AbstractContainerMenu {
             return false;
         }
         if (id == BUTTON_LAUNCH) {
-            current.startLaunch();
+            // Pressing Launch is what boards the player; if the ascent starts, close the console so they
+            // watch the lift-off from inside the rocket.
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                    && current.boardAndLaunch(serverPlayer)) {
+                serverPlayer.closeContainer();
+            }
             return true;
         }
         if (id == BUTTON_CYCLE_DEST) {
@@ -85,6 +92,10 @@ public class RocketMenu extends AbstractContainerMenu {
         }
         if (id == BUTTON_CYCLE_STATION) {
             current.cycleStation();
+            return true;
+        }
+        if (id == BUTTON_CYCLE_PAD) {
+            current.cyclePad();
             return true;
         }
         if (id >= SELECT_DEST_BASE) {
@@ -153,6 +164,11 @@ public class RocketMenu extends AbstractContainerMenu {
         return this.data.get(3) != 0;
     }
 
+    /** Whether the rocket is standing on a pad that meets its tier (independent of fuel/destination). */
+    public boolean isPadValid() {
+        return this.data.get(9) != 0;
+    }
+
     public int getDestinationIndex() {
         return this.data.get(4);
     }
@@ -163,15 +179,51 @@ public class RocketMenu extends AbstractContainerMenu {
         return capacity == 0 ? 0 : Math.min(100, getFuel() * 100 / capacity);
     }
 
+    /** Onboard oxygen (life-support) in millibuckets. */
+    public int getOxygen() {
+        return this.data.get(7);
+    }
+
+    /** Onboard oxygen tank capacity for the current tier, in millibuckets. */
+    public int getOxygenCapacity() {
+        return this.data.get(8);
+    }
+
+    /** Current oxygen as a 0–100 percentage of the tier capacity. */
+    public int getOxygenPercent() {
+        int capacity = getOxygenCapacity();
+        return capacity == 0 ? 0 : Math.min(100, getOxygen() * 100 / capacity);
+    }
+
+    /** Onboard power (FE). */
+    public int getPower() {
+        return this.data.get(10);
+    }
+
+    /** Onboard power buffer capacity for the current tier, in FE. */
+    public int getPowerCapacity() {
+        return this.data.get(11);
+    }
+
+    /** Current power as a 0–100 percentage of the tier capacity. */
+    public int getPowerPercent() {
+        int capacity = getPowerCapacity();
+        return capacity == 0 ? 0 : Math.min(100, getPower() * 100 / capacity);
+    }
+
     /** Display name of the currently selected destination. */
     public String getDestinationName() {
         net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> key =
-                getTier().destination(getDestinationIndex());
+                Destinations.byIndex(getDestinationIndex());
         return key == null ? "—" : Destinations.name(key);
     }
 
     public boolean hasMultipleDestinations() {
-        return getTier().destinations().size() > 1;
+        return Integer.bitCount(getDestinationMask()) > 1;
+    }
+
+    public int getDestinationMask() {
+        return this.data.get(6);
     }
 
     // --- Orbital-station selection (shown only when the Orbital Station is the destination) ----------
@@ -183,7 +235,28 @@ public class RocketMenu extends AbstractContainerMenu {
 
     /** Whether the currently selected destination is the Orbital Station dimension. */
     public boolean isStationDestination() {
-        return ModDimensions.STATION_LEVEL.equals(getTier().destination(getDestinationIndex()));
+        return ModDimensions.STATION_LEVEL.equals(Destinations.byIndex(getDestinationIndex()));
+    }
+
+    /** Whether the destination is a normal dimension (shows the pad cycler instead of the dock cycler). */
+    public boolean isPadDestination() {
+        return Destinations.byIndex(getDestinationIndex()) != null && !isStationDestination();
+    }
+
+    /** Selected landing-pad index within the destination dimension ({@code -1} = nearest/auto). */
+    public int getPadIndex() {
+        return this.data.get(12);
+    }
+
+    /** Display label for the selected landing pad (stable, int-only — real names live server-side). */
+    public String getPadName() {
+        int idx = getPadIndex();
+        return idx < 0 ? "Nearest pad" : "Pad " + (idx + 1);
+    }
+
+    /** Fuel this launch will burn (millibuckets), computed from the trip distance + dimension surcharge. */
+    public int getFuelCost() {
+        return this.data.get(13);
     }
 
     /**
@@ -192,6 +265,9 @@ public class RocketMenu extends AbstractContainerMenu {
      */
     public String getStationName() {
         int slot = getStationSlot();
+        if (slot == -2) {
+            return "New Station";
+        }
         return slot < 0 ? "Origin Platform" : "Station " + (slot + 1);
     }
 

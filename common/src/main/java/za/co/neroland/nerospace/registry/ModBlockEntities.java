@@ -20,6 +20,9 @@ import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.progression.StarGuideBlockEntity;
+import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
+import za.co.neroland.nerospace.rocket.LaunchGantryBlockEntity;
+import za.co.neroland.nerospace.rocket.ReturnSiteBlockEntity;
 import za.co.neroland.nerospace.rocket.StationCoreBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
 import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
@@ -142,6 +145,19 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<StationCoreBlockEntity>> STATION_CORE =
             BLOCK_ENTITIES.register("station_core",
                     key -> new BlockEntityType<>(StationCoreBlockEntity::new, java.util.Set.of(ModBlocks.STATION_CORE.get())));
+
+    public static final RegistryEntry<BlockEntityType<LaunchGantryBlockEntity>> LAUNCH_GANTRY =
+            BLOCK_ENTITIES.register("launch_gantry",
+                    key -> new BlockEntityType<>(LaunchGantryBlockEntity::new, java.util.Set.of(ModBlocks.LAUNCH_GANTRY.get())));
+
+    public static final RegistryEntry<BlockEntityType<LaunchControllerBlockEntity>> LAUNCH_CONTROLLER =
+            BLOCK_ENTITIES.register("launch_controller",
+                    key -> new BlockEntityType<>(LaunchControllerBlockEntity::new, java.util.Set.of(ModBlocks.LAUNCH_CONTROLLER.get())));
+
+    public static final RegistryEntry<BlockEntityType<ReturnSiteBlockEntity>> RETURN_SITE =
+            BLOCK_ENTITIES.register("return_site",
+                    key -> new BlockEntityType<>(ReturnSiteBlockEntity::new, java.util.Set.of(
+                            ModBlocks.LANDING_POD.get(), ModBlocks.DOCKING_PORT.get())));
 
     public static final RegistryEntry<BlockEntityType<VillageCoreBlockEntity>> VILLAGE_CORE =
             BLOCK_ENTITIES.register("village_core",

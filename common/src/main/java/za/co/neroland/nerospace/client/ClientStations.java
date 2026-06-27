@@ -32,6 +32,9 @@ public final class ClientStations {
      * charter name when known, else the stable founding-order fallback ("Station N").
      */
     public static String name(int slot) {
+        if (slot == -2) {
+            return "New Station";
+        }
         if (slot < 0) {
             return "Origin Platform";
         }

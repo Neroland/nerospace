@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "nerospace:block/launch_controller" },
+    "facing=east":  { "model": "nerospace:block/launch_controller" },
+    "facing=south": { "model": "nerospace:block/launch_controller" },
+    "facing=west":  { "model": "nerospace:block/launch_controller" }
+  }
+}

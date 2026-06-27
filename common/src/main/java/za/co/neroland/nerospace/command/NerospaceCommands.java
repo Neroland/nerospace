@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -45,9 +46,15 @@ import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.rocket.LaunchControllerBlock;
+import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
+import za.co.neroland.nerospace.rocket.PadRegistry;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.rocket.RocketTier;
+import za.co.neroland.nerospace.rocket.StationRegistry;
+import za.co.neroland.nerospace.rocket.StationStructure;
 import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 
@@ -87,7 +94,86 @@ public final class NerospaceCommands {
                                         () -> buildGallery(ctx.getSource())))
                                 .then(Commands.literal("clear")
                                         .executes(ctx -> runSafely(ctx.getSource(), "gallery clear",
-                                                () -> clearGallery(ctx.getSource()))))));
+                                                () -> clearGallery(ctx.getSource())))))
+                        .then(Commands.literal("station")
+                                .then(Commands.literal("list")
+                                        .executes(ctx -> runSafely(ctx.getSource(), "station list",
+                                                () -> listStations(ctx.getSource()))))
+                                .then(Commands.literal("remove")
+                                        .executes(ctx -> runSafely(ctx.getSource(), "station remove",
+                                                () -> removeStation(ctx.getSource(), -1)))
+                                        .then(Commands.argument("slot", IntegerArgumentType.integer(0))
+                                                .executes(ctx -> runSafely(ctx.getSource(), "station remove",
+                                                        () -> removeStation(ctx.getSource(),
+                                                                IntegerArgumentType.getInteger(ctx, "slot"))))))));
+    }
+
+    /** {@code /nerospace station list} — show founded stations (slot + name). */
+    private static int listStations(CommandSourceStack source) {
+        java.util.List<StationRegistry.StationEntry> all = StationRegistry.get(source.getServer()).all();
+        if (all.isEmpty()) {
+            source.sendSuccess(() -> Component.translatable("command.nerospace.station.list_empty"), false);
+            return 1;
+        }
+        source.sendSuccess(() -> Component.translatable("command.nerospace.station.list_header"), false);
+        for (StationRegistry.StationEntry e : all) {
+            source.sendSuccess(() -> Component.translatable("command.nerospace.station.list_entry",
+                    e.slot(), e.name()), false);
+        }
+        return 1;
+    }
+
+    /**
+     * {@code /nerospace station remove [slot]} — decommission a station (only its founder or a server
+     * op). With no slot it targets the station whose Station Core you're standing on. Unregisters the
+     * station, removes the (otherwise unbreakable) Core, and drops its landing-pad travel node.
+     */
+    private static int removeStation(CommandSourceStack source, int slot) {
+        ServerPlayer player = source.getPlayer();
+        if (player == null) {
+            source.sendFailure(Component.literal("Run this as a player."));
+            return 0;
+        }
+        StationRegistry registry = StationRegistry.get(source.getServer());
+        StationRegistry.StationEntry entry = slot >= 0 ? registry.get(slot) : stationAtPlayer(source, player);
+        if (entry == null) {
+            source.sendFailure(Component.translatable("command.nerospace.station.none"));
+            return 0;
+        }
+        // The founder may remove their own station; a creative-mode admin may remove any.
+        if (!StationRegistry.canManage(entry, player) && !player.getAbilities().instabuild) {
+            source.sendFailure(Component.translatable("item.nerospace.station_charter.not_owner"));
+            return 0;
+        }
+        ServerLevel station = source.getServer().getLevel(ModDimensions.STATION_LEVEL);
+        if (station != null) {
+            BlockPos centre = entry.center();
+            station.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
+            station.removeBlock(centre, false); // bypasses the unbreakable Core
+        }
+        registry.unregister(entry.slot());
+        PadRegistry.get(source.getServer())
+                .unregisterAt(ModDimensions.STATION_LEVEL, StationStructure.padCenter(entry.center()));
+        source.sendSuccess(() -> Component.translatable("item.nerospace.station_charter.removed", entry.name()), true);
+        return 1;
+    }
+
+    /** The founded station whose Core the player is standing on/near (within 8 blocks, station dim). */
+    private static StationRegistry.StationEntry stationAtPlayer(CommandSourceStack source, ServerPlayer player) {
+        if (!player.level().dimension().equals(ModDimensions.STATION_LEVEL)) {
+            return null;
+        }
+        BlockPos at = player.blockPosition();
+        StationRegistry.StationEntry best = null;
+        double bestSq = 64.0; // within 8 blocks of the Core
+        for (StationRegistry.StationEntry e : StationRegistry.get(source.getServer()).all()) {
+            double sq = e.center().distSqr(at);
+            if (sq <= bestSq) {
+                bestSq = sq;
+                best = e;
+            }
+        }
+        return best;
     }
 
     private static int runSafely(CommandSourceStack source, String commandName, CommandBody body) {
@@ -292,9 +378,11 @@ public final class NerospaceCommands {
             guide.installBook(new ItemStack(ModItems.STAR_GUIDE_BOOK.get()));
         }
 
-        // ROCKET ROW: every tier on the pad formation it actually requires (RocketItem gating):
-        //   T1 + T2: a full 3x3 pad.  T3: a 3x3 pad ringed with Station Wall.
-        //   T4: the Heavy Launch Complex — full 5x5 pad + a Launch Gantry on its border ring.
+        // ROCKET ROW: every tier on the distinct pad footprint it now requires (the Phase-1 pad-tier
+        // progression): T1 a SINGLE pad, T2 a full 3x3, T3 a 3x3 ringed with Station Wall, T4 the Heavy
+        // Launch Complex (full 5x5 + a Launch Gantry on the ring — which renders as the animated service
+        // tower). Each rocket arrives with full fuel AND a full onboard oxygen tank (open the console to
+        // see the dual gauges).
         int rx = origin.getX() - 14; // rocket row → NORTH (the hero spoke)
         int rz0 = origin.getZ() - 49;
         for (int dx = -2; dx <= 31; dx++) {
@@ -303,13 +391,15 @@ public final class NerospaceCommands {
             }
         }
         BlockState pad = ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState();
-        // T1 (3x3 + the classic pad-side Fuel Tank).
-        fillPad(level, new BlockPos(rx, fy + 1, rz0), 3, pad);
+        // T1 (a single pad — the entry tier — with the classic pad-side Fuel Tank).
+        level.setBlockAndUpdate(new BlockPos(rx + 1, fy + 1, rz0 + 1), pad);
         level.setBlockAndUpdate(new BlockPos(rx + 3, fy + 1, rz0 + 1), ModBlocks.FUEL_TANK.get().defaultBlockState());
         spawnRocket(level, rx + 1, fy + 1, rz0 + 1, RocketTier.TIER_1);
+        spawnLabelStand(level, new BlockPos(rx + 1, fy + 5, rz0 + 1), Component.literal("Tier 1 — single pad"));
         // T2 (3x3).
         fillPad(level, new BlockPos(rx + 8, fy + 1, rz0), 3, pad);
         spawnRocket(level, rx + 9, fy + 1, rz0 + 1, RocketTier.TIER_2);
+        spawnLabelStand(level, new BlockPos(rx + 9, fy + 6, rz0 + 1), Component.literal("Tier 2 — 3x3 pad"));
         // T3 (3x3 ringed with Station Wall).
         fillPad(level, new BlockPos(rx + 16, fy + 1, rz0), 3, pad);
         BlockState wall = ModBlocks.STATION_WALL.get().defaultBlockState();
@@ -321,13 +411,37 @@ public final class NerospaceCommands {
             }
         }
         spawnRocket(level, rx + 17, fy + 1, rz0 + 1, RocketTier.TIER_3);
-        // T4 (Heavy Launch Complex: 5x5 + gantry + fuel tank).
+        spawnLabelStand(level, new BlockPos(rx + 17, fy + 6, rz0 + 1), Component.literal("Tier 3 — Station Wall ring"));
+        // T4 (Heavy Launch Complex: 5x5 + gantry + fuel tank). The gantry renders as the animated
+        // service tower — it reclines to release the rocket on launch, then swings back upright.
         fillPad(level, new BlockPos(rx + 24, fy + 1, rz0 - 1), 5, pad);
         level.setBlockAndUpdate(new BlockPos(rx + 23, fy + 1, rz0 + 1),
                 ModBlocks.LAUNCH_GANTRY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(rx + 29, fy + 1, rz0 + 1),
                 ModBlocks.FUEL_TANK.get().defaultBlockState());
         spawnRocket(level, rx + 26, fy + 1, rz0 + 1, RocketTier.TIER_4);
+        spawnLabelStand(level, new BlockPos(rx + 26, fy + 7, rz0 + 1),
+                Component.literal("Tier 4 — Heavy Launch Complex (animated gantry tower)"));
+
+        // ROCKET O2 FUELLING (Phase 2): an endless Gas Tank → gas pipe → launch pad charges a docked
+        // rocket's onboard oxygen tank live (the rocket starts with empty O2 so the line visibly fills it).
+        int o2x = rx + 4;
+        int o2z = rz0 + 4;
+        level.setBlockAndUpdate(new BlockPos(o2x, fy + 1, o2z), ModBlocks.CREATIVE_GAS_TANK.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(o2x + 1, fy + 1, o2z), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(o2x + 2, fy + 1, o2z), pad);
+        setAllModes(level, new BlockPos(o2x + 1, fy + 1, o2z), Direction.WEST, PipeIoMode.IN);
+        setAllModes(level, new BlockPos(o2x + 1, fy + 1, o2z), Direction.EAST, PipeIoMode.OUT);
+        spawnRocket(level, o2x + 2, fy + 1, o2z, RocketTier.TIER_1, RocketTier.TIER_1.fuelCapacity(), 0);
+        spawnLabelStand(level, new BlockPos(o2x + 1, fy + 4, o2z), Component.literal("Rocket O2 Fuelling"));
+
+        // TRAVEL NODE (Phase 5): a launch pad doubles as a named pad-to-pad landing node — apply a Name
+        // Tag to commission it (a rocket then lands here). Shown as a labelled standalone pad.
+        int tnx = rx + 30;
+        int tnz = rz0 + 4;
+        level.setBlockAndUpdate(new BlockPos(tnx, fy + 1, tnz), pad);
+        spawnLabelStand(level, new BlockPos(tnx, fy + 3, tnz),
+                Component.literal("Travel Node — Name-Tag a pad to register"));
 
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
         int mx = origin.getX() + 18; // creatures → SOUTH-EAST
@@ -382,12 +496,39 @@ public final class NerospaceCommands {
         // battery → universal cable → panel hookup that lights the panel's power connector.
         buildSolarArrays(level, floor, origin.getX() - 50, origin.getZ() + 36, fy);
 
+        // LAUNCH CONTROLLER (Launch Controller slices): the glowing "computer brain" console that builds
+        // the pad from loaded blocks and previews it. Shown with materials loaded + the hologram ON (a
+        // Tier-3 ghost footprint projects in front), facing south over open floor.
+        int lcx = origin.getX() - 30;
+        int lcz = origin.getZ() - 18;
+        for (int dx = -1; dx <= 8; dx++) {
+            for (int dz = -1; dz <= 9; dz++) {
+                level.setBlockAndUpdate(new BlockPos(lcx + dx, fy, lcz + dz), floor);
+            }
+        }
+        BlockPos ctrlPos = new BlockPos(lcx + 3, fy + 1, lcz);
+        level.setBlockAndUpdate(ctrlPos, ModBlocks.LAUNCH_CONTROLLER.get().defaultBlockState()
+                .setValue(LaunchControllerBlock.FACING, Direction.SOUTH));
+        LaunchControllerBlock.assemble(level, ctrlPos, Direction.SOUTH);
+        if (level.getBlockEntity(ctrlPos) instanceof LaunchControllerBlockEntity controller) {
+            controller.getInputs().setItem(0, new ItemStack(ModBlocks.ROCKET_LAUNCH_PAD.get().asItem(), 64));
+            controller.getInputs().setItem(1, new ItemStack(ModBlocks.STATION_WALL.get().asItem(), 64));
+            controller.getInputs().setItem(2, new ItemStack(ModBlocks.LAUNCH_GANTRY.get().asItem(), 4));
+            controller.setTargetTier(3);
+            if (!controller.isHologram()) {
+                controller.toggleHologram();
+            }
+        }
+        spawnLabelStand(level, new BlockPos(lcx + 3, fy + 4, lcz),
+                Component.literal("Launch Controller — pad builder + launch hub (hologram on)"));
+
         source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
                 + blocks.size() + " blocks, 4 RUNNING machine clusters (grinder line, fuel refinery "
                 + "line, oxygen generator + lever, terraformer crew + lever — flip a lever to start "
                 + "those two), 4 live pipe scenarios (energy/fluid/gas/items), all 4 suit variants, "
-                + "a loaded Star Guide pedestal, all 4 rocket tiers on their required pads (3x3, "
-                + "3x3, walled ring, Heavy Launch Complex), 8 creatures (frozen for clean shots), "
+                + "a loaded Star Guide pedestal, all 4 rocket tiers on their distinct pads (single, "
+                + "3x3, walled ring, Heavy Launch Complex w/ animated gantry) with full fuel + oxygen "
+                + "tanks, a live rocket-O2 fuelling line and a travel-node pad, 8 creatures (frozen for clean shots), "
                 + "a meteor crash site (crater + loot core + hovering meteor), live quarry build "
                 + "displays for 3 miner tiers, and the solar arrays "
                 + "(T1/T2/T3 single units + a seam-joined field per tier + a cabled hookup showing "
@@ -579,10 +720,22 @@ public final class NerospaceCommands {
         }
     }
 
-    /** A rocket standing on the pad surface of the pad block at {@code (x, y, z)}. */
+    /** A rocket standing on the pad surface of the pad block at {@code (x, y, z)}, tanks topped off. */
     private static void spawnRocket(ServerLevel level, int x, int y, int z, RocketTier tier) {
-        level.addFreshEntity(new RocketEntity(level,
-                x + 0.5D, y + RocketLaunchPadBlock.SURFACE_HEIGHT, z + 0.5D, tier));
+        spawnRocket(level, x, y, z, tier, tier.fuelCapacity(), tier.oxygenCapacity());
+    }
+
+    /** A rocket with explicit fuel + onboard oxygen (mB) — used to showcase the dual-tank console. */
+    private static void spawnRocket(ServerLevel level, int x, int y, int z, RocketTier tier, int fuel, int oxygen) {
+        RocketEntity rocket = new RocketEntity(level,
+                x + 0.5D, y + RocketLaunchPadBlock.SURFACE_HEIGHT, z + 0.5D, tier);
+        if (fuel > 0) {
+            rocket.addFuel(fuel);
+        }
+        if (oxygen > 0) {
+            rocket.addOxygen(oxygen);
+        }
+        level.addFreshEntity(rocket);
     }
 
     /** An invulnerable, named armor stand wearing the given four-piece suit. */

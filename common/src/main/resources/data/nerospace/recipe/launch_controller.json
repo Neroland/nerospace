@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "W": "nerospace:station_wall",
+    "P": "nerospace:rocket_launch_pad",
+    "R": "minecraft:redstone",
+    "C": "minecraft:comparator"
+  },
+  "pattern": [
+    "WRW",
+    "PCP",
+    "WRW"
+  ],
+  "result": {
+    "id": "nerospace:launch_controller"
+  }
+}

@@ -66,6 +66,8 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         MenuScreens.register(ModMenuTypes.HYDRATION_MODULE.get(), HydrationModuleScreen::new);
         MenuScreens.register(ModMenuTypes.TERRAFORM_MONITOR.get(), TerraformMonitorScreen::new);
         MenuScreens.register(ModMenuTypes.STAR_GUIDE.get(), StarGuideScreen::new);
+        MenuScreens.register(ModMenuTypes.LAUNCH_CONTROLLER.get(), za.co.neroland.nerospace.client.LaunchControllerScreen::new);
+        MenuScreens.register(ModMenuTypes.STATION_CHARTER.get(), za.co.neroland.nerospace.client.StationCharterScreen::new);
 
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
             @Override

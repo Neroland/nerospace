@@ -24,9 +24,10 @@ import za.co.neroland.nerospace.NerospaceCommon;
  * single {@code nerospace:station} void dimension at well-separated X offsets; slot numbers are never
  * reused, so a new station can never be founded inside an abandoned hull.
  *
- * <p><b>Privacy (POPIA/GDPR):</b> entries deliberately store NO player identity — no names, no UUIDs,
- * no founder field. Stations are server-global and usable by everyone, so nothing personal is ever
- * written to disk.</p>
+ * <p><b>Privacy (POPIA/GDPR):</b> each entry stores the founder's UUID solely to gate management
+ * (rename / remove) to its founder or a server op. That identifier is kept locally in world save data
+ * only — never logged, never sent in telemetry, never broadcast to other clients. Stations remain
+ * server-global and usable (flyable) by everyone; only renaming/removing is owner-restricted.</p>
  *
  * <p>Cross-loader port: identical to the standalone mod except the {@code SavedDataType} uses the 4-arg
  * NeoForm ctor ({@code DataFixTypes = null}) and {@code org.jetbrains.annotations.Nullable}.</p>
@@ -47,19 +48,36 @@ public final class StationRegistry extends SavedData {
     public static final SavedDataType<StationRegistry> TYPE = new SavedDataType<>(
             ID, StationRegistry::new, codec(), null);
 
-    /** One founded station. The name comes from the founding charter (or an auto "Station N"). */
-    public record StationEntry(int slot, String name, BlockPos center) {
+    /**
+     * One founded station: slot, display name, centre, and the founder's UUID string ({@code owner}).
+     * The owner is stored locally for access control only (who may rename / remove the station); it is
+     * never logged, telemetered, or sent to other clients. An empty owner means unowned (legacy
+     * stations, or those founded before ownership existed) — anyone may manage those.
+     */
+    public record StationEntry(int slot, String name, BlockPos center, String owner) {
 
         public static final Codec<StationEntry> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Codec.INT.fieldOf("slot").forGetter(StationEntry::slot),
                 Codec.STRING.fieldOf("name").forGetter(StationEntry::name),
-                BlockPos.CODEC.fieldOf("center").forGetter(StationEntry::center)
+                BlockPos.CODEC.fieldOf("center").forGetter(StationEntry::center),
+                Codec.STRING.optionalFieldOf("owner", "").forGetter(StationEntry::owner)
         ).apply(inst, StationEntry::of));
 
         /** Boxed-parameter factory for the codec (avoids the ECJ unboxing null-safety warning). */
-        private static StationEntry of(Integer slot, String name, BlockPos center) {
-            return new StationEntry(slot.intValue(), name, center);
+        private static StationEntry of(Integer slot, String name, BlockPos center, String owner) {
+            return new StationEntry(slot.intValue(), name, center, owner);
         }
+    }
+
+    /** Whether {@code player} founded {@code entry} (or it is unowned/legacy) — i.e. may rename it. */
+    public static boolean canManage(@Nullable StationEntry entry, net.minecraft.server.level.ServerPlayer player) {
+        if (entry == null) {
+            return false;
+        }
+        if (entry.owner() == null || entry.owner().isEmpty()) {
+            return true; // unowned / legacy station
+        }
+        return entry.owner().equals(player.getUUID().toString());
     }
 
     /** Insertion-ordered (founding order) — the UI cycles stations in this order. */
@@ -101,16 +119,29 @@ public final class StationRegistry extends SavedData {
      * or {@code null} when {@link #MAX_STATIONS} is reached. A blank name auto-names "Station N".
      */
     @Nullable
-    public StationEntry found(@Nullable String name) {
+    public StationEntry found(@Nullable String name, @Nullable String owner) {
         if (this.stations.size() >= MAX_STATIONS) {
             return null;
         }
         int slot = this.nextSlot++;
         String stationName = name == null || name.isBlank() ? "Station " + (slot + 1) : name;
-        StationEntry entry = new StationEntry(slot, stationName, centerFor(slot));
+        StationEntry entry = new StationEntry(slot, stationName, centerFor(slot), owner == null ? "" : owner);
         this.stations.put(slot, entry);
         setDirty();
         return entry;
+    }
+
+    /** Renames {@code slot}; @return the updated entry, or {@code null} if it wasn't registered. */
+    @Nullable
+    public StationEntry rename(int slot, String name) {
+        StationEntry existing = this.stations.get(slot);
+        if (existing == null) {
+            return null;
+        }
+        StationEntry renamed = new StationEntry(slot, name, existing.center(), existing.owner());
+        this.stations.put(slot, renamed);
+        setDirty();
+        return renamed;
     }
 
     /** Unregisters {@code slot}; @return the removed entry, or {@code null} if it wasn't registered. */
