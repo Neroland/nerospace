@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -23,6 +24,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.ClientOxygenVisuals;
+import za.co.neroland.nerospace.client.GalleryCaptureHarness;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.FuelRefineryScreen;
 import za.co.neroland.nerospace.client.FuelTankScreen;
@@ -56,7 +58,12 @@ public final class ForgeClientSetup {
         TickEvent.ClientTickEvent.Post.BUS.addListener(event -> {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
+            GalleryCaptureHarness.tick();
         });
+        // Client-side /nerospace capture command tree (drives the local camera; separate dispatcher
+        // from the server-side /nerospace gallery builder).
+        RegisterClientCommandsEvent.BUS.addListener(event ->
+                GalleryCaptureHarness.registerClientCommands(event.getDispatcher()));
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {

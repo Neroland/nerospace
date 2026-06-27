@@ -9,9 +9,11 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.progression.StarGuideBlockEntity;
@@ -34,6 +36,20 @@ public class StarGuideHologramRenderer
     @Override
     public StarGuideHologramRenderState createRenderState() {
         return new StarGuideHologramRenderState();
+    }
+
+    /**
+     * Widen the per-BE frustum-cull box upward to cover the hologram, which floats ~1.35 blocks ABOVE the
+     * pedestal (and bobs). With the default single-block box it would be dropped whenever the pedestal sits
+     * just below the bottom of the view frustum. NeoForge (only) routes the per-BE frustum test through this
+     * method; on Fabric and Forge it is an inert unused method, hence no {@code @Override} and a vanilla
+     * {@code AABB} (compiles on all six cells). See {@link QuarryControllerRenderer#getRenderBoundingBox}.
+     */
+    public AABB getRenderBoundingBox(StarGuideBlockEntity guide) {
+        BlockPos p = guide.getBlockPos();
+        return new AABB(
+                p.getX() - 0.5, p.getY(), p.getZ() - 0.5,
+                p.getX() + 1.5, p.getY() + 2.5, p.getZ() + 1.5);
     }
 
     @Override

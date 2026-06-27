@@ -12,8 +12,10 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -53,6 +55,30 @@ public class SolarPanelRenderer
     @Override
     public SolarPanelRenderState createRenderState() {
         return new SolarPanelRenderState();
+    }
+
+    /**
+     * Widen the per-BE frustum-cull box to the whole panel deck. A Tier 2/3 anchor draws ONE deck spanning
+     * its entire N×N footprint (and tilting above the housings) from the anchor's min-corner cell, so the
+     * deck — metres from the anchor block — would be dropped the instant the anchor leaves the view frustum.
+     * NeoForge (only) routes the per-BE frustum test through this method; on Fabric and Forge it is an inert
+     * unused method (their dispatchers never call it), hence no {@code @Override} (vanilla's
+     * {@code BlockEntityRenderer} has no such method) and a vanilla {@code AABB} so it compiles on all six
+     * cells. See {@link QuarryControllerRenderer#getRenderBoundingBox}.
+     */
+    public AABB getRenderBoundingBox(SolarPanelBlockEntity panel) {
+        BlockPos p = panel.getBlockPos();
+        int n = panel.tier().footprint;
+        if (n <= 1) {
+            // Tier 1: a single 1×1 deck on the pole; a small pad around the column covers its east-west tilt.
+            return new AABB(
+                    p.getX() - 0.5, p.getY(), p.getZ() - 0.5,
+                    p.getX() + 1.5, p.getY() + 1.5, p.getZ() + 1.5);
+        }
+        // Tier 2/3: the deck fills the N×N footprint (anchor = min-corner) and tilts above the housings.
+        return new AABB(
+                p.getX() - 0.5, p.getY(), p.getZ() - 0.5,
+                p.getX() + n + 0.5, p.getY() + 2.0, p.getZ() + n + 0.5);
     }
 
     @Override

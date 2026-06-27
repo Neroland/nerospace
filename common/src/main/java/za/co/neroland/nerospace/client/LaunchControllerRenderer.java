@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -52,6 +54,37 @@ public class LaunchControllerRenderer
     @Override
     public int getViewDistance() {
         return 256; // the pad hologram projects several blocks out from the controller
+    }
+
+    /**
+     * Widen the per-BE frustum-cull box to the console chassis AND the holographic pad-preview cells. The
+     * console spans roughly x∈[-1,2], y∈[0,2.6], z beyond the block, and the ghost preview projects whole
+     * pad/wall/gantry cells several blocks toward the pad — all of which would be dropped the instant the
+     * controller block leaves the view frustum under the default single-block box (this is the frustum
+     * companion to the existing {@link #shouldRenderOffScreen()} section-culling exemption). NeoForge (only)
+     * routes the per-BE frustum test through this method; on Fabric and Forge it is an inert unused method,
+     * hence no {@code @Override} and a vanilla {@code AABB} (compiles on all six cells). See
+     * {@link QuarryControllerRenderer#getRenderBoundingBox}.
+     */
+    public AABB getRenderBoundingBox(LaunchControllerBlockEntity controller) {
+        BlockPos p = controller.getBlockPos();
+        // Console chassis (rotated by facing) — a symmetric pad around the block covers every orientation.
+        double minX = p.getX() - 2;
+        double minY = p.getY();
+        double minZ = p.getZ() - 2;
+        double maxX = p.getX() + 3;
+        double maxY = p.getY() + 3;
+        double maxZ = p.getZ() + 3;
+        // Union the holographic preview cells (world-relative offsets, same as submitGhosts draws them).
+        for (int[] cell : controller.previewCells()) {
+            minX = Math.min(minX, p.getX() + cell[0]);
+            minY = Math.min(minY, p.getY() + cell[1]);
+            minZ = Math.min(minZ, p.getZ() + cell[2]);
+            maxX = Math.max(maxX, p.getX() + cell[0] + 1);
+            maxY = Math.max(maxY, p.getY() + cell[1] + 1);
+            maxZ = Math.max(maxZ, p.getZ() + cell[2] + 1);
+        }
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     @Override

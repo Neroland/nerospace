@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -59,10 +60,41 @@ public class QuarryControllerRenderer
     public boolean shouldRenderOffScreen() {
         // The gantry + drill render far from the controller block, so always render this BE (a "global"
         // block entity): otherwise the renderer is dropped whenever the controller's chunk section is
-        // occlusion-culled (e.g. when the camera is down in the pit) and the gantry vanishes. (The root
-        // also widened getRenderBoundingBox; that override isn't on the de-obf BER signature here, but
-        // shouldRenderOffScreen alone keeps the gantry visible within getViewDistance.)
+        // occlusion-culled (e.g. when the camera is down in the pit) and the gantry vanishes. This alone
+        // is sufficient on Fabric and Forge (their BE render-state extraction does NOT frustum-cull); see
+        // getRenderBoundingBox for the extra NeoForge-only step.
         return true;
+    }
+
+    /**
+     * Widen the per-BE frustum-cull box to the whole working volume.
+     *
+     * <p>NeoForge (only) routes block-entity render-state extraction through a frustum-aware overload that
+     * culls via {@code renderer.getRenderBoundingBox(be)} → {@code Frustum.isVisible(aabb)}, where the
+     * default box is just the single controller block. So the gantry/drill — which draw across the whole
+     * claim, often metres from the controller — get dropped the instant the controller leaves the view
+     * frustum (look slightly away → the machine vanishes), independent of {@link #shouldRenderOffScreen()}
+     * (that only governs section culling, not this frustum test). Returning a box that spans the claim and
+     * the dig shaft keeps the assembly visible while any of it is on screen.</p>
+     *
+     * <p>Cross-loader: this is NeoForge's {@code IBlockEntityRendererExtension} method; vanilla's
+     * {@code BlockEntityRenderer} has no such method, so on Fabric and Forge this is simply an unused
+     * public method (their dispatchers never call it) — hence no {@code @Override} (it would not resolve
+     * there). {@code AABB} is vanilla, so it compiles on all six cells.</p>
+     */
+    public AABB getRenderBoundingBox(QuarryControllerBlockEntity be) {
+        QuarryRegion r = be.renderRegion();
+        if (r == null) {
+            // Unclaimed / nothing extra drawn — the controller block alone (matches the vanilla default).
+            return new AABB(be.getBlockPos());
+        }
+        // Claim footprint padded by the gantry overhang (it sits ~1 block beyond the frame on X), up to
+        // the frame plane and down past any world floor (refY - 512 clears even deep custom worlds). The
+        // box only feeds a frustum visibility test, so a generous span just guarantees we never wrongly
+        // cull — negligible for a singular machine.
+        return new AABB(
+                r.minX() - 1, r.refY() - 512, r.minZ() - 1,
+                r.maxX() + 2, r.refY() + 3, r.maxZ() + 2);
     }
 
     @Override
