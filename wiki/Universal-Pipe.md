@@ -1,5 +1,9 @@
 # Universal Pipe
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/universal_pipe.png" alt="Universal Pipe" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 One pipe for everything: energy, fluids, gases and items flow through the same translucent tube — at
 the same time.
 

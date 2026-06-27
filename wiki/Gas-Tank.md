@@ -1,5 +1,9 @@
 # Gas Tank
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/gas_tank.png" alt="Gas Tank" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A pressurised store for one gas, filled and drained through the pipe network's gas layer.
 
 ## Obtaining

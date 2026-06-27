@@ -1,5 +1,9 @@
 # Terraformer
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/terraformer.gif" alt="Terraformer" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The end-game machine: slowly converts a dead planet into livable, breathable, **living** land — in
 three visible stages.
 

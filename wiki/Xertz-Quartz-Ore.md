@@ -1,5 +1,9 @@
 # Xertz Quartz Ore
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/xertz_quartz_ore.png" alt="Xertz Quartz Ore" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A pale-green crystal ore on **Greenxertz**, the mod's nether-quartz analogue.
 
 ## Overview

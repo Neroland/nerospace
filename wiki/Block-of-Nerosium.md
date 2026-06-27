@@ -1,5 +1,9 @@
 # Block of Nerosium
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/nerosium_block.png" alt="Block of Nerosium" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Compact storage for nine Nerosium Ingots.
 
 ## Overview

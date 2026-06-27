@@ -1,5 +1,9 @@
 # Passive Generator
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/passive_generator.gif" alt="Passive Generator" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A slow, hands-off trickle of energy from a nerosium core.
 
 ## Obtaining

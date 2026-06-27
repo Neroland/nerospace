@@ -1,5 +1,9 @@
 # Combustion Generator
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/combustion_generator.gif" alt="Combustion Generator" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Burns fuel into energy (FE) for the pipe network.
 
 ## Obtaining

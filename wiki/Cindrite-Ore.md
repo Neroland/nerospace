@@ -1,5 +1,9 @@
 # Cindrite Ore
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/cindrite_ore.png" alt="Cindrite Ore" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The signature crystal of the volcanic moon **Cindara**.
 
 ## Overview

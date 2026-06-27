@@ -1,5 +1,9 @@
 # Launch Gantry
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/launch_gantry.png" alt="Launch Gantry" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The boarding tower that turns a 5×5 pad into the **Heavy Launch Complex**.
 
 ## Overview

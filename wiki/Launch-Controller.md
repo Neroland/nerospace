@@ -1,5 +1,9 @@
 # Launch Controller
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/launch_controller.png" alt="Launch Controller" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A mission-control console that builds your launch pad and flies your rocket.
 
 ## Overview

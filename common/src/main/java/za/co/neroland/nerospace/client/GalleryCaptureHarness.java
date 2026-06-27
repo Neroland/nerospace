@@ -70,6 +70,13 @@ public final class GalleryCaptureHarness {
     /** Ticks to wait after teleporting into a planet dimension (cross-dim load + chunk gen). */
     private static final int PLANET_WARMUP_TICKS = 100;
 
+    /**
+     * Ticks to wait AFTER the build/kill commands before the cleanup pass. Lets entity-kill death
+     * animations (smoke puffs) finish and any dropped items settle onto the ground, so the cleanup
+     * sweep actually catches them and they're gone well before the shot.
+     */
+    private static final int CLEANUP_TICKS = 60;
+
     /** Deterministic flat backdrop (data/nerospace/dimension/capture.json) + the fixed build origin. */
     private static final String CAPTURE_DIMENSION = "nerospace:capture";
     private static final int ORIGIN_X = 0;
@@ -77,24 +84,28 @@ public final class GalleryCaptureHarness {
     private static final int ORIGIN_Z = 0;
 
     /**
-     * One framed capture. {@code setup} = server commands run before this shot (teleport, build,
-     * summon…); {@code build} = server commands run AFTER warmup (block placement needs loaded
-     * chunks); {@code warmup} = ticks to wait after setup for the scene to load/sync; {@code camera}/
-     * {@code target} = the pose ({@code null} poses → "keep current view").
+     * One framed capture. {@code setup} = server commands run pre-warmup (teleport into the dimension,
+     * pin time/weather); {@code build} = server commands run AFTER warmup, once chunks are loaded
+     * (clear, place blocks, kill old entities, summon); {@code cleanup} = server commands run after a
+     * further {@link #CLEANUP_TICKS} pause (sweep up dropped items / dead-entity litter so the ground is
+     * clean before the shot); {@code warmup} = ticks to wait after setup for the scene to load/sync;
+     * {@code camera}/{@code target} = the pose ({@code null} poses → "keep current view").
      */
-    private record Shot(String name, List<String> setup, List<String> build,
+    private record Shot(String name, List<String> setup, List<String> build, List<String> cleanup,
             int warmup, Vec3 camera, Vec3 target) {
     }
 
-    private enum Phase { WARMUP, MOVE, SETTLE, SHOOT }
+    private enum Phase { MOVE, WARMUP, CLEANUP, SETTLE, SHOOT }
 
     private static final Deque<Shot> QUEUE = new ArrayDeque<>();
     private static boolean running;
     private static boolean hudWasHidden;
     private static boolean bobViewWas;
+    private static boolean flyingWas;
     private static CloudStatus cloudsWere;
     private static Phase phase = Phase.MOVE;
     private static int warmup;
+    private static int cleanupWait;
     private static int settle;
     private static Shot current;
 
@@ -205,7 +216,7 @@ public final class GalleryCaptureHarness {
             return 0;
         }
         QUEUE.clear();
-        QUEUE.add(new Shot(name, List.of(), List.of(), 0, null, null)); // grab the current view as-is
+        QUEUE.add(new Shot(name, List.of(), List.of(), List.of(), 0, null, null)); // grab the current view as-is
         begin(mc);
         return Command.SINGLE_SUCCESS;
     }
@@ -213,21 +224,27 @@ public final class GalleryCaptureHarness {
     /** The gallery shot list with the one-time rebuild + environment-pin setup attached to shot 0. */
     private static List<Shot> galleryQueue(String time) {
         List<Shot> shots = new ArrayList<>(buildShots(ORIGIN_X, ORIGIN_Y, ORIGIN_Z));
-        // Shot 0 carries the one-time setup: teleport into the flat capture dimension, rebuild the
-        // gallery FROM SCRATCH (clear → build, so reruns never stack blocks/entities or keep stale
-        // machine progress), and freeze the environment so every rerun is framed + lit identically.
-        // These are server commands (they need cheats — the creative gallery world has them).
+        // Shot 0 carries the one-time scene rebuild. SETUP (pre-warmup) only teleports into the flat
+        // capture dimension and pins the environment — NO building yet. After the warmup (chunks loaded),
+        // BUILD rebuilds the gallery FROM SCRATCH (clear → build, so reruns never stack blocks/entities or
+        // keep stale machine progress) and strips the floating debug labels. Doing this post-warmup avoids
+        // placing into unloaded chunks. CLEANUP (after a further pause) sweeps up the items the label kill
+        // drops, so the ground is clean. These are server commands (they need the creative world's cheats).
         List<String> setup = List.of(
                 "execute in " + CAPTURE_DIMENSION + " run tp @s "
                         + (ORIGIN_X + 0.5) + " " + ORIGIN_Y + " " + (ORIGIN_Z + 0.5),
-                "nerospace gallery clear", // wipe any prior footprint so the rebuild can't stack duplicates
-                "nerospace gallery",       // fresh build → fresh machine progress, no lingering artifacts
                 "gamerule advance_time false",    // 26.1 renamed doDaylightCycle → advance_time
                 "gamerule advance_weather false", // …and doWeatherCycle → advance_weather
                 "time set " + time,               // capture dim is overworld-type → has a clock
                 "weather clear");
+        List<String> build = List.of(
+                "nerospace gallery clear", // wipe any prior footprint so the rebuild can't stack duplicates
+                "nerospace gallery",       // fresh build → fresh machine progress, no lingering artifacts
+                // Strip the floating debug cluster labels (invisible name-tag stands) for clean marketing
+                // shots — the visible suit stands keep their name tags (they aren't Invisible).
+                "kill @e[type=armor_stand,nbt={Invisible:1b}]");
         Shot first = shots.get(0);
-        shots.set(0, new Shot(first.name(), setup, List.of(), BUILD_WARMUP_TICKS,
+        shots.set(0, new Shot(first.name(), setup, build, groundClear(), BUILD_WARMUP_TICKS,
                 first.camera(), first.target()));
         return shots;
     }
@@ -241,9 +258,22 @@ public final class GalleryCaptureHarness {
         mc.options.cloudStatus().set(CloudStatus.OFF); // clouds scroll with game time → freeze them out of frame
         bobViewWas = mc.options.bobView().get();
         mc.options.bobView().set(false); // kill view-bob so a pinned pose renders the exact same frame
+        // Fly the player so they hover at the teleport spot instead of falling through the (not-yet-built)
+        // scene while we wait — keeps the right chunks loaded and the camera where we put it.
+        flyingWas = mc.player != null && mc.player.getAbilities().flying;
+        setFlying(mc, true);
         running = true;
         phase = Phase.MOVE; // each shot's setup carries any teleport/build; warmup is per-shot
         current = null;
+    }
+
+    /** Toggle creative flight so the camera hovers (no gravity drift) for the duration of a run. */
+    private static void setFlying(Minecraft mc, boolean fly) {
+        if (mc.player == null) {
+            return;
+        }
+        mc.player.getAbilities().flying = fly && mc.player.getAbilities().mayfly;
+        mc.player.onUpdateAbilities();
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -270,7 +300,7 @@ public final class GalleryCaptureHarness {
                     finish(mc);
                     return;
                 }
-                for (String cmd : shot.setup()) { // pre-warmup: teleport / gamerules / time / kill
+                for (String cmd : shot.setup()) { // pre-warmup: teleport into the dimension + pin time/weather
                     player.connection.sendCommand(cmd);
                 }
                 warmup = shot.warmup();
@@ -282,8 +312,25 @@ public final class GalleryCaptureHarness {
                     phase = Phase.MOVE;
                     return;
                 }
-                if (--warmup <= 0) { // teleport + chunks now loaded
+                holdStill(mc, player); // keep flying + motionless so the player doesn't fall during the wait
+                if (--warmup <= 0) { // teleport done + chunks now loaded → safe to clear / build / kill
                     for (String cmd : shot.build()) { // block placement needs loaded chunks (else "not loaded")
+                        player.connection.sendCommand(cmd);
+                    }
+                    // Pause so any kill death-animations finish + dropped items settle before the sweep.
+                    cleanupWait = shot.cleanup().isEmpty() ? 0 : CLEANUP_TICKS;
+                    phase = Phase.CLEANUP;
+                }
+            }
+            case CLEANUP -> {
+                final Shot shot = current;
+                if (shot == null) {
+                    phase = Phase.MOVE;
+                    return;
+                }
+                holdStill(mc, player); // stay aloft while the death-smoke clears + items are swept
+                if (--cleanupWait <= 0) {
+                    for (String cmd : shot.cleanup()) { // sweep dropped items / dead-entity litter off the ground
                         player.connection.sendCommand(cmd);
                     }
                     applyPose(player, shot);
@@ -312,6 +359,14 @@ public final class GalleryCaptureHarness {
                 phase = Phase.MOVE;
             }
         }
+    }
+
+    /** Keep the player flying + motionless during a wait so gravity doesn't drift the camera. */
+    private static void holdStill(Minecraft mc, LocalPlayer player) {
+        if (!player.getAbilities().flying && player.getAbilities().mayfly) {
+            setFlying(mc, true); // re-assert if the server toggled it off
+        }
+        player.setDeltaMovement(Vec3.ZERO);
     }
 
     /** Snap the player (the render camera) to the shot's pose, holding it still. */
@@ -356,6 +411,7 @@ public final class GalleryCaptureHarness {
             mc.options.cloudStatus().set(cloudsWere);
         }
         mc.options.bobView().set(bobViewWas);
+        setFlying(mc, flyingWas); // restore the player's flight state
         running = false;
         current = null;
         QUEUE.clear();
@@ -464,48 +520,55 @@ public final class GalleryCaptureHarness {
     private static List<Shot> buildShots(int ox, int oy, int oz) {
         List<Shot> shots = new ArrayList<>();
 
-        // BLOCK GRID (EAST, base ox+38 / oz-9, displays float at oy+3). Grid centre ≈ (51, oy+3, 3).
-        // High 3/4 read of the whole grid, then a low corner angle.
-        shots.add(shot("blocks", 51.5, oy + 28, 30, 51.5, oy + 3, 3));
-        shots.add(shot("blocks_angle", 33, oy + 6, -4, 51, oy + 3, 3));
+        // Framing principles (after a review of the first pass, which sat too far back with huge dead sky):
+        //   • get CLOSE so the subject fills the frame; aim the target at the subject's MID-height so the
+        //     horizon sits high and there's little empty sky/floor;
+        //   • shoot wide rows DOWN THE LINE from near one end at near-eye height, so they recede with
+        //     perspective (the nearest piece reads large) instead of as distant broadside specks.
+        // Coordinates mirror the cluster bases in NerospaceCommands.buildGallery — tune the two together.
 
-        // MACHINE STRIP (SOUTH, z+48, x −14..14, four wired clusters). Wide read + two detail angles.
-        shots.add(shot("machines", 0, oy + 18, 18, 0, oy + 1.5, 48));
-        shots.add(shot("machines_power", -12.5, oy + 4, 44, -10.5, oy + 1.5, 48));   // combustion→grinder line
-        shots.add(shot("machines_refinery", -5, oy + 4, 44, -5, oy + 1.5, 48));       // battery→refinery→tank
+        // BLOCK GRID (EAST, base ox+38 / oz-9, displays float at oy+3; grid centre ≈ (51, oy+3, 3)).
+        shots.add(shot("blocks", 34, oy + 15, -13, 52, oy + 3, 4));          // tight high 3/4 over the grid
+        shots.add(shot("blocks_angle", 35, oy + 5, -11, 52, oy + 3.5, 6));   // low corner skim
 
-        // PIPES (WEST, x −50..−46, four resource rows stacked in z). View from the east along the rows.
-        shots.add(shot("pipes", -40, oy + 7, 0.5, -49, oy + 1.5, 0.5));
+        // MACHINE STRIP (SOUTH, z+48, clusters along x −13..9). Shoot down the line + two detail clusters.
+        shots.add(shot("machines", -16, oy + 3, 45.5, 7, oy + 1.4, 48));            // perspective down the strip
+        shots.add(shot("machines_power", -15.5, oy + 2.8, 45.5, -11.5, oy + 1.5, 48)); // combustion→grinder line
+        shots.add(shot("machines_refinery", -7.5, oy + 2.8, 45.5, -4.5, oy + 1.5, 48)); // battery→refinery→tank
 
-        // SUITS + STAR GUIDE (NORTH-WEST, z−34). Suits face ~south → head-on from the south; guide close.
-        shots.add(shot("suits", -35, oy + 3.5, -27, -35.5, oy + 2, -34));
-        shots.add(shot("star_guide", -28, oy + 3, -29, -28, oy + 2.5, -34));
+        // PIPES (WEST, x −50..−46, four resource rows stacked over z −4..5). Elevated SE 3/4 so all 4 read.
+        shots.add(shot("pipes", -44, oy + 6, 9, -49, oy + 1.4, 0.5));
 
-        // ROCKET ROW (NORTH, z−48, tiers at x −13/−5/3/12; tall). Hero wide + two tier details.
-        shots.add(shot("rockets", -0.5, oy + 7, -25, -0.5, oy + 10, -48));
-        shots.add(shot("rocket_t1", -13, oy + 3, -43, -13, oy + 6, -48));
-        shots.add(shot("rocket_t4", 12, oy + 5, -41, 12, oy + 9, -49));         // Heavy Launch Complex + gantry
-        shots.add(shot("rocket_o2", -9, oy + 4, -41, -9, oy + 2, -45));         // live O2 fuelling line
-        shots.add(shot("travel_node", 16, oy + 3, -41, 16, oy + 1.5, -45));
+        // SUITS + STAR GUIDE (NORTH-WEST, z−34; suits face south). Head-on from the south, tight.
+        shots.add(shot("suits", -36, oy + 3.2, -28, -36, oy + 2, -34));
+        shots.add(shot("star_guide", -28, oy + 2.6, -30, -28, oy + 2.2, -34));
+
+        // ROCKET ROW (NORTH, z−48, tiers at x −13/−5/3/12; tall). Low 3/4 looking up so they tower,
+        // plus two tier hero details + the live O2 line.
+        shots.add(shot("rockets", -13, oy + 3, -30, 2, oy + 7, -48));
+        shots.add(shot("rocket_t1", -12, oy + 2.6, -43.5, -12.5, oy + 4.5, -48));
+        shots.add(shot("rocket_t4", 15, oy + 2.6, -41, 12, oy + 7, -48.5));     // Heavy Launch Complex + gantry
+        shots.add(shot("rocket_o2", -9, oy + 2.4, -41.5, -9, oy + 2, -45));     // live O2 fuelling line
+        shots.add(shot("travel_node", 16, oy + 2.2, -42, 16, oy + 1.4, -45));
 
         // LAUNCH CONTROLLER (centre-NW, ctrl at −27/oy+1/−18 facing south; hologram projects south).
-        shots.add(shot("launch_controller", -27, oy + 4, -9, -27, oy + 2, -18));
+        shots.add(shot("launch_controller", -23, oy + 3, -10, -27, oy + 2, -18));
 
-        // CREATURES (SOUTH-EAST, z+34, nine frozen along x 18..50). Full line + over-the-shoulder closeup.
-        shots.add(shot("creatures", 34, oy + 12, 11, 34, oy + 2, 35));
-        shots.add(shot("creatures_closeup", 20, oy + 3, 30, 31, oy + 2, 34));
+        // CREATURES (SOUTH-EAST, z+34, nine frozen along x 18..50). Down the line, low, near-eye height.
+        shots.add(shot("creatures", 14, oy + 2, 36, 49, oy + 1.6, 34));
+        shots.add(shot("creatures_closeup", 16.5, oy + 2.2, 31, 24, oy + 1.5, 34));
 
-        // METEOR SITE (SOUTH-WEST, −28/+30; meteor hovers at oy+11). Low angle so crater + core + trail read.
-        shots.add(shot("meteor_site", -20, oy + 5, 24, -28, oy + 6, 30));
+        // METEOR SITE (SOUTH-WEST, −28/+30; meteor hovers at oy+11). Close low angle: crater + core + meteor.
+        shots.add(shot("meteor_site", -22, oy + 3.5, 25, -27.5, oy + 5, 30));
 
-        // QUARRIES (NORTH-EAST). Landmark L, an operating 9×9 looking into the pit, and the big 33×33 claim.
-        shots.add(shot("quarry_landmarks", 31, oy + 6, -30, 31, oy + 1.5, -37));
-        shots.add(shot("quarry_operating", 46, oy + 10, -27, 45, oy - 2, -37));
-        shots.add(shot("quarry_big", 102, oy + 22, -34, 101, oy - 4, -56));
+        // QUARRIES (NORTH-EAST). Landmark L, an operating 9×9 angled into the pit, and the big 33×33 claim.
+        shots.add(shot("quarry_landmarks", 33, oy + 4, -33, 30, oy + 1.6, -38));
+        shots.add(shot("quarry_operating", 40, oy + 6, -30, 46, oy - 1, -37));
+        shots.add(shot("quarry_big", 90, oy + 18, -38, 102, oy - 2, -56));
 
-        // SOLAR ARRAYS (SOUTH-WEST, base −50/+36). Wide read of all tiers + a closer field angle.
-        shots.add(shot("solar", -42, oy + 12, 23, -42, oy + 2, 40));
-        shots.add(shot("solar_field", -48, oy + 6, 30, -42, oy + 2, 41));
+        // SOLAR ARRAYS (SOUTH-WEST, base −50/+36). 3/4 across the tilted decks + a closer field angle.
+        shots.add(shot("solar", -33, oy + 4, 45, -44, oy + 2, 38));
+        shots.add(shot("solar_field", -46, oy + 4, 46, -44, oy + 2, 40));
 
         return shots;
     }
@@ -549,29 +612,35 @@ public final class GalleryCaptureHarness {
     }
 
     /**
-     * A self-contained planet scene: clear a box, lay a 13×13 themed platform (with a 3×3 ore inlay and
-     * a short accent pillar), freeze the signature mobs on deck, and frame it 3/4-on against the real
-     * dimension's sky. All block ops + summons run POST-warmup so the chunks are loaded.
+     * A self-contained planet scene, built rich enough to feel like a real outpost: a 15×15 themed deck
+     * with a central ore patch, a corner ore deposit and two tall back-corner accent pillars, then a small
+     * herd of the signature mobs. The mob kills happen in BUILD (post-warmup) but the fresh summons happen
+     * in CLEANUP — after the {@link #CLEANUP_TICKS} pause — so no kill death-smoke lingers around the new
+     * mobs. Framed close + near-deck so the herd reads large against the real dimension's sky.
      */
     private static Shot planetScene(String name, String dim, boolean hasClock, String time,
             int ox, int oy, int oz, String platform, String ore, String accent, List<String> mobs) {
-        List<String> setup = teleportSetup(dim, hasClock, time, ox + 0.5, oy + 4, oz - 9);
+        List<String> setup = teleportSetup(dim, hasClock, time, ox + 0.5, oy + 5, oz - 10);
         List<String> build = new ArrayList<>();
-        // Clear the whole working box (incl. any prior platform) so reruns leave no artifacts.
-        build.add(fill(ox - 8, oy - 1, oz - 8, ox + 8, oy + 20, oz + 8, "minecraft:air"));
+        // Clear the working box (incl. any prior platform) so reruns leave no artifacts, then kill the
+        // prior herd (its death-smoke clears during the cleanup pause before we summon a fresh one).
+        build.add(fill(ox - 9, oy - 1, oz - 9, ox + 9, oy + 24, oz + 9, "minecraft:air"));
         killMobs(build, mobs);
-        // 13×13 platform, a 3×3 ore inlay at centre, and a 3-high accent pillar at the far corner.
-        build.add(fill(ox - 6, oy, oz - 6, ox + 6, oy, oz + 6, platform));
-        build.add(fill(ox - 1, oy, oz - 1, ox + 1, oy, oz + 1, ore));
-        build.add(fill(ox + 5, oy + 1, oz + 5, ox + 5, oy + 3, oz + 5, accent));
-        // Frozen, persistent signature mobs spaced across the deck.
+        build.add(fill(ox - 7, oy, oz - 7, ox + 7, oy, oz + 7, platform));         // 15×15 deck
+        build.add(fill(ox - 2, oy, oz - 2, ox + 2, oy, oz + 2, ore));              // central ore patch
+        build.add(fill(ox - 7, oy, oz - 7, ox - 5, oy, oz - 5, ore));              // a corner ore deposit
+        build.add(fill(ox - 6, oy + 1, oz + 6, ox - 6, oy + 4, oz + 6, accent));   // two back-corner pillars
+        build.add(fill(ox + 6, oy + 1, oz + 6, ox + 6, oy + 4, oz + 6, accent));
+        // Fresh herd summoned post-smoke: each signature mob in a front and a back row → a lively group.
+        List<String> cleanup = new ArrayList<>(groundClear());
         for (int i = 0; i < mobs.size(); i++) {
-            int mxp = ox - 3 + i * 3;
-            build.add(summon(mobs.get(i), mxp, oy + 1, oz));
+            int mxp = ox - 4 + i * 4;
+            cleanup.add(summon(mobs.get(i), mxp, oy + 1, oz + 2));
+            cleanup.add(summon(mobs.get(i), mxp - 1, oy + 1, oz - 2));
         }
-        Vec3 cam = new Vec3(ox - 9, oy + 4, oz - 9);
-        Vec3 tgt = new Vec3(ox, oy + 2, oz);
-        return new Shot(name, setup, build, PLANET_WARMUP_TICKS, cam, tgt);
+        Vec3 cam = new Vec3(ox - 7, oy + 4, oz - 8);
+        Vec3 tgt = new Vec3(ox + 1, oy + 2, oz + 1);
+        return new Shot(name, setup, build, cleanup, PLANET_WARMUP_TICKS, cam, tgt);
     }
 
     /** The orbital station scene: a floor pad with two walls and a bound Station Core against the void. */
@@ -579,16 +648,23 @@ public final class GalleryCaptureHarness {
         int ox = 0;
         int oy = 96;
         int oz = 0;
-        List<String> setup = teleportSetup("nerospace:station", false, time, ox - 6.5, oy + 4, oz - 6.5);
+        List<String> setup = teleportSetup("nerospace:station", false, time, ox - 4, oy + 5, oz - 4);
         List<String> build = new ArrayList<>();
-        build.add(fill(ox - 2, oy - 1, oz - 2, ox + 8, oy + 6, oz + 8, "minecraft:air")); // clear prior platform
-        build.add(fill(ox, oy, oz, ox + 6, oy, oz + 6, "nerospace:station_floor"));
+        build.add(fill(ox - 2, oy - 1, oz - 2, ox + 8, oy + 8, oz + 8, "minecraft:air")); // clear prior platform
+        build.add(fill(ox, oy, oz, ox + 6, oy, oz + 6, "nerospace:station_floor"));      // 7×7 floor
+        // Full perimeter walls (a proper little outpost, not two loose walls) + the bound Core, plus a
+        // docking port and a landing pod so the platform reads as a real station against the starfield.
         build.add(fill(ox, oy + 1, oz, ox + 6, oy + 1, oz, "nerospace:station_wall"));
+        build.add(fill(ox, oy + 1, oz + 6, ox + 6, oy + 1, oz + 6, "nerospace:station_wall"));
         build.add(fill(ox, oy + 1, oz, ox, oy + 1, oz + 6, "nerospace:station_wall"));
+        build.add(fill(ox + 6, oy + 1, oz, ox + 6, oy + 1, oz + 6, "nerospace:station_wall"));
         build.add(setblock(ox + 3, oy + 1, oz + 3, "nerospace:station_core"));
-        Vec3 cam = new Vec3(ox - 6, oy + 5, oz - 6);
+        build.add(setblock(ox + 1, oy + 1, oz + 5, "nerospace:docking_port"));
+        build.add(setblock(ox + 5, oy + 1, oz + 1, "nerospace:landing_pod"));
+        // Elevated 3/4 over a near wall so the floor, walls and glowing Core all fill the frame.
+        Vec3 cam = new Vec3(ox - 3, oy + 5, oz - 3);
         Vec3 tgt = new Vec3(ox + 3, oy + 1, oz + 3);
-        return new Shot(name, setup, build, PLANET_WARMUP_TICKS, cam, tgt);
+        return new Shot(name, setup, build, groundClear(), PLANET_WARMUP_TICKS, cam, tgt);
     }
 
     /**
@@ -610,17 +686,22 @@ public final class GalleryCaptureHarness {
         build.add("fillbiome " + bx + " " + (by - 1) + " " + bz + " " + x2 + " " + (by + 10) + " " + z2
                 + " " + (after ? "nerospace:terraformed_meadow" : "nerospace:greenxertz"));
         build.add(fill(bx, by - 1, bz, x2, by - 1, z2, "minecraft:dirt")); // sub-base
+        List<String> cleanup = new ArrayList<>(groundClear());
         if (after) {
             build.add(fill(bx, by, bz, x2, by, z2, "minecraft:grass_block"));
             build.add("place feature minecraft:oak " + (bx + 3) + " " + (by + 1) + " " + (bz + 3));
             build.add("place feature minecraft:oak " + (bx + 9) + " " + (by + 1) + " " + (bz + 8));
-            build.add(summon("nerospace:meadow_loper", bx + 6, by + 1, bz + 6));
+            build.add("place feature minecraft:oak " + (bx + 6) + " " + (by + 1) + " " + (bz + 2));
+            // Loper herd summoned post-smoke (after the prior pass's kill-smoke has cleared).
+            cleanup.add(summon("nerospace:meadow_loper", bx + 5, by + 1, bz + 6));
+            cleanup.add(summon("nerospace:meadow_loper", bx + 8, by + 1, bz + 5));
         } else {
             build.add(fill(bx, by, bz, x2, by, z2, "minecraft:coarse_dirt"));
         }
-        Vec3 cam = new Vec3(bx - 6, by + 7, bz - 6);
-        Vec3 tgt = new Vec3(bx + 6, by, bz + 6);
-        return new Shot(name, setup, build, PLANET_WARMUP_TICKS, cam, tgt);
+        // Lower 3/4 so the grass, trees and Meadow Lopers read against the sky (not a flat top-down).
+        Vec3 cam = new Vec3(bx - 2, by + 4, bz - 2);
+        Vec3 tgt = new Vec3(bx + 8, by + 1.5, bz + 8);
+        return new Shot(name, setup, build, cleanup, PLANET_WARMUP_TICKS, cam, tgt);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -660,8 +741,13 @@ public final class GalleryCaptureHarness {
                 + " {NoAI:1b,PersistenceRequired:1b}";
     }
 
-    /** A camera-only gallery shot (no setup/build; the rebuild rides on shot 0). */
+    /** A camera-only gallery shot (no setup/build/cleanup; the rebuild rides on shot 0). */
     private static Shot shot(String name, double cx, double cy, double cz, double tx, double ty, double tz) {
-        return new Shot(name, List.of(), List.of(), 0, new Vec3(cx, cy, cz), new Vec3(tx, ty, tz));
+        return new Shot(name, List.of(), List.of(), List.of(), 0, new Vec3(cx, cy, cz), new Vec3(tx, ty, tz));
+    }
+
+    /** Sweep dropped items + XP-orb litter off the ground (run after a {@link #CLEANUP_TICKS} pause). */
+    private static List<String> groundClear() {
+        return List.of("kill @e[type=item]", "kill @e[type=experience_orb]");
     }
 }

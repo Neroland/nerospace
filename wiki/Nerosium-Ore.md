@@ -1,5 +1,9 @@
 # Nerosium Ore
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/nerosium_ore.png" alt="Nerosium Ore" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The mod's starting material — a red/purple cosmic crystal embedded in stone.
 
 ## Overview

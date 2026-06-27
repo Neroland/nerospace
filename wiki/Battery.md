@@ -1,5 +1,9 @@
 # Battery
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/battery.gif" alt="Battery" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A passive energy store that buffers your grid.
 
 ## Obtaining

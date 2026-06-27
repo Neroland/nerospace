@@ -1,5 +1,9 @@
 # Fuel Refinery
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/fuel_refinery.gif" alt="Fuel Refinery" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Refines coal + blaze powder + grid energy into pipeable liquid rocket fuel.
 
 ## Overview

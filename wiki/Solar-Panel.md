@@ -1,5 +1,9 @@
 # Solar Panel
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/solar_panel.png" alt="Solar Panel" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Sun-tracking generators that pool with their neighbours into one big solar array. Comes in **three
 tiers** — Tier 1 is a single block; Tier 2 and Tier 3 are 2×2 and 3×3 **multiblocks** that you place
 from a single item.

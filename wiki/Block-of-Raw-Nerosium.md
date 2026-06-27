@@ -1,5 +1,9 @@
 # Block of Raw Nerosium
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/raw_nerosium_block.png" alt="Block of Raw Nerosium" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Compact storage for nine units of Raw Nerosium.
 
 ## Overview

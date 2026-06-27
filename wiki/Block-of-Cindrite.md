@@ -1,5 +1,9 @@
 # Block of Cindrite
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/cindrite_block.png" alt="Block of Cindrite" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Compact storage for nine Cindrite gems.
 
 ## Overview

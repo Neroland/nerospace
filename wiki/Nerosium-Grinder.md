@@ -1,5 +1,9 @@
 # Nerosium Grinder
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/nerosium_grinder.gif" alt="Nerosium Grinder" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Your first machine — grinds ore into dust to double your metal yield.
 
 ## Overview

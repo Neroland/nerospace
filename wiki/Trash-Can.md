@@ -1,5 +1,9 @@
 # Trash Can
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/trash_can.png" alt="Trash Can" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A bottomless sink for unwanted items, fluids, and gas.
 
 ## Overview

@@ -1,5 +1,9 @@
 # Quarry Landmark
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/quarry_landmark.gif" alt="Quarry Landmark" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A corner marker that defines the area a [Quarry Controller](Quarry-Controller) will mine.
 
 ## Overview
