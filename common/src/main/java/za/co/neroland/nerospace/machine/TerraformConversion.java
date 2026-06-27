@@ -244,7 +244,6 @@ public final class TerraformConversion {
     }
 
     /** Write {@code biomeKey} down this column's sections. @return true if anything changed. */
-    @SuppressWarnings("unchecked")
     private static boolean writeBiomeColumn(ServerLevel level, LevelChunk chunk, int x, int z,
             ResourceKey<Biome> biomeKey) {
         Holder<Biome> terra = level.registryAccess()

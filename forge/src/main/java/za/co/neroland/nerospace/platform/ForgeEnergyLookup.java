@@ -11,7 +11,6 @@ import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.forge.ForgeCapabilities;
 
 /** Forge query of the mod's energy capability. */
-@SuppressWarnings("null")
 public final class ForgeEnergyLookup implements EnergyLookup {
 
     @Nullable

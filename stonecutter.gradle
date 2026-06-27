@@ -72,6 +72,52 @@ subprojects {
                     }
                 }
             }
+            // SINGLE SOURCE OF TRUTH: merge tools/ecj.prefs into this node's generated
+            // .settings/org.eclipse.jdt.core.prefs so the VS Code Java language server applies the
+            // EXACT same compiler-problem severities (and disabled null analysis) as the `ecjCheck`
+            // Gradle task. Edit tools/ecj.prefs, re-run `./gradlew eclipse`, reload VS Code.
+            jdt {
+                file {
+                    withProperties { props ->
+                        def prefsFile = rootProject.file('tools/ecj.prefs')
+                        if (prefsFile.exists()) {
+                            def loaded = new Properties()
+                            prefsFile.withInputStream { loaded.load(it) }
+                            loaded.stringPropertyNames().each { k ->
+                                props.setProperty(k, loaded.getProperty(k))
+                            }
+                        }
+                    }
+                }
+            }
+            // De-duplicate source-folder classpath entries. Loom/ModDevGradle + the `eclipse` plugin
+            // can emit the SAME generated source dir twice (e.g. build/generated/sources/modMetadata
+            // and build/generated/stonecutter/main/resources — once as a real entry, once with
+            // excluding="**"), which Eclipse/VS Code rejects as "Build path contains duplicate entry"
+            // and refuses to build. Keep one entry per path, preferring the non-excluded (real) one.
+            classpath {
+                file {
+                    whenMerged { cp ->
+                        def byPath = [:]
+                        cp.entries.each { e ->
+                            if (e.kind == 'src') {
+                                def prev = byPath[e.path]
+                                if (prev == null) {
+                                    byPath[e.path] = e
+                                } else {
+                                    def prevAll = (prev.hasProperty('excludes') ? prev.excludes : []).contains('**')
+                                    def curAll = (e.hasProperty('excludes') ? e.excludes : []).contains('**')
+                                    if (prevAll && !curAll) {
+                                        byPath[e.path] = e
+                                    }
+                                }
+                            }
+                        }
+                        def keep = byPath.values() as Set
+                        cp.entries.removeAll { it.kind == 'src' && !keep.contains(it) }
+                    }
+                }
+            }
         }
     }
 }

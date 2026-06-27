@@ -20,6 +20,7 @@ import za.co.neroland.nerospace.rocket.PadRegistry;
 import za.co.neroland.nerospace.rocket.StationCoreBlockEntity;
 import za.co.neroland.nerospace.rocket.StationRegistry;
 import za.co.neroland.nerospace.rocket.StationStructure;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 
 /**
  * The Station Charter — founds a player station. Right-click opens a naming console; type a name and
@@ -81,6 +82,7 @@ public class StationCharterItem extends Item {
         }
         held.shrink(1);
         StationStructure.build(station, entry.center());
+        NerospaceTelemetry.breadcrumb("station", "founded slot=" + entry.slot());
         StarGuideGrants.grant(player, "guide/station_charter");
         player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.founded", entry.name()));
     }

@@ -43,7 +43,7 @@ public final class FabricNetwork implements NetworkPlatform {
         PayloadTypeRegistry.serverboundPlay().register(sb.type(), sb.codec());
         ServerPlayNetworking.registerGlobalReceiver(sb.type(), (payload, context) -> {
             ServerPlayer player = context.player();
-            ((net.minecraft.server.level.ServerLevel) player.level()).getServer()
+            player.level().getServer()
                     .execute(() -> sb.handler().accept(payload, player));
         });
     }

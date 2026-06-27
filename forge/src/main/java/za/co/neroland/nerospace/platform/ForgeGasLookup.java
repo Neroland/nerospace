@@ -13,7 +13,6 @@ import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.rocket.RocketPadGasProxy;
 
 /** Forge query of the mod's gas capability. */
-@SuppressWarnings("null")
 public final class ForgeGasLookup implements GasLookup {
 
     @Nullable

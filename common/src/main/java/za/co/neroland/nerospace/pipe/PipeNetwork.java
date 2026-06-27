@@ -20,6 +20,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
 import za.co.neroland.nerospace.energy.EnergyBuffer;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
@@ -65,6 +66,10 @@ public final class PipeNetwork {
 
     /** Flood-fill the connected pipes from {@code seed}, build the network, and adopt every member. */
     public static PipeNetwork getOrBuild(ServerLevel level, BlockPos seed) {
+        return NerospaceTelemetry.trace("pipe.rebuild", "getOrBuild", () -> getOrBuild0(level, seed));
+    }
+
+    private static PipeNetwork getOrBuild0(ServerLevel level, BlockPos seed) {
         List<BlockPos> members = new ArrayList<>();
         Set<Long> seen = new HashSet<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();

@@ -38,6 +38,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.fluid.FluidTank;
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModEntities;
@@ -498,7 +499,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     public int addFuel(int amount) {
         int room = Math.max(0, getTier().fuelCapacity() - (int) this.fuelTank.getAmount());
         int toFill = Math.min(amount, room);
-        int filled = (int) this.fuelTank.fill((Fluid) ModFluids.ROCKET_FUEL.get(), toFill, false);
+        int filled = (int) this.fuelTank.fill(ModFluids.ROCKET_FUEL.get(), toFill, false);
         return amount - filled;
     }
 
@@ -729,6 +730,10 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     private void completeLaunch() {
+        NerospaceTelemetry.trace("rocket.launch", "completeLaunch", this::completeLaunch0);
+    }
+
+    private void completeLaunch0() {
         net.minecraft.resources.ResourceKey<Level> targetKey = selectedDestination();
         if (targetKey == null) {
             setLaunching(false);
@@ -738,6 +743,8 @@ public class RocketEntity extends Entity implements MenuProvider {
         int outboundFuel = currentFuelCost();
         int carriedFuel = Math.max(0, getFuel() - outboundFuel);
         this.fuelTank.drain(outboundFuel, false);
+        NerospaceTelemetry.breadcrumb("rocket",
+                "launch tier=" + getTier() + " dim=" + Destinations.name(targetKey));
 
         Entity passenger = this.getFirstPassenger();
         if (passenger instanceof ServerPlayer player && level() instanceof ServerLevel current) {

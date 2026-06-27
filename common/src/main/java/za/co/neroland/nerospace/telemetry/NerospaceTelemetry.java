@@ -9,9 +9,12 @@ import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 
+import io.sentry.Breadcrumb;
+import io.sentry.ITransaction;
 import io.sentry.Sentry;
 import io.sentry.SentryEvent;
 import io.sentry.SentryLevel;
+import io.sentry.SpanStatus;
 import io.sentry.protocol.Message;
 import io.sentry.protocol.SentryException;
 import io.sentry.protocol.SentryStackFrame;
@@ -55,6 +58,9 @@ public final class NerospaceTelemetry {
 
     /** Hard cap on events per game session (data minimisation + noise control). */
     private static final int MAX_EVENTS_PER_SESSION = 10;
+
+    /** Cap on how many mod ids are attached as crash context (payload bound). */
+    private static final int MAX_MODS_REPORTED = 300;
 
     /** Masks OS-account names in Windows/macOS/Linux home-directory paths. */
     private static final Pattern USER_PATH =
@@ -117,13 +123,53 @@ public final class NerospaceTelemetry {
             // The machine's hostname is identifying; never attach it.
             options.setAttachServerName(false);
             options.setEnableUncaughtExceptionHandler(true);
+            // Release health: we manage the session lifecycle manually (started below, ended on JVM
+            // shutdown) so it works outside the Android/servlet integrations. The session id is random
+            // per launch and is NOT linked across sessions; no user/IP is attached.
+            options.setEnableAutoSessionTracking(false);
+            // Performance: sample a small fraction of traced operations (launch, pipe rebuild,
+            // terraform work). Timing data only — no personal data in a transaction.
+            options.setTracesSampleRate(0.05D);
             options.setBeforeSend((event, hint) -> filterAndScrub(event));
         });
         Sentry.configureScope(scope -> {
             scope.setTag("loader", Services.PLATFORM.getPlatformName().toLowerCase(Locale.ROOT));
             scope.setTag("dist", Services.PLATFORM.isClient() ? "client" : "dedicated_server");
             scope.setTag("runtime", dev ? "development" : "production");
+            scope.setTag("mc_version", minecraftVersion());
+            // Config multipliers — surfaces crashes that only reproduce at non-default balance settings.
+            scope.setTag("cfg_energy_rate", fmt(NerospaceConfig.energyRateMultiplier()));
+            scope.setTag("cfg_oxygen_drain", fmt(NerospaceConfig.oxygenDrainMultiplier()));
+            scope.setTag("cfg_oxygen_capacity", fmt(NerospaceConfig.oxygenCapacityMultiplier()));
+            scope.setTag("cfg_fuel_cost", fmt(NerospaceConfig.fuelCostMultiplier()));
+            scope.setTag("cfg_machine_speed", fmt(NerospaceConfig.machineSpeedMultiplier()));
+            // Loaded-mod list (public manifest ids + versions only) for mod-conflict triage.
+            try {
+                List<String> mods = Services.PLATFORM.getLoadedModIds();
+                if (mods != null && !mods.isEmpty()) {
+                    if (mods.size() > MAX_MODS_REPORTED) {
+                        mods = mods.subList(0, MAX_MODS_REPORTED);
+                    }
+                    scope.setTag("mod_count", Integer.toString(mods.size()));
+                    java.util.Map<String, Object> modContext = new java.util.HashMap<>();
+                    modContext.put("count", mods.size());
+                    modContext.put("ids", mods);
+                    scope.setContexts("loaded_mods", modContext);
+                }
+            } catch (RuntimeException | LinkageError e) {
+                // Mod list not available this early — skip it; the rest of the report is unaffected.
+            }
         });
+        // Manual release-health session for this play session; closed on a clean JVM shutdown.
+        Sentry.startSession();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                Sentry.endSession();
+                Sentry.flush(2000L);
+            } catch (RuntimeException ignored) {
+                // best-effort flush on shutdown
+            }
+        }, "nerospace-sentry-shutdown"));
         if (appender == null) {
             appender = new SentryLogAppender();
             appender.start();
@@ -133,6 +179,75 @@ public final class NerospaceTelemetry {
         NerospaceCommon.LOGGER.info(
                 "[Nerospace] Telemetry enabled (anonymous error reports, EU servers; opt out via "
                         + "telemetryEnabled=false in config/nerospace.properties).");
+    }
+
+    /**
+     * Drops a lightweight, non-identifying breadcrumb onto the current scope — a trail of what the mod
+     * was doing (entered a dimension, launched a rocket, founded a station) that rides along with the
+     * next error report so a stack trace comes with the path that led to it. No-op when telemetry is off.
+     * The message is scrubbed of OS-account paths exactly like every other payload.
+     */
+    public static void breadcrumb(String category, String message) {
+        if (!active) {
+            return;
+        }
+        Breadcrumb crumb = new Breadcrumb();
+        crumb.setType("default");
+        crumb.setCategory(category);
+        crumb.setLevel(SentryLevel.INFO);
+        crumb.setMessage(scrub(message));
+        Sentry.addBreadcrumb(crumb);
+    }
+
+    /**
+     * Times a unit of work as a sampled Sentry transaction (performance tracing). Returns the body's
+     * value. When telemetry is off the body simply runs untraced, so call sites stay branch-free. Only
+     * timing + operation name are recorded — never personal data.
+     */
+    public static <T> T trace(String operation, String name, java.util.function.Supplier<T> body) {
+        if (!active) {
+            return body.get();
+        }
+        ITransaction tx = Sentry.startTransaction(name, operation);
+        try {
+            return body.get();
+        } catch (RuntimeException | Error e) {
+            tx.setThrowable(e);
+            tx.setStatus(SpanStatus.INTERNAL_ERROR);
+            throw e;
+        } finally {
+            tx.finish();
+        }
+    }
+
+    /** {@link #trace(String, String, java.util.function.Supplier)} for a body with no return value. */
+    public static void trace(String operation, String name, Runnable body) {
+        trace(operation, name, () -> {
+            body.run();
+            return null;
+        });
+    }
+
+    /** Formats a config multiplier as a short, stable tag value. */
+    private static String fmt(double value) {
+        return String.format(Locale.ROOT, "%.2f", value);
+    }
+
+    /**
+     * The running Minecraft version (e.g. "26.1.2"), read from the loader's mod list (where "minecraft"
+     * is always present) so we stay off version-specific vanilla version APIs. "unknown" if unavailable.
+     */
+    private static String minecraftVersion() {
+        try {
+            for (String mod : Services.PLATFORM.getLoadedModIds()) {
+                if (mod.startsWith("minecraft ")) {
+                    return mod.substring("minecraft ".length());
+                }
+            }
+        } catch (RuntimeException | LinkageError e) {
+            // fall through to unknown
+        }
+        return "unknown";
     }
 
     /** Maps the mod version's release channel to a Sentry environment. */
