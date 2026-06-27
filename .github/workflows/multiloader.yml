@@ -104,7 +104,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: Neroland/neroland-core
-          ref: v1.0.0            # pin to the Core version nerospace depends on (nerolandcore_version=1.0.0)
+          ref: v1.0.1            # pin to the Core version nerospace depends on (nerolandcore_version=1.0.1)
           path: neroland-core
           fetch-depth: 1
 
