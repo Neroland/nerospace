@@ -98,37 +98,37 @@ def screen_rect(front):
 
 
 def monitor_strip(front, frames=24):
+    """Clean live screen: deep-black screen (distinct from the grey base/bezel), three telemetry
+    bars in their original columns/colours rising and falling, a blinking status LED. No grid or
+    scan smear. Robust to re-runs: the screen interior is fully repainted each frame."""
     base = front.crop((0, 0, 16, 16))
     rx0, ry0, rx1, ry1 = screen_rect(base)
-    ix0, iy0, ix1, iy1 = rx0 + 1, ry0 + 1, rx1 - 1, ry1 - 1
-    aw = ix1 - ix0 + 1; ah = iy1 - iy0 + 1
-    bg = (8, 12, 18, 255); grid = (20, 30, 40, 255)
-    bars = [(60, 210, 110), (96, 200, 240), (150, 235, 175)]
-    nb = len(bars); bw = max(1, aw // (nb + 1)); gap = max(1, (aw - nb * bw) // (nb + 1))
+    ix0, iy0, ix1, iy1 = rx0, ry0, rx1, ry1
+    screen_bg = (7, 10, 16)
+    cols = [(52, 190, 92), (110, 220, 252), (186, 255, 196)]
+    bases = [3, 5, 7]
+    cap = (235, 255, 240)
+    nb = len(cols); aw = ix1 - ix0 + 1
+    bw = max(1, aw // (nb + 1)); gap = max(1, (aw - nb * bw) // (nb + 1))
+    floor = iy1
     strip = Image.new("RGBA", (16, 16 * frames))
     for i in range(frames):
         fr = base.copy(); px = fr.load()
         for y in range(iy0, iy1 + 1):
             for x in range(ix0, ix1 + 1):
-                px[x, y] = grid if ((y - iy0) % 3 == 0) else bg
-        for k, c in enumerate(bars):
-            ph = 2 * math.pi * i / frames + k * 2.1
-            hh = int(round(ah * (0.30 + 0.62 * (0.5 + 0.5 * math.sin(ph)))))
-            hh = max(1, min(ah, hh))
+                px[x, y] = (*screen_bg, 255)
+        for k, c in enumerate(cols):
+            ph = 2 * math.pi * i / frames + k * 1.9
+            hh = int(round(bases[k] + 1.6 * math.sin(ph)))
+            hh = max(2, min(floor - iy0, hh))
             bx = ix0 + gap + k * (bw + gap)
-            top = iy1 - hh + 1
-            for y in range(top, iy1 + 1):
-                shade = c if y > top else lerp(c, (255, 255, 255), 0.35)  # bright cap
+            top = floor - hh + 1
+            for y in range(top, floor + 1):
+                shade = lerp(c, cap, 0.35) if y == top else c
                 for x in range(bx, min(bx + bw, ix1 + 1)):
                     px[x, y] = (*shade, 255)
-        # scan line sweeping down
-        sy = iy0 + (i % ah)
-        for x in range(ix0, ix1 + 1):
-            r, g, b, a = px[x, sy]
-            px[x, sy] = (min(255, r + 60), min(255, g + 70), min(255, b + 60), 255)
-        # status LED (top-left inside screen) blink
-        on = (i % frames) < frames // 2
-        px[ix0, iy0] = ((90, 255, 130, 255) if on else (30, 80, 45, 255))
+        on = (i % frames) < frames * 2 // 3
+        px[ix0, iy0] = ((90, 255, 130, 255) if on else (26, 70, 40, 255))
         strip.paste(fr, (0, i * 16))
     return strip
 
@@ -181,8 +181,8 @@ def main():
     # monitor
     mp = os.path.join(B, "terraform_monitor_front.png")
     monitor_strip(Image.open(mp).convert("RGBA")).save(mp)
-    write_mcmeta(mp, 2)
-    made.append("terraform_monitor_front (graph 24f @2)")
+    write_mcmeta(mp, 3)
+    made.append("terraform_monitor_front (graph 24f @3)")
     # pulse machines
     for name, frames, ft, amp, hue in PULSE:
         p = os.path.join(B, name + ".png")

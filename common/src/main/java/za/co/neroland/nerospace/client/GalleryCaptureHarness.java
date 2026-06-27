@@ -56,8 +56,10 @@ import net.minecraft.world.phys.Vec3;
  * only applies in dimensions with a clock (the capture dim + Greenxertz). The space dimensions
  * (Cindara/Glacira/Station) render against their starfield by design.
  *
- * <p>Outputs land in {@code .minecraft/screenshots/nerospace/<shot>.png} at native resolution with the
- * HUD, clouds and view-bob all suppressed for the duration of the run.
+ * <p>Outputs land in {@code .minecraft/screenshots/nerospace/<shot>.png} at the game window's native
+ * resolution with the HUD, clouds and view-bob all suppressed for the duration of the run. Since native
+ * res can be 2.5k+ wide / 5-8 MB, run {@code ./gradlew compressScreenshots} afterwards to cap each shot
+ * at 1920 px / &lt;4 MB before committing (see RELEASE_CHECKLIST.md §9.4).
  */
 public final class GalleryCaptureHarness {
 

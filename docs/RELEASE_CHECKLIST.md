@@ -181,6 +181,12 @@ Canonical gallery folder: run the capture from the **NeoForge 26.2 client** so t
 mirrored to Modrinth (and uploaded manually to CurseForge). Commit the shots you want public; the
 `Sync Modrinth gallery` workflow re-uploads them in the curated order on push.
 
+Before committing, normalise the sizes: the harness captures at the game window's native resolution,
+so on a big display the PNGs come out 2.5k+ wide and 5–8 MB. Run **`./gradlew compressScreenshots`**
+(needs Pillow — the task pip-installs it if missing) to cap every shot at 1920 px wide and **< 4 MB**
+in place (the 1920×1080 CurseForge target + under the gallery upload limit; the Modrinth workflow also
+re-encodes to JPEG for its own upload). Tune with `-PscreenshotArgs="--max-mb 3 --max-width 1600"`.
+
 ### 9.5 Trailer / showcase video outline
 
 Target: **60–90 s**, 1080p60, hosted on **YouTube** (link it on the CurseForge page; CF supports a

@@ -37,6 +37,8 @@ SHADE = {"up": 1.0, "down": 0.5, "north": 0.8, "south": 0.8, "east": 0.62, "west
 NORMAL = {"up": (0, 1, 0), "down": (0, -1, 0), "north": (0, 0, -1),
           "south": (0, 0, 1), "east": (1, 0, 0), "west": (-1, 0, 0)}
 FULL = ([0, 0, 0], [16, 16, 16])
+# Blocks whose 'front' is on a face the default 45deg view hides/leans away from -> rotate to face it.
+YAW_OVERRIDE = {"terraform_monitor": math.radians(225.0)}
 
 def _box(faces): return {"from": FULL[0], "to": FULL[1], "faces": faces}
 def _cube(t): return {f: {"texture": t[f]} for f in ("down", "up", "north", "south", "east", "west")}
@@ -222,14 +224,15 @@ def render_block(model_id, spin, bright):
     fit = compute_fit()
     os.makedirs(OUT_DIR, exist_ok=True)
     outs = []
-    png = render(elements, textures, 0, YAW, bright, fit)
+    y0 = YAW_OVERRIDE.get(model_id, YAW)
+    png = render(elements, textures, 0, y0, bright, fit)
     pp = os.path.join(OUT_DIR, f"{model_id}.png"); png.save(pp); outs.append(pp)
     n = anim_frame_count(elements, textures)
     if n > 1:
-        gif = [render(elements, textures, i, YAW, bright, fit) for i in range(n)]
+        gif = [render(elements, textures, i, y0, bright, fit) for i in range(n)]
         gp = os.path.join(OUT_DIR, f"{model_id}.gif"); save_gif(gif, gp, gif_ms(elements, textures)); outs.append(gp)
     if spin:
-        frames = [render(elements, textures, 0, YAW + math.radians(i * 15), bright, fit) for i in range(24)]
+        frames = [render(elements, textures, 0, y0 + math.radians(i * 15), bright, fit) for i in range(24)]
         sp = os.path.join(OUT_DIR, f"{model_id}_spin.gif"); save_gif(frames, sp, 80); outs.append(sp)
     return outs
 
