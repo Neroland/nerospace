@@ -68,12 +68,6 @@ public final class OxygenManager {
 
     /** Oxygen (mB) a ridden rocket's life-support tank spends per check keeping the rider breathing. */
     private static final int RIDE_DRAIN_PER_CHECK = 2;
-    /**
-     * The rocket arrival reserve (oxygen carried over from the rocket's onboard tank, held as overfill above
-     * the normal tank) drains at {@code 1 / this} of the normal exposed rate — so a rocket trip buys a long
-     * surface stay before ordinary suit/bare drain resumes.
-     */
-    private static final int RESERVE_DRAIN_DIVISOR = 100;
 
     /** Airlock refill: scan radius around a suited player for a Gas Tank / Oxygen Generator holding O2. */
     private static final int AIRLOCK_RADIUS = 4;
@@ -104,10 +98,9 @@ public final class OxygenManager {
                 && !player.getAbilities().instabuild
                 && !player.isSpectator();
         if (!airless) {
-            // Breathable dimension: ensure a full tank but never wipe a carried-over arrival reserve.
-            int kept = Math.max(Services.PLATFORM.getOxygen(player), max);
-            Services.PLATFORM.setOxygen(player, kept);
-            mirrorToAirSupply(player, Math.min(kept, max), max);
+            // Breathable dimension (e.g. home): top the tank to full — no carried-over overfill.
+            Services.PLATFORM.setOxygen(player, max);
+            mirrorToAirSupply(player, max, max);
             return;
         }
 
@@ -128,17 +121,11 @@ public final class OxygenManager {
 
         if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
             if (isBreathable(level, player.blockPosition())) {
-                oxygen = Math.max(oxygen, max); // breathe ambient; any reserve is left untouched
-            } else if (oxygen > max) {
-                // Arrival reserve: deplete at ~1/RESERVE_DRAIN_DIVISOR of the exposed rate (a long stay),
-                // flooring at the normal tank so ordinary drain resumes once the reserve is spent.
-                int normalDrain = NerospaceConfig.scale(suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK,
-                        NerospaceConfig.oxygenDrainMultiplier()) * hazardDrainMultiplier(level, player);
-                int reserveDrain = Math.max(1, normalDrain / RESERVE_DRAIN_DIVISOR);
-                oxygen = Math.max(max, oxygen - reserveDrain);
-                hazardFeedback(level, player);
+                oxygen = Math.max(oxygen, max); // breathe ambient; a carried buffer is left untouched here
             } else {
-                // An uncountered dimension hazard (Cindara heat / Glacira cold) multiplies the drain.
+                // Exposed: drain the tank — INCLUDING any rocket-carried arrival buffer (overfill above the
+                // normal tank) — at the normal rate. A worn suit drains far slower; an uncountered planet
+                // hazard (Cindara heat / Glacira cold) multiplies it. At zero the player suffocates.
                 int drain = NerospaceConfig.scale(suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK,
                         NerospaceConfig.oxygenDrainMultiplier()) * hazardDrainMultiplier(level, player);
                 oxygen = Math.max(0, oxygen - drain);
@@ -169,9 +156,10 @@ public final class OxygenManager {
     }
 
     /**
-     * Grants a rocket arrival reserve: tops the rider's personal/suit oxygen to full and adds the rocket's
-     * remaining onboard oxygen as overfill on top. The overfill drains at {@link #RESERVE_DRAIN_DIVISOR} of
-     * the normal rate (see {@link #tick}), so a fuelled rocket buys a long surface stay. Server-side.
+     * Grants a rocket arrival buffer: tops the rider's personal/suit oxygen to full and adds the rocket's
+     * remaining onboard oxygen as overfill on top. That buffer then drains at the <em>normal</em> exposed
+     * rate (see {@link #tick}) — a finite head-start that gets spent, after which the player must reach a
+     * breathable zone (launch pad / Oxygen Generator / terraformed ground) or suffocate. Server-side.
      */
     public static void grantArrivalReserve(ServerPlayer player, int oxygenMb) {
         if (oxygenMb <= 0) {
