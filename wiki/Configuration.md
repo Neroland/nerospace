@@ -1,10 +1,17 @@
 # Configuration
 
-Nerospace's config (`config/nerospace-common.toml`) is deliberately small: the mod owns its base
-balance numbers in code, and packs tune them through **six multipliers**. Everything else in the
-file is genuinely absolute — booleans, radii, performance caps, advanced simulation tuning and
-client visual preferences.
+Nerospace's config is deliberately small: the mod owns its base balance numbers in code, and packs
+tune them through **six multipliers**. Everything else is genuinely absolute — booleans, radii,
+performance caps, advanced simulation tuning and client visual preferences.
 
+> **Managed by [Neroland Core](Neroland-Core).** The balance config lives in
+> `config/nerospace.properties` and is owned by Core: reload it live with `/neroland config reload`
+> (no restart), and the gameplay-balance multipliers are **server-authoritative** — a connected
+> client always uses the server's values. The `telemetryEnabled` opt-out is the exception: it stays a
+> personal, per-client choice a server can never force. Existing files migrate in place (the keys are
+> unchanged). Keys read by the deeper simulation systems (atmosphere, meteors, terraformer) are
+> documented below for reference.
+>
 > **Breaking change (pre-1.0):** the old flat key list (`oxygenMax`, `batteryCapacity`,
 > `combustionGeneratorFePerTick`, …) was removed without migration. Delete your old
 > `nerospace-common.toml` and let it regenerate.

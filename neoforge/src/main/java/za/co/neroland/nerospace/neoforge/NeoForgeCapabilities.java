@@ -9,6 +9,9 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
+import za.co.neroland.nerolandcore.platform.NeoForgeEnergyLookup;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
@@ -266,5 +269,30 @@ public final class NeoForgeCapabilities {
                         ? new WorldlyContainerWrapper(new RocketPadItemContainer(level, pos), side)
                         : VanillaContainerWrapper.of(new RocketPadItemContainer(level, pos)),
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
+
+        registerCoreEnergy(event);
+    }
+
+    /**
+     * Cross-mod energy network (Neroland Core): expose every Nerospace energy block-entity on Core's
+     * shared {@code nerolandcore:energy} capability too, so machines from any Nero mod interoperate on
+     * one power network. {@link NerospaceEnergyStorage} extends {@code NeroEnergyStorage}, so the
+     * existing {@code getEnergy()} suppliers satisfy Core's capability unchanged. The mod's own
+     * {@link #ENERGY} stays registered above for back-compat.
+     */
+    private static void registerCoreEnergy(RegisterCapabilitiesEvent event) {
+        BlockCapability<NeroEnergyStorage, Direction> core = NeoForgeEnergyLookup.ENERGY;
+        event.registerBlockEntity(core, ModBlockEntities.BATTERY.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.COMBUSTION_GENERATOR.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.NEROSIUM_GRINDER.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.PASSIVE_GENERATOR.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.UNIVERSAL_PIPE.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.OXYGEN_GENERATOR.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.SOLAR_PANEL.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.TERRAFORMER.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.CREATIVE_BATTERY.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.FUEL_REFINERY.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.QUARRY_CONTROLLER.get(), (be, side) -> be.getEnergy());
     }
 }

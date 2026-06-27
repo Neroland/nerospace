@@ -6,17 +6,19 @@ import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
 
-import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
 
 /**
  * Query side of the energy seam: find the energy storage exposed by the block at {@code pos} on
- * {@code side}. Each loader implements it over its own lookup mechanism (NeoForge
- * {@code Level.getCapability}, Fabric {@code BlockApiLookup.find}). Resolved via {@link Services}.
+ * {@code side}. Each loader implementation now delegates to Neroland Core's shared energy lookup
+ * ({@code nerolandcore:energy}), so a query returns the {@link NeroEnergyStorage} of ANY Nero mod's
+ * machine — not just Nerospace's — letting energy cross mod boundaries on one network. Resolved via
+ * {@link Services}.
  */
 public interface EnergyLookup {
 
     EnergyLookup INSTANCE = Services.load(EnergyLookup.class);
 
     @Nullable
-    NerospaceEnergyStorage find(Level level, BlockPos pos, @Nullable Direction side);
+    NeroEnergyStorage find(Level level, BlockPos pos, @Nullable Direction side);
 }

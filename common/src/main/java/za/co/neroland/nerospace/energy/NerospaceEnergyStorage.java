@@ -1,21 +1,28 @@
 package za.co.neroland.nerospace.energy;
 
-/**
- * Loader-neutral energy storage interface. Each loader exposes it through its own block-lookup
- * mechanism (NeoForge {@code BlockCapability}, Fabric {@code BlockApiLookup}) so the mod's own
- * generators, batteries and machines interoperate on both loaders. Cross-mod energy interop
- * (NeoForge's {@code Capabilities.Energy} / the Fabric energy libraries) is deferred — those
- * libraries have not ported to 26.x, and the mod is standalone for now.
- */
-public interface NerospaceEnergyStorage {
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
 
+/**
+ * Loader-neutral energy storage interface. Now a thin specialisation of Neroland Core's
+ * {@link NeroEnergyStorage} — the canonical Nero energy surface — so every Nerospace generator,
+ * battery and machine is an {@code NeroEnergyStorage} and interoperates with machines from any other
+ * Nero mod on the shared {@code nerolandcore:energy} capability. The method shape is identical
+ * (Core adds default {@code canReceive()}/{@code canExtract()}), so this remains source-compatible.
+ * Cross-mod bridging to the platforms' native FE libraries stays deferred until they port to 26.x.
+ */
+public interface NerospaceEnergyStorage extends NeroEnergyStorage {
+
+    @Override
     long getAmount();
 
+    @Override
     long getCapacity();
 
     /** @return energy actually inserted (0 if none). */
+    @Override
     long insert(long maxAmount, boolean simulate);
 
     /** @return energy actually extracted (0 if none). */
+    @Override
     long extract(long maxAmount, boolean simulate);
 }

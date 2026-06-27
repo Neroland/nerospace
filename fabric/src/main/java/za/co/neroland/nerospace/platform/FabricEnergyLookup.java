@@ -6,15 +6,18 @@ import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
 
-import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
-import za.co.neroland.nerospace.fabric.NerospaceFabric;
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
 
-/** Fabric query of the mod's energy block-api lookup. */
+/**
+ * Fabric energy query — delegates to Neroland Core's shared {@code nerolandcore:energy} lookup so a
+ * neighbour query finds machines from any Nero mod. Nerospace's own machines are also registered on
+ * Core's lookup (see {@code NerospaceFabric}), so they remain findable through this path.
+ */
 public final class FabricEnergyLookup implements EnergyLookup {
 
     @Nullable
     @Override
-    public NerospaceEnergyStorage find(Level level, BlockPos pos, @Nullable Direction side) {
-        return NerospaceFabric.ENERGY.find(level, pos, side);
+    public NeroEnergyStorage find(Level level, BlockPos pos, @Nullable Direction side) {
+        return za.co.neroland.nerolandcore.platform.EnergyLookup.INSTANCE.find(level, pos, side);
     }
 }

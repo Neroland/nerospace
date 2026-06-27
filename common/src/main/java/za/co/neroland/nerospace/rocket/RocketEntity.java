@@ -837,6 +837,12 @@ public class RocketEntity extends Entity implements MenuProvider {
                 // Life support: dump the rocket's remaining oxygen into the rider as a slow-draining
                 // surface reserve (this also tops their suit/personal O2 to full on arrival).
                 za.co.neroland.nerospace.world.OxygenManager.grantArrivalReserve(player, getOxygen());
+                // Neroland Core progression (one-directional): a completed launch reaches orbit; arriving
+                // at a far planet is a deep-space milestone. tryOpen respects the gate `requires` chain.
+                za.co.neroland.nerospace.progression.StarGuideGrants.driveReachedOrbit(player);
+                if (targetKey.equals(ModDimensions.CINDARA_LEVEL) || targetKey.equals(ModDimensions.GLACIRA_LEVEL)) {
+                    za.co.neroland.nerospace.progression.StarGuideGrants.driveDeepSpace(player);
+                }
             }
         }
 
