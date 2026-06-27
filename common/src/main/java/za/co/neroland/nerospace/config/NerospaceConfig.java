@@ -27,6 +27,7 @@ public final class NerospaceConfig {
     private static final String KEY_OXYGEN_CAPACITY = "oxygenCapacityMultiplier";
     private static final String KEY_FUEL_COST = "fuelCostMultiplier";
     private static final String KEY_MACHINE_SPEED = "machineSpeedMultiplier";
+    private static final String KEY_GRAVITY = "gravityMultiplier";
     private static final String KEY_QUARRY_MAX_SIDE = "quarryMaxSide";
     private static final String KEY_ALIEN_RAIDS = "alienRaidsEnabled";
     private static final String KEY_TERRAFORMER_FORCE_LOAD = "terraformerForceLoadEnabled";
@@ -47,6 +48,8 @@ public final class NerospaceConfig {
     private static volatile double fuelCostMultiplier = 1.0D;
     /** Scales machine work speed (inverse: higher ⇒ shorter work intervals). Clamped 0.1×..10×. */
     private static volatile double machineSpeedMultiplier = 1.0D;
+    /** Global scale on all resolved per-dimension / per-biome gravity factors. Clamped 0.1×..10×. */
+    private static volatile double gravityMultiplier = 1.0D;
     /** Max claimed quarry footprint side in blocks. Default 64x64; players can lower it for server balance. */
     private static volatile int quarryMaxSide = 64;
     /** Whether alien villages can be raided by hostile mobs at night. ON by default; players opt out. */
@@ -84,6 +87,11 @@ public final class NerospaceConfig {
 
     public static double machineSpeedMultiplier() {
         return machineSpeedMultiplier;
+    }
+
+    /** Global multiplier applied to every resolved gravity factor (default 1.0 = unchanged). */
+    public static double gravityMultiplier() {
+        return gravityMultiplier;
     }
 
     /** Configured quarry footprint side, clamped to a practical 4..64 block range. */
@@ -151,6 +159,8 @@ public final class NerospaceConfig {
                         props.getProperty(KEY_FUEL_COST), fuelCostMultiplier));
                 machineSpeedMultiplier = clampMultiplier(parseDouble(
                         props.getProperty(KEY_MACHINE_SPEED), machineSpeedMultiplier));
+                gravityMultiplier = clampMultiplier(parseDouble(
+                        props.getProperty(KEY_GRAVITY), gravityMultiplier));
                 quarryMaxSide = clampInt(parseInt(
                         props.getProperty(KEY_QUARRY_MAX_SIDE), quarryMaxSide), 4, 64);
                 alienRaidsEnabled = Boolean.parseBoolean(
@@ -203,6 +213,7 @@ public final class NerospaceConfig {
         props.setProperty(KEY_OXYGEN_CAPACITY, Double.toString(oxygenCapacityMultiplier));
         props.setProperty(KEY_FUEL_COST, Double.toString(fuelCostMultiplier));
         props.setProperty(KEY_MACHINE_SPEED, Double.toString(machineSpeedMultiplier));
+        props.setProperty(KEY_GRAVITY, Double.toString(gravityMultiplier));
         props.setProperty(KEY_QUARRY_MAX_SIDE, Integer.toString(quarryMaxSide));
         props.setProperty(KEY_ALIEN_RAIDS, Boolean.toString(alienRaidsEnabled));
         props.setProperty(KEY_TERRAFORMER_FORCE_LOAD, Boolean.toString(terraformerForceLoadEnabled));
@@ -219,6 +230,8 @@ public final class NerospaceConfig {
                         + "scales how fast air drains. oxygenCapacityMultiplier: scales air capacity. "
                         + "fuelCostMultiplier: scales fuel burned per rocket launch. "
                         + "machineSpeedMultiplier: scales machine work speed (higher = faster). "
+                        + "gravityMultiplier: global scale on per-dimension/per-biome gravity (higher = "
+                        + "stronger gravity). "
                         + "quarryMaxSide: max quarry landmark claim side in blocks (4..64, default 64). "
                         + "All multipliers 0.1..10, default 1. alienRaidsEnabled: allow hostile mobs to "
                         + "raid alien villages at night (true by default; set false to opt out). "

@@ -57,19 +57,23 @@ eventually **terraform** a dead planet into livable, rained-on ground.
   and off-world ores; track them with the Meteor Tracker.
 
 - **[Star Guide](Star-Guide)** — the in-game progression guide.
-- **[Configuration](Configuration)** — the five multiplier keys for server/modpack tuning.
+- **[Planet Gravity](Planet-Gravity)** — each world's own gravity, biome variation, and how
+  terraforming restores it.
+- **[Configuration](Configuration)** — the six multiplier keys for server/modpack tuning.
 - **[Roadmap](Roadmap)** — what shipped in 1.0 and what's next.
 - **[Future Features](Future-Features)** — the longer-term wish list.
 
 ## Dimensions at a glance
 
-| Dimension | Reached by | Sky | Notes |
-| --- | --- | --- | --- |
-| Overworld | — | normal | Source of Nerosium. |
-| **Orbital Station** | Tier 1+ rocket | space starfield | A platform in orbit — plus any [station you found](Station-Charter) yourself. Airless/void. |
-| **Greenxertz** | Tier 2+ rocket | day/night + sun | Green planet; Nerosteel + Xertz Quartz. Airless. |
-| **Cindara** | Tier 3+ rocket | space starfield | Volcanic moon; Cindrite. Airless + **heat hazard** (×4 O₂ drain without a [Thermal Suit](Oxygen-Suit)). |
-| **Glacira** | Tier 4 rocket | space starfield | Frozen moon; Glacite. Airless + **cold hazard** (×4 O₂ drain without a [Cryo Suit](Oxygen-Suit)). |
+| Dimension | Reached by | Sky | [Gravity](Planet-Gravity) | Notes |
+| --- | --- | --- | --- | --- |
+| Overworld | — | normal | `1.0×` | Source of Nerosium. |
+| **Orbital Station** | Tier 1+ rocket | space starfield | `~0.1×` | A platform in orbit — plus any [station you found](Station-Charter) yourself. Airless/void. |
+| **Greenxertz** | Tier 2+ rocket | day/night + sun | `~0.6×` | Green planet; Nerosteel + Xertz Quartz. Airless. |
+| **Cindara** | Tier 3+ rocket | space starfield | `~0.8×` | Volcanic moon; Cindrite. Airless + **heat hazard** (×4 O₂ drain without a [Thermal Suit](Oxygen-Suit)). |
+| **Glacira** | Tier 4 rocket | space starfield | `~0.4×` | Frozen moon; Glacite. Airless + **cold hazard** (×4 O₂ drain without a [Cryo Suit](Oxygen-Suit)). |
 
 All Nerospace dimensions are **airless** — without a breathable zone (an Oxygen Generator, a Launch
-Pad, terraformed ground, or a full Oxygen Suit) you will run out of oxygen and suffocate.
+Pad, terraformed ground, or a full Oxygen Suit) you will run out of oxygen and suffocate. They also
+each have their **own [gravity](Planet-Gravity)** — lighter than home out on the moons, near-weightless
+in orbit — which [terraforming](Terraformer) restores to normal as you reclaim the ground.

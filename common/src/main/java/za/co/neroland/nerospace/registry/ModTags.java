@@ -4,6 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 
 /**
@@ -22,6 +23,27 @@ public final class ModTags {
 
     private static TagKey<Item> itemTag(String namespace, String path) {
         return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(namespace, path));
+    }
+
+    private static TagKey<Biome> biomeTag(String namespace, String path) {
+        return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(namespace, path));
+    }
+
+    public static final class Biomes {
+
+        private Biomes() {
+        }
+
+        // --- Per-biome gravity overrides (GRAVITY_DESIGN.md) ----------------
+        // A biome carrying one of these tags overrides its dimension's default gravity factor. Most
+        // biomes carry none and simply inherit the dimension default. Membership is data
+        // (tags/worldgen/biome/*.json).
+        /** Micro-gravity biomes (~0.15× — craters, voids). */
+        public static final TagKey<Biome> GRAVITY_MICRO = biomeTag("nerospace", "gravity_micro");
+        /** Low-gravity biomes (~0.4×). */
+        public static final TagKey<Biome> GRAVITY_LOW = biomeTag("nerospace", "gravity_low");
+        /** High-gravity biomes (~1.5× — dense basins). */
+        public static final TagKey<Biome> GRAVITY_HIGH = biomeTag("nerospace", "gravity_high");
     }
 
     public static final class Blocks {
