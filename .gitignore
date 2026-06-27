@@ -50,6 +50,20 @@ repo/
 PROJECT_PLAN.md
 /tools/__pycache__
 runs/
+# …but DO track the capture-harness gallery screenshots under the NeoForge 26.2 client run, so the
+# Sync-Modrinth-gallery workflow can pick them up. Re-include each parent dir before the files — git
+# will not descend into an excluded directory, so the `**` alone is not enough.
+# Whitelist recipe (git docs): at each level un-ignore the dir so git descends, then re-ignore that
+# dir's OTHER contents with `/*`, so ONLY the screenshots/nerospace/ leaf ends up tracked — every
+# other run artifact (logs, options, saves, caches, the rest of client/ and runs/) stays ignored.
+!neoforge/versions/26.2/runs/
+neoforge/versions/26.2/runs/*
+!neoforge/versions/26.2/runs/client/
+neoforge/versions/26.2/runs/client/*
+!neoforge/versions/26.2/runs/client/screenshots/
+neoforge/versions/26.2/runs/client/screenshots/*
+!neoforge/versions/26.2/runs/client/screenshots/nerospace/
+!neoforge/versions/26.2/runs/client/screenshots/nerospace/**
 /fabric/runs
 /.github/scripts/__pycache__
 /tools/gradle-mcp/node_modules

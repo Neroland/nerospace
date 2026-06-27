@@ -1,5 +1,9 @@
 # Station Wall
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/station_wall.png" alt="Station Wall" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Hull panelling for the Orbital Station — and a Tier-3 progression gate.
 
 ## Overview

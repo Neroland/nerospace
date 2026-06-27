@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -26,6 +27,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.ClientOxygenVisuals;
+import za.co.neroland.nerospace.client.GalleryCaptureHarness;
 import za.co.neroland.nerospace.client.MeteorTrackerHud;
 import za.co.neroland.nerospace.client.OxygenHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
@@ -59,11 +61,17 @@ public final class NeoForgeClientSetup {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterGuiLayers);
         // Suppress the vanilla air-bubble row on airless dimensions (the bespoke gauge is the readout there).
         NeoForge.EVENT_BUS.addListener(NeoForgeClientSetup::onRenderGuiLayer);
-        // Meteor Tracker readout + oxygen-field visuals — game-bus client tick (counterpart to Fabric's END_CLIENT_TICK).
+        // Meteor Tracker readout + oxygen-field visuals + the screenshot harness — game-bus client tick
+        // (counterpart to Fabric's END_CLIENT_TICK).
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
+            GalleryCaptureHarness.tick();
         });
+        // Client-side /nerospace capture command tree (drives the local camera; separate dispatcher
+        // from the server-side /nerospace gallery builder).
+        NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent event) ->
+                GalleryCaptureHarness.registerClientCommands(event.getDispatcher()));
     }
 
     /** Register the bespoke oxygen/hazard HUD gauge on top of the vanilla HUD (shared draw in {@code common}). */

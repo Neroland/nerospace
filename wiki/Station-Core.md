@@ -1,5 +1,9 @@
 # Station Core
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/station_core.png" alt="Station Core" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The permanent anchor block of a player-founded station.
 
 ## Overview

@@ -95,14 +95,19 @@ Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 > **All web-UI / manual — CurseForge exposes no project-metadata or description API** (its API only
 > does file uploads), so none of the items below can be automated.
 
-- [ ] **Gallery:** upload the screenshot set (§9.5).
+- [ ] **Gallery:** manually upload the screenshot set (§9.4) — the PNGs committed in
+      `neoforge/versions/26.2/runs/client/screenshots/nerospace/` (written by `/nerospace capture`).
+      CurseForge has no gallery API, so this is a manual web upload of that same folder.
 
 ### 9.1b Modrinth project settings
 
 Project: <https://modrinth.com/mod/nerospace> (created 2026-06-12; the first uploaded version goes
 through Modrinth moderation review before the page goes public).
 
-- [ ] **Gallery:** same screenshot set as CurseForge (§9.5) — the only manual page item.
+- [ ] **Gallery:** auto-synced — the `Sync Modrinth gallery` workflow mirrors
+      `neoforge/versions/26.2/runs/client/screenshots/nerospace/*.png` (the same folder CurseForge
+      uses) to the Modrinth gallery on push, with per-shot titles/descriptions baked into the
+      workflow. No manual upload — just commit the PNGs.
 - [ ] File uploads themselves are automatic — `publish.yml` targets CurseForge **and** Modrinth in
       the same run.
 
@@ -161,6 +166,26 @@ subject. Suggested set (≈10):
 
 Cheapest route: a creative world + `/nerospace gallery` for the lineup shots, a staged terraform
 world for 9–10.
+
+Automated route (preferred — fully reproducible): from any creative world with cheats, run
+`/nerospace capture` (client command). It teleports into the flat `nerospace:capture` backdrop,
+rebuilds the gallery from scratch (clear → build, so reruns leave no stale blocks/entities or machine
+progress), pins time/weather/clouds, hides every overlay, and writes a reframed, multi-angle shot set
+to that run's `screenshots/nerospace/`. `/nerospace capture planets` shoots the dimension vistas as
+self-contained controlled scenes (themed platforms + frozen mobs built at a fixed origin), so they
+reproduce in ANY world with no fixed seed. `/nerospace capture all` does both; `/nerospace capture
+shot <name>` grabs the current view. Re-run after any texture/model change to refresh the set.
+
+Canonical gallery folder: run the capture from the **NeoForge 26.2 client** so the PNGs land in
+`neoforge/versions/26.2/runs/client/screenshots/nerospace/` — that's the one path tracked by git and
+mirrored to Modrinth (and uploaded manually to CurseForge). Commit the shots you want public; the
+`Sync Modrinth gallery` workflow re-uploads them in the curated order on push.
+
+Before committing, normalise the sizes: the harness captures at the game window's native resolution,
+so on a big display the PNGs come out 2.5k+ wide and 5–8 MB. Run **`./gradlew compressScreenshots`**
+(needs Pillow — the task pip-installs it if missing) to cap every shot at 1920 px wide and **< 4 MB**
+in place (the 1920×1080 CurseForge target + under the gallery upload limit; the Modrinth workflow also
+re-encodes to JPEG for its own upload). Tune with `-PscreenshotArgs="--max-mb 3 --max-width 1600"`.
 
 ### 9.5 Trailer / showcase video outline
 

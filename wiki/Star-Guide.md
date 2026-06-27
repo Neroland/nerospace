@@ -1,5 +1,9 @@
 # Star Guide
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/star_guide.gif" alt="Star Guide" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The in-game progression guide — a pedestal, a book, and a live quest tree.
 
 ## Overview

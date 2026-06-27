@@ -36,6 +36,7 @@ import za.co.neroland.nerospace.world.OxygenManager;
 import za.co.neroland.nerospace.world.PlayerJoinHandler;
 import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
+import za.co.neroland.nerospace.world.gravity.GravityManager;
 
 /** MinecraftForge entry point for the Forge Stonecutter branch. */
 @Mod(NerospaceCommon.MOD_ID)
@@ -66,6 +67,7 @@ public final class NerospaceForge {
             MeteorEvents.tick(event.server());
             OxygenFieldEvents.tick(event.server());
             TerraformDrift.tick(event.server());
+            GravityManager.tick(event.server());
         });
         LivingFallEvent.BUS.addListener(event -> {
             if (AlienGearAbilities.negatesFall(event.getEntity())) {

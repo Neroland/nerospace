@@ -2,6 +2,7 @@
 
 - [Home](Home)
 - [Star Guide](Star-Guide)
+- [Planet Gravity](Planet-Gravity)
 
 **Blocks — Ores**
 

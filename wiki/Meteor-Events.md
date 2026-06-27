@@ -60,5 +60,6 @@ turned off entirely (the Meteor Caller still works).
 
 - Trigger: rare timer near players (≈ one per 2–3 play-hours by default, configurable).
 - Dimensions: Overworld, Greenxertz, Cindara, Glacira (not the void station).
+- Gravity: meteors descend more slowly on low-[gravity](Planet-Gravity) worlds.
 - Blocks: [Meteor Rock](Meteor-Rock), [Meteor Core](Meteor-Core) · Entity: `nerospace:falling_meteor`.
 - Items: `alien_fragment`, `alien_tech_scrap`, `alien_core`, `meteor_tracker`, `meteor_caller`.

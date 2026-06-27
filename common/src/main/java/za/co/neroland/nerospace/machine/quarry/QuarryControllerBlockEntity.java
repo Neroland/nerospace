@@ -366,7 +366,10 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         }
         if (this.frameIndex >= ring.size()) {
             this.state = State.MINING;
-            this.currentY = region.refY() - 1;
+            // Start at the frame plane itself (refY) so the interior of the frame's own level is mined
+            // too; the perimeter ring (the frame casings) is skipped by region.isPerimeter / the
+            // QuarryFrameBlock check in mine().
+            this.currentY = region.refY();
             this.pauseReason = "";
             changed = true;
         }

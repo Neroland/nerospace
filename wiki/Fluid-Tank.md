@@ -1,5 +1,9 @@
 # Fluid Tank
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/fluid_tank.png" alt="Fluid Tank" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A passive single-fluid store for the pipe network. (Not to be confused with the rocket-fuelling
 [Fuel Tank](Fuel-Tank) machine.)
 

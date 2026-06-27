@@ -55,6 +55,21 @@ public class LaunchGantryRenderer
         return new LaunchGantryRenderState();
     }
 
+    /**
+     * Widen the per-BE frustum-cull box to the full service tower. The gantry draws a 3-block-tall lattice
+     * ABOVE its block that reclines up to {@value #MAX_LEAN}° (leaning ~1.7 blocks to the side) with a swing
+     * arm reaching toward the pad, so with the default single-block box the tower vanishes the moment the
+     * base block leaves the view frustum. NeoForge (only) routes the per-BE frustum test through this method;
+     * on Fabric and Forge it is an inert unused method, hence no {@code @Override} and a vanilla {@code AABB}
+     * (compiles on all six cells). See {@link QuarryControllerRenderer#getRenderBoundingBox}.
+     */
+    public AABB getRenderBoundingBox(LaunchGantryBlockEntity gantry) {
+        BlockPos p = gantry.getBlockPos();
+        return new AABB(
+                p.getX() - 2, p.getY(), p.getZ() - 2,
+                p.getX() + 3, p.getY() + 4, p.getZ() + 3);
+    }
+
     @Override
     public void extractRenderState(LaunchGantryBlockEntity gantry, LaunchGantryRenderState state,
             float partialTick, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {

@@ -41,6 +41,7 @@ import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.world.PlayerJoinHandler;
 import za.co.neroland.nerospace.world.TerraformDrift;
 import za.co.neroland.nerospace.world.TerraformManager;
+import za.co.neroland.nerospace.world.gravity.GravityManager;
 import za.co.neroland.nerospace.registry.ModEntityAttributes;
 import za.co.neroland.nerospace.registry.ModSpawnPlacements;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
@@ -111,6 +112,7 @@ public final class NerospaceFabric implements ModInitializer {
             MeteorEvents.tick(server);
             OxygenFieldEvents.tick(server);
             TerraformDrift.tick(server);
+            GravityManager.tick(server);
         });
         // Creative debug commands (/nerospace gallery).
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->

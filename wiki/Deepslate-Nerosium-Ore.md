@@ -1,5 +1,9 @@
 # Deepslate Nerosium Ore
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/deepslate_nerosium_ore.png" alt="Deepslate Nerosium Ore" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The deepslate-hosted variant of [Nerosium Ore](Nerosium-Ore), found in the lower part of its range.
 
 ## Overview

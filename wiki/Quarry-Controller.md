@@ -1,5 +1,9 @@
 # Quarry Controller
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/quarry_controller.gif" alt="Quarry Controller" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A BuildCraft-style automated miner: mark out an area with landmarks and the controller builds a
 glowing frame and excavates the interior, layer by layer, down to bedrock.
 

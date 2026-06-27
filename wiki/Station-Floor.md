@@ -1,5 +1,9 @@
 # Station Floor
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/station_floor.png" alt="Station Floor" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Metal platform plating for building out the Orbital Station.
 
 ## Overview

@@ -1,5 +1,9 @@
 # Fuel Tank
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/fuel_tank.png" alt="Fuel Tank" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Stores rocket fuel and auto-fuels a rocket sitting on an adjacent launch pad.
 
 ## Overview

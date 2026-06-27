@@ -1,5 +1,9 @@
 # Meteor Core
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/meteor_core.png" alt="Meteor Core" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The glowing block at the centre of a crater — the meteor's "box" of loot.
 
 ## Overview

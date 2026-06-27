@@ -43,6 +43,7 @@ import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.world.gravity.GravityManager;
 
 /**
  * The Nerospace rocket: a rideable vehicle entity placed on a {@link RocketLaunchPadBlock}. It carries
@@ -648,6 +649,11 @@ public class RocketEntity extends Entity implements MenuProvider {
             } else {
                 double t = (double) this.launchTicks / LAUNCH_DURATION;
                 double speed = 0.08D + 0.5D * (t * t);
+                // Cosmetic gravity feel (GRAVITY_DESIGN.md §5b): lower local gravity → a slightly faster
+                // climb. Bounded; the launch still completes on the fixed LAUNCH_DURATION counter (the
+                // arrival is a teleport), so this only changes how high the rocket visually rises.
+                double factor = Math.min(1.5D, GravityManager.factorAt((ServerLevel) level(), blockPosition()));
+                speed *= 1.5D - 0.5D * factor;
                 this.setDeltaMovement(0.0D, speed, 0.0D);
                 this.move(net.minecraft.world.entity.MoverType.SELF, this.getDeltaMovement());
                 this.launchTicks++;

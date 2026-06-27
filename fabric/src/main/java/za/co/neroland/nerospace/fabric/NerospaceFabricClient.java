@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
@@ -27,6 +28,7 @@ import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.client.ClientBlockEntityRenderers;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
 import za.co.neroland.nerospace.client.ClientOxygenVisuals;
+import za.co.neroland.nerospace.client.GalleryCaptureHarness;
 import za.co.neroland.nerospace.client.MeteorTrackerHud;
 import za.co.neroland.nerospace.client.OxygenHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
@@ -86,11 +88,17 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         registerFluidRendering();
         registerOxygenHud();
 
-        // Meteor Tracker readout + oxygen-field visuals — counterpart to NeoForge's ClientTickEvent.Post.
+        // Meteor Tracker readout + oxygen-field visuals + the screenshot harness — counterpart to
+        // NeoForge's ClientTickEvent.Post.
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
+            GalleryCaptureHarness.tick();
         });
+        // Client-side /nerospace capture command tree (drives the local camera; separate dispatcher
+        // from the server-side /nerospace gallery builder).
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+                GalleryCaptureHarness.registerClientCommands(dispatcher));
     }
 
     /**

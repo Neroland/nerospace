@@ -10,6 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -20,6 +21,8 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -30,9 +33,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.AABB;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.meteor.FallingMeteorEntity;
 import za.co.neroland.nerospace.meteor.MeteorCoreBlockEntity;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
@@ -47,6 +52,8 @@ import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.registry.ModTags;
+import za.co.neroland.nerospace.world.gravity.GravityManager;
 import za.co.neroland.nerospace.rocket.LaunchControllerBlock;
 import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
 import za.co.neroland.nerospace.rocket.PadRegistry;
@@ -95,6 +102,9 @@ public final class NerospaceCommands {
                                 .then(Commands.literal("clear")
                                         .executes(ctx -> runSafely(ctx.getSource(), "gallery clear",
                                                 () -> clearGallery(ctx.getSource())))))
+                        .then(Commands.literal("gravity")
+                                .executes(ctx -> runSafely(ctx.getSource(), "gravity",
+                                        () -> reportGravity(ctx.getSource()))))
                         .then(Commands.literal("station")
                                 .then(Commands.literal("list")
                                         .executes(ctx -> runSafely(ctx.getSource(), "station list",
@@ -106,6 +116,49 @@ public final class NerospaceCommands {
                                                 .executes(ctx -> runSafely(ctx.getSource(), "station remove",
                                                         () -> removeStation(ctx.getSource(),
                                                                 IntegerArgumentType.getInteger(ctx, "slot"))))))));
+    }
+
+    /**
+     * {@code /nerospace gravity} — report the resolved gravity factor at the player's feet: the value, its
+     * source (biome tag override vs the dimension default), the config multiplier, and the player's live
+     * {@code GRAVITY} attribute. A Phase-4 tuning aid for GRAVITY_DESIGN.md.
+     */
+    private static int reportGravity(CommandSourceStack source) {
+        ServerPlayer player = source.getPlayer();
+        if (player == null) {
+            source.sendFailure(Component.literal("Run this as a player."));
+            return 0;
+        }
+        ServerLevel level = player.level();
+        BlockPos pos = player.blockPosition();
+        Holder<Biome> biome = level.getBiome(pos);
+
+        String src;
+        if (biome.is(ModTags.Biomes.GRAVITY_MICRO)) {
+            src = "biome tag gravity_micro";
+        } else if (biome.is(ModTags.Biomes.GRAVITY_LOW)) {
+            src = "biome tag gravity_low";
+        } else if (biome.is(ModTags.Biomes.GRAVITY_HIGH)) {
+            src = "biome tag gravity_high";
+        } else {
+            src = "dimension default";
+        }
+
+        double factor = GravityManager.factorAt(level, pos);
+        double mult = NerospaceConfig.gravityMultiplier();
+        Identifier biomeId = biome.unwrapKey().map(k -> k.identifier()).orElse(null);
+        AttributeInstance gravityAttr = player.getAttribute(Attributes.GRAVITY);
+        String attrText = gravityAttr != null
+                ? String.format("%.4f (vanilla 0.0800)", gravityAttr.getValue())
+                : "ABSENT (player has no GRAVITY attribute!)";
+
+        String message = String.format(
+                "Gravity here: %.3f×  (source: %s; config ×%.2f)%nDimension: %s   Biome: %s%n"
+                        + "Your GRAVITY attribute: %s",
+                factor, src, mult, level.dimension().identifier(),
+                biomeId == null ? "(unknown)" : biomeId, attrText);
+        source.sendSuccess(() -> Component.literal(message), false);
+        return Command.SINGLE_SUCCESS;
     }
 
     /** {@code /nerospace station list} — show founded stations (slot + name). */
@@ -668,13 +721,21 @@ public final class NerospaceCommands {
         level.setBlockAndUpdate(new BlockPos(qx, refY, qz + side), landmark);
 
         BlockPos quarryPos = new BlockPos(qx - 1, refY, qz + mid);
+        BlockPos pipePos = new BlockPos(qx - 2, refY, qz + mid);
         level.setBlockAndUpdate(new BlockPos(qx - 3, refY, qz + mid),
                 ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(qx - 2, refY, qz + mid),
-                ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(pipePos, ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
         level.setBlockAndUpdate(quarryPos, ModBlocks.QUARRY_CONTROLLER.get().defaultBlockState());
-        setAllModes(level, new BlockPos(qx - 2, refY, qz + mid), Direction.WEST, PipeIoMode.IN);
-        setAllModes(level, new BlockPos(qx - 2, refY, qz + mid), Direction.EAST, PipeIoMode.OUT);
+        setAllModes(level, pipePos, Direction.WEST, PipeIoMode.IN);
+        setAllModes(level, pipePos, Direction.EAST, PipeIoMode.OUT);
+        // Keep the showcase quarry digging forever instead of clogging its 12-slot output buffer: the
+        // quarry-facing (EAST) face also PULLS the mined items into the pipe (energy still pushes IN on
+        // that same face — modes are per-resource-layer), and a Trash Can on the pipe's south face
+        // receives and voids them. Without an item sink the quarry pauses "buffer_full" mid-dig.
+        BlockPos trashPos = new BlockPos(qx - 2, refY, qz + mid + 1);
+        level.setBlockAndUpdate(trashPos, ModBlocks.TRASH_CAN.get().defaultBlockState());
+        setMode(level, pipePos, Direction.EAST, PipeResourceType.ITEM, PipeIoMode.IN);
+        setMode(level, pipePos, Direction.SOUTH, PipeResourceType.ITEM, PipeIoMode.OUT);
         if (level.getBlockEntity(quarryPos) instanceof QuarryControllerBlockEntity quarry) {
             for (int i = 0; i < QuarryControllerBlockEntity.FRAME_SLOTS; i++) {
                 quarry.setItem(i, new ItemStack(ModItems.FRAME_CASING.get(), 64));
@@ -774,6 +835,14 @@ public final class NerospaceCommands {
             for (PipeResourceType type : PipeResourceType.VALUES) {
                 pipe.setMode(face, type, mode);
             }
+        }
+    }
+
+    /** Set ONE resource layer of one pipe face to {@code mode}, leaving the other layers untouched. */
+    private static void setMode(ServerLevel level, BlockPos pos, Direction face,
+            PipeResourceType type, PipeIoMode mode) {
+        if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
+            pipe.setMode(face, type, mode);
         }
     }
 

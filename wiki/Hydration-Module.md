@@ -1,5 +1,9 @@
 # Hydration Module
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/hydration_module.gif" alt="Hydration Module" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The glacite intake of deeper terraforming: melts glacite into **hydration units** that fuel the
 [Terraformer](Terraformer)'s **Hydrated** stage (water).
 

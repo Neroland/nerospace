@@ -1,5 +1,9 @@
 # Glacite Ore
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/glacite_ore.png" alt="Glacite Ore" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The signature crystal of the frozen moon **Glacira**.
 
 ## Overview

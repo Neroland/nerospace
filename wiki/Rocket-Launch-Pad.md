@@ -1,5 +1,9 @@
 # Rocket Launch Pad
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/rocket_launch_pad.png" alt="Rocket Launch Pad" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The mount a rocket is deployed onto before launch — and a safe landing zone.
 
 ## Overview

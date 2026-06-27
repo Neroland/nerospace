@@ -1,5 +1,9 @@
 # Village Core
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/village_core.png" alt="Village Core" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The controller block at the heart of an alien village — claim it, stock it, and teach the village to
 build itself.
 

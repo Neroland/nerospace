@@ -1,5 +1,9 @@
 # Nerosteel Ore
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/nerosteel_ore.png" alt="Nerosteel Ore" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The primary metal of the **Greenxertz** planet.
 
 ## Overview

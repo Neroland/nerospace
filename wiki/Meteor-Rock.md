@@ -1,5 +1,9 @@
 # Meteor Rock
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/meteor_rock.png" alt="Meteor Rock" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The charred, faintly glowing rock left behind by a meteor crash.
 
 ## Overview

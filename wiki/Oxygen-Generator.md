@@ -1,5 +1,9 @@
 # Oxygen Generator
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/oxygen_generator.gif" alt="Oxygen Generator" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 Keeps you alive off-world by turning grid power into Oxygen gas — and pressurising the air around it.
 
 ## Overview

@@ -22,7 +22,8 @@ import org.jetbrains.annotations.Nullable;
  * The rectangular footprint a quarry mines, derived from its landmarks (3 forming an L). Landmarks
  * "project" along the four horizontal axes; a flood-fill over those links collects the cluster and its
  * X/Z bounding box becomes the mined rectangle. The reference plane {@link #refY()} is the landmarks'
- * Y; mining runs from {@code refY - 1} down to the world floor. Immutable; persisted in NBT.
+ * Y; mining runs from {@code refY} (the frame plane's interior) down to the world floor. Immutable;
+ * persisted in NBT.
  */
 public final class QuarryRegion {
 

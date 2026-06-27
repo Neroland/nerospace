@@ -1,5 +1,9 @@
 # Terraform Monitor
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/terraform_monitor.gif" alt="Terraform Monitor" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 The readout block for deeper terraforming: shows the nearest [Terraformer](Terraformer)'s stage
 radii, hydration buffer and stall reason, and reports the **local ground's terraform stage** on a
 comparator.

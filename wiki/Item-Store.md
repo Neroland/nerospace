@@ -1,5 +1,9 @@
 # Item Store
 
+<!-- nerospace:render -->
+<p align="right"><img src="images/item_store.png" alt="Item Store" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
 A nerosteel-reinforced 27-slot container built for pipe automation.
 
 ## Obtaining
