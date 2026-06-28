@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "ingredient": "nerospace:nerosium_dust",
+  "result": {
+    "id": "nerospace:nerosium_ingot"
+  }
+}
