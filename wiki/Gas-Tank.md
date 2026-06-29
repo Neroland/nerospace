@@ -13,9 +13,7 @@ Tank** variant supplies an endless gas.
 Nerospace's [Universal Pipe](Universal-Pipe) still moves oxygen in and out of it, so in-game
 behaviour is unchanged when both mods are installed.
 
-> **Updating an existing world:** blocks you placed as `nerospace:gas_tank` will **not**
-> auto-migrate to `nerolandcore:gas_tank` — replace them after updating (the new block is
-> craftable from the Neroland Core variant). See the
+> **Updating an existing world:** blocks you placed as `nerospace:gas_tank` are automatically remapped to `nerolandcore:gas_tank` on load — Forge via its missing-mappings event, NeoForge and Fabric via a built-in registry alias; their items and stored contents are preserved. See the
 > [changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md).
 
 See also: [Neroland Core](Neroland-Core), [Universal Pipe](Universal-Pipe),

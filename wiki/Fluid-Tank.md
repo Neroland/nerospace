@@ -12,9 +12,9 @@ out on every side. A **Creative Fluid Tank** variant supplies an endless fluid.
 Nerospace's [Universal Pipe](Universal-Pipe) still moves rocket fuel and other fluids in and
 out of it, so in-game behaviour is unchanged when both mods are installed.
 
-> **Updating an existing world:** blocks you placed as `nerospace:fluid_tank` will **not**
-> auto-migrate to `nerolandcore:fluid_tank` — replace them after updating (the new block is
-> craftable from the Neroland Core variant). See the
+> **Updating an existing world:** blocks you placed as `nerospace:fluid_tank` are automatically
+> remapped to `nerolandcore:fluid_tank` on load — Forge via its missing-mappings event, NeoForge
+> and Fabric via a built-in registry alias; their items and stored contents are preserved. See the
 > [changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md).
 
 See also: [Neroland Core](Neroland-Core), [Universal Pipe](Universal-Pipe),
