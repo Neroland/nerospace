@@ -173,8 +173,10 @@ public final class NerospaceFabric implements ModInitializer {
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.OXYGEN_GENERATOR.get());
+        // Gas is gated by the side config: the gated Core gas view (null on DISABLED/INPUT faces) mapped
+        // back onto Nerospace's gas lookup so the Universal Pipe pulls oxygen only from OUTPUT faces.
         GAS.registerForBlockEntity(
-                (be, direction) -> be.getGas(),
+                (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.gasView(be.sideConfig(), direction),
                 ModBlockEntities.OXYGEN_GENERATOR.get());
 
         // Launch Controller resource hub: fuel + oxygen + power inputs (pumped into the docked rocket).
@@ -217,9 +219,9 @@ public final class NerospaceFabric implements ModInitializer {
         GAS.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getTank()),
                 za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_GAS_TANK.get());
 
-        // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
+        // Fuel Tank: fluid in/out via the side config (STORAGE preset, default IO), canister in.
         FLUID.registerForBlockEntity(
-                (be, direction) -> be.getTank(),
+                (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction),
                 ModBlockEntities.FUEL_TANK.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
@@ -229,8 +231,9 @@ public final class NerospaceFabric implements ModInitializer {
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.FUEL_REFINERY.get());
+        // Refined fuel out via the side config (gated; null on non-OUTPUT/IO faces).
         FLUID.registerForBlockEntity(
-                (be, direction) -> be.getTank(),
+                (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction),
                 ModBlockEntities.FUEL_REFINERY.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
@@ -272,15 +275,17 @@ public final class NerospaceFabric implements ModInitializer {
      * registered above for back-compat.
      */
     private static void registerCoreEnergy() {
-        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.COMBUSTION_GENERATOR.get());
-        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.NEROSIUM_GRINDER.get());
-        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.PASSIVE_GENERATOR.get());
+        // Side-config-integrated machines expose energy through the gated view (null on DISABLED faces);
+        // the Universal Pipe queries this Core lookup via Nerospace's delegating energy lookup.
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.COMBUSTION_GENERATOR.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.NEROSIUM_GRINDER.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.PASSIVE_GENERATOR.get());
         FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.UNIVERSAL_PIPE.get());
-        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.OXYGEN_GENERATOR.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.OXYGEN_GENERATOR.get());
         FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.LAUNCH_CONTROLLER.get());
-        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.SOLAR_PANEL.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.SOLAR_PANEL.get());
         FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.TERRAFORMER.get());
-        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.FUEL_REFINERY.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.FUEL_REFINERY.get());
         FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.QUARRY_CONTROLLER.get());
     }
 

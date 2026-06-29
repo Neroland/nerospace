@@ -1,7 +1,6 @@
 package za.co.neroland.nerospace.machine;
 
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,6 +30,15 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.sideconfig.Channel;
+import za.co.neroland.nerolandcore.sideconfig.RelativeFace;
+import za.co.neroland.nerolandcore.sideconfig.SideConfig;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
+import za.co.neroland.nerolandcore.sideconfig.SideMode;
+import za.co.neroland.nerolandcore.sideconfig.SidePreset;
+import za.co.neroland.nerolandcore.sideconfig.SlotGroup;
+
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
@@ -39,6 +47,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.rocket.LaunchPadMultiblock;
 import za.co.neroland.nerospace.rocket.RocketEntity;
+import za.co.neroland.nerospace.storage.CoreTankBridge;
 
 /**
  * Block entity for the {@link FuelTankBlock}. It stores a large buffer of {@code rocket_fuel} and, each
@@ -51,7 +60,7 @@ import za.co.neroland.nerospace.rocket.RocketEntity;
  * {@code ContainerStorage}); fuel values are inlined (identity-multiplier). The pump FX uses a vanilla
  * sound (the root's {@code ModSounds.FUEL_TANK_PUMP} alias is not ported).</p>
  */
-public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
+public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider, SideConfigured {
 
     /** One bucket / canister of fuel, in millibuckets. */
     public static final int CONTAINER_MB = 1_000;
@@ -68,12 +77,41 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
 
     public static final int CANISTER_SLOT = 0;
     public static final int SIZE = 1;
-    private static final int[] SLOTS = IntStream.range(0, SIZE).toArray();
 
     private int fxTick;
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final FluidTank tank = new FluidTank(CAPACITY, this::setChanged);
+
+    /**
+     * Universal side configuration (Neroland Core): FLUID (the fuel buffer, fill + drain) + ITEM (the
+     * canister intake). STORAGE preset — every face is IO — so the fuel tank fills or drains on any face,
+     * which is the desired behaviour for a storage tank. The ITEM canister channel is then forced back to
+     * INPUT on every face so canisters can only be inserted (never auto-extracted), preserving the
+     * original canister-in-only intake. Composed, not inherited.
+     */
+    private final SideConfigComponent sideConfig =
+            new SideConfigComponent(buildSideConfig(), this)
+                    .withFluid(() -> CoreTankBridge.toCore(this.getTank()))
+                    .withItems(() -> this);
+
+    private static SideConfig buildSideConfig() {
+        SideConfig config = SideConfig.builder()
+                .channel(Channel.FLUID)
+                .channel(Channel.ITEM, SlotGroup.of("input", CANISTER_SLOT), null)
+                .defaultPreset(SidePreset.STORAGE)
+                .build();
+        // Canister intake is input only — never let a face auto-extract canisters.
+        for (RelativeFace face : RelativeFace.VALUES) {
+            config.setMode(Channel.ITEM, face, SideMode.INPUT);
+        }
+        return config;
+    }
+
+    @Override
+    public SideConfigComponent sideConfig() {
+        return this.sideConfig;
+    }
 
     /** Synced to the open menu: [0]=fuel, [1]=capacity. */
     private final ContainerData dataAccess = new ContainerData() {
@@ -158,6 +196,8 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
         if (level.isClientSide()) {
             return;
         }
+        // Optional auto-eject / auto-input — default off per face, so a safe no-op until enabled.
+        this.sideConfig.serverTick(level, pos, MachineSideConfig.TRANSFER_RATE);
 
         drawFromCanister();
 
@@ -245,6 +285,7 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
         output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.tank.getRawFluid()).toString());
         output.putInt("Amount", this.tank.getRawAmount());
         output.store("Canister", ItemStack.OPTIONAL_CODEC, this.items.get(CANISTER_SLOT));
+        this.sideConfig.save(output);
     }
 
     @Override
@@ -253,23 +294,24 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
         Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
         this.tank.setRaw(fluid, input.getIntOr("Amount", 0));
         this.items.set(CANISTER_SLOT, input.read("Canister", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.sideConfig.load(input);
     }
 
     // --- WorldlyContainer: canister in only ---------------------------------
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return SLOTS;
+        return this.sideConfig.itemSlotsForFace(side);
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return isCanister(stack);
+        return side != null && this.sideConfig.canInsertItem(slot, side) && isCanister(stack);
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return false;
+        return this.sideConfig.canExtractItem(slot, side);
     }
 
     @Override

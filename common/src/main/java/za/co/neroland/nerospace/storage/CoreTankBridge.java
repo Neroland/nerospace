@@ -93,6 +93,76 @@ public final class CoreTankBridge {
         };
     }
 
+    // --- Reverse adapters (Nerospace store -> Core store) -------------------
+    //
+    // The side-config component (Neroland Core 1.3.0) wraps a machine's storage as a Core
+    // {@link NeroFluidStorage}/{@link NeroGasStorage} and hands back gated, Core-typed views
+    // (fluidView/gasView). Nerospace's machines keep their own NerospaceFluidStorage/
+    // NerospaceGasStorage stores, so these wrap them up to the Core surface for {@code withFluid}/
+    // {@code withGas}. The gated Core view is then mapped back to Nerospace's own capability with
+    // {@link #fluid}/{@link #gas} above, so the Universal Pipe (which queries Nerospace's fluid/gas
+    // lookups) keeps working unchanged while honouring per-face modes.
+
+    /** Wrap a Nerospace fluid store as a Core fluid store (identical shape). */
+    public static NeroFluidStorage toCore(NerospaceFluidStorage nero) {
+        return new NeroFluidStorage() {
+            @Override
+            public Fluid getFluid() {
+                return nero.getFluid();
+            }
+
+            @Override
+            public long getAmount() {
+                return nero.getAmount();
+            }
+
+            @Override
+            public long getCapacity() {
+                return nero.getCapacity();
+            }
+
+            @Override
+            public long fill(Fluid fluid, long amount, boolean simulate) {
+                return nero.fill(fluid, amount, simulate);
+            }
+
+            @Override
+            public long drain(long amount, boolean simulate) {
+                return nero.drain(amount, simulate);
+            }
+        };
+    }
+
+    /** Wrap a Nerospace gas store as a Core gas store, mapping {@link GasResource} to gas ids. */
+    public static NeroGasStorage toCore(NerospaceGasStorage nero) {
+        return new NeroGasStorage() {
+            @Override
+            public Identifier getGas() {
+                return toId(nero.getGas());
+            }
+
+            @Override
+            public long getAmount() {
+                return nero.getAmount();
+            }
+
+            @Override
+            public long getCapacity() {
+                return nero.getCapacity();
+            }
+
+            @Override
+            public long fill(Identifier gas, long amount, boolean simulate) {
+                return nero.fill(fromId(gas), amount, simulate);
+            }
+
+            @Override
+            public long drain(long amount, boolean simulate) {
+                return nero.drain(amount, simulate);
+            }
+        };
+    }
+
     private static GasResource fromId(Identifier id) {
         return OXYGEN_ID.equals(id) ? GasResource.OXYGEN : GasResource.EMPTY;
     }

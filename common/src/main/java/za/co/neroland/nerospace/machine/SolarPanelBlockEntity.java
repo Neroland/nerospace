@@ -14,6 +14,13 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.sideconfig.Channel;
+import za.co.neroland.nerolandcore.sideconfig.SideConfig;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
+import za.co.neroland.nerolandcore.sideconfig.SideMode;
+import za.co.neroland.nerolandcore.sideconfig.SidePreset;
+
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -32,7 +39,7 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  * {@code ModDimensionTypes}). Every panel is a 1×1 self-anchor here; the N×N multiblock + sun-tracking
  * renderer are a deferred enhancement.</p>
  */
-public class SolarPanelBlockEntity extends BlockEntity {
+public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured {
 
     /** The mod's airless planets/station — permanent sun, no weather (the solar 2× bonus). */
     private static final Set<ResourceKey<Level>> AIRLESS = Set.of(
@@ -48,6 +55,29 @@ public class SolarPanelBlockEntity extends BlockEntity {
     /** Transient: the array this unit belongs to, lazily (re)built and shared with all members. */
     @Nullable
     private SolarArray array;
+
+    /**
+     * Universal side configuration (Neroland Core): ENERGY only, GENERATOR preset — the panel's pooled
+     * buffer is exposed as OUTPUT on every face (the pipe pulls power out) and never accepts power in.
+     * Energy is already a {@code NeroEnergyStorage}, so the gated view registers straight onto Core's
+     * energy capability; a face set to DISABLED then exposes nothing. Composed, not inherited.
+     */
+    private final SideConfigComponent sideConfig =
+            new SideConfigComponent(buildSideConfig(), this).withEnergy(this::getEnergy);
+
+    private static SideConfig buildSideConfig() {
+        return SideConfig.builder()
+                .channel(Channel.ENERGY)
+                .allow(Channel.ENERGY, SideMode.INPUT, false)
+                .allow(Channel.ENERGY, SideMode.IO, false)
+                .defaultPreset(SidePreset.GENERATOR)
+                .build();
+    }
+
+    @Override
+    public SideConfigComponent sideConfig() {
+        return this.sideConfig;
+    }
 
     public SolarPanelBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SOLAR_PANEL.get(), pos, state);
@@ -127,7 +157,13 @@ public class SolarPanelBlockEntity extends BlockEntity {
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {
-        if (!(level instanceof ServerLevel server) || !isAnchor()) {
+        if (!(level instanceof ServerLevel server)) {
+            return;
+        }
+        // Optional auto-eject (default off per face — a safe no-op until a player enables it). Runs per
+        // panel (each cell governs its own faces) regardless of whether this cell is the array anchor.
+        this.sideConfig.serverTick(level, pos, MachineSideConfig.TRANSFER_RATE);
+        if (!isAnchor()) {
             return;
         }
         SolarArray net = this.array; // local so the null/valid check holds for the analyzer
@@ -173,6 +209,7 @@ public class SolarPanelBlockEntity extends BlockEntity {
         super.saveAdditional(output);
         output.putInt("Energy", this.energy.getRaw());
         output.putLong("Anchor", anchorPos().asLong());
+        this.sideConfig.save(output);
     }
 
     @Override
@@ -180,5 +217,6 @@ public class SolarPanelBlockEntity extends BlockEntity {
         super.loadAdditional(input);
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.anchorPos = BlockPos.of(input.getLongOr("Anchor", this.worldPosition.asLong()));
+        this.sideConfig.load(input);
     }
 }

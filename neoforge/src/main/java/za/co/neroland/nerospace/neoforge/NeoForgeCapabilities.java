@@ -120,10 +120,12 @@ public final class NeoForgeCapabilities {
                 ENERGY,
                 ModBlockEntities.OXYGEN_GENERATOR.get(),
                 (be, side) -> be.getEnergy());
+        // Gas is gated by the side config: the gated Core gas view (null on DISABLED/INPUT faces) mapped
+        // back onto Nerospace's gas capability so the Universal Pipe pulls oxygen only from OUTPUT faces.
         event.registerBlockEntity(
                 GAS,
                 ModBlockEntities.OXYGEN_GENERATOR.get(),
-                (be, side) -> be.getGas());
+                (be, side) -> za.co.neroland.nerospace.machine.MachineSideConfig.gasView(be.sideConfig(), side));
 
         // Launch Controller resource hub: fuel in, oxygen in, power in (then pumped into the rocket).
         event.registerBlockEntity(FLUID, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getTank());
@@ -173,11 +175,11 @@ public final class NeoForgeCapabilities {
         event.registerBlockEntity(GAS, za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_GAS_TANK.get(),
                 (be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getTank()));
 
-        // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
+        // Fuel Tank: fluid in/out via the side config (STORAGE preset, default IO), canister in.
         event.registerBlockEntity(
                 FLUID,
                 ModBlockEntities.FUEL_TANK.get(),
-                (be, side) -> be.getTank());
+                (be, side) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), side));
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.FUEL_TANK.get(),
@@ -190,10 +192,11 @@ public final class NeoForgeCapabilities {
                 ENERGY,
                 ModBlockEntities.FUEL_REFINERY.get(),
                 (be, side) -> be.getEnergy());
+        // Refined fuel out via the side config (gated; null on non-OUTPUT/IO faces).
         event.registerBlockEntity(
                 FLUID,
                 ModBlockEntities.FUEL_REFINERY.get(),
-                (be, side) -> be.getTank());
+                (be, side) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), side));
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModBlockEntities.FUEL_REFINERY.get(),
@@ -249,15 +252,18 @@ public final class NeoForgeCapabilities {
      */
     private static void registerCoreEnergy(RegisterCapabilitiesEvent event) {
         BlockCapability<NeroEnergyStorage, Direction> core = NeoForgeEnergyLookup.ENERGY;
-        event.registerBlockEntity(core, ModBlockEntities.COMBUSTION_GENERATOR.get(), (be, side) -> be.getEnergy());
-        event.registerBlockEntity(core, ModBlockEntities.NEROSIUM_GRINDER.get(), (be, side) -> be.getEnergy());
-        event.registerBlockEntity(core, ModBlockEntities.PASSIVE_GENERATOR.get(), (be, side) -> be.getEnergy());
+        // Side-config-integrated machines expose their energy through the gated side-config view so a
+        // face set to DISABLED returns null (the Universal Pipe queries this Core capability via
+        // Nerospace's delegating energy lookup). Machines not yet integrated keep the raw energy store.
+        event.registerBlockEntity(core, ModBlockEntities.COMBUSTION_GENERATOR.get(), (be, side) -> be.sideConfig().energyView(side));
+        event.registerBlockEntity(core, ModBlockEntities.NEROSIUM_GRINDER.get(), (be, side) -> be.sideConfig().energyView(side));
+        event.registerBlockEntity(core, ModBlockEntities.PASSIVE_GENERATOR.get(), (be, side) -> be.sideConfig().energyView(side));
         event.registerBlockEntity(core, ModBlockEntities.UNIVERSAL_PIPE.get(), (be, side) -> be.getEnergy());
-        event.registerBlockEntity(core, ModBlockEntities.OXYGEN_GENERATOR.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.OXYGEN_GENERATOR.get(), (be, side) -> be.sideConfig().energyView(side));
         event.registerBlockEntity(core, ModBlockEntities.LAUNCH_CONTROLLER.get(), (be, side) -> be.getEnergy());
-        event.registerBlockEntity(core, ModBlockEntities.SOLAR_PANEL.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.SOLAR_PANEL.get(), (be, side) -> be.sideConfig().energyView(side));
         event.registerBlockEntity(core, ModBlockEntities.TERRAFORMER.get(), (be, side) -> be.getEnergy());
-        event.registerBlockEntity(core, ModBlockEntities.FUEL_REFINERY.get(), (be, side) -> be.getEnergy());
+        event.registerBlockEntity(core, ModBlockEntities.FUEL_REFINERY.get(), (be, side) -> be.sideConfig().energyView(side));
         event.registerBlockEntity(core, ModBlockEntities.QUARRY_CONTROLLER.get(), (be, side) -> be.getEnergy());
     }
 }

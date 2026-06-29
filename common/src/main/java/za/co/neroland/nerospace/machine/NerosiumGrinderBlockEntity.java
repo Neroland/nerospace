@@ -28,6 +28,12 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerolandcore.meteor.MeteorMaterials;
+import za.co.neroland.nerolandcore.sideconfig.Channel;
+import za.co.neroland.nerolandcore.sideconfig.SideConfig;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
+import za.co.neroland.nerolandcore.sideconfig.SidePreset;
+import za.co.neroland.nerolandcore.sideconfig.SlotGroup;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
 
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
@@ -42,7 +48,8 @@ import za.co.neroland.nerospace.rocket.StationRegistry;
  * fed by pipes (insert-only); grinds inputs into dust over time. Exercises the item (in/out) and
  * energy seams, a ticker, and the menu/screen seam together.
  */
-public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
+public class NerosiumGrinderBlockEntity extends BlockEntity
+        implements WorldlyContainer, MenuProvider, SideConfigured {
 
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
@@ -51,11 +58,36 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
     public static final int MAX_INSERT = 500;
     public static final int ENERGY_PER_TICK = 20;
     public static final int MAX_PROGRESS = 200;
-    private static final int[] SLOTS = {INPUT_SLOT, OUTPUT_SLOT};
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_INSERT, 0, this::setChanged);
     private int progress;
+
+    /**
+     * Universal side configuration (Neroland Core): ITEM (input slot in / output slot out) + ENERGY
+     * (grid power in). PROCESSOR preset — material in on every face but the bottom, power in;
+     * energy IO/PUSH forbidden (the grinder only consumes power). Composed, not inherited.
+     */
+    private final SideConfigComponent sideConfig =
+            new SideConfigComponent(buildSideConfig(), this)
+                    .withEnergy(this::getEnergy)
+                    .withItems(() -> this);
+
+    private static SideConfig buildSideConfig() {
+        return SideConfig.builder()
+                .channel(Channel.ITEM, SlotGroup.of("input", INPUT_SLOT), SlotGroup.of("output", OUTPUT_SLOT))
+                .channel(Channel.ENERGY)
+                .allow(Channel.ENERGY, za.co.neroland.nerolandcore.sideconfig.SideMode.OUTPUT, false)
+                .allow(Channel.ENERGY, za.co.neroland.nerolandcore.sideconfig.SideMode.IO, false)
+                .allow(Channel.ENERGY, za.co.neroland.nerolandcore.sideconfig.SideMode.PUSH, false)
+                .defaultPreset(SidePreset.PROCESSOR)
+                .build();
+    }
+
+    @Override
+    public SideConfigComponent sideConfig() {
+        return this.sideConfig;
+    }
 
     /**
      * The last player to open this grinder's menu — the "operator" whose progression gates and current
@@ -103,6 +135,8 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         if (level.isClientSide()) {
             return;
         }
+        // Optional auto-eject / auto-input (default off per face — safe no-op until a player enables it).
+        this.sideConfig.serverTick(level, pos, MachineSideConfig.TRANSFER_RATE);
         ItemStack input = this.items.get(INPUT_SLOT);
         boolean changed = input.is(ModItems.METEOR_ROCK_ITEM.get())
                 ? tickMeteor(level, pos)
@@ -249,6 +283,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         output.store("Output", ItemStack.OPTIONAL_CODEC, this.items.get(OUTPUT_SLOT));
         output.putInt("Progress", this.progress);
         output.putInt("Energy", this.energy.getRaw());
+        this.sideConfig.save(output);
     }
 
     @Override
@@ -258,6 +293,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         this.items.set(OUTPUT_SLOT, input.read("Output", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.progress = input.getIntOr("Progress", 0);
         this.energy.setRaw(input.getIntOr("Energy", 0));
+        this.sideConfig.load(input);
     }
 
     // --- MenuProvider ---------------------------------------------------------
@@ -282,20 +318,24 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         return !GrinderRecipes.getResult(stack).isEmpty() || stack.is(ModItems.METEOR_ROCK_ITEM.get());
     }
 
-    // --- WorldlyContainer: input in (grindable), output out -------------------
+    // --- WorldlyContainer: per-face routing via the side config ---------------
+    // The exposed slots and insert/extract permissions now follow the side config (input slot accepts
+    // grindable items on INPUT faces, output slot is taken from OUTPUT faces); the recipe/slot guard is
+    // kept as an extra gate so a face can never push a non-grindable item into the input slot.
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return SLOTS;
+        return this.sideConfig.itemSlotsForFace(side);
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return slot == INPUT_SLOT && isGrindableInput(stack);
+        return side != null && this.sideConfig.canInsertItem(slot, side)
+                && slot == INPUT_SLOT && isGrindableInput(stack);
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return slot == OUTPUT_SLOT;
+        return this.sideConfig.canExtractItem(slot, side);
     }
 
     @Override
