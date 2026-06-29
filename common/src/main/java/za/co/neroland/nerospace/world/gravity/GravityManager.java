@@ -91,6 +91,19 @@ public final class GravityManager {
     }
 
     /**
+     * The flat dimension-default gravity factor (config-scaled, floored at 0), with no per-position biome
+     * tag or terraforming override applied — i.e. the gravity an untagged, un-terraformed spot in that
+     * dimension has. {@code 1.0} (Earth-normal) for any dimension without a Nerospace default. This is the
+     * read-only value surfaced as the "default gravity" planet trait by the public
+     * {@code za.co.neroland.nerospace.api} facade; for an exact per-position reading use
+     * {@link #factorAt(ServerLevel, BlockPos)}.
+     */
+    public static double defaultFactor(ResourceKey<Level> dimension) {
+        double base = DIMENSION_DEFAULTS.getOrDefault(dimension, 1.0);
+        return Math.max(0.0, base * NerospaceConfig.gravityMultiplier());
+    }
+
+    /**
      * Per-server tick. Two passes (common is raw vanilla → the no-arg {@code getEntities()} is protected, so
      * both use the public typed query):
      * <ul>
