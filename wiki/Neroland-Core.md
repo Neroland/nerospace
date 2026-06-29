@@ -34,6 +34,21 @@ is one-directional — Nerospace drives the shared gates but still paces itself 
 which remains the authority on your Nerospace progress. You can inspect the shared gates in-game with
 `/neroland gate list`.
 
+## Shared meteor materials
+
+Grinding a **[Meteor Rock](Meteor-Rock)** in the **[Nerosium Grinder](Nerosium-Grinder)** reads Core's
+ecosystem-wide **Meteor Material Registry** (Core `1.2.0`+). Every Neroland mod declares its grindable
+materials into Core once — with a rarity tier, a [progression gate](#shared-progression-milestones) and an
+optional planet binding — and the grinder resolves a weighted-random output from that live aggregate. So
+the meteor pool grows automatically with whatever Neroland mods are installed, no grinder changes needed.
+
+Nerospace is the registry's first consumer: it contributes its raw materials and per-planet signature
+ores (Xertz Quartz and Raw Nerosteel on Greenxertz, Cindrite on Cindara, Glacite on Glacira, plus Alien
+Fragments / Tech Scrap and the exotic Alien Core), and it supplies Core's *planet-lookup* seam so the
+resolver knows which planet a grind happens on (and applies the planet-bias multiplier). The registry
+stores **only item metadata — no player data**; the grind's operator is used by UUID for gate context
+only and is never logged (POPIA/GDPR). Inspect the live pool with `/neroland meteor list`.
+
 ## One privacy / data-erasure path
 
 Nerospace registers its player-keyed data with Core's shared erasure hook, so a single

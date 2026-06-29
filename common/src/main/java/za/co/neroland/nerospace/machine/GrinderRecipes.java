@@ -14,8 +14,22 @@ public final class GrinderRecipes {
     private GrinderRecipes() {
     }
 
-    /** One input → output pairing, for display/integration (JEI). */
-    public record Grinding(ItemStack input, ItemStack output) {
+    /**
+     * One grinder process, for display/integration (JEI). A fixed recipe pairs one {@code input} with a
+     * deterministic {@code output}. The special {@code meteor} entry instead represents the random
+     * meteor-block path (resolved through Neroland Core's Meteor Material Registry at runtime): its
+     * {@code output} is empty and the JEI category renders the {@code neroland:meteor/grindable} pool.
+     */
+    public record Grinding(ItemStack input, ItemStack output, boolean meteor) {
+
+        public Grinding(ItemStack input, ItemStack output) {
+            this(input, output, false);
+        }
+    }
+
+    /** The display entry for the random meteor-block grind (output is resolved live from Core). */
+    public static Grinding meteor() {
+        return new Grinding(new ItemStack(ModItems.METEOR_ROCK_ITEM.get()), ItemStack.EMPTY, true);
     }
 
     /** @return every grinding pairing, derived through {@link #getResult} so the display can't drift. */

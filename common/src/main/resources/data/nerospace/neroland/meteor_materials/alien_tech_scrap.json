@@ -1,0 +1,8 @@
+{
+  "item": "nerospace:alien_tech_scrap",
+  "tier": "rare",
+  "min_gate": "nerolandcore:first_colony",
+  "planet": null,
+  "weight_override": null,
+  "enabled": true
+}

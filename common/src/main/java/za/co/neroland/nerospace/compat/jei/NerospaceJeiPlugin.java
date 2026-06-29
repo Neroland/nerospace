@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.compat.jei;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.IModPlugin;
@@ -46,7 +47,11 @@ public class NerospaceJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(GrindingCategory.TYPE, GrinderRecipes.all());
+        // Fixed in-code recipes plus the random meteor-block path (its output is the live
+        // neroland:meteor/grindable pool, rendered by GrindingCategory).
+        List<GrinderRecipes.Grinding> grinding = new ArrayList<>(GrinderRecipes.all());
+        grinding.add(GrinderRecipes.meteor());
+        registration.addRecipes(GrindingCategory.TYPE, grinding);
         registration.addRecipes(RefiningCategory.TYPE, List.of(RefiningCategory.RefiningRecipe.standard()));
         registration.addRecipes(CombustionFuelCategory.TYPE, CombustionFuelCategory.allFuels());
     }

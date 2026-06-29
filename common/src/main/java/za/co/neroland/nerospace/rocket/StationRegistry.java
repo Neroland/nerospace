@@ -10,13 +10,16 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.registry.ModDimensions;
 
 /**
  * The server-global registry of player-founded stations. Stored on the overworld (always loaded) via
@@ -179,6 +182,33 @@ public final class StationRegistry extends SavedData {
     @Nullable
     public StationEntry get(int slot) {
         return this.stations.get(slot);
+    }
+
+    /**
+     * The founder UUID of the station whose footprint contains {@code pos} in {@code dim}, or {@code null}
+     * when {@code pos} is outside the station dimension, in an unowned/legacy station, or no station claims
+     * it. Used as a graceful operator fallback for an unattended in-station meteor grinder. Each station
+     * occupies a {@link #SLOT_SPACING}-wide X band centred on its slot, so the owning slot is found by
+     * proximity on X. Never logs the UUID (POPIA/GDPR).
+     */
+    @Nullable
+    public java.util.UUID ownerAt(ResourceKey<Level> dim, BlockPos pos) {
+        if (!ModDimensions.STATION_LEVEL.equals(dim)) {
+            return null;
+        }
+        for (StationEntry entry : this.stations.values()) {
+            if (entry.owner() == null || entry.owner().isEmpty()) {
+                continue;
+            }
+            if (Math.abs(entry.center().getX() - pos.getX()) <= SLOT_SPACING / 2) {
+                try {
+                    return java.util.UUID.fromString(entry.owner());
+                } catch (IllegalArgumentException ignored) {
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 
     /** All stations in founding order (the UI's cycle order). */
