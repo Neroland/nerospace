@@ -31,9 +31,10 @@ import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
  */
 public final class ScreenSideConfig {
 
-    /** Anchor: top-right of a 176-wide machine panel (imageWidth - 20, 4). */
-    public static final int ANCHOR_X = 176 - 20;
-    public static final int ANCHOR_Y = 4;
+    /** Anchor: just right of a 176-wide machine panel, top-aligned, so the labelled
+     * side-config panel sits beside the GUI instead of overlapping it. */
+    public static final int ANCHOR_X = 176 + 4;
+    public static final int ANCHOR_Y = 0;
 
     @Nullable
     private final SideConfigWidget widget;
