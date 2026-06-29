@@ -25,12 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Migration note (existing worlds)
 
-- **Re-place these blocks after updating.** Blocks already placed as `nerospace:battery`,
-  `nerospace:fluid_tank`, `nerospace:gas_tank`, or `nerospace:item_store` will **not**
-  auto-migrate to the new `nerolandcore:` ids: NeoForge 26.x removed the registry-remapping
-  (MissingMappings) event and Fabric never had one, so cross-loader block-id aliasing is not
-  supported. Break and re-place each block with the Neroland Core variant. Their **items and
-  stored contents are unaffected** — only the placed-block id changed.
+- **Block-id aliases preserve existing placements.** Blocks already placed as
+  `nerospace:battery`, `nerospace:fluid_tank`, `nerospace:gas_tank`, or
+  `nerospace:item_store` (and `creative_*`) are remapped to the matching
+  `nerolandcore:` block on load:
+  - **Forge** — via Forge's `MissingMappingsEvent` (fully supported).
+  - **NeoForge / Fabric** — modern NeoForge removed that event and Fabric never had
+    one, so a small, strictly-scoped mixin remaps these eight ids at the registry
+    lookup instead. It is `require = 0` (best-effort): if it can't apply on a given
+    version it safely no-ops rather than crashing. **Verify on your save after
+    updating**; if a placed block ever drops, break and re-place it with the
+    Neroland Core variant — **items and stored contents are unaffected** regardless.
 
 ## [1.0.0-beta.1] - 2026-06-27
 
