@@ -37,7 +37,10 @@ N N N
 - **Connections:** the tube grows an arm toward anything it can talk to (pipes, machines, tanks,
 
   chests). Every face has an independent I/O mode **per layer**: Auto → In → Out → Off (set with the
-  [Configurator](Configurator)).
+  [Configurator](Configurator)). This includes the [Battery](Battery), [Fluid Tank](Fluid-Tank),
+  [Gas Tank](Gas-Tank), and [Item Store](Item-Store) — now provided by
+  [Neroland Core](Neroland-Core); the pipe bridges Core's `nerolandcore:fluid`/`nerolandcore:gas`
+  (and energy/item) capabilities onto its own lookups, so it connects to them exactly as before.
 
 - **Energy/fluid/gas:** the network pulls from providers, pushes to receivers and balances its own
 

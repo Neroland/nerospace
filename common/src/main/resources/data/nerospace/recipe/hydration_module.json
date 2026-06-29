@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "F": "nerospace:fluid_tank",
+    "F": "nerolandcore:fluid_tank",
     "G": "#c:gems/glacite",
     "N": "#c:ingots/nerosteel"
   },

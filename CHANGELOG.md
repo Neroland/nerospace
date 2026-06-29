@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+**Storage blocks moved to Neroland Core**
+
+- The **Battery**, **Fluid Tank**, **Gas Tank**, and **Item Store** (and their **Creative**
+  variants) now ship in the shared **Neroland Core** library instead of Nerospace. Their ids
+  changed from `nerospace:*` to `nerolandcore:battery`, `nerolandcore:fluid_tank`,
+  `nerolandcore:gas_tank`, `nerolandcore:item_store` (and `nerolandcore:creative_*`), so every
+  Neroland mod now shares one set of storage endpoints. They craft and behave exactly as
+  before.
+- Bumped the required **Neroland Core** dependency to **1.1.0** (the release that adds these
+  blocks and the generic fluid/gas storage APIs).
+- The **Universal Pipe** still interoperates with all four blocks — it bridges Core's
+  `nerolandcore:fluid` / `nerolandcore:gas` (and energy / item) capabilities onto Nerospace's
+  own `nerospace:fluid` / `nerospace:gas` lookups, so existing pipe networks keep working.
+
+### Migration note (existing worlds)
+
+- **Re-place these blocks after updating.** Blocks already placed as `nerospace:battery`,
+  `nerospace:fluid_tank`, `nerospace:gas_tank`, or `nerospace:item_store` will **not**
+  auto-migrate to the new `nerolandcore:` ids: NeoForge 26.x removed the registry-remapping
+  (MissingMappings) event and Fabric never had one, so cross-loader block-id aliasing is not
+  supported. Break and re-place each block with the Neroland Core variant. Their **items and
+  stored contents are unaffected** — only the placed-block id changed.
+
 ## [1.0.0-beta.1] - 2026-06-27
 
 First public **beta** of Nerospace — and the first **multi-loader** build. Nerospace now runs on

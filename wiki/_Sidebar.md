@@ -46,11 +46,14 @@
 - [Combustion Generator](Combustion-Generator)
 - [Passive Generator](Passive-Generator)
 - [Solar Panel](Solar-Panel)
+- [Trash Can](Trash-Can)
+
+**Storage — now in [Neroland Core](Neroland-Core)**
+
 - [Battery](Battery)
 - [Fluid Tank](Fluid-Tank)
 - [Gas Tank](Gas-Tank)
 - [Item Store](Item-Store)
-- [Trash Can](Trash-Can)
 - [Creative Source Blocks](Creative-Source-Blocks)
 
 **Blocks — Structures**

@@ -224,8 +224,8 @@ public final class OxygenManager {
                 break;
             }
             BlockState state = level.getBlockState(pos);
-            if (!state.is(ModBlocks.GAS_TANK.get())
-                    && !state.is(ModBlocks.CREATIVE_GAS_TANK.get())
+            if (!state.is(za.co.neroland.nerolandcore.registry.ModBlocks.GAS_TANK.get())
+                    && !state.is(za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_GAS_TANK.get())
                     && !state.is(ModBlocks.OXYGEN_GENERATOR.get())) {
                 continue;
             }

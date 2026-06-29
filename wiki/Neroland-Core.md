@@ -8,6 +8,12 @@ and loader); the launcher will refuse to start Nerospace without a compatible `n
 Building on Core means Nerospace no longer reinvents the systems every Neroland mod shares. In practice
 that gives you four things.
 
+Core also now provides the **shared storage blocks** — the [Battery](Battery), [Fluid Tank](Fluid-Tank),
+[Gas Tank](Gas-Tank), and [Item Store](Item-Store) (plus their [Creative](Creative-Source-Blocks)
+variants) moved out of Nerospace into Core as of `nerolandcore` 1.1.0, so every Neroland mod uses one
+set of endpoints. They craft and behave as before, and Nerospace's [Universal Pipe](Universal-Pipe)
+still connects to them.
+
 ## One power network across mods
 
 Every Nerospace generator, battery, machine and pipe now exposes its energy on Core's shared
