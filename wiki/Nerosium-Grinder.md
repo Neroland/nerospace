@@ -48,12 +48,15 @@ automatically with whatever mods are installed — the grinder never needs to kn
 
 - **What you get:** one **primary** material per rock, plus — occasionally — a bonus **exotic** item.
   Nerospace contributes its raw materials and signature planet ores to the pool.
-- **Progression-gated:** an entry only appears once you've reached its **Core gate**. Early game you mostly
-  get common dusts; after **Reached Orbit** the rarer materials (Xertz Quartz, Cindrite, Alien Fragments…)
-  unlock, and **First Colony** opens the deepest ones (Glacite, Alien Tech Scrap, and the exotic Alien Core).
-- **Planet bias:** a planet's **signature ore** is far more likely when you grind *on that planet*. Grind
-  on Greenxertz for Xertz Quartz and Raw Nerosteel, on Cindara for Cindrite, on Glacira for Glacite. Off a
-  planet (e.g. on Earth) the planet-bound materials drop out of the pool entirely.
+- **Planet-locked signature ores:** each planet's **signature ore** only enters the pool when you grind
+  *on that planet* — and is heavily weighted there (the planet-bias multiplier). Grind on Greenxertz for
+  Xertz Quartz and Raw Nerosteel, on Cindara for Cindrite, on Glacira for Glacite. Off a planet (e.g. on
+  Earth) those materials drop out entirely. Being on the planet *is* the gate — there's no separate
+  progression lock, so you can never be stranded on a world unable to grind its own ore.
+- **Progression-gated alien tech:** the **alien materials** aren't tied to a planet, so they can roll on any
+  world — and are instead paced by **Core gates**. Alien Fragments unlock at **Reached Orbit**; Alien Tech
+  Scrap and the exotic **Alien Core** at **First Colony**. This keeps the rare end-game drops out of early
+  overworld meteor grinds.
 - **Operator context:** the gate/planet check uses the **operator** — the last player to open the grinder,
   or the owner of the station it sits in. With no operator online (and no eligible material) the grind
   simply waits, so an unattended grinder never wastes a rock. If the output slot is occupied, extra results

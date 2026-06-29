@@ -1,7 +1,7 @@
 {
   "item": "nerospace:glacite",
   "tier": "rare",
-  "min_gate": "nerolandcore:first_colony",
+  "min_gate": null,
   "planet": "nerospace:glacira",
   "weight_override": null,
   "enabled": true
