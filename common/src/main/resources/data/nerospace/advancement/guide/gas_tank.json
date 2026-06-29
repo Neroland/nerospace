@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "nerospace:gas_tank"
+            "items": "nerolandcore:gas_tank"
           }
         ]
       },
@@ -15,7 +15,7 @@
   "display": {
     "description": "Craft a Gas Tank for oxygen storage",
     "icon": {
-      "id": "nerospace:gas_tank"
+      "id": "nerolandcore:gas_tank"
     },
     "title": "Bottled Air"
   },

@@ -24,15 +24,6 @@ import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlockEntity;
 import za.co.neroland.nerospace.rocket.ReturnSiteBlockEntity;
 import za.co.neroland.nerospace.rocket.StationCoreBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeGasTankBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
-import za.co.neroland.nerospace.storage.GasTankBlockEntity;
-import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
-import za.co.neroland.nerospace.storage.BatteryBlockEntity;
-import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
-import za.co.neroland.nerospace.storage.ItemStoreBlockEntity;
 import za.co.neroland.nerospace.village.VillageCoreBlockEntity;
 
 /**
@@ -44,18 +35,6 @@ public final class ModBlockEntities {
 
     public static final RegistrationProvider<BlockEntityType<?>> BLOCK_ENTITIES =
             RegistrationProvider.get(Registries.BLOCK_ENTITY_TYPE, NerospaceCommon.MOD_ID);
-
-    public static final RegistryEntry<BlockEntityType<ItemStoreBlockEntity>> ITEM_STORE =
-            BLOCK_ENTITIES.register("item_store",
-                    key -> new BlockEntityType<>(ItemStoreBlockEntity::new, java.util.Set.of(ModBlocks.ITEM_STORE.get())));
-
-    public static final RegistryEntry<BlockEntityType<BatteryBlockEntity>> BATTERY =
-            BLOCK_ENTITIES.register("battery",
-                    key -> new BlockEntityType<>(BatteryBlockEntity::new, java.util.Set.of(ModBlocks.BATTERY.get())));
-
-    public static final RegistryEntry<BlockEntityType<FluidTankBlockEntity>> FLUID_TANK =
-            BLOCK_ENTITIES.register("fluid_tank",
-                    key -> new BlockEntityType<>(FluidTankBlockEntity::new, java.util.Set.of(ModBlocks.FLUID_TANK.get())));
 
     public static final RegistryEntry<BlockEntityType<CombustionGeneratorBlockEntity>> COMBUSTION_GENERATOR =
             BLOCK_ENTITIES.register("combustion_generator",
@@ -73,18 +52,6 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("universal_pipe",
                     key -> new BlockEntityType<>(UniversalPipeBlockEntity::new, java.util.Set.of(ModBlocks.UNIVERSAL_PIPE.get())));
 
-    public static final RegistryEntry<BlockEntityType<TrashCanBlockEntity>> TRASH_CAN =
-            BLOCK_ENTITIES.register("trash_can",
-                    key -> new BlockEntityType<>(TrashCanBlockEntity::new, java.util.Set.of(ModBlocks.TRASH_CAN.get())));
-
-    public static final RegistryEntry<BlockEntityType<CreativeBatteryBlockEntity>> CREATIVE_BATTERY =
-            BLOCK_ENTITIES.register("creative_battery",
-                    key -> new BlockEntityType<>(CreativeBatteryBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_BATTERY.get())));
-
-    public static final RegistryEntry<BlockEntityType<GasTankBlockEntity>> GAS_TANK =
-            BLOCK_ENTITIES.register("gas_tank",
-                    key -> new BlockEntityType<>(GasTankBlockEntity::new, java.util.Set.of(ModBlocks.GAS_TANK.get())));
-
     public static final RegistryEntry<BlockEntityType<OxygenGeneratorBlockEntity>> OXYGEN_GENERATOR =
             BLOCK_ENTITIES.register("oxygen_generator",
                     key -> new BlockEntityType<>(OxygenGeneratorBlockEntity::new, java.util.Set.of(ModBlocks.OXYGEN_GENERATOR.get())));
@@ -101,18 +68,6 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<FuelRefineryBlockEntity>> FUEL_REFINERY =
             BLOCK_ENTITIES.register("fuel_refinery",
                     key -> new BlockEntityType<>(FuelRefineryBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_REFINERY.get())));
-
-    public static final RegistryEntry<BlockEntityType<CreativeFluidTankBlockEntity>> CREATIVE_FLUID_TANK =
-            BLOCK_ENTITIES.register("creative_fluid_tank",
-                    key -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_FLUID_TANK.get())));
-
-    public static final RegistryEntry<BlockEntityType<CreativeGasTankBlockEntity>> CREATIVE_GAS_TANK =
-            BLOCK_ENTITIES.register("creative_gas_tank",
-                    key -> new BlockEntityType<>(CreativeGasTankBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_GAS_TANK.get())));
-
-    public static final RegistryEntry<BlockEntityType<CreativeItemStoreBlockEntity>> CREATIVE_ITEM_STORE =
-            BLOCK_ENTITIES.register("creative_item_store",
-                    key -> new BlockEntityType<>(CreativeItemStoreBlockEntity::new, java.util.Set.of(ModBlocks.CREATIVE_ITEM_STORE.get())));
 
     public static final RegistryEntry<BlockEntityType<QuarryControllerBlockEntity>> QUARRY_CONTROLLER =
             BLOCK_ENTITIES.register("quarry_controller",

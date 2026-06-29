@@ -38,13 +38,6 @@ import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
-import za.co.neroland.nerospace.storage.BatteryBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeGasTankBlockEntity;
-import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
-import za.co.neroland.nerospace.storage.GasTankBlockEntity;
-import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 
 /** Forge capability providers for the existing loader-neutral storage seams. */
 public final class ForgeCapabilities {
@@ -80,18 +73,18 @@ public final class ForgeCapabilities {
         Supplier<NerospaceFluidStorage> fluid = null;
         Supplier<NerospaceGasStorage> gas = null;
 
-        if (be instanceof BatteryBlockEntity battery) {
-            energy = battery::getEnergy;
-        } else if (be instanceof CreativeBatteryBlockEntity battery) {
-            energy = battery::getEnergy;
-        } else if (be instanceof FluidTankBlockEntity tank) {
-            fluid = tank::getTank;
-        } else if (be instanceof CreativeFluidTankBlockEntity tank) {
-            fluid = tank::getTank;
-        } else if (be instanceof GasTankBlockEntity tank) {
-            gas = tank::getTank;
-        } else if (be instanceof CreativeGasTankBlockEntity tank) {
-            gas = tank::getTank;
+        // The Battery / Fluid Tank / Gas Tank / Item Store endpoints now live in Neroland Core. Battery
+        // energy crosses via Core's own Forge capability wiring and the Item Store is a vanilla Container;
+        // only the Core fluid/gas tanks need bridging back onto Nerospace's fluid/gas caps so the Universal
+        // Pipe still connects to them.
+        if (be instanceof za.co.neroland.nerolandcore.storage.FluidTankBlockEntity t) {
+            fluid = () -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.CreativeFluidTankBlockEntity t) {
+            fluid = () -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.GasTankBlockEntity t) {
+            gas = () -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.CreativeGasTankBlockEntity t) {
+            gas = () -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(t.getTank());
         } else if (be instanceof CombustionGeneratorBlockEntity machine) {
             energy = machine::getEnergy;
         } else if (be instanceof NerosiumGrinderBlockEntity machine) {
@@ -102,9 +95,9 @@ public final class ForgeCapabilities {
             energy = pipe::getEnergy;
             fluid = pipe::getFluidTank;
             gas = pipe::getGas;
-        } else if (be instanceof TrashCanBlockEntity trash) {
-            fluid = trash::getFluid;
-            gas = trash::getGas;
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.TrashCanBlockEntity trash) {
+            fluid = () -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(trash.getFluid());
+            gas = () -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(trash.getGas());
         } else if (be instanceof OxygenGeneratorBlockEntity machine) {
             energy = machine::getEnergy;
             gas = machine::getGas;

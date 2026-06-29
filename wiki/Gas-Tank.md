@@ -1,45 +1,20 @@
 # Gas Tank
 
-<!-- nerospace:render -->
-<p align="right"><img src="images/gas_tank.png" alt="Gas Tank" width="150" align="right"></p>
-<!-- /nerospace:render -->
+> **Moved to Neroland Core.** The Gas Tank now ships in the shared
+> [Neroland Core](Neroland-Core) library as **`nerolandcore:gas_tank`**, so every Neroland mod
+> uses one set of storage blocks. Craft and use it exactly as before — see the **Neroland Core
+> wiki** (the *Gas Tank* page) for the full details.
 
-A pressurised store for one gas, filled and drained through the pipe network's gas layer.
+A pressurised store for one gas, filled and drained through the gas layer of the pipe network.
+In Nerospace it still buffers **Oxygen** from an [Oxygen Generator](Oxygen-Generator) and works
+as an **airlock** that refills a worn [Oxygen Suit](Oxygen-Suit) nearby. A **Creative Gas
+Tank** variant supplies an endless gas.
 
-## Obtaining
+Nerospace's [Universal Pipe](Universal-Pipe) still moves oxygen in and out of it, so in-game
+behaviour is unchanged when both mods are installed.
 
-**Craft** (shaped): a sealed [Fluid Tank](Fluid-Tank) —
+> **Updating an existing world:** blocks you placed as `nerospace:gas_tank` are automatically remapped to `nerolandcore:gas_tank` on load — Forge via its missing-mappings event, NeoForge and Fabric via a built-in registry alias; their items and stored contents are preserved. See the
+> [changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md).
 
-```text
-N N N
-N T N
-N N N
-```
-
-`N` = Nerosteel Ingot · `T` = Fluid Tank
-
-## How it works
-
-- Holds **16,000 mB** (configurable) of one gas — **Oxygen** is the first gas in the mod.
-- Universal Pipes (gas layer, green stream) fill and drain it on every side; pipe a surplus from your
-
-  [Oxygen Generator](Oxygen-Generator) into it as a life-support buffer.
-
-- Gas is gas: **breaking a gas-filled pipe (or the tank itself) vents the contents** — plan your
-
-  plumbing before tearing it up.
-
-- **Airlock:** a player wearing a full [Oxygen Suit](Oxygen-Suit) within a few blocks (default 3) of
-
-  a tank holding Oxygen **refills the suit's air from it**, draining the gas — a tank by the base
-  door is a working airlock. A Tier 2 suit refills twice as fast.
-
-- Bare-hand right-click reads out the contents.
-
-A **Creative Gas Tank** variant supplies endless Oxygen — see
-[Creative Source Blocks](Creative-Source-Blocks).
-
-## Details
-
-- ID: `nerospace:gas_tank` · Tool: pickaxe, iron tier · Drops: itself
-- Config: `gasTankCapacity`
+See also: [Neroland Core](Neroland-Core), [Universal Pipe](Universal-Pipe),
+[Oxygen Suit](Oxygen-Suit), [Creative Source Blocks](Creative-Source-Blocks).

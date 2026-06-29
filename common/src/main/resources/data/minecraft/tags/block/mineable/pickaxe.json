@@ -20,14 +20,10 @@
     "nerospace:alien_lamp",
     "nerospace:alien_crystal_block",
     "nerospace:meteor_rock",
-    "nerospace:item_store",
-    "nerospace:battery",
-    "nerospace:fluid_tank",
     "nerospace:combustion_generator",
     "nerospace:nerosium_grinder",
     "nerospace:passive_generator",
     "nerospace:universal_pipe",
-    "nerospace:trash_can",
     "nerospace:landing_pod",
     "nerospace:docking_port"
   ]

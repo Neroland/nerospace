@@ -1,39 +1,20 @@
 # Battery
 
-<!-- nerospace:render -->
-<p align="right"><img src="images/battery.gif" alt="Battery" width="150" align="right"></p>
-<!-- /nerospace:render -->
+> **Moved to Neroland Core.** The Battery now ships in the shared
+> [Neroland Core](Neroland-Core) library as **`nerolandcore:battery`**, so every Neroland mod
+> uses one set of storage blocks. Craft and use it exactly as before — see the **Neroland Core
+> wiki** (the *Battery* page) for the full details.
 
-A passive energy store that buffers your grid.
+A passive **Nero energy** store that buffers your grid: generators fill it, machines drain it,
+on every side. A **Creative Battery** variant is an endless source/sink for testing.
 
-## Obtaining
+Nerospace's [Universal Pipe](Universal-Pipe) still connects to it, so in-game behaviour is
+unchanged when both mods are installed.
 
-**Craft** (shaped): a nerosteel casing around a redstone-and-nerosium cell —
+> **Updating an existing world:** blocks you placed as `nerospace:battery` are automatically
+> remapped to `nerolandcore:battery` on load — Forge via its missing-mappings event, NeoForge
+> and Fabric via a built-in registry alias; their items and stored contents are preserved. See the
+> [changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md).
 
-```text
-N R N
-R I R
-N R N
-```
-
-`N` = Nerosteel Ingot · `R` = Redstone · `I` = Nerosium Ingot
-
-## How it works
-
-- Stores **200,000 FE** (configurable); accepts and provides power on **every side** at pipe
-
-  throughput.
-
-- Generators fill it through the network; machines drain it the same way — so production hiccups
-
-  don't black out your base.
-
-- Right-click for a charge readout.
-
-A **Creative Battery** variant (creative tab only) is an endless source and sink of energy for
-testing grids — see [Creative Source Blocks](Creative-Source-Blocks).
-
-## Details
-
-- ID: `nerospace:battery` · Tool: pickaxe, iron tier · Drops: itself
-- Config: `batteryCapacity`
+See also: [Neroland Core](Neroland-Core), [Universal Pipe](Universal-Pipe),
+[Creative Source Blocks](Creative-Source-Blocks).
