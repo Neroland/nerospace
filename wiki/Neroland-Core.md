@@ -9,10 +9,11 @@ Building on Core means Nerospace no longer reinvents the systems every Neroland 
 that gives you four things.
 
 Core also now provides the **shared storage blocks** — the [Battery](Battery), [Fluid Tank](Fluid-Tank),
-[Gas Tank](Gas-Tank), and [Item Store](Item-Store) (plus their [Creative](Creative-Source-Blocks)
-variants) moved out of Nerospace into Core as of `nerolandcore` 1.1.0, so every Neroland mod uses one
-set of endpoints. They craft and behave as before, and Nerospace's [Universal Pipe](Universal-Pipe)
-still connects to them.
+[Gas Tank](Gas-Tank), [Item Store](Item-Store), and [Trash Can](Trash-Can) (the first four with their
+[Creative](Creative-Source-Blocks) variants) moved out of Nerospace into Core as of `nerolandcore` 1.1.0,
+so every Neroland mod uses one set of endpoints. They craft and behave as before, and Nerospace's
+[Universal Pipe](Universal-Pipe) still connects to them (still voiding into the Trash Can through the
+compat bridge).
 
 ## One power network across mods
 

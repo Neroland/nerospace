@@ -1,52 +1,20 @@
 # Trash Can
 
-<!-- nerospace:render -->
-<p align="right"><img src="images/trash_can.png" alt="Trash Can" width="150" align="right"></p>
-<!-- /nerospace:render -->
+> **Moved to Neroland Core.** The Trash Can now ships in the shared
+> [Neroland Core](Neroland-Core) library as **`nerolandcore:trash_can`**, so every Neroland mod
+> uses one set of storage blocks. Craft and use it exactly as before — see the **Neroland Core
+> wiki** (the *Trash Can* page) for the full details.
 
-A bottomless sink for unwanted items, fluids, and gas.
+A bottomless void sink: pipe or hopper items, fluid, or gas into it and they are destroyed
+(input only, no extraction), via a vanilla chest-style GUI with a single drop slot.
 
-## Overview
+Nerospace's [Universal Pipe](Universal-Pipe) still voids into it through the compat bridge, so
+in-game behaviour is unchanged when both mods are installed.
 
-Pipe or hopper anything into the Trash Can and it is **destroyed**. It accepts all three transfer
-layers — **items, fluids, and gas** — from any side, with no extraction surface, so nothing can ever
-be pulled back out. Handy for dumping the cobble and dirt a [Quarry Controller](Quarry-Controller)
-digs up (until item filters arrive), venting excess gas, or draining a fluid line.
+> **Updating an existing world:** blocks you placed as `nerospace:trash_can` are remapped to
+> `nerolandcore:trash_can` on load by Core's block-id alias mechanism (Forge `MissingMappingsEvent`;
+> NeoForge/Fabric via the registry-remap mixin), so existing placements carry over. See the
+> [changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md).
 
-## Obtaining
-
-**Craft** (shaped):
-
-```text
-I I I
-I C I
-I I I
-```
-
-`I` = Iron Ingot · `C` = Cactus
-
-## How it works
-
-- **Voids every layer:** exposes the item, fluid, and gas capabilities on **all six faces**; whatever
-
-  is inserted is discarded.
-
-- **Never backs up:** its internal sinks are emptied every tick, so it always has room and never
-
-  rejects or returns anything.
-
-- **Input only:** there is no way to extract from it — your modules, fuel, or anything else routed
-
-  past it stays safe; only what is explicitly piped *into* the Trash Can is lost.
-
-- **No energy:** it does not accept power (energy isn't "trash"); only items, fluids, and gas.
-
-## Tips
-
-Point a [Universal Pipe](Universal-Pipe) face set to **OUT** at the Trash Can to dump a filtered
-stream, or sit one under a quarry/machine output to auto-clear overflow.
-
-## Details
-
-- ID: `nerospace:trash_can` · Tool: pickaxe · Drops: itself
-- Capabilities: items **in**, fluid **in**, gas **in** (all sides) — all discarded; no extraction
+See also: [Neroland Core](Neroland-Core), [Universal Pipe](Universal-Pipe),
+[Creative Source Blocks](Creative-Source-Blocks).
