@@ -1,0 +1,8 @@
+{
+  "item": "nerospace:raw_nerosteel",
+  "tier": "uncommon",
+  "min_gate": "nerolandcore:reached_orbit",
+  "planet": "nerospace:greenxertz",
+  "weight_override": null,
+  "enabled": true
+}

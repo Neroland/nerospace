@@ -1,0 +1,8 @@
+{
+  "item": "nerospace:cindrite",
+  "tier": "rare",
+  "min_gate": "nerolandcore:reached_orbit",
+  "planet": "nerospace:cindara",
+  "weight_override": null,
+  "enabled": true
+}

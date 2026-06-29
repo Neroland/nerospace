@@ -24,6 +24,9 @@ visible marker of a crash site from a distance.
 
 - Decorative building block for space/crater builds.
 - The crater body around a **[Meteor Core](Meteor-Core)** — dig in to reach the loot.
+- **Grind it** in a **[Nerosium Grinder](Nerosium-Grinder#grinding-meteor-rock--random-space-materials)**
+  for a weighted-random space material from **[Neroland Core](Neroland-Core)'s** Meteor Material Registry —
+  progression-gated and biased toward the planet you grind on.
 
 ## Details
 

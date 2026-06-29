@@ -10,7 +10,6 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import za.co.neroland.nerospace.machine.GrinderRecipes;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
@@ -34,7 +33,7 @@ public class NerosiumGrinderMenu extends AbstractContainerMenu {
         this.addSlot(new Slot(container, NerosiumGrinderBlockEntity.INPUT_SLOT, 56, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return !GrinderRecipes.getResult(stack).isEmpty();
+                return NerosiumGrinderBlockEntity.isGrindableInput(stack);
             }
         });
         this.addSlot(new Slot(container, NerosiumGrinderBlockEntity.OUTPUT_SLOT, 116, 35) {

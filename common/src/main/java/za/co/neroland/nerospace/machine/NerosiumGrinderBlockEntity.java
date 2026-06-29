@@ -1,9 +1,15 @@
 package za.co.neroland.nerospace.machine;
 
+import java.util.List;
+import java.util.UUID;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
@@ -11,6 +17,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,11 +27,15 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.meteor.MeteorMaterials;
+
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.rocket.StationRegistry;
 
 /**
  * Nerosium Grinder — grid-powered processing machine. Input slot + output slot + an energy buffer
@@ -45,6 +56,15 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_INSERT, 0, this::setChanged);
     private int progress;
+
+    /**
+     * The last player to open this grinder's menu — the "operator" whose progression gates and current
+     * planet drive the random meteor-block grind through Core's Meteor Material Registry. Transient gameplay
+     * state (UUID only, never logged or persisted; POPIA/GDPR): it resets on world reload, after which the
+     * grinder falls back to the in-station owner, then degrades to a no-op until a player opens it again.
+     */
+    @Nullable
+    private UUID operator;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -83,8 +103,17 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
         if (level.isClientSide()) {
             return;
         }
-        boolean changed = false;
         ItemStack input = this.items.get(INPUT_SLOT);
+        boolean changed = input.is(ModItems.METEOR_ROCK_ITEM.get())
+                ? tickMeteor(level, pos)
+                : tickRecipe(input);
+        if (changed) {
+            this.setChanged();
+        }
+    }
+
+    /** Fixed in-code recipes (ores/ingots → nerosium dust). @return whether internal state changed. */
+    private boolean tickRecipe(ItemStack input) {
         ItemStack result = GrinderRecipes.getResult(input);
         int energyPerTick = NerospaceConfig.scale(ENERGY_PER_TICK, NerospaceConfig.fuelCostMultiplier());
         boolean canWork = !result.isEmpty() && canInsertOutput(result) && this.energy.getAmount() >= energyPerTick;
@@ -95,14 +124,103 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
                 craft(result);
                 this.progress = 0;
             }
-            changed = true;
+            return true;
         } else if (this.progress != 0) {
             this.progress = 0;
-            changed = true;
+            return true;
         }
-        if (changed) {
-            this.setChanged();
+        return false;
+    }
+
+    /**
+     * The random meteor-block path: grinds a meteor rock into a Core-resolved primary dust (plus an
+     * occasional exotic), weighted by the operator's progression gates and current planet via Neroland
+     * Core's Meteor Material Registry. Distinct from {@link #tickRecipe} — the output is not known until the
+     * grind completes, so it is resolved live (server-side) in {@link #grindMeteor}.
+     *
+     * <p>Needs a {@link ServerPlayer} for gate/planet context: we use the grinder's operator (the last
+     * player to open its menu), falling back to the owner of the station the grinder sits in. With no
+     * resolvable player — or no eligible material — the grind degrades gracefully to a no-op (energy and
+     * the meteor rock are preserved), so an unattended grinder never silently destroys input.
+     *
+     * @return whether internal state changed.
+     */
+    private boolean tickMeteor(Level level, BlockPos pos) {
+        int energyPerTick = NerospaceConfig.scale(ENERGY_PER_TICK, NerospaceConfig.fuelCostMultiplier());
+        ServerPlayer op = resolveOperator(level, pos);
+        boolean canWork = op != null && hasOutputRoom() && this.energy.getAmount() >= energyPerTick;
+        if (canWork) {
+            this.progress++;
+            this.energy.consume(energyPerTick);
+            if (this.progress >= NerospaceConfig.scaleInterval(MAX_PROGRESS, NerospaceConfig.machineSpeedMultiplier())) {
+                grindMeteor(level, pos, op);
+                this.progress = 0;
+            }
+            return true;
+        } else if (this.progress != 0) {
+            this.progress = 0;
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * Resolves the operator whose context drives the meteor grind: the last player to open this menu if
+     * online, otherwise the owner of the enclosing station if online, otherwise {@code null}. Keyed by UUID
+     * only — never logged (POPIA/GDPR).
+     */
+    @Nullable
+    private ServerPlayer resolveOperator(Level level, BlockPos pos) {
+        MinecraftServer server = level.getServer();
+        if (server == null) {
+            return null;
+        }
+        if (this.operator != null) {
+            ServerPlayer player = server.getPlayerList().getPlayer(this.operator);
+            if (player != null) {
+                return player;
+            }
+        }
+        UUID owner = StationRegistry.get(server).ownerAt(level.dimension(), pos);
+        return owner == null ? null : server.getPlayerList().getPlayer(owner);
+    }
+
+    /** Whether the output slot can take at least one more item (empty, or below max stack). */
+    private boolean hasOutputRoom() {
+        ItemStack output = this.items.get(OUTPUT_SLOT);
+        return output.isEmpty() || output.getCount() < output.getMaxStackSize();
+    }
+
+    /**
+     * Completes one meteor grind: consumes a meteor rock and yields Core's resolved item(s). The first
+     * item merges into the output slot when compatible; anything that does not fit (a mismatched item, a
+     * full slot, or the bonus exotic) pops out above the grinder rather than being lost. An empty
+     * resolution (no eligible material) is a no-op — the meteor rock is left intact.
+     */
+    private void grindMeteor(Level level, BlockPos pos, ServerPlayer operator) {
+        List<Item> produced = MeteorMaterials.resolve(operator, level.getRandom());
+        if (produced.isEmpty()) {
+            return;
+        }
+        this.items.get(INPUT_SLOT).shrink(1);
+        for (Item item : produced) {
+            insertOrPop(level, pos, new ItemStack(item));
+        }
+    }
+
+    /** Merge {@code stack} into the output slot if it fits, else drop it above the grinder. */
+    private void insertOrPop(Level level, BlockPos pos, ItemStack stack) {
+        ItemStack output = this.items.get(OUTPUT_SLOT);
+        if (output.isEmpty()) {
+            this.items.set(OUTPUT_SLOT, stack);
+            return;
+        }
+        if (ItemStack.isSameItemSameComponents(output, stack)
+                && output.getCount() + stack.getCount() <= output.getMaxStackSize()) {
+            output.grow(stack.getCount());
+            return;
+        }
+        Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, stack);
     }
 
     private void craft(ItemStack result) {
@@ -150,7 +268,18 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        // Remember the operator so an in-progress meteor grind has gate/planet context (UUID only).
+        this.operator = player.getUUID();
         return new NerosiumGrinderMenu(containerId, playerInventory, this, this.data);
+    }
+
+    /**
+     * Whether {@code stack} is a valid grinder input: either a fixed in-code recipe input or a meteor rock
+     * (the random Meteor Material Registry path). Shared by the menu slot and the hopper/pipe faces so all
+     * three agree on what may enter the input slot.
+     */
+    public static boolean isGrindableInput(ItemStack stack) {
+        return !GrinderRecipes.getResult(stack).isEmpty() || stack.is(ModItems.METEOR_ROCK_ITEM.get());
     }
 
     // --- WorldlyContainer: input in (grindable), output out -------------------
@@ -161,7 +290,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return slot == INPUT_SLOT && !GrinderRecipes.getResult(stack).isEmpty();
+        return slot == INPUT_SLOT && isGrindableInput(stack);
     }
 
     @Override
@@ -171,7 +300,7 @@ public class NerosiumGrinderBlockEntity extends BlockEntity implements WorldlyCo
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return slot == INPUT_SLOT && !GrinderRecipes.getResult(stack).isEmpty();
+        return slot == INPUT_SLOT && isGrindableInput(stack);
     }
 
     @Override

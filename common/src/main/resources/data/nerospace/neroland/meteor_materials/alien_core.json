@@ -1,0 +1,8 @@
+{
+  "item": "nerospace:alien_core",
+  "tier": "exotic",
+  "min_gate": "nerolandcore:first_colony",
+  "planet": null,
+  "weight_override": 6,
+  "enabled": true
+}
