@@ -31,6 +31,21 @@ public class NerosiumGrinderScreen extends TexturedContainerScreen<NerosiumGrind
                 ScreenSideConfig.ANCHOR_X, ScreenSideConfig.ANCHOR_Y);
     }
 
+    /** Output buffer slot positions (panel-relative), matching {@link NerosiumGrinderMenu}. */
+    private static final int[][] OUTPUT_WELLS = { { 116, 35 }, { 134, 35 }, { 116, 53 }, { 134, 53 } };
+
+    @Override
+    protected void drawPanel(GuiGraphicsExtractor g) {
+        super.drawPanel(g);
+        // Recessed wells behind the four output buffer slots (the texture has no cells there).
+        for (int[] xy : OUTPUT_WELLS) {
+            int x = this.leftPos + xy[0];
+            int y = this.topPos + xy[1];
+            g.fill(x - 1, y - 1, x + 17, y + 17, INK);
+            g.fill(x, y, x + 16, y + 16, TROUGH);
+        }
+    }
+
     @Override
     protected void extractForeground(GuiGraphicsExtractor g) {
         if (this.sideConfig != null) {

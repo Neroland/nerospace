@@ -25,7 +25,8 @@ C C C
 
 ## How it works
 
-- **Two slots:** an **input** (top/sides) and an **output** (bottom).
+- **Slots:** an **input** (top/sides) and a **four-slot output buffer** (extracted from the bottom).
+  The buffer gives pipes room to keep up; if it fills, the grinder **pauses** rather than overflowing.
 - **Grinding recipes:**
   - Nerosium Ore / Deepslate Nerosium Ore / Raw Nerosium → **2 Nerosium Dust**
   - Nerosium Ingot → **1 Nerosium Dust**
@@ -59,8 +60,9 @@ automatically with whatever mods are installed — the grinder never needs to kn
   overworld meteor grinds.
 - **Operator context:** the gate/planet check uses the **operator** — the last player to open the grinder,
   or the owner of the station it sits in. With no operator online (and no eligible material) the grind
-  simply waits, so an unattended grinder never wastes a rock. If the output slot is occupied, extra results
-  pop out above the machine.
+  simply waits, so an unattended grinder never wastes a rock. If the **output buffer is full**, the grinder
+  **pauses** with the result held and the meteor rock kept — it never drops items into the world; grinding
+  resumes the moment a slot frees up.
 - **Recipe book:** the random pool is browsable in **JEI** — look up the grinder and the meteor entry shows
   the whole `neroland:meteor/grindable` material set.
 
