@@ -25,6 +25,8 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
+import za.co.neroland.nerolandcore.platform.FabricEnergyLookup;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.command.NerospaceCommands;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -129,19 +131,10 @@ public final class NerospaceFabric implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) ->
                 !(source.is(DamageTypes.FALL) && AlienGearAbilities.negatesFall(entity)));
 
-        // Item-storage capability (Fabric Transfer API) — counterpart to NeoForge
-        // Capabilities.Item.BLOCK; lets mod pipes move items in/out of the item store.
-        ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
-                ModBlockEntities.ITEM_STORE.get());
-
-        ENERGY.registerForBlockEntity(
-                (be, direction) -> be.getEnergy(),
-                ModBlockEntities.BATTERY.get());
-
-        FLUID.registerForBlockEntity(
-                (be, direction) -> be.getTank(),
-                ModBlockEntities.FLUID_TANK.get());
+        // The Battery / Fluid Tank / Gas Tank / Item Store endpoints now live in Neroland Core and expose
+        // Core's own lookups. Energy crosses for free via Core's energy lookup and the Item Store is a
+        // vanilla Container; only fluid/gas need re-exposing on Nerospace's lookups for the Universal Pipe —
+        // see the CoreTankBridge registrations below.
 
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
@@ -177,15 +170,13 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.UNIVERSAL_PIPE.get());
 
-        GAS.registerForBlockEntity(
-                (be, direction) -> be.getTank(),
-                ModBlockEntities.GAS_TANK.get());
-
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.OXYGEN_GENERATOR.get());
+        // Gas is gated by the side config: the gated Core gas view (null on DISABLED/INPUT faces) mapped
+        // back onto Nerospace's gas lookup so the Universal Pipe pulls oxygen only from OUTPUT faces.
         GAS.registerForBlockEntity(
-                (be, direction) -> be.getGas(),
+                (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.gasView(be.sideConfig(), direction),
                 ModBlockEntities.OXYGEN_GENERATOR.get());
 
         // Launch Controller resource hub: fuel + oxygen + power inputs (pumped into the docked rocket).
@@ -210,34 +201,27 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.HYDRATION_MODULE.get());
 
-        ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
-                ModBlockEntities.TRASH_CAN.get());
-        FLUID.registerForBlockEntity(
-                (be, direction) -> be.getFluid(),
-                ModBlockEntities.TRASH_CAN.get());
-        GAS.registerForBlockEntity(
-                (be, direction) -> be.getGas(),
-                ModBlockEntities.TRASH_CAN.get());
+        // Trash Can now lives in Neroland Core (vanilla Container for items found by item adjacency); only
+        // its fluid/gas surfaces need bridging onto Nerospace's lookups so the Universal Pipe still voids into it.
+        FLUID.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getFluid()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get());
+        GAS.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getGas()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get());
 
-        ENERGY.registerForBlockEntity(
-                (be, direction) -> be.getEnergy(),
-                ModBlockEntities.CREATIVE_BATTERY.get());
+        // Re-expose Core's tank block-entities on Nerospace's own fluid/gas lookups so the Universal Pipe
+        // still connects to the (now Core-owned) Fluid Tank / Gas Tank and their creative variants.
+        FLUID.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.FLUID_TANK.get());
+        FLUID.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_FLUID_TANK.get());
+        GAS.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getTank()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.GAS_TANK.get());
+        GAS.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getTank()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_GAS_TANK.get());
 
-        // Creative storage: endless sources/sinks for testing logistics.
+        // Fuel Tank: fluid in/out via the side config (STORAGE preset, default IO), canister in.
         FLUID.registerForBlockEntity(
-                (be, direction) -> be.getTank(),
-                ModBlockEntities.CREATIVE_FLUID_TANK.get());
-        GAS.registerForBlockEntity(
-                (be, direction) -> be.getTank(),
-                ModBlockEntities.CREATIVE_GAS_TANK.get());
-        ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
-                ModBlockEntities.CREATIVE_ITEM_STORE.get());
-
-        // Fuel Tank: fluid out (pipes), canister in (hoppers/pipes).
-        FLUID.registerForBlockEntity(
-                (be, direction) -> be.getTank(),
+                (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction),
                 ModBlockEntities.FUEL_TANK.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
@@ -247,8 +231,9 @@ public final class NerospaceFabric implements ModInitializer {
         ENERGY.registerForBlockEntity(
                 (be, direction) -> be.getEnergy(),
                 ModBlockEntities.FUEL_REFINERY.get());
+        // Refined fuel out via the side config (gated; null on non-OUTPUT/IO faces).
         FLUID.registerForBlockEntity(
-                (be, direction) -> be.getTank(),
+                (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction),
                 ModBlockEntities.FUEL_REFINERY.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
@@ -278,6 +263,30 @@ public final class NerospaceFabric implements ModInitializer {
         ItemStorage.SIDED.registerForBlocks(
                 (world, pos, state, blockEntity, side) -> ContainerStorage.of(new RocketPadItemContainer(world, pos), side),
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
+
+        registerCoreEnergy();
+    }
+
+    /**
+     * Cross-mod energy network (Neroland Core): expose every Nerospace energy block-entity on Core's
+     * shared {@code nerolandcore:energy} lookup too, so machines from any Nero mod interoperate on one
+     * power network. {@link NerospaceEnergyStorage} extends {@code NeroEnergyStorage}, so the existing
+     * {@code getEnergy()} providers satisfy Core's lookup unchanged. The mod's own {@link #ENERGY} stays
+     * registered above for back-compat.
+     */
+    private static void registerCoreEnergy() {
+        // Side-config-integrated machines expose energy through the gated view (null on DISABLED faces);
+        // the Universal Pipe queries this Core lookup via Nerospace's delegating energy lookup.
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.COMBUSTION_GENERATOR.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.NEROSIUM_GRINDER.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.PASSIVE_GENERATOR.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.UNIVERSAL_PIPE.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.OXYGEN_GENERATOR.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.LAUNCH_CONTROLLER.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.SOLAR_PANEL.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.TERRAFORMER.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.sideConfig().energyView(dir), ModBlockEntities.FUEL_REFINERY.get());
+        FabricEnergyLookup.ENERGY.registerForBlockEntity((be, dir) -> be.getEnergy(), ModBlockEntities.QUARRY_CONTROLLER.get());
     }
 
     private static void addOverworldOre(String placedFeatureName) {

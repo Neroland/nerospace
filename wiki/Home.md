@@ -59,6 +59,10 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 - **[Star Guide](Star-Guide)** — the in-game progression guide.
 - **[Planet Gravity](Planet-Gravity)** — each world's own gravity, biome variation, and how
   terraforming restores it.
+- **[Neroland Core](Neroland-Core)** — the required foundation library Nerospace is built on: one
+  cross-mod power network, shared progression milestones, a unified privacy/erasure command,
+  Core-managed config, and the shared storage blocks ([Battery](Battery), [Fluid Tank](Fluid-Tank),
+  [Gas Tank](Gas-Tank), [Item Store](Item-Store), [Trash Can](Trash-Can)) that moved into Core.
 - **[Configuration](Configuration)** — the six multiplier keys for server/modpack tuning.
 - **[Roadmap](Roadmap)** — what shipped in 1.0 and what's next.
 - **[Future Features](Future-Features)** — the longer-term wish list.

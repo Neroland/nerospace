@@ -62,7 +62,7 @@ import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
 import za.co.neroland.nerospace.rocket.RocketTier;
 import za.co.neroland.nerospace.rocket.StationRegistry;
 import za.co.neroland.nerospace.rocket.StationStructure;
-import za.co.neroland.nerospace.storage.CreativeItemStoreBlockEntity;
+import za.co.neroland.nerolandcore.storage.CreativeItemStoreBlockEntity;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 
 /**
@@ -329,7 +329,7 @@ public final class NerospaceCommands {
 
         // B: refining line — power in from the endless battery, fuel out into a Fuel Tank.
         int bx = sx + 6;
-        level.setBlockAndUpdate(new BlockPos(bx, fy + 1, sz), ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(bx, fy + 1, sz), za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(bx + 1, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(bx + 2, fy + 1, sz), ModBlocks.FUEL_REFINERY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(bx + 3, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
@@ -345,7 +345,7 @@ public final class NerospaceCommands {
 
         // C: oxygen generator behind its lever (off until flipped — then the bubble forms).
         int cx = sx + 13;
-        level.setBlockAndUpdate(new BlockPos(cx, fy + 1, sz), ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(cx, fy + 1, sz), za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(cx + 1, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(cx + 2, fy + 1, sz), ModBlocks.OXYGEN_GENERATOR.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(cx + 3, fy + 1, sz), lever);
@@ -354,7 +354,7 @@ public final class NerospaceCommands {
 
         // D: terraformer cluster behind its lever, with the full deeper-terraform support crew.
         int tx = sx + 19;
-        level.setBlockAndUpdate(new BlockPos(tx, fy + 1, sz), ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(tx, fy + 1, sz), za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(tx + 1, fy + 1, sz), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(tx + 2, fy + 1, sz), ModBlocks.TERRAFORMER.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(tx + 2, fy + 1, sz + 1), ModBlocks.HYDRATION_MODULE.get().defaultBlockState());
@@ -372,10 +372,10 @@ public final class NerospaceCommands {
         int px = origin.getX() - 50; // pipe scenarios → WEST (rows run north-south → broadside from the centre)
         int pz = origin.getZ() + 5;
         Block[][] scenarioRows = {
-                {ModBlocks.CREATIVE_BATTERY.get(), ModBlocks.BATTERY.get()},
-                {ModBlocks.CREATIVE_FLUID_TANK.get(), ModBlocks.FLUID_TANK.get()},
-                {ModBlocks.CREATIVE_GAS_TANK.get(), ModBlocks.GAS_TANK.get()},
-                {ModBlocks.CREATIVE_ITEM_STORE.get(), ModBlocks.ITEM_STORE.get()},
+                {za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_BATTERY.get(), za.co.neroland.nerolandcore.registry.ModBlocks.BATTERY.get()},
+                {za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_FLUID_TANK.get(), za.co.neroland.nerolandcore.registry.ModBlocks.FLUID_TANK.get()},
+                {za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_GAS_TANK.get(), za.co.neroland.nerolandcore.registry.ModBlocks.GAS_TANK.get()},
+                {za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_ITEM_STORE.get(), za.co.neroland.nerolandcore.registry.ModBlocks.ITEM_STORE.get()},
         };
         for (int row = 0; row < scenarioRows.length; row++) {
             int rz = pz - row * 3;
@@ -480,7 +480,7 @@ public final class NerospaceCommands {
         // rocket's onboard oxygen tank live (the rocket starts with empty O2 so the line visibly fills it).
         int o2x = rx + 4;
         int o2z = rz0 + 4;
-        level.setBlockAndUpdate(new BlockPos(o2x, fy + 1, o2z), ModBlocks.CREATIVE_GAS_TANK.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(o2x, fy + 1, o2z), za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_GAS_TANK.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(o2x + 1, fy + 1, o2z), ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(o2x + 2, fy + 1, o2z), pad);
         setAllModes(level, new BlockPos(o2x + 1, fy + 1, o2z), Direction.WEST, PipeIoMode.IN);
@@ -673,7 +673,7 @@ public final class NerospaceCommands {
 
         // Cable hookup: T3 panel -> Universal Pipe -> Battery (solar output charges the battery).
         level.setBlockAndUpdate(new BlockPos(baseX + 10, sy, baseZ),
-                ModBlocks.BATTERY.get().defaultBlockState());
+                za.co.neroland.nerolandcore.registry.ModBlocks.BATTERY.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(baseX + 11, sy, baseZ),
                 ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
         placeSolar(level, ModBlocks.SOLAR_PANEL_T3.get(), baseX + 12, sy, baseZ);
@@ -723,7 +723,7 @@ public final class NerospaceCommands {
         BlockPos quarryPos = new BlockPos(qx - 1, refY, qz + mid);
         BlockPos pipePos = new BlockPos(qx - 2, refY, qz + mid);
         level.setBlockAndUpdate(new BlockPos(qx - 3, refY, qz + mid),
-                ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
+                za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_BATTERY.get().defaultBlockState());
         level.setBlockAndUpdate(pipePos, ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
         level.setBlockAndUpdate(quarryPos, ModBlocks.QUARRY_CONTROLLER.get().defaultBlockState());
         setAllModes(level, pipePos, Direction.WEST, PipeIoMode.IN);
@@ -733,7 +733,7 @@ public final class NerospaceCommands {
         // that same face — modes are per-resource-layer), and a Trash Can on the pipe's south face
         // receives and voids them. Without an item sink the quarry pauses "buffer_full" mid-dig.
         BlockPos trashPos = new BlockPos(qx - 2, refY, qz + mid + 1);
-        level.setBlockAndUpdate(trashPos, ModBlocks.TRASH_CAN.get().defaultBlockState());
+        level.setBlockAndUpdate(trashPos, za.co.neroland.nerolandcore.registry.ModBlocks.TRASH_CAN.get().defaultBlockState());
         setMode(level, pipePos, Direction.EAST, PipeResourceType.ITEM, PipeIoMode.IN);
         setMode(level, pipePos, Direction.SOUTH, PipeResourceType.ITEM, PipeIoMode.OUT);
         if (level.getBlockEntity(quarryPos) instanceof QuarryControllerBlockEntity quarry) {

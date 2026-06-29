@@ -68,7 +68,7 @@ public final class StarGuide {
                     step("combustion_generator", () -> ModBlocks.COMBUSTION_GENERATOR.get(), "guide/combustion_generator"))),
             new Chapter("power_grid", List.of(
                     step("universal_pipe", () -> ModBlocks.UNIVERSAL_PIPE.get(), "guide/universal_pipe"),
-                    step("battery", () -> ModBlocks.BATTERY.get(), "guide/battery"),
+                    step("battery", () -> za.co.neroland.nerolandcore.registry.ModBlocks.BATTERY.get(), "guide/battery"),
                     step("passive_generator", () -> ModBlocks.PASSIVE_GENERATOR.get(), "guide/passive_generator"),
                     step("configurator", () -> ModItems.CONFIGURATOR.get(), "guide/configurator"))),
             new Chapter("rocketry", List.of(
@@ -94,7 +94,7 @@ public final class StarGuide {
                     step("upgrade_module", () -> ModItems.SPEED_MODULE.get(), "guide/upgrade_module"))),
             new Chapter("vacuum", List.of(
                     step("oxygen_generator", () -> ModBlocks.OXYGEN_GENERATOR.get(), "guide/oxygen_generator"),
-                    step("gas_tank", () -> ModBlocks.GAS_TANK.get(), "guide/gas_tank"),
+                    step("gas_tank", () -> za.co.neroland.nerolandcore.registry.ModBlocks.GAS_TANK.get(), "guide/gas_tank"),
                     step("oxygen_suit", () -> ModItems.OXYGEN_SUIT_HELMET.get(), "guide/oxygen_suit"),
                     step("oxygen_suit_t2", () -> ModItems.OXYGEN_SUIT_T2_HELMET.get(), "guide/oxygen_suit_t2"),
                     step("thermal_suit", () -> ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), "guide/thermal_suit"),

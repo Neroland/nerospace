@@ -20,6 +20,14 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.sideconfig.Channel;
+import za.co.neroland.nerolandcore.sideconfig.SideConfig;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
+import za.co.neroland.nerolandcore.sideconfig.SidePreset;
+import za.co.neroland.nerolandcore.sideconfig.SlotGroup;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
+import za.co.neroland.nerolandcore.sideconfig.SideMode;
+
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -31,18 +39,43 @@ import za.co.neroland.nerospace.registry.ModItems;
  * Passive Generator — consumes a nerosium "core" (raw/ingot/dust) which grants a long run-time of
  * a small steady energy trickle. Item + energy seams + ticker + GUI; hands-off but weak.
  */
-public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
+public class PassiveGeneratorBlockEntity extends BlockEntity
+        implements WorldlyContainer, MenuProvider, SideConfigured {
 
     public static final int CORE_SLOT = 0;
     public static final int SIZE = 1;
     public static final int CAPACITY = 100_000;
     public static final int FE_PER_TICK = 8;
     public static final int CORE_TICKS = 24_000;
-    private static final int[] SLOTS = {CORE_SLOT};
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, FE_PER_TICK * 64, this::setChanged);
     private int coreTicks;
+
+    /**
+     * Universal side configuration (Neroland Core): ITEM (fuel core in, input-only) + ENERGY (grid
+     * power out). GENERATOR preset — energy leaves on every face, the core item enters; energy
+     * INPUT/IO forbidden (the generator only emits power). Composed, not inherited.
+     */
+    private final SideConfigComponent sideConfig =
+            new SideConfigComponent(buildSideConfig(), this)
+                    .withEnergy(this::getEnergy)
+                    .withItems(() -> this);
+
+    private static SideConfig buildSideConfig() {
+        return SideConfig.builder()
+                .channel(Channel.ITEM, SlotGroup.of("input", CORE_SLOT), null)
+                .channel(Channel.ENERGY)
+                .allow(Channel.ENERGY, SideMode.INPUT, false)
+                .allow(Channel.ENERGY, SideMode.IO, false)
+                .defaultPreset(SidePreset.GENERATOR)
+                .build();
+    }
+
+    @Override
+    public SideConfigComponent sideConfig() {
+        return this.sideConfig;
+    }
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -93,6 +126,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
         if (level.isClientSide()) {
             return;
         }
+        this.sideConfig.serverTick(level, pos, MachineSideConfig.TRANSFER_RATE);
         if (this.coreTicks <= 0) {
             ItemStack core = this.items.get(CORE_SLOT);
             if (isCore(core)) {
@@ -113,6 +147,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
         output.putInt("Energy", this.energy.getRaw());
         output.putInt("CoreTicks", this.coreTicks);
         output.store("Core", ItemStack.OPTIONAL_CODEC, this.items.get(CORE_SLOT));
+        this.sideConfig.save(output);
     }
 
     @Override
@@ -121,6 +156,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.coreTicks = input.getIntOr("CoreTicks", 0);
         this.items.set(CORE_SLOT, input.read("Core", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.sideConfig.load(input);
     }
 
     @Override
@@ -135,17 +171,17 @@ public class PassiveGeneratorBlockEntity extends BlockEntity implements WorldlyC
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return SLOTS;
+        return this.sideConfig.itemSlotsForFace(side);
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return isCore(stack);
+        return side != null && this.sideConfig.canInsertItem(slot, side) && isCore(stack);
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return !isCore(stack);
+        return this.sideConfig.canExtractItem(slot, side);
     }
 
     @Override

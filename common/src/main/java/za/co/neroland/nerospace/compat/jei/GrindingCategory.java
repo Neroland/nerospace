@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.compat.jei;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,7 +12,13 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+
+import za.co.neroland.nerolandcore.meteor.MeteorMaterialTags;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
@@ -38,7 +45,27 @@ public class GrindingCategory extends AbstractRecipeCategory<GrinderRecipes.Grin
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, GrinderRecipes.Grinding recipe, IFocusGroup focuses) {
         builder.addInputSlot(1, 5).setStandardSlotBackground().add(recipe.input());
-        builder.addOutputSlot(66, 5).setOutputSlotBackground().add(recipe.output());
+        if (recipe.meteor()) {
+            // Random meteor-block path: the output is resolved live by Neroland Core's Meteor Material
+            // Registry, so show its whole membership pool — the neroland:meteor/grindable tag (Core's
+            // materials + Nerospace's planet ores + any other Nero mod's entries) — as a cycling slot.
+            builder.addOutputSlot(66, 5).setOutputSlotBackground().addItemStacks(grindableStacks());
+        } else {
+            builder.addOutputSlot(66, 5).setOutputSlotBackground().add(recipe.output());
+        }
+    }
+
+    /**
+     * The current contents of the {@code neroland:meteor/grindable} membership tag as item stacks, for the
+     * cycling output slot. Uses {@link net.minecraft.core.Registry#getTagOrEmpty} so it is empty-safe when
+     * the tag is unbound, and reflects whatever every installed Nero mod contributes — not a static list.
+     */
+    private static List<ItemStack> grindableStacks() {
+        List<ItemStack> stacks = new ArrayList<>();
+        for (Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(MeteorMaterialTags.GRINDABLE)) {
+            stacks.add(new ItemStack(holder));
+        }
+        return stacks;
     }
 
     @Override

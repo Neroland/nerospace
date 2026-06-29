@@ -20,6 +20,9 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
+import za.co.neroland.nerolandcore.platform.ForgeEnergyLookup;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
@@ -35,13 +38,6 @@ import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
-import za.co.neroland.nerospace.storage.BatteryBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeBatteryBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeFluidTankBlockEntity;
-import za.co.neroland.nerospace.storage.CreativeGasTankBlockEntity;
-import za.co.neroland.nerospace.storage.FluidTankBlockEntity;
-import za.co.neroland.nerospace.storage.GasTankBlockEntity;
-import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 
 /** Forge capability providers for the existing loader-neutral storage seams. */
 public final class ForgeCapabilities {
@@ -76,19 +72,23 @@ public final class ForgeCapabilities {
         Supplier<NerospaceEnergyStorage> energy = null;
         Supplier<NerospaceFluidStorage> fluid = null;
         Supplier<NerospaceGasStorage> gas = null;
+        // When present, gates the per-face energy/fluid/gas capability through Neroland Core's side config
+        // (a face set to DISABLED exposes no capability). Resolved below for side-config-integrated machines.
+        za.co.neroland.nerolandcore.sideconfig.SideConfigComponent sideConfig =
+                be instanceof za.co.neroland.nerolandcore.sideconfig.SideConfigured sc ? sc.sideConfig() : null;
 
-        if (be instanceof BatteryBlockEntity battery) {
-            energy = battery::getEnergy;
-        } else if (be instanceof CreativeBatteryBlockEntity battery) {
-            energy = battery::getEnergy;
-        } else if (be instanceof FluidTankBlockEntity tank) {
-            fluid = tank::getTank;
-        } else if (be instanceof CreativeFluidTankBlockEntity tank) {
-            fluid = tank::getTank;
-        } else if (be instanceof GasTankBlockEntity tank) {
-            gas = tank::getTank;
-        } else if (be instanceof CreativeGasTankBlockEntity tank) {
-            gas = tank::getTank;
+        // The Battery / Fluid Tank / Gas Tank / Item Store endpoints now live in Neroland Core. Battery
+        // energy crosses via Core's own Forge capability wiring and the Item Store is a vanilla Container;
+        // only the Core fluid/gas tanks need bridging back onto Nerospace's fluid/gas caps so the Universal
+        // Pipe still connects to them.
+        if (be instanceof za.co.neroland.nerolandcore.storage.FluidTankBlockEntity t) {
+            fluid = () -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.CreativeFluidTankBlockEntity t) {
+            fluid = () -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.GasTankBlockEntity t) {
+            gas = () -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.CreativeGasTankBlockEntity t) {
+            gas = () -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(t.getTank());
         } else if (be instanceof CombustionGeneratorBlockEntity machine) {
             energy = machine::getEnergy;
         } else if (be instanceof NerosiumGrinderBlockEntity machine) {
@@ -99,9 +99,9 @@ public final class ForgeCapabilities {
             energy = pipe::getEnergy;
             fluid = pipe::getFluidTank;
             gas = pipe::getGas;
-        } else if (be instanceof TrashCanBlockEntity trash) {
-            fluid = trash::getFluid;
-            gas = trash::getGas;
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.TrashCanBlockEntity trash) {
+            fluid = () -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(trash.getFluid());
+            gas = () -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(trash.getGas());
         } else if (be instanceof OxygenGeneratorBlockEntity machine) {
             energy = machine::getEnergy;
             gas = machine::getGas;
@@ -127,7 +127,7 @@ public final class ForgeCapabilities {
         if (energy == null && fluid == null && gas == null && container == null) {
             return null;
         }
-        return new MachineCaps(energy, fluid, gas, container);
+        return new MachineCaps(energy, fluid, gas, container, sideConfig);
     }
 
     private static IItemHandler itemHandler(Container container, @Nullable Direction side) {
@@ -140,6 +140,9 @@ public final class ForgeCapabilities {
     private static final class MachineCaps implements ICapabilityProvider {
 
         private final LazyOptional<ForgeEnergyStorageCapability> energy;
+        // Same storage exposed on Neroland Core's shared nerolandcore:energy capability (cross-mod power
+        // network). NerospaceEnergyStorage IS a NeroEnergyStorage, so no adapter is needed.
+        private final LazyOptional<NeroEnergyStorage> coreEnergy;
         private final LazyOptional<ForgeFluidStorageCapability> fluid;
         private final LazyOptional<ForgeGasStorageCapability> gas;
         @Nullable
@@ -147,27 +150,53 @@ public final class ForgeCapabilities {
         @Nullable
         private final LazyOptional<IItemHandler> itemUnsided;
         private final EnumMap<Direction, LazyOptional<IItemHandler>> itemBySide = new EnumMap<>(Direction.class);
+        /** When non-null, gates the energy/fluid/gas caps per face through Core's side config. */
+        @Nullable
+        private final za.co.neroland.nerolandcore.sideconfig.SideConfigComponent sideConfig;
 
         MachineCaps(@Nullable Supplier<NerospaceEnergyStorage> energy,
                 @Nullable Supplier<NerospaceFluidStorage> fluid,
-                @Nullable Supplier<NerospaceGasStorage> gas, @Nullable Container container) {
+                @Nullable Supplier<NerospaceGasStorage> gas, @Nullable Container container,
+                @Nullable za.co.neroland.nerolandcore.sideconfig.SideConfigComponent sideConfig) {
             this.energy = energy == null ? LazyOptional.empty() : LazyOptional.of(() -> new EnergyAdapter(energy));
+            this.coreEnergy = energy == null ? LazyOptional.empty() : LazyOptional.<NeroEnergyStorage>of(energy::get);
             this.fluid = fluid == null ? LazyOptional.empty() : LazyOptional.of(() -> new FluidAdapter(fluid));
             this.gas = gas == null ? LazyOptional.empty() : LazyOptional.of(() -> new GasAdapter(gas));
             this.container = container;
+            this.sideConfig = sideConfig;
             this.itemUnsided = container == null ? null : LazyOptional.of(() -> itemHandler(container, null));
+        }
+
+        /** Whether the side config (if any) gates {@code channel} to DISABLED on {@code side}. */
+        private boolean gatedOff(za.co.neroland.nerolandcore.sideconfig.Channel channel, @Nullable Direction side) {
+            if (sideConfig == null || side == null) {
+                return false;
+            }
+            return switch (channel) {
+                case ENERGY -> sideConfig.energyView(side) == null;
+                case FLUID -> sideConfig.fluidView(side) == null;
+                case GAS -> sideConfig.gasView(side) == null;
+                case ITEM -> false;
+            };
         }
 
         @Override
         public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
             if (cap == ENERGY) {
-                return energy.cast();
+                return gatedOff(za.co.neroland.nerolandcore.sideconfig.Channel.ENERGY, side)
+                        ? LazyOptional.empty() : energy.cast();
+            }
+            if (cap == ForgeEnergyLookup.ENERGY) {
+                return gatedOff(za.co.neroland.nerolandcore.sideconfig.Channel.ENERGY, side)
+                        ? LazyOptional.empty() : coreEnergy.cast();
             }
             if (cap == FLUID) {
-                return fluid.cast();
+                return gatedOff(za.co.neroland.nerolandcore.sideconfig.Channel.FLUID, side)
+                        ? LazyOptional.empty() : fluid.cast();
             }
             if (cap == GAS) {
-                return gas.cast();
+                return gatedOff(za.co.neroland.nerolandcore.sideconfig.Channel.GAS, side)
+                        ? LazyOptional.empty() : gas.cast();
             }
             if (cap == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER && container != null) {
                 return item(side).cast();
@@ -184,6 +213,7 @@ public final class ForgeCapabilities {
 
         void invalidate() {
             energy.invalidate();
+            coreEnergy.invalidate();
             fluid.invalidate();
             gas.invalidate();
             if (itemUnsided != null) {

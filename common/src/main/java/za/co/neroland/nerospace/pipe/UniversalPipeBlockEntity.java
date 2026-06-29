@@ -55,6 +55,15 @@ import za.co.neroland.nerospace.registry.ModItems;
  * with no extra seam). The pipe is itself a {@link WorldlyContainer} (small buffer), so it is exposed
  * as the item capability and chains pipe-to-pipe. Item flow is directed: pull only from non-pipe
  * containers, push to any neighbour — sources feed the line, the line feeds sinks.
+ *
+ * <p>Side-config alignment (Neroland Core 1.3.0): the pipe is unchanged — it still queries each
+ * neighbour's capability per face through {@link EnergyLookup}/{@link GasLookup}/{@code FluidLookup}.
+ * A machine face that Core's side config sets to OUTPUT now returns its (extract-only) storage, so
+ * the pipe pulls from exactly those faces; a face set to DISABLED returns {@code null}, so the pipe
+ * forms no connection there. The pipe's own per-face {@link PipeIoMode} ({@code AUTO/IN/OUT/OFF})
+ * maps onto Core's {@link za.co.neroland.nerolandcore.sideconfig.SideMode} semantics
+ * (AUTO≈IO, IN≈INPUT, OUT≈OUTPUT, OFF≈DISABLED) but stays the pipe's own vocabulary — Core's
+ * SideConfig model is not duplicated here; the machine side decides what each machine face exposes.
  */
 public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 

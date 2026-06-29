@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+**Storage blocks moved to Neroland Core**
+
+- The **Battery**, **Fluid Tank**, **Gas Tank**, **Item Store**, and **Trash Can** (the first
+  four with their **Creative** variants) now ship in the shared **Neroland Core** library
+  instead of Nerospace. Their ids changed from `nerospace:*` to `nerolandcore:battery`,
+  `nerolandcore:fluid_tank`, `nerolandcore:gas_tank`, `nerolandcore:item_store`,
+  `nerolandcore:trash_can` (and `nerolandcore:creative_*`), so every Neroland mod now shares one
+  set of storage endpoints. They craft and behave exactly as before.
+- Bumped the required **Neroland Core** dependency to **1.1.0** (the release that adds these
+  blocks and the generic fluid/gas storage APIs; the Trash Can also brings Core's first menu
+  type and client screen).
+- The **Universal Pipe** still interoperates with all of these blocks — it bridges Core's
+  `nerolandcore:fluid` / `nerolandcore:gas` (and energy / item) capabilities onto Nerospace's
+  own `nerospace:fluid` / `nerospace:gas` lookups, so existing pipe networks keep working
+  (including voiding into the Trash Can).
+
+### Migration note (existing worlds)
+
+- **Block-id aliases preserve existing placements.** Blocks already placed as
+  `nerospace:battery`, `nerospace:fluid_tank`, `nerospace:gas_tank`,
+  `nerospace:item_store`, or `nerospace:trash_can` (and `creative_*`) are remapped to
+  the matching `nerolandcore:` block on load:
+  - **Forge** — via Forge's `MissingMappingsEvent` (fully supported).
+  - **NeoForge / Fabric** — modern NeoForge removed that event and Fabric never had
+    one, so a small, strictly-scoped mixin remaps these ids at the registry
+    lookup instead. It is `require = 0` (best-effort): if it can't apply on a given
+    version it safely no-ops rather than crashing. **Verify on your save after
+    updating**; if a placed block ever drops, break and re-place it with the
+    Neroland Core variant — **items and stored contents are unaffected** regardless.
+
 ## [1.0.0-beta.1] - 2026-06-27
 
 First public **beta** of Nerospace — and the first **multi-loader** build. Nerospace now runs on

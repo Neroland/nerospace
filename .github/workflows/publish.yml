@@ -80,6 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: read   # resolve Neroland Core from GitHub Packages (see the build step)
     outputs:
       environment: ${{ steps.channel.outputs.environment }}
       version_type: ${{ steps.channel.outputs.version_type }}
@@ -101,10 +102,24 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
+      # --- Neroland Core dependency ---
+      # Core is consumed as a published Maven artifact from GitHub Packages (see the
+      # NerolandCoreGitHubPackages repo in stonecutter.gradle). The version comes solely from
+      # nerolandcore_version in gradle.properties — no Core checkout/build here, so no pinned-ref
+      # drift. Gradle reads GITHUB_ACTOR/GITHUB_TOKEN below to authenticate the package read. The
+      # package must be readable by this repo (Core package = Internal visibility, or granted),
+      # otherwise add an org PAT secret with read:packages and use it in place of GITHUB_TOKEN.
+      # See USING-CORE.md.
+      # --- end Neroland Core dependency ---
+
       # Build all six cells (loader x MC version). Each produces a distinctly named jar under
       # <loader>/versions/<mc>/build/libs. Forge's distributable is the jarJar output
       # ("*-all.jar", with embedded Sentry); the plain Forge jar is not shipped.
       - name: Build all cells
+        env:
+          # Resolve Neroland Core from GitHub Packages (see note above + USING-CORE.md).
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           ./gradlew
           :fabric:26.1.2:build :fabric:26.2:build
@@ -282,7 +297,8 @@ jobs:
         continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          MOD_NAME: Nerospace
+          MOD_NAME: NeroSpace
+          AVATAR_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/art/logo/nerospace_logo_400.png
           VERSION: ${{ needs.detect.outputs.version }}
           RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/v${{ needs.detect.outputs.version }}
         run: |
@@ -304,10 +320,11 @@ jobs:
           # jq builds the payload so the changelog is safely JSON-escaped.
           PAYLOAD="$(jq -n \
             --arg name "$MOD_NAME" \
+            --arg avatar "$AVATAR_URL" \
             --arg version "$VERSION" \
             --arg url "$RELEASE_URL" \
             --arg changelog "$CHANGELOG" \
-            '{embeds: [{
+            '{username: $name, avatar_url: $avatar, embeds: [{
                title: "🚀 \($name) v\($version) released",
                url: $url,
                description: $changelog,

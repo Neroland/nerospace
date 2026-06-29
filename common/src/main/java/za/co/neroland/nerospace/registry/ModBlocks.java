@@ -36,15 +36,6 @@ import za.co.neroland.nerospace.rocket.DockingPortBlock;
 import za.co.neroland.nerospace.rocket.LandingPodBlock;
 import za.co.neroland.nerospace.rocket.StationCoreBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
-import za.co.neroland.nerospace.storage.CreativeBatteryBlock;
-import za.co.neroland.nerospace.storage.CreativeFluidTankBlock;
-import za.co.neroland.nerospace.storage.CreativeGasTankBlock;
-import za.co.neroland.nerospace.storage.CreativeItemStoreBlock;
-import za.co.neroland.nerospace.storage.GasTankBlock;
-import za.co.neroland.nerospace.storage.TrashCanBlock;
-import za.co.neroland.nerospace.storage.BatteryBlock;
-import za.co.neroland.nerospace.storage.FluidTankBlock;
-import za.co.neroland.nerospace.storage.ItemStoreBlock;
 import za.co.neroland.nerospace.village.VillageCoreBlock;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
@@ -129,37 +120,6 @@ public final class ModBlocks {
                     key -> new za.co.neroland.nerospace.telemetry.SentryTestBlock(BlockBehaviour.Properties.of()
                             .setId(key).mapColor(MapColor.COLOR_RED).strength(1.0F, 1.0F).sound(SoundType.METAL)));
 
-    // Block entity — item storage (pilot for the block-entity + capability seam).
-    public static final RegistryEntry<ItemStoreBlock> ITEM_STORE = BLOCKS.register("item_store",
-            key -> new ItemStoreBlock(BlockBehaviour.Properties.of()
-                    .setId(key)
-                    .mapColor(MapColor.METAL)
-                    .strength(3.0F, 6.0F)
-                    .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL)
-                    .noOcclusion()));
-
-
-    public static final RegistryEntry<BatteryBlock> BATTERY = BLOCKS.register("battery",
-            key -> new BatteryBlock(BlockBehaviour.Properties.of()
-                    .setId(key)
-                    .mapColor(MapColor.METAL)
-                    .strength(3.0F, 6.0F)
-                    .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL)
-                    .noOcclusion()));
-
-
-    public static final RegistryEntry<FluidTankBlock> FLUID_TANK = BLOCKS.register("fluid_tank",
-            key -> new FluidTankBlock(BlockBehaviour.Properties.of()
-                    .setId(key)
-                    .mapColor(MapColor.METAL)
-                    .strength(3.0F, 6.0F)
-                    .requiresCorrectToolForDrops()
-                    .sound(SoundType.METAL)
-                    .noOcclusion()));
-
-
     public static final RegistryEntry<CombustionGeneratorBlock> COMBUSTION_GENERATOR = BLOCKS.register("combustion_generator",
             key -> new CombustionGeneratorBlock(BlockBehaviour.Properties.of()
                     .setId(key)
@@ -187,37 +147,6 @@ public final class ModBlocks {
                     .setId(key).mapColor(MapColor.METAL).strength(1.5F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
-
-    public static final RegistryEntry<TrashCanBlock> TRASH_CAN = BLOCKS.register("trash_can",
-            key -> new TrashCanBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_GRAY).strength(2.0F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
-
-
-    public static final RegistryEntry<CreativeBatteryBlock> CREATIVE_BATTERY = BLOCKS.register("creative_battery",
-            key -> new CreativeBatteryBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
-                    .sound(SoundType.METAL).noOcclusion()));
-
-    public static final RegistryEntry<CreativeFluidTankBlock> CREATIVE_FLUID_TANK = BLOCKS.register("creative_fluid_tank",
-            key -> new CreativeFluidTankBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
-                    .sound(SoundType.METAL).noOcclusion()));
-
-    public static final RegistryEntry<CreativeGasTankBlock> CREATIVE_GAS_TANK = BLOCKS.register("creative_gas_tank",
-            key -> new CreativeGasTankBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
-                    .sound(SoundType.METAL).noOcclusion()));
-
-    public static final RegistryEntry<CreativeItemStoreBlock> CREATIVE_ITEM_STORE = BLOCKS.register("creative_item_store",
-            key -> new CreativeItemStoreBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_PINK).strength(-1.0F, 3_600_000.0F)
-                    .sound(SoundType.METAL).noOcclusion()));
-
-    public static final RegistryEntry<GasTankBlock> GAS_TANK = BLOCKS.register("gas_tank",
-            key -> new GasTankBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
     public static final RegistryEntry<OxygenGeneratorBlock> OXYGEN_GENERATOR = BLOCKS.register("oxygen_generator",
             key -> new OxygenGeneratorBlock(BlockBehaviour.Properties.of()

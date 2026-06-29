@@ -25,6 +25,15 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.sideconfig.Channel;
+import za.co.neroland.nerolandcore.sideconfig.RelativeFace;
+import za.co.neroland.nerolandcore.sideconfig.SideConfig;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
+import za.co.neroland.nerolandcore.sideconfig.SideMode;
+import za.co.neroland.nerolandcore.sideconfig.SidePreset;
+import za.co.neroland.nerolandcore.sideconfig.SlotGroup;
+
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -34,6 +43,7 @@ import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.menu.FuelRefineryMenu;
 import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.storage.CoreTankBridge;
 
 /**
  * Fuel Refinery: the logistics-grade rocket-fuel source. It takes <b>grid power</b> (energy, insert-only),
@@ -45,7 +55,8 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  * {@link WorldlyContainer} for the two input slots (the root used the NeoForge transfer API). Tuning
  * values are inlined (identity multiplier).</p>
  */
-public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
+public class FuelRefineryBlockEntity extends BlockEntity
+        implements WorldlyContainer, MenuProvider, SideConfigured {
 
     public static final int CARBON_SLOT = 0;
     public static final int CATALYST_SLOT = 1;
@@ -62,12 +73,53 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
     public static final int MB_PER_BATCH = 2_000;
     public static final int WORK_TICKS = 100;
 
-    private static final int[] SLOTS = {CARBON_SLOT, CATALYST_SLOT};
-
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(ENERGY_BUFFER, ENERGY_MAX_INSERT, 0, this::setChanged);
     private final FluidTank tank = new FluidTank(TANK_CAPACITY, this::setChanged);
     private int progress;
+
+    /**
+     * Universal side configuration (Neroland Core): ITEM (two inputs in one input group, no output) +
+     * FLUID (refined rocket fuel, output only) + ENERGY (grid power in). The fluid channel forbids
+     * INPUT/IO (fuel only leaves) and energy forbids OUTPUT/IO/PUSH (it only draws power); every face
+     * is seeded to emit fuel on OUTPUT so the default is a sensible "fuel out". Composed, not inherited.
+     *
+     * <p>The active {@link #pushFluid} auto-eject stays in place; the side-config auto-eject defaults OFF
+     * per face, so the two never double-pump until a player explicitly enables a face.</p>
+     */
+    private final SideConfigComponent sideConfig =
+            new SideConfigComponent(buildSideConfig(), this)
+                    .withEnergy(this::getEnergy)
+                    .withFluid(() -> CoreTankBridge.toCore(this.getTank()))
+                    .withItems(() -> this);
+
+    private static SideConfig buildSideConfig() {
+        SideConfig config = SideConfig.builder()
+                // Both inputs (carbon + catalyst) live in one input group; there is no item output.
+                .channel(Channel.ITEM, SlotGroup.of("input", CARBON_SLOT, CATALYST_SLOT), null)
+                .channel(Channel.FLUID)
+                .channel(Channel.ENERGY)
+                // Refined fuel leaves only — never accepted.
+                .allow(Channel.FLUID, SideMode.INPUT, false)
+                .allow(Channel.FLUID, SideMode.IO, false)
+                // Power in only.
+                .allow(Channel.ENERGY, SideMode.OUTPUT, false)
+                .allow(Channel.ENERGY, SideMode.IO, false)
+                .allow(Channel.ENERGY, SideMode.PUSH, false)
+                .defaultPreset(SidePreset.PROCESSOR)
+                .build();
+        // PROCESSOR seeds non-energy channels INPUT on most faces, which FLUID forbids (it clamps). Seed
+        // every face to emit fuel on OUTPUT instead, so the default is a sensible "fuel out" everywhere.
+        for (RelativeFace face : RelativeFace.VALUES) {
+            config.setMode(Channel.FLUID, face, SideMode.OUTPUT);
+        }
+        return config;
+    }
+
+    @Override
+    public SideConfigComponent sideConfig() {
+        return this.sideConfig;
+    }
 
     /** Synced to the menu: [0]=energy [1]=energyCap [2]=fuel [3]=fuelCap [4]=progress [5]=maxProgress. */
     private final ContainerData dataAccess = new ContainerData() {
@@ -149,6 +201,10 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
             return;
         }
 
+        // Optional side-config auto-eject (fuel) / auto-input — default off per face, so a safe no-op until
+        // a player enables it. Runs in ADDITION to the active pushFluid below (which always drains the tank).
+        this.sideConfig.serverTick(level, pos, MachineSideConfig.TRANSFER_RATE);
+
         // Active auto-eject: push the refined fuel into any adjacent fluid store (tank/pipe) even with no
         // pipe pulling — so a full output tank keeps draining and the refinery never idles on "tank full".
         pushFluid(level, pos);
@@ -206,6 +262,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
         output.putInt("Progress", this.progress);
         output.store("Carbon", ItemStack.OPTIONAL_CODEC, this.items.get(CARBON_SLOT));
         output.store("Catalyst", ItemStack.OPTIONAL_CODEC, this.items.get(CATALYST_SLOT));
+        this.sideConfig.save(output);
     }
 
     @Override
@@ -217,6 +274,7 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
         this.progress = input.getIntOr("Progress", 0);
         this.items.set(CARBON_SLOT, input.read("Carbon", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.items.set(CATALYST_SLOT, input.read("Catalyst", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.sideConfig.load(input);
     }
 
     // --- MenuProvider -------------------------------------------------------
@@ -232,21 +290,24 @@ public class FuelRefineryBlockEntity extends BlockEntity implements WorldlyConta
         return new FuelRefineryMenu(containerId, playerInventory, this, this.dataAccess);
     }
 
-    // --- WorldlyContainer: coal + blaze powder in only ----------------------
+    // --- WorldlyContainer: per-face routing via the side config -------------
+    // Exposed slots and insert/extract permissions follow the side config; the slot/recipe guard is kept
+    // as an extra gate so a face can never push the wrong item into a slot. There is no item output, so
+    // canExtractItem is false on every face for both slots.
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return SLOTS;
+        return this.sideConfig.itemSlotsForFace(side);
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return slotAccepts(slot, stack);
+        return side != null && this.sideConfig.canInsertItem(slot, side) && slotAccepts(slot, stack);
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return false;
+        return this.sideConfig.canExtractItem(slot, side);
     }
 
     @Override

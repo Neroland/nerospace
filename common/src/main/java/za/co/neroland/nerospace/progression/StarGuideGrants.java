@@ -7,6 +7,9 @@ import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
 
+import za.co.neroland.nerolandcore.progression.CoreGates;
+import za.co.neroland.nerolandcore.progression.ProgressionGates;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.platform.Services;
 
@@ -40,6 +43,52 @@ public final class StarGuideGrants {
         if (stage >= 3) {
             grant(player, "guide/living_world");
         }
+        driveCoreGates(player, stage);
+    }
+
+    /**
+     * Drives Neroland Core's shared progression gates from Nerospace milestones (one-directional —
+     * Nerospace only opens gates, never gates its own content on them; the Star Guide stays the
+     * authority). {@code tryOpen} respects each gate's {@code requires}, so the canonical
+     * {@code industrial_power → reached_orbit → first_colony → deep_space} arc only advances in order
+     * and re-calling an already-open gate is a no-op. Reads existing per-player advancement completion +
+     * terraform stage — no new player-keyed state (POPIA/GDPR: the gate store holds only UUID + gate id).
+     * {@code reached_orbit}/{@code first_colony} are driven at their gameplay hooks (rocket launch /
+     * station founding); see {@link #driveReachedOrbit} / {@code StationCharterItem.foundFromUi}.
+     */
+    private static void driveCoreGates(ServerPlayer player, int terraformStage) {
+        // First powered machine → a built generator is the earliest power source.
+        if (isDone(player, "guide/combustion_generator") || isDone(player, "guide/passive_generator")) {
+            ProgressionGates.tryOpen(player, CoreGates.INDUSTRIAL_POWER);
+        }
+        // Terraforming a world to "living" is a deep-space colonisation milestone.
+        if (terraformStage >= 3) {
+            ProgressionGates.tryOpen(player, CoreGates.DEEP_SPACE);
+        }
+    }
+
+    /** Opens {@code reached_orbit} when a player completes a rocket launch (called from the rocket). */
+    public static void driveReachedOrbit(ServerPlayer player) {
+        ProgressionGates.tryOpen(player, CoreGates.REACHED_ORBIT);
+    }
+
+    /** Opens {@code deep_space} when a player reaches a far planet (called from the rocket). */
+    public static void driveDeepSpace(ServerPlayer player) {
+        ProgressionGates.tryOpen(player, CoreGates.DEEP_SPACE);
+    }
+
+    /** Opens {@code first_colony} when a player founds a station (called from station founding). */
+    public static void driveFirstColony(ServerPlayer player) {
+        ProgressionGates.tryOpen(player, CoreGates.FIRST_COLONY);
+    }
+
+    private static boolean isDone(ServerPlayer player, String path) {
+        ServerAdvancementManager manager = player.level().getServer().getAdvancements();
+        AdvancementHolder holder = manager.get(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path));
+        if (holder == null) {
+            return false;
+        }
+        return player.getAdvancements().getOrStartProgress(holder).isDone();
     }
 
     /** Awards an impossible-criterion guide advancement directly (routes around the deferred ModCriteria). */

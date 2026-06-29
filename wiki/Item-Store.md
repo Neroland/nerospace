@@ -1,35 +1,21 @@
 # Item Store
 
-<!-- nerospace:render -->
-<p align="right"><img src="images/item_store.png" alt="Item Store" width="150" align="right"></p>
-<!-- /nerospace:render -->
+> **Moved to Neroland Core.** The Item Store now ships in the shared
+> [Neroland Core](Neroland-Core) library as **`nerolandcore:item_store`**, so every Neroland mod
+> uses one set of storage blocks. Craft and use it exactly as before — see the **Neroland Core
+> wiki** (the *Item Store* page) for the full details.
 
-A nerosteel-reinforced 27-slot container built for pipe automation.
+A 27-slot container with a chest-style GUI, built for pipe automation: hoppers and pipes can
+insert/extract on every side, including the top face. A **Creative Item Store** variant supplies
+an endless stream of one configured item.
 
-## Obtaining
+Nerospace's [Universal Pipe](Universal-Pipe) still feeds and drains it, so in-game behaviour is
+unchanged when both mods are installed.
 
-**Craft** (shaped): a nerosteel frame around a Chest —
+> **Updating an existing world:** blocks you placed as `nerospace:item_store` are automatically
+> remapped to `nerolandcore:item_store` on load — Forge via its missing-mappings event, NeoForge
+> and Fabric via a built-in registry alias; their items and stored contents are preserved. See the
+> [changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md).
 
-```text
-N N N
-N C N
-N N N
-```
-
-`N` = Nerosteel Ingot · `C` = Chest
-
-## How it works
-
-- **27 slots**, chest-style GUI on right-click.
-- Universal Pipes (item layer) and hoppers can insert/extract on **every side** — unlike a chest,
-
-  nothing blocks the top face.
-
-- Spills its contents when broken, like a chest.
-
-A **Creative Item Store** variant supplies an endless stream of one configured item — see
+See also: [Neroland Core](Neroland-Core), [Universal Pipe](Universal-Pipe),
 [Creative Source Blocks](Creative-Source-Blocks).
-
-## Details
-
-- ID: `nerospace:item_store` · Tool: pickaxe, iron tier · Drops: itself

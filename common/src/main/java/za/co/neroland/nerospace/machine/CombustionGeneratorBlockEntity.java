@@ -1,7 +1,5 @@
 package za.co.neroland.nerospace.machine;
 
-import java.util.stream.IntStream;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -23,6 +21,14 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.sideconfig.Channel;
+import za.co.neroland.nerolandcore.sideconfig.SideConfig;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
+import za.co.neroland.nerolandcore.sideconfig.SidePreset;
+import za.co.neroland.nerolandcore.sideconfig.SlotGroup;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
+import za.co.neroland.nerolandcore.sideconfig.SideMode;
+
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -36,18 +42,43 @@ import za.co.neroland.nerospace.registry.ModItems;
  * capability). First ticking machine: proves the item + energy seams together with a
  * {@code BlockEntityTicker}. The menu/screen comes with the menu seam.
  */
-public class CombustionGeneratorBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
+public class CombustionGeneratorBlockEntity extends BlockEntity
+        implements WorldlyContainer, MenuProvider, SideConfigured {
 
     public static final int FUEL_SLOT = 0;
     public static final int SIZE = 1;
     public static final int CAPACITY = 100_000;
     public static final int FE_PER_TICK = 20;
-    private static final int[] FUEL_SLOTS = IntStream.range(0, SIZE).toArray();
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, FE_PER_TICK * 64, this::setChanged);
     private int burnTime;
     private int maxBurnTime;
+
+    /**
+     * Universal side configuration (Neroland Core): one ITEM fuel slot (input only) + ENERGY (grid
+     * power out — pipes pull). GENERATOR preset; energy INPUT/IO forbidden (the generator only emits
+     * power, never receives it). Composed, not inherited.
+     */
+    private final SideConfigComponent sideConfig =
+            new SideConfigComponent(buildSideConfig(), this)
+                    .withEnergy(this::getEnergy)
+                    .withItems(() -> this);
+
+    private static SideConfig buildSideConfig() {
+        return SideConfig.builder()
+                .channel(Channel.ITEM, SlotGroup.of("input", FUEL_SLOT), null)
+                .channel(Channel.ENERGY)
+                .allow(Channel.ENERGY, SideMode.INPUT, false)
+                .allow(Channel.ENERGY, SideMode.IO, false)
+                .defaultPreset(SidePreset.GENERATOR)
+                .build();
+    }
+
+    @Override
+    public SideConfigComponent sideConfig() {
+        return this.sideConfig;
+    }
 
     /** Synced to the menu: [0]=energy [1]=capacity [2]=burnTime [3]=maxBurnTime. */
     private final ContainerData data = new ContainerData() {
@@ -124,6 +155,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         if (level.isClientSide()) {
             return;
         }
+        this.sideConfig.serverTick(level, pos, MachineSideConfig.TRANSFER_RATE);
         if (this.burnTime > 0) {
             if (this.energy.getAmount() < this.energy.getCapacity()) {
                 this.burnTime--;
@@ -150,6 +182,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         output.putInt("BurnTime", this.burnTime);
         output.putInt("MaxBurnTime", this.maxBurnTime);
         output.store("Fuel", ItemStack.OPTIONAL_CODEC, this.items.get(FUEL_SLOT));
+        this.sideConfig.save(output);
     }
 
     @Override
@@ -159,6 +192,7 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         this.burnTime = input.getIntOr("BurnTime", 0);
         this.maxBurnTime = input.getIntOr("MaxBurnTime", 0);
         this.items.set(FUEL_SLOT, input.read("Fuel", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.sideConfig.load(input);
     }
 
     // --- MenuProvider ---------------------------------------------------------
@@ -172,20 +206,20 @@ public class CombustionGeneratorBlockEntity extends BlockEntity implements World
         return new CombustionGeneratorMenu(containerId, playerInventory, this, this.data);
     }
 
-    // --- WorldlyContainer: fuel in only ---------------------------------------
+    // --- WorldlyContainer: per-face routing via the side config ---------------
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return FUEL_SLOTS;
+        return this.sideConfig.itemSlotsForFace(side);
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return fuelValue(stack) > 0;
+        return side != null && this.sideConfig.canInsertItem(slot, side) && fuelValue(stack) > 0;
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return fuelValue(stack) == 0;
+        return this.sideConfig.canExtractItem(slot, side);
     }
 
     @Override

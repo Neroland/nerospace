@@ -33,7 +33,6 @@ import za.co.neroland.nerospace.client.MeteorTrackerHud;
 import za.co.neroland.nerospace.client.OxygenHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
-import za.co.neroland.nerospace.client.TrashCanScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.FuelRefineryScreen;
 import za.co.neroland.nerospace.client.FuelTankScreen;
@@ -56,7 +55,6 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         FabricNetwork.registerClient();
         MenuScreens.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         MenuScreens.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
-        MenuScreens.register(ModMenuTypes.TRASH_CAN.get(), TrashCanScreen::new);
         MenuScreens.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         MenuScreens.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
         MenuScreens.register(ModMenuTypes.PIPE_CONFIG.get(), PipeConfigScreen::new);

@@ -21,7 +21,7 @@ import net.minecraft.world.level.material.Fluids;
 
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
-import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.GasResource;
@@ -147,7 +147,7 @@ public final class PipeNetwork {
                 if (!mode.isConnected()) {
                     continue;
                 }
-                NerospaceEnergyStorage neighbour = EnergyLookup.INSTANCE.find(level, np, dir.getOpposite());
+                NeroEnergyStorage neighbour = EnergyLookup.INSTANCE.find(level, np, dir.getOpposite());
                 if (neighbour == null) {
                     continue;
                 }
@@ -172,7 +172,7 @@ public final class PipeNetwork {
         }
     }
 
-    private static void moveEnergy(NerospaceEnergyStorage from, NerospaceEnergyStorage to, long max) {
+    private static void moveEnergy(NeroEnergyStorage from, NeroEnergyStorage to, long max) {
         long avail = from.extract(max, true);
         if (avail <= 0) {
             return;

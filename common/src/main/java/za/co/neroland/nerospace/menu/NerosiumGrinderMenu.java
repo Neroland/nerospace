@@ -10,7 +10,6 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import za.co.neroland.nerospace.machine.GrinderRecipes;
 import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
@@ -34,15 +33,19 @@ public class NerosiumGrinderMenu extends AbstractContainerMenu {
         this.addSlot(new Slot(container, NerosiumGrinderBlockEntity.INPUT_SLOT, 56, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return !GrinderRecipes.getResult(stack).isEmpty();
+                return NerosiumGrinderBlockEntity.isGrindableInput(stack);
             }
         });
-        this.addSlot(new Slot(container, NerosiumGrinderBlockEntity.OUTPUT_SLOT, 116, 35) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
+        // Four-slot output buffer (2x2), result-only — players/pipes extract but never insert.
+        int[][] outputXY = { { 116, 35 }, { 134, 35 }, { 116, 53 }, { 134, 53 } };
+        for (int i = 0; i < NerosiumGrinderBlockEntity.OUTPUT_COUNT; i++) {
+            this.addSlot(new Slot(container, NerosiumGrinderBlockEntity.OUTPUT_START + i, outputXY[i][0], outputXY[i][1]) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+        }
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));

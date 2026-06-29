@@ -84,6 +84,15 @@ public final class OxygenManager {
     private OxygenManager() {
     }
 
+    /**
+     * Whether {@code dimension} is an airless Nerospace world (every planet and the orbital station vacuum).
+     * Read-only; surfaced as the "airless" planet trait by the public {@code za.co.neroland.nerospace.api}
+     * facade so consumers needn't hard-code the dimension set.
+     */
+    public static boolean isAirless(ResourceKey<Level> dimension) {
+        return PLANETS.contains(dimension);
+    }
+
     /** Per-player server tick (called from each loader's server-tick hook). */
     public static void tick(ServerPlayer player) {
         if (!(player.level() instanceof ServerLevel level)) {
@@ -224,8 +233,8 @@ public final class OxygenManager {
                 break;
             }
             BlockState state = level.getBlockState(pos);
-            if (!state.is(ModBlocks.GAS_TANK.get())
-                    && !state.is(ModBlocks.CREATIVE_GAS_TANK.get())
+            if (!state.is(za.co.neroland.nerolandcore.registry.ModBlocks.GAS_TANK.get())
+                    && !state.is(za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_GAS_TANK.get())
                     && !state.is(ModBlocks.OXYGEN_GENERATOR.get())) {
                 continue;
             }

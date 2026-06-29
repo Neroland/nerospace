@@ -32,6 +32,7 @@ on:
 
 permissions:
   contents: read
+  packages: read   # resolve Neroland Core from GitHub Packages (see the build step)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -94,6 +95,16 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
+      # --- Neroland Core dependency ---
+      # Core is consumed as a published Maven artifact from GitHub Packages (see the
+      # NerolandCoreGitHubPackages repo in stonecutter.gradle). The version comes solely from
+      # nerolandcore_version in gradle.properties — no Core checkout/build here, so no pinned-ref
+      # drift. Gradle reads GITHUB_ACTOR/GITHUB_TOKEN below to authenticate the package read.
+      # The package must be readable by this repo (set Core's package visibility to Internal, or
+      # grant this repo access) — otherwise add an org PAT secret with read:packages and use it
+      # in place of GITHUB_TOKEN. See USING-CORE.md.
+      # --- end Neroland Core dependency ---
+
       - name: Build ${{ matrix.loader }} for MC ${{ matrix.mc }}
         # Stonecutter: each loader x MC version is its own node (:loader:version:build).
         # The old `-Pminecraft_version` axis is gone — the node path selects the version.
@@ -110,6 +121,11 @@ jobs:
         # the runner tool cache, the likely cause of its fast failure; that step is gone.
         env:
           JAVA_TOOL_OPTIONS: "-Xmx6g"
+          # Resolve Neroland Core from GitHub Packages. GITHUB_TOKEN works if Core's package is
+          # readable by this repo (Internal visibility or explicit grant); otherwise swap in an
+          # org PAT secret with read:packages. See USING-CORE.md.
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           ./gradlew :${{ matrix.loader }}:${{ matrix.mc }}:build
           --stacktrace

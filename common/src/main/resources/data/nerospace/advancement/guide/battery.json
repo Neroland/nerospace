@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "nerospace:battery"
+            "items": "nerolandcore:battery"
           }
         ]
       },
@@ -15,7 +15,7 @@
   "display": {
     "description": "Craft a Battery",
     "icon": {
-      "id": "nerospace:battery"
+      "id": "nerolandcore:battery"
     },
     "title": "Stored Potential"
   },

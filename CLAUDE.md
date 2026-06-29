@@ -172,6 +172,35 @@
 - **Judgment-call rebalances: KEPT as the deliberate final balance** (Dario's call, 2026-06-23). The
   multiloader's machine base FE values + oxygen drain / suit-tank numbers stay as-is — they differ from the
   retired root by large factors (an intentional retune, not drift). No gameplay change.
+- **Neroland Core integration: DONE + STAGED (2026-06-28), both repos.** Nerospace now depends on
+  **`nerolandcore`** (sibling repo `../neroland-core`) as a REQUIRED dep loading BEFORE Nerospace. Resolution
+  = **Maven Local**: `../neroland-core` gained a `maven-publish` block per loader node (artifacts
+  `za.co.neroland.nerolandcore:nerolandcore-<loader>-<mc>:1.0.0`); run `./gradlew publishToMavenLocal` in
+  Core, then Nerospace resolves them via `mavenLocal()` (added to the shared `stonecutter.gradle`
+  repositories) + per-loader dep + `nerolandcore_version` pin + manifest entries (fabric.mod.json depends,
+  neoforge/forge mods.toml required `ordering="AFTER"`). On Fabric this Loom has no `modImplementation`
+  (no mappings) → plain `implementation`. Integrations: (1) **Energy** — `NerospaceEnergyStorage extends
+  NeroEnergyStorage`; all 12 energy BEs ALSO registered on Core's `nerolandcore:energy` cap per loader
+  (additive, `nerospace:energy` kept for back-compat); Nerospace's `platform.EnergyLookup` seam + the 2
+  pipe call sites repointed to Core's `EnergyLookup.INSTANCE` so energy crosses mod boundaries (Forge:
+  `MachineCaps` also answers Core's `ForgeEnergyLookup.ENERGY`). (2) **Progression** — `StarGuideGrants`
+  drives `CoreGates` via `ProgressionGates.tryOpen` (INDUSTRIAL_POWER ← generator advancement,
+  REACHED_ORBIT ← `RocketEntity.completeLaunch`, DEEP_SPACE ← far-planet launch / terraform stage 3,
+  FIRST_COLONY ← `StationCharterItem.foundFromUi`); one-directional, Star Guide stays authority. (3)
+  **Erasure** — `NerospaceCommon.registerDataErasers()` registers a `PlayerDataErasure` eraser
+  (StationRegistry.forgetPlayer anonymises ownership; online player oxygen + star-guide-seen reset). (4)
+  **Config** — `NerospaceConfig` rewritten onto Core's `ConfigManager`/`ConfigSchema` (same keys → seamless
+  migration; balance multipliers server-authoritative, telemetry opt-out client-local; public getter API
+  unchanged so no machine touched). (5) **Creative tab** — signature items contributed to Core's shared
+  `CoreCreativeTab` (lazy suppliers); Nerospace `c:` material tags already complete. All 6 cells BUILD
+  SUCCESSFUL + ecjCheck 0 errors. Needs a dev-client run to confirm cross-mod energy flow + the gates/erase
+  commands (not agent-testable). See `wiki/Neroland-Core.md`.
+- **DEFERRED for sign-off: upgrade-module migration to Core.** Core's `UpgradeType` enum is fixed
+  {SPEED, EFFICIENCY, RANGE, CAPACITY}; Nerospace modules are {SPEED, EFFICIENCY, FORTUNE, SILK_TOUCH}.
+  FORTUNE/SILK_TOUCH (quarry) have no Core equivalent, so a full migration would drop quarry function OR add
+  mining-specific constants to Core's generic enum (a Core API/ecosystem decision). Left as-is. Also
+  deferred: a shared remote Maven (GitHub Packages) so CI + other contributors resolve Core without a local
+  publish (Maven Local is dev-machine-only).
 
 ## Wiki — keep `wiki/` updated
 

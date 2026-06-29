@@ -3,6 +3,7 @@
 - [Home](Home)
 - [Star Guide](Star-Guide)
 - [Planet Gravity](Planet-Gravity)
+- [Neroland Core](Neroland-Core)
 
 **Blocks — Ores**
 
@@ -45,6 +46,9 @@
 - [Combustion Generator](Combustion-Generator)
 - [Passive Generator](Passive-Generator)
 - [Solar Panel](Solar-Panel)
+
+**Storage — now in [Neroland Core](Neroland-Core)**
+
 - [Battery](Battery)
 - [Fluid Tank](Fluid-Tank)
 - [Gas Tank](Gas-Tank)

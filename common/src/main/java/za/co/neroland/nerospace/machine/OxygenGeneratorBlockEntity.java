@@ -15,6 +15,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerolandcore.sideconfig.Channel;
+import za.co.neroland.nerolandcore.sideconfig.RelativeFace;
+import za.co.neroland.nerolandcore.sideconfig.SideConfig;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
+import za.co.neroland.nerolandcore.sideconfig.SideMode;
+import za.co.neroland.nerolandcore.sideconfig.SidePreset;
+
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -23,6 +31,7 @@ import za.co.neroland.nerospace.gas.GasTank;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.menu.OxygenGeneratorMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
+import za.co.neroland.nerospace.storage.CoreTankBridge;
 import za.co.neroland.nerospace.world.OxygenFieldManager;
 
 /**
@@ -32,7 +41,7 @@ import za.co.neroland.nerospace.world.OxygenFieldManager;
  * adjacent gas tanks). It also feeds the world {@link OxygenFieldManager}: while its tank holds oxygen
  * this position is a field source (pressurising sealed rooms / a bubble) and the tank drains slowly.
  */
-public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvider {
+public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvider, SideConfigured {
 
     public static final int ENERGY_CAPACITY = 50_000;
     public static final int GAS_CAPACITY = 8_000;
@@ -44,6 +53,45 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
 
     private final EnergyBuffer energy = new EnergyBuffer(ENERGY_CAPACITY, MAX_INSERT, 0, this::setChanged);
     private final GasTank gas = new GasTank(GAS_CAPACITY, this::setChanged);
+
+    /**
+     * Universal side configuration (Neroland Core): ENERGY (grid power in) + GAS (oxygen out). The gas
+     * channel defaults every face to OUTPUT and forbids INPUT/IO — an electrolyser only emits oxygen,
+     * never accepts it — while energy defaults to INPUT and forbids OUTPUT/IO/PUSH (it only draws power).
+     * The component's {@code gasView} therefore returns the tank only on OUTPUT faces and {@code null}
+     * on DISABLED faces, so oxygen leaves only where the player allows it. Composed, not inherited.
+     */
+    private final SideConfigComponent sideConfig =
+            new SideConfigComponent(buildSideConfig(), this)
+                    .withEnergy(this::getEnergy)
+                    .withGas(() -> CoreTankBridge.toCore(this.getGas()));
+
+    private static SideConfig buildSideConfig() {
+        SideConfig config = SideConfig.builder()
+                .channel(Channel.ENERGY)
+                .channel(Channel.GAS)
+                // Energy is consumed only.
+                .allow(Channel.ENERGY, SideMode.OUTPUT, false)
+                .allow(Channel.ENERGY, SideMode.IO, false)
+                .allow(Channel.ENERGY, SideMode.PUSH, false)
+                // Oxygen is emitted only — never accepted.
+                .allow(Channel.GAS, SideMode.INPUT, false)
+                .allow(Channel.GAS, SideMode.IO, false)
+                .defaultPreset(SidePreset.ALL_DISABLED)
+                .build();
+        // Seed sensible defaults: power in on every face, oxygen out on every face. The player can
+        // refine which faces do what; gasView stays null on any face later set back to DISABLED.
+        for (RelativeFace face : RelativeFace.VALUES) {
+            config.setMode(Channel.ENERGY, face, SideMode.INPUT);
+            config.setMode(Channel.GAS, face, SideMode.OUTPUT);
+        }
+        return config;
+    }
+
+    @Override
+    public SideConfigComponent sideConfig() {
+        return this.sideConfig;
+    }
 
     /** Synced gauge values for the screen: [0]=energy, [1]=energy cap, [2]=oxygen mB, [3]=oxygen cap. */
     private final ContainerData data = new ContainerData() {
@@ -117,6 +165,8 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
         if (level.isClientSide()) {
             return;
         }
+        // Optional auto-eject (oxygen) / auto-input — default off per face, so a safe no-op until enabled.
+        this.sideConfig.serverTick(level, pos, MachineSideConfig.TRANSFER_RATE);
         // Redstone gate: an adjacent redstone source switches the generator off (and collapses its field).
         if (!MachineRedstone.allowsRun(level, pos)) {
             if (level instanceof ServerLevel serverLevel) {
@@ -174,6 +224,7 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
         output.putInt("Energy", this.energy.getRaw());
         output.putString("Gas", this.gas.getRawGas().getSerializedName());
         output.putInt("GasAmount", this.gas.getRawAmount());
+        this.sideConfig.save(output);
     }
 
     @Override
@@ -181,5 +232,6 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
         super.loadAdditional(input);
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.gas.setRaw(GasResource.byName(input.getStringOr("Gas", "empty")), input.getIntOr("GasAmount", 0));
+        this.sideConfig.load(input);
     }
 }

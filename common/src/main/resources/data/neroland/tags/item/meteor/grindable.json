@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "nerospace:nerosium_dust", "required": false },
+    { "id": "nerospace:raw_nerosium", "required": false },
+    { "id": "nerospace:raw_nerosteel", "required": false },
+    { "id": "nerospace:xertz_quartz", "required": false },
+    { "id": "nerospace:alien_fragment", "required": false },
+    { "id": "nerospace:cindrite", "required": false },
+    { "id": "nerospace:glacite", "required": false },
+    { "id": "nerospace:alien_tech_scrap", "required": false },
+    { "id": "nerospace:alien_core", "required": false }
+  ]
+}

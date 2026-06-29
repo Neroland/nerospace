@@ -39,9 +39,9 @@ life support. Wearing the **full set** lets you breathe off-world away from a ge
 from a finite air tank that refills in any breathable zone (so it greatly extends your air rather than
 being infinite). Diamond-class protection, repaired with nerosteel.
 
-The suit also refills at **airlocks**: standing within a few blocks of a [Gas Tank](Gas-Tank) or
-[Oxygen Generator](Oxygen-Generator) that holds Oxygen tops the suit up from that store (draining the
-gas). A **Tier 2 Oxygen Suit** (each piece = Tier 1 piece + 4 Cindrite) doubles the air tank (600)
+The suit also refills at **airlocks**: standing within a few blocks of a [Gas Tank](Gas-Tank) (now
+provided by [Neroland Core](Neroland-Core)) or [Oxygen Generator](Oxygen-Generator) that holds Oxygen
+tops the suit up from that store (draining the gas). A **Tier 2 Oxygen Suit** (each piece = Tier 1 piece + 4 Cindrite) doubles the air tank (600)
 and the airlock refill speed — a mixed T1/T2 set counts as Tier 1.
 
 Two **hazard variants** of the Tier 2 suit shield you from planetary extremes (unprotected exposure

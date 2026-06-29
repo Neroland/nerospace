@@ -1,38 +1,21 @@
 # Fluid Tank
 
-<!-- nerospace:render -->
-<p align="right"><img src="images/fluid_tank.png" alt="Fluid Tank" width="150" align="right"></p>
-<!-- /nerospace:render -->
+> **Moved to Neroland Core.** The Fluid Tank now ships in the shared
+> [Neroland Core](Neroland-Core) library as **`nerolandcore:fluid_tank`**, so every Neroland
+> mod uses one set of storage blocks. Craft and use it exactly as before — see the **Neroland
+> Core wiki** (the *Fluid Tank* page) for the full details. (Not to be confused with the
+> rocket-fuelling [Fuel Tank](Fuel-Tank) machine, which stays in Nerospace.)
 
-A passive single-fluid store for the pipe network. (Not to be confused with the rocket-fuelling
-[Fuel Tank](Fuel-Tank) machine.)
+A passive single-fluid store: right-click with a bucket to fill/empty, or pipe fluid in and
+out on every side. A **Creative Fluid Tank** variant supplies an endless fluid.
 
-## Obtaining
+Nerospace's [Universal Pipe](Universal-Pipe) still moves rocket fuel and other fluids in and
+out of it, so in-game behaviour is unchanged when both mods are installed.
 
-**Craft** (shaped): a nerosteel shell with glass windows —
+> **Updating an existing world:** blocks you placed as `nerospace:fluid_tank` are automatically
+> remapped to `nerolandcore:fluid_tank` on load — Forge via its missing-mappings event, NeoForge
+> and Fabric via a built-in registry alias; their items and stored contents are preserved. See the
+> [changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md).
 
-```text
-N G N
-G   G
-N G N
-```
-
-`N` = Nerosteel Ingot · `G` = Glass
-
-## How it works
-
-- Holds **16,000 mB** (configurable) of any one fluid.
-- **Buckets:** right-click with a filled bucket to pour in, an empty bucket to draw out.
-- **Pipes:** the fluid layer fills and drains it on every side — remember the network carries one
-
-  fluid at a time.
-
-- Bare-hand right-click reads out the contents.
-
-A **Creative Fluid Tank** variant supplies endless fluid — see
-[Creative Source Blocks](Creative-Source-Blocks).
-
-## Details
-
-- ID: `nerospace:fluid_tank` · Tool: pickaxe, iron tier · Drops: itself
-- Config: `fluidTankCapacity`
+See also: [Neroland Core](Neroland-Core), [Universal Pipe](Universal-Pipe),
+[Fuel Tank](Fuel-Tank), [Creative Source Blocks](Creative-Source-Blocks).

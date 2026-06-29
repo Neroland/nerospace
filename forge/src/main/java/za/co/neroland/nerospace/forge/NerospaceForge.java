@@ -50,6 +50,7 @@ public final class NerospaceForge {
         NerospaceTelemetry.init();
         ForgeFluidFactory.registerFluidTypes(modBusGroup);
         ForgeRegistrationFactory.registerAll(modBusGroup);
+        ForgeStorageAliases.register();
         ForgeCapabilities.register();
         ForgeAttachments.register();
         ForgeNetwork.register();

@@ -12,14 +12,10 @@
     "nerospace:glacite_block",
     "nerospace:station_floor",
     "nerospace:station_wall",
-    "nerospace:item_store",
-    "nerospace:battery",
-    "nerospace:fluid_tank",
     "nerospace:combustion_generator",
     "nerospace:nerosium_grinder",
     "nerospace:passive_generator",
     "nerospace:universal_pipe",
-    "nerospace:trash_can",
     "nerospace:landing_pod",
     "nerospace:docking_port"
   ]
