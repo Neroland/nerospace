@@ -40,7 +40,6 @@ import za.co.neroland.nerospace.client.RocketScreen;
 import za.co.neroland.nerospace.client.StarGuideScreen;
 import za.co.neroland.nerospace.client.TerraformMonitorScreen;
 import za.co.neroland.nerospace.client.TerraformerScreen;
-import za.co.neroland.nerospace.client.TrashCanScreen;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
@@ -95,7 +94,6 @@ public final class ForgeClientSetup {
     private static void registerScreens() {
         MenuScreens.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         MenuScreens.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
-        MenuScreens.register(ModMenuTypes.TRASH_CAN.get(), TrashCanScreen::new);
         MenuScreens.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         MenuScreens.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
         MenuScreens.register(ModMenuTypes.PIPE_CONFIG.get(), PipeConfigScreen::new);

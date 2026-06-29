@@ -733,7 +733,7 @@ public final class NerospaceCommands {
         // that same face — modes are per-resource-layer), and a Trash Can on the pipe's south face
         // receives and voids them. Without an item sink the quarry pauses "buffer_full" mid-dig.
         BlockPos trashPos = new BlockPos(qx - 2, refY, qz + mid + 1);
-        level.setBlockAndUpdate(trashPos, ModBlocks.TRASH_CAN.get().defaultBlockState());
+        level.setBlockAndUpdate(trashPos, za.co.neroland.nerolandcore.registry.ModBlocks.TRASH_CAN.get().defaultBlockState());
         setMode(level, pipePos, Direction.EAST, PipeResourceType.ITEM, PipeIoMode.IN);
         setMode(level, pipePos, Direction.SOUTH, PipeResourceType.ITEM, PipeIoMode.OUT);
         if (level.getBlockEntity(quarryPos) instanceof QuarryControllerBlockEntity quarry) {

@@ -38,7 +38,6 @@ import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
 import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
 import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
-import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 
 /** Forge capability providers for the existing loader-neutral storage seams. */
 public final class ForgeCapabilities {
@@ -96,9 +95,9 @@ public final class ForgeCapabilities {
             energy = pipe::getEnergy;
             fluid = pipe::getFluidTank;
             gas = pipe::getGas;
-        } else if (be instanceof TrashCanBlockEntity trash) {
-            fluid = trash::getFluid;
-            gas = trash::getGas;
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.TrashCanBlockEntity trash) {
+            fluid = () -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(trash.getFluid());
+            gas = () -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(trash.getGas());
         } else if (be instanceof OxygenGeneratorBlockEntity machine) {
             energy = machine::getEnergy;
             gas = machine::getGas;

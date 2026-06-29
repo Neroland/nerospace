@@ -42,7 +42,8 @@ public abstract class MappedRegistryStorageAliasMixin<T> implements Registry<T> 
 
     private static final Set<String> MOVED = Set.of(
             "battery", "fluid_tank", "gas_tank", "item_store",
-            "creative_battery", "creative_fluid_tank", "creative_gas_tank", "creative_item_store");
+            "creative_battery", "creative_fluid_tank", "creative_gas_tank", "creative_item_store",
+            "trash_can");
 
     /** Holder lookup by key — the path the chunk block-state decoder uses. */
     @Inject(method = "get(Lnet/minecraft/resources/ResourceKey;)Ljava/util/Optional;",

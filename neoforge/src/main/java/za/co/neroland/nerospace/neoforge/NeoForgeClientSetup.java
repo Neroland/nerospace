@@ -32,7 +32,6 @@ import za.co.neroland.nerospace.client.MeteorTrackerHud;
 import za.co.neroland.nerospace.client.OxygenHud;
 import za.co.neroland.nerospace.client.CombustionGeneratorScreen;
 import za.co.neroland.nerospace.client.OxygenGeneratorScreen;
-import za.co.neroland.nerospace.client.TrashCanScreen;
 import za.co.neroland.nerospace.client.NerosiumGrinderScreen;
 import za.co.neroland.nerospace.client.FuelRefineryScreen;
 import za.co.neroland.nerospace.client.FuelTankScreen;
@@ -116,7 +115,6 @@ public final class NeoForgeClientSetup {
     private static void onRegisterScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
-        event.register(ModMenuTypes.TRASH_CAN.get(), TrashCanScreen::new);
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         event.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
         event.register(ModMenuTypes.PIPE_CONFIG.get(), PipeConfigScreen::new);

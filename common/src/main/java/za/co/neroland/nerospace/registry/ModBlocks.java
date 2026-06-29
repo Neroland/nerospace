@@ -36,7 +36,6 @@ import za.co.neroland.nerospace.rocket.DockingPortBlock;
 import za.co.neroland.nerospace.rocket.LandingPodBlock;
 import za.co.neroland.nerospace.rocket.StationCoreBlock;
 import za.co.neroland.nerospace.rocket.RocketLaunchPadBlock;
-import za.co.neroland.nerospace.storage.TrashCanBlock;
 import za.co.neroland.nerospace.village.VillageCoreBlock;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
@@ -146,12 +145,6 @@ public final class ModBlocks {
     public static final RegistryEntry<UniversalPipeBlock> UNIVERSAL_PIPE = BLOCKS.register("universal_pipe",
             key -> new UniversalPipeBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(1.5F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
-
-
-    public static final RegistryEntry<TrashCanBlock> TRASH_CAN = BLOCKS.register("trash_can",
-            key -> new TrashCanBlock(BlockBehaviour.Properties.of()
-                    .setId(key).mapColor(MapColor.COLOR_GRAY).strength(2.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
 

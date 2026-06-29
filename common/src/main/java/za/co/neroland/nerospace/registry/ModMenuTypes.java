@@ -12,7 +12,6 @@ import za.co.neroland.nerospace.menu.FuelTankMenu;
 import za.co.neroland.nerospace.menu.HydrationModuleMenu;
 import za.co.neroland.nerospace.menu.LaunchControllerMenu;
 import za.co.neroland.nerospace.menu.OxygenGeneratorMenu;
-import za.co.neroland.nerospace.menu.TrashCanMenu;
 import za.co.neroland.nerospace.machine.quarry.QuarryMenu;
 import za.co.neroland.nerospace.menu.PassiveGeneratorMenu;
 import za.co.neroland.nerospace.menu.PipeConfigMenu;
@@ -48,10 +47,6 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<OxygenGeneratorMenu>> OXYGEN_GENERATOR =
             MENUS.register("oxygen_generator",
                     key -> new MenuType<>(OxygenGeneratorMenu::new, FeatureFlags.VANILLA_SET));
-
-    public static final RegistryEntry<MenuType<TrashCanMenu>> TRASH_CAN =
-            MENUS.register("trash_can",
-                    key -> new MenuType<>(TrashCanMenu::new, FeatureFlags.VANILLA_SET));
 
     public static final RegistryEntry<MenuType<RocketMenu>> ROCKET =
             MENUS.register("rocket",

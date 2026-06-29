@@ -24,7 +24,6 @@ import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
 import za.co.neroland.nerospace.rocket.LaunchGantryBlockEntity;
 import za.co.neroland.nerospace.rocket.ReturnSiteBlockEntity;
 import za.co.neroland.nerospace.rocket.StationCoreBlockEntity;
-import za.co.neroland.nerospace.storage.TrashCanBlockEntity;
 import za.co.neroland.nerospace.village.VillageCoreBlockEntity;
 
 /**
@@ -52,10 +51,6 @@ public final class ModBlockEntities {
     public static final RegistryEntry<BlockEntityType<UniversalPipeBlockEntity>> UNIVERSAL_PIPE =
             BLOCK_ENTITIES.register("universal_pipe",
                     key -> new BlockEntityType<>(UniversalPipeBlockEntity::new, java.util.Set.of(ModBlocks.UNIVERSAL_PIPE.get())));
-
-    public static final RegistryEntry<BlockEntityType<TrashCanBlockEntity>> TRASH_CAN =
-            BLOCK_ENTITIES.register("trash_can",
-                    key -> new BlockEntityType<>(TrashCanBlockEntity::new, java.util.Set.of(ModBlocks.TRASH_CAN.get())));
 
     public static final RegistryEntry<BlockEntityType<OxygenGeneratorBlockEntity>> OXYGEN_GENERATOR =
             BLOCK_ENTITIES.register("oxygen_generator",

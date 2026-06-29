@@ -199,15 +199,12 @@ public final class NerospaceFabric implements ModInitializer {
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.HYDRATION_MODULE.get());
 
-        ItemStorage.SIDED.registerForBlockEntity(
-                (be, direction) -> ContainerStorage.of(be, direction),
-                ModBlockEntities.TRASH_CAN.get());
-        FLUID.registerForBlockEntity(
-                (be, direction) -> be.getFluid(),
-                ModBlockEntities.TRASH_CAN.get());
-        GAS.registerForBlockEntity(
-                (be, direction) -> be.getGas(),
-                ModBlockEntities.TRASH_CAN.get());
+        // Trash Can now lives in Neroland Core (vanilla Container for items found by item adjacency); only
+        // its fluid/gas surfaces need bridging onto Nerospace's lookups so the Universal Pipe still voids into it.
+        FLUID.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getFluid()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get());
+        GAS.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getGas()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get());
 
         // Re-expose Core's tank block-entities on Nerospace's own fluid/gas lookups so the Universal Pipe
         // still connects to the (now Core-owned) Fluid Tank / Gas Tank and their creative variants.

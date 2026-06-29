@@ -24,7 +24,8 @@ public final class ForgeStorageAliases {
 
     private static final Set<String> MOVED = Set.of(
             "battery", "fluid_tank", "gas_tank", "item_store",
-            "creative_battery", "creative_fluid_tank", "creative_gas_tank", "creative_item_store");
+            "creative_battery", "creative_fluid_tank", "creative_gas_tank", "creative_item_store",
+            "trash_can");
 
     private ForgeStorageAliases() {
     }

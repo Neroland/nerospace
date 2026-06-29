@@ -155,20 +155,12 @@ public final class NeoForgeCapabilities {
                         ? new WorldlyContainerWrapper(be, side)
                         : VanillaContainerWrapper.of(be));
 
-        event.registerBlockEntity(
-                Capabilities.Item.BLOCK,
-                ModBlockEntities.TRASH_CAN.get(),
-                (be, side) -> side != null
-                        ? new WorldlyContainerWrapper(be, side)
-                        : VanillaContainerWrapper.of(be));
-        event.registerBlockEntity(
-                FLUID,
-                ModBlockEntities.TRASH_CAN.get(),
-                (be, side) -> be.getFluid());
-        event.registerBlockEntity(
-                GAS,
-                ModBlockEntities.TRASH_CAN.get(),
-                (be, side) -> be.getGas());
+        // Trash Can now lives in Neroland Core (vanilla Container for items found by item adjacency); only
+        // its fluid/gas surfaces need bridging onto Nerospace's caps so the Universal Pipe still voids into it.
+        event.registerBlockEntity(FLUID, za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getFluid()));
+        event.registerBlockEntity(GAS, za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getGas()));
 
         // Re-expose Core's tank block-entities on Nerospace's own fluid/gas capabilities so the Universal
         // Pipe still connects to the (now Core-owned) Fluid Tank / Gas Tank and their creative variants.
