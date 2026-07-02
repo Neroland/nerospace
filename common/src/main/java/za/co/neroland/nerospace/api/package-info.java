@@ -17,6 +17,11 @@
  *   <li>{@link za.co.neroland.nerospace.api.NerospaceStations} — read-only station destinations as
  *       immutable {@link za.co.neroland.nerospace.api.StationInfo} records (id, name, planet, position,
  *       route capacity), with lookup by id and listing by planet.</li>
+ *   <li>{@link za.co.neroland.nerospace.api.NerospaceRoutes} — the cargo-rocket route catalog for
+ *       logistics consumers: {@link za.co.neroland.nerospace.api.RouteEndpoint}s (Home + every Nerospace
+ *       body) and directed {@link za.co.neroland.nerospace.api.CargoRoute}s carrying the minimum rocket
+ *       tier, per-launch fuel cost (mB, config-scaled) and canonical transit duration (ticks), plus
+ *       {@code isOpen} liveness checks.</li>
  * </ul>
  *
  * <p><b>Design.</b> This is a thin facade — it holds no state of its own and wraps the single internal

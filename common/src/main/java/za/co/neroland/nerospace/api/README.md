@@ -63,6 +63,37 @@ that Nerospace registers: once a player is purged, their station ownership is an
 `ownedBy` returns `false` for them. No erasure logic runs through this API — it simply reflects the source
 of truth.
 
+## Cargo-rocket routes — `NerospaceRoutes`
+
+The lookup entry point for logistics consumers (e.g. NeroLogistics' `RouteProvider` seam). Routes are
+directed dimension pairs over the five endpoints (Home + Station + three moons); per-station addressing
+inside the orbital void stays with `NerospaceStations`.
+
+```java
+// Catalog (static data — order is stable: Home, Orbital Station, Greenxertz, Cindara, Glacira)
+List<RouteEndpoint> endpoints = NerospaceRoutes.endpoints();
+RouteEndpoint e = endpoints.get(0);
+ResourceKey<Level> dim = e.dimension();   // interned key
+String label          = e.name();         // "Home", "Orbital Station", ...
+Optional<PlanetId> p  = e.planet();       // empty only for Home (Overworld)
+
+// One directed route (empty if either dim isn't an endpoint, or from == to)
+Optional<CargoRoute> r = NerospaceRoutes.route(Level.OVERWORLD, NerospacePlanets.GLACIRA.dimension());
+CargoRoute route = r.orElseThrow();
+int tier    = route.minimumRocketTier();  // 1–4; lowest rocket tier that can fly it
+int fuelMb  = route.fuelCostMb();         // per-launch fuel, config-scaled at query time — query per shipment
+int transit = route.transitTicks();       // canonical duration: TRANSIT_TICKS_PER_STEP per step of separation
+
+// All routes departing a dimension
+List<CargoRoute> out = NerospaceRoutes.routesFrom(Level.OVERWORLD);
+
+// Liveness: both endpoint dimensions loaded on this server
+boolean open = NerospaceRoutes.isOpen(server, route);
+boolean open2 = NerospaceRoutes.isOpen(server, fromKey, toKey);   // also false when no such route
+```
+
+No player data crosses this surface — endpoints, costs and durations only.
+
 ## Design notes
 
 - Thin facade: no duplicated state; wraps the single internal `StationRegistry` and the gravity/oxygen

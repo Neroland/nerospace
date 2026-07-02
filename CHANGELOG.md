@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+**Public cargo-rocket route API (`za.co.neroland.nerospace.api`)**
+
+- New semver-stable route surface for logistics consumers (NeroLogistics' `RouteProvider` seam):
+  - `NerospaceRoutes` — static lookup facade: `endpoints()` (Home + Orbital Station + the three
+    moons, stable order), `endpoint`/`isEndpoint`, `route(from, to)`, `routesFrom(from)`, and
+    `isOpen(...)` liveness checks against loaded dimensions.
+  - `RouteEndpoint` — immutable endpoint record (dimension key, display name, optional `PlanetId`).
+  - `CargoRoute` — immutable directed route record carrying the minimum rocket tier (1–4), the
+    per-launch fuel cost in millibuckets (the same cross-dimension launch cost a crewed rocket
+    pays, `fuelCost`-config-scaled at query time), and a canonical transit duration in ticks
+    (`TRANSIT_TICKS_PER_STEP` per step of separation in the destination order).
+- Read-only and player-data-free; the internals (`rocket.Destinations`, `rocket.RocketTravel`,
+  `rocket.RocketTier`) remain internal.
+
 ### Changed
 
 **Storage blocks moved to Neroland Core**
