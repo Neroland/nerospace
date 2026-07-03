@@ -52,6 +52,11 @@ I I I
 
    cluster, then **consumes the landmarks** and starts.
 
+> **No landmarks? Outline it yourself.** Frame Casing is placeable: build a **closed rectangle of
+> frame blocks** (same Y level, complete perimeter, same size limits) and place the controller
+> **beside the ring** — it adopts the outline as its mining area and starts mining right away,
+> skipping the frame-building step.
+
 3. **Put [Frame Casing](Upgrade-Modules) in the frame slot** (top-left of the GUI). The frame costs
 
    **one casing per perimeter cell** (the controller's own cell and any block entities on the
@@ -102,17 +107,26 @@ I I I
   any remainder when it finishes or is removed), so the quarry never pins the whole region — keeping
   memory use and world-save time low.
 
-- **Reclaiming:** breaking the controller tears down its frame.
+- **Frame damage:** if a frame block is broken mid-dig (it drops a Frame Casing), the quarry
+
+  **rebuilds the gap** from its casing stock — or **pauses** ("frame incomplete") until you patch
+  the ring by hand or insert casings into the frame slots.
+
+- **Reclaiming:** when the dig **finishes**, the frame is dismantled and the standing casings are
+
+  returned to the controller's frame slots. **Breaking the controller mid-dig** instead *orphans*
+  the frame: the frame blocks crumble away one by one over the next few seconds and **drop
+  nothing** — place a new controller beside a still-complete ring to re-adopt it before it decays.
 
 ### GUI status lines
 
 | Line | Meaning |
 | --- | --- |
-| **Idle — place landmarks** | No valid region found yet. |
+| **Idle — place landmarks or a frame outline** | No valid region found yet. |
 | **Building frame** | Placing the frame ring (consuming casings). |
 | **Mining** | Digging — `Depth` shows how many layers below the frame plane it has reached. |
-| **Paused** | Stopped — out of casings, out of power, buffers full, or wrong planet for this tier. |
-| **Finished** | Reached bedrock; frame stays until you break the controller. |
+| **Paused — …** | Stopped — the line names the reason: frame incomplete, out of Frame Casing, out of power, output/fluid buffer full, or wrong planet for this tier. |
+| **Finished — frame reclaimed** | Reached bedrock; the frame was dismantled and its casings returned to the frame slots. |
 
 ## Tiers & planets
 
@@ -140,10 +154,12 @@ too-low tier on a gated planet pauses with "wrong planet".
 
 ## Details
 
-- ID: `nerospace:quarry_controller` · Tool: pickaxe, iron tier · Drops: itself
-- Companion blocks: [Quarry Landmark](Quarry-Landmark), Quarry Frame (machine-placed; no item,
+- ID: `nerospace:quarry_controller` · Tool: pickaxe, iron tier · Drops: itself (plus its
+  buffered items, casings and modules)
+- Companion blocks: [Quarry Landmark](Quarry-Landmark), Quarry Frame (placed by the machine or by
 
-  drops nothing)
+  hand from a Frame Casing; drops a Frame Casing when a player breaks it — orphaned frames that
+  decay after their controller is destroyed drop nothing)
 
 - Capabilities: energy **in** (any side); mined **items out** (any side); **fluid out** (any side).
 

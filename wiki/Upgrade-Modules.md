@@ -6,7 +6,10 @@ The crafting parts and tuning cards for the [Quarry Controller](Quarry-Controlle
 ## Frame Casing
 
 The structural material the quarry spends to build its frame ring — **one casing per open-air
-perimeter cell** (cells already backed by terrain are free).
+perimeter cell** (cells already backed by terrain are free). Casings are also **placeable** as
+frame blocks, so you can outline a mining area by hand instead of using landmarks; a frame block
+broken by a player drops its casing, and a **finished dig returns its standing casings** to the
+controller's frame slots.
 
 **Craft** (shaped, makes 4):
 

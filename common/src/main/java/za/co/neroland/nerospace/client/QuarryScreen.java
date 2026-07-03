@@ -39,8 +39,11 @@ public class QuarryScreen extends TexturedContainerScreen<QuarryMenu> {
         segGauge(g, 8, 90, 160, 3, energyFrac, ACCENT);
 
         QuarryControllerBlockEntity.State state = this.menu.getState();
-        label(g, Component.translatable("gui.nerospace.quarry.state." + state.name().toLowerCase(java.util.Locale.ROOT)),
-                8, 97, SUBTLE);
+        String pauseReason = this.menu.getPauseReason();
+        Component stateLine = state == QuarryControllerBlockEntity.State.PAUSED && !pauseReason.isEmpty()
+                ? Component.translatable("gui.nerospace.quarry.pause." + pauseReason)
+                : Component.translatable("gui.nerospace.quarry.state." + state.name().toLowerCase(java.util.Locale.ROOT));
+        label(g, stateLine, 8, 97, SUBTLE);
         int depth = Math.max(0, this.menu.getRefY() - this.menu.getCurrentY());
         if (state != QuarryControllerBlockEntity.State.IDLE) {
             label(g, Component.literal("Depth: " + depth), 110, 97, SUBTLE);

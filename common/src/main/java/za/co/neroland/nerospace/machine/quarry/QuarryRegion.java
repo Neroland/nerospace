@@ -259,6 +259,84 @@ public final class QuarryRegion {
         return state.getBlock() instanceof QuarryLandmarkBlock;
     }
 
+    // --- Discovery from a hand-built frame rectangle (marker-less setup) ----------
+
+    /**
+     * Marker-less setup: detects a closed rectangle of hand-placed {@link QuarryFrameBlock}s adjacent to
+     * the controller (same plane, complete perimeter) and adopts it as the mining area. Size limits are
+     * identical to the landmark path ({@code 2 ≤ side ≤ maxSide}); the controller must sit beside (or on
+     * the line of) the perimeter, exactly as {@link #acceptsController} demands for landmark claims.
+     */
+    @Nullable
+    public static QuarryRegion fromFrameRectangle(Level level, BlockPos controllerPos, int maxSide) {
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
+            BlockPos seed = controllerPos.relative(dir);
+            if (!isFrame(level, seed)) {
+                continue;
+            }
+            QuarryRegion candidate = traceFrameRectangle(level, seed, maxSide);
+            if (candidate != null && candidate.acceptsController(controllerPos)) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Flood-fills the frame blocks connected to {@code seed} in its horizontal plane and accepts the
+     * cluster only if it is exactly the complete perimeter of an in-limits rectangle.
+     */
+    @Nullable
+    private static QuarryRegion traceFrameRectangle(Level level, BlockPos seed, int maxSide) {
+        int cap = 4 * maxSide; // a closed in-limits ring is at most 4*(maxSide-1) blocks
+        Set<BlockPos> ring = new HashSet<>();
+        Deque<BlockPos> queue = new ArrayDeque<>();
+        ring.add(seed.immutable());
+        queue.add(seed.immutable());
+        while (!queue.isEmpty()) {
+            BlockPos pos = queue.poll();
+            for (Direction dir : Direction.Plane.HORIZONTAL) {
+                BlockPos next = pos.relative(dir);
+                if (isFrame(level, next) && ring.add(next)) {
+                    if (ring.size() > cap) {
+                        return null; // sprawling frame network — not a simple ring
+                    }
+                    queue.add(next);
+                }
+            }
+        }
+        int minX = Integer.MAX_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+        for (BlockPos pos : ring) {
+            minX = Math.min(minX, pos.getX());
+            minZ = Math.min(minZ, pos.getZ());
+            maxX = Math.max(maxX, pos.getX());
+            maxZ = Math.max(maxZ, pos.getZ());
+        }
+        QuarryRegion candidate = new QuarryRegion(minX, minZ, maxX, maxZ, seed.getY());
+        int w = candidate.width();
+        int l = candidate.length();
+        if (w < 2 || l < 2 || w > maxSide || l > maxSide) {
+            return null;
+        }
+        List<BlockPos> perimeter = candidate.framePositions();
+        if (ring.size() != perimeter.size()) {
+            return null; // stray frames hanging off the rectangle
+        }
+        for (BlockPos fp : perimeter) {
+            if (!ring.contains(fp)) {
+                return null; // incomplete perimeter
+            }
+        }
+        return candidate;
+    }
+
+    private static boolean isFrame(Level level, BlockPos pos) {
+        return level.getBlockState(pos).getBlock() instanceof QuarryFrameBlock;
+    }
+
     // --- Persistence -------------------------------------------------------------
 
     public void save(ValueOutput output) {

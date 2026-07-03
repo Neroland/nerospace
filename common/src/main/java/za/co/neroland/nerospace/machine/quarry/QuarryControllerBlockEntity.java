@@ -21,6 +21,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -77,7 +78,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     public static final int FRAME_SLOT = 0;
     private static final int OUTPUT_START = FRAME_SLOTS;
     public static final int ENERGY_MAX_INSERT = 10_000;
-    public static final int DATA_COUNT = 7;
+    public static final int DATA_COUNT = 8;
     private static final int SCAN_BUDGET_PER_TICK = 4096;
 
     // Inlined Tuning base values.
@@ -88,6 +89,8 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     private static final int CLAIM_SCAN_INTERVAL = 5;
     private static final int FRAME_BUILD_INTERVAL = 10;
     private static final int FRAME_BLOCKS_PER_STEP = 1;
+    /** How often (server ticks) the mining loop re-verifies the frame ring is still whole. */
+    private static final int FRAME_CHECK_INTERVAL = 20;
 
     public enum State {
         IDLE, BUILDING_FRAME, MINING, DONE, PAUSED
@@ -147,6 +150,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
                     QuarryRegion rg = region;
                     yield rg == null ? 0 : rg.refY();
                 }
+                case 7 -> pauseReasonCode();
                 default -> 0;
             };
         }
@@ -227,7 +231,9 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
                 }
             }
             case MINING -> {
-                if (serverLevel.getGameTime() % miningInterval(serverLevel) == 0L) {
+                if (serverLevel.getGameTime() % FRAME_CHECK_INTERVAL == 0L && !frameIntact(serverLevel)) {
+                    onFrameBroken();
+                } else if (serverLevel.getGameTime() % miningInterval(serverLevel) == 0L) {
                     mine(serverLevel);
                 }
             }
@@ -267,6 +273,24 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
             this.pauseReason = "wrong_planet";
             return;
         }
+        if ("frame_incomplete".equals(this.pauseReason)) {
+            // Frame was broken mid-dig and there was no stock. Resume when the ring is whole again —
+            // either the player patched it by hand, or casings were inserted (then rebuild from stock).
+            if (level.getGameTime() % FRAME_CHECK_INTERVAL != 0L) {
+                return;
+            }
+            if (frameIntact(level)) {
+                this.state = State.MINING;
+                this.pauseReason = "";
+                setChanged();
+            } else if (!nextFrameCasing().isEmpty()) {
+                this.frameIndex = 0;
+                this.state = State.BUILDING_FRAME;
+                this.pauseReason = "";
+                setChanged();
+            }
+            return;
+        }
         if (this.frameIndex < frameTotal()) {
             this.state = State.BUILDING_FRAME;
             buildFrame(level);
@@ -285,19 +309,42 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
             return;
         }
         QuarryRegion found = QuarryRegion.findClaim(level, pos, effectiveMaxSide());
+        boolean framePrebuilt = false;
+        if (found == null) {
+            // Marker-less setup: a closed rectangle of hand-placed frame blocks beside the controller
+            // is adopted as the mining area exactly like a landmark claim (same size limits).
+            found = QuarryRegion.fromFrameRectangle(level, pos, effectiveMaxSide());
+            framePrebuilt = found != null;
+        }
         if (found == null) {
             return;
         }
         this.region = found;
         this.frameTotal = -1;
-        consumeLandmarks(level, found);
-        this.frameIndex = 0;
+        if (framePrebuilt) {
+            adoptFrame(level, found);
+            this.frameIndex = found.framePositions().size();
+            this.state = State.MINING;
+        } else {
+            consumeLandmarks(level, found);
+            this.frameIndex = 0;
+            this.state = State.BUILDING_FRAME;
+        }
         this.currentY = found.refY();
         this.cursor = 0;
         this.skippedColumns.clear();
-        this.state = State.BUILDING_FRAME;
         this.pauseReason = "";
         setChanged();
+    }
+
+    /** Claims a hand-built frame ring: clears any pending orphan-decay flags so the ring stops crumbling. */
+    private void adoptFrame(ServerLevel level, QuarryRegion region) {
+        for (BlockPos fp : region.framePositions()) {
+            BlockState fs = level.getBlockState(fp);
+            if (fs.getBlock() instanceof QuarryFrameBlock && fs.getValue(QuarryFrameBlock.ORPHANED)) {
+                level.setBlock(fp, fs.setValue(QuarryFrameBlock.ORPHANED, Boolean.FALSE), Block.UPDATE_CLIENTS);
+            }
+        }
     }
 
     private int effectiveMaxSide() {
@@ -368,8 +415,8 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
             this.state = State.MINING;
             // Start at the frame plane itself (refY) so the interior of the frame's own level is mined
             // too; the perimeter ring (the frame casings) is skipped by region.isPerimeter / the
-            // QuarryFrameBlock check in mine().
-            this.currentY = region.refY();
+            // QuarryFrameBlock check in mine(). A mid-dig frame repair keeps its depth (currentY < refY).
+            this.currentY = Math.min(this.currentY, region.refY());
             this.pauseReason = "";
             changed = true;
         }
@@ -395,6 +442,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
             scanned++;
             if (this.currentY < floor) {
                 this.state = State.DONE;
+                reclaimFrame(level);
                 releaseForcedChunks(level);
                 changed = true;
                 break;
@@ -698,20 +746,110 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
         if (this.level instanceof ServerLevel serverLevel) {
-            removeFrame(serverLevel);
+            orphanFrame(serverLevel);
         }
     }
 
-    private void removeFrame(ServerLevel level) {
+    /**
+     * Breaking the controller while its frame stands orphans the ring: every frame block is flagged
+     * {@link QuarryFrameBlock#ORPHANED} and scheduled to crumble on its own staggered tick — the frames
+     * visibly break one by one and drop nothing. (Frames the player mines directly still drop their
+     * casing; a finished dig reclaims its casings via {@link #reclaimFrame} before this can run.)
+     */
+    private void orphanFrame(ServerLevel level) {
         QuarryRegion region = this.region;
         if (region == null) {
             return;
         }
         for (BlockPos fp : region.framePositions()) {
+            QuarryFrameBlock.startDecay(level, fp, level.getBlockState(fp), level.getRandom());
+        }
+    }
+
+    /**
+     * Frame-ring integrity: every ring position must hold a frame block, except the cells the builder
+     * legitimately skipped (the controller's own cell and block-entity cells).
+     */
+    private boolean frameIntact(ServerLevel level) {
+        QuarryRegion region = this.region;
+        if (region == null) {
+            return true;
+        }
+        for (BlockPos fp : region.framePositions()) {
+            BlockState existing = level.getBlockState(fp);
+            if (existing.getBlock() instanceof QuarryFrameBlock
+                    || fp.equals(this.worldPosition) || existing.hasBlockEntity()) {
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /** A frame block was broken mid-dig: rebuild from casing stock if possible, else pause until fixed. */
+    private void onFrameBroken() {
+        if (!nextFrameCasing().isEmpty()) {
+            this.frameIndex = 0;
+            this.state = State.BUILDING_FRAME;
+            setChanged();
+        } else {
+            setPaused("frame_incomplete");
+        }
+    }
+
+    /** A finished dig dismantles its frame and returns the standing casings to the frame slots. */
+    private void reclaimFrame(ServerLevel level) {
+        QuarryRegion region = this.region;
+        if (region == null) {
+            return;
+        }
+        int reclaimed = 0;
+        for (BlockPos fp : region.framePositions()) {
             if (level.getBlockState(fp).getBlock() instanceof QuarryFrameBlock) {
                 level.removeBlock(fp, false);
+                reclaimed++;
             }
         }
+        returnFrameCasings(level, reclaimed);
+    }
+
+    /** Returns {@code count} frame casings to the frame slots; anything that can't fit spills as items. */
+    private void returnFrameCasings(ServerLevel level, int count) {
+        int remaining = count;
+        for (int i = 0; i < FRAME_SLOTS && remaining > 0; i++) {
+            ItemStack slot = this.items.get(i);
+            if (slot.isEmpty()) {
+                int put = Math.min(remaining, new ItemStack(ModItems.FRAME_CASING.get()).getMaxStackSize());
+                this.items.set(i, new ItemStack(ModItems.FRAME_CASING.get(), put));
+                remaining -= put;
+            } else if (slot.is(ModItems.FRAME_CASING.get())) {
+                int put = Math.min(remaining, slot.getMaxStackSize() - slot.getCount());
+                if (put > 0) {
+                    slot.grow(put);
+                    remaining -= put;
+                }
+            }
+        }
+        while (remaining > 0) {
+            int put = Math.min(remaining, 64);
+            Containers.dropItemStack(level, this.worldPosition.getX() + 0.5,
+                    this.worldPosition.getY() + 0.5, this.worldPosition.getZ() + 0.5,
+                    new ItemStack(ModItems.FRAME_CASING.get(), put));
+            remaining -= put;
+        }
+    }
+
+    /** Stable wire code for the pause reason (index 7 of the {@link ContainerData}); 0 = none/unknown. */
+    private int pauseReasonCode() {
+        return switch (this.pauseReason) {
+            case "wrong_planet" -> 1;
+            case "need_material" -> 2;
+            case "fluid_full" -> 3;
+            case "no_power" -> 4;
+            case "buffer_full" -> 5;
+            case "frame_incomplete" -> 6;
+            default -> 0;
+        };
     }
 
     // --- Persistence ------------------------------------------------------------
