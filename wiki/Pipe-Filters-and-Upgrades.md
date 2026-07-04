@@ -21,6 +21,22 @@ Restricts a pipe face's **item layer** to a single item.
 Filters affect extraction (pulling faces only grab the matching item), routing (packets won't head
 toward a filtered face that rejects them) and delivery.
 
+**Routing rules (how filters and destinations interact):**
+
+- Items enter a pipe network **only through faces set to In** (with the
+  [Configurator](Configurator)). An **Auto** face delivers but never extracts items — so the
+  network can't drain its own destination chests back out again. Energy, fluid and gas Auto
+  faces still pull as before.
+- **Junctions are gated.** An item only travels across a pipe-to-pipe junction if the leaving
+  face allows outgoing items (**Out**/Auto), the entering face allows incoming items
+  (**In**/Auto), and **both faces' filters** pass it. A filter installed on a T-junction's
+  branch face therefore controls exactly what may go up that branch — items that don't match
+  route around it or stay behind.
+- **Filtered faces claim their items first.** An item that matches any filtered face goes to a
+  filtered face; unfiltered destinations only receive what no filter claimed. So "cobblestone →
+  chest A (whitelist)" really means all the cobblestone lands in A, and the unfiltered overflow
+  chest gets everything else.
+
 > **Tip — watch which face you click.** The filter lands on the face you clicked, which is not
 > always the face touching the target chest. Hold the Configurator to see the per-face colour
 > shading, then check the panel: the filter should sit in the row whose colour matches the shaded

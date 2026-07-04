@@ -44,7 +44,7 @@ public class PipeConfigMenu extends AbstractContainerMenu {
     public static final int SLOT_X = 148;
     public static final int FIRST_ROW_Y = 36;
     public static final int ROW_STEP = 18;
-    public static final int INV_Y = 150;
+    public static final int INV_Y = 158;
 
     @Nullable
     private final UniversalPipeBlockEntity pipe;

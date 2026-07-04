@@ -112,14 +112,16 @@ public class UniversalPipeRenderer
         float step = 1.0F / pipe.itemTicksPerBlock();
 
         List<TravellingItem> items = pipe.travelling();
-        int count = Math.min(MAX_RENDERED_ITEMS, items.size());
-        state.visibleItems = count;
-        for (int i = 0; i < count; i++) {
+        int rendered = 0;
+        for (int i = 0; i < items.size() && rendered < MAX_RENDERED_ITEMS; i++) {
             TravellingItem item = items.get(i);
             if (!item.isParked()) {
                 item.advance(dt * step * 0.999F); // hold just shy of 1.0 until the server expires it
             }
-            UniversalPipeRenderState.TravellingItemEntry entry = state.entry(i);
+            if (!item.isVisible()) {
+                continue; // path-staggered packet that hasn't entered this segment yet
+            }
+            UniversalPipeRenderState.TravellingItemEntry entry = state.entry(rendered++);
 
             float t = item.progress();
             float fx = item.from().getStepX();
@@ -141,12 +143,17 @@ public class UniversalPipeRenderer
                 entry.y = 0.5F + to.getStepY() * k;
                 entry.z = 0.5F + to.getStepZ() * k;
             }
-            entry.spin = (now * 4.0F + i * 45.0F) % 360.0F;
+            // Spin phase from the packet's route (stable), not its list index (which shifts as
+            // earlier packets expire and made items visibly snap).
+            int spinSeed = item.from().get3DDataValue() * 61
+                    + (to == null ? 3 : to.get3DDataValue()) * 97;
+            entry.spin = (now * 4.0F + spinSeed) % 360.0F;
 
             Minecraft.getInstance().getItemModelResolver().updateForTopItem(
                     entry.renderState, item.stack(), ItemDisplayContext.GROUND, pipe.getLevel(), null,
                     (int) pipe.getBlockPos().asLong() + i);
         }
+        state.visibleItems = rendered;
 
         for (int slot = 0; slot < pipe.getContainerSize() && state.visibleItems < MAX_RENDERED_ITEMS; slot++) {
             ItemStack stack = pipe.getItem(slot);
@@ -155,14 +162,15 @@ public class UniversalPipeRenderer
             }
             int i = state.visibleItems++;
             UniversalPipeRenderState.TravellingItemEntry entry = state.entry(i);
-            int lane = i - count;
-            entry.x = 0.5F + ((lane % 2) == 0 ? -0.12F : 0.12F);
-            entry.y = 0.5F + (lane / 2) * 0.12F;
+            // Lane by SLOT (stable) — deriving it from the render index made buffered items hop
+            // lanes whenever a travelling packet expired.
+            entry.x = 0.5F + ((slot % 2) == 0 ? -0.12F : 0.12F);
+            entry.y = 0.5F + (slot / 2) * 0.12F;
             entry.z = 0.5F;
-            entry.spin = (now * 2.0F + i * 45.0F) % 360.0F;
+            entry.spin = (now * 2.0F + slot * 45.0F) % 360.0F;
             Minecraft.getInstance().getItemModelResolver().updateForTopItem(
                     entry.renderState, stack, ItemDisplayContext.GROUND, pipe.getLevel(), null,
-                    (int) pipe.getBlockPos().asLong() + i + 31);
+                    (int) pipe.getBlockPos().asLong() + slot + 31);
         }
     }
 
@@ -200,9 +208,15 @@ public class UniversalPipeRenderer
             poseStack.popPose();
         }
 
-        // Stream packets (position-colour translucent quads via the lightning render type),
-        // plus the Configurator's per-face colour shading on the hub.
-        boolean any = state.configuratorHeld;
+        // Configurator face shading: normal alpha blending (debugQuads) — the additive lightning
+        // blend washed the colours out to pastel against bright backgrounds.
+        if (state.configuratorHeld) {
+            collector.order(2).submitCustomGeometry(poseStack, RenderTypes.debugQuads(),
+                    (pose, consumer) -> renderFaceShading(state, pose, consumer));
+        }
+
+        // Stream packets (position-colour translucent quads via the lightning render type).
+        boolean any = false;
         for (int d = 0; d < 6 && !any; d++) {
             for (int l = 0; l < 3 && !any; l++) {
                 any = state.streams[d][l];
@@ -212,20 +226,15 @@ public class UniversalPipeRenderer
             return;
         }
         collector.order(1).submitCustomGeometry(poseStack, RenderTypes.lightning(),
-                (pose, consumer) -> {
-                    renderStreams(state, pose, consumer);
-                    if (state.configuratorHeld) {
-                        renderFaceShading(state, pose, consumer);
-                    }
-                });
+                (pose, consumer) -> renderStreams(state, pose, consumer));
     }
 
     /**
-     * Configurator face shading: one large colour-coded quad just inside each OUTER face of the
-     * pipe's block space (colours shared with the config GUI via {@link PipeFaceColors}), so the
-     * direction code reads clearly from across a room; faces with an installed filter glow
-     * stronger. Kept 0.005 inside the block bounds so it never z-fights an adjacent block face.
-     * Double-sided position-colour quads on the same lightning render type.
+     * Configurator face shading, hugging the PHYSICAL pipe model (colours shared with the config
+     * GUI via {@link PipeFaceColors}): a colour plate on each hub face, plus — where the arm is
+     * connected — an opaque colour sleeve wrapped around that arm out to the block edge. Faces
+     * with an installed filter render brighter. This tints the pipe itself rather than boxing it
+     * in, so the tube stays visible (the old full-block overlay hid the pipe entirely).
      */
     private static void renderFaceShading(UniversalPipeRenderState state, PoseStack.Pose pose,
             VertexConsumer consumer) {
@@ -235,22 +244,47 @@ public class UniversalPipeRenderer
             int r = (color >> 16) & 0xFF;
             int g = (color >> 8) & 0xFF;
             int b = color & 0xFF;
-            int a = state.faceFiltered[d] ? 165 : 70;
-            float along = 0.495F; // the block's outer face, nudged in to avoid neighbour z-fighting
-            float cx = 0.5F + dir.getStepX() * along;
-            float cy = 0.5F + dir.getStepY() * along;
-            float cz = 0.5F + dir.getStepZ() * along;
-            float s = 0.44F;      // near-full-face so the colour reads at a distance
-            if (dir.getAxis() == Direction.Axis.Z) {
-                // normal = Z: span X and Y.
-                quad(pose, consumer, cx, cy, cz, s, 0, 0, 0, s, 0, r, g, b, a);
-            } else if (dir.getAxis() == Direction.Axis.Y) {
-                // normal = Y: span X and Z.
-                quad(pose, consumer, cx, cy, cz, s, 0, 0, 0, 0, s, r, g, b, a);
-            } else {
-                // normal = X: span Y and Z.
-                quad(pose, consumer, cx, cy, cz, 0, s, 0, 0, 0, s, r, g, b, a);
+            int a = state.faceFiltered[d] ? 240 : 170;
+
+            // The two axes perpendicular to the face normal:
+            // X-normal -> P1=(0,1,0), P2=(0,0,1); Y-normal -> P1=(1,0,0), P2=(0,0,1);
+            // Z-normal -> P1=(1,0,0), P2=(0,1,0).
+            float p1x = dir.getAxis() == Direction.Axis.X ? 0 : 1;
+            float p1y = dir.getAxis() == Direction.Axis.X ? 1 : 0;
+            float p2y = dir.getAxis() == Direction.Axis.Z ? 1 : 0;
+            float p2z = dir.getAxis() == Direction.Axis.Z ? 0 : 1;
+
+            // Colour plate sitting just off the 6x6 hub face (hub half-size = 0.1875).
+            float plate = 0.192F;
+            float ps = 0.175F;
+            quad(pose, consumer,
+                    0.5F + dir.getStepX() * plate, 0.5F + dir.getStepY() * plate, 0.5F + dir.getStepZ() * plate,
+                    p1x * ps, p1y * ps, 0, 0, p2y * ps, p2z * ps, r, g, b, a);
+
+            if (!state.connections[d]) {
+                continue;
             }
+            // Sleeve around the connected arm: four walls from the hub edge to the block face,
+            // wrapped just outside the arm's cross-section.
+            float mid = 0.346F;   // midpoint of the arm run (0.192 .. 0.5)
+            float half = 0.154F;  // half-length of the run
+            float sh = 0.20F;     // sleeve half-width (arm is ~0.1875)
+            float cx = 0.5F + dir.getStepX() * mid;
+            float cy = 0.5F + dir.getStepY() * mid;
+            float cz = 0.5F + dir.getStepZ() * mid;
+            float ax = dir.getStepX() * half;
+            float ay = dir.getStepY() * half;
+            float az = dir.getStepZ() * half;
+            // Walls offset along ±P1, spanned by (arm axis, P2).
+            quad(pose, consumer, cx + p1x * sh, cy + p1y * sh, cz,
+                    ax, ay, az, 0, p2y * sh, p2z * sh, r, g, b, a);
+            quad(pose, consumer, cx - p1x * sh, cy - p1y * sh, cz,
+                    ax, ay, az, 0, p2y * sh, p2z * sh, r, g, b, a);
+            // Walls offset along ±P2, spanned by (arm axis, P1).
+            quad(pose, consumer, cx, cy + p2y * sh, cz + p2z * sh,
+                    ax, ay, az, p1x * sh, p1y * sh, 0, r, g, b, a);
+            quad(pose, consumer, cx, cy - p2y * sh, cz - p2z * sh,
+                    ax, ay, az, p1x * sh, p1y * sh, 0, r, g, b, a);
         }
     }
 
@@ -271,11 +305,17 @@ public class UniversalPipeRenderer
                     if (state.inward[d][l]) {
                         phase = 1.0F - phase;
                     }
+                    // Ease the pulse in and out over its run (sin envelope) so it fades at the arm
+                    // ends instead of popping into and out of existence — the visible "jitter".
+                    int alpha = (int) (170 * Mth.sin(phase * (float) Math.PI));
+                    if (alpha <= 10) {
+                        continue;
+                    }
                     float along = 0.08F + 0.42F * phase; // centre -> face
                     float cx = 0.5F + dir.getStepX() * along;
                     float cy = 0.5F + dir.getStepY() * along + (l - 1) * 0.09F * (dir.getAxis().isHorizontal() ? 1 : 0);
                     float cz = 0.5F + dir.getStepZ() * along;
-                    crossQuads(pose, consumer, dir, cx, cy, cz, r, g, b, 170);
+                    crossQuads(pose, consumer, dir, cx, cy, cz, r, g, b, alpha);
                 }
             }
         }

@@ -29,14 +29,15 @@ With the Configurator:
   (Energy → Fluid → Gas → Items).
 
 While the Configurator is in your hand, every Universal Pipe **shades its six faces** with the
-same colours as the panel rows (down slate, up white, north red, south green, west purple, east
-amber) — faces with a filter installed glow brighter — and any pipe holding a filter shows a
+same colours as the panel rows (down blue, up yellow, north red, south green, west purple, east
+orange) — faces with a filter installed glow brighter — and any pipe holding a filter shows a
 **floating copy of the filter item** above it, so filtered segments stand out across a whole line.
 
 ## Tips
 
-Faces touching an endless source (or any block that both gives and takes) should be set to **In** so
-the pipe doesn't push its buffer straight back. Faces feeding machines are happiest on **Out**.
+**Items only enter the network through faces set to In** — Auto pushes items out but never pulls
+them (energy/fluid/gas Auto still pull). Set the face touching each source chest or machine
+output to **In**; faces feeding machines and chests are happiest on **Out** or Auto.
 
 ## Details
 

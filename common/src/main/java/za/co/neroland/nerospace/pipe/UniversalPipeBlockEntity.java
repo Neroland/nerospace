@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.pipe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
@@ -430,10 +431,15 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     /** Network-level visual packet for an item routed through this segment. */
     void showTravelling(ItemStack moved, Direction inFace, @Nullable Direction outFace) {
+        showTravelling(moved, inFace, outFace, 0.0F);
+    }
+
+    /** As above with a start progress; negative = delayed entry (path stagger), hidden until 0. */
+    void showTravelling(ItemStack moved, Direction inFace, @Nullable Direction outFace, float startProgress) {
         if (moved.isEmpty() || this.travelling.size() >= MAX_TRAVELLING) {
             return;
         }
-        this.travelling.add(new TravellingItem(moved.copy(), inFace, outFace, 0.0F));
+        this.travelling.add(new TravellingItem(moved.copy(), inFace, outFace, startProgress));
         setChanged();
     }
 
@@ -511,8 +517,33 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         }
         this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
         this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);
-        this.travelling.clear();
-        this.travelling.addAll(input.read("Travelling", TravellingItem.CODEC.listOf()).orElse(List.of()));
+        List<TravellingItem> incoming = input.read("Travelling", TravellingItem.CODEC.listOf()).orElse(List.of());
+        if (this.level != null && this.level.isClientSide() && !this.travelling.isEmpty() && !incoming.isEmpty()) {
+            // Client sync smoothing: the client advances packets locally between the throttled server
+            // syncs, so adopting the server's (older) progress verbatim snaps them backwards — jitter.
+            // Keep the local packet when it matches an incoming one and is further along.
+            List<TravellingItem> remaining = new ArrayList<>(this.travelling);
+            List<TravellingItem> merged = new ArrayList<>(incoming.size());
+            for (TravellingItem in : incoming) {
+                TravellingItem kept = in;
+                for (Iterator<TravellingItem> it = remaining.iterator(); it.hasNext();) {
+                    TravellingItem old = it.next();
+                    if (old.from() == in.from() && old.to() == in.to()
+                            && old.progress() >= in.progress()
+                            && ItemStack.isSameItemSameComponents(old.stack(), in.stack())) {
+                        kept = old;
+                        it.remove();
+                        break;
+                    }
+                }
+                merged.add(kept);
+            }
+            this.travelling.clear();
+            this.travelling.addAll(merged);
+        } else {
+            this.travelling.clear();
+            this.travelling.addAll(incoming);
+        }
     }
 
     // --- Client sync (travelling-item visuals ride the block-entity update packet) ------------

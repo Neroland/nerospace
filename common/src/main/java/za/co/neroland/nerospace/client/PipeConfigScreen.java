@@ -28,7 +28,7 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
     private static final String[] FACE_NAMES = {"Down", "Up", "North", "South", "West", "East"};
 
     public PipeConfigScreen(PipeConfigMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, 176, 232);
+        super(menu, playerInventory, title, 176, 240);
         this.titleLabelX = 8;
         this.titleLabelY = 6;
         this.inventoryLabelX = 8;

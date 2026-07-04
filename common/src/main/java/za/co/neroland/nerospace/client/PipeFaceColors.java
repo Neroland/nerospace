@@ -10,14 +10,15 @@ import net.minecraft.core.Direction;
  */
 public final class PipeFaceColors {
 
-    /** ARGB per {@link Direction#get3DDataValue()}: down, up, north, south, west, east. */
+    /** ARGB per {@link Direction#get3DDataValue()}: down, up, north, south, west, east.
+     *  Six VIVID hues — every side must read as a colour in-world (white/grey wash out). */
     public static final int[] ARGB = {
-            0xFF8A97A8, // down  — slate
-            0xFFF0F0F0, // up    — white
-            0xFFE04848, // north — signal red
-            0xFF50D878, // south — green
-            0xFFB05AE0, // west  — nerosium purple
-            0xFFF0A030, // east  — amber
+            0xFF3C64F0, // down  — blue
+            0xFFF0D032, // up    — yellow
+            0xFFE04040, // north — signal red
+            0xFF3CD46C, // south — green
+            0xFFB050E8, // west  — nerosium purple
+            0xFFF09028, // east  — amber orange
     };
 
     public static int of(Direction dir) {

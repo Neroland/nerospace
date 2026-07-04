@@ -69,6 +69,11 @@ public final class TravellingItem {
         return this.progress >= 1.0F;
     }
 
+    /** Path-staggered packets start at negative progress and stay hidden until they "enter". */
+    public boolean isVisible() {
+        return this.progress >= 0.0F;
+    }
+
     /** Move along the segment (server advance + client-side smoothing between syncs). */
     public void advance(float by) {
         this.progress = Math.min(1.0F, this.progress + by);
