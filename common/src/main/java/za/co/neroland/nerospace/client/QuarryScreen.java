@@ -39,11 +39,20 @@ public class QuarryScreen extends TexturedContainerScreen<QuarryMenu> {
         segGauge(g, 8, 90, 160, 3, energyFrac, ACCENT);
 
         QuarryControllerBlockEntity.State state = this.menu.getState();
-        label(g, Component.translatable("gui.nerospace.quarry.state." + state.name().toLowerCase(java.util.Locale.ROOT)),
-                8, 97, SUBTLE);
-        int depth = Math.max(0, this.menu.getRefY() - this.menu.getCurrentY());
-        if (state != QuarryControllerBlockEntity.State.IDLE) {
-            label(g, Component.literal("Depth: " + depth), 110, 97, SUBTLE);
+        String pauseReason = this.menu.getPauseReason();
+        Component stateLine = state == QuarryControllerBlockEntity.State.PAUSED && !pauseReason.isEmpty()
+                ? Component.translatable("gui.nerospace.quarry.pause." + pauseReason)
+                : Component.translatable("gui.nerospace.quarry.state." + state.name().toLowerCase(java.util.Locale.ROOT));
+        label(g, stateLine, 8, 97, SUBTLE);
+        // Depth rides the right edge of the status row, and only while actively digging (MINING /
+        // BUILDING_FRAME), whose status texts are short. Paused/done/idle statuses can be long, so they
+        // get the full 160px row to themselves — no fixed-x depth label to collide with (the depth
+        // readout returns as soon as the dig resumes).
+        if (state == QuarryControllerBlockEntity.State.MINING
+                || state == QuarryControllerBlockEntity.State.BUILDING_FRAME) {
+            int depth = Math.max(0, this.menu.getRefY() - this.menu.getCurrentY());
+            Component depthLine = Component.literal("Depth: " + depth);
+            label(g, depthLine, 168 - this.font.width(depthLine), 97, SUBTLE);
         }
 
         int fluid = this.menu.getFluid();

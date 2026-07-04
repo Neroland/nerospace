@@ -60,13 +60,14 @@ release** — the complete progression from the first nerosium ore to a terrafor
 
 - With JEI installed, the grinder, fuel refinery and combustion generator show their own recipe categories (standard recipes/tags already worked out of the box).
 
-## 🛠️ Next up (first post-1.0 updates)
+**Solar Panels**
 
 - **[Solar Panels](Solar-Panel)** — sun-tracking, array-pooling power generation across **three tiers**
 
   (Tier 1 1×1, Tier 2 2×2, Tier 3 3×3 multiblocks), each folding the previous panel into its recipe.
 
-- **EMI integration** as soon as it reaches 26.1.
+## 🛠️ Next up (first post-1.0 updates)
+
 - **Balance tuning from player feedback** — the config multipliers make this cheap.
 - **Bespoke audio** to replace the vanilla-alias placeholders.
 

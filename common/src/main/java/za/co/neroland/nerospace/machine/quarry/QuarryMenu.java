@@ -144,6 +144,17 @@ public class QuarryMenu extends AbstractContainerMenu {
         return this.data.get(6);
     }
 
+    /** Wire codes for the controller's pause reason (index 7); order matches the server-side mapping. */
+    private static final String[] PAUSE_REASONS = {
+        "", "wrong_planet", "need_material", "fluid_full", "no_power", "buffer_full", "frame_incomplete"
+    };
+
+    /** The synced pause-reason key ({@code ""} when running or the reason is unknown). */
+    public String getPauseReason() {
+        int code = this.data.get(7);
+        return code > 0 && code < PAUSE_REASONS.length ? PAUSE_REASONS[code] : "";
+    }
+
     // --- Slot kinds -------------------------------------------------------------
 
     private static final class FrameSlot extends Slot {

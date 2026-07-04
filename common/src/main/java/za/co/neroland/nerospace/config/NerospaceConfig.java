@@ -48,6 +48,10 @@ public final class NerospaceConfig {
             1.0D, MULT_MIN, MULT_MAX, true, "global scale on per-dimension/per-biome gravity (higher = stronger)");
     private static final ConfigValue<Integer> QUARRY_MAX_SIDE = SCHEMA.intRange("quarryMaxSide",
             64, 4, 64, true, "max quarry landmark claim side in blocks (4..64, default 64)");
+    private static final ConfigValue<Integer> QUARRY_FRAME_DECAY_TICKS = SCHEMA.intRange("quarryFrameDecayTicks",
+            600, 20, 24000, true, "base delay in ticks before an orphaned quarry frame block crumbles and "
+            + "drops its casing; each block waits base + rand(base*7), so the default 600 spreads the ring's "
+            + "decay over ~30s..4min (20..24000)");
     private static final ConfigValue<Boolean> ALIEN_RAIDS = SCHEMA.bool("alienRaidsEnabled", true, true,
             "allow hostile mobs to raid alien villages at night (true by default; false = opt out)");
     private static final ConfigValue<Boolean> TERRAFORMER_FORCE_LOAD = SCHEMA.bool("terraformerForceLoadEnabled",
@@ -91,6 +95,14 @@ public final class NerospaceConfig {
     /** Configured quarry footprint side, clamped to a practical 4..64 block range. */
     public static int quarryMaxSide() {
         return QUARRY_MAX_SIDE.get();
+    }
+
+    /**
+     * Base scheduled-tick delay before an orphaned quarry frame block crumbles (each block adds a
+     * random spread of up to 7× this base, so the ring decays block by block; default 600 ≈ 30s–4min).
+     */
+    public static int quarryFrameDecayTicks() {
+        return QUARRY_FRAME_DECAY_TICKS.get();
     }
 
     /** Whether config-gated night raids on alien villages are enabled (default true; opt-out). */

@@ -116,7 +116,9 @@ public final class ModItems {
     /** A real bucket of the {@code rocket_fuel} fluid; places the liquid block / fills tanks. */
     public static final RegistryEntry<BucketItem> ROCKET_FUEL_BUCKET = ITEMS.register("rocket_fuel_bucket",
             key -> new BucketItem(ModFluids.ROCKET_FUEL.get(), new Item.Properties().stacksTo(1).setId(key)));
-    public static final RegistryEntry<Item> FRAME_CASING = item("frame_casing");
+    /** Quarry frame material — a {@link BlockItem} since the frame-rectangle setup path: players can
+     *  place casings as {@code quarry_frame} blocks by hand (outline an area, or patch a broken ring). */
+    public static final RegistryEntry<BlockItem> FRAME_CASING = blockItem("frame_casing", ModBlocks.QUARRY_FRAME);
     public static final RegistryEntry<Item> GRAV_STRIDERS = item("grav_striders");
     public static final RegistryEntry<Item> DRIFT_FLEECE = item("drift_fleece");
     /** Meadow Loper drop: a hearty haunch (no cooked variant — design §13). */
