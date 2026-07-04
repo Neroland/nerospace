@@ -115,17 +115,19 @@ I I I
 - **Reclaiming:** when the dig **finishes**, the frame is dismantled and the standing casings are
 
   returned to the controller's frame slots. **Breaking the controller mid-dig** instead *orphans*
-  the frame: the frame blocks crumble away one by one over the next few seconds and **drop
-  nothing** — place a new controller beside a still-complete ring to re-adopt it before it decays.
+  the frame: the frame blocks slowly crumble away one by one over the next few minutes (each block
+  at its own random moment, roughly 30 s – 4 min by default — tune with `quarryFrameDecayTicks`),
+  and **each drops its Frame Casing** as it goes, the same drop as mining it yourself. Placing a
+  new controller beside a still-standing ring re-adopts it and stops the decay.
 
 ### GUI status lines
 
 | Line | Meaning |
 | --- | --- |
-| **Idle — place landmarks or a frame outline** | No valid region found yet. |
+| **Idle — set landmarks or frame** | No valid region found yet — place landmarks or a hand-built frame outline. |
 | **Building frame** | Placing the frame ring (consuming casings). |
-| **Mining** | Digging — `Depth` shows how many layers below the frame plane it has reached. |
-| **Paused — …** | Stopped — the line names the reason: frame incomplete, out of Frame Casing, out of power, output/fluid buffer full, or wrong planet for this tier. |
+| **Mining** | Digging — `Depth` (right edge of the line, shown while building/mining) counts layers below the frame plane. |
+| **Paused — …** | Stopped — the line names the reason: frame incomplete, out of Frame Casing, out of power, output/fluid buffer full, or wrong planet (tier too low for it). The paused drill head stays where the dig stopped. |
 | **Finished — frame reclaimed** | Reached bedrock; the frame was dismantled and its casings returned to the frame slots. |
 
 ## Tiers & planets
@@ -158,8 +160,8 @@ too-low tier on a gated planet pauses with "wrong planet".
   buffered items, casings and modules)
 - Companion blocks: [Quarry Landmark](Quarry-Landmark), Quarry Frame (placed by the machine or by
 
-  hand from a Frame Casing; drops a Frame Casing when a player breaks it — orphaned frames that
-  decay after their controller is destroyed drop nothing)
+  hand from a Frame Casing; always drops a Frame Casing — whether a player breaks it or it decays
+  away after its controller is destroyed)
 
 - Capabilities: energy **in** (any side); mined **items out** (any side); **fluid out** (any side).
 
@@ -168,4 +170,5 @@ too-low tier on a gated planet pauses with "wrong planet".
 
 - Config: scales with the standard `energyRateMultiplier`, `fuelCostMultiplier`, and
 
-  `machineSpeedMultiplier` (see [Configuration](Configuration))
+  `machineSpeedMultiplier`; `quarryFrameDecayTicks` tunes how slowly an orphaned frame crumbles
+  (see [Configuration](Configuration))

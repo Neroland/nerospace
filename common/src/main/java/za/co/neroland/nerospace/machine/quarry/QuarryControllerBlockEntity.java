@@ -245,8 +245,11 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
             autoEject(serverLevel, pos);
         }
         // Push a throttled render snapshot (region/state/cursor ride the BE update tag) so the gantry +
-        // drill-head BER can draw and track the dig while the quarry is working.
-        if (this.state != State.IDLE && serverLevel.getGameTime() % RENDER_SYNC_INTERVAL == 0L) {
+        // drill-head BER can draw and track the dig while the quarry is working. IDLE has nothing to
+        // draw and DONE is static (the transition itself is pushed once from mine(), after which the
+        // renderer hides the machinery) — neither needs the periodic broadcast.
+        if (this.state != State.IDLE && this.state != State.DONE
+                && serverLevel.getGameTime() % RENDER_SYNC_INTERVAL == 0L) {
             serverLevel.sendBlockUpdated(pos, blockState, blockState, Block.UPDATE_CLIENTS);
         }
     }
@@ -444,6 +447,9 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
                 this.state = State.DONE;
                 reclaimFrame(level);
                 releaseForcedChunks(level);
+                // Final render snapshot: DONE is excluded from the periodic tick sync, so push the
+                // finished state once here — the client BER hides the gantry + drill on receipt.
+                level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
                 changed = true;
                 break;
             }
@@ -752,9 +758,10 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
 
     /**
      * Breaking the controller while its frame stands orphans the ring: every frame block is flagged
-     * {@link QuarryFrameBlock#ORPHANED} and scheduled to crumble on its own staggered tick — the frames
-     * visibly break one by one and drop nothing. (Frames the player mines directly still drop their
-     * casing; a finished dig reclaims its casings via {@link #reclaimFrame} before this can run.)
+     * {@link QuarryFrameBlock#ORPHANED} and scheduled to crumble on its own long, staggered tick — the
+     * frames visibly break one by one over minutes, each dropping its Frame Casing (same drop as
+     * player-mining). (A finished dig reclaims its casings via {@link #reclaimFrame} before this can
+     * run; re-adopting the ring with a new controller cancels the decay.)
      */
     private void orphanFrame(ServerLevel level) {
         QuarryRegion region = this.region;

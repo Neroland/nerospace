@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (same plane, same size limits as the landmark path) and starts mining inside it immediately.
   The landmark flow is unchanged.
 - The GUI now shows *why* the quarry is paused ("Paused — frame incomplete / out of power /
-  output buffer full / fluid buffer full / out of Frame Casing / wrong planet for this tier").
+  output buffer full / fluid buffer full / out of Frame Casing / wrong planet").
 
 **Public cargo-rocket route API (`za.co.neroland.nerospace.api`)**
 
@@ -57,9 +57,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   casings returned to the controller's frame slots (spilled at the controller if the slots
   overflow). Breaking the controller still drops everything it holds.
 - **Breaking the controller mid-dig no longer silently deletes the frame.** The orphaned frame
-  blocks now *decay*: each one crumbles (break effect, **no drop**) at its own random moment
-  over the next ~10 seconds. Placing a new controller beside a still-complete orphaned ring
-  re-adopts it and stops the decay.
+  blocks now *decay*: each one crumbles (break effect, **dropping its Frame Casing** — the same
+  drop as mining it yourself) at its own random moment, the ring slowly dissolving block by
+  block over roughly the next 30 seconds to 4 minutes (tunable via the new
+  `quarryFrameDecayTicks` config key). Placing a new controller beside a still-complete
+  orphaned ring re-adopts it and stops the decay.
 
 **Storage blocks moved to Neroland Core**
 
