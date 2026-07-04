@@ -5,6 +5,7 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.menu.AdvancedFilterMenu;
 import za.co.neroland.nerospace.menu.CombustionGeneratorMenu;
 import za.co.neroland.nerospace.menu.NerosiumGrinderMenu;
 import za.co.neroland.nerospace.menu.FuelRefineryMenu;
@@ -39,6 +40,10 @@ public final class ModMenuTypes {
     public static final RegistryEntry<MenuType<PipeConfigMenu>> PIPE_CONFIG =
             MENUS.register("pipe_config",
                     key -> new MenuType<>(PipeConfigMenu::new, FeatureFlags.VANILLA_SET));
+
+    public static final RegistryEntry<MenuType<AdvancedFilterMenu>> ADVANCED_FILTER =
+            MENUS.register("advanced_filter",
+                    key -> new MenuType<>(AdvancedFilterMenu::new, FeatureFlags.VANILLA_SET));
 
     public static final RegistryEntry<MenuType<PassiveGeneratorMenu>> PASSIVE_GENERATOR =
             MENUS.register("passive_generator",

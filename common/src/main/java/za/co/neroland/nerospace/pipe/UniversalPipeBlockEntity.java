@@ -91,8 +91,10 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     /** Per-face (6) × per-resource-type (4) I/O mode, set with the Configurator. Default AUTO. */
     private final PipeIoMode[][] faceModes = new PipeIoMode[6][PipeResourceType.VALUES.length];
-    /** Per-face item-layer filter (EMPTY = unfiltered), indexed by {@code Direction.get3DDataValue()}. */
-    private final ItemStack[] faceFilters = new ItemStack[6];
+    /** Per-face item-layer filter (EMPTY = unfiltered), indexed by {@code Direction.get3DDataValue()}.
+     *  Multi-entry {@link FaceFilter} model (issue #25); the basic Pipe Filter writes one-entry
+     *  whitelists through {@link #setFilter}, the Advanced Pipe Filter applies whole configs. */
+    private final FaceFilter[] faceFilters = new FaceFilter[6];
     private int speedUpgrades;
     private int capacityUpgrades;
 
@@ -122,7 +124,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             for (int t = 0; t < PipeResourceType.VALUES.length; t++) {
                 this.faceModes[f][t] = PipeIoMode.AUTO;
             }
-            this.faceFilters[f] = ItemStack.EMPTY;
+            this.faceFilters[f] = FaceFilter.EMPTY;
         }
     }
 
@@ -222,14 +224,20 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         return new PipeConfigMenu(containerId, inventory, this, this.configData);
     }
 
-    // --- Per-face item filter (Pipe Filter) ----------------------------------
+    // --- Per-face item filter (Pipe Filter / Advanced Pipe Filter) -----------
 
-    public ItemStack filter(Direction dir) {
+    public FaceFilter filter(Direction dir) {
         return this.faceFilters[dir.get3DDataValue()];
     }
 
+    /** Basic Pipe Filter compatibility path: one exact item (EMPTY clears the face). */
     public void setFilter(Direction dir, ItemStack filter) {
-        this.faceFilters[dir.get3DDataValue()] = filter == null ? ItemStack.EMPTY : filter;
+        setFaceFilter(dir, FaceFilter.ofItem(filter));
+    }
+
+    /** Apply a full multi-entry filter to a face (Advanced Pipe Filter; EMPTY clears). */
+    public void setFaceFilter(Direction dir, FaceFilter filter) {
+        this.faceFilters[dir.get3DDataValue()] = filter == null ? FaceFilter.EMPTY : filter;
         setChanged();
     }
 
@@ -408,7 +416,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         output.putLong("Faces", packed);
         for (int f = 0; f < 6; f++) {
             if (!this.faceFilters[f].isEmpty()) {
-                output.store("Filter" + f, ItemStack.OPTIONAL_CODEC, this.faceFilters[f]);
+                output.store("FaceFilter" + f, FaceFilter.CODEC, this.faceFilters[f]);
             }
         }
         output.putInt("SpeedUpgrades", this.speedUpgrades);
@@ -441,7 +449,14 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             }
         }
         for (int f = 0; f < 6; f++) {
-            this.faceFilters[f] = input.read("Filter" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+            // New multi-entry format first; fall back to the legacy single-ItemStack key
+            // (pre-#25 worlds), wrapped as a one-entry whitelist — identical behaviour.
+            FaceFilter stored = input.read("FaceFilter" + f, FaceFilter.CODEC).orElse(null);
+            if (stored == null) {
+                stored = FaceFilter.ofItem(
+                        input.read("Filter" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+            }
+            this.faceFilters[f] = stored;
         }
         this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
         this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);

@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.Block;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.gear.XertzResonatorItem;
+import za.co.neroland.nerospace.item.AdvancedPipeFilterItem;
 import za.co.neroland.nerospace.item.ConfiguratorItem;
 import za.co.neroland.nerospace.item.DestinationCompassItem;
 import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
@@ -138,6 +139,9 @@ public final class ModItems {
             key -> new ConfiguratorItem(new Item.Properties().stacksTo(1).setId(key)));
     public static final RegistryEntry<Item> PIPE_FILTER = ITEMS.register("pipe_filter",
             key -> new PipeFilterItem(new Item.Properties().stacksTo(16).setId(key)));
+    /** Higher-tier filter (issue #25): up to 9 item/tag entries, whitelist/blacklist, GUI-configured. */
+    public static final RegistryEntry<Item> ADVANCED_PIPE_FILTER = ITEMS.register("advanced_pipe_filter",
+            key -> new AdvancedPipeFilterItem(new Item.Properties().stacksTo(16).setId(key)));
     public static final RegistryEntry<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade",
             key -> new PipeUpgradeItem(new Item.Properties().setId(key), PipeUpgradeItem.Kind.SPEED));
     public static final RegistryEntry<Item> CAPACITY_UPGRADE = ITEMS.register("capacity_upgrade",
@@ -303,7 +307,8 @@ public final class ModItems {
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
                         STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(), CINDARA_COMPASS.get(),
                         GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get(),
-                        CONFIGURATOR.get(), PIPE_FILTER.get(), SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get(),
+                        CONFIGURATOR.get(), PIPE_FILTER.get(), ADVANCED_PIPE_FILTER.get(),
+                        SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get(),
                         STAR_GUIDE_BOOK.get(), STATION_CHARTER.get()),
                 CreativeModeTabs.SPAWN_EGGS,
                 List.<ItemLike>of(XERTZ_STALKER_SPAWN_EGG.get(), QUARTZ_CRAWLER_SPAWN_EGG.get(),

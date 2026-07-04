@@ -345,7 +345,7 @@ public final class PipeNetwork {
 
     // --- Items ----------------------------------------------------------------
 
-    private record Sink(BlockPos pipePos, Direction outFace, Container container, Direction side, ItemStack filter) {
+    private record Sink(BlockPos pipePos, Direction outFace, Container container, Direction side, FaceFilter filter) {
     }
 
     private void tickItems(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
@@ -410,7 +410,7 @@ public final class PipeNetwork {
                     int offset = Math.floorMod(this.itemRoundRobin++, n);
                     for (int i = 0; i < n && !stack.isEmpty(); i++) {
                         Sink sink = sinks.get((offset + i) % n);
-                        if (!sink.filter().isEmpty() && !ItemStack.isSameItemSameComponents(sink.filter(), stack)) {
+                        if (!sink.filter().test(stack)) {
                             continue;
                         }
                         ItemStack before = stack.copy();
@@ -535,14 +535,14 @@ public final class PipeNetwork {
     }
 
     /** Extract up to {@code maxCount} items matching {@code filter} from one slot of a sided container. */
-    private static ItemStack extract(Container src, Direction side, ItemStack filter, int maxCount) {
+    private static ItemStack extract(Container src, Direction side, FaceFilter filter, int maxCount) {
         int[] slots = src instanceof WorldlyContainer w ? w.getSlotsForFace(side) : allSlots(src);
         for (int slot : slots) {
             ItemStack inSlot = src.getItem(slot);
             if (inSlot.isEmpty()) {
                 continue;
             }
-            if (!filter.isEmpty() && !ItemStack.isSameItemSameComponents(filter, inSlot)) {
+            if (!filter.test(inSlot)) {
                 continue;
             }
             if (src instanceof WorldlyContainer w && !w.canTakeItemThroughFace(slot, inSlot, side)) {

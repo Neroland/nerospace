@@ -3055,6 +3055,36 @@ def gen_falling_meteor_entity():
     save(img, os.path.join(ENTITY_DIR, "falling_meteor.png"))
 
 
+def gen_advanced_pipe_filter():
+    """Advanced Pipe Filter (issue #25): the committed pipe_filter art re-trimmed toward gold
+    (higher tier, like the T2 suit derivation) with a cyan multi-chip motif bottom-right —
+    'the same tool, more entries' at a glance."""
+    src = os.path.join(ITEM_DIR, "pipe_filter.png")
+    dst = os.path.join(ITEM_DIR, "advanced_pipe_filter.png")
+    if not os.path.exists(src):
+        print("skip advanced_pipe_filter (no committed pipe_filter base)")
+        return
+    img = Image.open(src).convert("RGBA").copy()
+    px = img.load()
+    for y in range(S):
+        for x in range(S):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            # Greyish steel -> warm gold tint; leave any accent pixels alone.
+            if abs(r - g) < 28 and abs(g - b) < 28:
+                px[x, y] = (min(255, int(r * 1.2) + 34), min(255, int(g * 1.02) + 20),
+                            max(0, int(b * 0.55)), a)
+    chip = (90, 200, 224, 255)
+    chip_d = (34, 104, 134, 255)
+    for (cx, cy) in ((9, 10), (12, 10), (9, 13), (12, 13)):  # 2x2 chip quad = the 3x3-grid motif
+        px[cx, cy] = chip
+        px[cx + 1, cy] = chip
+        px[cx, cy + 1] = chip_d
+        px[cx + 1, cy + 1] = chip_d
+    save(img, dst)
+
+
 if __name__ == "__main__":
     # Solar panels (SOLAR_PANEL_DESIGN): shared futuristic blue+green PV deck; the edge ring colour
     # codes the tier — T1 signal red, T2 nerosium magenta, T3 gold.
@@ -3107,6 +3137,10 @@ if __name__ == "__main__":
     gen_gui_machine_panel("fuel_tank", (255, 158, 36, 255), (110, 62, 14, 255), slots=())
     gen_gui_machine_panel("fuel_refinery", (255, 158, 36, 255), (110, 62, 14, 255),
                           slots=((56, 35), (104, 35)))
+    # Advanced Pipe Filter (issue #25): 3x3 ghost grid at (26,17), toggles drawn live by the screen.
+    gen_gui_machine_panel("advanced_filter", (90, 200, 224, 255), (30, 80, 100, 255),
+                          slots=tuple((26 + c * 18, 17 + r * 18) for r in range(3) for c in range(3)))
+    gen_advanced_pipe_filter()
     # Creature base textures (additive; (re)render only under the creature-scoped --creatures flag).
     gen_creatures()
     gen_spawn_eggs()
