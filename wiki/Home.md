@@ -26,7 +26,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 
    - Automate the digging with a **[Quarry Controller](Quarry-Controller)**: mark an area with
 
-     landmarks and it strip-mines the whole rectangle to bedrock on its own.
+     landmarks (or outline it with hand-placed frame blocks) and it strip-mines the whole
+     rectangle to bedrock on its own.
 
 5. Late game: build the **[Heavy Launch Complex](Launch-Gantry)**, found stations with a
 

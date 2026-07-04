@@ -108,7 +108,10 @@ public class QuarryControllerRenderer
         BlockEntityRenderer.super.extractRenderState(be, s, partialTick, cameraPos, breakProgress);
         QuarryRegion r = be.renderRegion();
         QuarryControllerBlockEntity.State st = be.renderState();
-        if (r == null || st == QuarryControllerBlockEntity.State.IDLE || be.getLevel() == null) {
+        // No machinery when there is nothing to work on: unclaimed / IDLE, and DONE — the dig is finished
+        // and the frame reclaimed, so a gantry + drill floating over the empty pit would be a ghost.
+        if (r == null || st == QuarryControllerBlockEntity.State.IDLE
+                || st == QuarryControllerBlockEntity.State.DONE || be.getLevel() == null) {
             s.active = false;
             return;
         }
@@ -127,14 +130,17 @@ public class QuarryControllerRenderer
         double tx;
         double ty;
         double tz;
-        if (s.mining) {
-            // Head target: the current dig cell. The spike apex sits on the cell's top face.
+        if (s.mining || st == QuarryControllerBlockEntity.State.PAUSED) {
+            // Head target: the current dig cell. The spike apex sits on the cell's top face. PAUSED keeps
+            // targeting the cell too — a quarry paused mid-dig (frame incomplete, out of power, buffers
+            // full…) visually retains its drill exactly where it stopped instead of retracting to the
+            // frame plane, so the player can see at a glance where the dig will resume.
             BlockPos cell = r.columnPos(be.renderCursor(), be.renderCurrentY());
             tx = cell.getX() + 0.5;
             ty = be.renderCurrentY() + 1.0 - TIP_Y;
             tz = cell.getZ() + 0.5;
         } else {
-            // Idle / pre-first-block: hover at the region centre.
+            // Building the frame / pre-first-block: hover at the region centre on the frame plane.
             tx = cx;
             ty = r.refY() + 0.5;
             tz = cz;

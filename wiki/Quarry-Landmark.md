@@ -12,6 +12,10 @@ Landmarks are how you draw a quarry's footprint. Each one projects animated **ma
 the horizontal axes; place **three in an L** and the controller reads them as the corners of a
 rectangle. They're consumed when the quarry activates.
 
+> Landmarks are optional: you can instead outline the rectangle yourself with hand-placed **frame
+> blocks** (Frame Casing is placeable) and put the controller beside the closed ring — see
+> [Quarry Controller](Quarry-Controller).
+
 ## Obtaining
 
 **Craft** (shaped, makes 3):

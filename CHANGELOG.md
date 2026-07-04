@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**Marker-less quarry setup (frame outline)**
+
+- The quarry area can now be defined **without landmarks**: outline a closed rectangle with
+  hand-placed **Frame Casing** (it is now a placeable block item that places `quarry_frame`)
+  and put the Quarry Controller beside it — the controller detects the complete perimeter
+  (same plane, same size limits as the landmark path) and starts mining inside it immediately.
+  The landmark flow is unchanged.
+- The GUI now shows *why* the quarry is paused ("Paused — frame incomplete / out of power /
+  output buffer full / fluid buffer full / out of Frame Casing / wrong planet").
+
 **Public cargo-rocket route API (`za.co.neroland.nerospace.api`)**
 
 - New semver-stable route surface for logistics consumers (NeroLogistics' `RouteProvider` seam):
@@ -23,7 +33,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Read-only and player-data-free; the internals (`rocket.Destinations`, `rocket.RocketTravel`,
   `rocket.RocketTier`) remain internal.
 
+### Fixed
+
+**Machine blocks now drop themselves when mined**
+
+- Several blocks used `requiresCorrectToolForDrops` but were missing from the
+  `minecraft:mineable/pickaxe` tag, so **no tool ever counted as correct and they dropped
+  nothing**: Fuel Tank, Fuel Refinery, Oxygen Generator, Terraformer, Hydration Module,
+  Terraform Monitor, Star Guide, Solar Panel (all tiers), Quarry Controller, Rocket Launch
+  Pad, Launch Gantry, Village Core (plus Meteor Core, Launch Controller and its filler for
+  mining-speed parity). All are now pickaxe-mineable; loot-table-dropping ones also need an
+  iron tool, matching the other machines. Solar Panel T2/T3 keep their one-item multiblock
+  drop from code (their loot tables are now empty to prevent a duplicate drop).
+
 ### Changed
+
+**Quarry frame lifecycle**
+
+- **Breaking a frame block now drops a Frame Casing**, and the quarry notices the broken ring:
+  it rebuilds the gap from its casing stock, or pauses with "frame incomplete" until the
+  player patches the ring by hand or inserts casings into the frame slots.
+- **A finished dig dismantles its frame**: the standing frame blocks are removed and their
+  casings returned to the controller's frame slots (spilled at the controller if the slots
+  overflow). Breaking the controller still drops everything it holds.
+- **Breaking the controller mid-dig no longer silently deletes the frame.** The orphaned frame
+  blocks now *decay*: each one crumbles (break effect, **dropping its Frame Casing** — the same
+  drop as mining it yourself) at its own random moment, the ring slowly dissolving block by
+  block over roughly the next 30 seconds to 4 minutes (tunable via the new
+  `quarryFrameDecayTicks` config key). Placing a new controller beside a still-complete
+  orphaned ring re-adopts it and stops the decay.
 
 **Storage blocks moved to Neroland Core**
 

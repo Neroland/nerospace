@@ -208,7 +208,7 @@ public final class ModBlocks {
     public static final RegistryEntry<QuarryFrameBlock> QUARRY_FRAME = BLOCKS.register("quarry_frame",
             key -> new QuarryFrameBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(1.5F, 6.0F)
-                    .sound(SoundType.METAL).lightLevel(s -> 7).noOcclusion().noLootTable()));
+                    .sound(SoundType.METAL).lightLevel(s -> 7).noOcclusion()));
 
     public static final RegistryEntry<QuarryLandmarkBlock> QUARRY_LANDMARK = BLOCKS.register("quarry_landmark",
             key -> new QuarryLandmarkBlock(BlockBehaviour.Properties.of()

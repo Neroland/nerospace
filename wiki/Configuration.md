@@ -118,6 +118,13 @@ one natural meteor every 2–3 play-hours per active dimension; the Meteor Calle
 | `meteorLootBonusRolls` | `3` | 0–32 | Weighted bonus loot rolls on top of the guaranteed alien fragments. |
 | `meteorDebugLog` | `false` | — | Verbose, non-personal meteor logging (dimension + coordinates only — POPIA/GDPR). |
 
+### Quarry
+
+| Key | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `quarryMaxSide` | `64` | 4–64 | Max side length (blocks) of a quarry's landmark claim; tiers may cap lower. |
+| `quarryFrameDecayTicks` | `600` | 20–24,000 | Base delay before an orphaned frame block crumbles and drops its casing. Each block waits `base + rand(base×7)` ticks, so the default spreads the ring's decay over ~30 s – 4 min. |
+
 ### Alien villages
 
 | Key | Default | Meaning |
