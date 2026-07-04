@@ -11,12 +11,22 @@ Restricts a pipe face's **item layer** to a single item.
 
   right-click in air. (Empty other hand = clear the filter item.)
 
-- **Apply:** right-click a Universal Pipe **face** with the configured filter — only the matching
-
-  item is pulled or pushed through that face. Apply an empty filter to remove it.
+- **Install:** right-click a Universal Pipe **face** with the configured filter — the item is
+  **consumed into that face's filter slot** (like pipe upgrades), and only the matching item is
+  pulled or pushed through the face. A filter already on the face pops back to you.
+- **Remove / inspect:** open the pipe's [Configurator](Configurator) panel — each face's filter
+  sits in a real slot; hover it to see what it matches, take it out to clear the face. Breaking
+  the pipe drops its installed filters.
 
 Filters affect extraction (pulling faces only grab the matching item), routing (packets won't head
 toward a filtered face that rejects them) and delivery.
+
+> **Tip — watch which face you click.** The filter lands on the face you clicked, which is not
+> always the face touching the target chest. Hold the Configurator to see the per-face colour
+> shading, then check the panel: the filter should sit in the row whose colour matches the shaded
+> face pointing at your target. Items with **no accepting face anywhere** wait inside the pipes
+> (backpressure — nothing is ever dropped), so a fully filtered line needs at least one
+> unfiltered destination for the leftovers.
 
 ## Advanced Pipe Filter
 
@@ -33,10 +43,13 @@ BuildCraft-diamond-pipe-style sorting without parallel lines.
     back to the exact item.
   - **Whitelist / Blacklist** toggle: only these items — or everything **except** these items.
   - **Match Exact / Ignore Data** toggle: whether item data components (NBT) must match too.
-- **Apply:** right-click a Universal Pipe **face** — the whole configuration lands on that face.
-  An unconfigured filter clears the face.
-- **Copy:** **sneak-right-click** a pipe face to read its current filter back into the item —
+- **Install:** right-click a Universal Pipe **face** — the item (with its whole configuration)
+  is consumed into that face's filter slot; a previously installed filter pops back to you.
+  Remove or inspect it via the [Configurator](Configurator) panel's face slots.
+- **Copy:** **sneak-right-click** a pipe face to read its current filter back into the held item —
   replicate a sorting wall without rebuilding the config.
+- **Inspect:** the item's **tooltip lists the full configuration** (mode line + every entry;
+  tag entries in gold) — in your inventory and in the Configurator panel's face slots.
 
 The configuration is stored on the item, so a tuned filter is a **template**: stack it in a chest,
 share it, or apply it to a dozen faces in a row. A filter with no entries behaves like no filter

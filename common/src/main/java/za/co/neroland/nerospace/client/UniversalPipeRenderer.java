@@ -19,6 +19,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
+import net.minecraft.client.player.LocalPlayer;
+
+import za.co.neroland.nerospace.item.ConfiguratorItem;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.TravellingItem;
@@ -59,6 +62,29 @@ public class UniversalPipeRenderer
         }
         float now = pipe.getLevel().getGameTime() + partialTick;
         state.time = now;
+
+        // Configurator overlay: face shading + the floating installed-filter indicator.
+        LocalPlayer player = Minecraft.getInstance().player;
+        state.configuratorHeld = player != null
+                && (player.getMainHandItem().getItem() instanceof ConfiguratorItem
+                        || player.getOffhandItem().getItem() instanceof ConfiguratorItem);
+        state.hasFilterIndicator = false;
+        if (state.configuratorHeld) {
+            ItemStack indicator = ItemStack.EMPTY;
+            for (Direction dir : Direction.values()) {
+                ItemStack filter = pipe.filterItem(dir);
+                state.faceFiltered[dir.get3DDataValue()] = !filter.isEmpty();
+                if (indicator.isEmpty()) {
+                    indicator = filter;
+                }
+            }
+            if (!indicator.isEmpty()) {
+                state.hasFilterIndicator = true;
+                Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                        state.filterIndicator, indicator, ItemDisplayContext.GROUND, pipe.getLevel(), null,
+                        (int) pipe.getBlockPos().asLong() + 63);
+            }
+        }
 
         // Stream layers from the buffered contents + face modes + connection blockstate.
         boolean hasEnergy = pipe.getEnergy().getAmount() > 0;
@@ -162,8 +188,21 @@ public class UniversalPipeRenderer
             poseStack.popPose();
         }
 
-        // Stream packets (position-colour translucent quads via the lightning render type).
-        boolean any = false;
+        // Floating installed-filter indicator (Configurator in hand): a slow-spinning, bobbing
+        // copy of the face's filter item above the pipe — filtered segments read at a glance.
+        if (state.hasFilterIndicator) {
+            poseStack.pushPose();
+            float bob = Mth.sin(state.time * 0.12F) * 0.04F;
+            poseStack.translate(0.5F, 1.05F + bob, 0.5F);
+            poseStack.mulPose(Axis.YP.rotationDegrees((state.time * 2.5F) % 360.0F));
+            poseStack.scale(0.45F, 0.45F, 0.45F);
+            state.filterIndicator.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+        }
+
+        // Stream packets (position-colour translucent quads via the lightning render type),
+        // plus the Configurator's per-face colour shading on the hub.
+        boolean any = state.configuratorHeld;
         for (int d = 0; d < 6 && !any; d++) {
             for (int l = 0; l < 3 && !any; l++) {
                 any = state.streams[d][l];
@@ -173,7 +212,46 @@ public class UniversalPipeRenderer
             return;
         }
         collector.order(1).submitCustomGeometry(poseStack, RenderTypes.lightning(),
-                (pose, consumer) -> renderStreams(state, pose, consumer));
+                (pose, consumer) -> {
+                    renderStreams(state, pose, consumer);
+                    if (state.configuratorHeld) {
+                        renderFaceShading(state, pose, consumer);
+                    }
+                });
+    }
+
+    /**
+     * Configurator face shading: one large colour-coded quad just inside each OUTER face of the
+     * pipe's block space (colours shared with the config GUI via {@link PipeFaceColors}), so the
+     * direction code reads clearly from across a room; faces with an installed filter glow
+     * stronger. Kept 0.005 inside the block bounds so it never z-fights an adjacent block face.
+     * Double-sided position-colour quads on the same lightning render type.
+     */
+    private static void renderFaceShading(UniversalPipeRenderState state, PoseStack.Pose pose,
+            VertexConsumer consumer) {
+        for (Direction dir : Direction.values()) {
+            int d = dir.get3DDataValue();
+            int color = PipeFaceColors.ARGB[d];
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = color & 0xFF;
+            int a = state.faceFiltered[d] ? 165 : 70;
+            float along = 0.495F; // the block's outer face, nudged in to avoid neighbour z-fighting
+            float cx = 0.5F + dir.getStepX() * along;
+            float cy = 0.5F + dir.getStepY() * along;
+            float cz = 0.5F + dir.getStepZ() * along;
+            float s = 0.44F;      // near-full-face so the colour reads at a distance
+            if (dir.getAxis() == Direction.Axis.Z) {
+                // normal = Z: span X and Y.
+                quad(pose, consumer, cx, cy, cz, s, 0, 0, 0, s, 0, r, g, b, a);
+            } else if (dir.getAxis() == Direction.Axis.Y) {
+                // normal = Y: span X and Z.
+                quad(pose, consumer, cx, cy, cz, s, 0, 0, 0, 0, s, r, g, b, a);
+            } else {
+                // normal = X: span Y and Z.
+                quad(pose, consumer, cx, cy, cz, 0, s, 0, 0, 0, s, r, g, b, a);
+            }
+        }
     }
 
     private static void renderStreams(UniversalPipeRenderState state, PoseStack.Pose pose, VertexConsumer consumer) {

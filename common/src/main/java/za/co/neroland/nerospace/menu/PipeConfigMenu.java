@@ -1,30 +1,36 @@
 package za.co.neroland.nerospace.menu;
 
 import net.minecraft.core.Direction;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.item.AdvancedPipeFilterItem;
+import za.co.neroland.nerospace.item.PipeFilterItem;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
 /**
- * The Universal Pipe configuration menu (advanced-pipes slice B). A slot-less menu that edits one
- * resource layer at a time across the pipe's six faces: seven synced data values ([0]=selected layer,
- * [1..6]=each face's I/O mode for that layer). Buttons route through {@link #clickMenuButton} so no
- * custom packet is needed — the cycle-layer and per-face cycle buttons are handled server-side where
- * the menu holds the {@link UniversalPipeBlockEntity}.
+ * The Universal Pipe configuration menu. Edits one resource layer at a time across the pipe's six
+ * faces (seven synced data values: [0]=selected layer, [1..6]=each face's I/O mode) <b>and</b> hosts
+ * the six per-face <b>filter slots</b> (issue #25 follow-up): real slots holding the physical
+ * Pipe Filter / Advanced Pipe Filter item installed on each face, so the GUI shows exactly what
+ * every face is doing — drop a filter in to filter that face, take it out to clear it, hover for
+ * the filter's contents (the filter items list their configuration in their tooltip).
  *
- * <p>Cross-loader note: a plain (non-extended) menu opened via the vanilla {@code openMenu} path, so it
- * needs no loader-specific extended-menu API and no client-screen-open seam — the standalone mod's
- * client-screen + {@code SetPipeModePayload} approach is replaced by this server-authoritative menu.</p>
+ * <p>Slot indices: {@code 0..5} = face filter slots by {@link Direction#get3DDataValue()},
+ * {@code 6..41} = player inventory. Mode buttons still route through {@link #clickMenuButton}
+ * (cycle-layer = 0, per-face cycle = {@code FACE_BASE + face}) — no custom packets.</p>
  */
 public class PipeConfigMenu extends AbstractContainerMenu {
 
@@ -33,9 +39,17 @@ public class PipeConfigMenu extends AbstractContainerMenu {
     /** Cycle face {@code n} (0..5 by {@link Direction#get3DDataValue()}) via button id {@code FACE_BASE + n}. */
     public static final int FACE_BASE = 1;
 
+    public static final int FILTER_SLOTS = 6;
+    /** Filter-slot column X and first-row Y (18px pitch) — the screen draws its sockets here. */
+    public static final int SLOT_X = 148;
+    public static final int FIRST_ROW_Y = 36;
+    public static final int ROW_STEP = 18;
+    public static final int INV_Y = 150;
+
     @Nullable
     private final UniversalPipeBlockEntity pipe;
     private final ContainerData data;
+    private final Container filterItems;
 
     public PipeConfigMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, null, new SimpleContainerData(DATA_COUNT));
@@ -48,7 +62,30 @@ public class PipeConfigMenu extends AbstractContainerMenu {
         checkContainerDataCount(data, DATA_COUNT);
         this.pipe = pipe;
         this.data = data;
+        this.filterItems = pipe != null ? pipe.filterItems() : new SimpleContainer(FILTER_SLOTS);
+        for (int f = 0; f < FILTER_SLOTS; f++) {
+            this.addSlot(new FilterSlot(this.filterItems, f, SLOT_X, FIRST_ROW_Y + f * ROW_STEP));
+        }
+        this.addStandardInventorySlots(playerInventory, 8, INV_Y);
         this.addDataSlots(data);
+    }
+
+    /** A face's filter containment: one Pipe Filter / Advanced Pipe Filter item, nothing else. */
+    private static final class FilterSlot extends Slot {
+        FilterSlot(Container container, int index, int x, int y) {
+            super(container, index, x, y);
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return stack.getItem() instanceof PipeFilterItem
+                    || stack.getItem() instanceof AdvancedPipeFilterItem;
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return 1;
+        }
     }
 
     @Override
@@ -81,7 +118,29 @@ public class PipeConfigMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
-        return ItemStack.EMPTY; // slot-less config readout — nothing to move
+        Slot slot = this.slots.get(index);
+        if (!slot.hasItem()) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack stack = slot.getItem();
+        ItemStack original = stack.copy();
+        if (index < FILTER_SLOTS) {
+            // Face slot -> player inventory.
+            if (!moveItemStackTo(stack, FILTER_SLOTS, this.slots.size(), true)) {
+                return ItemStack.EMPTY;
+            }
+        } else {
+            // Player inventory -> first free face slot (single filter per face).
+            if (!moveItemStackTo(stack, 0, FILTER_SLOTS, false)) {
+                return ItemStack.EMPTY;
+            }
+        }
+        if (stack.isEmpty()) {
+            slot.setByPlayer(ItemStack.EMPTY);
+        } else {
+            slot.setChanged();
+        }
+        return original;
     }
 
     // --- Screen helpers -----------------------------------------------------

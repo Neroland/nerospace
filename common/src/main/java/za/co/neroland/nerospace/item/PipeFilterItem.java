@@ -1,5 +1,8 @@
 package za.co.neroland.nerospace.item;
 
+import java.util.function.Consumer;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -9,6 +12,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
@@ -40,18 +45,40 @@ public class PipeFilterItem extends Item {
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display,
+            Consumer<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, tooltip, flag);
+        ItemStack filter = configured(stack);
+        tooltip.accept(filter.isEmpty()
+                ? Component.translatable("item.nerospace.pipe_filter.tooltip.empty")
+                        .withStyle(ChatFormatting.DARK_GRAY)
+                : Component.translatable("item.nerospace.pipe_filter.tooltip.filters",
+                        filter.getHoverName()).withStyle(ChatFormatting.GRAY));
+    }
+
+    @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         if (!level.isClientSide() && context.getPlayer() instanceof ServerPlayer player
                 && level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
+            ItemStack held = context.getItemInHand();
+            if (configured(held).isEmpty()) {
+                player.sendSystemMessage(Component.translatable("item.nerospace.pipe_filter.unconfigured"));
+                return InteractionResult.SUCCESS;
+            }
+            // Install the physical filter into the face's slot (like upgrades); any previously
+            // installed filter pops back to the player. Remove filters via the Configurator GUI.
             Direction face = context.getClickedFace();
-            ItemStack filter = configured(context.getItemInHand());
-            pipe.setFilter(face, filter);
-            player.sendSystemMessage(filter.isEmpty()
-                    ? Component.translatable("item.nerospace.pipe_filter.cleared_face", face.getName())
-                    : Component.translatable("item.nerospace.pipe_filter.applied",
-                            filter.getHoverName(), face.getName()));
+            ItemStack previous = pipe.installFilter(face, held);
+            if (!player.getAbilities().instabuild) {
+                held.shrink(1);
+            }
+            if (!previous.isEmpty()) {
+                player.getInventory().placeItemBackInInventory(previous);
+            }
+            player.sendSystemMessage(Component.translatable("item.nerospace.pipe_filter.applied",
+                    configured(pipe.filterItem(face)).getHoverName(), face.getName()));
             return InteractionResult.SUCCESS;
         }
         return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.PASS;

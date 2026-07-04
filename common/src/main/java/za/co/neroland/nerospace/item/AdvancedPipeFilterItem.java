@@ -1,15 +1,21 @@
 package za.co.neroland.nerospace.item;
 
+import java.util.function.Consumer;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
@@ -63,25 +69,67 @@ public class AdvancedPipeFilterItem extends Item {
             if (!level.isClientSide() && context.getPlayer() instanceof ServerPlayer player) {
                 Direction face = context.getClickedFace();
                 if (player.isShiftKeyDown()) {
-                    // Copy the face's filter into the item (template pickup).
+                    // Copy the face's effective filter into the item (template pickup).
                     FaceFilter copied = pipe.filter(face);
                     store(context.getItemInHand(), copied);
                     player.sendSystemMessage(Component.translatable(
                             "item.nerospace.advanced_pipe_filter.copied",
                             face.getName(), copied.activeEntryCount()));
                 } else {
-                    FaceFilter filter = configured(context.getItemInHand());
-                    pipe.setFaceFilter(face, filter);
-                    player.sendSystemMessage(filter.isEmpty()
-                            ? Component.translatable("item.nerospace.advanced_pipe_filter.cleared_face",
-                                    face.getName())
-                            : Component.translatable("item.nerospace.advanced_pipe_filter.applied",
-                                    filter.activeEntryCount(), face.getName()));
+                    ItemStack held = context.getItemInHand();
+                    FaceFilter filter = configured(held);
+                    if (filter.isEmpty()) {
+                        player.sendSystemMessage(Component.translatable(
+                                "item.nerospace.pipe_filter.unconfigured"));
+                        return InteractionResult.SUCCESS;
+                    }
+                    // Install the physical filter into the face's slot; a previous filter pops back.
+                    ItemStack previous = pipe.installFilter(face, held);
+                    if (!player.getAbilities().instabuild) {
+                        held.shrink(1);
+                    }
+                    if (!previous.isEmpty()) {
+                        player.getInventory().placeItemBackInInventory(previous);
+                    }
+                    player.sendSystemMessage(Component.translatable(
+                            "item.nerospace.advanced_pipe_filter.applied",
+                            filter.activeEntryCount(), face.getName()));
                 }
             }
             return InteractionResult.SUCCESS;
         }
         return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.PASS;
+    }
+
+    /** List the whole configuration on hover: mode line + one line per entry (tags in gold). */
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display,
+            Consumer<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, tooltip, flag);
+        FaceFilter filter = configured(stack);
+        if (filter.isEmpty()) {
+            tooltip.accept(Component.translatable("item.nerospace.pipe_filter.tooltip.empty")
+                    .withStyle(ChatFormatting.DARK_GRAY));
+            return;
+        }
+        tooltip.accept(Component.translatable(filter.blacklist()
+                        ? "gui.nerospace.advanced_filter.blacklist"
+                        : "gui.nerospace.advanced_filter.whitelist")
+                .append(" · ")
+                .append(Component.translatable(filter.matchComponents()
+                        ? "gui.nerospace.advanced_filter.exact"
+                        : "gui.nerospace.advanced_filter.item_only"))
+                .withStyle(ChatFormatting.GRAY));
+        for (FaceFilter.FilterEntry entry : filter.entries()) {
+            if (entry.ghost().isEmpty()) {
+                continue;
+            }
+            TagKey<Item> tag = entry.resolveTag();
+            tooltip.accept(tag != null
+                    ? Component.literal(" • #" + tag.location()).withStyle(ChatFormatting.GOLD)
+                    : Component.literal(" • ").append(entry.ghost().getHoverName())
+                            .withStyle(ChatFormatting.GRAY));
+        }
     }
 
     @Override

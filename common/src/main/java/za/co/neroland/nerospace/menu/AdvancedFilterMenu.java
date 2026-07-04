@@ -9,7 +9,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
@@ -150,10 +150,10 @@ public class AdvancedFilterMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, ClickType clickType, Player clickingPlayer) {
+    public void clicked(int slotId, int button, ContainerInput clickType, Player clickingPlayer) {
         if (slotId >= 0 && slotId < FILTER_SLOTS) {
-            if (clickType == ClickType.PICKUP || clickType == ClickType.PICKUP_ALL
-                    || clickType == ClickType.QUICK_MOVE) {
+            if (clickType == ContainerInput.PICKUP || clickType == ContainerInput.PICKUP_ALL
+                    || clickType == ContainerInput.QUICK_MOVE) {
                 ItemStack carried = getCarried();
                 if (!carried.isEmpty()) {
                     setEntry(slotId, carried);
@@ -167,7 +167,7 @@ public class AdvancedFilterMenu extends AbstractContainerMenu {
         }
         // Never let the open filter (or any advanced filter) be moved while its menu edits it;
         // SWAP (hotbar number keys) is blocked wholesale for the same reason.
-        if (clickType == ClickType.SWAP) {
+        if (clickType == ContainerInput.SWAP) {
             return;
         }
         if (slotId >= 0 && slotId < this.slots.size()

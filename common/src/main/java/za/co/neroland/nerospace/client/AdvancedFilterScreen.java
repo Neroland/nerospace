@@ -102,6 +102,12 @@ public class AdvancedFilterScreen extends TexturedContainerScreen<AdvancedFilter
         extractor.text(this.font, status, this.leftPos + 8, this.topPos + HINT_Y, SUBTLE, false);
     }
 
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor extractor, int mouseX, int mouseY) {
+        // Title only — the vanilla "Inventory" label would overlap the status line at HINT_Y.
+        extractor.text(this.font, this.title, this.titleLabelX, this.titleLabelY, TITLE, false);
+    }
+
     /** The ghost-grid index under the mouse, or -1 (geometry-based; no reliance on hoveredSlot). */
     private int hoveredGhostSlot(int mouseX, int mouseY) {
         int dx = mouseX - (this.leftPos + AdvancedFilterMenu.GRID_X);

@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -91,10 +92,28 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     /** Per-face (6) × per-resource-type (4) I/O mode, set with the Configurator. Default AUTO. */
     private final PipeIoMode[][] faceModes = new PipeIoMode[6][PipeResourceType.VALUES.length];
-    /** Per-face item-layer filter (EMPTY = unfiltered), indexed by {@code Direction.get3DDataValue()}.
-     *  Multi-entry {@link FaceFilter} model (issue #25); the basic Pipe Filter writes one-entry
-     *  whitelists through {@link #setFilter}, the Advanced Pipe Filter applies whole configs. */
-    private final FaceFilter[] faceFilters = new FaceFilter[6];
+    /**
+     * Per-face item-layer filters as PHYSICAL contained items, indexed by
+     * {@code Direction.get3DDataValue()}: each slot holds one Pipe Filter or Advanced Pipe Filter
+     * item (issue #25 follow-up). The face's effective {@link FaceFilter} is derived from the
+     * contained item in {@link #filter}, so the Configurator GUI shows exactly what each face is
+     * doing and popping the item out clears the face. Installed like upgrades (right-click
+     * consumes; removed via the GUI slots or block break).
+     */
+    private final SimpleContainer filterItems = new FilterContainer();
+
+    /** 6-slot filter containment whose mutations mark the block entity dirty. */
+    private final class FilterContainer extends SimpleContainer {
+        FilterContainer() {
+            super(6);
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            UniversalPipeBlockEntity.this.setChanged();
+        }
+    }
     private int speedUpgrades;
     private int capacityUpgrades;
 
@@ -124,7 +143,6 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             for (int t = 0; t < PipeResourceType.VALUES.length; t++) {
                 this.faceModes[f][t] = PipeIoMode.AUTO;
             }
-            this.faceFilters[f] = FaceFilter.EMPTY;
         }
     }
 
@@ -224,21 +242,48 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         return new PipeConfigMenu(containerId, inventory, this, this.configData);
     }
 
-    // --- Per-face item filter (Pipe Filter / Advanced Pipe Filter) -----------
+    /** Drop the contained filter items when the pipe is broken (they are physical items). */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level instanceof ServerLevel serverLevel) {
+            for (int f = 0; f < 6; f++) {
+                ItemStack filter = this.filterItems.getItem(f);
+                if (!filter.isEmpty()) {
+                    Containers.dropItemStack(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5,
+                            pos.getZ() + 0.5, filter);
+                    this.filterItems.setItem(f, ItemStack.EMPTY);
+                }
+            }
+        }
+    }
 
+    // --- Per-face item filter (contained Pipe Filter / Advanced Pipe Filter items) ---
+
+    /** The 6-slot filter containment (one face per slot by {@code Direction.get3DDataValue()});
+     *  backs the Configurator GUI's per-face filter slots. */
+    public SimpleContainer filterItems() {
+        return this.filterItems;
+    }
+
+    /** The filter item installed on a face (EMPTY = unfiltered). */
+    public ItemStack filterItem(Direction dir) {
+        return this.filterItems.getItem(dir.get3DDataValue());
+    }
+
+    /** The face's effective filter, derived from the contained filter item. */
     public FaceFilter filter(Direction dir) {
-        return this.faceFilters[dir.get3DDataValue()];
+        return FaceFilter.fromFilterItem(filterItem(dir));
     }
 
-    /** Basic Pipe Filter compatibility path: one exact item (EMPTY clears the face). */
-    public void setFilter(Direction dir, ItemStack filter) {
-        setFaceFilter(dir, FaceFilter.ofItem(filter));
-    }
-
-    /** Apply a full multi-entry filter to a face (Advanced Pipe Filter; EMPTY clears). */
-    public void setFaceFilter(Direction dir, FaceFilter filter) {
-        this.faceFilters[dir.get3DDataValue()] = filter == null ? FaceFilter.EMPTY : filter;
-        setChanged();
+    /**
+     * Install a filter item on a face (like upgrades, the physical item lives in the pipe).
+     * @return the previously installed item (EMPTY if none) — hand it back to the player.
+     */
+    public ItemStack installFilter(Direction dir, ItemStack filterItem) {
+        ItemStack previous = filterItem(dir);
+        this.filterItems.setItem(dir.get3DDataValue(), filterItem.copyWithCount(1));
+        return previous;
     }
 
     // --- Upgrades (Speed / Capacity) -----------------------------------------
@@ -415,8 +460,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         }
         output.putLong("Faces", packed);
         for (int f = 0; f < 6; f++) {
-            if (!this.faceFilters[f].isEmpty()) {
-                output.store("FaceFilter" + f, FaceFilter.CODEC, this.faceFilters[f]);
+            if (!this.filterItems.getItem(f).isEmpty()) {
+                output.store("FilterItem" + f, ItemStack.OPTIONAL_CODEC, this.filterItems.getItem(f));
             }
         }
         output.putInt("SpeedUpgrades", this.speedUpgrades);
@@ -449,14 +494,20 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             }
         }
         for (int f = 0; f < 6; f++) {
-            // New multi-entry format first; fall back to the legacy single-ItemStack key
-            // (pre-#25 worlds), wrapped as a one-entry whitelist — identical behaviour.
-            FaceFilter stored = input.read("FaceFilter" + f, FaceFilter.CODEC).orElse(null);
-            if (stored == null) {
-                stored = FaceFilter.ofItem(
-                        input.read("Filter" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+            // Containment format first ("FilterItem" = the physical filter item). Migration chain:
+            // "FaceFilter" (the brief config-only #25 format) and legacy "Filter" (pre-#25 single
+            // ItemStack) both synthesize an equivalent contained filter item — same behaviour, and
+            // the player can now pop the item back out of the GUI.
+            ItemStack stored = input.read("FilterItem" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+            if (stored.isEmpty()) {
+                FaceFilter migrated = input.read("FaceFilter" + f, FaceFilter.CODEC).orElse(null);
+                if (migrated == null) {
+                    migrated = FaceFilter.ofItem(
+                            input.read("Filter" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+                }
+                stored = migrated.toFilterItem();
             }
-            this.faceFilters[f] = stored;
+            this.filterItems.setItem(f, stored);
         }
         this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
         this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);

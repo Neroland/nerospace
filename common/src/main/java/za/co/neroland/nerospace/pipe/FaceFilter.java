@@ -54,6 +54,50 @@ public record FaceFilter(List<FilterEntry> entries, boolean blacklist, boolean m
                 false, true);
     }
 
+    /**
+     * The effective filter of a physically contained filter item (Configurator GUI face slots):
+     * an Advanced Pipe Filter contributes its configured {@code ADVANCED_FILTER} component, a basic
+     * Pipe Filter its single {@code FILTER_ITEM} entry; anything else (or EMPTY) filters nothing.
+     */
+    public static FaceFilter fromFilterItem(ItemStack filterItem) {
+        if (filterItem.isEmpty()) {
+            return EMPTY;
+        }
+        if (filterItem.getItem() instanceof za.co.neroland.nerospace.item.AdvancedPipeFilterItem) {
+            return za.co.neroland.nerospace.item.AdvancedPipeFilterItem.configured(filterItem);
+        }
+        if (filterItem.getItem() instanceof za.co.neroland.nerospace.item.PipeFilterItem) {
+            return ofItem(za.co.neroland.nerospace.item.PipeFilterItem.configured(filterItem));
+        }
+        return EMPTY;
+    }
+
+    /**
+     * Synthesize the physical filter item equivalent to this config (world migration from the
+     * config-only formats): a single exact whitelist entry becomes a configured basic Pipe Filter,
+     * anything richer an Advanced Pipe Filter carrying the whole config.
+     */
+    public ItemStack toFilterItem() {
+        if (isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        if (!this.blacklist && this.matchComponents && activeEntryCount() == 1) {
+            for (FilterEntry entry : this.entries) {
+                if (!entry.ghost().isEmpty() && entry.tagIndex() == FilterEntry.MODE_ITEM) {
+                    ItemStack basic = new ItemStack(
+                            za.co.neroland.nerospace.registry.ModItems.PIPE_FILTER.get());
+                    basic.set(za.co.neroland.nerospace.registry.ModDataComponents.FILTER_ITEM.get(),
+                            entry.ghost().copyWithCount(1));
+                    return basic;
+                }
+            }
+        }
+        ItemStack advanced = new ItemStack(
+                za.co.neroland.nerospace.registry.ModItems.ADVANCED_PIPE_FILTER.get());
+        advanced.set(za.co.neroland.nerospace.registry.ModDataComponents.ADVANCED_FILTER.get(), this);
+        return advanced;
+    }
+
     /** True when no entry restricts anything (the filter passes every stack). */
     public boolean isEmpty() {
         for (FilterEntry entry : this.entries) {
@@ -101,8 +145,8 @@ public record FaceFilter(List<FilterEntry> entries, boolean blacklist, boolean m
         if (ghost.isEmpty()) {
             return List.of();
         }
-        return ghost.getItemHolder().tags()
-                .sorted(Comparator.comparing(tag -> tag.location().toString()))
+        return ghost.typeHolder().tags()
+                .sorted(Comparator.comparing((TagKey<Item> tag) -> tag.location().toString()))
                 .toList();
     }
 
