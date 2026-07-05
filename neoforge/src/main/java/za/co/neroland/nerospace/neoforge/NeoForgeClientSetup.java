@@ -118,6 +118,7 @@ public final class NeoForgeClientSetup {
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);
         event.register(ModMenuTypes.PASSIVE_GENERATOR.get(), PassiveGeneratorScreen::new);
         event.register(ModMenuTypes.PIPE_CONFIG.get(), PipeConfigScreen::new);
+        event.register(ModMenuTypes.ADVANCED_FILTER.get(), za.co.neroland.nerospace.client.AdvancedFilterScreen::new);
         event.register(ModMenuTypes.ROCKET.get(), RocketScreen::new);
         event.register(ModMenuTypes.FUEL_TANK.get(), FuelTankScreen::new);
         event.register(ModMenuTypes.FUEL_REFINERY.get(), FuelRefineryScreen::new);

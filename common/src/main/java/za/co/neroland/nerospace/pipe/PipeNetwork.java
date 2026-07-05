@@ -345,7 +345,7 @@ public final class PipeNetwork {
 
     // --- Items ----------------------------------------------------------------
 
-    private record Sink(BlockPos pipePos, Direction outFace, Container container, Direction side, ItemStack filter) {
+    private record Sink(BlockPos pipePos, Direction outFace, Container container, Direction side, FaceFilter filter) {
     }
 
     private void tickItems(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
@@ -367,6 +367,9 @@ public final class PipeNetwork {
         }
 
         // 1. Extraction pulse: pull from sources into pipe buffers (backpressure — only if the pipe has room).
+        //    Items are only extracted through faces EXPLICITLY set to IN: an AUTO face pushes but never
+        //    pulls items, otherwise the network drains its own delivery chests straight back out and
+        //    filters appear to be ignored (energy/fluid/gas AUTO still pull — they balance, items route).
         if ((level.getGameTime() % ITEM_EXTRACT_PERIOD) == 0L) {
             for (UniversalPipeBlockEntity pipe : pipes) {
                 int extractMax = ITEM_EXTRACT_AMOUNT * pipe.speedMultiplier();
@@ -374,7 +377,7 @@ public final class PipeNetwork {
                 for (Direction dir : Direction.values()) {
                     BlockPos np = pos.relative(dir);
                     if (this.memberSet.contains(np.asLong())
-                            || !pipe.mode(dir, PipeResourceType.ITEM).canPull()) {
+                            || pipe.mode(dir, PipeResourceType.ITEM) != PipeIoMode.IN) {
                         continue;
                     }
                     BlockEntity be = level.getBlockEntity(np);
@@ -399,6 +402,9 @@ public final class PipeNetwork {
         }
 
         // 2. Drain every pipe's buffer toward the network's sinks (any source can reach any sink).
+        //    Two passes: FILTERED faces claim their matching items first (a whitelist face is a
+        //    destination, not just a gate), then unfiltered faces take whatever no filter claimed —
+        //    so "cobble → chest A" doesn't round-robin cobble into the unfiltered trash can too.
         if (!sinks.isEmpty()) {
             for (UniversalPipeBlockEntity pipe : pipes) {
                 for (int slot = 0; slot < pipe.getContainerSize(); slot++) {
@@ -406,20 +412,35 @@ public final class PipeNetwork {
                     if (stack.isEmpty()) {
                         continue;
                     }
+                    // Junction gating: an item may only reach sinks it can physically route to —
+                    // every pipe→pipe crossing needs BOTH faces open for it (leaving face Out/Auto,
+                    // entering face In/Auto) AND both faces' filters to pass. A filter installed on
+                    // a T-junction's branch therefore really controls what goes up the branch.
+                    Map<Long, BlockPos> reachable = routeReachable(level, pipe.getBlockPos(), stack);
                     int n = sinks.size();
                     int offset = Math.floorMod(this.itemRoundRobin++, n);
-                    for (int i = 0; i < n && !stack.isEmpty(); i++) {
-                        Sink sink = sinks.get((offset + i) % n);
-                        if (!sink.filter().isEmpty() && !ItemStack.isSameItemSameComponents(sink.filter(), stack)) {
-                            continue;
-                        }
-                        ItemStack before = stack.copy();
-                        int beforeCount = stack.getCount();
-                        stack = insert(sink.container(), sink.side(), stack);
-                        int moved = beforeCount - stack.getCount();
-                        if (moved > 0) {
-                            showItemPath(level, pipe.getBlockPos(), sink.pipePos(), sink.outFace(),
-                                    before.copyWithCount(moved));
+                    for (int pass = 0; pass < 2 && !stack.isEmpty(); pass++) {
+                        boolean filteredPass = pass == 0;
+                        for (int i = 0; i < n && !stack.isEmpty(); i++) {
+                            Sink sink = sinks.get((offset + i) % n);
+                            if (sink.filter().isEmpty() == filteredPass) {
+                                continue; // pass 0 = filtered sinks only, pass 1 = unfiltered
+                            }
+                            if (!sink.filter().test(stack)) {
+                                continue;
+                            }
+                            if (!sink.pipePos().equals(pipe.getBlockPos())
+                                    && !reachable.containsKey(sink.pipePos().asLong())) {
+                                continue; // no filter/mode-permitted path to that sink's pipe
+                            }
+                            ItemStack before = stack.copy();
+                            int beforeCount = stack.getCount();
+                            stack = insert(sink.container(), sink.side(), stack);
+                            int moved = beforeCount - stack.getCount();
+                            if (moved > 0) {
+                                showItemPath(level, pipe.getBlockPos(), sink.pipePos(), sink.outFace(),
+                                        before.copyWithCount(moved), reachable);
+                            }
                         }
                     }
                     pipe.setItem(slot, stack);
@@ -428,11 +449,70 @@ public final class PipeNetwork {
         }
     }
 
-    private void showItemPath(ServerLevel level, BlockPos source, BlockPos target, Direction outFace, ItemStack moved) {
+    /**
+     * BFS over the network's pipe→pipe edges GATED for {@code stack}: crossing from pipe A to
+     * neighbouring pipe B requires A's face to allow outgoing items (Out/Auto), B's opposite face
+     * to allow incoming items (In/Auto), and both faces' filters to pass the stack. Returns the
+     * predecessor map (key = {@code BlockPos.asLong()}); a pipe is reachable iff it is the source
+     * or has an entry, and the map doubles as the shortest-path record for the delivery visuals.
+     */
+    private Map<Long, BlockPos> routeReachable(ServerLevel level, BlockPos source, ItemStack stack) {
+        Map<Long, BlockPos> previous = new HashMap<>();
+        Set<Long> seen = new HashSet<>();
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        queue.add(source);
+        seen.add(source.asLong());
+
+        while (!queue.isEmpty()) {
+            BlockPos pos = queue.poll();
+            if (!(level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity from)) {
+                continue;
+            }
+            for (Direction dir : Direction.values()) {
+                BlockPos np = pos.relative(dir);
+                long key = np.asLong();
+                if (!this.memberSet.contains(key) || seen.contains(key)) {
+                    continue;
+                }
+                if (!(level.getBlockEntity(np) instanceof UniversalPipeBlockEntity to)) {
+                    continue;
+                }
+                PipeIoMode outMode = from.mode(dir, PipeResourceType.ITEM);
+                PipeIoMode inMode = to.mode(dir.getOpposite(), PipeResourceType.ITEM);
+                if (!outMode.canPush() || !inMode.canPull()) {
+                    continue; // the junction's direction settings block this crossing
+                }
+                if (!from.filter(dir).test(stack) || !to.filter(dir.getOpposite()).test(stack)) {
+                    continue; // a junction filter rejects this item
+                }
+                seen.add(key);
+                previous.put(key, pos);
+                queue.add(np);
+            }
+        }
+        return previous;
+    }
+
+    private void showItemPath(ServerLevel level, BlockPos source, BlockPos target, Direction outFace,
+            ItemStack moved, Map<Long, BlockPos> previous) {
         if (moved.isEmpty()) {
             return;
         }
-        List<BlockPos> path = route(source, target);
+        List<BlockPos> path = new ArrayList<>();
+        BlockPos cursor = target;
+        int guard = 0;
+        while (cursor != null && guard++ <= MAX_MEMBERS) {
+            path.add(cursor);
+            if (cursor.equals(source)) {
+                break;
+            }
+            cursor = previous.get(cursor.asLong());
+        }
+        if (path.isEmpty() || !path.get(path.size() - 1).equals(source)) {
+            path.clear();
+            path.add(source); // no recorded route (same-pipe delivery)
+        }
+        Collections.reverse(path);
         for (int i = 0; i < path.size(); i++) {
             BlockPos pos = path.get(i);
             if (!(level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe)) {
@@ -440,50 +520,10 @@ public final class PipeNetwork {
             }
             Direction nextFace = i == path.size() - 1 ? outFace : directionBetween(pos, path.get(i + 1));
             Direction inFace = i == 0 ? nextFace.getOpposite() : directionBetween(pos, path.get(i - 1));
-            pipe.showTravelling(moved, inFace, nextFace);
+            // Stagger: segment i starts at progress -i, so the packet flows down the line segment
+            // by segment instead of the whole path pulsing at once (hidden while negative).
+            pipe.showTravelling(moved, inFace, nextFace, -i);
         }
-    }
-
-    private List<BlockPos> route(BlockPos source, BlockPos target) {
-        if (source.equals(target)) {
-            return List.of(source);
-        }
-        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
-        Map<Long, BlockPos> previous = new HashMap<>();
-        Set<Long> seen = new HashSet<>();
-        queue.add(source);
-        seen.add(source.asLong());
-
-        while (!queue.isEmpty()) {
-            BlockPos pos = queue.poll();
-            if (pos.equals(target)) {
-                break;
-            }
-            for (Direction dir : Direction.values()) {
-                BlockPos next = pos.relative(dir);
-                long key = next.asLong();
-                if (!this.memberSet.contains(key) || !seen.add(key)) {
-                    continue;
-                }
-                previous.put(key, pos);
-                queue.add(next);
-            }
-        }
-        if (!seen.contains(target.asLong())) {
-            return List.of(source);
-        }
-
-        List<BlockPos> path = new ArrayList<>();
-        BlockPos cursor = target;
-        while (cursor != null) {
-            path.add(cursor);
-            if (cursor.equals(source)) {
-                break;
-            }
-            cursor = previous.get(cursor.asLong());
-        }
-        Collections.reverse(path);
-        return path;
     }
 
     private static Direction directionBetween(BlockPos from, BlockPos to) {
@@ -535,14 +575,14 @@ public final class PipeNetwork {
     }
 
     /** Extract up to {@code maxCount} items matching {@code filter} from one slot of a sided container. */
-    private static ItemStack extract(Container src, Direction side, ItemStack filter, int maxCount) {
+    private static ItemStack extract(Container src, Direction side, FaceFilter filter, int maxCount) {
         int[] slots = src instanceof WorldlyContainer w ? w.getSlotsForFace(side) : allSlots(src);
         for (int slot : slots) {
             ItemStack inSlot = src.getItem(slot);
             if (inSlot.isEmpty()) {
                 continue;
             }
-            if (!filter.isEmpty() && !ItemStack.isSameItemSameComponents(filter, inSlot)) {
+            if (!filter.test(inSlot)) {
                 continue;
             }
             if (src instanceof WorldlyContainer w && !w.canTakeItemThroughFace(slot, inSlot, side)) {

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": "nerospace:pipe_filter",
+    "N": "#c:ingots/nerosteel",
+    "X": "#c:gems/xertz_quartz"
+  },
+  "pattern": [
+    "NXN",
+    "XFX",
+    "NXN"
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:advanced_pipe_filter"
+  }
+}

@@ -36,6 +36,16 @@ public class UniversalPipeRenderState extends BlockEntityRenderState {
     public final List<TravellingItemEntry> items = new ArrayList<>();
     public int visibleItems;
 
+    // --- Configurator overlay (issue #25 follow-up) --------------------------
+    /** The local player is holding the Configurator: shade the faces + show the filter indicator. */
+    public boolean configuratorHeld;
+    /** A filter item is installed on this face (stronger shading). */
+    public final boolean[] faceFiltered = new boolean[6];
+    /** Render the floating installed-filter indicator above the pipe. */
+    public boolean hasFilterIndicator;
+    /** Pooled render state for the floating filter item. */
+    public final ItemStackRenderState filterIndicator = new ItemStackRenderState();
+
     public static final class TravellingItemEntry {
         public final ItemStackRenderState renderState = new ItemStackRenderState();
         public float x;

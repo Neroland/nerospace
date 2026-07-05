@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.pipe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
@@ -18,6 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -91,8 +93,28 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     /** Per-face (6) × per-resource-type (4) I/O mode, set with the Configurator. Default AUTO. */
     private final PipeIoMode[][] faceModes = new PipeIoMode[6][PipeResourceType.VALUES.length];
-    /** Per-face item-layer filter (EMPTY = unfiltered), indexed by {@code Direction.get3DDataValue()}. */
-    private final ItemStack[] faceFilters = new ItemStack[6];
+    /**
+     * Per-face item-layer filters as PHYSICAL contained items, indexed by
+     * {@code Direction.get3DDataValue()}: each slot holds one Pipe Filter or Advanced Pipe Filter
+     * item (issue #25 follow-up). The face's effective {@link FaceFilter} is derived from the
+     * contained item in {@link #filter}, so the Configurator GUI shows exactly what each face is
+     * doing and popping the item out clears the face. Installed like upgrades (right-click
+     * consumes; removed via the GUI slots or block break).
+     */
+    private final SimpleContainer filterItems = new FilterContainer();
+
+    /** 6-slot filter containment whose mutations mark the block entity dirty. */
+    private final class FilterContainer extends SimpleContainer {
+        FilterContainer() {
+            super(6);
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            UniversalPipeBlockEntity.this.setChanged();
+        }
+    }
     private int speedUpgrades;
     private int capacityUpgrades;
 
@@ -122,7 +144,6 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             for (int t = 0; t < PipeResourceType.VALUES.length; t++) {
                 this.faceModes[f][t] = PipeIoMode.AUTO;
             }
-            this.faceFilters[f] = ItemStack.EMPTY;
         }
     }
 
@@ -222,15 +243,48 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         return new PipeConfigMenu(containerId, inventory, this, this.configData);
     }
 
-    // --- Per-face item filter (Pipe Filter) ----------------------------------
-
-    public ItemStack filter(Direction dir) {
-        return this.faceFilters[dir.get3DDataValue()];
+    /** Drop the contained filter items when the pipe is broken (they are physical items). */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level instanceof ServerLevel serverLevel) {
+            for (int f = 0; f < 6; f++) {
+                ItemStack filter = this.filterItems.getItem(f);
+                if (!filter.isEmpty()) {
+                    Containers.dropItemStack(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5,
+                            pos.getZ() + 0.5, filter);
+                    this.filterItems.setItem(f, ItemStack.EMPTY);
+                }
+            }
+        }
     }
 
-    public void setFilter(Direction dir, ItemStack filter) {
-        this.faceFilters[dir.get3DDataValue()] = filter == null ? ItemStack.EMPTY : filter;
-        setChanged();
+    // --- Per-face item filter (contained Pipe Filter / Advanced Pipe Filter items) ---
+
+    /** The 6-slot filter containment (one face per slot by {@code Direction.get3DDataValue()});
+     *  backs the Configurator GUI's per-face filter slots. */
+    public SimpleContainer filterItems() {
+        return this.filterItems;
+    }
+
+    /** The filter item installed on a face (EMPTY = unfiltered). */
+    public ItemStack filterItem(Direction dir) {
+        return this.filterItems.getItem(dir.get3DDataValue());
+    }
+
+    /** The face's effective filter, derived from the contained filter item. */
+    public FaceFilter filter(Direction dir) {
+        return FaceFilter.fromFilterItem(filterItem(dir));
+    }
+
+    /**
+     * Install a filter item on a face (like upgrades, the physical item lives in the pipe).
+     * @return the previously installed item (EMPTY if none) — hand it back to the player.
+     */
+    public ItemStack installFilter(Direction dir, ItemStack filterItem) {
+        ItemStack previous = filterItem(dir);
+        this.filterItems.setItem(dir.get3DDataValue(), filterItem.copyWithCount(1));
+        return previous;
     }
 
     // --- Upgrades (Speed / Capacity) -----------------------------------------
@@ -377,10 +431,15 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
 
     /** Network-level visual packet for an item routed through this segment. */
     void showTravelling(ItemStack moved, Direction inFace, @Nullable Direction outFace) {
+        showTravelling(moved, inFace, outFace, 0.0F);
+    }
+
+    /** As above with a start progress; negative = delayed entry (path stagger), hidden until 0. */
+    void showTravelling(ItemStack moved, Direction inFace, @Nullable Direction outFace, float startProgress) {
         if (moved.isEmpty() || this.travelling.size() >= MAX_TRAVELLING) {
             return;
         }
-        this.travelling.add(new TravellingItem(moved.copy(), inFace, outFace, 0.0F));
+        this.travelling.add(new TravellingItem(moved.copy(), inFace, outFace, startProgress));
         setChanged();
     }
 
@@ -407,8 +466,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         }
         output.putLong("Faces", packed);
         for (int f = 0; f < 6; f++) {
-            if (!this.faceFilters[f].isEmpty()) {
-                output.store("Filter" + f, ItemStack.OPTIONAL_CODEC, this.faceFilters[f]);
+            if (!this.filterItems.getItem(f).isEmpty()) {
+                output.store("FilterItem" + f, ItemStack.OPTIONAL_CODEC, this.filterItems.getItem(f));
             }
         }
         output.putInt("SpeedUpgrades", this.speedUpgrades);
@@ -441,12 +500,50 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
             }
         }
         for (int f = 0; f < 6; f++) {
-            this.faceFilters[f] = input.read("Filter" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+            // Containment format first ("FilterItem" = the physical filter item). Migration chain:
+            // "FaceFilter" (the brief config-only #25 format) and legacy "Filter" (pre-#25 single
+            // ItemStack) both synthesize an equivalent contained filter item — same behaviour, and
+            // the player can now pop the item back out of the GUI.
+            ItemStack stored = input.read("FilterItem" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+            if (stored.isEmpty()) {
+                FaceFilter migrated = input.read("FaceFilter" + f, FaceFilter.CODEC).orElse(null);
+                if (migrated == null) {
+                    migrated = FaceFilter.ofItem(
+                            input.read("Filter" + f, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+                }
+                stored = migrated.toFilterItem();
+            }
+            this.filterItems.setItem(f, stored);
         }
         this.speedUpgrades = input.getIntOr("SpeedUpgrades", 0);
         this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);
-        this.travelling.clear();
-        this.travelling.addAll(input.read("Travelling", TravellingItem.CODEC.listOf()).orElse(List.of()));
+        List<TravellingItem> incoming = input.read("Travelling", TravellingItem.CODEC.listOf()).orElse(List.of());
+        if (this.level != null && this.level.isClientSide() && !this.travelling.isEmpty() && !incoming.isEmpty()) {
+            // Client sync smoothing: the client advances packets locally between the throttled server
+            // syncs, so adopting the server's (older) progress verbatim snaps them backwards — jitter.
+            // Keep the local packet when it matches an incoming one and is further along.
+            List<TravellingItem> remaining = new ArrayList<>(this.travelling);
+            List<TravellingItem> merged = new ArrayList<>(incoming.size());
+            for (TravellingItem in : incoming) {
+                TravellingItem kept = in;
+                for (Iterator<TravellingItem> it = remaining.iterator(); it.hasNext();) {
+                    TravellingItem old = it.next();
+                    if (old.from() == in.from() && old.to() == in.to()
+                            && old.progress() >= in.progress()
+                            && ItemStack.isSameItemSameComponents(old.stack(), in.stack())) {
+                        kept = old;
+                        it.remove();
+                        break;
+                    }
+                }
+                merged.add(kept);
+            }
+            this.travelling.clear();
+            this.travelling.addAll(merged);
+        } else {
+            this.travelling.clear();
+            this.travelling.addAll(incoming);
+        }
     }
 
     // --- Client sync (travelling-item visuals ride the block-entity update packet) ------------

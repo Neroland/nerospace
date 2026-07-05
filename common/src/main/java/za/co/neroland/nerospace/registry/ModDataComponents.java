@@ -8,6 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.ItemStack;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.pipe.FaceFilter;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
 /**
@@ -35,6 +36,13 @@ public final class ModDataComponents {
             COMPONENTS.register("filter_item", key -> DataComponentType.<ItemStack>builder()
                     .persistent(ItemStack.CODEC)
                     .networkSynchronized(ItemStack.STREAM_CODEC)
+                    .build());
+
+    /** The multi-entry filter configured on an Advanced Pipe Filter (issue #25). Network
+     *  sync falls back to the persistent codec (no explicit stream codec needed). */
+    public static final RegistryEntry<DataComponentType<FaceFilter>> ADVANCED_FILTER =
+            COMPONENTS.register("advanced_filter", key -> DataComponentType.<FaceFilter>builder()
+                    .persistent(FaceFilter.CODEC)
                     .build());
 
     private ModDataComponents() {

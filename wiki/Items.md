@@ -28,7 +28,7 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 
   full configuration panel on sneak-right-click.
 
-- **Pipe Filter / Speed Upgrade / Capacity Upgrade** — see
+- **Pipe Filter / Advanced Pipe Filter / Speed Upgrade / Capacity Upgrade** — see
 
   [Pipe Filters and Upgrades](Pipe-Filters-and-Upgrades).
 

@@ -105,7 +105,9 @@
   (sync power as a per-mille ≤1000). `Item.getDescriptionId()` is `final` → BlockItems show the raw key
   unless a mirrored `item.nerospace.<id>` lang alias exists. `level.getDefaultClockTime()` compiles but
   THROWS at runtime where the data-driven clock markers aren't loaded — wrap try-once → permanent
-  `getGameTime()` fallback. `net.minecraft.world.inventory.ClickType` moved. NeoForge/Forge debug tasks use
+  `getGameTime()` fallback. `net.minecraft.world.inventory.ClickType` is now
+  `net.minecraft.world.inventory.ContainerInput` (same constants; `AbstractContainerMenu.clicked` takes it).
+  `ItemStack.getItemHolder()` is now `ItemStack.typeHolder()`. NeoForge/Forge debug tasks use
   `-PnerospaceDebug`; Fabric Loom honours Gradle `--debug-jvm` (see IDE section).
 - **Mekanism / cross-mod integration is DEFERRED.** Forge itself is supported as the third loader via
   ForgeGradle 7 (`forge_version_26.1.2=26.1.2-64.0.10`, `forge_version_26.2=26.2-65.0.0`), but Mekanism
