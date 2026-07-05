@@ -2,11 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": "#c:ingots/nerosteel"
+    "#": "#c:ingots/nerosteel",
+    "S": "minecraft:smooth_stone"
   },
   "pattern": [
     "###",
-    "# #",
+    "#S#",
     "###"
   ],
   "result": {
