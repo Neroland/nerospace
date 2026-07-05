@@ -85,7 +85,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     private static final int ENERGY_BUFFER = 200_000;
     private static final int FLUID_CAPACITY = 16_000;
     private static final int ENERGY_PER_BLOCK = 40;
-    private static final int MINE_INTERVAL = 8;
+    private static final int MINE_INTERVAL = 10;
     private static final int CLAIM_SCAN_INTERVAL = 5;
     private static final int FRAME_BUILD_INTERVAL = 10;
     private static final int FRAME_BLOCKS_PER_STEP = 1;
