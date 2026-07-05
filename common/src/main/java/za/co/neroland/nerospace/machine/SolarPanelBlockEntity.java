@@ -70,6 +70,7 @@ public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured
                 .channel(Channel.ENERGY)
                 .allow(Channel.ENERGY, SideMode.INPUT, false)
                 .allow(Channel.ENERGY, SideMode.IO, false)
+                .autoEject(Channel.ENERGY, true) // push power into adjacent receivers by default (no cable needed)
                 .defaultPreset(SidePreset.GENERATOR)
                 .build();
     }
