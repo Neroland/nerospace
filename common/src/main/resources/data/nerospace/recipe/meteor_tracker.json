@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone",
+    "C": "minecraft:compass"
+  },
+  "pattern": [
+    " N ",
+    "RCR",
+    " N "
+  ],
+  "result": {
+    "id": "nerospace:meteor_tracker"
+  }
+}
