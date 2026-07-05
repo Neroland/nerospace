@@ -33,6 +33,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Read-only and player-data-free; the internals (`rocket.Destinations`, `rocket.RocketTravel`,
   `rocket.RocketTier`) remain internal.
 
+**Meteor Tracker is now craftable (survival)**
+
+- New shaped recipe: a vanilla **Compass** with **Nerosteel Ingots** above and below and
+  **Redstone Dust** at the sides. The tracker was previously creative-only. (The four
+  destination compasses remain creative-only pending a rework.)
+
+**Optional Energized Power interop declared**
+
+- All three loader manifests now declare **Energized Power** as an optional/suggested
+  dependency with `AFTER` load ordering, so its capabilities and `c:` tags are ready
+  before Nerospace loads when it is installed. Nerospace stays fully independent of it.
+
 ### Fixed
 
 **Machine blocks now drop themselves when mined**
@@ -78,6 +90,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `nerolandcore:fluid` / `nerolandcore:gas` (and energy / item) capabilities onto Nerospace's
   own `nerospace:fluid` / `nerospace:gas` lookups, so existing pipe networks keep working
   (including voiding into the Trash Can).
+
+**Generators now push power directly (no cables needed)**
+
+- The **Combustion Generator**, **Passive Generator**, and **Solar Panel** now default
+  their energy **auto-eject to ON**: they push power into adjacent receivers every tick —
+  machines, batteries, pipes, and (via Neroland Core 1.3.2's Forge-Energy fallback)
+  third-party FE blocks. Auto-eject can still be toggled off per machine in the
+  side-config UI.
+
+**Quarry pacing rebalance**
+
+- The quarry's mining interval increased from 8 to 10 ticks — a modest slow-down to
+  rebalance throughput against its power draw.
+
+**Neroland Core dependency bumped to 1.3.2**
+
+- Brings the standard **Forge-Energy fallback** in Core's energy lookup: the **Universal
+  Pipe** now connects to and transfers with third-party FE cables and machines (e.g.
+  **Energized Power**) on NeoForge and Forge, and Core's **Battery pushes power into
+  adjacent blocks** without cables. See Neroland Core's changelog for details.
+
+### Build & CI
+
+- New **auto-assign** workflow: the maintainer is assigned to newly opened issues and PRs
+  (including forked PRs via a limited, API-only `pull_request_target`).
+- `publish.yml` release-note extraction now tries the exact version section first, falls
+  back to `[Unreleased]`, and only uses the placeholder when neither exists.
 
 ### Migration note (existing worlds)
 
