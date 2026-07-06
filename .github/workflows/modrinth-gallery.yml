@@ -6,7 +6,7 @@ name: Sync Modrinth gallery
 # the existing gallery and re-uploads every PNG in a fixed order, featuring the first as the card.
 #
 # Source of truth: neoforge/versions/26.2/runs/client/screenshots/nerospace/*.png (written by the
-# /nerospace capture harness when run from the NeoForge 26.2 client).
+# /nsgallery capture harness when run from the NeoForge 26.2 client).
 # Requires the same secrets as the description sync: MODRINTH_PROJECT_ID + MODRINTH_API_TOKEN.
 on:
   push:

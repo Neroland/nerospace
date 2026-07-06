@@ -75,7 +75,9 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
     24,000 mB tank.)
   The in-rocket screen shows a live fuel gauge, a selectable destination trajectory, a station
-  selector, and a Launch button.
+  selector, and a Launch button, with your inventory laid out in a slot grid below the controls.
+  Mods that enlarge the main player inventory (such as *Inventory Extended* on Fabric) are
+  supported automatically — the console grows to show the extra rows.
 
 - **[Station Charter](Station-Charter)** — 8 [Station Wall](Station-Wall) around a
 

@@ -36,19 +36,22 @@ import net.minecraft.world.phys.Vec3;
  * loaders.
  *
  * <p><b>Commands</b> (client-side — they never reach the server dispatcher, which owns
- * {@code /nerospace gallery|station}):
+ * {@code /nerospace gallery|station}). The root is {@code /nsgallery}, NOT {@code /nerospace}: a
+ * client-dispatcher root that shares its name with a server command SHADOWS the server subtree — the
+ * client parser matches the root, fails on the server-only child ("Incorrect argument for command")
+ * and never forwards to the server. Keep the roots distinct.
  * <ul>
- *   <li>{@code /nerospace capture [time]} — the gallery pass: teleports into the flat
+ *   <li>{@code /nsgallery capture [time]} — the gallery pass: teleports into the flat
  *       {@code nerospace:capture} dimension at a fixed origin (identical backdrop every run),
  *       rebuilds the gallery there from scratch ({@code gallery clear} then {@code gallery} — so a
  *       rerun never leaves lingering blocks/entities or stale machine progress), freezes
  *       time/weather/clouds, then shoots the reframed multi-angle shot list.</li>
- *   <li>{@code /nerospace capture planets [time]} — the dimension vistas, each staged as a SELF-CONTAINED
+ *   <li>{@code /nsgallery capture planets [time]} — the dimension vistas, each staged as a SELF-CONTAINED
  *       controlled scene (a themed floating platform + frozen signature mobs built fresh at a fixed
  *       origin in the real dimension), so they're 100% reproducible in ANY world — no fixed seed, no
  *       terrain tuning. Each scene clears its own footprint before rebuilding.</li>
- *   <li>{@code /nerospace capture all [time]} — gallery pass then planet pass in one run.</li>
- *   <li>{@code /nerospace capture shot <name>} — capture the CURRENT view once (overlays hidden) to
+ *   <li>{@code /nsgallery capture all [time]} — gallery pass then planet pass in one run.</li>
+ *   <li>{@code /nsgallery capture shot <name>} — capture the CURRENT view once (overlays hidden) to
  *       {@code nerospace/<name>.png}. Use this to grab a hand-framed money shot.</li>
  * </ul>
  *
@@ -132,13 +135,14 @@ public final class GalleryCaptureHarness {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Register the client-side {@code /nerospace capture …} tree on the given dispatcher. Generic in
+     * Register the client-side {@code /nsgallery capture …} tree on the given dispatcher. Generic in
      * the source type {@code S} so the SAME method serves NeoForge/Forge ({@code CommandSourceStack})
      * and Fabric ({@code FabricClientCommandSource}); the command bodies drive the local client only.
+     * The root must NOT be {@code nerospace} — see the class javadoc (it would shadow the server tree).
      */
     public static <S> void registerClientCommands(CommandDispatcher<S> dispatcher) {
         dispatcher.register(
-                LiteralArgumentBuilder.<S>literal("nerospace")
+                LiteralArgumentBuilder.<S>literal("nsgallery")
                         .then(LiteralArgumentBuilder.<S>literal("capture")
                                 .executes(ctx -> startCapture("noon"))
                                 .then(LiteralArgumentBuilder.<S>literal("planets")

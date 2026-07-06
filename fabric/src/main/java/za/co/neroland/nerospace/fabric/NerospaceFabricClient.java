@@ -94,8 +94,8 @@ public final class NerospaceFabricClient implements ClientModInitializer {
             ClientOxygenVisuals.tick();
             GalleryCaptureHarness.tick();
         });
-        // Client-side /nerospace capture command tree (drives the local camera; separate dispatcher
-        // from the server-side /nerospace gallery builder).
+        // Client-side /nsgallery capture command tree (drives the local camera; separate dispatcher
+        // from the server-side /nerospace gallery builder — a shared "nerospace" root would shadow it).
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
                 GalleryCaptureHarness.registerClientCommands(dispatcher));
     }

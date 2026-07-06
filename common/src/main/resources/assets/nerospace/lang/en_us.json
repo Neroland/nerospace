@@ -426,6 +426,7 @@
   "gui.nerospace.rocket.dock": "Dock: %s",
   "gui.nerospace.rocket.pad": "Land: %s",
   "gui.nerospace.rocket.cost": "Cost %s mb",
+  "gui.nerospace.rocket.here": "%s — you are here (Name-Tag a pad here to enable same-planet hops)",
   "gui.nerospace.rocket.found": "FOUND",
   "gui.nerospace.rocket.fuel": "Fuel: %s / %s mB",
   "gui.nerospace.rocket.fuel_label": "FUEL",

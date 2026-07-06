@@ -43,13 +43,17 @@ public class RocketMenu extends AbstractContainerMenu {
     private static final int DATA_COUNT = 14;
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INV_START = 1;
-    private static final int PLAYER_INV_END = PLAYER_INV_START + 36; // exclusive
 
     private static final int FUEL_SLOT_X = 186;
     private static final int FUEL_SLOT_Y = 30;
+    /** Player-inventory block origin (must match RocketScreen's grid). */
+    public static final int INV_X = 26;
+    public static final int INV_Y = 164;
 
     private final ContainerData data;
     private final Container fuelContainer;
+    /** One past the last player-inventory slot (varies when an inventory-expanding mod is present). */
+    private final int playerInvEnd;
     @Nullable
     private final RocketEntity rocket;
 
@@ -67,8 +71,31 @@ public class RocketMenu extends AbstractContainerMenu {
         this.fuelContainer = rocket != null ? rocket.getFuelInput() : new SimpleContainer(1);
 
         this.addSlot(new FuelSlot(this.fuelContainer, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
-        this.addStandardInventorySlots(playerInventory, 26, 164);
+
+        // Hand-rolled player-inventory slots (instead of the vanilla addStandardInventorySlots helper) so
+        // extra main-inventory rows added by mods like Inventory Extended are reachable AND laid out under
+        // our control. Detection is generic — any mod that grows the main list past 36 gets its rows shown.
+        int rows = mainRows(playerInventory);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < 9; col++) {
+                this.addSlot(new Slot(playerInventory, 9 + row * 9 + col, INV_X + col * 18, INV_Y + row * 18));
+            }
+        }
+        int hotbarY = INV_Y + rows * 18 + 4;
+        for (int col = 0; col < 9; col++) {
+            this.addSlot(new Slot(playerInventory, col, INV_X + col * 18, hotbarY));
+        }
+        this.playerInvEnd = PLAYER_INV_START + rows * 9 + 9;
+
         this.addDataSlots(data);
+    }
+
+    /**
+     * Rows of main player inventory above the hotbar: 3 in vanilla, more when an inventory-expanding mod
+     * (e.g. Inventory Extended) has grown the main item list. Hotbar is indices 0–8; main rows follow.
+     */
+    public static int mainRows(Inventory playerInventory) {
+        return Math.max(3, (playerInventory.getNonEquipmentItems().size() - 9) / 9);
     }
 
     @Override
@@ -122,7 +149,7 @@ public class RocketMenu extends AbstractContainerMenu {
             ItemStack raw = slot.getItem();
             moved = raw.copy();
             if (index == FUEL_SLOT_INDEX) {
-                if (!this.moveItemStackTo(raw, PLAYER_INV_START, PLAYER_INV_END, true)) {
+                if (!this.moveItemStackTo(raw, PLAYER_INV_START, this.playerInvEnd, true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (RocketEntity.isFuelContainer(raw)) {

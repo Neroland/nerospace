@@ -3,7 +3,7 @@
 (default 1920 px — the CurseForge gallery target) and under a size cap (default 4 MiB), re-encoded
 in place.
 
-The capture harness (`/nerospace capture`) writes screenshots at the game window's native
+The capture harness (`/nsgallery capture`) writes screenshots at the game window's native
 resolution, so on a large/hi-DPI display they come out 2.5k+ wide and 5-8 MB each — too big for the
 4 MB gallery limit and heavy in git. Run this after a capture, before committing:
 

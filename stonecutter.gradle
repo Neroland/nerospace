@@ -42,14 +42,21 @@ subprojects {
         mavenLocal() // Neroland Core (nerolandcore-<loader>-<mc>) published locally; see USING-CORE.md
         // Neroland Core from GitHub Packages — resolves in CI and on fresh clones, where mavenLocal is
         // empty. mavenLocal() above still wins for local devs who run Core's publishToMavenLocal.
-        // Auth: gradle props gpr.user/gpr.key, else env GITHUB_ACTOR/GITHUB_TOKEN. Lazy getOrNull() so a
-        // local build that resolves Core from mavenLocal never needs a token. See USING-CORE.md.
-        maven {
-            name = 'NerolandCoreGitHubPackages'
-            url = 'https://maven.pkg.github.com/Neroland/neroland-core'
-            credentials {
-                username = providers.gradleProperty('gpr.user').orElse(providers.environmentVariable('GITHUB_ACTOR')).getOrNull()
-                password = providers.gradleProperty('gpr.key').orElse(providers.environmentVariable('GITHUB_TOKEN')).getOrNull()
+        // Auth: gradle props gpr.user/gpr.key, else env GITHUB_ACTOR/GITHUB_TOKEN. The repo is only
+        // DECLARED when both are present: a maven repo with a null username fails the whole resolve
+        // ("Username must not be null!") the moment Gradle consults it — it does NOT fall through to
+        // the next repository — so tokenless local builds must not see this repo at all. Without a
+        // token, Core resolves from mavenLocal (run Core's publishToMavenLocal). See USING-CORE.md.
+        def gprUser = providers.gradleProperty('gpr.user').orElse(providers.environmentVariable('GITHUB_ACTOR')).getOrNull()
+        def gprKey = providers.gradleProperty('gpr.key').orElse(providers.environmentVariable('GITHUB_TOKEN')).getOrNull()
+        if (gprUser != null && gprKey != null) {
+            maven {
+                name = 'NerolandCoreGitHubPackages'
+                url = 'https://maven.pkg.github.com/Neroland/neroland-core'
+                credentials {
+                    username = gprUser
+                    password = gprKey
+                }
             }
         }
         mavenCentral()
@@ -255,7 +262,7 @@ tasks.register('genAssets') {
 // Cap the captured gallery screenshots to <=1920px wide and <4 MiB each, IN PLACE, so they're
 // gallery-ready (the CurseForge 1920x1080 target + under the 4 MB upload limit) and light in git.
 // The capture harness writes at the game window's native resolution, so on a big display the PNGs
-// come out 2.5k+ wide and 5-8 MB. Run this after a `/nerospace capture` pass, before committing:
+// come out 2.5k+ wide and 5-8 MB. Run this after a `/nsgallery capture` pass, before committing:
 //   ./gradlew compressScreenshots
 //   ./gradlew compressScreenshots -PscreenshotArgs="--max-mb 3 --max-width 1600"
 // Needs Pillow (pip install Pillow). Python auto-detected (python/py/python3 + pyenv); override

@@ -96,7 +96,7 @@ Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
 > does file uploads), so none of the items below can be automated.
 
 - [ ] **Gallery:** manually upload the screenshot set (§9.4) — the PNGs committed in
-      `neoforge/versions/26.2/runs/client/screenshots/nerospace/` (written by `/nerospace capture`).
+      `neoforge/versions/26.2/runs/client/screenshots/nerospace/` (written by `/nsgallery capture`).
       CurseForge has no gallery API, so this is a manual web upload of that same folder.
 
 ### 9.1b Modrinth project settings
@@ -168,12 +168,13 @@ Cheapest route: a creative world + `/nerospace gallery` for the lineup shots, a 
 world for 9–10.
 
 Automated route (preferred — fully reproducible): from any creative world with cheats, run
-`/nerospace capture` (client command). It teleports into the flat `nerospace:capture` backdrop,
+`/nsgallery capture` (client command; its root is deliberately NOT `/nerospace`, which would shadow
+the server commands). It teleports into the flat `nerospace:capture` backdrop,
 rebuilds the gallery from scratch (clear → build, so reruns leave no stale blocks/entities or machine
 progress), pins time/weather/clouds, hides every overlay, and writes a reframed, multi-angle shot set
-to that run's `screenshots/nerospace/`. `/nerospace capture planets` shoots the dimension vistas as
+to that run's `screenshots/nerospace/`. `/nsgallery capture planets` shoots the dimension vistas as
 self-contained controlled scenes (themed platforms + frozen mobs built at a fixed origin), so they
-reproduce in ANY world with no fixed seed. `/nerospace capture all` does both; `/nerospace capture
+reproduce in ANY world with no fixed seed. `/nsgallery capture all` does both; `/nsgallery capture
 shot <name>` grabs the current view. Re-run after any texture/model change to refresh the set.
 
 Canonical gallery folder: run the capture from the **NeoForge 26.2 client** so the PNGs land in

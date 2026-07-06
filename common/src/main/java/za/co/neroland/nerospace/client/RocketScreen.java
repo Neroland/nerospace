@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -39,7 +41,8 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private static final int GOOD = 0xFF54D46A;   // ready green
 
     private static final int W = 212;
-    private static final int H = 244;
+    /** Base hull height with the vanilla 3 main-inventory rows; grows 18px per extra modded row. */
+    private static final int BASE_H = 244;
 
     // Viewport (panel-relative).
     private static final int VX = 8;
@@ -49,14 +52,14 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
     // Stacked control rows below the viewport / instruments (panel-relative Y).
     private static final int DEST_ROW_Y = 110;   // destination node row
-    private static final int DOCK_ROW_Y = 127;   // dock cycler (only for the Orbital Station)
-    private static final int LAUNCH_ROW_Y = 142; // launch button
+    private static final int DOCK_ROW_Y = 128;   // dock cycler (only for the Orbital Station)
+    private static final int LAUNCH_ROW_Y = 144; // launch button
     // Right instrument column (panel-relative).
     private static final int RX = 108;
     private static final int GW = 72;
-    // Fuel-intake slot recess (must match RocketMenu's FUEL_SLOT_X/Y).
-    private static final int SLOT_X = 186;
-    private static final int SLOT_Y = 30;
+    // Destination trajectory nodes.
+    private static final int NODE_W = 36;
+    private static final int NODE_GAP = 2;
 
     /** The full global destination order; the synced mask decides which nodes are visible. */
     private static final List<ResourceKey<Level>> ALL_DESTINATIONS = Destinations.all();
@@ -65,9 +68,12 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private SpaceButton stationButton;
     private SpaceButton padButton;
     private final List<SpaceButton> destinationButtons = new ArrayList<>();
+    /** Whether the current-dimension node currently carries the "you are here" tooltip hint. */
+    private boolean hereHintApplied;
 
     public RocketScreen(RocketMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, TEXTURE, ACCENT, W, H);
+        super(menu, playerInventory, title, TEXTURE, ACCENT, W,
+                BASE_H + (RocketMenu.mainRows(playerInventory) - 3) * 18);
         this.titleLabelY = -100;        // header drawn manually in extractForeground
         this.inventoryLabelY = 10_000;  // hide the redundant inventory label
     }
@@ -77,30 +83,33 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         super.init();
         this.destinationButtons.clear();
 
-        // Trajectory node row: one node per destination in the global order, centred under the panel.
+        // Trajectory node row: one node per destination in the global order. Initial positions assume
+        // all visible; extractForeground re-flows the VISIBLE nodes every frame (the mask hides the
+        // current dimension, so a fixed slot per destination would leave a hole in the row).
         int count = ALL_DESTINATIONS.size();
-        int nodeW = 36;
-        int gap = 2;
-        int rowW = count * nodeW + (count - 1) * gap;
+        int rowW = count * NODE_W + (count - 1) * NODE_GAP;
         int x = this.leftPos + Math.max(8, (W - rowW) / 2);
+        this.hereHintApplied = false; // extractForeground swaps in the "you are here" hint when needed
         for (int i = 0; i < count; i++) {
             final int index = i;
-            SpaceButton node = new SpaceButton(x, this.topPos + DEST_ROW_Y, nodeW, 15,
-                    Component.literal(shortName(Destinations.name(ALL_DESTINATIONS.get(i)))), ACCENT,
+            String fullName = Destinations.name(ALL_DESTINATIONS.get(i));
+            SpaceButton node = new SpaceButton(x, this.topPos + DEST_ROW_Y, NODE_W, 15,
+                    Component.literal(shortName(fullName)), ACCENT,
                     b -> onSelectDestination(index));
+            node.setTooltip(Tooltip.create(Component.literal(fullName)));
             this.addRenderableWidget(node);
             this.destinationButtons.add(node);
-            x += nodeW + gap;
+            x += NODE_W + NODE_GAP;
         }
 
         // Dock cycler: its own full-width row (only shown for the Orbital Station destination), so the
         // long "Dock: <name>" label has room and never spills over the instrument column.
-        this.stationButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 11,
+        this.stationButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 12,
                 Component.empty(), ACCENT, b -> onCycleStation());
         this.addRenderableWidget(this.stationButton);
 
         // Pad cycler — shares the dock row; shown for normal-dimension destinations instead of the dock cycler.
-        this.padButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 11,
+        this.padButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 12,
                 Component.empty(), O2, b -> onCyclePad());
         this.addRenderableWidget(this.padButton);
 
@@ -115,17 +124,28 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     protected void drawPanel(GuiGraphicsExtractor g) {
         int l = this.leftPos;
         int t = this.topPos;
-        g.fill(l - 2, t - 2, l + W + 2, t + H + 2, INK);     // outer rim
-        g.fill(l, t, l + W, t + H, 0xFF0E1724);              // hull body
+        int h = this.imageHeight; // grows with extra modded inventory rows
+        g.fill(l - 2, t - 2, l + W + 2, t + h + 2, INK);     // outer rim
+        g.fill(l, t, l + W, t + h, 0xFF0E1724);              // hull body
         g.fill(l, t, l + W, t + 18, 0xFF14283C);             // header band
         g.fill(l, t + 18, l + W, t + 19, ACCENT);            // accent rule under the header
         well(g, l + VX, t + VY, VW, VH);                     // viewport recess
-        well(g, l + RX - 2, t + 22, W - RX - 6, 82);         // instrument cluster backing (106..204)
-        slotWell(g, SLOT_X, SLOT_Y);                         // fuel-intake recess (under the slot item)
+        well(g, l + RX - 2, t + 22, W - RX - 6, 86);         // instrument cluster backing
+        // Slot grid: a recess under EVERY menu slot (fuel intake + the full player-inventory block,
+        // including any extra rows) — adjacent cells share borders, reading as an inventory grid. The
+        // fuel intake (slot 0) gets a high-vis fuel-orange frame instead of a plain cell.
+        for (int i = 0; i < this.menu.slots.size(); i++) {
+            Slot slot = this.menu.slots.get(i);
+            if (i == 0) {
+                fuelSlotWell(g, slot.x, slot.y);
+            } else {
+                slotWell(g, slot.x, slot.y);
+            }
+        }
         rivet(g, l + 3, t + 3);
         rivet(g, l + W - 5, t + 3);
-        rivet(g, l + 3, t + H - 5);
-        rivet(g, l + W - 5, t + H - 5);
+        rivet(g, l + 3, t + h - 5);
+        rivet(g, l + W - 5, t + h - 5);
     }
 
     private void well(GuiGraphicsExtractor g, int x, int y, int w, int h) {
@@ -176,18 +196,40 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             statusKey = "gui.nerospace.rocket.pad_ready";
             statusColor = GOOD;
         }
-        label(g, Component.translatable(statusKey), RX, 90, statusColor);
+        label(g, Component.translatable(statusKey), RX, 88, statusColor);
 
-        // Destination node states from the live tier mask.
+        // Destination node states from the live tier mask. The mask includes the CURRENT dimension
+        // only when it has registered landing pads (Name-Tagged travel nodes) for a same-dimension
+        // hop; without one there is nowhere distinct to land, but a silently missing planet reads as
+        // a bug — so the current dimension is then SHOWN as a dimmed, unclickable "you are here"
+        // node. The row re-flows into a compact, centred line each frame (fixed per-destination
+        // slots would leave holes).
         int mask = this.menu.getDestinationMask();
         int reachable = Integer.bitCount(mask);
         int selected = this.menu.getDestinationIndex();
+        int hereIndex = this.minecraft != null && this.minecraft.level != null
+                ? Destinations.indexOf(this.minecraft.level.dimension()) : -1;
+        boolean hereExtra = hereIndex >= 0 && (mask & (1 << hereIndex)) == 0; // shown but not selectable
+        if (hereIndex >= 0 && hereExtra != this.hereHintApplied) {
+            String fullName = Destinations.name(ALL_DESTINATIONS.get(hereIndex));
+            this.destinationButtons.get(hereIndex).setTooltip(Tooltip.create(hereExtra
+                    ? Component.translatable("gui.nerospace.rocket.here", fullName)
+                    : Component.literal(fullName)));
+            this.hereHintApplied = hereExtra;
+        }
+        int shown = reachable + (hereExtra ? 1 : 0);
+        int rowW = shown * NODE_W + Math.max(0, shown - 1) * NODE_GAP;
+        int nodeX = this.leftPos + Math.max(8, (W - rowW) / 2);
         for (int i = 0; i < this.destinationButtons.size(); i++) {
             SpaceButton node = this.destinationButtons.get(i);
-            boolean visible = (mask & (1 << i)) != 0;
-            node.visible = visible;
-            node.active = visible && reachable > 1;
+            boolean reachableNode = (mask & (1 << i)) != 0;
+            node.visible = reachableNode || i == hereIndex;
+            node.active = reachableNode && reachable > 1;
             node.setSelected(i == selected);
+            if (node.visible) {
+                node.setX(nodeX);
+                nodeX += NODE_W + NODE_GAP;
+            }
         }
 
         // Dock / pad cycler (share the same row): the dock cycler for the Orbital Station, the pad cycler
@@ -211,8 +253,8 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             }
         }
 
-        // Calculated fuel cost for the current trip.
-        label(g, Component.translatable("gui.nerospace.rocket.cost", this.menu.getFuelCost()), RX, 99, 0xFFCFE7FF);
+        // Calculated fuel cost for the current trip (inside the instrument well, under the status light).
+        label(g, Component.translatable("gui.nerospace.rocket.cost", this.menu.getFuelCost()), RX, 98, 0xFFCFE7FF);
 
         // Launch button: enabled when ready, with a soft ready-pulse on its border.
         if (this.launchButton != null) {
@@ -289,6 +331,27 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         int y = this.topPos + dy;
         g.fill(x - 1, y - 1, x + 17, y + 17, INK);
         g.fill(x, y, x + 16, y + 16, 0xFF0A1018);
+    }
+
+    /**
+     * The fuel-intake recess: framed in fuel orange (vs the plain grid cells) so the "drop fuel here"
+     * slot reads at a glance. While empty the frame pulses and a small arrow points into the slot.
+     */
+    private void fuelSlotWell(GuiGraphicsExtractor g, int dx, int dy) {
+        int x = this.leftPos + dx;
+        int y = this.topPos + dy;
+        boolean empty = !this.menu.slots.get(0).hasItem();
+        boolean lit = !empty || ((System.currentTimeMillis() / 500L) & 1L) == 0L;
+        int rim = lit ? FUEL : dim(FUEL, 0.45F);
+        g.fill(x - 2, y - 2, x + 18, y + 18, rim);           // orange frame
+        g.fill(x - 1, y - 1, x + 17, y + 17, INK);           // inner rule
+        g.fill(x, y, x + 16, y + 16, 0xFF1A1208);            // warm dark interior
+        if (empty) {
+            int ax = x + 8; // arrow pointing down into the slot
+            g.fill(ax - 3, y - 7, ax + 3, y - 5, rim);
+            g.fill(ax - 2, y - 5, ax + 2, y - 3, rim);
+            g.fill(ax - 1, y - 3, ax + 1, y - 2, rim);
+        }
     }
 
     private static int hash(int i, int salt) {

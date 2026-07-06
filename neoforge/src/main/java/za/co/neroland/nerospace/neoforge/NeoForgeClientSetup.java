@@ -67,8 +67,8 @@ public final class NeoForgeClientSetup {
             ClientOxygenVisuals.tick();
             GalleryCaptureHarness.tick();
         });
-        // Client-side /nerospace capture command tree (drives the local camera; separate dispatcher
-        // from the server-side /nerospace gallery builder).
+        // Client-side /nsgallery capture command tree (drives the local camera; separate dispatcher
+        // from the server-side /nerospace gallery builder — a shared "nerospace" root would shadow it).
         NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent event) ->
                 GalleryCaptureHarness.registerClientCommands(event.getDispatcher()));
     }
