@@ -103,11 +103,19 @@ public final class OxygenManager {
         int max = NerospaceConfig.scale(suited ? OXYGEN_SUIT_MAX : OXYGEN_MAX,
                 NerospaceConfig.oxygenCapacityMultiplier());
 
-        boolean airless = PLANETS.contains(level.dimension())
-                && !player.getAbilities().instabuild
-                && !player.isSpectator();
+        // Nerospace's oxygen survival is scoped to its OWN airless dimensions. On any other world
+        // (vanilla overworld/nether/end, or another mod's dimension) the mod must NOT touch the
+        // player's vanilla air supply — mirroring it every tick would clobber vanilla drowning /
+        // suffocation. Top the internal tank so a later trip starts full, then leave vanilla alone.
+        if (!isAirless(level.dimension())) {
+            Services.PLATFORM.setOxygen(player, max);
+            return;
+        }
+
+        // On a Nerospace dimension but not actually exposed (creative build / spectator): keep the
+        // tank full and mirror full bubbles. Mirroring is safe here — this is the mod's own world.
+        boolean airless = !player.getAbilities().instabuild && !player.isSpectator();
         if (!airless) {
-            // Breathable dimension (e.g. home): top the tank to full — no carried-over overfill.
             Services.PLATFORM.setOxygen(player, max);
             mirrorToAirSupply(player, max, max);
             return;
