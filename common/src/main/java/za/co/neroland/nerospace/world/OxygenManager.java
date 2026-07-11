@@ -17,6 +17,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import za.co.neroland.nerospace.api.NerospaceVisits;
+import za.co.neroland.nerospace.api.NerospaceOxygen;
+import za.co.neroland.nerospace.api.NerospaceTerraforming;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
@@ -95,6 +98,7 @@ public final class OxygenManager {
 
     /** Per-player server tick (called from each loader's server-tick hook). */
     public static void tick(ServerPlayer player) {
+        NerospaceVisits.observeCurrentPlanet(player);
         if (!(player.level() instanceof ServerLevel level)) {
             return;
         }
@@ -203,7 +207,13 @@ public final class OxygenManager {
         if (Services.PLATFORM.isTerraformed(level.getChunkAt(center))) {
             return true;
         }
+        if (NerospaceTerraforming.at(level, center).map(region -> region.stage() >= 1).orElse(false)) {
+            return true;
+        }
         if (OxygenFieldManager.get(level).isBreathable(center)) {
+            return true;
+        }
+        if (NerospaceOxygen.pressureAt(level, center) >= 6) {
             return true;
         }
         for (BlockPos pos : BlockPos.betweenClosed(

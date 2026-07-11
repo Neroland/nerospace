@@ -34,6 +34,30 @@ double exact = NerospacePlanets.gravityAt(serverLevel, pos);
 
 `PlanetId` wraps a dimension `Identifier` and maps to/from `ResourceKey<Level>` via `dimension()`.
 
+## Historical visits — `NerospaceVisits`
+
+`NerospaceVisits.hasVisited(player, planet)` queries server-authoritative historical state;
+`visitedPlanets(server, uuid)` returns an immutable subject export. `PlanetVisitEvents.onVisit` fires
+once on the first observed arrival. Storage contains only UUID plus planet ids—no names, timestamps,
+route, or location history—and Core `PlayerDataErasure` removes the UUID row.
+
+## Environment and oxygen
+
+`NerospaceEnvironment.at(level, pos)` returns an immutable `EnvironmentSnapshot`: loaded state, optional
+planet, coarse `Atmosphere`, hazard, gravity, oxygen pressure (`0..15`), terraforming stage (`0..3`),
+and breathability. Unloaded positions fail closed with vacuum and zero oxygen.
+
+Optional providers add bounded, expiring pressure through
+`NerospaceOxygen.contribute(level, sourceId, center, radius, strength, durationTicks)` and remove it with
+the same source id. Contributions never force-load chunks and carry no player attribution.
+
+## Reversible terraforming overlays
+
+`NerospaceTerraforming` stores bounded `TerraformRequest`s as immutable `TerraformRegion` snapshots.
+Install a `TerraformClaimPolicy` before mutation; the default denies all requests. Apply and rollback
+both pass through that policy. Overlays persist but do not destructively rewrite chunks, expose no owner
+UUID, and can be removed cleanly.
+
 ## Stations — `NerospaceStations`
 
 ```java
@@ -96,7 +120,6 @@ No player data crosses this surface — endpoints, costs and durations only.
 
 ## Design notes
 
-- Thin facade: no duplicated state; wraps the single internal `StationRegistry` and the gravity/oxygen
-  managers.
+- Thin facades wrap the owning state/manager and return snapshots; no internal manager escapes.
 - All returned collections and records are immutable; no mutable internal collection or block entity leaks.
 - Lives in the shared `common` module, so it compiles into every loader cell (Fabric / Forge / NeoForge).

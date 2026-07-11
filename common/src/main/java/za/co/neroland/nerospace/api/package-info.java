@@ -22,11 +22,17 @@
  *       body) and directed {@link za.co.neroland.nerospace.api.CargoRoute}s carrying the minimum rocket
  *       tier, per-launch fuel cost (mB, config-scaled) and canonical transit duration (ticks), plus
  *       {@code isOpen} liveness checks.</li>
+ *   <li>{@link za.co.neroland.nerospace.api.NerospaceVisits} and {@link
+ *       za.co.neroland.nerospace.api.PlanetVisitEvents} — erasable historical planet arrivals.</li>
+ *   <li>{@link za.co.neroland.nerospace.api.NerospaceEnvironment} and {@link
+ *       za.co.neroland.nerospace.api.NerospaceOxygen} — immutable atmosphere queries and bounded,
+ *       unattributed external oxygen contributions.</li>
+ *   <li>{@link za.co.neroland.nerospace.api.NerospaceTerraforming} — claim-authorized reversible
+ *       regional overlays with no owner identity in returned snapshots.</li>
  * </ul>
  *
- * <p><b>Design.</b> This is a thin facade — it holds no state of its own and wraps the single internal
- * registry/managers. All returned collections and records are immutable; no mutable internal collection or
- * block entity is leaked.</p>
+ * <p><b>Design.</b> These are thin facades over owning stores/managers. All returned collections and
+ * records are immutable; no mutable internal collection, block entity, or manager is leaked.</p>
  *
  * <p><b>Privacy (POPIA/GDPR).</b> Station ownership ties to a player. This API never exposes raw owner
  * UUIDs; ownership is queryable only as a per-player boolean

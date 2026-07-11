@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**Public environment and progression APIs (`za.co.neroland.nerospace.api`)**
+
+- Historical planet-visit queries and first-visit events, persisted by UUID without timestamps and
+  routed through Core's shared player-data erasure hook.
+- Immutable atmosphere/environment snapshots covering loaded state, planet, hazard, gravity, oxygen,
+  terraforming stage, and breathability.
+- Bounded, expiring oxygen contributions keyed by caller-owned source ids, with no player attribution
+  and no effect in unloaded regions.
+- Persisted reversible regional terraforming overlays guarded by a pluggable claim policy. The default
+  denies mutation; public snapshots expose no owner UUID and no internal manager.
+- Plain-JVM tests for visit persistence/erasure, oxygen add/remove/decay, atmosphere resolution,
+  overlay persistence, rollback, and authorization.
+
 **Marker-less quarry setup (frame outline)**
 
 - The quarry area can now be defined **without landmarks**: outline a closed rectangle with
@@ -59,6 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drop from code (their loot tables are now empty to prevent a duplicate drop).
 
 ### Changed
+
+- Raised the required Neroland Core floor to `1.8.0` and bumped Nerospace to `1.0.0-beta.8`.
 
 **Quarry frame lifecycle**
 
