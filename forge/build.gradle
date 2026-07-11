@@ -5,6 +5,7 @@ plugins {
     id 'net.minecraftforge.gradle'
     id 'net.minecraftforge.jarjar'
     id 'eclipse'
+    id 'maven-publish'
 }
 
 // MC version comes from the Stonecutter node (e.g. :forge:26.1.2), not a global property.
@@ -25,6 +26,29 @@ def forgeMajor = forgeBuild.split('\\.')[0]
 
 // Distinct, descriptive jar name per cell.
 base { archivesName = "nerospace-forge-${mc}" }
+
+// Maven publishing for sibling-mod consumption (NeroTech's optional api interop) — mirrors
+// ../neroland-core's publishing; see the neoforge module's block for the full rationale.
+publishing {
+    publications {
+        register('mod', MavenPublication) {
+            groupId = rootProject.mod_group_id
+            artifactId = "nerospace-forge-${mc}"
+            version = rootProject.mod_version
+            artifact tasks.named('jar')
+        }
+    }
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = 'https://maven.pkg.github.com/Neroland/nerospace'
+            credentials {
+                username = providers.gradleProperty('gpr.user').orElse(providers.environmentVariable('GITHUB_ACTOR')).getOrNull()
+                password = providers.gradleProperty('gpr.key').orElse(providers.environmentVariable('GITHUB_TOKEN')).getOrNull()
+            }
+        }
+    }
+}
 
 // Enable Forge's Jar-in-Jar task for embedded Sentry, mirroring Fabric include and NeoForge JarJar.
 jarJar.register()

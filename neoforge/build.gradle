@@ -7,6 +7,7 @@
 
 plugins {
     id 'net.neoforged.moddev'
+    id 'maven-publish'
 }
 
 // MC version comes from the Stonecutter node (e.g. :neoforge:26.1.2), not a global property.
@@ -22,6 +23,32 @@ def branchDir = project.parent.projectDir
 // Distinct, descriptive jar name per cell (the node project is named after the MC version, so the
 // default jar would be "<mc>-<version>.jar" and COLLIDE with the fabric cell of the same version).
 base { archivesName = "nerospace-neoforge-${mc}" }
+
+// Publish this cell's jar to Maven Local (~/.m2) so sibling Nero mods (e.g. NeroTech's optional
+// planet-trait interop against za.co.neroland.nerospace.api) can declare Nerospace a compileOnly
+// dependency in dev: `za.co.neroland.nerospace:nerospace-neoforge-<mc>:<version>`. Dependency-free
+// POM on purpose — mirrors ../neroland-core's publishing. `./gradlew publishToMavenLocal` installs
+// all six cells; the GitHubPackages target serves CI/fresh clones like Core's.
+publishing {
+    publications {
+        register('mod', MavenPublication) {
+            groupId = rootProject.mod_group_id
+            artifactId = "nerospace-neoforge-${mc}"
+            version = rootProject.mod_version
+            artifact tasks.named('jar')
+        }
+    }
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = 'https://maven.pkg.github.com/Neroland/nerospace'
+            credentials {
+                username = providers.gradleProperty('gpr.user').orElse(providers.environmentVariable('GITHUB_ACTOR')).getOrNull()
+                password = providers.gradleProperty('gpr.key').orElse(providers.environmentVariable('GITHUB_TOKEN')).getOrNull()
+            }
+        }
+    }
+}
 
 repositories {
     mavenLocal() // resolves a self-built NeoForge 26.2 until the official jar drops
