@@ -67,3 +67,4 @@ neoforge/versions/26.2/runs/client/screenshots/*
 /fabric/runs
 /.github/scripts/__pycache__
 /tools/gradle-mcp/node_modules
+/neoforge/versions

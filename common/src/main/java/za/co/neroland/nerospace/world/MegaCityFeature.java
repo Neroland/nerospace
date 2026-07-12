@@ -100,8 +100,16 @@ public class MegaCityFeature extends Feature<NoneFeatureConfiguration> {
             chest.setItem(22, new ItemStack(Items.EMERALD, 12 + rand.nextInt(12)));
         }
         int by = level.getHeight(Heightmap.Types.WORLD_SURFACE, o.getX(), o.getZ());
-        ModEntities.RUIN_WARDEN.get().spawn(level.getLevel(), new BlockPos(o.getX(), by, o.getZ()),
-                EntitySpawnReason.EVENT);
+        // Spawn on the world-gen thread using the feature's own RandomSource. EntityType.spawn()/create()
+        // would otherwise roll the initial yaw from the ServerLevel's random, which is owned by the server
+        // thread and trips c2me's off-thread ThreadLocalRandom guard during multithreaded (Distant Horizons)
+        // world generation (MC-NEROSPACE-D). Build the entity manually, position it with ctx.random(), and
+        // add it through the WorldGenLevel instead.
+        var warden = ModEntities.RUIN_WARDEN.get().create(level.getLevel(), EntitySpawnReason.EVENT);
+        if (warden != null) {
+            warden.snapTo(o.getX() + 0.5, by, o.getZ() + 0.5, rand.nextFloat() * 360.0F, 0.0F);
+            level.addFreshEntity(warden);
+        }
         return true;
     }
 }
