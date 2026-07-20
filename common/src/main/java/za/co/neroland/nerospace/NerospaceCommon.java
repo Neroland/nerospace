@@ -11,6 +11,7 @@ import za.co.neroland.nerolandcore.meteor.MeteorPlanets;
 import za.co.neroland.nerolandcore.registry.CoreCreativeTab;
 
 import za.co.neroland.nerospace.platform.Services;
+import za.co.neroland.nerospace.progression.PlanetVisitState;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModRegistries;
 import za.co.neroland.nerospace.rocket.StationRegistry;
@@ -93,6 +94,7 @@ public final class NerospaceCommon {
     private static void registerDataErasers() {
         PlayerDataErasure.register((server, uuid) -> {
             StationRegistry.get(server).forgetPlayer(uuid);
+            PlanetVisitState.get(server).forget(uuid);
             ServerPlayer player = server.getPlayerList().getPlayer(uuid);
             if (player != null) {
                 Services.PLATFORM.setOxygen(player, OxygenManager.OXYGEN_MAX);
