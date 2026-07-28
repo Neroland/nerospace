@@ -53,7 +53,11 @@ public class LaunchControllerRenderer
 
     @Override
     public int getViewDistance() {
-        return 256; // the pad hologram projects several blocks out from the controller
+        // Slack allowed BEYOND the drawn volume, which {@link #shouldRender} already measures via
+        // getRenderBoundingBox — so this only has to cover the gap between "off screen" and "far enough
+        // away to stop paying for", not the hologram's own reach. Was 256, which combined with an
+        // unconditional shouldRender to leave the renderer effectively unculled (Sentry MC-NEROSPACE-G).
+        return 128;
     }
 
     /**
@@ -94,9 +98,23 @@ public class LaunchControllerRenderer
         return true;
     }
 
+    /**
+     * Distance cull, measured against the drawn volume rather than the controller block.
+     *
+     * <p>This used to return an unconditional {@code true}. Together with {@link #shouldRenderOffScreen()}
+     * that removed every cull the dispatcher has, so <em>every</em> Launch Controller in every loaded chunk
+     * re-submitted its console (~1 000 vertices) and its ghost cells (48 each) into the shared per-RenderType
+     * {@code BufferBuilder} on every frame. That buffer tops out at 16 777 215 vertices, and on a base with
+     * enough controllers in range it overflowed and took the client down with an
+     * {@code IllegalStateException} — Sentry {@code MC-NEROSPACE-G}.</p>
+     *
+     * <p>Measuring against {@link #getRenderBoundingBox} rather than the block position keeps the original
+     * intent intact: the hologram draws well away from the controller, and it stays visible right up to the
+     * far edge of the preview.</p>
+     */
     @Override
     public boolean shouldRender(LaunchControllerBlockEntity blockEntity, Vec3 cameraPos) {
-        return true;
+        return getRenderBoundingBox(blockEntity).inflate(getViewDistance()).contains(cameraPos);
     }
 
     @Override

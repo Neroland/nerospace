@@ -53,7 +53,11 @@ public class QuarryControllerRenderer
 
     @Override
     public int getViewDistance() {
-        return 512; // max-size claims can put the gantry far from the controller block
+        // Slack allowed BEYOND the claim, which {@link #shouldRender} already measures via
+        // getRenderBoundingBox — so this no longer has to be large enough to contain a max-size claim
+        // measured from the controller block. Was 512, which combined with an unconditional shouldRender
+        // to leave the renderer effectively unculled (the twin of Sentry MC-NEROSPACE-G).
+        return 128;
     }
 
     @Override
@@ -97,9 +101,22 @@ public class QuarryControllerRenderer
                 r.maxX() + 2, r.refY() + 3, r.maxZ() + 2);
     }
 
+    /**
+     * Distance cull, measured against the working volume rather than the controller block.
+     *
+     * <p>This used to return an unconditional {@code true}, which together with
+     * {@link #shouldRenderOffScreen()} removed every cull the dispatcher has — so every quarry in every
+     * loaded chunk re-submitted its gantry and drill into the shared per-RenderType {@code BufferBuilder}
+     * each frame, with nothing bounding the total. The launch controller's identical override overflowed
+     * that buffer's 16 777 215 vertex ceiling in production (Sentry {@code MC-NEROSPACE-G}); this is the
+     * same defect, fixed the same way.</p>
+     *
+     * <p>Using {@link #getRenderBoundingBox} keeps the intent: the assembly draws across the whole claim
+     * and stays visible from anywhere near it, including down in the pit.</p>
+     */
     @Override
     public boolean shouldRender(QuarryControllerBlockEntity blockEntity, Vec3 cameraPos) {
-        return true;
+        return getRenderBoundingBox(blockEntity).inflate(getViewDistance()).contains(cameraPos);
     }
 
     @Override

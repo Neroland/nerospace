@@ -41,6 +41,10 @@ public final class NerospaceCommon {
         // attaches them to the mod bus); on Fabric it registers eagerly.
         ModRegistries.init();
 
+        // Resolve the remaining platform seams while the mod jar is still guaranteed readable, rather
+        // than mid-tick on first use (Sentry MC-NEROSPACE-F).
+        Services.preload();
+
         registerDataErasers();
         installMeteorPlanetProvider();
         contributeToSharedTab();
