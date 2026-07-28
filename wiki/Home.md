@@ -65,6 +65,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
   Core-managed config, and the shared storage blocks ([Battery](Battery), [Fluid Tank](Fluid-Tank),
   [Gas Tank](Gas-Tank), [Item Store](Item-Store), [Trash Can](Trash-Can)) that moved into Core.
 - **[Configuration](Configuration)** — the six multiplier keys for server/modpack tuning.
+- **[Public Integration API](Public-API)** — stable planet-visit, environment, oxygen, terraforming,
+  station, and route contracts for other Nero mods.
 - **[Roadmap](Roadmap)** — what shipped in 1.0 and what's next.
 - **[Future Features](Future-Features)** — the longer-term wish list.
 
