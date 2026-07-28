@@ -38,6 +38,7 @@
   "item.nerospace.launch_controller": "Launch Controller",
   "block.nerospace.launch_controller.built": "Built %s block(s) — Tier %s launch pad",
   "block.nerospace.launch_controller.nothing": "Nothing to place — the pad is already formed for this tier, or you're out of materials",
+  "gui.nerospace.menu_open_failed": "This server couldn't open that screen. Nerospace logged the details — hybrid Bukkit/Paper servers are not supported.",
   "gui.nerospace.launch_controller.build": "Build Pad",
   "gui.nerospace.launch_controller.preview": "Toggle Hologram",
   "gui.nerospace.launch_controller.mode_build": "BUILD",

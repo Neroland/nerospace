@@ -18,6 +18,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /** Passive Generator block — ticks + opens its {@link PassiveGeneratorBlockEntity}. */
@@ -49,7 +50,7 @@ public class PassiveGeneratorBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof PassiveGeneratorBlockEntity gen) {
-            serverPlayer.openMenu(gen);
+            MenuOpener.open(serverPlayer, gen);
         }
         return InteractionResult.SUCCESS;
     }

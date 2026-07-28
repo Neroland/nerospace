@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
@@ -58,7 +59,7 @@ public class ConfiguratorItem extends Item {
             if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
                 // Sneak + right-click a pipe: open the per-face configuration GUI.
                 if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.openMenu(pipe);
+                    MenuOpener.open(serverPlayer, pipe);
                 }
                 return InteractionResult.SUCCESS;
             }

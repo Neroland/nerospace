@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.menu.StationCharterMenu;
 import za.co.neroland.nerospace.progression.StarGuideGrants;
 import za.co.neroland.nerospace.registry.ModDimensions;
@@ -41,7 +42,7 @@ public class StationCharterItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(new SimpleMenuProvider(
+            MenuOpener.open(serverPlayer, new SimpleMenuProvider(
                     (id, inv, p) -> new StationCharterMenu(id, inv),
                     Component.translatable("gui.nerospace.station_charter.title")));
         }

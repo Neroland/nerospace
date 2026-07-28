@@ -16,6 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
+
 /**
  * The Launch Gantry module: placed on a 5x5 pad's border ring it forms the Heavy Launch Complex
  * (Tier 4 launch infrastructure). Right-click opens the flight console of the rocket on the adjacent
@@ -65,7 +67,7 @@ public class LaunchGantryBlock extends BaseEntityBlock {
             za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
                     za.co.neroland.nerospace.network.StationSyncPayload.of(
                             StationRegistry.get(serverPlayer.level().getServer())));
-            serverPlayer.openMenu(rocket);
+            MenuOpener.open(serverPlayer, rocket);
         }
         return InteractionResult.SUCCESS;
     }

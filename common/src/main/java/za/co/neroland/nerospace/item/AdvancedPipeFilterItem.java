@@ -20,6 +20,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.menu.AdvancedFilterMenu;
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.pipe.FaceFilter;
 import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 import za.co.neroland.nerospace.registry.ModDataComponents;
@@ -135,7 +136,7 @@ public class AdvancedPipeFilterItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(new SimpleMenuProvider(
+            MenuOpener.open(serverPlayer, new SimpleMenuProvider(
                     (id, inventory, p) -> new AdvancedFilterMenu(id, inventory, hand),
                     Component.translatable("item.nerospace.advanced_pipe_filter")));
         }

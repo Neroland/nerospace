@@ -14,6 +14,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlocks;
 
 /**
@@ -63,7 +64,7 @@ public abstract class ReturnSiteBlock extends BaseEntityBlock {
             if (this.landingPod && state.getValue(INFLATED)) {
                 level.setBlock(pos, state.setValue(INFLATED, false), 3);
             }
-            player.openMenu(site);
+            MenuOpener.open(player, site);
         }
         return InteractionResult.SUCCESS;
     }

@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlocks;
 
 /**
@@ -31,7 +32,7 @@ public class LaunchControllerPartBlock extends Block {
         BlockPos core = LaunchControllerBlock.findCore(level, pos);
         if (core != null && level.getBlockEntity(core) instanceof LaunchControllerBlockEntity controller
                 && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(controller);
+            MenuOpener.open(serverPlayer, controller);
         }
         return InteractionResult.SUCCESS;
     }

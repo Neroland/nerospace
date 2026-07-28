@@ -23,6 +23,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /** Nerosium Grinder block — directional, ticks + opens its {@link NerosiumGrinderBlockEntity}. */
@@ -67,7 +68,7 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof NerosiumGrinderBlockEntity grinder) {
-            serverPlayer.openMenu(grinder);
+            MenuOpener.open(serverPlayer, grinder);
         }
         return InteractionResult.SUCCESS;
     }

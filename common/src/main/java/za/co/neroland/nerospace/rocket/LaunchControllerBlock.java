@@ -28,6 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlocks;
 
 /**
@@ -210,7 +211,7 @@ public class LaunchControllerBlock extends BaseEntityBlock {
         }
         if (player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof LaunchControllerBlockEntity controller) {
-            serverPlayer.openMenu(controller);
+            MenuOpener.open(serverPlayer, controller);
         }
         return InteractionResult.SUCCESS;
     }

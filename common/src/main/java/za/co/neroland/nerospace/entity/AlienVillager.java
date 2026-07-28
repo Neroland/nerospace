@@ -41,6 +41,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.village.AlienTrades;
@@ -182,7 +183,7 @@ public class AlienVillager extends PathfinderMob implements Merchant {
     private void startTrading(Player player) {
         rebuildOffers(player);
         this.setTradingPlayer(player);
-        OptionalInt opt = player.openMenu(new SimpleMenuProvider(
+        OptionalInt opt = MenuOpener.open(player, new SimpleMenuProvider(
                 (id, inv, p) -> new MerchantMenu(id, inv, this), this.getDisplayName()));
         if (opt.isPresent()) {
             player.sendMerchantOffers(opt.getAsInt(), this.getOffers(), 1, this.getVillagerXp(),

@@ -16,6 +16,8 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
+
 /**
  * The Station Core block: placed only by the founding flow (no recipe, no loot table — breaking it
  * pops a named charter via the block entity's remove hook and unregisters the station). Right-click
@@ -61,7 +63,7 @@ public class StationCoreBlock extends BaseEntityBlock {
                     serverPlayer.sendSystemMessage(
                             Component.translatable("item.nerospace.station_charter.not_owner"));
                 } else {
-                    serverPlayer.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                    MenuOpener.open(serverPlayer, new net.minecraft.world.SimpleMenuProvider(
                             (id, inv, p) -> new za.co.neroland.nerospace.menu.StationCharterMenu(
                                     id, inv, za.co.neroland.nerospace.menu.StationCharterMenu.MODE_RENAME, slot),
                             Component.translatable("gui.nerospace.station_charter.rename")));

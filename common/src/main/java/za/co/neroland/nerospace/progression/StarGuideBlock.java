@@ -23,6 +23,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 
@@ -104,7 +105,7 @@ public class StarGuideBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(guide);
+            MenuOpener.open(serverPlayer, guide);
         }
         return InteractionResult.SUCCESS;
     }

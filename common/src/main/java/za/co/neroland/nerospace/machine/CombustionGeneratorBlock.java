@@ -23,6 +23,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /** Combustion Generator block — directional, ticks its {@link CombustionGeneratorBlockEntity}. */
@@ -67,7 +68,7 @@ public class CombustionGeneratorBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof CombustionGeneratorBlockEntity gen) {
-            serverPlayer.openMenu(gen);
+            MenuOpener.open(serverPlayer, gen);
         }
         return InteractionResult.SUCCESS;
     }

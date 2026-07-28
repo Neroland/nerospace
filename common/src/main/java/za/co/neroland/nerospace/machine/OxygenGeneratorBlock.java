@@ -18,6 +18,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /** Oxygen Generator block — ticks its {@link OxygenGeneratorBlockEntity}; right-click opens its gauge GUI. */
@@ -49,7 +50,7 @@ public class OxygenGeneratorBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof OxygenGeneratorBlockEntity gen) {
-            serverPlayer.openMenu(gen);
+            MenuOpener.open(serverPlayer, gen);
         }
         return InteractionResult.SUCCESS;
     }

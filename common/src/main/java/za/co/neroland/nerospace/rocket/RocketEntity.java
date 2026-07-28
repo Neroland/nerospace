@@ -38,6 +38,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.fluid.FluidTank;
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.registry.ModDimensions;
@@ -893,7 +894,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
                     za.co.neroland.nerospace.network.StationSyncPayload.of(
                             StationRegistry.get(serverPlayer.level().getServer())));
-            serverPlayer.openMenu(this);
+            MenuOpener.open(serverPlayer, this);
         }
         return InteractionResult.SUCCESS;
     }
