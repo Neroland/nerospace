@@ -18,6 +18,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.world.SavedDataRecovery;
 
 /**
  * Per-{@link ServerLevel} driver + persistent state for natural meteor events (meteor-events design
@@ -80,7 +81,7 @@ public final class MeteorEventManager extends SavedData {
     }
 
     public static MeteorEventManager get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(level, TYPE, MeteorEventManager::new, "nerospace:meteor_events");
     }
 
     // --- Tick driver --------------------------------------------------------

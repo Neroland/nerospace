@@ -96,7 +96,12 @@ public final class NerospaceCommon {
      */
     private static void registerDataErasers() {
         PlayerDataErasure.register((server, uuid) -> {
-            StationRegistry.get(server).forgetPlayer(uuid);
+            StationRegistry stations = StationRegistry.get(server);
+            stations.forgetPlayer(uuid);
+            // Propagate the anonymisation to the last-known-good backup file immediately, so an
+            // erasure request is not retained there until the next periodic backup pass.
+            za.co.neroland.nerospace.world.SavedDataRecovery.backupNow(
+                    server.overworld(), StationRegistry.TYPE, stations, "nerospace:stations");
             ServerPlayer player = server.getPlayerList().getPlayer(uuid);
             if (player != null) {
                 Services.PLATFORM.setOxygen(player, OxygenManager.OXYGEN_MAX);

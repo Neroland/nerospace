@@ -65,6 +65,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
   Core-managed config, and the shared storage blocks ([Battery](Battery), [Fluid Tank](Fluid-Tank),
   [Gas Tank](Gas-Tank), [Item Store](Item-Store), [Trash Can](Trash-Can)) that moved into Core.
 - **[Configuration](Configuration)** — the six multiplier keys for server/modpack tuning.
+- **[Saved-Data Backups](Saved-Data-Backups)** — automatic last-known-good backups and crash-proof
+  recovery of Nerospace's world data.
 - **[Roadmap](Roadmap)** — what shipped in 1.0 and what's next.
 - **[Future Features](Future-Features)** — the longer-term wish list.
 

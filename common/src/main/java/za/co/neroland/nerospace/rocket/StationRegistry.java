@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.world.SavedDataRecovery;
 
 /**
  * The server-global registry of player-founded stations. Stored on the overworld (always loaded) via
@@ -109,7 +110,7 @@ public final class StationRegistry extends SavedData {
 
     /** The one registry, stored on the overworld so it is always loaded. */
     public static StationRegistry get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(server.overworld(), TYPE, StationRegistry::new, "nerospace:stations");
     }
 
     /** Where station slot {@code i} sits in the station dimension (the origin platform is slot −1). */

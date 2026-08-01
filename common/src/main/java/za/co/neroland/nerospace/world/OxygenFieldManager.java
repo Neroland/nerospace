@@ -80,7 +80,7 @@ public final class OxygenFieldManager extends SavedData {
     }
 
     public static OxygenFieldManager get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(level, TYPE, OxygenFieldManager::new, "nerospace:oxygen_field");
     }
 
     // --- Source registry ----------------------------------------------------

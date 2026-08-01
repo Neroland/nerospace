@@ -19,6 +19,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.world.SavedDataRecovery;
 
 /**
  * Server-global registry of launch pads commissioned as named travel nodes. A rocket arriving in a
@@ -79,7 +80,7 @@ public final class PadRegistry extends SavedData {
     }
 
     public static PadRegistry get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(server.overworld(), TYPE, PadRegistry::new, "nerospace:pads");
     }
 
     private static String dimId(ResourceKey<Level> dim) {

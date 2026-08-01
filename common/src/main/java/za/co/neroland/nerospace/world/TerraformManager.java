@@ -99,7 +99,7 @@ public final class TerraformManager extends SavedData {
     }
 
     public static TerraformManager get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(TYPE);
+        return SavedDataRecovery.get(level, TYPE, TerraformManager::new, "nerospace:terraformers");
     }
 
     /** Visits every registered terraformer with its centre and per-stage radii. */
