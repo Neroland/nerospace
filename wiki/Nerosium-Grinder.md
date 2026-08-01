@@ -30,6 +30,11 @@ C C C
 - **Grinding recipes:**
   - Nerosium Ore / Deepslate Nerosium Ore / Raw Nerosium → **2 Nerosium Dust**
   - Nerosium Ingot → **1 Nerosium Dust**
+  - Nerosteel Ore → **2 Raw Nerosteel**
+  - Cindrite Ore → **2 Cindrite** · Glacite Ore → **2 Glacite** · Xertz Quartz Ore → **2 Xertz Quartz**
+
+  The ore-block recipes mean **silk-touched ore** (hand-mined or from the quarry's Silk Touch Module)
+  is never a dead end — grind it back into its raw material or gem.
 - **Power:** it has an internal energy buffer (10,000 FE) and currently **self-charges**
 
   (~15 FE/tick), spending ~30 FE/tick while grinding. A full grind takes ~100 progress ticks.

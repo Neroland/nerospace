@@ -8,7 +8,11 @@ import net.minecraft.world.item.ItemStack;
 
 import za.co.neroland.nerospace.registry.ModItems;
 
-/** In-code grinding recipes (ores/raw -> 2 dust; ingot -> 1 dust). Isolated for a later datapack swap. */
+/**
+ * In-code grinding recipes. Nerosium ores/raw -> 2 dust; nerosium ingot -> 1 dust. Every other ore
+ * block -> 2x its ordinary drop (raw nerosteel or gem), so silk-touched ore blocks (hand-mined or
+ * from the quarry's silk-touch module) are never a dead end. Isolated for a later datapack swap.
+ */
 public final class GrinderRecipes {
 
     private GrinderRecipes() {
@@ -36,7 +40,9 @@ public final class GrinderRecipes {
     public static List<Grinding> all() {
         List<Grinding> recipes = new ArrayList<>();
         for (Item item : List.of(ModItems.NEROSIUM_ORE_ITEM.get(), ModItems.DEEPSLATE_NEROSIUM_ORE_ITEM.get(),
-                ModItems.RAW_NEROSIUM.get(), ModItems.NEROSIUM_INGOT.get())) {
+                ModItems.RAW_NEROSIUM.get(), ModItems.NEROSIUM_INGOT.get(),
+                ModItems.NEROSTEEL_ORE_ITEM.get(), ModItems.CINDRITE_ORE_ITEM.get(),
+                ModItems.GLACITE_ORE_ITEM.get(), ModItems.XERTZ_QUARTZ_ORE_ITEM.get())) {
             ItemStack input = new ItemStack(item);
             ItemStack output = getResult(input);
             if (!output.isEmpty()) {
@@ -57,6 +63,18 @@ public final class GrinderRecipes {
         }
         if (input.is(ModItems.NEROSIUM_INGOT.get())) {
             return new ItemStack(ModItems.NEROSIUM_DUST.get(), 1);
+        }
+        if (input.is(ModItems.NEROSTEEL_ORE_ITEM.get())) {
+            return new ItemStack(ModItems.RAW_NEROSTEEL.get(), 2);
+        }
+        if (input.is(ModItems.CINDRITE_ORE_ITEM.get())) {
+            return new ItemStack(ModItems.CINDRITE.get(), 2);
+        }
+        if (input.is(ModItems.GLACITE_ORE_ITEM.get())) {
+            return new ItemStack(ModItems.GLACITE.get(), 2);
+        }
+        if (input.is(ModItems.XERTZ_QUARTZ_ORE_ITEM.get())) {
+            return new ItemStack(ModItems.XERTZ_QUARTZ.get(), 2);
         }
         return ItemStack.EMPTY;
     }
