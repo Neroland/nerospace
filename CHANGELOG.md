@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**NeroLink companion module (`za.co.neroland.nerospace.link`)**
+
+- Nerospace now registers a module with Neroland Core's link registry, so the NeroLink companion
+  bridge serves it instead of reporting `nerospace: absent`. Schema v1.
+- Five read-only sections: `rockets` (tier, fuel, oxygen, power, launch readiness + nearby launch-pad
+  tiers), `stations` (the stations **you** own, plus registry capacity as plain counts), `planets`
+  (gravity / airless / hazard, plus which worlds you have reached), `life_support` (your oxygen tank,
+  suit tier and hazard shield) and `star_guide` (your chapter/step progress and next step).
+- Two deliberately conservative actions: `rename_station` (owner-gated, online-required, runs the same
+  server-side path as the in-game naming console) and `acknowledge_alert`. **Nothing** in the module
+  can launch a rocket, move a player or edit the world from a phone.
+- Three live events: `oxygen_low` and `rocket_landed` (owner-scoped), and a deliberately anaemic
+  `station_state` broadcast carrying only a slot number, a dimension and a state word.
+- New config key `linkModuleEnabled` (default `true`, server-authoritative) switches the whole module
+  off; it is re-checked on every snapshot, action and publish, so `/neroland config reload` applies
+  immediately.
+- **Privacy:** every section is filtered by the requesting player's UUID. No other player's station,
+  oxygen value or Star Guide step can appear in a response; ownership of other players is never
+  emitted, not even as a name. Operator status is deliberately not honoured. Rockets and launch pads
+  have no owner in Nerospace, so that section reports only what you could already see from where you
+  stand (a 128-block radius around you, while online) rather than a server-wide roster.
+
+**Per-loader Maven artifacts published to GitHub Packages**
+
+- The release workflow now publishes all six `nerospace-<loader>-<mc>` artifacts after the build, so
+  sibling Nero mods can compile against `za.co.neroland.nerospace.api` from a remote repository
+  instead of reaching Nerospace by reflection.
+
 **Marker-less quarry setup (frame outline)**
 
 - The quarry area can now be defined **without landmarks**: outline a closed rectangle with
@@ -47,6 +75,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+**Right-to-erasure now reaches Alien Villager reputation (POPIA/GDPR)**
+
+- Each Alien Villager keeps a `UUID -> reputation` map in its own entity NBT — an undeclared **fourth**
+  per-player store that Nerospace's Core erasure hook never touched, so an erased player's UUID could
+  sit in villager NBT indefinitely. The eraser (now `data.NerospaceErasure`) sweeps every **loaded**
+  level and drops the entry, and a villager whose chunk loads later in the same server session has the
+  entry stripped as it reads its NBT. The residual gap — a villager in a chunk never visited again
+  after a server restart — is documented in code rather than papered over; deliberately no persistent
+  suppression list, because storing the very UUID we were asked to forget, forever, would be worse.
+- The eraser's comment claiming an offline player's attachment data "resets to defaults on its own"
+  was **wrong**: both `oxygen` and `star_guide_seen` are declared `serialize(...)` with `copyOnDeath()`
+  and persist in the player's save file. The comment now states the real limitation, and an erasure
+  that lands while a player is offline is completed the next time they log in during the same session.
+
 **Machine blocks now drop themselves when mined**
 
 - Several blocks used `requiresCorrectToolForDrops` but were missing from the
@@ -59,6 +101,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drop from code (their loot tables are now empty to prevent a duplicate drop).
 
 ### Changed
+
+**Neroland Core dependency floor raised to 1.10.0**
+
+- `nerolandcore_version` moves from `1.4.0` to `1.10.0` (six minors of drift). Core's V1 API is frozen
+  and every minor in that range is additive-only, so no Nerospace code changed. The loader dependency
+  ranges are derived from this single property — `[1.10.0,2.0)` for NeoForge/Forge and
+  `>=1.10.0 <2.0.0` for Fabric — so an out-of-date Core is now refused at load time instead of
+  crashing later at registration.
 
 **Quarry frame lifecycle**
 

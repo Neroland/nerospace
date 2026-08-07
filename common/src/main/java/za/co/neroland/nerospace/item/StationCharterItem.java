@@ -84,6 +84,8 @@ public class StationCharterItem extends Item {
         held.shrink(1);
         StationStructure.build(station, entry.center());
         NerospaceTelemetry.breadcrumb("station", "founded slot=" + entry.slot());
+        // NeroLink: a thin broadcast (slot + dimension + state only — no name, owner or position).
+        za.co.neroland.nerospace.link.NerospaceLinkEvents.stationStateChanged(server, entry.slot(), "FOUNDED");
         StarGuideGrants.grant(player, "guide/station_charter");
         // Founding an off-world base opens Neroland Core's shared FIRST_COLONY gate (one-directional).
         StarGuideGrants.driveFirstColony(player);
@@ -117,6 +119,9 @@ public class StationCharterItem extends Item {
             PadRegistry.get(server).register(trimmed + " Landing", ModDimensions.STATION_LEVEL,
                     StationStructure.padCenter(entry.center()));
         }
+        // NeroLink: same thin broadcast as founding, fired here rather than at the call sites so the
+        // in-game naming console and the companion app's rename action cannot drift apart.
+        za.co.neroland.nerospace.link.NerospaceLinkEvents.stationStateChanged(server, slot, "RENAMED");
         player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.renamed", trimmed));
     }
 }

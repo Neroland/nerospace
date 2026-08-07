@@ -838,6 +838,11 @@ public class RocketEntity extends Entity implements MenuProvider {
                 // Life support: dump the rocket's remaining oxygen into the rider as a slow-draining
                 // surface reserve (this also tops their suit/personal O2 to full on arrival).
                 za.co.neroland.nerospace.world.OxygenManager.grantArrivalReserve(player, getOxygen());
+                // NeroLink: an owner-scoped rocket_landed push, so a companion client learns the trip
+                // finished without polling. Best-effort — the publisher swallows its own failures.
+                za.co.neroland.nerospace.link.NerospaceLinkEvents.rocketLanded(player, targetKey, getTier(),
+                        carriedFuel, getOxygen(),
+                        new BlockPos(Mth.floor(ax), Mth.floor(ay), Mth.floor(az)));
                 // Neroland Core progression (one-directional): a completed launch reaches orbit; arriving
                 // at a far planet is a deep-space milestone. tryOpen respects the gate `requires` chain.
                 za.co.neroland.nerospace.progression.StarGuideGrants.driveReachedOrbit(player);

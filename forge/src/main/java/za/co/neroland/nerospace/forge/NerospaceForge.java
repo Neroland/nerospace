@@ -69,6 +69,8 @@ public final class NerospaceForge {
             OxygenFieldEvents.tick(event.server());
             TerraformDrift.tick(event.server());
             GravityManager.tick(event.server());
+            // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
+            za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(event.server());
         });
         LivingFallEvent.BUS.addListener(event -> {
             if (AlienGearAbilities.negatesFall(event.getEntity())) {

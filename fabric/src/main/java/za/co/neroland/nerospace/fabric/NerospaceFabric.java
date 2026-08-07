@@ -115,6 +115,8 @@ public final class NerospaceFabric implements ModInitializer {
             OxygenFieldEvents.tick(server);
             TerraformDrift.tick(server);
             GravityManager.tick(server);
+            // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
+            za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(server);
         });
         // Creative debug commands (/nerospace gallery).
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->

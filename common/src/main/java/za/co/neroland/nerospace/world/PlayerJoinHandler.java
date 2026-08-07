@@ -26,6 +26,11 @@ public final class PlayerJoinHandler {
 
     /** Send the one-time welcome to a freshly joined server player. */
     public static void onPlayerJoin(ServerPlayer player) {
+        // POPIA/GDPR: if an erasure request landed for this player while they were offline, the two
+        // per-player attachments could not be reached then (both loaders expose attachments only through
+        // a live Player). Finish the job now. No-op for everyone else.
+        za.co.neroland.nerospace.data.NerospaceErasure.applyOnJoin(player);
+
         player.sendSystemMessage(Component.empty()
                 .append(Component.literal("[Nerospace] ").withStyle(ChatFormatting.LIGHT_PURPLE))
                 .append(Component.translatable("message.nerospace.welcome.intro").withStyle(ChatFormatting.GRAY)));

@@ -4,17 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 
-import za.co.neroland.nerolandcore.data.PlayerDataErasure;
 import za.co.neroland.nerolandcore.meteor.MeteorPlanets;
 import za.co.neroland.nerolandcore.registry.CoreCreativeTab;
 
+import za.co.neroland.nerospace.data.NerospaceErasure;
+import za.co.neroland.nerospace.link.NerospaceLinkModule;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModRegistries;
-import za.co.neroland.nerospace.rocket.StationRegistry;
-import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
  * Loader-agnostic entry point. Both {@code NerospaceFabric} and
@@ -48,6 +46,11 @@ public final class NerospaceCommon {
         registerDataErasers();
         installMeteorPlanetProvider();
         contributeToSharedTab();
+
+        // The NeroLink module goes LAST, so a companion client is never told about something before the
+        // mod itself has finished reacting to it, and its own init swallows any failure — a broken link
+        // module must never take rockets, stations or life support down with it.
+        NerospaceLinkModule.init();
     }
 
     /**
@@ -88,25 +91,15 @@ public final class NerospaceCommon {
 
     /**
      * POPIA/GDPR: register Nerospace's player-keyed stores with Neroland Core's shared erasure hook so a
-     * single {@code /neroland data eraseme} (or Core's retention sweep) purges Nerospace too. Keyed only
-     * by UUID; player identity is never logged. Cleared: station ownership (the one stored identifier —
-     * anonymised, keeping the physical station as shared world content) and, for an online player, the
-     * oxygen + Star Guide "seen" attachments (gameplay state reachable through the platform seam). Offline
-     * attachment data is transient gameplay state that resets to defaults on its own.
+     * single {@code /neroland data eraseme} (or Core's retention sweep) purges Nerospace too.
+     *
+     * <p>Registered at construction, ahead of the stores it purges: registering late is the classic way an
+     * erasure request silently misses a store. There are <b>four</b> such stores — station ownership,
+     * Alien Villager reputation (held in entity NBT), and the two per-player attachments — and
+     * {@link za.co.neroland.nerospace.data.NerospaceErasure} documents exactly what each pass can and
+     * cannot reach rather than claiming the job is fully done.</p>
      */
     private static void registerDataErasers() {
-        PlayerDataErasure.register((server, uuid) -> {
-            StationRegistry stations = StationRegistry.get(server);
-            stations.forgetPlayer(uuid);
-            // Propagate the anonymisation to the last-known-good backup file immediately, so an
-            // erasure request is not retained there until the next periodic backup pass.
-            za.co.neroland.nerospace.world.SavedDataRecovery.backupNow(
-                    server.overworld(), StationRegistry.TYPE, stations, "nerospace:stations");
-            ServerPlayer player = server.getPlayerList().getPlayer(uuid);
-            if (player != null) {
-                Services.PLATFORM.setOxygen(player, OxygenManager.OXYGEN_MAX);
-                Services.PLATFORM.setStarGuideSeen(player, java.util.List.of());
-            }
-        });
+        NerospaceErasure.init();
     }
 }

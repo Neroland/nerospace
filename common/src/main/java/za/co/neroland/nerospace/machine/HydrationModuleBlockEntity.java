@@ -28,7 +28,7 @@ import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.ModTags;
 
 /**
- * Hydration Module (DEEPER_TERRAFORM_DESIGN.md §3.1): the glacite intake of the water stage. It must
+ * Hydration Module: the glacite intake of the terraforming water stage. It must
  * TOUCH a Terraformer; each work pulse it melts one item from its input slot ({@code
  * nerospace:hydration_input} — glacite by default) into the Terraformer's hydration-unit buffer. No
  * energy buffer of its own — melting is part of the Terraformer's stage-2 column cost.

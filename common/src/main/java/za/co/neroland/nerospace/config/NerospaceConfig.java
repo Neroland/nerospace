@@ -57,6 +57,10 @@ public final class NerospaceConfig {
     private static final ConfigValue<Boolean> TERRAFORMER_FORCE_LOAD = SCHEMA.bool("terraformerForceLoadEnabled",
             false, true, "a running Terraformer keeps a small window of chunks loaded so it terraforms "
             + "while you are away (false by default; opt-in - costs server memory/TPS while it runs)");
+    private static final ConfigValue<Boolean> LINK_MODULE = SCHEMA.bool("linkModuleEnabled", true, true,
+            "expose Nerospace data to the NeroLink companion bridge (your own rockets, stations, planets, "
+            + "life support and Star Guide progress - never another player's). true by default; false = the "
+            + "companion app reports Nerospace as absent. Server-authoritative: the server decides");
 
     private static volatile boolean loaded;
 
@@ -113,6 +117,15 @@ public final class NerospaceConfig {
     /** Whether the Terraformer actively force-loads a small window of chunks while running (default false; opt-in). */
     public static boolean terraformerForceLoadEnabled() {
         return TERRAFORMER_FORCE_LOAD.get();
+    }
+
+    /**
+     * Whether Nerospace registers its NeroLink module (player-scoped data sections, the two safe actions and
+     * the live events). Default true. Checked both when the module registers and again on every snapshot,
+     * action and publish, so a mid-session {@code /neroland config reload} takes effect immediately.
+     */
+    public static boolean linkModuleEnabled() {
+        return LINK_MODULE.get();
     }
 
     /**

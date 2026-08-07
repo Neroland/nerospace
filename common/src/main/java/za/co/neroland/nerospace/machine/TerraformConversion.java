@@ -31,8 +31,8 @@ import za.co.neroland.nerospace.world.ModBiomes;
 import za.co.neroland.nerospace.world.TerraformFauna;
 
 /**
- * Shared, idempotent surface-column conversion for the Terraformer (terraform design §2.2; staged per
- * DEEPER_TERRAFORM_DESIGN.md). Extracted so both the live frontier ({@link TerraformerBlockEntity})
+ * Shared, idempotent surface-column conversion for the Terraformer — the staged Rooted → Hydrated →
+ * Living pipeline. Extracted so both the live frontier ({@link TerraformerBlockEntity})
  * and the chunk-load catch-up rescan ({@code TerraformManager}) convert columns identically. The
  * caller guarantees the column's chunk is loaded.
  *
@@ -58,7 +58,7 @@ public final class TerraformConversion {
     private TerraformConversion() {
     }
 
-    // --- Stage bookkeeping (DEEPER_TERRAFORM_DESIGN.md §2.2) ----------------
+    // --- Stage bookkeeping ---------------------------------------------------
 
     /**
      * The chunk's effective terraform stage. Legacy chunks (pre-stage saves) carry only the
@@ -129,7 +129,7 @@ public final class TerraformConversion {
         seedResource(level, x, surfaceY, z, tier);
     }
 
-    // --- Stage 2: Hydrated (DEEPER_TERRAFORM_DESIGN.md §3.2) ----------------
+    // --- Stage 2: Hydrated ---------------------------------------------------
 
     /**
      * Stage-2 conversion of one column: fill the basin below {@code waterTableY} with still water,
@@ -190,7 +190,7 @@ public final class TerraformConversion {
         return state.isAir() || state.is(Blocks.WATER) || state.canBeReplaced();
     }
 
-    // --- Stage 3: Living (DEEPER_TERRAFORM_DESIGN.md §4–5) ------------------
+    // --- Stage 3: Living -----------------------------------------------------
 
     /**
      * Stage-3 conversion of one column: settle the mature per-planet biome (real weather), grow the

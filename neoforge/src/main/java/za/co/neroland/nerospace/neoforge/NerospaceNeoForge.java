@@ -75,6 +75,8 @@ public final class NerospaceNeoForge {
             OxygenFieldEvents.tick(event.getServer());
             TerraformDrift.tick(event.getServer());
             GravityManager.tick(event.getServer());
+            // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
+            za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(event.getServer());
         });
         // Artificer gear: Grav Striders cushion the wearer — negate fall damage while carried.
         NeoForge.EVENT_BUS.addListener((LivingFallEvent event) -> {

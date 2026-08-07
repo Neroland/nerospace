@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read   # resolve Neroland Core from GitHub Packages (see the build step)
+      packages: write  # read Neroland Core AND publish Nerospace's own Maven artifacts (see below)
     outputs:
       environment: ${{ steps.channel.outputs.environment }}
       version_type: ${{ steps.channel.outputs.version_type }}
@@ -125,6 +125,26 @@ jobs:
           :fabric:26.1.2:build :fabric:26.2:build
           :neoforge:26.1.2:build :neoforge:26.2:build
           :forge:26.1.2:build :forge:26.2:build
+          --stacktrace
+
+      # Publish the six per-loader Maven artifacts to GitHub Packages so downstream Nero mods can
+      # resolve Nerospace from a remote repo (CI runners + fresh clones have an empty ~/.m2). This is
+      # the ONLY consumable Maven for Nerospace; CurseForge/Modrinth/GitHub Releases carry
+      # player-facing jars, not Gradle dependencies. Publishing here is what lets NeroColonies and
+      # NeroAgriculture drop their reflection bridges and compile against za.co.neroland.nerospace.api
+      # directly. The jars were just built above, so `publish`'s `jar` dependency is UP-TO-DATE and
+      # this step only uploads — no second build. GITHUB_TOKEN is the workflow's own token
+      # (packages: write granted above). Privacy (POPIA/GDPR): only build artifacts + version
+      # strings are handled or logged.
+      - name: Publish Maven artifacts to GitHub Packages
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          ./gradlew
+          :fabric:26.1.2:publish :fabric:26.2:publish
+          :neoforge:26.1.2:publish :neoforge:26.2:publish
+          :forge:26.1.2:publish :forge:26.2:publish
           --stacktrace
 
       # Release channel from the version suffix: -alpha -> alpha, -beta -> beta, else release.
@@ -214,8 +234,11 @@ jobs:
       contents: read
     strategy:
       fail-fast: false
-      # Gentle on the CurseForge/Modrinth APIs vs. firing all six uploads at once.
-      max-parallel: 2
+      # STRICTLY one upload at a time. At max-parallel 2 the CurseForge upload endpoint
+      # returned generic HTTP 500s for concurrent uploads to the same project. Serial
+      # uploads + the retry loop in the CurseForge step below make the matrix
+      # deterministic.
+      max-parallel: 1
       matrix:
         include:
           - { loader: fabric,   mc: "26.1.2", label: "Fabric",   suffix: "" }
@@ -322,17 +345,35 @@ jobs:
               gameVersionNames: [$mc, $loader, "Client", "Server"]
             }' > cf_metadata.json
 
-          HTTP_CODE=$(curl -sS -o cf_response.json -w "%{http_code}" \
-            -X POST "https://minecraft.curseforge.com/api/projects/${CF_PROJECT_ID}/upload-file" \
-            -H "X-Api-Token: ${CF_API_TOKEN}" \
-            -F "metadata=<cf_metadata.json" \
-            -F "file=@${JAR}")
+          # CurseForge's upload endpoint intermittently answers a generic HTTP 500
+          # ("An unhandled exception occurred") under load — retry 5xx with backoff.
+          # 4xx responses are real request errors and fail immediately (no retry), so a
+          # bad token/metadata never spams the API.
+          ATTEMPTS=4
+          for i in $(seq 1 $ATTEMPTS); do
+            HTTP_CODE=$(curl -sS -o cf_response.json -w "%{http_code}" \
+              -X POST "https://minecraft.curseforge.com/api/projects/${CF_PROJECT_ID}/upload-file" \
+              -H "X-Api-Token: ${CF_API_TOKEN}" \
+              -F "metadata=<cf_metadata.json" \
+              -F "file=@${JAR}")
 
-          if [ "$HTTP_CODE" != "200" ]; then
-            echo "::error::CurseForge upload returned HTTP $HTTP_CODE"
+            if [ "$HTTP_CODE" = "200" ]; then
+              break
+            fi
+            if [ "$HTTP_CODE" -lt 500 ]; then
+              echo "::error::CurseForge upload returned HTTP $HTTP_CODE (not retryable)"
+              cat cf_response.json
+              exit 1
+            fi
+            if [ "$i" = "$ATTEMPTS" ]; then
+              echo "::error::CurseForge upload returned HTTP $HTTP_CODE after $ATTEMPTS attempts"
+              cat cf_response.json
+              exit 1
+            fi
+            echo "CurseForge upload attempt $i/$ATTEMPTS returned HTTP $HTTP_CODE - retrying in 30s..."
             cat cf_response.json
-            exit 1
-          fi
+            sleep 30
+          done
           echo "CurseForge upload OK (HTTP 200): file id $(jq -r '.id' cf_response.json) - $MC_VERSION / $CF_LOADER / Client+Server"
 
   release:

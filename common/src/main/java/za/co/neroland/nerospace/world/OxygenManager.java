@@ -154,6 +154,10 @@ public final class OxygenManager {
                 }
             }
             Services.PLATFORM.setOxygen(player, oxygen);
+            // NeroLink: push an owner-scoped oxygen_low event the first time this trip crosses into the
+            // red (the publisher edge-latches, so this call is cheap and cannot spam).
+            za.co.neroland.nerospace.link.NerospaceLinkEvents.oxygenChanged(
+                    player, Math.min(oxygen, max), max);
         }
 
         mirrorToAirSupply(player, Math.min(oxygen, max), max);

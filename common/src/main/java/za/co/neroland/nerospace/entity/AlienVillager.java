@@ -244,6 +244,35 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         }
     }
 
+    /**
+     * Whether this villager currently stores a reputation score for {@code playerId}. Used by the erasure
+     * sweep to pick out only the villagers it actually has to touch.
+     */
+    public boolean remembers(UUID playerId) {
+        return playerId != null && this.reputation.containsKey(playerId);
+    }
+
+    /**
+     * POPIA/GDPR: drops a player's reputation entry from this villager.
+     *
+     * <p>{@link #reputation} is keyed by raw player UUID and is serialised into the villager's own entity
+     * NBT, which makes it a per-player store in its own right — it must be reachable by Core's shared
+     * erasure hook, and it is, through {@code data.NerospaceErasure}. Dropping the entry in memory is
+     * enough to remove it from disk: the entity is written out from its live state on the next chunk save.</p>
+     *
+     * @return {@code true} if an entry was actually removed
+     */
+    public boolean forgetPlayer(UUID playerId) {
+        if (playerId == null || this.reputation.remove(playerId) == null) {
+            return false;
+        }
+        refreshDisplayTier();
+        if (this.tradingPlayer != null && playerId.equals(this.tradingPlayer.getUUID())) {
+            this.offers = null;
+        }
+        return true;
+    }
+
     private void refreshDisplayTier() {
         int best = 0;
         for (int score : this.reputation.values()) {
@@ -385,11 +414,20 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         this.reputation.clear();
         Optional<Map<String, Integer>> stored = input.read("Reputation", REP_CODEC);
         stored.ifPresent(map -> map.forEach((key, score) -> {
+            UUID id;
             try {
-                this.reputation.put(UUID.fromString(key), score);
+                id = UUID.fromString(key);
             } catch (IllegalArgumentException ignored) {
-                // skip malformed UUID keys
+                return; // skip malformed UUID keys
             }
+            // POPIA/GDPR load-time filter: an erasure request can arrive while this villager's chunk is
+            // unloaded, so the loaded-entity sweep in data.NerospaceErasure never sees it. Drop the entry
+            // here instead, and it is simply not written back on the next chunk save. The latch is
+            // session-scoped by design (see NerospaceErasure's javadoc for the residual gap this leaves).
+            if (za.co.neroland.nerospace.data.NerospaceErasure.erasedThisSession(id)) {
+                return;
+            }
+            this.reputation.put(id, score);
         }));
         refreshDisplayTier();
     }

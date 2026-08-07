@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 /**
- * Cosmetic drift (DEEPER_TERRAFORM_DESIGN.md §2.3) — the passive lane of the stage engine: settled
+ * Cosmetic drift — the passive lane of the stage engine: settled
  * terraformed land keeps sprouting sparse ground cover even while the machine idles. Pure garnish on a
  * hard per-second budget (loaded-and-near-players only); no gameplay effect.
  *

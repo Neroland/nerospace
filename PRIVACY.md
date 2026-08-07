@@ -60,6 +60,43 @@ The change takes effect immediately on config reload (or next launch) and no dat
 while disabled. Server owners can opt out for the whole server the same way. Nothing is
 ever sent before the config — and therefore your choice — has been loaded.
 
+## In-world player data, and the NeroLink companion module
+
+Separately from telemetry, Nerospace stores four things in the **world save on your own
+server** — nothing here leaves that server:
+
+| Store | What it holds | Erasure |
+|---|---|---|
+| Station registry | the owner UUID of each orbital station | UUID anonymised to blank; the station stays as shared world content |
+| Alien Villager reputation | a `UUID -> trade score` map inside each villager's entity data | swept from every loaded world, and stripped from a villager that loads later in the same server session |
+| Oxygen | your current air, in your player data | reset to a full tank |
+| Star Guide "seen" markers | which guide steps you have dismissed | cleared |
+
+All four are registered with Neroland Core's shared erasure hook, so one
+`/neroland data eraseme` purges Nerospace along with every other Neroland mod. Two known
+limits are stated plainly rather than glossed over: a villager in a chunk that is never
+loaded again after a server restart can retain its entry (re-running erasure after visiting
+the area clears it), and if you are offline when the request is processed, your oxygen and
+Star Guide markers are reset the next time you log in during that same server session.
+
+If the **NeroLink companion bridge** is installed, Nerospace exposes a read-only view of
+your own data to your paired companion client: your rockets and the launch pads around you,
+the stations **you** own, planet traits and which worlds you have reached, your life support,
+and your Star Guide progress. Every section is filtered by the requesting player's UUID —
+another player's station, oxygen or progress can never appear in a response, ownership by
+other players is never named, and operator status is deliberately not honoured. Rockets and
+pads have no owner in Nerospace, so that section reports only what you could already see
+from where you are standing (a 128-block radius, while online) rather than a server-wide
+list. The only two things a companion client can change are the name of a station you own
+and the acknowledgement of your own alerts; nothing can launch a rocket, move a player or
+edit the world remotely.
+
+Server owners can switch the whole module off in `config/nerospace.properties`:
+
+```properties
+linkModuleEnabled=false
+```
+
 ## Legal basis and your rights (GDPR / POPIA)
 
 Error reports are processed on the basis of **legitimate interest** (GDPR Art. 6(1)(f);

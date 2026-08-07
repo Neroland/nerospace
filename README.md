@@ -12,7 +12,7 @@
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-26.1.2%20%7C%2026.2-62B47A">
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge%20%7C%20Forge%20%7C%20Fabric-F16436">
   <img alt="Java" src="https://img.shields.io/badge/Java-25-007396">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0.0--beta.3-blue">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.0.1-blue">
 </p>
 
 <p align="center">
@@ -29,20 +29,20 @@
 
 Nerospace is a complete, standalone space-progression mod for Minecraft (Java Edition). One ore in the overworld starts a chain that ends with you breeding alien livestock on a moon you personally made breathable: machines, an all-in-one pipe network, four rocket tiers, four destinations, player-founded space stations, oxygen survival with hazard suits, and a staged terraforming endgame — all guided in-game by the **Star Guide**.
 
-The mod is built **standalone** — it requires no other mods — but uses conventional `c:` tags and loader-native capability/lookup hooks, so it slots cleanly alongside the wider tech-mod ecosystem on NeoForge, Forge, and Fabric.
+The mod is built **standalone** — its only dependency is **Neroland Core**, and it needs no third-party mods — but it uses conventional `c:` tags and loader-native capability/lookup hooks, so it slots cleanly alongside the wider tech-mod ecosystem on NeoForge, Forge, and Fabric.
 
 ## The gameplay loop
 
 1. **Nerosium** — mine the new overworld ore; smelt it, or double your yield with the powered **Nerosium Grinder**.
 2. **Power & pipes** — build generators and the **Universal Pipe**, which carries energy, fluids, gas, *and* items in one tube with per-face modes, filters, and upgrades.
-3. **First launch** — craft a Tier 1 rocket, lay a 3×3 launch pad, and fly to the **Orbital Station**.
+3. **First launch** — craft a Tier 1 rocket, lay a single launch pad block (Tier 2 needs a full 3×3), and fly to the **Orbital Station**.
 4. **New worlds** — tiered rockets reach **Greenxertz** (green planet), **Cindara** (volcanic moon), and **Glacira** (frozen moon), each with its own ores, creatures, and hazards.
-5. **Survive** — every world out there is airless: seal rooms, pipe oxygen, refill your **Oxygen Suit** at airlocks, and wear the **Thermal**/**Cryo Suit** where heat or cold quadruples O₂ drain.
-6. **Found stations** — rename a **Station Charter** in an anvil and found your own named orbital station, selectable as a rocket destination.
+5. **Survive** — every world out there is airless: seal rooms, pipe oxygen, refill your **Oxygen Suit** (and its tougher **Mk II**) at airlocks, and wear the **Thermal**/**Cryo Suit** where heat or cold quadruples O₂ drain — four full suit sets in all.
+6. **Found stations** — right-click a **Station Charter** to open its naming console, name your own orbital station, and found it as a selectable rocket destination.
 7. **Go heavy** — build the 5×5 **Heavy Launch Complex** + gantry, refine rocket fuel in the **Fuel Refinery**, and launch the Tier 4 heavy rocket.
 8. **Terraform** — mature dead ground through **Rooted → Hydrated → Living** stages, complete with a glacite-fed water cycle, weather, vibrant biomes, and three breedable livestock species.
 
-In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree — 7 chapters, 31 steps, synced to a full advancement tree. In a creative world, `/nerospace gallery` builds a live showcase of everything in the mod.
+In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree — 9 chapters, 42 steps, synced to a full advancement tree. In a creative world, `/nerospace gallery` builds a live showcase of everything in the mod.
 
 ## Requirements
 
@@ -51,6 +51,7 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 | Minecraft | 26.1.2 or 26.2 |
 | Mod loader | NeoForge, MinecraftForge/Forge, or Fabric |
 | Java | JDK 25 (64-bit) |
+| Required mod | Neroland Core (the only dependency; no third-party mods needed) |
 
 ## Installing
 
