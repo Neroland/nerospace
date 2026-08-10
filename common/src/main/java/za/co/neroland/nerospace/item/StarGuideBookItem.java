@@ -29,7 +29,7 @@ public class StarGuideBookItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            MenuOpener.open(serverPlayer, new SimpleMenuProvider(
+            return MenuOpener.openOrConsume(serverPlayer, new SimpleMenuProvider(
                     (id, inventory, p) -> new StarGuideMenu(id, inventory, p),
                     Component.translatable("container.nerospace.star_guide")));
         }

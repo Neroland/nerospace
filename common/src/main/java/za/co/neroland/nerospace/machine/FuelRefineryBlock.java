@@ -59,7 +59,7 @@ public class FuelRefineryBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof FuelRefineryBlockEntity refinery) {
-            MenuOpener.open(serverPlayer, refinery);
+            return MenuOpener.openOrConsume(serverPlayer, refinery);
         }
         return InteractionResult.SUCCESS;
     }

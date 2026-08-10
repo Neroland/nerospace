@@ -211,7 +211,7 @@ public class LaunchControllerBlock extends BaseEntityBlock {
         }
         if (player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof LaunchControllerBlockEntity controller) {
-            MenuOpener.open(serverPlayer, controller);
+            return MenuOpener.openOrConsume(serverPlayer, controller);
         }
         return InteractionResult.SUCCESS;
     }

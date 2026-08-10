@@ -136,7 +136,7 @@ public class AdvancedPipeFilterItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            MenuOpener.open(serverPlayer, new SimpleMenuProvider(
+            return MenuOpener.openOrConsume(serverPlayer, new SimpleMenuProvider(
                     (id, inventory, p) -> new AdvancedFilterMenu(id, inventory, hand),
                     Component.translatable("item.nerospace.advanced_pipe_filter")));
         }

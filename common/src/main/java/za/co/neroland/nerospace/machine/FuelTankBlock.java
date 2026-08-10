@@ -105,7 +105,7 @@ public class FuelTankBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof FuelTankBlockEntity tank) {
-            MenuOpener.open(serverPlayer, tank);
+            return MenuOpener.openOrConsume(serverPlayer, tank);
         }
         return InteractionResult.SUCCESS;
     }

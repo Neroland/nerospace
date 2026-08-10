@@ -3,7 +3,9 @@ package za.co.neroland.nerospace.menu;
 import java.util.OptionalInt;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 
@@ -27,8 +29,9 @@ import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
  * {@link RuntimeException} and {@link LinkageError} are caught — the failure modes a foreign platform
  * actually produces. Genuine {@code Error}s (out of memory, stack overflow) still propagate.</p>
  *
- * <p><b>POPIA/GDPR:</b> the log line and the telemetry report name the menu, never the player. No
- * name, UUID, IP, or position is recorded on this path.</p>
+ * <p><b>POPIA/GDPR:</b> the log line and the telemetry report identify the menu by translation key or
+ * class name, never the player and never a rendered title (which can contain player-authored text —
+ * see {@link #describe}). No name, UUID, IP, or position is recorded on this path.</p>
  */
 public final class MenuOpener {
 
@@ -48,6 +51,25 @@ public final class MenuOpener {
             recover(player, provider, e);
             return OptionalInt.empty();
         }
+    }
+
+    /**
+     * {@link #open} for the common interaction case, translated into the value a {@code useWithoutItem} /
+     * {@code useOn} / {@code interact} override should return.
+     *
+     * <p>{@link InteractionResult#SUCCESS} when the menu opened. When it did not, the interaction is
+     * still spent — {@link InteractionResult#CONSUME}, not {@code FAIL}. {@code FAIL} does not consume
+     * the action, so the interaction would fall through to {@code ItemStack#useOn} and a refused GUI
+     * would end with the player placing a block against the machine they were trying to open.</p>
+     *
+     * <p>Note that server-side {@code CONSUME} and {@code SUCCESS} behave identically at these call
+     * sites — both are {@code Success}, and the arm swing is driven by the client's own predicted
+     * result, which is always {@code SUCCESS} here. The distinction is recorded intent, not a
+     * behaviour change: the refusal path returns the value that says "spent, nothing happened" so the
+     * next person to read it is not told the menu opened.</p>
+     */
+    public static InteractionResult openOrConsume(Player player, MenuProvider provider) {
+        return open(player, provider).isPresent() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
     }
 
     private static void recover(Player player, MenuProvider provider, Throwable cause) {
@@ -77,15 +99,22 @@ public final class MenuOpener {
         NerospaceTelemetry.captureHandledException(cause, "menu_open", menu);
     }
 
-    /** Menu title if it can be resolved, else the provider class — never anything player-specific. */
+    /**
+     * A label for the menu that is safe to log and to send to Sentry: the translation key we authored,
+     * or failing that the provider class. Never the <em>rendered</em> title.
+     *
+     * <p>Rendering the title would be the obvious thing to do and is the reason this method is written
+     * out rather than being {@code title.getString()}. A display name is not always ours: a renamed
+     * Alien Villager carries whatever a player typed on the name tag, and a station-scoped provider can
+     * carry a station name. Both are player-authored free text, so under POPIA/GDPR neither belongs in
+     * a log line or a telemetry payload. A translation key is a constant from our own lang file and
+     * carries no user input.</p>
+     */
     private static String describe(MenuProvider provider) {
         try {
             Component title = provider.getDisplayName();
-            if (title != null) {
-                String text = title.getString();
-                if (!text.isEmpty()) {
-                    return text;
-                }
+            if (title != null && title.getContents() instanceof TranslatableContents translatable) {
+                return translatable.getKey();
             }
         } catch (RuntimeException | LinkageError ignored) {
             // Fall through to the class name.

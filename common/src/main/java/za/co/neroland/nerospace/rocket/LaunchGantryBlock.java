@@ -67,7 +67,7 @@ public class LaunchGantryBlock extends BaseEntityBlock {
             za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
                     za.co.neroland.nerospace.network.StationSyncPayload.of(
                             StationRegistry.get(serverPlayer.level().getServer())));
-            MenuOpener.open(serverPlayer, rocket);
+            return MenuOpener.openOrConsume(serverPlayer, rocket);
         }
         return InteractionResult.SUCCESS;
     }

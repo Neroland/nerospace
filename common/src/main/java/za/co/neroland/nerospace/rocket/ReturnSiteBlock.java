@@ -60,11 +60,12 @@ public abstract class ReturnSiteBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ReturnSiteBlockEntity site) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ReturnSiteBlockEntity site
+                && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             if (this.landingPod && state.getValue(INFLATED)) {
                 level.setBlock(pos, state.setValue(INFLATED, false), 3);
             }
-            MenuOpener.open(player, site);
+            return MenuOpener.openOrConsume(serverPlayer, site);
         }
         return InteractionResult.SUCCESS;
     }

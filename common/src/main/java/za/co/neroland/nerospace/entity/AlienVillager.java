@@ -175,20 +175,27 @@ public class AlienVillager extends PathfinderMob implements Merchant {
             return InteractionResult.SUCCESS;
         }
         if (this.getTradingPlayer() == null && this.isAlive()) {
-            startTrading(player);
+            return startTrading(player) ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
         }
         return InteractionResult.SUCCESS;
     }
 
-    private void startTrading(Player player) {
+    /** @return {@code true} if the trade screen actually opened. */
+    private boolean startTrading(Player player) {
         rebuildOffers(player);
         this.setTradingPlayer(player);
         OptionalInt opt = MenuOpener.open(player, new SimpleMenuProvider(
                 (id, inv, p) -> new MerchantMenu(id, inv, this), this.getDisplayName()));
-        if (opt.isPresent()) {
-            player.sendMerchantOffers(opt.getAsInt(), this.getOffers(), 1, this.getVillagerXp(),
-                    this.showProgressBar(), false);
+        if (opt.isEmpty()) {
+            // The platform refused the open, so there is no merchant screen and no close event coming.
+            // Leaving the villager flagged as trading would lock it to a player who has no window —
+            // nobody else could trade with it and they could not retry. Release it.
+            this.setTradingPlayer(null);
+            return false;
         }
+        player.sendMerchantOffers(opt.getAsInt(), this.getOffers(), 1, this.getVillagerXp(),
+                this.showProgressBar(), false);
+        return true;
     }
 
     private void receiveGift(Player player, ItemStack held) {

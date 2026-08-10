@@ -300,16 +300,43 @@ public final class NerospaceTelemetry {
         }
     }
 
-    /** Capture a handled exception with a non-identifying source label for triage. */
+    /**
+     * Capture a handled exception with a non-identifying source label for triage.
+     *
+     * <p>The scope is applied through {@code captureException(Throwable, ScopeCallback)} rather than
+     * {@code withScope} + a bare capture: under the Sentry 8 scopes API the forked scope in
+     * {@code withScope} did not reach the event, so {@code handled} and {@code source} arrived empty
+     * (observed on {@code MC-NEROSPACE-J}) and the triage labels were useless.</p>
+     *
+     * <p>Two further deliberate choices, both about signal rather than data:</p>
+     * <ul>
+     *   <li><b>Level {@code WARNING}, not {@code ERROR}.</b> Reaching here means a guard caught the
+     *       failure and the server carried on. Filing it at error level puts a survived incident in the
+     *       same queue as a crash.</li>
+     *   <li><b>Fingerprint fixed to source + operation.</b> Foreign-platform failures (Bukkit/Paper
+     *       hybrids) produce an endlessly varied stack — one per plugin, per menu, per item — and
+     *       without a fingerprint each variation opens a fresh issue for a platform we do not support,
+     *       burying real regressions. {@code operation} stays in the key rather than {@code source}
+     *       alone because the same guard also catches <em>our</em> bugs: {@code openMenu} builds the
+     *       menu inside the guarded call, so a broken menu constructor of ours arrives here too. On
+     *       {@code source} alone it would merge into the hybrid noise and inherit its title. Both are
+     *       bounded, non-identifying labels, so this cannot leak and cannot explode cardinality.</li>
+     * </ul>
+     *
+     * <p><b>POPIA/GDPR:</b> {@code source} and {@code operation} are caller-supplied labels that must
+     * never carry player identity. Callers pass a fixed guard name and a menu/operation name only.</p>
+     */
     public static void captureHandledException(Throwable t, String source, String operation) {
         if (!active || t == null || !touchesNerospace(t)) {
             return;
         }
-        Sentry.withScope(scope -> {
+        String label = operation == null ? "unknown" : scrub(operation);
+        Sentry.captureException(t, scope -> {
+            scope.setLevel(SentryLevel.WARNING);
             scope.setTag("handled", "true");
             scope.setTag("source", source);
-            scope.setExtra("operation", operation);
-            Sentry.captureException(t);
+            scope.setExtra("operation", label);
+            scope.setFingerprint(List.of("nerospace-handled", source, label));
         });
     }
 

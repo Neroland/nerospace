@@ -32,7 +32,7 @@ public class LaunchControllerPartBlock extends Block {
         BlockPos core = LaunchControllerBlock.findCore(level, pos);
         if (core != null && level.getBlockEntity(core) instanceof LaunchControllerBlockEntity controller
                 && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-            MenuOpener.open(serverPlayer, controller);
+            return MenuOpener.openOrConsume(serverPlayer, controller);
         }
         return InteractionResult.SUCCESS;
     }

@@ -63,7 +63,7 @@ public class StationCoreBlock extends BaseEntityBlock {
                     serverPlayer.sendSystemMessage(
                             Component.translatable("item.nerospace.station_charter.not_owner"));
                 } else {
-                    MenuOpener.open(serverPlayer, new net.minecraft.world.SimpleMenuProvider(
+                    return MenuOpener.openOrConsume(serverPlayer, new net.minecraft.world.SimpleMenuProvider(
                             (id, inv, p) -> new za.co.neroland.nerospace.menu.StationCharterMenu(
                                     id, inv, za.co.neroland.nerospace.menu.StationCharterMenu.MODE_RENAME, slot),
                             Component.translatable("gui.nerospace.station_charter.rename")));

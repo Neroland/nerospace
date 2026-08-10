@@ -105,7 +105,7 @@ public class StarGuideBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         if (player instanceof ServerPlayer serverPlayer) {
-            MenuOpener.open(serverPlayer, guide);
+            return MenuOpener.openOrConsume(serverPlayer, guide);
         }
         return InteractionResult.SUCCESS;
     }

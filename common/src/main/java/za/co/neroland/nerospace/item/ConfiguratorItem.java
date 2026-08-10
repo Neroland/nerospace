@@ -59,7 +59,7 @@ public class ConfiguratorItem extends Item {
             if (level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
                 // Sneak + right-click a pipe: open the per-face configuration GUI.
                 if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-                    MenuOpener.open(serverPlayer, pipe);
+                    return MenuOpener.openOrConsume(serverPlayer, pipe);
                 }
                 return InteractionResult.SUCCESS;
             }

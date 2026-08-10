@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-08-10
+
 ### Added
 
 **NeroLink companion module (`za.co.neroland.nerospace.link`)**
@@ -74,6 +76,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   before Nerospace loads when it is installed. Nerospace stays fully independent of it.
 
 ### Fixed
+
+**A refused GUI no longer reports as a successful one (MC-NEROSPACE-J)**
+
+- The `MenuOpener` guard already stopped a Bukkit/Paper hybrid from taking the server thread down when
+  a plugin choked on a modded item during `InventoryOpenEvent` — but 21 of its 22 call sites discarded
+  the result and returned `InteractionResult.SUCCESS` regardless. They now return the new
+  `MenuOpener.openOrConsume`, which reports `CONSUME` on a refusal. `FAIL` would be wrong: it does not
+  consume the action, so the interaction would fall through to the held item and the player would place
+  a block against the machine they were trying to open.
+- An **Alien Villager whose trade screen was refused stayed locked forever.** `startTrading` set the
+  trading player before opening, and nothing cleared it when the open failed — so the villager was
+  flagged as busy with a player who had no window, and neither they nor anyone else could trade with it
+  again. It is now released on refusal.
+- Handled-failure telemetry was applying its `handled` / `source` tags through a scope that never
+  reached the event, so every report arrived unlabelled, at error level, in its own new issue. The tags
+  now land, the level is `WARNING` (a guard caught it; the server carried on), and reports are
+  fingerprinted by guard **and** operation so hybrid noise collapses into one issue without swallowing
+  a genuine bug in one of our own menus.
+- **Privacy:** the guard's log line and telemetry payload identified the menu by its *rendered* title,
+  which for a renamed Alien Villager is text a player typed on a name tag. It now sends the translation
+  key or the provider class name, never player-authored text.
 
 **Right-to-erasure now reaches Alien Villager reputation (POPIA/GDPR)**
 

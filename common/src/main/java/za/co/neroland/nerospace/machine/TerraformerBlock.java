@@ -78,7 +78,7 @@ public class TerraformerBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof TerraformerBlockEntity be) {
-            MenuOpener.open(serverPlayer, be);
+            return MenuOpener.openOrConsume(serverPlayer, be);
         }
         return InteractionResult.SUCCESS;
     }
