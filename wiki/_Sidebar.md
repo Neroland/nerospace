@@ -86,6 +86,7 @@
 - [Station Charter](Station-Charter)
 - [Creatures](Creatures)
 - [Configuration](Configuration)
+- [Public Integration API](Public-API)
 - [Saved-Data Backups](Saved-Data-Backups)
 - [Roadmap](Roadmap)
 - [Future Features](Future-Features)

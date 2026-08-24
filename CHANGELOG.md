@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-08-11
+
+Additive patch: a new public API package, no breaking change to any existing type.
+
+### Added
+
+**Public integration API (`za.co.neroland.nerospace.api`)**
+
+- `NerospaceEnvironment.at(level, pos)` returns an immutable `EnvironmentSnapshot` — atmosphere,
+  hazard, gravity, oxygen (0-15), terraforming stage (0-3) and breathability — so another mod can ask
+  what a position is like without touching Nerospace's internal managers. It fails closed to a vacuum
+  snapshot on unloaded chunks and never forces a chunk to load or generate.
+- `NerospaceVisits` + `PlanetVisitEvents` answer "has this player ever reached Cindara?" and fire once
+  on a genuine first visit. This is the half no amount of live event listening can reconstruct for a
+  mod installed after the fact.
+- `NerospaceOxygen` accepts bounded, expiring external oxygen contributions (max radius 64, strength
+  15, one hour), keyed by a caller-owned source id, so another mod's life support can feed Nerospace's
+  breathability and environment answers.
+- `NerospaceTerraforming` applies and rolls back reversible regional overlays that change what
+  Nerospace *reports* without rewriting a single block. **Denies every mutation until the server
+  installs a `TerraformClaimPolicy`** — an unauthenticated regional environment override would be a
+  griefing tool. Each region records the physical chunk stage underneath it, so a rollback restores
+  that baseline rather than erasing real progress.
+
+### Changed
+
+- Breathability now also honours an active terraforming overlay and external oxygen contributions,
+  alongside the existing terraformed-chunk flag, oxygen field and launch-pad safe radius.
+
+### Privacy
+
+- Planet visits are the only new player-keyed store: a UUID and a set of planet ids, with no
+  timestamps, coordinates or movement trail. It is registered with Neroland Core's shared
+  `PlayerDataErasure` hook and, like station ownership, an erasure request is pushed into the
+  saved-data backup file immediately rather than at the next periodic pass.
+- Oxygen contributions and terraforming overlays record no player at all. Their ids are caller-owned
+  and are documented as never permitted to encode player identity, because Nerospace persists them
+  verbatim.
+
 ## [1.0.2] - 2026-08-10
 
 ### Added

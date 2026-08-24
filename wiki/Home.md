@@ -58,6 +58,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
   and off-world ores; track them with the Meteor Tracker.
 
 - **[Star Guide](Star-Guide)** — the in-game progression guide.
+- **[Public Integration API](Public-API)** — for mod developers: the supported surface for querying
+  planets, environment and visits, contributing oxygen, and applying reversible terraforming overlays.
 - **[Planet Gravity](Planet-Gravity)** — each world's own gravity, biome variation, and how
   terraforming restores it.
 - **[Neroland Core](Neroland-Core)** — the required foundation library Nerospace is built on: one

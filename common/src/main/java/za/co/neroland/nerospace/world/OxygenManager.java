@@ -17,6 +17,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import za.co.neroland.nerospace.api.NerospaceOxygen;
+import za.co.neroland.nerospace.api.NerospaceTerraforming;
+import za.co.neroland.nerospace.api.NerospaceVisits;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
@@ -110,6 +113,13 @@ public final class OxygenManager {
         if (!isAirless(level.dimension())) {
             Services.PLATFORM.setOxygen(player, max);
             return;
+        }
+
+        // Historical planet visits for the public API. Placed after the airless gate so it costs nothing
+        // at all off-world, and throttled to the same cadence as the rest of this method's periodic work:
+        // a first visit is worth recording within a few seconds, not within a single tick.
+        if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
+            NerospaceVisits.observeCurrentPlanet(player);
         }
 
         // On a Nerospace dimension but not actually exposed (creative build / spectator): keep the
@@ -208,6 +218,17 @@ public final class OxygenManager {
             return true;
         }
         if (OxygenFieldManager.get(level).isBreathable(center)) {
+            return true;
+        }
+        // A reversible terraforming overlay makes a region breathable without rewriting the chunk, so it
+        // has to be checked separately from the physical isTerraformed flag above. Explicit branch to
+        // keep an Optional map + Boolean box off this path.
+        var overlay = NerospaceTerraforming.at(level, center);
+        if (overlay.isPresent() && overlay.get().stage() >= 1) {
+            return true;
+        }
+        // External contributions (a NeroAgriculture greenhouse, say) are pressure like any other.
+        if (NerospaceOxygen.pressureAt(level, center) >= NerospaceOxygen.BREATHABLE_PRESSURE) {
             return true;
         }
         for (BlockPos pos : BlockPos.betweenClosed(
