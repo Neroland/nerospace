@@ -19,12 +19,15 @@ Landmarks](Quarry-Landmark)**, place the controller beside it, give it **frame m
    by layer**, top to bedrock, like a 3D printer in reverse — a drill head travels the gantry to each
    block, one block at a time.
 
-3. **Buffers and auto-ejects** everything it digs: mined items into an internal inventory, and any
+3. **Buffers and auto-ejects** what it digs: mined items into an internal inventory, and any liquids
 
-   liquids it hits into an internal fluid tank — both push out to adjacent storage / pipes.
+   it hits into an internal fluid tank — both push out to adjacent storage / pipes (including other
+   mods' — see [Universal Pipe](Universal-Pipe)). Liquid it has nowhere to put is destroyed rather
+   than allowed to hold the dig up.
 
-It never destroys what it can't store: if its buffers fill or the power runs out, it **pauses** (the
-GUI tells you why) and resumes on its own once you fix it.
+It never destroys an **item** it can't store: if the output buffer fills or the power runs out, it
+**pauses** (the GUI tells you why) and resumes on its own once you fix it. Liquids are the deliberate
+exception — see below.
 
 ## Obtaining
 
@@ -80,7 +83,15 @@ I I I
 
 - **Fluid buffer:** source liquids (water, lava) in the dig area are **sucked up** into a
 
-  **16,000 mB** internal tank that auto-ejects to an adjacent [Fluid Tank](Fluid-Tank) / pipe.
+  **16,000 mB** internal tank that auto-ejects to an adjacent [Fluid Tank](Fluid-Tank) / pipe —
+  another mod's tank or pipe counts too (see [Universal Pipe](Universal-Pipe)). The tank holds one
+  fluid at a time and 16 source blocks' worth of it, and **the quarry never waits for it**: anything
+  that won't fit — the overflow, and any fluid that isn't the one it is already holding — is destroyed
+  as it digs, so a dig through an ocean or a lava lake carries on regardless. It clears at most **64
+  source blocks per mining tick**, so a big body of water drains steadily over a few seconds instead
+  of vanishing all at once. Want none of it kept? Slot an
+  **[Evaporator Module](Upgrade-Modules)** — with one installed the quarry destroys every liquid on
+  sight and the buffer stays empty.
 
 - **Obstacles:** it **skips** bedrock and other unbreakable blocks, and **skips the entire column**
 
@@ -127,7 +138,7 @@ I I I
 | **Idle — set landmarks or frame** | No valid region found yet — place landmarks or a hand-built frame outline. |
 | **Building frame** | Placing the frame ring (consuming casings). |
 | **Mining** | Digging — `Depth` (right edge of the line, shown while building/mining) counts layers below the frame plane. |
-| **Paused — …** | Stopped — the line names the reason: frame incomplete, out of Frame Casing, out of power, output/fluid buffer full, or wrong planet (tier too low for it). The paused drill head stays where the dig stopped. |
+| **Paused — …** | Stopped — the line names the reason: frame incomplete, out of Frame Casing, out of power, output buffer full, or wrong planet (tier too low for it). Liquid never pauses the dig. The paused drill head stays where the dig stopped. |
 | **Finished — frame reclaimed** | Reached bedrock; the frame was dismantled and its casings returned to the frame slots. |
 
 ## Tiers & planets
@@ -145,7 +156,7 @@ too-low tier on a gated planet pauses with "wrong planet".
 
 ## Upgrades & the future
 
-- **[Upgrade Modules](Upgrade-Modules)** (Speed / Efficiency / Fortune / Silk Touch) slot into the
+- **[Upgrade Modules](Upgrade-Modules)** (Speed / Efficiency / Fortune / Silk Touch / Evaporator) slot into the
 
   controller and tune its behaviour. They're a **cross-machine** system — the same cards will work
   in other machines.

@@ -80,6 +80,12 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     public static final int ENERGY_MAX_INSERT = 10_000;
     public static final int DATA_COUNT = 8;
     private static final int SCAN_BUDGET_PER_TICK = 4096;
+    /**
+     * Max liquid source blocks cleared in one {@code mine()} call. Liquid cells cost no energy and do
+     * not count towards {@code processed}, so without a cap a footprint over an ocean would clear a
+     * whole 64x64 layer in a single call and spike the neighbour/fluid updates that come with it.
+     */
+    private static final int LIQUID_PER_CALL = 64;
 
     // Inlined Tuning base values.
     private static final int ENERGY_BUFFER = 200_000;
@@ -441,6 +447,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
         boolean changed = false;
 
         int scanned = 0;
+        int liquidCleared = 0;
         for (int processed = 0; processed < 1 && scanned < SCAN_BUDGET_PER_TICK; ) {
             scanned++;
             if (this.currentY < floor) {
@@ -492,13 +499,14 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
 
             FluidState fluidState = state.getFluidState();
             if (state.getBlock() instanceof LiquidBlock && fluidState.isSource()) {
-                if (!suckFluid(level, target, fluidState)) {
-                    setPaused("fluid_full");
-                    changed = true;
-                    break;
-                }
+                // Never a failure path: the cell is always cleared and the cursor always advances, so a
+                // dig that runs into an ocean drains through it instead of parking on the same block.
+                takeFluid(level, target, fluidState, this.modules.evaporator());
                 this.cursor++;
                 changed = true;
+                if (++liquidCleared >= LIQUID_PER_CALL) {
+                    break; // budgeted, NOT paused: the dig resumes here on the next mining tick
+                }
                 continue;
             }
 
@@ -613,14 +621,31 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
                 cx, cy, cz, 3, 0.2, 0.2, 0.2, 0.0);
     }
 
-    private boolean suckFluid(ServerLevel level, BlockPos pos, FluidState fluidState) {
-        Fluid fluid = fluidState.getType();
-        if (this.fluidBuffer.fill(fluid, 1000, true) >= 1000) {
-            this.fluidBuffer.fill(fluid, 1000, false);
-            level.removeBlock(pos, false);
-            return true;
+    /**
+     * Clears one liquid source block out of the dig, buffering its 1000 mB when there is room and
+     * silently discarding it when there isn't.
+     *
+     * <p>It has no failure mode on purpose. The buffer holds sixteen source blocks; a quarry footprint
+     * over an ocean sits on thousands, so any "wait until the tank has room" rule becomes a permanent
+     * stall — the machine pauses on the liquid, resumes onto the very same block, and pauses again. A
+     * quarry that throws away water it has nowhere to put is strictly better than one that stops
+     * forever the moment it touches the sea. The same reasoning covers a fluid mismatch:
+     * {@link FluidTank#fill} refuses a second fluid outright, so a water-laden quarry reaching lava
+     * would otherwise hard-stall even while a pipe drains it.</p>
+     *
+     * @param evaporate with an Evaporator module installed, destroy the source without buffering it at
+     *                  all, keeping the buffer free for a fluid the player actually wants
+     */
+    private void takeFluid(ServerLevel level, BlockPos pos, FluidState fluidState, boolean evaporate) {
+        if (!evaporate) {
+            Fluid fluid = fluidState.getType();
+            // All-or-nothing per source block: a partial fill would leave a fraction of a bucket in the
+            // buffer that no bucket/tank round-trip can ever square up.
+            if (this.fluidBuffer.fill(fluid, 1000, true) >= 1000) {
+                this.fluidBuffer.fill(fluid, 1000, false);
+            }
         }
-        return false;
+        level.removeBlock(pos, false);
     }
 
     // --- Skipped-column bookkeeping --------------------------------------------
@@ -653,7 +678,8 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
             }
         }
         // Mirror the item path for the fluid buffer: push buffered fluid into any adjacent fluid store (tank/
-        // pipe) so the quarry doesn't dead-pause on "fluid_full" next to a tank.
+        // pipe) so a quarry parked next to a tank actually keeps the liquid it digs up instead of
+        // filling its 16-bucket buffer once and discarding every source block after that.
         pushFluid(level, pos);
     }
 

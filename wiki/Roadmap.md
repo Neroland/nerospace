@@ -77,9 +77,11 @@ See **[Future Features](Future-Features)**.
 
 ## ⏳ Deferred
 
-- **Cross-mod integration** (e.g. Mekanism) waits until those mods port to Minecraft 26.1. Nerospace
+- **Bespoke, mod-specific integration** waits until those mods port to Minecraft 26.1. Nerospace is
 
-  is standalone by design — tags + NeoForge capabilities mean most integration comes free later.
+  standalone by design, and the generic half is already done: energy, fluids and items ride the
+  platform-standard capabilities and lookups on all three loaders, so anything else using them connects
+  today — see [Mod Compatibility](Mod-Compatibility).
 
 ## Contributing / feedback
 

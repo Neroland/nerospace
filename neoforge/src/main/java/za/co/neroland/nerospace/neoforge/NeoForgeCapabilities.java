@@ -6,6 +6,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
@@ -16,6 +18,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
+import za.co.neroland.nerospace.platform.NeoForgeFluidResourceHandler;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.rocket.RocketPadFluidProxy;
@@ -28,7 +31,9 @@ import za.co.neroland.nerospace.rocket.RocketPadItemContainer;
  *   <li>item storage via the standard {@code Capabilities.Item.BLOCK} (26.x transfer API);</li>
  *   <li>energy via a mod-owned {@link #ENERGY} {@link BlockCapability} over
  *       {@link NerospaceEnergyStorage} (the Fabric side uses a matching {@code BlockApiLookup}) —
- *       self-contained until the platforms' energy libraries port to 26.x.</li>
+ *       self-contained until the platforms' energy libraries port to 26.x;</li>
+ *   <li>fluid on BOTH the mod-owned {@link #FLUID} capability and the standard
+ *       {@code Capabilities.Fluid.BLOCK} — see {@link #registerStandardFluid}.</li>
  * </ul>
  */
 public final class NeoForgeCapabilities {
@@ -241,6 +246,7 @@ public final class NeoForgeCapabilities {
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
 
         registerCoreEnergy(event);
+        registerStandardFluid(event);
     }
 
     /**
@@ -265,5 +271,64 @@ public final class NeoForgeCapabilities {
         event.registerBlockEntity(core, ModBlockEntities.TERRAFORMER.get(), (be, side) -> be.getEnergy());
         event.registerBlockEntity(core, ModBlockEntities.FUEL_REFINERY.get(), (be, side) -> be.sideConfig().energyView(side));
         event.registerBlockEntity(core, ModBlockEntities.QUARRY_CONTROLLER.get(), (be, side) -> be.getEnergy());
+    }
+
+    /**
+     * Cross-mod fluid, EXPORT half: expose every block entity that already provides the mod-private
+     * {@link #FLUID} capability on the platform-standard {@code Capabilities.Fluid.BLOCK} as well, wrapped
+     * in {@link NeoForgeFluidResourceHandler}.
+     *
+     * <p>WHY: a foreign pipe, pump or tank only ever asks the standard capability, so before this every
+     * Nerospace tank was invisible to the rest of the ecosystem — the reason players reported the Fluid
+     * Tank as useless because they could not pipe into a bigger tank from another mod. This is purely
+     * additive: the mod-private registrations above are untouched and are still what
+     * {@code NeoForgeFluidLookup} asks first, so Nerospace's own blocks behave exactly as they did.</p>
+     *
+     * <p>Each line mirrors its mod-private twin one-for-one, INCLUDING the gated side-config views —
+     * {@link NeoForgeFluidResourceHandler#of} propagates {@code null}, so a face the side config has
+     * disabled stays invisible on the standard capability too and the gate cannot be walked around. The
+     * Rocket Launch Pad is the ONE deliberate exception; see the comment at the end of this method.</p>
+     *
+     * <p>The three Neroland Core block-entities are listed because Nerospace re-exposes them on its own
+     * fluid capability (see {@code CoreTankBridge} above). Core loads first, so if Core ever registers its
+     * own provider for the standard capability, Core's wins and these are dead weight rather than a
+     * conflict — NeoForge queries providers in registration order and takes the first non-null.</p>
+     */
+    private static void registerStandardFluid(RegisterCapabilitiesEvent event) {
+        BlockCapability<ResourceHandler<FluidResource>, Direction> standard = Capabilities.Fluid.BLOCK;
+
+        event.registerBlockEntity(standard, ModBlockEntities.UNIVERSAL_PIPE.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(be.getFluidTank()));
+        event.registerBlockEntity(standard, ModBlockEntities.LAUNCH_CONTROLLER.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(be.getTank()));
+
+        event.registerBlockEntity(standard, za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(
+                        za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getFluid())));
+        event.registerBlockEntity(standard, za.co.neroland.nerolandcore.registry.ModBlockEntities.FLUID_TANK.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(
+                        za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank())));
+        event.registerBlockEntity(standard,
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_FLUID_TANK.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(
+                        za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank())));
+
+        event.registerBlockEntity(standard, ModBlockEntities.FUEL_TANK.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(
+                        za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), side)));
+        event.registerBlockEntity(standard, ModBlockEntities.FUEL_REFINERY.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(
+                        za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), side)));
+        event.registerBlockEntity(standard, ModBlockEntities.QUARRY_CONTROLLER.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(be.getTank()));
+
+        // DELIBERATELY NOT REGISTERED: ModBlocks.ROCKET_LAUNCH_PAD / RocketPadFluidProxy. The standard
+        // handler implements `simulate` as "mutate, then undo if the transaction aborts", which is only
+        // sound for an INVERTIBLE storage. The pad proxy is a write-only sink — its drain() always returns
+        // 0 while its fill() permanently fuels the docked rocket — so it cannot be undone, and a foreign
+        // mod's routine insert-then-abort probe would gift the rocket free fuel on every tick that probes.
+        // Nothing is lost: the pad keeps its mod-private FLUID registration above, so Nerospace's own pipes
+        // and the Fuel Tank refuel rockets exactly as before, and a foreign mod can still fuel a rocket by
+        // piping into a Nerospace Fuel Tank that feeds the pad.
     }
 }

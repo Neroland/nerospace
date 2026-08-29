@@ -91,12 +91,18 @@
 - **Resources are HAND-AUTHORED in `common/src/main/resources`** — the multiloader does **not** run
   datagen. Recipes/loot/tags/lang/blockstates/models/`items/` are committed JSON; validate with
   `python json.load` after any edit. (Datapack folders are singular: `recipe/`, `loot_table/`.)
-- **Platform seams (ServiceLoader, no Architectury).** `common/.../platform/Services.java` loads 7
+- **Platform seams (ServiceLoader, no Architectury).** `common/.../platform/Services.java` loads 8
   services; each loader ships exactly one impl of each plus a `META-INF/services` entry:
   `IPlatformHelper` (name/dev/isModLoaded/isClient/configDir/version + the data-attachment getters/setters
   oxygen / terraformed / terraformStage / starGuideSeen), `EnergyLookup`, `FluidLookup`, `FluidFactory`,
-  `GasLookup`, `NetworkPlatform`, `registry.RegistrationProvider$Factory`. **`common/` is effectively
-  read-only for loader work — reuse the EXACT seams; don't add new common interfaces.**
+  `GasLookup`, `ItemLookup`, `NetworkPlatform`, `registry.RegistrationProvider$Factory`. `ItemLookup` is
+  the newest seam (cross-mod item transfer); `FluidLookup` now falls back to the platform-standard fluid
+  handler when a neighbour doesn't answer Nerospace's own cap, and both seams also EXPOSE the standard
+  handlers (NeoForge `Capabilities.Fluid/Item.BLOCK`, Fabric `FluidStorage/ItemStorage.SIDED` (Transfer
+  API v1), Forge `ForgeCapabilities.FLUID_HANDLER`/`ITEM_HANDLER`) — mod-private cap tried first, so
+  Nerospace-to-Nerospace behaviour is unchanged. Gas is deliberately NOT bridged (no cross-mod standard).
+  **`common/` is effectively read-only for loader work — reuse the EXACT seams; don't add new common
+  interfaces.**
 - One RegistrationProvider DeferredRegister setup per content type. Menus are non-extended; renderers
   bake-direct; energy/fluid/gas via `EnergyBuffer`/`FluidTank`/`GasTank` + vanilla `WorldlyContainer`
   (simulate-then-commit, no transfer transactions); cross-loader BERs via

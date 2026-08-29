@@ -17,5 +17,17 @@ out of it, so in-game behaviour is unchanged when both mods are installed.
 > and Fabric via a built-in registry alias; their items and stored contents are preserved. See the
 > [changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md).
 
+## Other mods' fluid pipes
+
+**The tank is no longer a Nerospace-only endpoint.** It answers the platform's standard fluid
+handler on every loader, so **another mod's fluid pipe can drain it into a larger container, or
+fill it**, with no Nerospace pipe anywhere in the line. It works the other way too: a
+[Universal Pipe](Universal-Pipe) will happily pull from or push into another mod's tank, so you
+can buffer here and move the fluid onward with whatever pipes you already have.
+
+Per-face I/O modes still decide what a side does — a face you set to **Out** stays an output for a
+foreign pipe just as it does for a Nerospace one. Whether a given mod connects depends on that mod
+using the standard handlers too; see [Universal Pipe](Universal-Pipe) for the full picture.
+
 See also: [Neroland Core](Neroland-Core), [Universal Pipe](Universal-Pipe),
 [Fuel Tank](Fuel-Tank), [Creative Source Blocks](Creative-Source-Blocks).

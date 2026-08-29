@@ -13,11 +13,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
-import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+
+import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
@@ -27,9 +29,12 @@ import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.GasResource;
 import za.co.neroland.nerospace.gas.GasTank;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
+import za.co.neroland.nerospace.item.ContainerItemStore;
+import za.co.neroland.nerospace.item.NerospaceItemStore;
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
+import za.co.neroland.nerospace.platform.ItemLookup;
 
 /**
  * A connected group of {@link UniversalPipeBlockEntity} segments that move resources as ONE pool — the
@@ -345,7 +350,7 @@ public final class PipeNetwork {
 
     // --- Items ----------------------------------------------------------------
 
-    private record Sink(BlockPos pipePos, Direction outFace, Container container, Direction side, FaceFilter filter) {
+    private record Sink(BlockPos pipePos, Direction outFace, NerospaceItemStore store, FaceFilter filter) {
     }
 
     private void tickItems(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
@@ -359,9 +364,9 @@ public final class PipeNetwork {
                         || !pipe.mode(dir, PipeResourceType.ITEM).canPush()) {
                     continue;
                 }
-                BlockEntity be = level.getBlockEntity(np);
-                if (be instanceof Container dst && !(be instanceof UniversalPipeBlockEntity)) {
-                    sinks.add(new Sink(pos, dir, dst, dir.getOpposite(), pipe.filter(dir)));
+                NerospaceItemStore dst = itemStore(level, np, dir.getOpposite());
+                if (dst != null) {
+                    sinks.add(new Sink(pos, dir, dst, pipe.filter(dir)));
                 }
             }
         }
@@ -380,22 +385,40 @@ public final class PipeNetwork {
                             || pipe.mode(dir, PipeResourceType.ITEM) != PipeIoMode.IN) {
                         continue;
                     }
-                    BlockEntity be = level.getBlockEntity(np);
-                    if (!(be instanceof Container src) || be instanceof UniversalPipeBlockEntity) {
+                    NerospaceItemStore src = itemStore(level, np, dir.getOpposite());
+                    if (src == null) {
                         continue;
                     }
-                    ItemStack pulled = extract(src, dir.getOpposite(), pipe.filter(dir), extractMax);
+                    FaceFilter faceFilter = pipe.filter(dir);
+                    // Peek, then take only what the pipe's buffer can actually hold. A vanilla Container
+                    // always accepts its own items back, so the old extract-then-return-the-remainder
+                    // shape was safe; a FOREIGN handler need not — an extract-only output slot refuses
+                    // the put-back and the items would simply cease to exist.
+                    ItemStack peek = src.extract(faceFilter::test, extractMax, true);
+                    if (peek.isEmpty()) {
+                        continue;
+                    }
+                    int room = pipeRoomFor(pipe, peek);
+                    if (room <= 0) {
+                        continue;
+                    }
+                    ItemStack pulled = src.extract(faceFilter::test, Math.min(extractMax, room), false);
                     if (pulled.isEmpty()) {
                         continue;
                     }
-                    ItemStack toBuffer = pulled.copy();
-                    ItemStack leftover = insertIntoPipe(pipe, toBuffer);
+                    ItemStack leftover = insertIntoPipe(pipe, pulled.copy());
                     int accepted = pulled.getCount() - leftover.getCount();
                     if (accepted > 0 && sinks.isEmpty()) {
                         pipe.showTravelling(pulled.copyWithCount(accepted), dir, null);
                     }
                     if (!leftover.isEmpty()) {
-                        insert(src, dir.getOpposite(), leftover); // pipe full — put the remainder back, never drop
+                        ItemStack refused = src.insert(leftover, false); // put the remainder back
+                        if (!refused.isEmpty()) {
+                            // The source will not take its own items back. Dropping them at the source
+                            // block is a last resort; silently deleting a player's items never is.
+                            Containers.dropItemStack(level, np.getX() + 0.5, np.getY() + 0.5,
+                                    np.getZ() + 0.5, refused);
+                        }
                     }
                 }
             }
@@ -435,7 +458,7 @@ public final class PipeNetwork {
                             }
                             ItemStack before = stack.copy();
                             int beforeCount = stack.getCount();
-                            stack = insert(sink.container(), sink.side(), stack);
+                            stack = sink.store().insert(stack, false);
                             int moved = beforeCount - stack.getCount();
                             if (moved > 0) {
                                 showItemPath(level, pipe.getBlockPos(), sink.pipePos(), sink.outFace(),
@@ -535,62 +558,40 @@ public final class PipeNetwork {
         return Direction.NORTH;
     }
 
-    /** Standard sided insertion into a container; returns the un-inserted remainder. */
-    private static ItemStack insert(Container dst, Direction side, ItemStack stack) {
-        int[] slots = dst instanceof WorldlyContainer w ? w.getSlotsForFace(side) : allSlots(dst);
-        // Pass 1: merge into matching stacks.
-        for (int slot : slots) {
-            if (stack.isEmpty()) {
-                return stack;
-            }
-            if (!canPlace(dst, slot, stack, side)) {
-                continue;
-            }
-            ItemStack inSlot = dst.getItem(slot);
-            if (!inSlot.isEmpty() && ItemStack.isSameItemSameComponents(inSlot, stack)) {
-                int max = Math.min(dst.getMaxStackSize(), inSlot.getMaxStackSize());
-                int move = Math.min(max - inSlot.getCount(), stack.getCount());
-                if (move > 0) {
-                    inSlot.grow(move);
-                    stack.shrink(move);
-                    dst.setChanged();
-                }
-            }
+    /**
+     * Resolve the item inventory behind {@code np} as seen from {@code side}, or {@code null} if there is
+     * none. A vanilla {@link Container} — every Nerospace machine, every chest — is taken directly;
+     * anything else falls through to {@link ItemLookup}, which reaches a foreign mod's platform-standard
+     * item handler. Pipes are excluded: pipe-to-pipe movement is the network's own business.
+     */
+    @Nullable
+    private static NerospaceItemStore itemStore(ServerLevel level, BlockPos np, Direction side) {
+        BlockEntity be = level.getBlockEntity(np);
+        if (be instanceof UniversalPipeBlockEntity) {
+            return null;
         }
-        // Pass 2: fill empty slots.
-        for (int slot : slots) {
-            if (stack.isEmpty()) {
-                return stack;
-            }
-            if (!canPlace(dst, slot, stack, side) || !dst.getItem(slot).isEmpty()) {
-                continue;
-            }
-            int max = Math.min(dst.getMaxStackSize(), stack.getMaxStackSize());
-            ItemStack put = stack.copyWithCount(Math.min(max, stack.getCount()));
-            dst.setItem(slot, put);
-            stack.shrink(put.getCount());
-            dst.setChanged();
+        if (be instanceof Container container) {
+            return new ContainerItemStore(container, side);
         }
-        return stack;
+        return ItemLookup.INSTANCE.find(level, np, side);
     }
 
-    /** Extract up to {@code maxCount} items matching {@code filter} from one slot of a sided container. */
-    private static ItemStack extract(Container src, Direction side, FaceFilter filter, int maxCount) {
-        int[] slots = src instanceof WorldlyContainer w ? w.getSlotsForFace(side) : allSlots(src);
-        for (int slot : slots) {
-            ItemStack inSlot = src.getItem(slot);
+    /**
+     * Room in the pipe's own buffer for a stack like {@code like}, in items — the most an extraction
+     * pulse may safely take, so nothing is pulled that would then have to be handed back.
+     */
+    private static int pipeRoomFor(UniversalPipeBlockEntity pipe, ItemStack like) {
+        int room = 0;
+        int max = Math.min(pipe.getMaxStackSize(), like.getMaxStackSize());
+        for (int slot = 0; slot < pipe.getContainerSize(); slot++) {
+            ItemStack inSlot = pipe.getItem(slot);
             if (inSlot.isEmpty()) {
-                continue;
+                room += max;
+            } else if (ItemStack.isSameItemSameComponents(inSlot, like)) {
+                room += Math.max(0, max - inSlot.getCount());
             }
-            if (!filter.test(inSlot)) {
-                continue;
-            }
-            if (src instanceof WorldlyContainer w && !w.canTakeItemThroughFace(slot, inSlot, side)) {
-                continue;
-            }
-            return src.removeItem(slot, Math.min(maxCount, inSlot.getCount()));
         }
-        return ItemStack.EMPTY;
+        return room;
     }
 
     /** Insert into the pipe's own internal buffer (no sided restriction — it is a pass-through). */
@@ -615,18 +616,4 @@ public final class PipeNetwork {
         return stack;
     }
 
-    private static boolean canPlace(Container dst, int slot, ItemStack stack, Direction side) {
-        if (dst instanceof WorldlyContainer w) {
-            return w.canPlaceItem(slot, stack) && w.canPlaceItemThroughFace(slot, stack, side);
-        }
-        return dst.canPlaceItem(slot, stack);
-    }
-
-    private static int[] allSlots(Container c) {
-        int[] slots = new int[c.getContainerSize()];
-        for (int i = 0; i < slots.length; i++) {
-            slots[i] = i;
-        }
-        return slots;
-    }
 }

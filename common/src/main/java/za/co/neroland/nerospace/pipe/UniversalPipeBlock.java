@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
+import za.co.neroland.nerospace.platform.ItemLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -131,7 +132,8 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     // --- Connections -----------------------------------------------------------
 
     /** True when the neighbour on {@code dir} is another pipe, a vanilla item container, or exposes an
-     *  energy/fluid/gas storage through the cross-loader lookup seams. */
+     *  energy/fluid/gas/item storage through the cross-loader lookup seams — including the
+     *  platform-standard handlers OTHER mods use, so a pipe connects to a foreign tank or machine. */
     public static boolean canConnect(Level level, BlockPos pos, Direction dir) {
         BlockPos np = pos.relative(dir);
         BlockEntity be = level.getBlockEntity(np);
@@ -144,7 +146,8 @@ public class UniversalPipeBlock extends BaseEntityBlock {
         Direction opposite = dir.getOpposite();
         return EnergyLookup.INSTANCE.find(level, np, opposite) != null
                 || FluidLookup.INSTANCE.find(level, np, opposite) != null
-                || GasLookup.INSTANCE.find(level, np, opposite) != null;
+                || GasLookup.INSTANCE.find(level, np, opposite) != null
+                || ItemLookup.INSTANCE.find(level, np, opposite) != null;
     }
 
     /** Recompute all six connection properties of {@code state} against the world. */

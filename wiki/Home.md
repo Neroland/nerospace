@@ -60,6 +60,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 - **[Star Guide](Star-Guide)** — the in-game progression guide.
 - **[Public Integration API](Public-API)** — for mod developers: the supported surface for querying
   planets, environment and visits, contributing oxygen, and applying reversible terraforming overlays.
+- **[Mod Compatibility](Mod-Compatibility)** — what Nerospace shares with the other mods in your pack:
+  energy, fluids and items cross the mod boundary; gas stays Nerospace-side.
 - **[Planet Gravity](Planet-Gravity)** — each world's own gravity, biome variation, and how
   terraforming restores it.
 - **[Neroland Core](Neroland-Core)** — the required foundation library Nerospace is built on: one

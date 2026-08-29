@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "R": "minecraft:redstone",
+    "S": "minecraft:blaze_powder"
+  },
+  "pattern": [
+    " N ",
+    "RSR",
+    " N "
+  ],
+  "result": {
+    "id": "nerospace:evaporator_module"
+  }
+}

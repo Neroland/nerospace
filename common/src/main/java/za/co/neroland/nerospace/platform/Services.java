@@ -44,6 +44,7 @@ public final class Services {
             EnergyLookup.INSTANCE,
             FluidLookup.INSTANCE,
             GasLookup.INSTANCE,
+            ItemLookup.INSTANCE,
             FluidFactory.INSTANCE,
         };
         NerospaceCommon.LOGGER.debug("[Nerospace] {} platform services resolved during init",

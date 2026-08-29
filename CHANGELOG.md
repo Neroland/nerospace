@@ -7,11 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.3] - 2026-08-11
+## [1.0.3] - 2026-08-30
 
 Additive patch: a new public API package, no breaking change to any existing type.
 
 ### Added
+
+**Cross-mod fluid and item interoperability**
+
+- Nerospace now speaks the **platform-standard fluid and item handlers** on all three loaders, both as
+  a provider and as a consumer: `Capabilities.Fluid.BLOCK` / `Capabilities.Item.BLOCK` on NeoForge,
+  `FluidStorage.SIDED` / `ItemStorage.SIDED` (Fabric Transfer API v1) on Fabric, and
+  `ForgeCapabilities.FLUID_HANDLER` / `ForgeCapabilities.ITEM_HANDLER` on Forge. Until now the
+  Universal Pipe and every Nerospace tank and machine spoke only Nerospace's own mod-private
+  capabilities plus vanilla `Container`, so a pipe simply refused to grow an arm toward another mod's
+  tank or machine — which made the Fluid Tank hard to use as anything but a Nerospace-only endpoint.
+- In play: a **Universal Pipe** now connects to, pulls from and pushes into another mod's fluid tanks,
+  item machines and pipes, and **another mod's pipes can pull fluid or items straight out of** a Fluid
+  Tank, Fuel Tank, Fuel Refinery, Quarry Controller, Launch Controller or Universal Pipe. Every block
+  that already offered fluid on Nerospace's own capability now offers it on the standard one as well;
+  the mod-private path is still tried first, so Nerospace-to-Nerospace behaviour is unchanged.
+- **Per-face I/O modes and filters apply to foreign neighbours** exactly as they do to Nerospace ones —
+  a face disabled in the side config looks shut to another mod's pipe too. This adds reach without
+  giving up any control over what moves where.
+- **Gas is deliberately not bridged.** There is no cross-mod standard for it, and Nerospace's oxygen is
+  not a fluid, so the gas layer stays on Nerospace's own capability and Neroland Core's. Nothing about
+  it changes.
+- Worth stating plainly: this makes Nerospace speak the standard APIs. Whether any *particular* other
+  mod interoperates still depends on that mod using them too.
+- **One deliberate exception: the Rocket Launch Pad.** The pad's fluid connection is a one-way sink
+  into a docked rocket — it can be filled but never drained — and the standard handlers are
+  transactional, meaning another mod may insert and then roll back as a routine way of asking "how
+  much would you take?". A sink cannot honour that rollback, so the pad is reachable through
+  Nerospace's own pipes only. Fuel a rocket from another mod by piping into a **Fuel Tank** beside the
+  pad, which auto-fuels as before.
+- New platform seam `za.co.neroland.nerospace.platform.ItemLookup` alongside the existing
+  `EnergyLookup` / `FluidLookup` / `GasLookup`, with exactly one implementation and a
+  `META-INF/services` entry per loader cell. `FluidLookup` now falls back to the platform-standard
+  handler when a neighbour does not answer Nerospace's own.
+
+**Evaporator Module (`nerospace:evaporator_module`)**
+
+- A new upgrade-module card for the Quarry Controller's module slot. With one installed the quarry
+  **destroys liquids on sight** instead of buffering them at all, so its fluid tank stays empty and
+  there is nothing to pipe away. Use it for a dig you know will hit water or lava and whose fluid you
+  do not want; leave the slot for another card when you would rather keep what it collects.
+- Crafted with the same shape and cost as the other module cards — Nerosteel Ingots and Redstone around
+  a signature centre item, here **Blaze Powder**.
+- Its texture is placeholder art for now.
+
+### Changed
+
+**The quarry no longer stops for liquid**
+
+- The Quarry Controller's fluid handling is now best-effort instead of all-or-nothing: it buffers what
+  fits in its **16,000 mB** tank and **destroys the rest** as it digs, so a dig that reaches an ocean or
+  a lava lake keeps going rather than waiting for somewhere to put the fluid.
+- It clears at most **64 source blocks per mining tick**, so a large body of water drains steadily over
+  a few seconds instead of disappearing in one spike — and a single tick's work stays bounded.
+- Buffered fluid still auto-ejects into any adjacent fluid store, which — per the interop change above
+  — now includes other mods' tanks and pipes.
+- The `fluid_full` pause reason is retired: nothing raises it any more. The **output buffer** still
+  pauses the dig when it cannot fit a drop, so mined *items* are never voided.
+
+### Fixed
+
+**A quarry over water used to stall for good**
+
+- The Quarry Controller paused with reason `fluid_full` the moment its 16,000 mB buffer filled — which
+  is **16 source blocks** — or the moment it met a second fluid type, and it resumed only if something
+  drained the tank. A dig that reached a lake or an aquifer therefore stopped dead and stayed stopped
+  with everything else about it healthy. It now never stalls on liquid (see above).
 
 **Public integration API (`za.co.neroland.nerospace.api`)**
 

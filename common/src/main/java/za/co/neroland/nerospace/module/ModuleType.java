@@ -15,7 +15,14 @@ public enum ModuleType {
     /** Applies a Fortune level to harvested blocks (mutually overridden by {@link #SILK_TOUCH}). */
     FORTUNE,
     /** Harvests blocks with Silk Touch (takes precedence over {@link #FORTUNE}). */
-    SILK_TOUCH;
+    SILK_TOUCH,
+    /**
+     * Destroys liquid source blocks outright instead of buffering them, so the machine's fluid buffer
+     * stays free for a fluid the player actually wants to collect (and so a dig over an ocean isn't
+     * spent shuttling water). Declared last on purpose: {@link #byOrdinal} makes the ordinal the wire
+     * form of this enum, so new constants must only ever be appended.
+     */
+    EVAPORATOR;
 
     public static ModuleType byOrdinal(int ordinal) {
         ModuleType[] values = values();

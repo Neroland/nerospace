@@ -1,6 +1,16 @@
 {
   "parent": "nerospace:guide/quarry_controller",
   "criteria": {
+    "evaporator": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:evaporator_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "efficiency": {
       "conditions": {
         "items": [
@@ -43,7 +53,7 @@
     }
   },
   "display": {
-    "description": "Craft an upgrade module — speed, efficiency, fortune or silk touch",
+    "description": "Craft an upgrade module — speed, efficiency, fortune, silk touch or evaporator",
     "icon": {
       "id": "nerospace:speed_module"
     },
@@ -54,7 +64,8 @@
       "speed",
       "efficiency",
       "fortune",
-      "silk_touch"
+      "silk_touch",
+      "evaporator"
     ]
   ],
   "sends_telemetry_event": true

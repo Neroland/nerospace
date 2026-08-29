@@ -34,7 +34,7 @@ The mod is built **standalone** — its only dependency is **Neroland Core**, an
 ## The gameplay loop
 
 1. **Nerosium** — mine the new overworld ore; smelt it, or double your yield with the powered **Nerosium Grinder**.
-2. **Power & pipes** — build generators and the **Universal Pipe**, which carries energy, fluids, gas, *and* items in one tube with per-face modes, filters, and upgrades.
+2. **Power & pipes** — build generators and the **Universal Pipe**, which carries energy, fluids, gas, *and* items in one tube with per-face modes, filters, and upgrades. Energy, fluids, and items cross the mod boundary: the pipe connects to other mods' tanks, machines, and pipes on all three loaders, and theirs can pull straight out of Nerospace blocks.
 3. **First launch** — craft a Tier 1 rocket, lay a single launch pad block (Tier 2 needs a full 3×3), and fly to the **Orbital Station**.
 4. **New worlds** — tiered rockets reach **Greenxertz** (green planet), **Cindara** (volcanic moon), and **Glacira** (frozen moon), each with its own ores, creatures, and hazards.
 5. **Survive** — every world out there is airless: seal rooms, pipe oxygen, refill your **Oxygen Suit** (and its tougher **Mk II**) at airlocks, and wear the **Thermal**/**Cryo Suit** where heat or cold quadruples O₂ drain — four full suit sets in all.

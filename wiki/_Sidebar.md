@@ -87,6 +87,7 @@
 - [Creatures](Creatures)
 - [Configuration](Configuration)
 - [Public Integration API](Public-API)
+- [Mod Compatibility](Mod-Compatibility)
 - [Saved-Data Backups](Saved-Data-Backups)
 - [Roadmap](Roadmap)
 - [Future Features](Future-Features)

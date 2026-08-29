@@ -78,6 +78,15 @@ public final class MachineModules {
         return count(ModuleType.SILK_TOUCH) > 0;
     }
 
+    /**
+     * True once any Evaporator module is installed: liquids the machine meets are destroyed on sight
+     * rather than buffered. Deliberately a flag and not a count — evaporation is all-or-nothing, so a
+     * second card would add nothing.
+     */
+    public boolean evaporator() {
+        return count(ModuleType.EVAPORATOR) > 0;
+    }
+
     // --- Persistence (host machine calls these from save/loadAdditional) --------
 
     public void save(ValueOutput output) {

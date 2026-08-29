@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Direction;
@@ -34,6 +35,7 @@ import za.co.neroland.nerospace.gear.AlienGearAbilities;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.meteor.MeteorEvents;
+import za.co.neroland.nerospace.platform.FabricFluidStorageAdapter;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.rocket.RocketPadFluidProxy;
@@ -168,6 +170,13 @@ public final class NerospaceFabric implements ModInitializer {
         FLUID.registerForBlockEntity(
                 (be, direction) -> be.getFluidTank(),
                 ModBlockEntities.UNIVERSAL_PIPE.get());
+        // Cross-mod fluid EXPORT: every tank published on the mod-private FLUID lookup above is also
+        // published on the Transfer API's FluidStorage.SIDED, wrapped by FabricFluidStorageAdapter (which
+        // converts millibuckets to droplets and makes the tank transaction-safe). Purely additive — the
+        // FLUID registrations are untouched, so Nerospace's own blocks behave exactly as before.
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> FabricFluidStorageAdapter.of(be.getFluidTank()),
+                ModBlockEntities.UNIVERSAL_PIPE.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.UNIVERSAL_PIPE.get());
@@ -183,6 +192,9 @@ public final class NerospaceFabric implements ModInitializer {
 
         // Launch Controller resource hub: fuel + oxygen + power inputs (pumped into the docked rocket).
         FLUID.registerForBlockEntity((be, direction) -> be.getTank(), ModBlockEntities.LAUNCH_CONTROLLER.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> FabricFluidStorageAdapter.of(be.getTank()),
+                ModBlockEntities.LAUNCH_CONTROLLER.get());
         GAS.registerForBlockEntity((be, direction) -> be.getGas(), ModBlockEntities.LAUNCH_CONTROLLER.get());
         ENERGY.registerForBlockEntity((be, direction) -> be.getEnergy(), ModBlockEntities.LAUNCH_CONTROLLER.get());
 
@@ -207,6 +219,10 @@ public final class NerospaceFabric implements ModInitializer {
         // its fluid/gas surfaces need bridging onto Nerospace's lookups so the Universal Pipe still voids into it.
         FLUID.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getFluid()),
                 za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, side) -> FabricFluidStorageAdapter.of(
+                        za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getFluid())),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get());
         GAS.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getGas()),
                 za.co.neroland.nerolandcore.registry.ModBlockEntities.TRASH_CAN.get());
 
@@ -214,7 +230,15 @@ public final class NerospaceFabric implements ModInitializer {
         // still connects to the (now Core-owned) Fluid Tank / Gas Tank and their creative variants.
         FLUID.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank()),
                 za.co.neroland.nerolandcore.registry.ModBlockEntities.FLUID_TANK.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, side) -> FabricFluidStorageAdapter.of(
+                        za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank())),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.FLUID_TANK.get());
         FLUID.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank()),
+                za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_FLUID_TANK.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, side) -> FabricFluidStorageAdapter.of(
+                        za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank())),
                 za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_FLUID_TANK.get());
         GAS.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getTank()),
                 za.co.neroland.nerolandcore.registry.ModBlockEntities.GAS_TANK.get());
@@ -224,6 +248,12 @@ public final class NerospaceFabric implements ModInitializer {
         // Fuel Tank: fluid in/out via the side config (STORAGE preset, default IO), canister in.
         FLUID.registerForBlockEntity(
                 (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction),
+                ModBlockEntities.FUEL_TANK.get());
+        // The gated view is null on a face the side config disables; FabricFluidStorageAdapter.of() keeps
+        // that null, so the face stays invisible to foreign mods too.
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> FabricFluidStorageAdapter.of(
+                        za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction)),
                 ModBlockEntities.FUEL_TANK.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
@@ -237,6 +267,10 @@ public final class NerospaceFabric implements ModInitializer {
         FLUID.registerForBlockEntity(
                 (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction),
                 ModBlockEntities.FUEL_REFINERY.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> FabricFluidStorageAdapter.of(
+                        za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction)),
+                ModBlockEntities.FUEL_REFINERY.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.FUEL_REFINERY.get());
@@ -248,6 +282,9 @@ public final class NerospaceFabric implements ModInitializer {
         FLUID.registerForBlockEntity(
                 (be, direction) -> be.getTank(),
                 ModBlockEntities.QUARRY_CONTROLLER.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> FabricFluidStorageAdapter.of(be.getTank()),
+                ModBlockEntities.QUARRY_CONTROLLER.get());
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, direction) -> ContainerStorage.of(be, direction),
                 ModBlockEntities.QUARRY_CONTROLLER.get());
@@ -258,6 +295,15 @@ public final class NerospaceFabric implements ModInitializer {
         FLUID.registerForBlocks(
                 (world, pos, state, blockEntity, side) -> new RocketPadFluidProxy(world, pos),
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
+        // Deliberately NOT exported on FluidStorage.SIDED. A Transfer API Storage must be able to roll
+        // back, and FabricFluidStorageAdapter rolls back by draining what it holds and re-filling the
+        // snapshot — which is only faithful when fill/drain are inverses. RocketPadFluidProxy is a pure
+        // SINK: its drain() always returns 0 while its fill() permanently fuels the docked rocket, so a
+        // routine StorageUtil.simulateInsert probe (insert, then ABORT) would fuel the rocket on the way
+        // in and fuel it AGAIN on the rollback's re-fill, for free, every tick a foreign pipe probes.
+        // Foreign mods can still fuel a rocket by piping into a Nerospace Fuel Tank, and Nerospace's own
+        // pipes are unaffected: they reach the pad through the mod-private FLUID lookup above, which is
+        // not transactional and calls the proxy exactly once per transfer.
         // Gas sink: forwards oxygen into a docked rocket's onboard life-support tank.
         GAS.registerForBlocks(
                 (world, pos, state, blockEntity, side) -> new RocketPadGasProxy(world, pos),

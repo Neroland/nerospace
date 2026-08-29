@@ -57,6 +57,32 @@ N N N
 
   an empty hand pops installed upgrades out.
 
+## Other mods' pipes and machines
+
+The pipe is not limited to Nerospace blocks. On every loader it now both offers and reads the
+platform's standard fluid and item handlers — the ones the wider tech-mod ecosystem uses — so a
+Nerospace line and another mod's logistics meet in the middle:
+
+- **Fluid:** an **Out** face pushes into another mod's tank or fluid machine, an **In** face pulls from
+
+  one, and another mod's fluid pipe can drain or fill a Nerospace [Fluid Tank](Fluid-Tank),
+  [Fuel Tank](Fuel-Tank), [Fuel Refinery](Fuel-Refinery), [Quarry Controller](Quarry-Controller),
+  [Launch Controller](Launch-Controller) or Universal Pipe on its own — no Nerospace pipe needed
+  anywhere in the line.
+
+- **Items:** the same, both directions, for another mod's machines, crates and item pipes.
+- **Energy** already crossed the mod boundary through [Neroland Core](Neroland-Core)'s shared network.
+- **Gas does not.** There is no cross-mod standard for gas, and Nerospace's oxygen is not a fluid, so
+
+  the green layer stops at the mod boundary — pipe oxygen between Nerospace (and Neroland) blocks only.
+
+Face modes and [filters](Pipe-Filters-and-Upgrades) treat a foreign neighbour exactly like a Nerospace
+one: set a face to **Off** with the [Configurator](Configurator) and another mod's pipe sees a shut face
+there too, and a filtered face only passes what it is set to pass.
+
+One honest caveat: this is Nerospace's half of the deal — it speaks the standard APIs. Whether a
+particular other mod connects depends on that mod using them as well.
+
 ## Tips
 
 One line can power a machine, feed it items and carry its outputs away at once — use face modes when

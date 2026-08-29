@@ -10,12 +10,16 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
@@ -144,6 +148,9 @@ public final class ForgeCapabilities {
         // network). NerospaceEnergyStorage IS a NeroEnergyStorage, so no adapter is needed.
         private final LazyOptional<NeroEnergyStorage> coreEnergy;
         private final LazyOptional<ForgeFluidStorageCapability> fluid;
+        // The same tank published on Forge's standard fluid capability, so foreign pipes and tanks that
+        // only know net.minecraftforge.fluids can pull from and push into Nerospace machines.
+        private final LazyOptional<IFluidHandler> standardFluid;
         private final LazyOptional<ForgeGasStorageCapability> gas;
         @Nullable
         private final Container container;
@@ -161,6 +168,8 @@ public final class ForgeCapabilities {
             this.energy = energy == null ? LazyOptional.empty() : LazyOptional.of(() -> new EnergyAdapter(energy));
             this.coreEnergy = energy == null ? LazyOptional.empty() : LazyOptional.<NeroEnergyStorage>of(energy::get);
             this.fluid = fluid == null ? LazyOptional.empty() : LazyOptional.of(() -> new FluidAdapter(fluid));
+            this.standardFluid = fluid == null ? LazyOptional.empty()
+                    : LazyOptional.<IFluidHandler>of(() -> new StandardFluidAdapter(fluid));
             this.gas = gas == null ? LazyOptional.empty() : LazyOptional.of(() -> new GasAdapter(gas));
             this.container = container;
             this.sideConfig = sideConfig;
@@ -194,6 +203,12 @@ public final class ForgeCapabilities {
                 return gatedOff(za.co.neroland.nerolandcore.sideconfig.Channel.FLUID, side)
                         ? LazyOptional.empty() : fluid.cast();
             }
+            if (cap == net.minecraftforge.common.capabilities.ForgeCapabilities.FLUID_HANDLER) {
+                // Same face gating as the mod-private cap above: a DISABLED face must look shut to
+                // foreign mods too, or the side config would only bind Nerospace's own pipes.
+                return gatedOff(za.co.neroland.nerolandcore.sideconfig.Channel.FLUID, side)
+                        ? LazyOptional.empty() : standardFluid.cast();
+            }
             if (cap == GAS) {
                 return gatedOff(za.co.neroland.nerolandcore.sideconfig.Channel.GAS, side)
                         ? LazyOptional.empty() : gas.cast();
@@ -215,6 +230,7 @@ public final class ForgeCapabilities {
             energy.invalidate();
             coreEnergy.invalidate();
             fluid.invalidate();
+            standardFluid.invalidate();
             gas.invalidate();
             if (itemUnsided != null) {
                 itemUnsided.invalidate();
@@ -269,6 +285,88 @@ public final class ForgeCapabilities {
         @Override
         public long drain(long amount, boolean simulate) {
             return delegate.get().drain(amount, simulate);
+        }
+    }
+
+    /**
+     * Publishes a Nerospace tank as a Forge {@link IFluidHandler}. Exactly one tank is reported because
+     * the Nerospace contract IS one tank, and both sides count millibuckets, so the only impedance is the
+     * long/int clamp on amounts. Only UNTAGGED fluids cross this adapter — see
+     * {@link #isFluidValid(int, FluidStack)}.
+     */
+    private record StandardFluidAdapter(Supplier<NerospaceFluidStorage> delegate) implements IFluidHandler {
+
+        @Override
+        public int getTanks() {
+            return 1;
+        }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            NerospaceFluidStorage storage = delegate.get();
+            Fluid held = storage.getFluid();
+            long amount = storage.getAmount();
+            if (held == Fluids.EMPTY || amount <= 0L) {
+                return FluidStack.EMPTY;
+            }
+            return new FluidStack(held, (int) Math.min(amount, Integer.MAX_VALUE));
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return (int) Math.min(delegate.get().getCapacity(), Integer.MAX_VALUE);
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            if (stack.isEmpty()) {
+                return true;
+            }
+            // A Nerospace tank stores a bare Fluid: it has nowhere to put NBT, so accepting a tagged stack
+            // would silently strip the tag, and draining it back would hand the caller the untagged base
+            // fluid under the variant's own name — a potion or chemical fluid laundered by a round trip.
+            // Refusing is the honest answer; stripping is worse than saying no.
+            if (stack.hasTag()) {
+                return false;
+            }
+            // Single-fluid tank: anything goes while it is empty, only the held fluid once it is not.
+            Fluid held = delegate.get().getFluid();
+            return held == Fluids.EMPTY || held == stack.getFluid();
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            if (resource.isEmpty() || !isFluidValid(0, resource)) {
+                return 0;
+            }
+            return (int) delegate.get().fill(resource.getFluid(), resource.getAmount(), action.simulate());
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            // Same refusal as fill: this tank can never be holding the tagged variant being asked for, so
+            // matching on the fluid alone would hand back a different variant under the caller's name.
+            if (resource.isEmpty() || resource.hasTag()
+                    || resource.getFluid() != delegate.get().getFluid()) {
+                return FluidStack.EMPTY;
+            }
+            return drain(resource.getAmount(), action);
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            if (maxDrain <= 0) {
+                return FluidStack.EMPTY;
+            }
+            NerospaceFluidStorage storage = delegate.get();
+            // Read the fluid BEFORE draining: a real drain can empty the tank and leave getFluid()
+            // reporting EMPTY, which would turn a successful drain into an empty stack.
+            Fluid held = storage.getFluid();
+            if (held == Fluids.EMPTY) {
+                return FluidStack.EMPTY;
+            }
+            long drained = storage.drain(maxDrain, action.simulate());
+            return drained <= 0L ? FluidStack.EMPTY : new FluidStack(held, (int) drained);
         }
     }
 

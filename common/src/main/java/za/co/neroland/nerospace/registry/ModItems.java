@@ -157,6 +157,7 @@ public final class ModItems {
     public static final RegistryEntry<Item> EFFICIENCY_MODULE = module("efficiency_module", ModuleType.EFFICIENCY);
     public static final RegistryEntry<Item> FORTUNE_MODULE = module("fortune_module", ModuleType.FORTUNE);
     public static final RegistryEntry<Item> SILK_TOUCH_MODULE = module("silk_touch_module", ModuleType.SILK_TOUCH);
+    public static final RegistryEntry<Item> EVAPORATOR_MODULE = module("evaporator_module", ModuleType.EVAPORATOR);
 
     // --- Rockets (one item per tier; deploys a RocketEntity onto a launch pad) ----
     public static final RegistryEntry<RocketItem> ROCKET_TIER_1 = ITEMS.register("rocket_tier_1",
@@ -324,7 +325,7 @@ public final class ModItems {
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
                 List.<ItemLike>of(COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), SOLAR_PANEL_T2_ITEM.get(), SOLAR_PANEL_T3_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), LAUNCH_CONTROLLER_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(), HYDRATION_MODULE_ITEM.get(), TERRAFORM_MONITOR_ITEM.get(),
                         LANDING_POD_ITEM.get(), DOCKING_PORT_ITEM.get(),
-                        SPEED_MODULE.get(), EFFICIENCY_MODULE.get(), FORTUNE_MODULE.get(), SILK_TOUCH_MODULE.get(),
+                        SPEED_MODULE.get(), EFFICIENCY_MODULE.get(), FORTUNE_MODULE.get(), SILK_TOUCH_MODULE.get(), EVAPORATOR_MODULE.get(),
                         STAR_GUIDE_ITEM.get()));
     }
 
