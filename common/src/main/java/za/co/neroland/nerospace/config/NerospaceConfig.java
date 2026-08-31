@@ -61,6 +61,10 @@ public final class NerospaceConfig {
             "expose Nerospace data to the NeroLink companion bridge (your own rockets, stations, planets, "
             + "life support and Star Guide progress - never another player's). true by default; false = the "
             + "companion app reports Nerospace as absent. Server-authoritative: the server decides");
+    private static final ConfigValue<Boolean> WELCOME_MESSAGE = SCHEMA.bool("welcomeMessageEnabled",
+            true, true, "show the two-line Nerospace welcome in chat when a player joins (the Star Guide "
+            + "prompt plus the feedback link). true by default; false = join silently. "
+            + "Server-authoritative: the server sends the message, so the server decides");
 
     private static volatile boolean loaded;
 
@@ -126,6 +130,15 @@ public final class NerospaceConfig {
      */
     public static boolean linkModuleEnabled() {
         return LINK_MODULE.get();
+    }
+
+    /**
+     * Whether the on-join welcome message (the Star Guide prompt and the feedback link) is sent to a
+     * joining player. Default true; set false to join silently. Read on every join, so a mid-session
+     * {@code /neroland config reload} takes effect immediately.
+     */
+    public static boolean welcomeMessageEnabled() {
+        return WELCOME_MESSAGE.get();
     }
 
     /**

@@ -7,10 +7,13 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
+import za.co.neroland.nerospace.config.NerospaceConfig;
+
 /**
  * Greets a player on join with a short welcome pointing at the Star Guide and a clickable link to the
- * mod's repository. Cross-loader: the loader entry points invoke {@link #onPlayerJoin} from their join
- * events (NeoForge {@code PlayerEvent.PlayerLoggedInEvent} / Fabric
+ * mod's repository. Suppressed entirely when the {@code welcomeMessageEnabled} config key is false.
+ * Cross-loader: the loader entry points invoke {@link #onPlayerJoin} from their join events
+ * (NeoForge {@code PlayerEvent.PlayerLoggedInEvent} / Fabric
  * {@code ServerPlayConnectionEvents.JOIN}). The {@link ClickEvent.OpenUrl} record and {@code Style}
  * builder calls are vanilla on both 26.1.2 and 26.2, so no per-loader split is needed.
  *
@@ -30,6 +33,13 @@ public final class PlayerJoinHandler {
         // per-player attachments could not be reached then (both loaders expose attachments only through
         // a live Player). Finish the job now. No-op for everyone else.
         za.co.neroland.nerospace.data.NerospaceErasure.applyOnJoin(player);
+
+        // Opt-out: config/nerospace.properties -> welcomeMessageEnabled=false joins silently. Checked
+        // here (after the erasure sweep above, which must always run) and read fresh on every join, so
+        // a `/neroland config reload` applies without a restart.
+        if (!NerospaceConfig.welcomeMessageEnabled()) {
+            return;
+        }
 
         player.sendSystemMessage(Component.empty()
                 .append(Component.literal("[Nerospace] ").withStyle(ChatFormatting.LIGHT_PURPLE))

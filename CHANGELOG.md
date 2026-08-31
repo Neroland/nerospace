@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-08-31
+
+### Added
+
+- **`welcomeMessageEnabled` config key** (default `true`). Set it to `false` in
+  `config/nerospace.properties` to suppress the two-line welcome — the Star Guide Book prompt and the
+  feedback link — that Nerospace posts in chat when a player joins the world. Server-authoritative and
+  re-read on every join, so `/neroland config reload` applies it without a restart.
+
 ## [1.0.3] - 2026-08-30
 
 Additive patch: a new public API package, no breaking change to any existing type.

@@ -131,6 +131,12 @@ one natural meteor every 2–3 play-hours per active dimension; the Meteor Calle
 | --- | --- | --- |
 | `alienRaidsEnabled` | `true` | Whether claimed alien villages are raided by hostile mobs at night. Set `false` to opt out; applies on config reload. |
 
+### Chat
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `welcomeMessageEnabled` | `true` | Whether the two-line Nerospace welcome (the Star Guide Book prompt and the feedback link) is sent to a player when they join the world. Set `false` to join silently; applies on config reload. Server-authoritative — the server sends the message, so the server decides. |
+
 ## Removed keys (for modpack authors migrating)
 
 Folded into multipliers: `atmosphereDamage`, `oxygenMax`, `oxygenDrainPerTick`, `oxygenSuitDrain`,
