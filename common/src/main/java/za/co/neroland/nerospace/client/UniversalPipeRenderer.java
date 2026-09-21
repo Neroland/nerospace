@@ -190,7 +190,11 @@ public class UniversalPipeRenderer
             UniversalPipeRenderState.TravellingItemEntry entry = state.items.get(i);
             poseStack.pushPose();
             poseStack.translate(entry.x, entry.y - 0.12F, entry.z);
+            //? if >=26.3 {
+            /*poseStack.rotate(Axis.YP.rotationDegrees(entry.spin));
+            *///?} else {
             poseStack.mulPose(Axis.YP.rotationDegrees(entry.spin));
+            //?}
             poseStack.scale(0.55F, 0.55F, 0.55F);
             entry.renderState.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
@@ -202,7 +206,11 @@ public class UniversalPipeRenderer
             poseStack.pushPose();
             float bob = Mth.sin(state.time * 0.12F) * 0.04F;
             poseStack.translate(0.5F, 1.05F + bob, 0.5F);
+            //? if >=26.3 {
+            /*poseStack.rotate(Axis.YP.rotationDegrees((state.time * 2.5F) % 360.0F));
+            *///?} else {
             poseStack.mulPose(Axis.YP.rotationDegrees((state.time * 2.5F) % 360.0F));
+            //?}
             poseStack.scale(0.45F, 0.45F, 0.45F);
             state.filterIndicator.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();

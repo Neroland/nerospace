@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "#c:ingots/nerosium",
+    "N": "#c:ingots/nerosteel",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "NRN",
+    "RIR",
+    "NRN"
+  ],
+  "result": {
+    "id": "nerolandcore:battery"
+  }
+}

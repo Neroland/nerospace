@@ -18,19 +18,19 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /** Passive Generator block — ticks + opens its {@link PassiveGeneratorBlockEntity}. */
 public class PassiveGeneratorBlock extends BaseEntityBlock {
 
-    public static final MapCodec<PassiveGeneratorBlock> CODEC = simpleCodec(PassiveGeneratorBlock::new);
+    public static final MapCodec<PassiveGeneratorBlock> CODEC = BlockCodecs.simple(PassiveGeneratorBlock::new);
 
     public PassiveGeneratorBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<PassiveGeneratorBlock> codec() {
         return CODEC;
     }

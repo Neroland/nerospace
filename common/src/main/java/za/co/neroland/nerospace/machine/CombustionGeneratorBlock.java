@@ -23,13 +23,14 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /** Combustion Generator block — directional, ticks its {@link CombustionGeneratorBlockEntity}. */
 public class CombustionGeneratorBlock extends BaseEntityBlock {
 
-    public static final MapCodec<CombustionGeneratorBlock> CODEC = simpleCodec(CombustionGeneratorBlock::new);
+    public static final MapCodec<CombustionGeneratorBlock> CODEC = BlockCodecs.simple(CombustionGeneratorBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     @SuppressWarnings("this-escape")
@@ -38,7 +39,6 @@ public class CombustionGeneratorBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    @Override
     protected MapCodec<CombustionGeneratorBlock> codec() {
         return CODEC;
     }

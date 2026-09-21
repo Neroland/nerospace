@@ -10,7 +10,9 @@ import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+//? if <26.3 {
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+//?}
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -230,7 +232,11 @@ public final class TerraformConversion {
             return;
         }
         ResourceKey<Level> dimension = level.dimension();
+        //? if >=26.3 {
+        /*ResourceKey<net.minecraft.world.level.levelgen.feature.Feature> tree;
+        *///?} else {
         ResourceKey<ConfiguredFeature<?, ?>> tree;
+        //?}
         if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
             tree = TreeFeatures.ACACIA;
         } else if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
@@ -238,7 +244,11 @@ public final class TerraformConversion {
         } else {
             tree = level.getRandom().nextBoolean() ? TreeFeatures.OAK : TreeFeatures.BIRCH;
         }
+        //? if >=26.3 {
+        /*level.registryAccess().lookupOrThrow(Registries.FEATURE).get(tree)
+        *///?} else {
         level.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(tree)
+        //?}
                 .ifPresent(holder -> holder.value().place(
                         level, level.getChunkSource().getGenerator(), level.getRandom(), above));
     }

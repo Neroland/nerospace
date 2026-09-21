@@ -169,8 +169,10 @@ public class RocketEntity extends Entity implements MenuProvider {
     };
 
     /** Client-side position interpolation so the ascent (and the seated rider) moves smoothly. */
+    //? if <26.3 {
     private final net.minecraft.world.entity.InterpolationHandler interpolation =
             new net.minecraft.world.entity.InterpolationHandler(this);
+    //?}
 
     @SuppressWarnings("this-escape") // idiomatic Minecraft constructor wiring
     public RocketEntity(EntityType<? extends RocketEntity> type, Level level) {
@@ -179,10 +181,17 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.blocksBuilding = true;
     }
 
+    //? if >=26.3 {
+    /*@Override
+    protected net.minecraft.world.entity.InterpolationHandler createInterpolationHandler() {
+        return net.minecraft.world.entity.LinearInterpolationHandler.create(this);
+    }
+    *///?} else {
     @Override
     public net.minecraft.world.entity.InterpolationHandler getInterpolation() {
         return this.interpolation;
     }
+    //?}
 
     // --- Per-tier presentation ----------------------------------------------
 
@@ -640,9 +649,11 @@ public class RocketEntity extends Entity implements MenuProvider {
         super.tick();
 
         // Advance the client-side interpolation toward the latest server position (vanilla vehicle pattern).
+        //? if <26.3 {
         if (level().isClientSide() && this.interpolation.hasActiveInterpolation()) {
             this.interpolation.interpolate();
         }
+        //?}
 
         if (isLaunching()) {
             if (level().isClientSide()) {

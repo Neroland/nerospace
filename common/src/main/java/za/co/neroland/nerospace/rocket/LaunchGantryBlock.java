@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 
 /**
@@ -29,13 +30,12 @@ import za.co.neroland.nerospace.menu.MenuOpener;
  */
 public class LaunchGantryBlock extends BaseEntityBlock {
 
-    public static final MapCodec<LaunchGantryBlock> CODEC = simpleCodec(LaunchGantryBlock::new);
+    public static final MapCodec<LaunchGantryBlock> CODEC = BlockCodecs.simple(LaunchGantryBlock::new);
 
     public LaunchGantryBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<LaunchGantryBlock> codec() {
         return CODEC;
     }

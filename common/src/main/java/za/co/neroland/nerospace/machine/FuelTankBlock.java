@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -31,13 +32,12 @@ import za.co.neroland.nerospace.registry.ModItems;
  */
 public class FuelTankBlock extends BaseEntityBlock {
 
-    public static final MapCodec<FuelTankBlock> CODEC = simpleCodec(FuelTankBlock::new);
+    public static final MapCodec<FuelTankBlock> CODEC = BlockCodecs.simple(FuelTankBlock::new);
 
     public FuelTankBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<FuelTankBlock> codec() {
         return CODEC;
     }
@@ -90,8 +90,13 @@ public class FuelTankBlock extends BaseEntityBlock {
             if (!level.isClientSide() && tank.tryDrainBucket()) {
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
+                    //? if >=26.3 {
+                    /*player.getInventory().placeItemBackInInventory(
+                            new ItemStack(ModItems.ROCKET_FUEL_BUCKET.get()), net.minecraft.util.Prediction.SERVER_ONLY);
+                    *///?} else {
                     player.getInventory().placeItemBackInInventory(
                             new ItemStack(ModItems.ROCKET_FUEL_BUCKET.get()));
+                    //?}
                 }
                 playGlug(level, pos);
             }

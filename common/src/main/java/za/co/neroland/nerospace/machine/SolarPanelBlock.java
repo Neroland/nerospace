@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -39,7 +40,7 @@ public class SolarPanelBlock extends BaseEntityBlock {
     public static final MapCodec<SolarPanelBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     SolarTier.CODEC.fieldOf("tier").forGetter(SolarPanelBlock::tier),
-                    propertiesCodec()
+                    BlockCodecs.properties()
             ).apply(instance, SolarPanelBlock::new));
 
     /** True on the unit's min-corner cell — the only cell that drops the item and renders the deck. */
@@ -62,7 +63,6 @@ public class SolarPanelBlock extends BaseEntityBlock {
         return this.tier;
     }
 
-    @Override
     protected MapCodec<SolarPanelBlock> codec() {
         return CODEC;
     }

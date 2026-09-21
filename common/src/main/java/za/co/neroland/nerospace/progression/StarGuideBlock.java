@@ -23,6 +23,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -37,13 +38,12 @@ import za.co.neroland.nerospace.registry.ModItems;
  */
 public class StarGuideBlock extends BaseEntityBlock {
 
-    public static final MapCodec<StarGuideBlock> CODEC = simpleCodec(StarGuideBlock::new);
+    public static final MapCodec<StarGuideBlock> CODEC = BlockCodecs.simple(StarGuideBlock::new);
 
     public StarGuideBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<StarGuideBlock> codec() {
         return CODEC;
     }
@@ -99,7 +99,11 @@ public class StarGuideBlock extends BaseEntityBlock {
             // Return the installed book.
             ItemStack book = guide.removeBook();
             if (!book.isEmpty() && !player.addItem(book)) {
+                //? if >=26.3 {
+                /*player.drop(book, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                *///?} else {
                 player.drop(book, false);
+                //?}
             }
             level.playSound(null, pos, SoundEvents.BOOK_PUT, SoundSource.BLOCKS, 1.0F, 0.8F);
             return InteractionResult.SUCCESS;

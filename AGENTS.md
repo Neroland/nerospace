@@ -11,7 +11,7 @@
   progression. Author: **Neroland** (Dario). Repo: github.com/Neroland/nerospace.
 - Mod id: **`nerospace`** (matches the registry namespace + every loader manifest). Package root:
   `za.co.neroland.nerospace`.
-- Targets **MC 26.1.2 AND 26.2** on **NeoForge, MinecraftForge/Forge, and Fabric** → the **"6 cells"**. **Java 25.**
+- Targets **MC 26.1.2, 26.2 AND 26.3** on **NeoForge, MinecraftForge/Forge, and Fabric** → the **"9 cells"**. **Java 25.**
   Mappings = official Mojang names (26.x ships de-obfuscated; no Parchment).
 
 ## Working with Dario (the developer)
@@ -33,9 +33,10 @@
   `stonecutter.gradle` (the REAL root build script — Stonecutter repoints `buildFileName` here; the root
   `build.gradle` is inert), `gradle.properties`, `gradlew`, `gradle/`.
 - **Version/loader axis = Stonecutter.** Each loader×MC is a real node `:<loader>:<mc>`
-  (`:fabric:26.1.2 :fabric:26.2 :neoforge:26.1.2 :neoforge:26.2 :forge:26.1.2 :forge:26.2`). `common` is NOT a node — its source is
+  (`:fabric:26.1.2 :fabric:26.2 :fabric:26.3 :neoforge:26.1.2 :neoforge:26.2 :neoforge:26.3 :forge:26.1.2 :forge:26.2 :forge:26.3`). `common` is NOT a node — its source is
   spliced via `rootProject.ext.commonJava` / `commonResources`. Dep pins live in `gradle.properties` as
-  `*_version_<mc>` keys; `mc_versions=26.1.2,26.2`.
+  `*_version_<mc>` keys; `mc_versions=26.1.2,26.2,26.3`.
+- **Version-specific code in `common/`.** Non-active nodes run `common/` through Stonecutter (`stonecutterProcessCommon`), so shared code uses the same `//? if >=26.3 {` blocks as the loader `src/` trees. Keep the files in the vcsVersion state, and never put a `*/` inside a disabled block. Datapack files whose format differs by version go in `common/src/main/resources-<mc>/`, which is merged over `common/src/main/resources` for every node at or above `<mc>` (`mergeCommonResources`).
 - `legacy/` = the retired **standalone single-loader** project (kept until the port is 120% confirmed;
   NOT built or shipped). The cutover runbook is `post_port.md`.
 - Shared at root (do NOT move): `tools/` (generators + the gradle-mcp server), `art/blockbench/`, `docs/`,
@@ -45,15 +46,15 @@
 
 - A local gradle MCP server (`tools/gradle-mcp/server.js`, MCP server `gradle`) runs `gradlew` natively
   with JDK 25. **`project_dir` = the repo root** (the default; the flattened build lives there).
-- Build the cells: `mcp__gradle__gradle_build` tasks `[":neoforge:26.1.2:build", ":neoforge:26.2:build",
-  ":forge:26.1.2:build", ":forge:26.2:build", ":fabric:26.1.2:build", ":fabric:26.2:build"]` → poll `mcp__gradle__gradle_status` until `outcome` is
+- Build the cells: `mcp__gradle__gradle_build` tasks `[":neoforge:26.1.2:build", ":neoforge:26.2:build :neoforge:26.3:build",
+  ":forge:26.1.2:build", ":forge:26.2:build :forge:26.3:build", ":fabric:26.1.2:build", ":fabric:26.2:build :fabric:26.3:build"]` → poll `mcp__gradle__gradle_status` until `outcome` is
   SUCCESSFUL/FAILED → on failure `mcp__gradle__gradle_log` (grep `\.java:[0-9]+: error`). A compile
   failure returns in ~1 s; a full build longer.
 - Static analysis: `mcp__gradle__gradle_analyze` (runs `ecjCheck` = the VS Code Problems panel, via
   `tools/ecj.prefs`). **Baseline: 0 errors, ~25 pre-existing warnings** (nullness on Mojang codec/cap
   generics, redundant `(Fluid)`/`(int)` casts, 4 dead pipe-relay methods, 1 unused import). The task only
   FAILS on errors.
-- **ALWAYS verify all 6 cells BUILD SUCCESSFUL + ecjCheck 0 errors before marking a task done.** Never
+- **ALWAYS verify all 9 cells BUILD SUCCESSFUL + ecjCheck 0 errors before marking a task done.** Never
   sign off on an uncompiled change. The build does NOT validate lang/JSON — validate resource edits with
   `python json.load`.
 - Resolving exact 26.x signatures when an `@Override` won't resolve: don't guess — register a temporary
@@ -156,7 +157,7 @@
 ## Status & open follow-ups
 
 - **Cross-loader port: COMPLETE + signed off** (5-agent parity audit; gaps ported — recipes, loot, lang,
-  tags, ore-gen, comparators, etc.). The current support matrix is 6 cells including Forge. See
+  tags, ore-gen, comparators, etc.). The current support matrix is 9 cells including Forge. See
   `post_port.md` + `docs/MULTILOADER.md`.
 - **post_port.md Phase 1** (retire standalone root → `legacy/`) + **Phase 2** (flatten the multiloader to
   the repo root + fix path refs/CI/IDE) are **DONE and STAGED (not committed)** on
@@ -200,7 +201,7 @@
   **Config** — `NerospaceConfig` rewritten onto Core's `ConfigManager`/`ConfigSchema` (same keys → seamless
   migration; balance multipliers server-authoritative, telemetry opt-out client-local; public getter API
   unchanged so no machine touched). (5) **Creative tab** — signature items contributed to Core's shared
-  `CoreCreativeTab` (lazy suppliers); Nerospace `c:` material tags already complete. All 6 cells BUILD
+  `CoreCreativeTab` (lazy suppliers); Nerospace `c:` material tags already complete. All 9 cells BUILD
   SUCCESSFUL + ecjCheck 0 errors. Needs a dev-client run to confirm cross-mod energy flow + the gates/erase
   commands (not agent-testable). See `wiki/Neroland-Core.md`.
 - **DEFERRED for sign-off: upgrade-module migration to Core.** Core's `UpgradeType` enum is fixed

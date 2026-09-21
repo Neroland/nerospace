@@ -23,13 +23,14 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /** Nerosium Grinder block — directional, ticks + opens its {@link NerosiumGrinderBlockEntity}. */
 public class NerosiumGrinderBlock extends BaseEntityBlock {
 
-    public static final MapCodec<NerosiumGrinderBlock> CODEC = simpleCodec(NerosiumGrinderBlock::new);
+    public static final MapCodec<NerosiumGrinderBlock> CODEC = BlockCodecs.simple(NerosiumGrinderBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     @SuppressWarnings("this-escape")
@@ -38,7 +39,6 @@ public class NerosiumGrinderBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    @Override
     protected MapCodec<NerosiumGrinderBlock> codec() {
         return CODEC;
     }

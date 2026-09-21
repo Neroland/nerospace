@@ -19,6 +19,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModBlocks;
 
@@ -35,13 +36,12 @@ import za.co.neroland.nerospace.registry.ModBlocks;
  */
 public class VillageCoreBlock extends BaseEntityBlock {
 
-    public static final MapCodec<VillageCoreBlock> CODEC = simpleCodec(VillageCoreBlock::new);
+    public static final MapCodec<VillageCoreBlock> CODEC = BlockCodecs.simple(VillageCoreBlock::new);
 
     public VillageCoreBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<VillageCoreBlock> codec() {
         return CODEC;
     }

@@ -315,7 +315,11 @@ public class VillageCoreBlockEntity extends BlockEntity {
 
     private void give(Player player, ItemStack stack) {
         if (!player.addItem(stack)) {
+            //? if >=26.3 {
+            /*player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
+            *///?} else {
             player.drop(stack, false);
+            //?}
         }
     }
 

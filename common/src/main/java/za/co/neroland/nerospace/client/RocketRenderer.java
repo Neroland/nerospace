@@ -71,8 +71,12 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
         RocketModel model = this.models[Math.min(this.models.length - 1, state.tier)];
         model.setupAnim(state);
         RenderType renderType = model.renderType(state.texture);
+        //? if >=26.3 {
+        /*collector.order(0).submitModel(model, state, poseStack, renderType, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1);
+        *///?} else {
         collector.order(0).submitModel(model, state, poseStack, renderType,
                 FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1, null, 0, null);
+        //?}
 
         poseStack.popPose();
         super.submit(state, poseStack, collector, cameraState);

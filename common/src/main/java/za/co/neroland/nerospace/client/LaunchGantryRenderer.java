@@ -140,7 +140,11 @@ public class LaunchGantryRenderer
         poseStack.pushPose();
         // Recline about the tower base centre.
         poseStack.translate(0.5F, 0.0F, 0.5F);
+        //? if >=26.3 {
+        /*poseStack.rotate((state.axisX ? Axis.XP : Axis.ZP).rotationDegrees(state.lean));
+        *///?} else {
         poseStack.mulPose((state.axisX ? Axis.XP : Axis.ZP).rotationDegrees(state.lean));
+        //?}
         poseStack.translate(-0.5F, 0.0F, -0.5F);
         collector.order(1).submitCustomGeometry(poseStack, rt,
                 (pose, consumer) -> drawTower(consumer, pose, state));

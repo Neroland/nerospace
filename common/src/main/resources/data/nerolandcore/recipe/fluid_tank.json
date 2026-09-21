@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "#c:glass_blocks/colorless",
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    "NGN",
+    "G G",
+    "NGN"
+  ],
+  "result": {
+    "id": "nerolandcore:fluid_tank"
+  }
+}

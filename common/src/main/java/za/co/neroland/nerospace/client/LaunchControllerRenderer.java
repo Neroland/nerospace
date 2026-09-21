@@ -135,7 +135,11 @@ public class LaunchControllerRenderer
         // Console face — rotate so the screen faces the operator side and the arms reach the pad side.
         poseStack.pushPose();
         poseStack.translate(0.5, 0.0, 0.5);
+        //? if >=26.3 {
+        /*poseStack.rotate(Axis.YP.rotationDegrees(-blockYRot(state.facing)));
+        *///?} else {
         poseStack.mulPose(Axis.YP.rotationDegrees(-blockYRot(state.facing)));
+        //?}
         poseStack.translate(-0.5, 0.0, -0.5);
         collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(BODY),
                 (pose, c) -> drawArms(c, pose));

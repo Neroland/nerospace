@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -31,7 +32,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class HydrationModuleBlock extends BaseEntityBlock {
 
-    public static final MapCodec<HydrationModuleBlock> CODEC = simpleCodec(HydrationModuleBlock::new);
+    public static final MapCodec<HydrationModuleBlock> CODEC = BlockCodecs.simple(HydrationModuleBlock::new);
     /** The melt window faces the placer. Visual only. */
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -41,7 +42,6 @@ public class HydrationModuleBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    @Override
     protected MapCodec<HydrationModuleBlock> codec() {
         return CODEC;
     }

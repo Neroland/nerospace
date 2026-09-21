@@ -75,7 +75,11 @@ public class PipeFilterItem extends Item {
                 held.shrink(1);
             }
             if (!previous.isEmpty()) {
+                //? if >=26.3 {
+                /*player.getInventory().placeItemBackInInventory(previous, net.minecraft.util.Prediction.SERVER_ONLY);
+                *///?} else {
                 player.getInventory().placeItemBackInInventory(previous);
+                //?}
             }
             player.sendSystemMessage(Component.translatable("item.nerospace.pipe_filter.applied",
                     configured(pipe.filterItem(face)).getHoverName(), face.getName()));

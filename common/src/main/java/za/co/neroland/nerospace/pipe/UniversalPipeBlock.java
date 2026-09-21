@@ -30,6 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.FluidLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
@@ -51,7 +52,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class UniversalPipeBlock extends BaseEntityBlock {
 
-    public static final MapCodec<UniversalPipeBlock> CODEC = simpleCodec(UniversalPipeBlock::new);
+    public static final MapCodec<UniversalPipeBlock> CODEC = BlockCodecs.simple(UniversalPipeBlock::new);
 
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
     public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
@@ -109,7 +110,6 @@ public class UniversalPipeBlock extends BaseEntityBlock {
         return mask;
     }
 
-    @Override
     protected MapCodec<UniversalPipeBlock> codec() {
         return CODEC;
     }

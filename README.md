@@ -62,7 +62,7 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 ## Building from source
 
 This repo is the flattened multiloader build. `common/` is shared into six Stonecutter nodes:
-NeoForge, Forge, and Fabric for Minecraft 26.1.2 and 26.2. No separate Gradle install is needed.
+NeoForge, Forge, and Fabric for Minecraft 26.1.2, 26.2 and 26.3. No separate Gradle install is needed.
 
 ```bash
 # Build one cell
@@ -70,8 +70,8 @@ NeoForge, Forge, and Fabric for Minecraft 26.1.2 and 26.2. No separate Gradle in
 ./gradlew :forge:26.2:build
 ./gradlew :fabric:26.2:build
 
-# Build all six cells
-./gradlew :neoforge:26.1.2:build :neoforge:26.2:build :forge:26.1.2:build :forge:26.2:build :fabric:26.1.2:build :fabric:26.2:build
+# Build all nine cells
+./gradlew :neoforge:26.1.2:build :neoforge:26.2:build :neoforge:26.3:build :forge:26.1.2:build :forge:26.2:build :forge:26.3:build :fabric:26.1.2:build :fabric:26.2:build :fabric:26.3:build
 
 # Launch a dev client / server for a cell
 ./gradlew :neoforge:26.2:runClient

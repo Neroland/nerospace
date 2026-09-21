@@ -8,6 +8,8 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
+
 /**
  * The Meteor Core (meteor-events design §5): the glowing block at the centre of a crater that holds
  * the meteor's RNG loot. Break-to-loot — the stored stacks spill when the core is removed, driven by
@@ -16,13 +18,12 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class MeteorCoreBlock extends BaseEntityBlock {
 
-    public static final MapCodec<MeteorCoreBlock> CODEC = simpleCodec(MeteorCoreBlock::new);
+    public static final MapCodec<MeteorCoreBlock> CODEC = BlockCodecs.simple(MeteorCoreBlock::new);
 
     public MeteorCoreBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<MeteorCoreBlock> codec() {
         return CODEC;
     }

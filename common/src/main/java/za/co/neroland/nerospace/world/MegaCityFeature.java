@@ -1,6 +1,8 @@
 package za.co.neroland.nerospace.world;
 
+//? if <26.3 {
 import com.mojang.serialization.Codec;
+//?}
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -13,8 +15,10 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
+//? if <26.3 {
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+//?}
 
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModEntities;
@@ -25,23 +29,49 @@ import za.co.neroland.nerospace.registry.ModItems;
  * with four gates around a glowing tile plaza of towers, and a central keep guarded by the Ruin Warden
  * boss over a grand vault. Very rare, spaced via {@link StructureSpacing}.
  */
+//? if >=26.3 {
+/*public class MegaCityFeature implements Feature {
+*///?} else {
 public class MegaCityFeature extends Feature<NoneFeatureConfiguration> {
+//?}
 
     private static final int WALL_R = 20;   // 41x41 footprint
     private static final int WALL_H = 6;
 
+    //? if >=26.3 {
+    /*// Minecraft 26.3+: features are data-driven values; this configuration-free type has one instance.
+    public static final MegaCityFeature INSTANCE = new MegaCityFeature();
+    public static final com.mojang.serialization.MapCodec<MegaCityFeature> CODEC = com.mojang.serialization.MapCodec.unit(INSTANCE);
+
+    @Override
+    public com.mojang.serialization.MapCodec<? extends Feature> codec() {
+        return CODEC;
+    }
+    *///?}
+    //? if <26.3 {
     public MegaCityFeature(Codec<NoneFeatureConfiguration> codec) {
         super(codec);
     }
+    //?}
 
+    //? if >=26.3 {
+    /*@Override
+    public boolean place(WorldGenLevel level, net.minecraft.world.level.chunk.ChunkGenerator generator, RandomSource rand,
+            BlockPos o) {
+        return generate(level, rand, o);
+    }
+    *///?} else {
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> ctx) {
-        BlockPos o = ctx.origin();
+        return generate(ctx.level(), ctx.random(), ctx.origin());
+    }
+    //?}
+
+    /** Version-neutral body shared by both feature APIs. */
+    private boolean generate(WorldGenLevel level, RandomSource rand, BlockPos o) {
         if (!StructureSpacing.shouldPlace(o, StructureSpacing.Roi.MEGA_CITY)) {
             return false;
         }
-        WorldGenLevel level = ctx.level();
-        RandomSource rand = ctx.random();
         int baseY = o.getY();
         BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
         BlockState bricks = AlienBuild.bricks();

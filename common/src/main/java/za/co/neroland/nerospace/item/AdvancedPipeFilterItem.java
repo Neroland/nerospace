@@ -90,7 +90,11 @@ public class AdvancedPipeFilterItem extends Item {
                         held.shrink(1);
                     }
                     if (!previous.isEmpty()) {
+                        //? if >=26.3 {
+                        /*player.getInventory().placeItemBackInInventory(previous, net.minecraft.util.Prediction.SERVER_ONLY);
+                        *///?} else {
                         player.getInventory().placeItemBackInInventory(previous);
+                        //?}
                     }
                     player.sendSystemMessage(Component.translatable(
                             "item.nerospace.advanced_pipe_filter.applied",

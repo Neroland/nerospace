@@ -47,7 +47,9 @@ public class FallingMeteorEntity extends Entity {
     /** Gallery/showcase only: hover in place (spin + trail) instead of falling. Not persisted. */
     private boolean frozen;
 
+    //? if <26.3 {
     private final InterpolationHandler interpolation = new InterpolationHandler(this);
+    //?}
 
     @SuppressWarnings("this-escape")
     public FallingMeteorEntity(EntityType<? extends FallingMeteorEntity> type, Level level) {
@@ -96,10 +98,17 @@ public class FallingMeteorEntity extends Entity {
         // No synced data: the client renders from the tracked position + spins on tickCount.
     }
 
+    //? if >=26.3 {
+    /*@Override
+    protected InterpolationHandler createInterpolationHandler() {
+        return net.minecraft.world.entity.LinearInterpolationHandler.create(this);
+    }
+    *///?} else {
     @Override
     public InterpolationHandler getInterpolation() {
         return this.interpolation;
     }
+    //?}
 
     private Vec3 targetVec() {
         return new Vec3(this.targetX + 0.5D, this.targetY + 0.5D, this.targetZ + 0.5D);
@@ -110,9 +119,11 @@ public class FallingMeteorEntity extends Entity {
         super.tick();
 
         if (level().isClientSide()) {
+            //? if <26.3 {
             if (this.interpolation.hasActiveInterpolation()) {
                 this.interpolation.interpolate();
             }
+            //?}
             spawnTrail();
             return;
         }

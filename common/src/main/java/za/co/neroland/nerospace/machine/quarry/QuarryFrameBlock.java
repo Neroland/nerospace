@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 
 /**
@@ -27,7 +28,7 @@ import za.co.neroland.nerospace.config.NerospaceConfig;
  */
 public class QuarryFrameBlock extends Block {
 
-    public static final MapCodec<QuarryFrameBlock> CODEC = simpleCodec(QuarryFrameBlock::new);
+    public static final MapCodec<QuarryFrameBlock> CODEC = BlockCodecs.simple(QuarryFrameBlock::new);
 
     /** True once the owning controller was removed — the frame is decaying and will slowly crumble, dropping its casing. */
     public static final BooleanProperty ORPHANED = BooleanProperty.create("orphaned");
@@ -45,7 +46,6 @@ public class QuarryFrameBlock extends Block {
         registerDefaultState(this.stateDefinition.any().setValue(ORPHANED, Boolean.FALSE));
     }
 
-    @Override
     protected MapCodec<QuarryFrameBlock> codec() {
         return CODEC;
     }

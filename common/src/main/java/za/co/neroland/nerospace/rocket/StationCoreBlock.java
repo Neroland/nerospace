@@ -16,6 +16,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 
 /**
@@ -27,13 +28,12 @@ import za.co.neroland.nerospace.menu.MenuOpener;
  */
 public class StationCoreBlock extends BaseEntityBlock {
 
-    public static final MapCodec<StationCoreBlock> CODEC = simpleCodec(StationCoreBlock::new);
+    public static final MapCodec<StationCoreBlock> CODEC = BlockCodecs.simple(StationCoreBlock::new);
 
     public StationCoreBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<StationCoreBlock> codec() {
         return CODEC;
     }

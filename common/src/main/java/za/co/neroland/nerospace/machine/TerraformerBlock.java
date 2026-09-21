@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -30,7 +31,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class TerraformerBlock extends BaseEntityBlock {
 
-    public static final MapCodec<TerraformerBlock> CODEC = simpleCodec(TerraformerBlock::new);
+    public static final MapCodec<TerraformerBlock> CODEC = BlockCodecs.simple(TerraformerBlock::new);
     /** The core lens faces the placer. Visual only. */
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -40,7 +41,6 @@ public class TerraformerBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    @Override
     protected MapCodec<TerraformerBlock> codec() {
         return CODEC;
     }

@@ -129,7 +129,11 @@ public class SolarPanelRenderer
         // Tier 1: a centred 1×1 deck on the model's T-pole, pitching east-west to follow the sun.
         poseStack.pushPose();
         poseStack.translate(0.5F, POLE_TOP, 0.5F);
+        //? if >=26.3 {
+        /*poseStack.rotate(Axis.ZP.rotationDegrees(state.angle));
+        *///?} else {
         poseStack.mulPose(Axis.ZP.rotationDegrees(state.angle));
+        //?}
         collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture),
                 (pose, consumer) -> box(consumer, pose, light,
                         -0.5F, -THICK / 2.0F, -0.5F, 0.5F, THICK / 2.0F, 0.5F,
@@ -164,7 +168,11 @@ public class SolarPanelRenderer
         float half = centre;
         poseStack.pushPose();
         poseStack.translate(centre, POLE_TOP, centre);
+        //? if >=26.3 {
+        /*poseStack.rotate(Axis.ZP.rotationDegrees(angle));
+        *///?} else {
         poseStack.mulPose(Axis.ZP.rotationDegrees(angle));
+        //?}
         collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture),
                 (pose, consumer) -> box(consumer, pose, light,
                         -half, -THICK / 2.0F, -half, half, THICK / 2.0F, half,

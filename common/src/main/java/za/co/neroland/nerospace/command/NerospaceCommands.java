@@ -811,7 +811,11 @@ public final class NerospaceCommands {
         stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(boots));
         stand.setCustomName(name);
         stand.setCustomNameVisible(true);
+        //? if >=26.3 {
+        /*stand.setPermanentlyInvulnerable(true);
+        *///?} else {
         stand.setInvulnerable(true);
+        //?}
         stand.setYRot(yaw); // uniform facing so the row reads as a clean line, angled a few degrees off straight-on
         stand.setYBodyRot(yaw);
         stand.setYHeadRot(yaw);
@@ -825,7 +829,11 @@ public final class NerospaceCommands {
         stand.setCustomNameVisible(true);
         stand.setInvisible(true);
         stand.setNoGravity(true);
+        //? if >=26.3 {
+        /*stand.setPermanentlyInvulnerable(true);
+        *///?} else {
         stand.setInvulnerable(true);
+        //?}
         level.addFreshEntity(stand);
     }
 

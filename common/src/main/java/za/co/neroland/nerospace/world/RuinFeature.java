@@ -1,6 +1,8 @@
 package za.co.neroland.nerospace.world;
 
+//? if <26.3 {
 import com.mojang.serialization.Codec;
+//?}
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -11,8 +13,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
+//? if <26.3 {
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+//?}
 
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModItems;
@@ -21,20 +25,46 @@ import za.co.neroland.nerospace.registry.ModItems;
  * Ancient Ruin — a derelict, half-buried alien hall of cracked alien brick with collapsed walls and a
  * dead crystal core, holding a loot vault of rare alien goods. Spaced + capped by {@link StructureSpacing}.
  */
+//? if >=26.3 {
+/*public class RuinFeature implements Feature {
+*///?} else {
 public class RuinFeature extends Feature<NoneFeatureConfiguration> {
+//?}
 
+    //? if >=26.3 {
+    /*// Minecraft 26.3+: features are data-driven values; this configuration-free type has one instance.
+    public static final RuinFeature INSTANCE = new RuinFeature();
+    public static final com.mojang.serialization.MapCodec<RuinFeature> CODEC = com.mojang.serialization.MapCodec.unit(INSTANCE);
+
+    @Override
+    public com.mojang.serialization.MapCodec<? extends Feature> codec() {
+        return CODEC;
+    }
+    *///?}
+    //? if <26.3 {
     public RuinFeature(Codec<NoneFeatureConfiguration> codec) {
         super(codec);
     }
+    //?}
 
+    //? if >=26.3 {
+    /*@Override
+    public boolean place(WorldGenLevel level, net.minecraft.world.level.chunk.ChunkGenerator generator, RandomSource rand,
+            BlockPos o) {
+        return generate(level, rand, o);
+    }
+    *///?} else {
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> ctx) {
-        BlockPos o = ctx.origin();
+        return generate(ctx.level(), ctx.random(), ctx.origin());
+    }
+    //?}
+
+    /** Version-neutral body shared by both feature APIs. */
+    private boolean generate(WorldGenLevel level, RandomSource rand, BlockPos o) {
         if (!StructureSpacing.shouldPlace(o, StructureSpacing.Roi.RUIN)) {
             return false;
         }
-        WorldGenLevel level = ctx.level();
-        RandomSource rand = ctx.random();
         int baseY = o.getY() - 2; // sunken
         BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
 

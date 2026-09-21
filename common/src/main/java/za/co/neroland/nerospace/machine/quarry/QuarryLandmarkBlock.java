@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
 /**
@@ -24,7 +25,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class QuarryLandmarkBlock extends BaseEntityBlock {
 
-    public static final MapCodec<QuarryLandmarkBlock> CODEC = simpleCodec(QuarryLandmarkBlock::new);
+    public static final MapCodec<QuarryLandmarkBlock> CODEC = BlockCodecs.simple(QuarryLandmarkBlock::new);
 
     private static final VoxelShape SHAPE = Block.box(5.0D, 0.0D, 5.0D, 11.0D, 12.0D, 11.0D);
 
@@ -32,7 +33,6 @@ public class QuarryLandmarkBlock extends BaseEntityBlock {
         super(properties);
     }
 
-    @Override
     protected MapCodec<QuarryLandmarkBlock> codec() {
         return CODEC;
     }

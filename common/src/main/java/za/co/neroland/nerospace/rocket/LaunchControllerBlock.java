@@ -28,6 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlocks;
 
@@ -39,7 +40,7 @@ import za.co.neroland.nerospace.registry.ModBlocks;
  */
 public class LaunchControllerBlock extends BaseEntityBlock {
 
-    public static final MapCodec<LaunchControllerBlock> CODEC = simpleCodec(LaunchControllerBlock::new);
+    public static final MapCodec<LaunchControllerBlock> CODEC = BlockCodecs.simple(LaunchControllerBlock::new);
     /** The horizontal direction the pad is built toward; also the structure's width axis (clockwise). */
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -51,7 +52,6 @@ public class LaunchControllerBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    @Override
     protected MapCodec<LaunchControllerBlock> codec() {
         return CODEC;
     }

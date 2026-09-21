@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -25,13 +26,12 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class FuelRefineryBlock extends BaseEntityBlock {
 
-    public static final MapCodec<FuelRefineryBlock> CODEC = simpleCodec(FuelRefineryBlock::new);
+    public static final MapCodec<FuelRefineryBlock> CODEC = BlockCodecs.simple(FuelRefineryBlock::new);
 
     public FuelRefineryBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
     protected MapCodec<FuelRefineryBlock> codec() {
         return CODEC;
     }

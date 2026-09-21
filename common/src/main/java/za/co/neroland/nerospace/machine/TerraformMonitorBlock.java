@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -31,7 +32,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  */
 public class TerraformMonitorBlock extends BaseEntityBlock {
 
-    public static final MapCodec<TerraformMonitorBlock> CODEC = simpleCodec(TerraformMonitorBlock::new);
+    public static final MapCodec<TerraformMonitorBlock> CODEC = BlockCodecs.simple(TerraformMonitorBlock::new);
     /** The screen faces the placer. Visual only. */
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -41,7 +42,6 @@ public class TerraformMonitorBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    @Override
     protected MapCodec<TerraformMonitorBlock> codec() {
         return CODEC;
     }

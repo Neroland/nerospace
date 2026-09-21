@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -26,7 +27,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
 public class QuarryControllerBlock extends BaseEntityBlock {
 
     public static final MapCodec<QuarryControllerBlock> CODEC =
-            simpleCodec(props -> new QuarryControllerBlock(props, MinerTier.TIER_1));
+            BlockCodecs.simple(props -> new QuarryControllerBlock(props, MinerTier.TIER_1));
 
     private final MinerTier tier;
 
@@ -43,7 +44,6 @@ public class QuarryControllerBlock extends BaseEntityBlock {
         return this.tier;
     }
 
-    @Override
     protected MapCodec<QuarryControllerBlock> codec() {
         return CODEC;
     }

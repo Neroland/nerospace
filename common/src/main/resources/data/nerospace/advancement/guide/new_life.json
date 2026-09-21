@@ -8,7 +8,7 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "type": "nerospace:ember_strutter"
+              "minecraft:entity_type": "nerospace:ember_strutter"
             }
           }
         ]
@@ -22,7 +22,7 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "type": "nerospace:meadow_loper"
+              "minecraft:entity_type": "nerospace:meadow_loper"
             }
           }
         ]
@@ -36,7 +36,7 @@
             "condition": "minecraft:entity_properties",
             "entity": "this",
             "predicate": {
-              "type": "nerospace:woolly_drift"
+              "minecraft:entity_type": "nerospace:woolly_drift"
             }
           }
         ]

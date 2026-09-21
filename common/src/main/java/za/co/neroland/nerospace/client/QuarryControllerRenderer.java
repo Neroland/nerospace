@@ -205,7 +205,11 @@ public class QuarryControllerRenderer
         // Drill head (red): spun around the vertical axis at the dig cell.
         poseStack.pushPose();
         poseStack.translate(s.hx, s.hy, s.hz);
+        //? if >=26.3 {
+        /*poseStack.rotate(Axis.YP.rotationDegrees(s.headSpin));
+        *///?} else {
         poseStack.mulPose(Axis.YP.rotationDegrees(s.headSpin));
+        //?}
         collector.order(1).submitCustomGeometry(poseStack, RenderTypes.entityCutout(DRILL_TEX),
                 (pose, c) -> drawBit(pose, c));
         poseStack.popPose();

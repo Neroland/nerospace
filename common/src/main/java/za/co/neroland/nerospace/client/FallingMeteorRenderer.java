@@ -54,12 +54,24 @@ public class FallingMeteorRenderer extends EntityRenderer<FallingMeteorEntity, F
         // rock spins as it falls.
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         poseStack.translate(0.0F, -0.7F, 0.0F);
+        //? if >=26.3 {
+        /*poseStack.rotate(Axis.YP.rotationDegrees(state.ticks * 7.0F));
+        *///?} else {
         poseStack.mulPose(Axis.YP.rotationDegrees(state.ticks * 7.0F));
+        //?}
+        //? if >=26.3 {
+        /*poseStack.rotate(Axis.XP.rotationDegrees(state.ticks * 5.0F));
+        *///?} else {
         poseStack.mulPose(Axis.XP.rotationDegrees(state.ticks * 5.0F));
+        //?}
 
         RenderType renderType = this.model.renderType(TEXTURE);
+        //? if >=26.3 {
+        /*collector.order(0).submitModel(this.model, state, poseStack, renderType, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1);
+        *///?} else {
         collector.order(0).submitModel(this.model, state, poseStack, renderType,
                 FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1, null, 0, null);
+        //?}
 
         poseStack.popPose();
         super.submit(state, poseStack, collector, cameraState);
