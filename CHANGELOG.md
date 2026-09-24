@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-24
+
+EMI support for the Nerospace machine pages, and its JEI pages now show on Fabric.
+
+### Added
+
+- **EMI support.** The Nerosium Grinder, Fuel Refinery and Combustion Generator pages that JEI already
+  had now come from a native EMI plugin too. Official EMI has no Minecraft 26.x release, so this targets
+  the community EMI Unofficial Port (Unstable) on NeoForge and Fabric; that port has no Forge build. With
+  JEI and EMI both installed, the pages show once. EMI stays optional.
+
+### Fixed
+
+- **JEI pages now appear on Fabric.** JEI on Fabric only loads plugins listed under the `jei_mod_plugin`
+  entrypoint and ignores the `@JeiPlugin` annotation, so Nerospace's grinding, refining and combustion
+  fuel pages never showed there. NeoForge was not affected.
+
 ## [1.1.1] - 2026-09-24
 
 Gas interop with NeroTech through the Universal Pipe, plus three crash-report fixes. Pair it with

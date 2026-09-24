@@ -68,7 +68,7 @@ automatically with whatever mods are installed — the grinder never needs to kn
   simply waits, so an unattended grinder never wastes a rock. If the **output buffer is full**, the grinder
   **pauses** with the result held and the meteor rock kept — it never drops items into the world; grinding
   resumes the moment a slot frees up.
-- **Recipe book:** the random pool is browsable in **JEI** — look up the grinder and the meteor entry shows
+- **Recipe book:** the random pool is browsable in **JEI** or **EMI** — look up the grinder and the meteor entry shows
   the whole `neroland:meteor/grindable` material set.
 
 Privacy: the registry stores **no player data** — only item metadata. The operator is held by UUID for

@@ -56,9 +56,10 @@ release** — the complete progression from the first nerosium ore to a terrafor
 
   advancement tree; the creative `/nerospace gallery` showcase; a 36+-test gametest suite.
 
-**JEI integration**
+**JEI & EMI integration**
 
 - With JEI installed, the grinder, fuel refinery and combustion generator show their own recipe categories (standard recipes/tags already worked out of the box).
+- EMI gets the same three pages from a native EMI plugin. Official EMI has no Minecraft 26.x release, so this targets the community **EMI Unofficial Port (Unstable)** on NeoForge and Fabric (26.1.2, 26.2, 26.3); that port has no Forge build. With JEI and EMI both installed, the pages appear once.
 
 **Solar Panels**
 

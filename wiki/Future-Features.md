@@ -45,10 +45,9 @@ A longer-term wish list — ideas under consideration after 1.0, not commitments
   sound events alias fitting vanilla audio as placeholders; swapping in real files is a pure
   resource change).
 
-- **EMI integration** — as soon as it reaches 26.1. JEI is already supported: standard
-
-  recipes/tags work out of the box, and the Nerosium Grinder, Fuel Refinery and Combustion
-  Generator get their own JEI recipe categories.
+- **Official EMI** — native EMI pages already ship against the community EMI Unofficial Port
+  (NeoForge and Fabric). Once official EMI releases for 26.x, switch the `emi_file_*` pins to it,
+  which also brings EMI to Forge if it ships a Forge build.
 
 - **Cross-mod integration** — e.g. Mekanism, once the big tech mods port to Minecraft 26.1.
 

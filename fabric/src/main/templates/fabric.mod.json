@@ -10,7 +10,9 @@
   "environment": "*",
   "entrypoints": {
     "main": ["za.co.neroland.nerospace.fabric.NerospaceFabric"],
-    "client": ["za.co.neroland.nerospace.fabric.NerospaceFabricClient"]
+    "client": ["za.co.neroland.nerospace.fabric.NerospaceFabricClient"],
+    "jei_mod_plugin": ["za.co.neroland.nerospace.compat.jei.NerospaceJeiPlugin"],
+    "emi": ["za.co.neroland.nerospace.compat.emi.NerospaceEmiPlugin"]
   },
   "mixins": [
     "nerospace-common.mixins.json",
