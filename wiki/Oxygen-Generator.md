@@ -33,7 +33,7 @@ N N N
 
 - **Oxygen out:** while powered it produces up to 5 mB of Oxygen per tick (2 FE per mB) into an
 
-  8,000 mB internal tank. Pipes connected to it can carry the gas away (green stream).
+  8,000 mB internal tank. Pipes connected to it can carry the gas away (cyan stream).
 
 - **Oxygen field:** while the tank holds gas the machine is an oxygen **source**, slowly draining
 

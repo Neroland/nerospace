@@ -11,6 +11,7 @@ import java.util.Set;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
@@ -24,17 +25,17 @@ import org.jetbrains.annotations.Nullable;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
+import za.co.neroland.nerolandcore.gas.GasBuffer;
+import za.co.neroland.nerolandcore.gas.NeroGasStorage;
+import za.co.neroland.nerolandcore.gas.NeroGases;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
-import za.co.neroland.nerospace.gas.GasResource;
-import za.co.neroland.nerospace.gas.GasTank;
-import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.item.ContainerItemStore;
 import za.co.neroland.nerospace.item.NerospaceItemStore;
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.FluidLookup;
-import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.platform.ItemLookup;
+import za.co.neroland.nerospace.storage.CoreTankBridge;
 
 /**
  * A connected group of {@link UniversalPipeBlockEntity} segments that move resources as ONE pool — the
@@ -272,9 +273,11 @@ public final class PipeNetwork {
     // --- Gas ------------------------------------------------------------------
 
     private void tickGas(ServerLevel level, List<UniversalPipeBlockEntity> pipes) {
-        GasResource networkGas = GasResource.EMPTY;
+        // Gas ids are Core Identifiers (any Nero gas). Every way into a pipe buffer stores the
+        // CoreTankBridge.canonical id, so plain equals() compares like with like (one oxygen).
+        Identifier networkGas = NeroGases.EMPTY;
         for (UniversalPipeBlockEntity pipe : pipes) {
-            if (!pipe.gas().getGas().isEmpty()) {
+            if (!NeroGases.isEmpty(pipe.gas().getGas())) {
                 networkGas = pipe.gas().getGas();
                 break;
             }
@@ -283,7 +286,7 @@ public final class PipeNetwork {
         for (UniversalPipeBlockEntity pipe : pipes) {
             long io = (long) UniversalPipeBlockEntity.GAS_MAX_IO * pipe.speedMultiplier();
             BlockPos pos = pipe.getBlockPos();
-            GasTank tank = pipe.gas();
+            GasBuffer tank = pipe.gas();
             for (Direction dir : Direction.values()) {
                 BlockPos np = pos.relative(dir);
                 if (this.memberSet.contains(np.asLong())) {
@@ -293,31 +296,31 @@ public final class PipeNetwork {
                 if (!mode.isConnected()) {
                     continue;
                 }
-                NerospaceGasStorage neighbour = GasLookup.INSTANCE.find(level, np, dir.getOpposite());
+                NeroGasStorage neighbour = PipeGas.find(level, np, dir.getOpposite());
                 if (neighbour == null) {
                     continue;
                 }
                 if (mode.canPull()) {
-                    GasResource ng = neighbour.getGas();
-                    boolean typeOk = !ng.isEmpty()
-                            && (networkGas.isEmpty() || ng == networkGas)
-                            && (tank.getGas().isEmpty() || tank.getGas() == ng);
+                    Identifier ng = CoreTankBridge.canonical(neighbour.getGas());
+                    boolean typeOk = !NeroGases.isEmpty(ng)
+                            && (NeroGases.isEmpty(networkGas) || ng.equals(networkGas))
+                            && (NeroGases.isEmpty(tank.getGas()) || tank.getGas().equals(ng));
                     if (typeOk) {
                         long room = tank.getCapacity() - tank.getAmount();
                         long avail = neighbour.drain(Math.min(room, io), true);
                         long moved = tank.fill(ng, avail, false);
                         if (moved > 0) {
                             neighbour.drain(moved, false);
-                            if (networkGas.isEmpty()) {
+                            if (NeroGases.isEmpty(networkGas)) {
                                 networkGas = ng;
                             }
                         }
                     }
                 }
                 if (mode.canPush() && tank.getAmount() > 0) {
-                    GasResource g = tank.getGas();
+                    Identifier g = tank.getGas();
                     long offered = tank.drain(Math.min(tank.getAmount(), io), true);
-                    long accepted = neighbour.fill(g, offered, false);
+                    long accepted = CoreTankBridge.fillCanonical(neighbour, g, offered, false);
                     if (accepted > 0) {
                         tank.drain(accepted, false);
                     }
@@ -325,14 +328,14 @@ public final class PipeNetwork {
             }
         }
 
-        if (networkGas.isEmpty()) {
+        if (NeroGases.isEmpty(networkGas)) {
             return;
         }
         List<UniversalPipeBlockEntity> matching = new ArrayList<>(pipes.size());
         long total = 0L;
         for (UniversalPipeBlockEntity pipe : pipes) {
-            GasResource held = pipe.gas().getGas();
-            if (held.isEmpty() || held == networkGas) {
+            Identifier held = pipe.gas().getGas();
+            if (NeroGases.isEmpty(held) || held.equals(networkGas)) {
                 matching.add(pipe);
                 total += pipe.gas().getAmount();
             }

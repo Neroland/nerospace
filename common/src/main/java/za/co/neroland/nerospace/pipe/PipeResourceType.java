@@ -8,8 +8,9 @@ import net.minecraft.util.StringRepresentable;
  * Each has a display colour (ARGB) used by the streams in the pipe renderer and the Configurator UI.
  *
  * <p>Cross-loader port: pure vanilla ({@link StringRepresentable}/{@link Component}); identical to the
- * standalone mod. Note: the multiloader relay currently moves energy, gas and items — the {@code FLUID}
- * layer is reserved (its per-face mode is stored but inert until the fluid relay lands).</p>
+ * standalone mod. All four layers are live in {@link PipeNetwork} (energy, fluid, gas and items). The
+ * {@code GAS} colour is the oxygen stream colour; other gases pick theirs in
+ * {@link PipeGas#streamColor}.</p>
  */
 public enum PipeResourceType implements StringRepresentable {
     ENERGY("energy", 0xFFE0506A),  // red — FE

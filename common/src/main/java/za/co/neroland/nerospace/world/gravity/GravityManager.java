@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.Vec3;
 
@@ -82,12 +83,24 @@ public final class GravityManager {
             base = LOW_FACTOR;
         } else if (biome.is(ModTags.Biomes.GRAVITY_HIGH)) {
             base = HIGH_FACTOR;
-        } else if (Services.PLATFORM.isTerraformed(level.getChunkAt(pos))) {
+        } else if (isTerraformed(level, pos)) {
             base = NORMAL_FACTOR;
         } else {
             base = DIMENSION_DEFAULTS.getOrDefault(level.dimension(), 1.0);
         }
         return Math.max(0.0, base * NerospaceConfig.gravityMultiplier());
+    }
+
+    /**
+     * Whether the chunk at {@code pos} carries the terraformed flag — read from an ALREADY-LOADED chunk only.
+     * {@code level.getChunkAt} would block and load (or generate) the chunk synchronously; called from the
+     * server tick for an entity standing on a chunk edge, that nested load runs other chunk tasks mid-tick
+     * and can re-enter the entity-section manager while it is iterating (the ConcurrentModificationException
+     * seen with C2ME). An unloaded chunk simply reads as "not terraformed".
+     */
+    private static boolean isTerraformed(ServerLevel level, BlockPos pos) {
+        LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+        return chunk != null && Services.PLATFORM.isTerraformed(chunk);
     }
 
     /**
@@ -125,7 +138,12 @@ public final class GravityManager {
             }
             if (level.getGameTime() % CHECK_INTERVAL_TICKS == 0) {
                 for (LivingEntity living : level.getEntities(EntityTypeTest.forClass(LivingEntity.class), e -> true)) {
-                    applyToLiving(living, factorAt(level, living.blockPosition()));
+                    BlockPos pos = living.blockPosition();
+                    // Leave entities on not-yet-loaded ground alone until their chunk is ready (see isTerraformed).
+                    if (!level.hasChunkAt(pos)) {
+                        continue;
+                    }
+                    applyToLiving(living, factorAt(level, pos));
                 }
             }
             if (DIMENSION_DEFAULTS.containsKey(level.dimension())) {
@@ -171,6 +189,9 @@ public final class GravityManager {
      */
     private static void applyMotionCorrection(ServerLevel level, Entity entity) {
         if (entity.isNoGravity() || entity.onGround() || entity.isInWater()) {
+            return;
+        }
+        if (!level.hasChunkAt(entity.blockPosition())) {
             return;
         }
         double factor = factorAt(level, entity.blockPosition());

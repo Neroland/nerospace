@@ -17,7 +17,7 @@ resource layers ride the same connection graph simultaneously:
 | --- | --- | --- |
 | Energy (FE) | red | shared pool, balanced across all segments |
 | Fluid | blue | **one fluid per network** — the first fluid in claims it until drained |
-| Gas | green | one gas per network; **breaking a pipe vents its gas** (visible puff) |
+| Gas | cyan (oxygen), pale blue (hydrogen), grey (other gases) | one gas per network; **breaking a pipe vents its gas** (visible puff) |
 | Items | — | travel as **visible packets** (~2 blocks/s), round-robin between destinations |
 
 ## Obtaining
@@ -40,8 +40,8 @@ N N N
   [Configurator](Configurator)). This includes the [Battery](Battery), [Fluid Tank](Fluid-Tank),
   [Gas Tank](Gas-Tank), [Item Store](Item-Store), and the void-sink [Trash Can](Trash-Can) — all
   now provided by [Neroland Core](Neroland-Core); the pipe bridges Core's
-  `nerolandcore:fluid`/`nerolandcore:gas` (and energy/item) capabilities onto its own lookups, so
-  it connects to them exactly as before (point an **OUT** face at the Trash Can to dump a stream).
+  `nerolandcore:fluid` (and energy/item) capabilities onto its own lookups, so it connects to them
+  exactly as before (point an **OUT** face at the Trash Can to dump a stream).
 
 - **Energy/fluid/gas:** the network pulls from providers, pushes to receivers and balances its own
 
@@ -72,9 +72,14 @@ Nerospace line and another mod's logistics meet in the middle:
 
 - **Items:** the same, both directions, for another mod's machines, crates and item pipes.
 - **Energy** already crossed the mod boundary through [Neroland Core](Neroland-Core)'s shared network.
-- **Gas does not.** There is no cross-mod standard for gas, and Nerospace's oxygen is not a fluid, so
+- **Gas** crosses between Neroland mods through Neroland Core's shared gas capability
 
-  the green layer stops at the mod boundary — pipe oxygen between Nerospace (and Neroland) blocks only.
+  (`nerolandcore:gas`). The gas layer carries any Neroland gas, not just oxygen: it pulls hydrogen and
+  oxygen out of NeroTech machines such as the Electrolyzer, feeds a Chemical Processor, and fills a
+  Core [Gas Tank](Gas-Tank) with whatever gas the line carries. NeroTech machines can also push
+  straight into a pipe. Both mods use one oxygen, `nerospace:oxygen`; oxygen that NeroTech stored
+  under its old id, `nerotech:oxygen`, is read as the same gas. There is still no cross-mod standard
+  for gas outside the Neroland mods, so another mod's own gas system will not connect.
 
 Face modes and [filters](Pipe-Filters-and-Upgrades) treat a foreign neighbour exactly like a Nerospace
 one: set a face to **Off** with the [Configurator](Configurator) and another mod's pipe sees a shut face

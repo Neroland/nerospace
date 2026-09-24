@@ -29,7 +29,7 @@ public class UniversalPipeRenderState extends BlockEntityRenderState {
     public final boolean[][] streams = new boolean[6][3];
     /** Stream flows toward the pipe centre (face mode IN) instead of outward. */
     public final boolean[][] inward = new boolean[6][3];
-    /** ARGB colour per stream layer (energy red, fluid blue, gas cyan). */
+    /** ARGB colour per stream layer (energy red, fluid blue, gas by the carried gas id). */
     public final int[] streamColors = new int[3];
 
     /** Travelling items: pooled render states + their offsets within the block. */

@@ -30,10 +30,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.gas.NeroGasStorage;
+import za.co.neroland.nerolandcore.gas.NeroGases;
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.FluidLookup;
-import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.platform.ItemLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 
@@ -47,7 +48,7 @@ import za.co.neroland.nerospace.registry.ModBlockEntities;
  * {@link UniversalPipeBlockEntity}) rather than via {@code neighborChanged}/{@code updateShape} — those
  * 26.x override signatures (with {@code Orientation} / {@code ScheduledTickAccess}) are version-fragile,
  * whereas a throttled tick refresh uses only stable APIs and connects within a tick. {@code canConnect}
- * uses the {@code EnergyLookup}/{@code FluidLookup}/{@code GasLookup} seams + {@code Container} adjacency
+ * uses the {@code EnergyLookup}/{@code FluidLookup} seams, {@link PipeGas#find} + {@code Container} adjacency
  * instead of the root's NeoForge {@code Capabilities}.</p>
  */
 public class UniversalPipeBlock extends BaseEntityBlock {
@@ -146,7 +147,7 @@ public class UniversalPipeBlock extends BaseEntityBlock {
         Direction opposite = dir.getOpposite();
         return EnergyLookup.INSTANCE.find(level, np, opposite) != null
                 || FluidLookup.INSTANCE.find(level, np, opposite) != null
-                || GasLookup.INSTANCE.find(level, np, opposite) != null
+                || PipeGas.find(level, np, opposite) != null
                 || ItemLookup.INSTANCE.find(level, np, opposite) != null;
     }
 
@@ -179,8 +180,10 @@ public class UniversalPipeBlock extends BaseEntityBlock {
             if (pipe.getFluidTank().getFluid() != Fluids.EMPTY) {
                 serverPlayer.sendSystemMessage(Component.literal("§bFluid: " + pipe.getFluidTank().getAmount() + " mB"));
             }
-            if (!pipe.getGas().getGas().isEmpty()) {
-                serverPlayer.sendSystemMessage(Component.literal("§aGas: " + pipe.getGas().getAmount() + " mB"));
+            NeroGasStorage gas = pipe.getCoreGas();
+            if (!NeroGases.isEmpty(gas.getGas()) && gas.getAmount() > 0) {
+                serverPlayer.sendSystemMessage(Component.literal("§aGas: " + gas.getAmount() + " mB ")
+                        .append(NeroGases.label(gas.getGas())));
             }
             int items = 0;
             for (int i = 0; i < pipe.getContainerSize(); i++) {

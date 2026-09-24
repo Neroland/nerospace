@@ -11,7 +11,7 @@ integration surface, see [Public Integration API](Public-API).)
 | Energy (FE) | **yes** | Through [Neroland Core](Neroland-Core)'s shared power network. |
 | Fluid | **yes** | Nerospace offers and reads the platform's standard fluid handler on NeoForge, Forge and Fabric. |
 | Items | **yes** | The same, on the platform's standard item handler — plus vanilla containers as always. |
-| Gas | **no** | There is no cross-mod standard for gas, and Nerospace's oxygen is not a fluid. |
+| Gas | **Neroland mods only** | Through [Neroland Core](Neroland-Core)'s shared gas capability. There is no cross-mod standard for gas beyond that. |
 
 In practice a [Universal Pipe](Universal-Pipe) connects to, pulls from and pushes into another mod's
 tanks, machines and pipes — and another mod's pipes can drain or fill a Nerospace
@@ -35,11 +35,14 @@ a Nerospace one. A face set to **Off** with the [Configurator](Configurator) loo
 pipe too, and a filtered face passes only what you told it to pass — cross-mod reach never costs you
 control over what moves where.
 
-## Gas stays Nerospace-side
+## Gas stays inside the Neroland mods
 
-Oxygen and the pipe's green layer move between Nerospace (and Neroland) blocks only. Pipe oxygen from an
-[Oxygen Generator](Oxygen-Generator) to a [Gas Tank](Gas-Tank) as you always have; do not expect another
-mod's gas system to read it, or Nerospace to read theirs.
+The pipe's gas layer moves gas between Nerospace, [Neroland Core](Neroland-Core) and the other Neroland
+mods, such as NeroTech, through Core's shared gas capability. It carries any of their gases: oxygen from
+an [Oxygen Generator](Oxygen-Generator) or an Electrolyzer, hydrogen from an Electrolyzer, into a
+[Gas Tank](Gas-Tank) or a Chemical Processor. Oxygen is one gas, `nerospace:oxygen`, in every Neroland
+mod. There is no gas standard beyond the Neroland mods, so do not expect another mod's gas system to read
+it, or Nerospace to read theirs.
 
 ## Recipes
 

@@ -14,12 +14,14 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluid;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
 import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.registry.ModItems;
 
 /**
  * JEI category for the Fuel Refinery's single in-code process: carbon (coal/charcoal) + blaze powder +
@@ -52,9 +54,18 @@ public class RefiningCategory extends AbstractRecipeCategory<RefiningCategory.Re
         int mb = FuelRefineryBlockEntity.MB_PER_BATCH;
         builder.addInputSlot(1, 1).setStandardSlotBackground().addItemStacks(recipe.carbon());
         builder.addInputSlot(1, 21).setStandardSlotBackground().addItemStacks(recipe.catalyst());
-        builder.addOutputSlot(66, 11).setStandardSlotBackground()
-                .setFluidRenderer(Math.max(1, mb), false, 16, 16)
-                .add(ModFluids.ROCKET_FUEL.get(), mb);
+        Fluid fuel = ModFluids.ROCKET_FUEL.get();
+        if (fuel.builtInRegistryHolder().areComponentsBound()) {
+            builder.addOutputSlot(66, 11).setStandardSlotBackground()
+                    .setFluidRenderer(Math.max(1, mb), false, 16, 16)
+                    .add(fuel, mb);
+        } else {
+            // NeoForge builds a FluidStack from the fluid's registry holder, and JEI can start (on the
+            // recipes packet) before that holder's data components are bound — creating the stack then
+            // throws "Components not bound yet" and drops the whole category. Show the bucket instead.
+            builder.addOutputSlot(66, 11).setStandardSlotBackground()
+                    .add(new ItemStack(ModItems.ROCKET_FUEL_BUCKET.get()));
+        }
     }
 
     @Override

@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-09-24
+
+Gas interop with NeroTech through the Universal Pipe, plus three crash-report fixes. Pair it with
+NeroTech 0.2.1-beta.1 so both mods use the same oxygen.
+
+### Fixed
+
+- **Universal Pipe gas layer now works with NeroTech and every Neroland Core gas** (Neroland/nerotech#9).
+  The gas buffer is Neroland Core's id-keyed store instead of Nerospace's oxygen-only enum, so a line
+  can carry hydrogen and any other Neroland gas. The pipe now finds a neighbour's gas storage through
+  Core's shared `nerolandcore:gas` capability first, then through Nerospace's own `nerospace:gas`.
+  NeroTech's Electrolyzer, Chemical Processor and Gas Turbine now connect and exchange gas, and a Core
+  Gas Tank holding a gas other than oxygen no longer looks empty to the pipe. Per-face side-config gating
+  on Nerospace machines is unchanged, because those machines are only registered on `nerospace:gas`.
+- The pipe is now also exposed on `nerolandcore:gas` on NeoForge, Forge and Fabric, so NeroTech machines
+  can push into it and pull from it directly. The existing `nerospace:gas` exposure is kept.
+- One oxygen across the ecosystem: `nerotech:oxygen` (NeroTech's old id) is read as `nerospace:oxygen`
+  by the pipe and by Nerospace's oxygen consumers, so oxygen that NeroTech stored in a Core Gas Tank
+  feeds airlocks and the Launch Controller. A tank that still holds the old id keeps accepting oxygen.
+- Gas stream colour follows the carried gas: cyan for oxygen, pale blue for hydrogen, grey for
+  anything else. The empty-hand pipe readout names the gas.
+- Existing pipes keep their gas: the old `Gas` save value (`"oxygen"`/`"empty"`) is migrated to the
+  full id on load.
+- **Gravity no longer loads chunks from the server tick.** The terraformed-ground check read the chunk
+  with a blocking load. For an entity on a chunk edge that nested load ran other chunk work mid-tick and,
+  with C2ME, crashed the entity-section manager (`ConcurrentModificationException`). Gravity now reads
+  only already-loaded chunks and skips entities whose chunk is not ready yet.
+- **JEI Fuel Refinery page no longer fails on NeoForge.** When JEI starts before the rocket fuel's
+  registry data is ready, the output slot shows the Rocket Fuel Bucket instead of throwing
+  "Components not bound yet" and dropping the whole category.
+- **Crash reporting ignores errors Nerospace did not cause:** exceptions thrown inside another mod's own
+  code (for example a recipe viewer building a Nerospace mob while its own config is not loaded), and
+  vanilla's "Invalid block entity" message for saved data whose block was replaced. Nothing else changes
+  about what is sent.
+
 ## [1.1.0] - 2026-09-20
 
 Minecraft **26.3** support, plus one advancement fix.

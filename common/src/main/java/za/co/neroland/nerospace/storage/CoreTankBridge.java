@@ -18,17 +18,30 @@ import za.co.neroland.nerospace.gas.NerospaceGasStorage;
  * <p>The Battery, Fluid Tank, Gas Tank and Item Store blocks now live in Core and
  * expose Core's {@code nerolandcore:*} capabilities. Energy and items already
  * cross over for free — Nerospace's energy lookup delegates to Core's, and the
- * Item Store is a vanilla {@code Container}. Fluid and gas, however, are still
- * queried by Nerospace's Universal Pipe on the mod's own {@code nerospace:fluid}/
- * {@code nerospace:gas} lookups, so each loader re-exposes Core's tank
- * block-entities on those lookups through these thin adapters (registered in the
- * loader capability wiring). Gas maps Core's {@link Identifier}-keyed gases to
- * Nerospace's {@link GasResource} (only oxygen exists today).
+ * Item Store is a vanilla {@code Container}. Fluid, and gas for Nerospace's own
+ * {@link GasResource}-typed consumers (Oxygen airlocks, the Launch Controller),
+ * are still queried on the mod's own {@code nerospace:fluid}/{@code nerospace:gas}
+ * lookups, so each loader re-exposes Core's tank block-entities on those lookups
+ * through these thin adapters (registered in the loader capability wiring). Gas
+ * maps Core's {@link Identifier}-keyed gases to Nerospace's {@link GasResource}
+ * (only oxygen exists today). The Universal Pipe's gas layer is Identifier-keyed
+ * and asks Core's {@code nerolandcore:gas} first (see
+ * {@link za.co.neroland.nerospace.pipe.PipeGas}), so it is not limited by this
+ * mapping.
+ *
+ * <p>One oxygen across the ecosystem: {@code nerospace:oxygen} is THE oxygen id. NeroTech wrote
+ * {@code nerotech:oxygen} before it adopted Nerospace's id, so {@link #canonical} folds that legacy
+ * alias onto {@link #OXYGEN_ID}. Every place that interprets a gas id goes through it — the
+ * {@link GasResource} mapping below and the Universal Pipe's Identifier-keyed gas layer — so there is
+ * exactly one list of aliases.</p>
  */
 public final class CoreTankBridge {
 
     /** Core gas id for Nerospace oxygen — matches the {@code gas.nerospace.oxygen} translation key. */
     public static final Identifier OXYGEN_ID = Identifier.fromNamespaceAndPath("nerospace", "oxygen");
+
+    /** NeroTech's pre-unification oxygen id; read as {@link #OXYGEN_ID} everywhere. */
+    public static final Identifier LEGACY_NEROTECH_OXYGEN_ID = Identifier.fromNamespaceAndPath("nerotech", "oxygen");
 
     private CoreTankBridge() {
     }
@@ -83,7 +96,7 @@ public final class CoreTankBridge {
 
             @Override
             public long fill(GasResource gas, long amount, boolean simulate) {
-                return core.fill(toId(gas), amount, simulate);
+                return fillCanonical(core, toId(gas), amount, simulate);
             }
 
             @Override
@@ -163,11 +176,32 @@ public final class CoreTankBridge {
         };
     }
 
-    private static GasResource fromId(Identifier id) {
-        return OXYGEN_ID.equals(id) ? GasResource.OXYGEN : GasResource.EMPTY;
+    /**
+     * The canonical id for {@code gas}: legacy aliases (today only {@code nerotech:oxygen}) fold onto the
+     * id Nerospace uses; anything else — including {@code null}/empty — is returned unchanged.
+     */
+    public static Identifier canonical(Identifier gas) {
+        return LEGACY_NEROTECH_OXYGEN_ID.equals(gas) ? OXYGEN_ID : gas;
     }
 
-    private static Identifier toId(GasResource gas) {
+    /**
+     * Fill {@code target} with {@code gas}, tolerating an alias: if the target already holds a gas whose
+     * {@link #canonical} id matches, fill with the target's OWN spelling so a tank still holding legacy
+     * {@code nerotech:oxygen} keeps accepting oxygen instead of refusing it as a different gas.
+     */
+    public static long fillCanonical(NeroGasStorage target, Identifier gas, long amount, boolean simulate) {
+        Identifier held = target.getGas();
+        Identifier use = !NeroGases.isEmpty(held) && !NeroGases.isEmpty(gas)
+                && canonical(held).equals(canonical(gas)) ? held : gas;
+        return target.fill(use, amount, simulate);
+    }
+
+    private static GasResource fromId(Identifier id) {
+        return OXYGEN_ID.equals(canonical(id)) ? GasResource.OXYGEN : GasResource.EMPTY;
+    }
+
+    /** The Core gas id for a Nerospace {@link GasResource} ({@link NeroGases#EMPTY} for EMPTY). */
+    public static Identifier toId(GasResource gas) {
         return gas == GasResource.OXYGEN ? OXYGEN_ID : NeroGases.EMPTY;
     }
 }

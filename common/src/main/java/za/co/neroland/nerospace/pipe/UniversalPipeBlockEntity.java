@@ -36,12 +36,13 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.gas.GasBuffer;
+import za.co.neroland.nerolandcore.gas.NeroGasStorage;
+
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
-import za.co.neroland.nerospace.gas.GasResource;
-import za.co.neroland.nerospace.gas.GasTank;
 import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.item.PipeUpgradeItem;
 import za.co.neroland.nerospace.menu.PipeConfigMenu;
@@ -49,6 +50,7 @@ import za.co.neroland.nerospace.platform.EnergyLookup;
 import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.registry.ModItems;
+import za.co.neroland.nerospace.storage.CoreTankBridge;
 
 /**
  * Universal Pipe — relays energy, gas AND items between adjacent storages. Energy/gas use the
@@ -66,6 +68,13 @@ import za.co.neroland.nerospace.registry.ModItems;
  * maps onto Core's {@link za.co.neroland.nerolandcore.sideconfig.SideMode} semantics
  * (AUTO≈IO, IN≈INPUT, OUT≈OUTPUT, OFF≈DISABLED) but stays the pipe's own vocabulary — Core's
  * SideConfig model is not duplicated here; the machine side decides what each machine face exposes.
+ *
+ * <p>Gas layer: the buffer is Neroland Core's {@link Identifier}-keyed {@link GasBuffer}, so the pipe
+ * carries any Nero gas (Nerospace oxygen, NeroTech hydrogen, ...), not just Nerospace's
+ * {@code GasResource} enum. It is exposed on Core's shared {@code nerolandcore:gas} capability via
+ * {@link #getCoreGas} (so NeroTech machines push into / pull from it) and, for back-compat, on
+ * {@code nerospace:gas} via {@link #getGas} (an oxygen-only {@link CoreTankBridge} view). Neighbours are
+ * resolved with {@link PipeGas#find}.</p>
  */
 public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
 
@@ -83,7 +92,34 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     public static final int MAX_UPGRADES = 3;
 
     private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, MAX_IO, MAX_IO, this::setChanged);
-    private final GasTank gas = new GasTank(GAS_CAPACITY, this::setChanged);
+    private final GasBuffer gas = new GasBuffer(GAS_CAPACITY, this::setChanged);
+    /** The buffer as published on Core's gas capability: fills fold legacy gas aliases to one id. */
+    private final NeroGasStorage coreGasView = new NeroGasStorage() {
+        @Override
+        public Identifier getGas() {
+            return gas.getGas();
+        }
+
+        @Override
+        public long getAmount() {
+            return gas.getAmount();
+        }
+
+        @Override
+        public long getCapacity() {
+            return gas.getCapacity();
+        }
+
+        @Override
+        public long fill(Identifier toFill, long amount, boolean simulate) {
+            return gas.fill(CoreTankBridge.canonical(toFill), amount, simulate);
+        }
+
+        @Override
+        public long drain(long amount, boolean simulate) {
+            return gas.drain(amount, simulate);
+        }
+    };
     private final FluidTank fluid = new FluidTank(FLUID_CAPACITY, this::setChanged);
     private final NonNullList<ItemStack> items = NonNullList.withSize(ITEM_SLOTS, ItemStack.EMPTY);
 
@@ -151,8 +187,14 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         return this.energy;
     }
 
+    /** The gas buffer on Nerospace's own {@code nerospace:gas} surface (oxygen-only view; back-compat). */
     public NerospaceGasStorage getGas() {
-        return this.gas;
+        return CoreTankBridge.gas(this.coreGasView);
+    }
+
+    /** The gas buffer on Neroland Core's shared {@code nerolandcore:gas} surface (any gas id). */
+    public NeroGasStorage getCoreGas() {
+        return this.coreGasView;
     }
 
     public NerospaceFluidStorage getFluidTank() {
@@ -168,7 +210,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         return this.fluid;
     }
 
-    GasTank gas() {
+    GasBuffer gas() {
         return this.gas;
     }
 
@@ -447,7 +489,7 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.putInt("Energy", this.energy.getRaw());
-        output.putString("Gas", this.gas.getRawGas().getSerializedName());
+        output.putString("Gas", this.gas.getRawGas().toString());
         output.putInt("GasAmount", this.gas.getRawAmount());
         output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.fluid.getRawFluid()).toString());
         output.putInt("FluidAmount", this.fluid.getRawAmount());
@@ -486,7 +528,8 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
         this.capacityUpgrades = input.getIntOr("CapacityUpgrades", 0);
         syncTankCapacities();
         this.energy.setRaw(input.getIntOr("Energy", 0));
-        this.gas.setRaw(GasResource.byName(input.getStringOr("Gas", "empty")), input.getIntOr("GasAmount", 0));
+        // "Gas" is a full gas id; pre-Identifier saves wrote a GasResource name ("oxygen"/"empty").
+        this.gas.setRaw(PipeGas.readSaved(input.getStringOr("Gas", "empty")), input.getIntOr("GasAmount", 0));
         Fluid storedFluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
         this.fluid.setRaw(storedFluid, input.getIntOr("FluidAmount", 0));
         for (int i = 0; i < ITEM_SLOTS; i++) {

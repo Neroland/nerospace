@@ -246,7 +246,26 @@ public final class NeoForgeCapabilities {
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
 
         registerCoreEnergy(event);
+        registerCoreGas(event);
         registerStandardFluid(event);
+    }
+
+    /**
+     * Cross-mod gas (Neroland Core): expose the Universal Pipe's gas buffer on Core's shared
+     * {@code nerolandcore:gas} capability too, so a Nero machine that pushes/pulls through Core's gas
+     * lookup (NeroTech's Electrolyzer, Chemical Processor, Gas Turbine) reaches the pipe directly and any
+     * gas id — not just oxygen — can enter it. Ungated per face, exactly like the pipe's
+     * {@link #GAS} registration above. The pipe's {@code nerospace:gas} registration stays for
+     * Nerospace's own {@code GasResource} consumers.
+     *
+     * <p>Nerospace's side-configured machines are deliberately NOT registered here: the pipe's
+     * neighbour lookup ({@code PipeGas.find}) asks Core's capability first and falls back to
+     * {@link #GAS}, where their gated view lives. Registering one here would need its gated
+     * {@code sideConfig().gasView(side)}, or the gate could be walked around.</p>
+     */
+    private static void registerCoreGas(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(za.co.neroland.nerolandcore.platform.NeoForgeGasLookup.GAS,
+                ModBlockEntities.UNIVERSAL_PIPE.get(), (be, side) -> be.getCoreGas());
     }
 
     /**

@@ -313,6 +313,24 @@ public final class NerospaceFabric implements ModInitializer {
                 ModBlocks.ROCKET_LAUNCH_PAD.get());
 
         registerCoreEnergy();
+        registerCoreGas();
+    }
+
+    /**
+     * Cross-mod gas (Neroland Core): expose the Universal Pipe's gas buffer on Core's shared
+     * {@code nerolandcore:gas} lookup too, so a Nero machine that pushes/pulls through Core's gas lookup
+     * (NeroTech's Electrolyzer, Chemical Processor, Gas Turbine) reaches the pipe directly and any gas id
+     * — not just oxygen — can enter it. Ungated per face, exactly like the pipe's {@link #GAS}
+     * registration above, which stays for Nerospace's own {@code GasResource} consumers.
+     *
+     * <p>Nerospace's side-configured machines are deliberately NOT registered here: the pipe's neighbour
+     * lookup ({@code PipeGas.find}) asks Core's lookup first and falls back to {@link #GAS}, where their
+     * gated view lives. Registering one here would need its gated {@code sideConfig().gasView(side)}, or
+     * the gate could be walked around.</p>
+     */
+    private static void registerCoreGas() {
+        za.co.neroland.nerolandcore.platform.FabricGasLookup.GAS.registerForBlockEntity(
+                (be, dir) -> be.getCoreGas(), ModBlockEntities.UNIVERSAL_PIPE.get());
     }
 
     /**

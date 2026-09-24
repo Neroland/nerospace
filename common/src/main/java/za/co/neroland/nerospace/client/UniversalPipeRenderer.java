@@ -22,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.client.player.LocalPlayer;
 
 import za.co.neroland.nerospace.item.ConfiguratorItem;
+import za.co.neroland.nerospace.pipe.PipeGas;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
 import za.co.neroland.nerospace.pipe.TravellingItem;
@@ -31,8 +32,8 @@ import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
 /**
  * Renders the dynamic contents of a Universal Pipe: the item stacks physically travelling through the
  * segment, and colour-coded stream packets pulsing along each active arm (red = energy, blue = fluid,
- * cyan = gas). The translucent tube itself is the (static, batched) multipart block model; this
- * renderer only draws what is MOVING, so idle pipes cost nothing beyond the connection checks.
+ * gas by its id: cyan oxygen, pale-blue hydrogen, grey otherwise — see {@link PipeGas#streamColor}).
+ * The translucent tube itself is the (static, batched) multipart block model; this renderer only draws what is MOVING, so idle pipes cost nothing beyond the connection checks.
  *
  * <p>Cross-loader port: the standalone mod's pipe renderer, on the vanilla BER submission API + the
  * item-model resolver + the {@link ClientBlockEntityRenderers} seam (all proven cross-version by the
@@ -89,10 +90,10 @@ public class UniversalPipeRenderer
         // Stream layers from the buffered contents + face modes + connection blockstate.
         boolean hasEnergy = pipe.getEnergy().getAmount() > 0;
         boolean hasFluid = pipe.getFluidTank().getAmount() > 0;
-        boolean hasGas = pipe.getGas().getAmount() > 0;
+        boolean hasGas = pipe.getCoreGas().getAmount() > 0;
         state.streamColors[0] = PipeResourceType.ENERGY.color();
         state.streamColors[1] = PipeResourceType.FLUID.color();
-        state.streamColors[2] = PipeResourceType.GAS.color();
+        state.streamColors[2] = PipeGas.streamColor(pipe.getCoreGas().getGas());
 
         PipeResourceType[] layerTypes = {PipeResourceType.ENERGY, PipeResourceType.FLUID, PipeResourceType.GAS};
         boolean[] layerHas = {hasEnergy, hasFluid, hasGas};
