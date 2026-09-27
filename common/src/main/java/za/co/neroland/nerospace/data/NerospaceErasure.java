@@ -19,6 +19,7 @@ import za.co.neroland.nerospace.link.NerospaceLinkEvents;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.progression.PlanetVisitState;
 import za.co.neroland.nerospace.rocket.StationRegistry;
+import za.co.neroland.nerospace.route.RouteRegistry;
 import za.co.neroland.nerospace.world.OxygenManager;
 import za.co.neroland.nerospace.world.SavedDataRecovery;
 
@@ -27,7 +28,7 @@ import za.co.neroland.nerospace.world.SavedDataRecovery;
  * one {@code /neroland data eraseme} (or Core's retention sweep) purges Nerospace together with every
  * other Nero mod. Keyed only by UUID; player identity is never logged.
  *
- * <h2>The five stores</h2>
+ * <h2>The six stores</h2>
  * <ol>
  *   <li><b>Station ownership</b> ({@link StationRegistry}) — the owner UUID is anonymised to {@code ""},
  *       keeping the physical station as shared world content. The last-known-good backup file is rewritten
@@ -39,6 +40,10 @@ import za.co.neroland.nerospace.world.SavedDataRecovery;
  *       its own entity NBT. This is a genuine player-data store and it is swept below.</li>
  *   <li><b>The oxygen attachment</b> — reset to a full tank.</li>
  *   <li><b>The Star Guide "seen" attachment</b> — reset to empty.</li>
+ *   <li><b>Cargo routes</b> ({@link RouteRegistry}) — the player's routes are removed, their Cargo Pads
+ *       anonymised (the station rule), they are dropped from every pad access list, and their flights are
+ *       anonymised but keep flying: cargo is delivered or crated, never deleted, because items are not
+ *       personal data — the ownership record is. Backup rewritten immediately.</li>
  * </ol>
  *
  * <p>The two API-facing stores added alongside the visit history — external oxygen contributions and
@@ -121,6 +126,12 @@ public final class NerospaceErasure {
         if (player != null) {
             resetAttachments(player);
         }
+
+        // 6. Cargo routes — routes removed, pads anonymised, access lists purged, flights anonymised (cargo
+        // keeps flying). Straight into Core's backup file as well, like the other two SavedData stores.
+        RouteRegistry routes = RouteRegistry.get(server);
+        routes.forgetPlayer(uuid);
+        RouteRegistry.backupNow(server, routes);
 
         // The link module's in-memory event bookkeeping (never persisted).
         NerospaceLinkEvents.forgetPlayer(uuid);

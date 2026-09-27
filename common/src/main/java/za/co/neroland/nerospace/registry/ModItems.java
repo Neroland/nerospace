@@ -92,6 +92,7 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> SOLAR_PANEL_T2_ITEM = blockItem("solar_panel_t2", ModBlocks.SOLAR_PANEL_T2);
     public static final RegistryEntry<BlockItem> SOLAR_PANEL_T3_ITEM = blockItem("solar_panel_t3", ModBlocks.SOLAR_PANEL_T3);
     public static final RegistryEntry<BlockItem> ROCKET_LAUNCH_PAD_ITEM = blockItem("rocket_launch_pad", ModBlocks.ROCKET_LAUNCH_PAD);
+    public static final RegistryEntry<BlockItem> CARGO_PAD_ITEM = blockItem("cargo_pad", ModBlocks.CARGO_PAD);
     public static final RegistryEntry<BlockItem> LAUNCH_GANTRY_ITEM = blockItem("launch_gantry", ModBlocks.LAUNCH_GANTRY);
     public static final RegistryEntry<BlockItem> LAUNCH_CONTROLLER_ITEM = blockItem("launch_controller", ModBlocks.LAUNCH_CONTROLLER);
     public static final RegistryEntry<BlockItem> LANDING_POD_ITEM = blockItem("landing_pod", ModBlocks.LANDING_POD);
@@ -168,6 +169,16 @@ public final class ModItems {
             key -> new RocketItem(new Item.Properties().stacksTo(1).setId(key), RocketTier.TIER_3));
     public static final RegistryEntry<RocketItem> ROCKET_TIER_4 = ITEMS.register("rocket_tier_4",
             key -> new RocketItem(new Item.Properties().stacksTo(1).setId(key), RocketTier.TIER_4));
+
+    // --- Cargo rockets (docs/CARGO-ROCKETS.md) --------------------------------
+    /** Crafting intermediate: the pressurised hold a cargo rocket is built around. */
+    public static final RegistryEntry<Item> CARGO_HULL = item("cargo_hull");
+    /** Deploys an uncrewed cargo rocket onto a Cargo Pad. */
+    public static final RegistryEntry<Item> CARGO_ROCKET = ITEMS.register("cargo_rocket",
+            key -> new za.co.neroland.nerospace.route.CargoRocketItem(new Item.Properties().stacksTo(1).setId(key)));
+    /** Not craftable: an undeliverable flight's cargo, never deleted. Right-click to unpack. */
+    public static final RegistryEntry<Item> CARGO_CRATE = ITEMS.register("cargo_crate",
+            key -> new za.co.neroland.nerospace.route.CargoCrateItem(new Item.Properties().stacksTo(1).setId(key)));
 
     // --- Creative travel devices --------------------------------------------
     public static final RegistryEntry<Item> STATION_COMPASS = ITEMS.register("station_compass",
@@ -301,11 +312,12 @@ public final class ModItems {
                         RAW_NEROSTEEL.get(), NEROSTEEL_INGOT.get(),
                         XERTZ_QUARTZ.get(), CINDRITE.get(), GLACITE.get(),
                         NEROSIUM_DUST.get(), ALIEN_FRAGMENT.get(), ALIEN_TECH_SCRAP.get(), ALIEN_CORE.get(),
-                        ROCKET_FUEL_CANISTER.get(), FRAME_CASING.get(), GRAV_STRIDERS.get(), DRIFT_FLEECE.get(),
+                        ROCKET_FUEL_CANISTER.get(), CARGO_HULL.get(), FRAME_CASING.get(), GRAV_STRIDERS.get(), DRIFT_FLEECE.get(),
                         LOPER_HAUNCH.get(), STRUTTER_DRUMSTICK.get()),
                 CreativeModeTabs.TOOLS_AND_UTILITIES,
                 List.<ItemLike>of(NEROSIUM_PICKAXE.get(), ROCKET_FUEL_BUCKET.get(), XERTZ_RESONATOR.get(),
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
+                        CARGO_ROCKET.get(),
                         STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(), CINDARA_COMPASS.get(),
                         GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get(),
                         CONFIGURATOR.get(), PIPE_FILTER.get(), ADVANCED_PIPE_FILTER.get(),
@@ -323,7 +335,7 @@ public final class ModItems {
                         OXYGEN_SUIT_HEAT_HELMET.get(), OXYGEN_SUIT_HEAT_CHESTPLATE.get(), OXYGEN_SUIT_HEAT_LEGGINGS.get(), OXYGEN_SUIT_HEAT_BOOTS.get(),
                         OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get()),
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
-                List.<ItemLike>of(COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), SOLAR_PANEL_T2_ITEM.get(), SOLAR_PANEL_T3_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), LAUNCH_CONTROLLER_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(), HYDRATION_MODULE_ITEM.get(), TERRAFORM_MONITOR_ITEM.get(),
+                List.<ItemLike>of(COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), SOLAR_PANEL_T2_ITEM.get(), SOLAR_PANEL_T3_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), CARGO_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), LAUNCH_CONTROLLER_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(), HYDRATION_MODULE_ITEM.get(), TERRAFORM_MONITOR_ITEM.get(),
                         LANDING_POD_ITEM.get(), DOCKING_PORT_ITEM.get(),
                         SPEED_MODULE.get(), EFFICIENCY_MODULE.get(), FORTUNE_MODULE.get(), SILK_TOUCH_MODULE.get(), EVAPORATOR_MODULE.get(),
                         STAR_GUIDE_ITEM.get()));

@@ -129,6 +129,7 @@ public final class NeoForgeClientSetup {
         event.register(ModMenuTypes.STAR_GUIDE.get(), StarGuideScreen::new);
         event.register(ModMenuTypes.LAUNCH_CONTROLLER.get(), za.co.neroland.nerospace.client.LaunchControllerScreen::new);
         event.register(ModMenuTypes.STATION_CHARTER.get(), za.co.neroland.nerospace.client.StationCharterScreen::new);
+        event.register(ModMenuTypes.CARGO_PAD.get(), za.co.neroland.nerospace.client.CargoPadScreen::new);
     }
 
     /** Rocket fuel renders as itself (amber still/flow) instead of the default missing art. */

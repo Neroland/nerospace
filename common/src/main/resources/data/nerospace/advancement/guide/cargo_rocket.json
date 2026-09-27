@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/cargo_pad",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:cargo_rocket"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Build an uncrewed Cargo Rocket",
+    "icon": {
+      "id": "nerospace:cargo_rocket"
+    },
+    "title": "Nobody Aboard"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

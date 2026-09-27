@@ -38,8 +38,9 @@ public class RocketItem extends Item {
             return deployOnReturnSite(context);
         }
 
-        if (!(state.getBlock() instanceof RocketLaunchPadBlock)) {
-            return InteractionResult.PASS;
+        if (!(state.getBlock() instanceof RocketLaunchPadBlock)
+                || state.getBlock() instanceof za.co.neroland.nerospace.route.CargoPadBlock) {
+            return InteractionResult.PASS; // a Cargo Pad only takes the Cargo Rocket
         }
 
         if (!level.isClientSide()) {

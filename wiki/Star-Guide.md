@@ -9,7 +9,7 @@ The in-game progression guide — a pedestal, a book, and a live quest tree.
 ## Overview
 
 The Star Guide is Nerospace's built-in tutorial and progression tracker: an interactive tree of
-**8 chapters and 35 steps**, from your first nerosium ore to a fully matured terraformed world.
+**10 chapters and 45 steps**, from your first nerosium ore to an automated interplanetary supply line.
 Completion is tracked per player through the mod's **advancement tree**, so the guide is always
 live — finish something anywhere and the tree lights up.
 
@@ -37,7 +37,8 @@ S S S
 
 - **The tree:** chapters cover **Nerosium → Machines → Power Grid → Rocketry → New Worlds →
 
-  [Mining](Quarry-Controller) → Surviving Vacuum → Terraforming**. Completed steps pulse; each step
+  [Mining](Quarry-Controller) → Surviving Vacuum → Terraforming → Meteor Events →
+  [Freight](Cargo-Pad)**. Completed steps pulse; each step
   carries guide text telling you exactly what to do next.
 
 - **Mining chapter:** the quarry automation track — [Quarry Landmark](Quarry-Landmark) →

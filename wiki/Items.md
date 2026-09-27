@@ -79,6 +79,18 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
   Mods that enlarge the main player inventory (such as *Inventory Extended* on Fabric) are
   supported automatically — the console grows to show the extra rows.
 
+- **[Cargo Hull](Cargo-Rocket)** — a chest in a ring of iron and nerosteel; the intermediate for the
+
+  Cargo Rocket and the [Cargo Pad](Cargo-Pad).
+
+- **[Cargo Rocket](Cargo-Rocket)** — an uncrewed rocket (Tier 2 Rocket + Cargo Hull + canister, in
+
+  nerosteel) that deploys only onto a **Cargo Pad** and carries its hold to another pad or station.
+
+- **Cargo Crate** — not craftable: the manifest of a cargo flight that could not be delivered in time,
+
+  dropped at the destination so nothing is lost. Right-click to unpack.
+
 - **[Station Charter](Station-Charter)** — 8 [Station Wall](Station-Wall) around a
 
   [Station Floor](Station-Floor); rename in an anvil, carry it aboard, and pick the rocket UI's

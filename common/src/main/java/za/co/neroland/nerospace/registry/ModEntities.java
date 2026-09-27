@@ -86,6 +86,13 @@ public final class ModEntities {
             key -> EntityType.Builder.<RocketEntity>of(RocketEntity::new, MobCategory.MISC)
                     .sized(1.0F, 3.0F).clientTrackingRange(10).build(key));
 
+    /** The uncrewed cargo rocket (a RocketEntity subclass; rendered with the tier-2 hull). */
+    public static final RegistryEntry<EntityType<za.co.neroland.nerospace.route.CargoRocketEntity>> CARGO_ROCKET =
+            ENTITY_TYPES.register("cargo_rocket",
+                    key -> EntityType.Builder.<za.co.neroland.nerospace.route.CargoRocketEntity>of(
+                            za.co.neroland.nerospace.route.CargoRocketEntity::new, MobCategory.MISC)
+                            .sized(1.0F, 3.0F).clientTrackingRange(10).build(key));
+
     public static final RegistryEntry<EntityType<FallingMeteorEntity>> FALLING_METEOR = ENTITY_TYPES.register(
             "falling_meteor",
             key -> EntityType.Builder.<FallingMeteorEntity>of(FallingMeteorEntity::new, MobCategory.MISC)

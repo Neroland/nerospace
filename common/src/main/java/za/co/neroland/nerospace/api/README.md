@@ -94,6 +94,27 @@ boolean open2 = NerospaceRoutes.isOpen(server, fromKey, toKey);   // also false 
 
 No player data crosses this surface — endpoints, costs and durations only.
 
+## Cargo pads, routes and flights — `route.RouteApi` (1.3.0)
+
+The pad-level route API behind Cargo Pads, in the sub-package `za.co.neroland.nerospace.api.route`
+(same stability contract; interfaces only). Endpoints are pads and founded stations, never bare
+dimensions. See that package's `package-info.java`, `docs/CARGO-ROCKETS.md` §4/§7 and
+`docs/NEROLOGISTICS-HANDOVER.md`.
+
+```java
+RouteApi api = RouteApi.instance();
+List<PadHandle> pads = api.padsVisibleTo(server, playerUuid);          // the player's, shared-with-them, public, their stations
+RouteQuote quote = api.quote(server, originId, destId, manifest, false).orElseThrow();
+FlightRequestResult r = api.requestFlight(server, playerUuid, new FlightRequest(originId, destId, manifest, false));
+RouteEvents.subscribe(new RouteEvents.Listener() {
+    @Override public void onFlightArrived(FlightHandle flight) { /* ... */ }
+});
+```
+
+Privacy: pads, routes and flights carry an owner that this surface never exposes — only `ownedBy(UUID)`
+booleans, and `padsVisibleTo` is scoped to the asking player (never a server-wide roster). Erasure through
+Core's `PlayerDataErasure` removes the player's routes, anonymises pads/flights and purges access lists.
+
 ## Design notes
 
 - Thin facade: no duplicated state; wraps the single internal `StationRegistry` and the gravity/oxygen

@@ -537,6 +537,97 @@ def gen_rocket_fuel_canister():
     save(img, os.path.join(ITEM_DIR, "rocket_fuel_canister.png"))
 
 
+# ---------------- Cargo rockets (docs/CARGO-ROCKETS.md) ----------------
+
+def gen_cargo_pad():
+    """The Cargo Pad plate: the launch-pad steel + hazard border, with a Greenxertz-green landing ring
+    and a crate glyph in the centre so it reads as freight at a glance."""
+    rng = random.Random(0xCA5607)
+    img = new_img()
+    noise_fill(img, METAL, rng)
+    px = img.load()
+    for x in range(S):
+        c = HAZ_Y if (x // 2) % 2 == 0 else HAZ_K
+        px[x, 0] = c
+        px[x, 1] = HAZ_K if c == HAZ_Y else HAZ_Y
+        px[x, S - 1] = c
+        px[x, S - 2] = HAZ_K if c == HAZ_Y else HAZ_Y
+    cx = cy = 8
+    for y in range(S):
+        for x in range(S):
+            d = ((x - cx + 0.5) ** 2 + (y - cy + 0.5) ** 2) ** 0.5
+            if 3.6 <= d <= 4.6:
+                px[x, y] = G_GREEN
+            elif d < 3.6:
+                px[x, y] = (22, 30, 26, 255)
+    # crate glyph (5x5 box with an X)
+    for i in range(6, 11):
+        px[i, 6] = G_GREEN_L
+        px[i, 10] = G_GREEN_L
+        px[6, i] = G_GREEN_L
+        px[10, i] = G_GREEN_L
+    for i in range(7, 10):
+        px[i, i] = G_GLOW
+        px[16 - i, i] = G_GLOW
+    save(img, os.path.join(BLOCK_DIR, "cargo_pad.png"))
+
+
+def gen_cargo_hull():
+    """Cargo Hull item: a riveted nerosteel drum with a green pressure band."""
+    img = new_img()
+    px = img.load()
+    for y in range(3, 14):
+        for x in range(4, 12):
+            px[x, y] = G_STEEL
+    for y in range(3, 14):
+        px[4, y] = G_STEEL_L
+        px[11, y] = G_STEEL_D
+    for x in range(4, 12):
+        px[x, 3] = G_STEEL_L
+        px[x, 13] = G_STEEL_D
+    for x in range(4, 12):
+        px[x, 8] = G_GREEN
+    px[6, 8] = G_GREEN_L; px[9, 8] = G_GREEN_L
+    for (x, y) in ((5, 5), (10, 5), (5, 11), (10, 11)):
+        px[x, y] = METAL_L
+    save(img, os.path.join(ITEM_DIR, "cargo_hull.png"))
+
+
+def gen_cargo_rocket():
+    """Cargo Rocket item: the tier-2 silhouette with a green stripe and no window (nobody aboard)."""
+    img = new_img()
+    px = img.load()
+    _draw_rocket(px, G_STEEL_L, G_GREEN, G_GREEN_L, True, None)
+    # blank out the window band into hull plating
+    for y in range(6, 9):
+        for x in range(6, 10):
+            if px[x, y][3] and px[x, y] != G_GREEN_L:
+                px[x, y] = G_STEEL
+    save(img, os.path.join(ITEM_DIR, "cargo_rocket.png"))
+
+
+def gen_cargo_crate():
+    """Cargo Crate item: a strapped steel crate — the never-lost fallback for an undeliverable flight."""
+    img = new_img()
+    px = img.load()
+    for y in range(4, 14):
+        for x in range(2, 14):
+            px[x, y] = (84, 92, 104, 255) if (x + y) % 3 else (98, 106, 118, 255)
+    for x in range(2, 14):
+        px[x, 4] = METAL_L
+        px[x, 13] = METAL_D
+    for y in range(4, 14):
+        px[2, y] = METAL_L
+        px[13, y] = METAL_D
+    for y in range(4, 14):
+        px[5, y] = HAZ_Y
+        px[10, y] = HAZ_Y
+    for x in range(6, 10):
+        px[x, 8] = G_GREEN
+    px[7, 8] = G_GLOW
+    save(img, os.path.join(ITEM_DIR, "cargo_crate.png"))
+
+
 def gen_destination_compass(name, needle):
     img = new_img()
     px = img.load()
@@ -3183,6 +3274,11 @@ if __name__ == "__main__":
     gen_glacite()
     gen_rocket_tier("rocket_tier_4", I_FROST, I_CYAN, I_BLUE, boosters=True, glow=I_WHITE)
     gen_destination_compass("glacira_compass", I_CYAN)
+    # Cargo rockets (docs/CARGO-ROCKETS.md): pad plate + hull/rocket/crate icons.
+    gen_cargo_pad()
+    gen_cargo_hull()
+    gen_cargo_rocket()
+    gen_cargo_crate()
     # Hazard suit variants (SUIT_HAZARD_DESIGN.md), derived from the committed T2/T1 art.
     gen_oxygen_suit_heat()
     gen_oxygen_suit_cold()

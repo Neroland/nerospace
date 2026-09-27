@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Version bumped to **1.3.0** in `gradle.properties` — a new feature with an additive public API. Nothing
+below has been published yet; the owner decides when it ships.
+
+### Added
+
+- **Cargo rockets and Cargo Pads** (`docs/CARGO-ROCKETS.md`). A **Cargo Pad** is a launch-pad plate with
+  a 27-slot hold (18 usable by default), a pipe-fed rocket-fuel buffer and a route selector; it is a cell
+  of an ordinary 3×3 pad, so the existing tier validation, Fuel Tank pumping and Launch Controller layout
+  all apply unchanged. An uncrewed **Cargo Rocket** (new Cargo Hull intermediate; recipes on the Greenxertz
+  ladder behind the Tier 2 rocket) carries the hold to another Cargo Pad or a founded station in any
+  Nerospace dimension. Flights are server-side timers derived from the planet registry (time from the
+  gravity of both ends and whether a dimension boundary is crossed; fuel from payload mass and origin
+  gravity — one class, unit-tested), consume rocket fuel, survive a server restart, never load a chunk to
+  deliver, hold and retry when the destination is missing or occupied, and after a timeout drop the
+  remaining manifest as a **Cargo Crate** item rather than losing it. Schedules: manual, launch-when-full,
+  launch every N minutes; per-route **Return empty** flies the hull home. Universal Pipes and their filters
+  work on every face of the pad through Core's side configuration.
+- **Public route API** `za.co.neroland.nerospace.api.route` (semver-stable, additive; the existing
+  `NerospaceRoutes` facade is untouched): `RouteApi` (pads visible to a player, quotes, flight requests,
+  flight queries, cancel), `PadHandle`/`RouteHandle`/`FlightHandle` snapshots, `FlightState`,
+  `ScheduleMode`, `RouteQuote`, `FlightRequest`/`FlightRequestResult`, and the `RouteEvents` bus
+  (`PadRegistered`, `PadUnregistered`, `FlightDeparted`, `FlightArrived`, `FlightHeld`, `FlightDropped`).
+  Shaped for NeroLogistics' `RouteProvider`/`ShipmentManager` seams — see
+  `docs/NEROLOGISTICS-HANDOVER.md`.
+- **Star Guide chapter "Freight"** (Cargo Pad → Cargo Rocket → first unattended delivery, code-granted).
+- NeroLink module section **`route`**: the requester's own Cargo Pads and cargo flights, by owner UUID only.
+- Config (Core-managed, server-authoritative): `cargoPadSlots`, `cargoFuelCapacity`,
+  `cargoTravelTimeMultiplier`, `cargoHoldRetrySeconds`, `cargoHoldTimeoutMinutes`,
+  `cargoFlightRetentionDays`, `cargoMaxFlightsPerOwner`, `cargoMaxPads`.
+- `en_za` language file (the new strings; everything else falls back to `en_us`).
+- `/nerospace gallery` gains a **Freight** exhibit north of the rocket row: two routed Cargo Pads on 3×3
+  footprints, pad A with a fuelled Cargo Rocket, a loaded hold, a Fuel Tank and a rocket-fuel pipe into
+  its buffer, pad B with an extraction pipe into a chest — open A and press Launch.
+
+### Privacy
+
+- One new store, `nerospace:cargo_routes`, guarded by Neroland Core's `SavedDataRecovery` (Nerospace is
+  now 6/6) and registered with `PlayerDataErasure`: erasure removes the player's routes, anonymises their
+  pads and flights, drops them from pad access lists and rewrites the backup at once; in-flight cargo is
+  delivered or crated, never deleted. Completed flight records are pruned after `cargoFlightRetentionDays`
+  in-game days. Verified with Core's `ErasureConformance` harness in the unit tests. Logs and telemetry
+  breadcrumbs carry flight ids only. `PRIVACY.md` lists the store.
+
 ## [1.2.0] - 2026-09-24
 
 EMI support for the Nerospace machine pages, and its JEI pages now show on Fabric.

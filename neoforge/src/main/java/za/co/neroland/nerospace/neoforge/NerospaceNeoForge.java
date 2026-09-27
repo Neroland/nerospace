@@ -75,6 +75,7 @@ public final class NerospaceNeoForge {
             OxygenFieldEvents.tick(event.getServer());
             TerraformDrift.tick(event.getServer());
             GravityManager.tick(event.getServer());
+            za.co.neroland.nerospace.route.CargoFlights.tick(event.getServer());
             // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
             za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(event.getServer());
         });

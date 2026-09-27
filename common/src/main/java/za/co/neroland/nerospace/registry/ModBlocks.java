@@ -221,6 +221,12 @@ public final class ModBlocks {
                     .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
+    /** Cargo Pad: a launch-pad plate with a hold, fuel buffer and route selector (docs/CARGO-ROCKETS.md). */
+    public static final RegistryEntry<za.co.neroland.nerospace.route.CargoPadBlock> CARGO_PAD = BLOCKS.register("cargo_pad",
+            key -> new za.co.neroland.nerospace.route.CargoPadBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
+
     public static final RegistryEntry<LaunchGantryBlock> LAUNCH_GANTRY = BLOCKS.register("launch_gantry",
             key -> new LaunchGantryBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.METAL).strength(3.0F, 6.0F)

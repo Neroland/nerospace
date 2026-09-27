@@ -65,6 +65,11 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("fuel_tank",
                     key -> new BlockEntityType<>(FuelTankBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_TANK.get())));
 
+    public static final RegistryEntry<BlockEntityType<za.co.neroland.nerospace.route.CargoPadBlockEntity>> CARGO_PAD =
+            BLOCK_ENTITIES.register("cargo_pad",
+                    key -> new BlockEntityType<>(za.co.neroland.nerospace.route.CargoPadBlockEntity::new,
+                            java.util.Set.of(ModBlocks.CARGO_PAD.get())));
+
     public static final RegistryEntry<BlockEntityType<FuelRefineryBlockEntity>> FUEL_REFINERY =
             BLOCK_ENTITIES.register("fuel_refinery",
                     key -> new BlockEntityType<>(FuelRefineryBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_REFINERY.get())));

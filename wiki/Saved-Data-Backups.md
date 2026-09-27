@@ -1,7 +1,8 @@
 # Saved-Data Backups
 
-Nerospace keeps its world state — oxygen sources, terraformer progress, meteor sites, and the
-[launch pad](Rocket-Launch-Pad) and [station](Station-Charter) registries — in the world's saved-data
+Nerospace keeps its world state — oxygen sources, terraformer progress, meteor sites, the
+[launch pad](Rocket-Launch-Pad) and [station](Station-Charter) registries, and the
+[cargo route](Cargo-Pad) registry (pads, routes and flights in the air) — in the world's saved-data
 files, alongside vanilla's own. Starting after 1.0.0, the mod also protects that state against disk
 problems.
 
@@ -20,8 +21,10 @@ problems.
 ## What recovery means in practice
 
 Oxygen fields, terraforming radii, and meteor state largely rebuild themselves from the blocks in
-the world within seconds. The pad and station registries are the valuable part — with a backup they
-roll back to the last backup point instead of being lost.
+the world within seconds. The pad, station and cargo-route registries are the valuable part — with a
+backup they roll back to the last backup point instead of being lost. Cargo Pads re-register
+themselves as their chunks load, so even a fresh store heals; a pad that lost its owner that way can be
+re-claimed by sneak-right-clicking it, and a flight that was in the air is delivered from the backup.
 
 ## Privacy
 

@@ -109,7 +109,13 @@ public final class StarGuide {
             new Chapter("meteor_events", List.of(
                     step("meteor_site", () -> ModItems.ALIEN_FRAGMENT.get(), "guide/alien_fragment"),
                     step("alien_tech", () -> ModItems.ALIEN_TECH_SCRAP.get(), "guide/alien_tech_scrap"),
-                    step("alien_core", () -> ModItems.ALIEN_CORE.get(), "guide/alien_core"))));
+                    step("alien_core", () -> ModItems.ALIEN_CORE.get(), "guide/alien_core"))),
+            // Cargo rockets (docs/CARGO-ROCKETS.md): pad → rocket → the first unattended delivery, which is
+            // code-granted by CargoFlights when the owner's first flight is delivered.
+            new Chapter("freight", List.of(
+                    step("cargo_pad", () -> ModBlocks.CARGO_PAD.get(), "guide/cargo_pad"),
+                    step("cargo_rocket", () -> ModItems.CARGO_ROCKET.get(), "guide/cargo_rocket"),
+                    step("first_freight", () -> ModItems.CARGO_CRATE.get(), "guide/first_freight"))));
 
     public static final int CHAPTER_COUNT = CHAPTERS.size();
 

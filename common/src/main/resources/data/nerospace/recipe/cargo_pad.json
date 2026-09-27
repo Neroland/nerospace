@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "P": "nerospace:rocket_launch_pad",
+    "H": "nerospace:cargo_hull",
+    "B": "#c:storage_blocks/nerosium"
+  },
+  "pattern": [
+    "NHN",
+    "PBP",
+    "NNN"
+  ],
+  "result": {
+    "id": "nerospace:cargo_pad"
+  }
+}

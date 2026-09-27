@@ -40,9 +40,10 @@ The mod is built **standalone** — its only dependency is **Neroland Core**, an
 5. **Survive** — every world out there is airless: seal rooms, pipe oxygen, refill your **Oxygen Suit** (and its tougher **Mk II**) at airlocks, and wear the **Thermal**/**Cryo Suit** where heat or cold quadruples O₂ drain — four full suit sets in all.
 6. **Found stations** — right-click a **Station Charter** to open its naming console, name your own orbital station, and found it as a selectable rocket destination.
 7. **Go heavy** — build the 5×5 **Heavy Launch Complex** + gantry, refine rocket fuel in the **Fuel Refinery**, and launch the Tier 4 heavy rocket.
-8. **Terraform** — mature dead ground through **Rooted → Hydrated → Living** stages, complete with a glacite-fed water cycle, weather, vibrant biomes, and three breedable livestock species.
+8. **Automate supply** — place **Cargo Pads** at both ends, deploy an uncrewed **Cargo Rocket**, pipe cargo and fuel in, pick a destination (or a schedule) and let freight fly between planets and stations with nobody at either pad — flights survive restarts, and undeliverable cargo is crated, never lost.
+9. **Terraform** — mature dead ground through **Rooted → Hydrated → Living** stages, complete with a glacite-fed water cycle, weather, vibrant biomes, and three breedable livestock species.
 
-In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree — 9 chapters, 42 steps, synced to a full advancement tree. In a creative world, `/nerospace gallery` builds a live showcase of everything in the mod.
+In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree — 10 chapters, 45 steps, synced to a full advancement tree. In a creative world, `/nerospace gallery` builds a live showcase of everything in the mod.
 
 ## Requirements
 
@@ -89,6 +90,8 @@ common/src/main/java/za/co/neroland/nerospace/
   registry/   shared registrations through the ServiceLoader-backed registry seam
   machine/    machine block-entities, menus, and screens
   rocket/     rockets, launch pads, stations
+  route/      cargo pads, cargo rockets, the route/flight registry (docs/CARGO-ROCKETS.md)
+  api/route/  the public pad-level route API other mods code against
   world/      oxygen, dimensions, terraforming, worldgen, creatures
 neoforge/      NeoForge entrypoint, manifests, services, capabilities, events
 forge/         Forge entrypoint, manifests, services, capabilities, events

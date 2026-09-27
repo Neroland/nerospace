@@ -27,6 +27,7 @@
     "nerospace:fuel_refinery",
     "nerospace:quarry_controller",
     "nerospace:rocket_launch_pad",
+    "nerospace:cargo_pad",
     "nerospace:launch_gantry",
     "nerospace:landing_pod",
     "nerospace:docking_port"

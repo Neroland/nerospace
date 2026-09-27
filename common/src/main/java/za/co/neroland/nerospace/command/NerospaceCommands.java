@@ -496,6 +496,13 @@ public final class NerospaceCommands {
         spawnLabelStand(level, new BlockPos(tnx, fy + 3, tnz),
                 Component.literal("Travel Node — Name-Tag a pad to register"));
 
+        // FREIGHT (cargo rockets, 1.3.0): two Cargo Pads on 3x3 footprints, one strip north of the rocket
+        // row. Pad A carries a docked, fuelled Cargo Rocket with a loaded hold, an adjacent Fuel Tank and a
+        // rocket-fuel pipe into the pad's own buffer; pad B is the destination. Both are registered to the
+        // player and A is routed to B (manual schedule), so opening A's GUI and pressing Launch flies the
+        // cargo across the gallery and lands it on B. Pipes on B's far side show delivered cargo leaving.
+        buildFreight(level, floor, player, rx, rz0 - 12, fy);
+
         // Creatures: each spawned twice — live (AI) and frozen (NoAI) — on a small floor strip.
         int mx = origin.getX() + 18; // creatures → SOUTH-EAST
         int mz = origin.getZ() + 33;
@@ -773,6 +780,88 @@ public final class NerospaceCommands {
     }
 
     /** A full {@code size x size} square of launch pads with min-corner {@code corner}. */
+    /**
+     * The cargo-rocket exhibit: pad A (origin) at {@code (ax, az)} and pad B (destination) 16 blocks east,
+     * each a Cargo Pad in the centre of a 3x3 launch-pad footprint. A gets a fuelled Cargo Rocket, a hold
+     * full of nerosteel, a Fuel Tank on the ring and a rocket-fuel pipe into its buffer; B gets an
+     * extraction pipe into a chest so delivered cargo visibly leaves. Both pads are registered to the
+     * running player (so they appear in the GUI's destination list) and A is routed to B.
+     */
+    private static void buildFreight(ServerLevel level, BlockState floor, ServerPlayer player, int ax, int az, int fy) {
+        for (int dx = -2; dx <= 22; dx++) {
+            for (int dz = -3; dz <= 4; dz++) {
+                level.setBlockAndUpdate(new BlockPos(ax + dx, fy, az + dz), floor);
+            }
+        }
+        BlockState pad = ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState();
+        BlockState cargoPad = ModBlocks.CARGO_PAD.get().defaultBlockState();
+        int bx = ax + 16;
+
+        // Pad A: 3x3 with the Cargo Pad in the centre, Fuel Tank on the west edge, fuel pipe from the north.
+        fillPad(level, new BlockPos(ax, fy + 1, az), 3, pad);
+        BlockPos aPos = new BlockPos(ax + 1, fy + 1, az + 1);
+        level.setBlockAndUpdate(aPos, cargoPad);
+        level.setBlockAndUpdate(new BlockPos(ax - 1, fy + 1, az + 1), ModBlocks.FUEL_TANK.get().defaultBlockState());
+        if (level.getBlockEntity(new BlockPos(ax - 1, fy + 1, az + 1))
+                instanceof za.co.neroland.nerospace.machine.FuelTankBlockEntity tank) {
+            tank.getTank().fill(za.co.neroland.nerospace.fluid.ModFluids.ROCKET_FUEL.get(),
+                    za.co.neroland.nerospace.machine.FuelTankBlockEntity.CAPACITY, false);
+        }
+        // Rocket fuel piped straight into the Cargo Pad's own buffer: an endless Core fluid tank of rocket
+        // fuel → pipe → pad (the pipe runs over the pad ring at Y+2 so the 3x3 stays intact).
+        BlockPos srcPos = new BlockPos(ax + 1, fy + 2, az - 2);
+        level.setBlockAndUpdate(srcPos, za.co.neroland.nerolandcore.registry.ModBlocks.CREATIVE_FLUID_TANK.get().defaultBlockState());
+        if (level.getBlockEntity(srcPos) instanceof za.co.neroland.nerolandcore.storage.CreativeFluidTankBlockEntity src) {
+            src.setSource(za.co.neroland.nerospace.fluid.ModFluids.ROCKET_FUEL.get());
+        }
+        BlockPos pipeA = new BlockPos(ax + 1, fy + 2, az - 1);
+        BlockPos pipeB = new BlockPos(ax + 1, fy + 2, az);
+        level.setBlockAndUpdate(pipeA, ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(pipeB, ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        setAllModes(level, pipeA, Direction.NORTH, PipeIoMode.IN);
+        setAllModes(level, pipeB, Direction.DOWN, PipeIoMode.OUT);
+
+        // Pad B: 3x3 + Cargo Pad, with an extraction pipe on its east side into a chest.
+        fillPad(level, new BlockPos(bx, fy + 1, az), 3, pad);
+        BlockPos bPos = new BlockPos(bx + 1, fy + 1, az + 1);
+        level.setBlockAndUpdate(bPos, cargoPad);
+        BlockPos outPipe = new BlockPos(bx + 1, fy + 2, az + 1);
+        BlockPos outPipe2 = new BlockPos(bx + 1, fy + 2, az + 2);
+        level.setBlockAndUpdate(outPipe, ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(outPipe2, ModBlocks.UNIVERSAL_PIPE.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(bx + 1, fy + 2, az + 3), Blocks.CHEST.defaultBlockState());
+        setAllModes(level, outPipe, Direction.DOWN, PipeIoMode.IN);
+        setAllModes(level, outPipe2, Direction.SOUTH, PipeIoMode.OUT);
+
+        // Registry: both pads owned by the player, A → B, manual schedule. The block entities tick and
+        // adopt these records by position, exactly as a reloaded world would.
+        za.co.neroland.nerospace.route.RouteRegistry registry =
+                za.co.neroland.nerospace.route.RouteRegistry.get(level.getServer());
+        za.co.neroland.nerospace.route.PadRecord a = registry.registerPad(level.dimension(), aPos, player.getUUID(), "Gallery Dock A");
+        za.co.neroland.nerospace.route.PadRecord b = registry.registerPad(level.dimension(), bPos, player.getUUID(), "Gallery Dock B");
+        if (a != null && b != null) {
+            registry.setRoute(a.id(), b.id());
+        }
+
+        // The cargo rocket, fuelled, and a hold of nerosteel so the quote line shows a real trip.
+        za.co.neroland.nerospace.route.CargoRocketEntity rocket =
+                za.co.neroland.nerospace.route.CargoRocketEntity.standOn(level, aPos);
+        rocket.addFuel(za.co.neroland.nerospace.route.CargoRocketEntity.FUEL_CAPACITY);
+        level.addFreshEntity(rocket);
+        if (level.getBlockEntity(aPos) instanceof za.co.neroland.nerospace.route.CargoPadBlockEntity padA) {
+            for (int slot = 0; slot < 6; slot++) {
+                padA.setItem(slot, new ItemStack(ModItems.NEROSTEEL_INGOT.get(), 64));
+            }
+        }
+
+        spawnLabelStand(level, new BlockPos(ax + 1, fy + 6, az + 1),
+                Component.literal("Cargo Pad A — loaded + fuelled; open it and press Launch"));
+        spawnLabelStand(level, new BlockPos(bx + 1, fy + 5, az + 1),
+                Component.literal("Cargo Pad B — destination; pipe pulls the delivery into the chest"));
+        spawnLabelStand(level, new BlockPos(ax + 8, fy + 4, az + 1),
+                Component.literal("Freight — uncrewed cargo rockets between pads and stations (1.3.0)"));
+    }
+
     private static void fillPad(ServerLevel level, BlockPos corner, int size, BlockState pad) {
         for (int dx = 0; dx < size; dx++) {
             for (int dz = 0; dz < size; dz++) {

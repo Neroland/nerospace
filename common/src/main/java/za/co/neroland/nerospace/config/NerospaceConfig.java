@@ -66,9 +66,60 @@ public final class NerospaceConfig {
             + "prompt plus the feedback link). true by default; false = join silently. "
             + "Server-authoritative: the server sends the message, so the server decides");
 
+    // --- Cargo rockets (docs/CARGO-ROCKETS.md §5) — all server-authoritative -------------------
+    private static final ConfigValue<Integer> CARGO_PAD_SLOTS = SCHEMA.intRange("cargoPadSlots",
+            18, 1, 27, true, "usable cargo slots on a Cargo Pad = the payload a cargo rocket carries (1..27)");
+    private static final ConfigValue<Integer> CARGO_FUEL_CAPACITY = SCHEMA.intRange("cargoFuelCapacity",
+            16_000, 1_000, 64_000, true, "rocket fuel (mB) a Cargo Pad's pipe-fed fuel buffer holds");
+    private static final ConfigValue<Double> CARGO_TRAVEL_TIME = SCHEMA.doubleRange("cargoTravelTimeMultiplier",
+            1.0D, MULT_MIN, MULT_MAX, true, "scales cargo-rocket travel time (higher = slower flights)");
+    private static final ConfigValue<Integer> CARGO_HOLD_RETRY_SECONDS = SCHEMA.intRange("cargoHoldRetrySeconds",
+            30, 5, 600, true, "how often a holding cargo flight retries its landing (seconds)");
+    private static final ConfigValue<Integer> CARGO_HOLD_TIMEOUT_MINUTES = SCHEMA.intRange("cargoHoldTimeoutMinutes",
+            30, 1, 1440, true, "how long a cargo flight holds before its cargo is dropped as a crate at the "
+            + "destination (minutes; cargo is never deleted)");
+    private static final ConfigValue<Integer> CARGO_FLIGHT_RETENTION_DAYS = SCHEMA.intRange("cargoFlightRetentionDays",
+            7, 1, 90, true, "in-game days a completed cargo flight record is kept before it is pruned");
+    private static final ConfigValue<Integer> CARGO_MAX_FLIGHTS_PER_OWNER = SCHEMA.intRange("cargoMaxFlightsPerOwner",
+            16, 1, 128, true, "concurrent live cargo flights one player may have");
+    private static final ConfigValue<Integer> CARGO_MAX_PADS = SCHEMA.intRange("cargoMaxPads",
+            256, 8, 4096, true, "hard cap on registered Cargo Pads (keeps a grief-spammed registry small)");
+
     private static volatile boolean loaded;
 
     private NerospaceConfig() {
+    }
+
+    public static int cargoPadSlots() {
+        return CARGO_PAD_SLOTS.get();
+    }
+
+    public static int cargoFuelCapacity() {
+        return CARGO_FUEL_CAPACITY.get();
+    }
+
+    public static double cargoTravelTimeMultiplier() {
+        return CARGO_TRAVEL_TIME.get();
+    }
+
+    public static int cargoHoldRetryTicks() {
+        return CARGO_HOLD_RETRY_SECONDS.get() * 20;
+    }
+
+    public static long cargoHoldTimeoutTicks() {
+        return CARGO_HOLD_TIMEOUT_MINUTES.get() * 1_200L;
+    }
+
+    public static long cargoFlightRetentionTicks() {
+        return CARGO_FLIGHT_RETENTION_DAYS.get() * 24_000L;
+    }
+
+    public static int cargoMaxFlightsPerOwner() {
+        return CARGO_MAX_FLIGHTS_PER_OWNER.get();
+    }
+
+    public static int cargoMaxPads() {
+        return CARGO_MAX_PADS.get();
     }
 
     public static boolean isTelemetryEnabled() {

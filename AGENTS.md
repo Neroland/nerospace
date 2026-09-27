@@ -204,6 +204,14 @@
   `CoreCreativeTab` (lazy suppliers); Nerospace `c:` material tags already complete. All 9 cells BUILD
   SUCCESSFUL + ecjCheck 0 errors. Needs a dev-client run to confirm cross-mod energy flow + the gates/erase
   commands (not agent-testable). See `wiki/Neroland-Core.md`.
+- **Cargo rockets + route API: BUILT 2026-09-27 (staged, not committed), version bumped to 1.3.0.**
+  New `route/` package (Cargo Pad block/BE/menu, uncrewed `CargoRocketEntity extends RocketEntity`,
+  `RouteRegistry` SavedData `nerospace:cargo_routes` via Core `SavedDataRecovery` — 6/6 stores guarded — with
+  `PlayerDataErasure` + `ErasureConformance` test, `CargoFlights` tick driver in all three loaders,
+  `CargoFormulas` unit-tested) and the semver-stable `api/route/` package (`RouteApi`, handles,
+  `RouteEvents`). Design + schema + config keys: `docs/CARGO-ROCKETS.md`; NeroLogistics binding:
+  `docs/NEROLOGISTICS-HANDOVER.md`; client checklist: `docs/RUNTIME-VERIFICATION.md` (NOT yet run — needs a
+  dev client). Star Guide gained a 10th chapter (Freight). Lang: `en_us` + new `en_za`.
 - **DEFERRED for sign-off: upgrade-module migration to Core.** Core's `UpgradeType` enum is fixed
   {SPEED, EFFICIENCY, RANGE, CAPACITY}; Nerospace modules are {SPEED, EFFICIENCY, FORTUNE, SILK_TOUCH}.
   FORTUNE/SILK_TOUCH (quarry) have no Core equivalent, so a full migration would drop quarry function OR add

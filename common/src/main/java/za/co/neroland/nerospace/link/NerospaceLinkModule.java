@@ -34,6 +34,9 @@ import za.co.neroland.nerospace.platform.Services;
  *       their own dimension, while online. Offline it answers nothing.</li>
  *   <li>{@link #SECTION_PLANETS} is public world data (gravity, airless, hazard); only the per-planet
  *       "reached" flag is player-scoped, and it comes from the requester's own advancements.</li>
+ *   <li>{@link #SECTION_ROUTE} lists only Cargo Pads whose stored owner UUID equals the requester's, and
+ *       only flights they own. Pads on someone else's access list are not listed — that would name the
+ *       granter's base. No new actions in this release.</li>
  * </ul>
  *
  * <p>No section ever emits another player's UUID or name. Where a shared registry is involved, the module
@@ -63,6 +66,8 @@ public final class NerospaceLinkModule {
     public static final String SECTION_LIFE_SUPPORT = "life_support";
     /** The requester's own Star Guide chapter/step progress. */
     public static final String SECTION_STAR_GUIDE = "star_guide";
+    /** The requester's own Cargo Pads and cargo flights, by owner UUID. Never another player's pad. */
+    public static final String SECTION_ROUTE = "route";
 
     /** Rename a station the requester owns. Owner-gated, online-required, no world mutation beyond the name. */
     public static final String ACTION_RENAME_STATION = "rename_station";
@@ -94,7 +99,7 @@ public final class NerospaceLinkModule {
             }
             LinkModuleInfo info = new LinkModuleInfo(MODULE_ID, modVersion(), SCHEMA_VERSION,
                     List.of(SECTION_ROCKETS, SECTION_STATIONS, SECTION_PLANETS, SECTION_LIFE_SUPPORT,
-                            SECTION_STAR_GUIDE),
+                            SECTION_STAR_GUIDE, SECTION_ROUTE),
                     List.of(ACTION_RENAME_STATION, ACTION_ACKNOWLEDGE_ALERT));
             // One provider and one handler cover the whole module; Core keys both on the module id.
             NeroLinkRegistry.registerSnapshotProvider(new NerospaceLinkSnapshots(), info);

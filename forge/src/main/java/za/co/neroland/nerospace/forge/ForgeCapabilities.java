@@ -120,6 +120,8 @@ public final class ForgeCapabilities {
             energy = panel::getEnergy;
         } else if (be instanceof TerraformerBlockEntity machine) {
             energy = machine::getEnergy;
+        } else if (be instanceof za.co.neroland.nerospace.route.CargoPadBlockEntity cargoPad) {
+            fluid = cargoPad::getTank;
         } else if (be instanceof FuelTankBlockEntity tank) {
             fluid = tank::getTank;
         } else if (be instanceof FuelRefineryBlockEntity machine) {

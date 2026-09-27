@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "H": "nerospace:cargo_hull",
+    "T": "nerospace:rocket_tier_2",
+    "F": "nerospace:rocket_fuel_canister"
+  },
+  "pattern": [
+    "NTN",
+    "NHN",
+    "NFN"
+  ],
+  "result": {
+    "id": "nerospace:cargo_rocket"
+  }
+}

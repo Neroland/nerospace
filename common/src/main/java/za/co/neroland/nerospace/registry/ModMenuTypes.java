@@ -89,6 +89,10 @@ public final class ModMenuTypes {
             MENUS.register("launch_controller",
                     key -> new MenuType<>(LaunchControllerMenu::new, FeatureFlags.VANILLA_SET));
 
+    public static final RegistryEntry<MenuType<za.co.neroland.nerospace.route.CargoPadMenu>> CARGO_PAD =
+            MENUS.register("cargo_pad",
+                    key -> new MenuType<>(za.co.neroland.nerospace.route.CargoPadMenu::new, FeatureFlags.VANILLA_SET));
+
     public static final RegistryEntry<MenuType<StationCharterMenu>> STATION_CHARTER =
             MENUS.register("station_charter",
                     key -> new MenuType<>(StationCharterMenu::new, FeatureFlags.VANILLA_SET));

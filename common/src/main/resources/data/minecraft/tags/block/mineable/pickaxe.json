@@ -39,6 +39,7 @@
     "nerospace:quarry_controller",
     "nerospace:quarry_frame",
     "nerospace:rocket_launch_pad",
+    "nerospace:cargo_pad",
     "nerospace:launch_gantry",
     "nerospace:launch_controller",
     "nerospace:launch_controller_part",

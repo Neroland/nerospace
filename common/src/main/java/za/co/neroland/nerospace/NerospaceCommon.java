@@ -94,8 +94,8 @@ public final class NerospaceCommon {
      * single {@code /neroland data eraseme} (or Core's retention sweep) purges Nerospace too.
      *
      * <p>Registered at construction, ahead of the stores it purges: registering late is the classic way an
-     * erasure request silently misses a store. There are <b>four</b> such stores — station ownership,
-     * Alien Villager reputation (held in entity NBT), and the two per-player attachments — and
+     * erasure request silently misses a store. There are <b>six</b> such stores — station ownership, planet
+     * visits, cargo routes, Alien Villager reputation (held in entity NBT), and the two per-player attachments — and
      * {@link za.co.neroland.nerospace.data.NerospaceErasure} documents exactly what each pass can and
      * cannot reach rather than claiming the job is fully done.</p>
      */

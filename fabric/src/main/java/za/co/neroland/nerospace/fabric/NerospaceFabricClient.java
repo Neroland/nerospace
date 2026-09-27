@@ -69,6 +69,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         MenuScreens.register(ModMenuTypes.STAR_GUIDE.get(), StarGuideScreen::new);
         MenuScreens.register(ModMenuTypes.LAUNCH_CONTROLLER.get(), za.co.neroland.nerospace.client.LaunchControllerScreen::new);
         MenuScreens.register(ModMenuTypes.STATION_CHARTER.get(), za.co.neroland.nerospace.client.StationCharterScreen::new);
+        MenuScreens.register(ModMenuTypes.CARGO_PAD.get(), za.co.neroland.nerospace.client.CargoPadScreen::new);
 
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
             @Override

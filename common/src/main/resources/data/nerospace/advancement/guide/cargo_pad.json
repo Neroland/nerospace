@@ -1,0 +1,28 @@
+{
+  "parent": "nerospace:guide/rocket_tier_2",
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:cargo_pad"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Cargo Pad \u2014 the endpoint of an automated supply line",
+    "icon": {
+      "id": "nerospace:cargo_pad"
+    },
+    "title": "Loading Dock"
+  },
+  "requirements": [
+    [
+      "has_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

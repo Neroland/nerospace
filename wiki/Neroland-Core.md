@@ -54,7 +54,8 @@ only and is never logged (POPIA/GDPR). Inspect the live pool with `/neroland met
 Nerospace registers its player-keyed data with Core's shared erasure hook, so a single
 `/neroland data eraseme` (or an admin's `/neroland data erase <uuid>`, or Core's inactivity retention
 sweep) clears your Nerospace data too — your station ownership is unlinked (the station itself stays as
-shared world content) and your oxygen and Star-Guide state reset. In keeping with POPIA/GDPR, Nerospace
+shared world content), your [Cargo Pad](Cargo-Pad) routes are removed and your pads and flights
+unlinked (cargo in the air is still delivered), and your oxygen and Star-Guide state reset. In keeping with POPIA/GDPR, Nerospace
 keys this data only by player UUID and never logs your identity. See `PRIVACY.md` for the full picture.
 
 ## One config-reload command and a shared tab

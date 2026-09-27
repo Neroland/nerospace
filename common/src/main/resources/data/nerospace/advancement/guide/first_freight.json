@@ -1,0 +1,22 @@
+{
+  "parent": "nerospace:guide/cargo_rocket",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": "Have a cargo rocket deliver its manifest to another pad with nobody at either end",
+    "frame": "challenge",
+    "icon": {
+      "id": "nerospace:cargo_crate"
+    },
+    "title": "Supply Line"
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -180,6 +180,18 @@ public final class NeoForgeCapabilities {
         event.registerBlockEntity(GAS, za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_GAS_TANK.get(),
                 (be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getTank()));
 
+        // Cargo Pad: rocket fuel in via the side config (fuel-only buffer), cargo in/out on every face.
+        event.registerBlockEntity(
+                FLUID,
+                ModBlockEntities.CARGO_PAD.get(),
+                (be, side) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), side));
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.CARGO_PAD.get(),
+                (be, side) -> side != null
+                        ? new WorldlyContainerWrapper(be, side)
+                        : VanillaContainerWrapper.of(be));
+
         // Fuel Tank: fluid in/out via the side config (STORAGE preset, default IO), canister in.
         event.registerBlockEntity(
                 FLUID,
@@ -333,6 +345,9 @@ public final class NeoForgeCapabilities {
                         za.co.neroland.nerospace.storage.CoreTankBridge.fluid(be.getTank())));
 
         event.registerBlockEntity(standard, ModBlockEntities.FUEL_TANK.get(),
+                (be, side) -> NeoForgeFluidResourceHandler.of(
+                        za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), side)));
+        event.registerBlockEntity(standard, ModBlockEntities.CARGO_PAD.get(),
                 (be, side) -> NeoForgeFluidResourceHandler.of(
                         za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), side)));
         event.registerBlockEntity(standard, ModBlockEntities.FUEL_REFINERY.get(),

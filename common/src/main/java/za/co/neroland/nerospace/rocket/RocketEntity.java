@@ -140,7 +140,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         public int get(int index) {
             return switch (index) {
                 case 0 -> getFuel();
-                case 1 -> getTier().fuelCapacity();
+                case 1 -> fuelCapacity();
                 case 2 -> getTier().ordinal();
                 case 3 -> isLaunchReady() ? 1 : 0;
                 case 4 -> getDestinationIndex();
@@ -259,7 +259,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /** Current fuel as a 0–100 percentage of the tier capacity (for the UI readout). */
     public int getFuelPercent() {
-        int capacity = getTier().fuelCapacity();
+        int capacity = fuelCapacity();
         return capacity == 0 ? 0 : Math.min(100, getFuel() * 100 / capacity);
     }
 
@@ -435,7 +435,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         return this.entityData.get(DATA_LAUNCHING);
     }
 
-    private void setLaunching(boolean launching) {
+    protected void setLaunching(boolean launching) {
         this.entityData.set(DATA_LAUNCHING, launching);
     }
 
@@ -506,12 +506,25 @@ public class RocketEntity extends Entity implements MenuProvider {
         return amount - fill;
     }
 
-    /** @return millibuckets of fuel that could not be accepted (overflow). Caps at the tier capacity. */
+    /** @return millibuckets of fuel that could not be accepted (overflow). Caps at {@link #fuelCapacity()}. */
     public int addFuel(int amount) {
-        int room = Math.max(0, getTier().fuelCapacity() - (int) this.fuelTank.getAmount());
+        int room = Math.max(0, fuelCapacity() - (int) this.fuelTank.getAmount());
         int toFill = Math.min(amount, room);
         int filled = (int) this.fuelTank.fill(ModFluids.ROCKET_FUEL.get(), toFill, false);
         return amount - filled;
+    }
+
+    /** The usable tank size — the tier's capacity for crewed rockets; the cargo hull overrides it. */
+    public int fuelCapacity() {
+        return getTier().fuelCapacity();
+    }
+
+    /** Removes up to {@code mb} of fuel from the tank (server). @return millibuckets actually removed. */
+    public int drainFuelRaw(int mb) {
+        if (level().isClientSide() || mb <= 0) {
+            return 0;
+        }
+        return (int) this.fuelTank.drain(mb, false);
     }
 
     /**
@@ -638,10 +651,28 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.launchOriginDim = level().dimension();
         BlockPos originPad = validPadScanOrigin();
         this.launchOriginPad = originPad != null ? originPad.immutable() : blockPosition();
+        beginAscent();
+    }
+
+    /**
+     * Starts the ascent animation with no gating of its own — {@link #startLaunch} calls this after the
+     * crewed checks pass, and the uncrewed cargo rocket calls it after the Cargo Pad has validated and
+     * recorded the flight. Server-side.
+     */
+    protected void beginAscent() {
         setLaunching(true);
         this.launchTicks = 0;
         level().playSound(null, this.getX(), this.getY(), this.getZ(),
                 SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.NEUTRAL, 3.0F, 0.6F);
+    }
+
+    /**
+     * Called once the ascent counter reaches {@link #LAUNCH_DURATION}. The crewed rocket transports its
+     * rider and lands a fresh rocket at the destination; the cargo rocket overrides this to simply vanish,
+     * because its flight is a server-side record that materialises a rocket on arrival.
+     */
+    protected void finishAscent() {
+        completeLaunch();
     }
 
     @Override
@@ -670,7 +701,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 this.move(net.minecraft.world.entity.MoverType.SELF, this.getDeltaMovement());
                 this.launchTicks++;
                 if (this.launchTicks >= LAUNCH_DURATION) {
-                    completeLaunch();
+                    finishAscent();
                 }
             }
         } else if (!level().isClientSide()) {
@@ -708,7 +739,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     /** Drops the intake slot's contents into the world (called before the rocket is discarded). */
-    private void dropFuelInput() {
+    protected void dropFuelInput() {
         if (level() instanceof ServerLevel server) {
             ItemStack stack = this.fuelInput.removeItemNoUpdate(0);
             if (!stack.isEmpty()) {
@@ -735,7 +766,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         level.addFreshEntity(landed);
     }
 
-    private void spawnLaunchParticles() {
+    protected void spawnLaunchParticles() {
         double bx = this.getX();
         double by = this.getY();
         double bz = this.getZ();

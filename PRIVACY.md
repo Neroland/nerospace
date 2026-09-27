@@ -62,7 +62,7 @@ ever sent before the config — and therefore your choice — has been loaded.
 
 ## In-world player data, and the NeroLink companion module
 
-Separately from telemetry, Nerospace stores four things in the **world save on your own
+Separately from telemetry, Nerospace stores six things in the **world save on your own
 server** — nothing here leaves that server:
 
 | Store | What it holds | Erasure |
@@ -71,8 +71,10 @@ server** — nothing here leaves that server:
 | Alien Villager reputation | a `UUID -> trade score` map inside each villager's entity data | swept from every loaded world, and stripped from a villager that loads later in the same server session |
 | Oxygen | your current air, in your player data | reset to a full tank |
 | Star Guide "seen" markers | which guide steps you have dismissed | cleared |
+| Planet visits | your UUID and the set of planets you have reached (no timestamps, no coordinates) | the row is dropped and the backup rewritten at once |
+| Cargo routes | the owner UUID of each Cargo Pad, route and cargo flight, plus the UUIDs a pad owner shared their pad with; retention: completed flight records are pruned after 7 in-game days (`cargoFlightRetentionDays`) | your routes are removed, your pads and flights are unlinked from you (a pad stays as shared world content, cargo in the air is still delivered or crated — never deleted), and you are removed from every access list; the backup is rewritten at once |
 
-All four are registered with Neroland Core's shared erasure hook, so one
+All six are registered with Neroland Core's shared erasure hook, so one
 `/neroland data eraseme` purges Nerospace along with every other Neroland mod. Two known
 limits are stated plainly rather than glossed over: a villager in a chunk that is never
 loaded again after a server restart can retain its entry (re-running erasure after visiting

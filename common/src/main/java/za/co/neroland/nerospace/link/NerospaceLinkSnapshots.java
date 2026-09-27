@@ -52,7 +52,8 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
             NerospaceLinkModule.SECTION_STATIONS,
             NerospaceLinkModule.SECTION_PLANETS,
             NerospaceLinkModule.SECTION_LIFE_SUPPORT,
-            NerospaceLinkModule.SECTION_STAR_GUIDE);
+            NerospaceLinkModule.SECTION_STAR_GUIDE,
+            NerospaceLinkModule.SECTION_ROUTE);
 
     @Override
     public String moduleId() {
@@ -85,6 +86,7 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
                 case NerospaceLinkModule.SECTION_PLANETS -> planets(server, playerId);
                 case NerospaceLinkModule.SECTION_LIFE_SUPPORT -> lifeSupport(server, playerId);
                 case NerospaceLinkModule.SECTION_STAR_GUIDE -> starGuide(server, playerId);
+                case NerospaceLinkModule.SECTION_ROUTE -> route(server, playerId);
                 default -> new JsonObject();   // Unknown section: nothing to say.
             };
         } catch (RuntimeException e) {
@@ -353,6 +355,79 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
     // --- helpers ------------------------------------------------------------
 
     /** The two fields every Nerospace snapshot root starts with. */
+    // --- route ---------------------------------------------------------------
+
+    /**
+     * The requester's own Cargo Pads and cargo flights — the owner UUID is the scope, exactly as for
+     * stations. A pad's live readout (docked rocket, fuel) is included only when its chunk is already
+     * loaded; the section never loads anything. Flight rows carry ids, state and ticks, never a position of
+     * another player's pad: the destination is an id the requester can resolve only if they may see it.
+     */
+    private static JsonObject route(MinecraftServer server, UUID playerId) {
+        JsonObject root = envelope(server, playerId);
+        za.co.neroland.nerospace.route.RouteRegistry registry = za.co.neroland.nerospace.route.RouteRegistry.get(server);
+        JsonArray pads = new JsonArray();
+        for (za.co.neroland.nerospace.route.PadRecord pad : registry.allPads()) {
+            if (!pad.ownedBy(playerId)) {
+                continue;
+            }
+            JsonObject row = new JsonObject();
+            row.addProperty("id", pad.id());
+            row.addProperty("name", pad.name());
+            row.addProperty("dimension", pad.dim());
+            row.add("position", position(pad.pos()));
+            row.addProperty("public", pad.isPublic());
+            row.addProperty("is_owner", true);
+            row.addProperty("inbound", registry.inboundCount(pad.id()));
+            za.co.neroland.nerospace.route.RouteRecord r = registry.routeForOrigin(pad.id());
+            if (r != null) {
+                row.addProperty("destination", r.destinationPadId());
+                row.addProperty("schedule", r.mode().name());
+                row.addProperty("interval_ticks", r.intervalTicks());
+                row.addProperty("return_empty", r.returnEmpty());
+            }
+            ServerLevel level = server.getLevel(pad.dimension());
+            boolean loaded = level != null && level.hasChunk(pad.pos().getX() >> 4, pad.pos().getZ() >> 4);
+            row.addProperty("loaded", loaded);
+            if (level != null && loaded
+                    && level.getBlockEntity(pad.pos()) instanceof za.co.neroland.nerospace.route.CargoPadBlockEntity be) {
+                row.addProperty("cargo_slots_used", be.usedSlots());
+                row.addProperty("cargo_slots", be.activeSlots());
+                row.addProperty("fuel_buffer", be.fuelAmount());
+                row.addProperty("fuel_buffer_capacity", be.fuelCapacity());
+                row.addProperty("pad_tier", be.padTier());
+                za.co.neroland.nerospace.route.CargoRocketEntity rocket = be.dockedRocket();
+                row.addProperty("rocket_docked", rocket != null);
+                if (rocket != null) {
+                    row.addProperty("rocket_fuel", rocket.getFuel());
+                    row.addProperty("rocket_fuel_capacity", rocket.fuelCapacity());
+                }
+            }
+            pads.add(row);
+        }
+        root.add("pads", pads);
+
+        JsonArray flights = new JsonArray();
+        long now = server.overworld().getGameTime();
+        for (za.co.neroland.nerospace.route.FlightRecord flight : registry.flightsOwnedBy(playerId)) {
+            JsonObject row = new JsonObject();
+            row.addProperty("id", flight.id());
+            row.addProperty("route", flight.routeId());
+            row.addProperty("origin", flight.originPadId());
+            row.addProperty("destination", flight.destinationPadId());
+            row.addProperty("state", flight.state().name());
+            row.addProperty("return_leg", flight.returnLeg());
+            row.addProperty("items", flight.itemCount());
+            row.addProperty("departed_at", flight.departedAt());
+            row.addProperty("arrives_at", flight.arrivesAt());
+            row.addProperty("ticks_remaining", Math.max(0L, flight.arrivesAt() - now));
+            flights.add(row);
+        }
+        root.add("flights", flights);
+        root.addProperty("now", now);
+        return root;
+    }
+
     private static JsonObject envelope(MinecraftServer server, UUID playerId) {
         JsonObject root = new JsonObject();
         root.addProperty("schema_version", NerospaceLinkModule.SCHEMA_VERSION);

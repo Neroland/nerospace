@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "C": "#c:chests/wooden",
+    "I": "#c:ingots/iron"
+  },
+  "pattern": [
+    "NIN",
+    "ICI",
+    "NIN"
+  ],
+  "result": {
+    "id": "nerospace:cargo_hull"
+  }
+}

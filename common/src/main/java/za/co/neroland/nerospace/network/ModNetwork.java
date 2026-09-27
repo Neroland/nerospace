@@ -87,6 +87,9 @@ public final class ModNetwork {
         // Founded-station names: server → a player opening a rocket, so the "Dock:" cycler shows real names.
         clientbound(StationSyncPayload.TYPE, StationSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientStations::accept);
+        // Cargo Pad: server → the viewer of one open pad menu, the destination labels they may pick from.
+        clientbound(CargoPadSyncPayload.TYPE, CargoPadSyncPayload.STREAM_CODEC,
+                za.co.neroland.nerospace.client.ClientCargoPads::accept);
         // Station Charter: client (naming screen) → server, founds the named station without teleporting.
         serverbound(FoundStationPayload.TYPE, FoundStationPayload.STREAM_CODEC,
                 (payload, player) -> za.co.neroland.nerospace.item.StationCharterItem.foundFromUi(player, payload.name()));

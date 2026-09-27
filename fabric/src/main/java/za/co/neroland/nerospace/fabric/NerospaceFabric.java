@@ -117,6 +117,7 @@ public final class NerospaceFabric implements ModInitializer {
             OxygenFieldEvents.tick(server);
             TerraformDrift.tick(server);
             GravityManager.tick(server);
+            za.co.neroland.nerospace.route.CargoFlights.tick(server);
             // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
             za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(server);
         });
@@ -244,6 +245,18 @@ public final class NerospaceFabric implements ModInitializer {
                 za.co.neroland.nerolandcore.registry.ModBlockEntities.GAS_TANK.get());
         GAS.registerForBlockEntity((be, side) -> za.co.neroland.nerospace.storage.CoreTankBridge.gas(be.getTank()),
                 za.co.neroland.nerolandcore.registry.ModBlockEntities.CREATIVE_GAS_TANK.get());
+
+        // Cargo Pad: rocket fuel in via the side config (fuel-only buffer), cargo in/out on every face.
+        FLUID.registerForBlockEntity(
+                (be, direction) -> za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction),
+                ModBlockEntities.CARGO_PAD.get());
+        FluidStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> FabricFluidStorageAdapter.of(
+                        za.co.neroland.nerospace.machine.MachineSideConfig.fluidView(be.sideConfig(), direction)),
+                ModBlockEntities.CARGO_PAD.get());
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, direction) -> ContainerStorage.of(be, direction),
+                ModBlockEntities.CARGO_PAD.get());
 
         // Fuel Tank: fluid in/out via the side config (STORAGE preset, default IO), canister in.
         FLUID.registerForBlockEntity(

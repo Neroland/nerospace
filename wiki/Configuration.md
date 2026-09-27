@@ -101,6 +101,23 @@ at defaults unless debugging server performance.
 | `terraformForceLoadChunks` | `false` | — | Force-load a bounded arc around the working frontier (TPS footgun — off by default). |
 | `terraformMaxForcedChunks` | `16` | 0–256 | Guard on force-loaded chunks. |
 
+### Cargo rockets
+
+Tunables for [Cargo Pads](Cargo-Pad) and cargo flights. All server-authoritative.
+
+| Key | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `cargoPadSlots` | `18` | 1–27 | Usable hold slots on a Cargo Pad — the payload one cargo rocket carries. |
+| `cargoFuelCapacity` | `16000` | 1,000–64,000 | Rocket fuel (mB) a Cargo Pad's pipe-fed buffer holds. |
+| `cargoTravelTimeMultiplier` | `1.0` | 0.1–10 | Scales cargo flight time. |
+| `cargoHoldRetrySeconds` | `30` | 5–600 | How often a holding flight retries its landing. |
+| `cargoHoldTimeoutMinutes` | `30` | 1–1,440 | Holding time before the cargo is dropped as a Cargo Crate at the destination (never deleted). |
+| `cargoFlightRetentionDays` | `7` | 1–90 | In-game days a completed flight record is kept before it is pruned. |
+| `cargoMaxFlightsPerOwner` | `16` | 1–128 | Concurrent live flights one player may have. |
+| `cargoMaxPads` | `256` | 8–4,096 | Hard cap on registered Cargo Pads. |
+
+`fuelCostMultiplier` also scales cargo fuel.
+
 ### Meteor events
 
 Tunables for the meteor world-event (see **[Meteor Events](Meteor-Events)**). Defaults give roughly
