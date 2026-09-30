@@ -125,14 +125,19 @@ public final class SavedDataRecovery {
         } catch (Exception inner) {
             failure.addSuppressed(inner);
         }
+        // Report BEFORE logging (MC-NEROSPACE-S). SentryLogAppender captures every ERROR log that
+        // carries a Nerospace throwable as a plain error, and the per-session de-dup then drops the
+        // second capture of the same stack. Logging first meant the unhandled ERROR copy always won
+        // and this handled WARNING (source + fingerprint) never arrived, so a survived recovery
+        // filed as a crash. Capturing first lets the handled copy win and the log copy be dropped.
+        NerospaceTelemetry.captureHandledException(failure, "saved_data_recovery",
+                name + (fromBackup ? "|backup_restored" : "|fresh_start"));
         NerospaceCommon.LOGGER.error(
                 "[Nerospace] Could not read saved data '{}' (corrupt or unreadable file); {}. "
                         + "A clean file will be rewritten at the next save.",
                 name,
                 fromBackup ? "restored the last-known-good backup" : "no usable backup — starting with fresh data",
                 failure);
-        NerospaceTelemetry.captureHandledException(failure, "saved_data_recovery",
-                name + (fromBackup ? "|backup_restored" : "|fresh_start"));
         return instance;
     }
 

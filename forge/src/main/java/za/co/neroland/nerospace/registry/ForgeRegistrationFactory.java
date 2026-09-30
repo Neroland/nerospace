@@ -12,6 +12,8 @@ import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
+
 /** Forge {@link RegistrationProvider.Factory}: wraps Forge DeferredRegisters. */
 public final class ForgeRegistrationFactory implements RegistrationProvider.Factory {
 
@@ -44,7 +46,19 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
         public <I extends T> RegistryEntry<I> register(String name, Function<ResourceKey<T>, I> factory) {
             Identifier id = Identifier.fromNamespaceAndPath(modId, name);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);
-            Supplier<I> supplier = () -> factory.apply(key);
+            // Report a failing constructor at its source (MC-NEROSPACE-R / -8). The register event swallows
+            // it into a loading issue that never reached Sentry; what did arrive were the follow-on
+            // "Trying to access unbound value" errors from every later entry that looks this one up (block
+            // items, block-entity types), which name the victim, not the cause. Captured here, the real
+            // exception wins the session de-dup; it is still rethrown so the loader fails exactly as before.
+            Supplier<I> supplier = () -> {
+                try {
+                    return factory.apply(key);
+                } catch (RuntimeException | LinkageError e) {
+                    NerospaceTelemetry.captureHandledException(e);
+                    throw e;
+                }
+            };
             RegistryObject<I> holder = register.register(name, supplier);
             return new RegistryEntry<>() {
                 @Override

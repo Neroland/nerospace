@@ -12,6 +12,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
+
 /**
  * NeoForge {@link RegistrationProvider.Factory}: each provider wraps a
  * {@link DeferredRegister}. The registers are collected as they are created
@@ -53,7 +55,19 @@ public final class NeoForgeRegistrationFactory implements RegistrationProvider.F
         public <I extends T> RegistryEntry<I> register(String name, Function<ResourceKey<T>, I> factory) {
             Identifier id = Identifier.fromNamespaceAndPath(modId, name);
             ResourceKey<T> key = ResourceKey.create(registryKey, id);
-            Supplier<I> supplier = () -> factory.apply(key);
+            // Report a failing constructor at its source (MC-NEROSPACE-R / -8). The register event swallows
+            // it into a loading issue that never reached Sentry; what did arrive were the follow-on
+            // "Trying to access unbound value" errors from every later entry that looks this one up (block
+            // items, block-entity types), which name the victim, not the cause. Captured here, the real
+            // exception wins the session de-dup; it is still rethrown so the loader fails exactly as before.
+            Supplier<I> supplier = () -> {
+                try {
+                    return factory.apply(key);
+                } catch (RuntimeException | LinkageError e) {
+                    NerospaceTelemetry.captureHandledException(e);
+                    throw e;
+                }
+            };
             DeferredHolder<T, I> holder = register.register(name, supplier);
             return new RegistryEntry<>() {
                 @Override

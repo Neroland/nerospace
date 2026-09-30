@@ -7,8 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Version bumped to **1.3.0** in `gradle.properties` — a new feature with an additive public API. Nothing
-below has been published yet; the owner decides when it ships.
+## [1.3.1] - 2026-10-01
+
+### Fixed
+
+- **Each jar now refuses to load on the next Minecraft line.** The NeoForge, Forge and Fabric metadata
+  declared only a minimum Minecraft version, so a jar built for one line (e.g. 26.2) would load on the
+  next (26.3) and crash at runtime on a changed method signature. Every build now caps its range at the
+  next minor line (26.1.2 → `<26.2`, 26.2 → `<26.3`, 26.3 → `<26.4`), so the loader shows a clear
+  version mismatch instead.
+
+### Changed
+
+- **Recovered saved data no longer reports as a crash** (MC-NEROSPACE-S). When a corrupt `.dat` is
+  recovered from backup or restarted fresh, the handled report is now sent before the error is logged,
+  so the handled event wins the per-session de-duplication instead of an unhandled duplicate.
+- **Registration failures on NeoForge and Forge are reported at their source** (MC-NEROSPACE-R / -8).
+  A block or item whose constructor throws during registration is now captured with its real exception
+  before being rethrown, instead of surfacing only as the follow-on "Trying to access unbound value"
+  errors that named the victim rather than the cause. Loading fails exactly as before.
+
+Crash reports stay anonymous and opt-out (`telemetryEnabled = false`); see [PRIVACY.md](PRIVACY.md).
+
+## [1.3.0] - 2026-09-27
+
+Cargo rockets and Cargo Pads, with a public route API for NeroLogistics.
 
 ### Added
 
