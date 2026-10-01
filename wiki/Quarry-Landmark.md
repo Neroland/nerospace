@@ -38,9 +38,10 @@ I
 
   plane (the frame is built there; mining runs from just below it down to bedrock).
 
-- **Within the tier's cap.** The rectangle's longest side must fit the controller's area cap
+- **Within the size cap.** Each side of the rectangle may be up to **64 blocks** (the
 
-  (Tier 1 = 16). An oversized or degenerate layout makes the controller pause with "bad region".
+  `quarryMaxSide` config value). An oversized or degenerate layout is simply not claimed — the
+  controller stays at "Idle — set landmarks or frame".
 
 - **Binding.** Place the [Quarry Controller](Quarry-Controller) next to / in line with a landmark.
 
@@ -53,4 +54,5 @@ I
 ## Details
 
 - ID: `nerospace:quarry_landmark` · Tool: pickaxe · Drops: itself
-- See [Quarry Controller](Quarry-Controller) for the full mining setup.
+- See the [Quarry Setup Guide](Quarry-Setup-Guide) for a step-by-step walkthrough, and
+  [Quarry Controller](Quarry-Controller) for the full reference.

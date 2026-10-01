@@ -34,6 +34,7 @@
 
 **Mining**
 
+- [Quarry Setup Guide](Quarry-Setup-Guide)
 - [Quarry Controller](Quarry-Controller)
 - [Quarry Landmark](Quarry-Landmark)
 - [Upgrade Modules](Upgrade-Modules)

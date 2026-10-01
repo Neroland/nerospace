@@ -5,8 +5,8 @@ The crafting parts and tuning cards for the [Quarry Controller](Quarry-Controlle
 
 ## Frame Casing
 
-The structural material the quarry spends to build its frame ring — **one casing per open-air
-perimeter cell** (cells already backed by terrain are free). Casings are also **placeable** as
+The structural material the quarry spends to build its frame ring — **one casing per perimeter
+cell** (terrain on the ring is replaced by frame; chests and machines on the ring are left in place). Casings are also **placeable** as
 frame blocks, so you can outline a mining area by hand instead of using landmarks; a frame block
 broken by a player drops its casing, and a **finished dig returns its standing casings** to the
 controller's frame slots.
@@ -29,7 +29,7 @@ has **1 module slot at Tier 1** (more at higher tiers).
 
 | Module | Effect | Notes |
 | --- | --- | --- |
-| **Speed Module** | +50% to the work-cap per module | Lets the machine do more when fed more power; capped at ×8. |
+| **Speed Module** | +50% work speed per module | Capped at ×8. Power alone never speeds a machine up — only Speed modules do (and they don't change the energy cost per block). |
 | **Efficiency Module** | −15% energy cost per module | Floors at 25% of the base cost. |
 | **Fortune Module** | Applies Fortune to mined blocks | Stacks up to Fortune III. |
 | **Silk Touch Module** | Mines blocks with Silk Touch | **Overrides** Fortune when present. |

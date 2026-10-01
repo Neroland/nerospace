@@ -47,9 +47,12 @@ I I I
 
 ## Setting it up
 
+> First time? The **[Quarry Setup Guide](Quarry-Setup-Guide)** walks through it step by step,
+> with material counts and troubleshooting.
+
 1. **Place 3 [Quarry Landmarks](Quarry-Landmark) in an L** at the **same Y level** to define the
 
-   corners of the rectangle. The longest side must fit the tier's cap (**Tier 1 = 16×16**).
+   corners of the rectangle. Each side may be up to **64 blocks** (the `quarryMaxSide` config cap).
 
 2. **Place the controller next to / in line with** a landmark — it scans along the axes to find the
 
@@ -72,10 +75,12 @@ I I I
 - **Power:** an internal **200,000 FE** buffer, filled through the energy capability on any side —
 
   connect a [Universal Pipe](Universal-Pipe) from a [Combustion](Combustion-Generator)/[Passive
-  Generator](Passive-Generator) or a [Battery](Battery). **Dig speed scales with the power you
-  supply**, up to the tier's per-cycle ceiling × your modules' speed bonus × the planet's speed
-  factor. Base cost is **40 FE per block** (lowered by Efficiency modules). The dig is **paced** (a
-  work cycle every few ticks) so even with unlimited power it mines at a steady rate, not instantly.
+  Generator](Passive-Generator) or a [Battery](Battery). **Dig speed is fixed** — the tier's base
+  rate × your modules' speed bonus × the planet's speed factor (× the `machineSpeedMultiplier`
+  config). Extra power does **not** make it dig faster; it just keeps the buffer topped up, and if
+  the buffer runs dry the dig **pauses** ("out of power") until energy arrives again. Base cost is
+  **40 FE per block** (lowered by Efficiency modules) — a Tier 1 quarry with no modules mines about
+  4 blocks a second, roughly 8 FE/t.
 
 - **Output buffer:** 12 internal slots for mined items; **auto-ejects** into an adjacent inventory /
 
@@ -147,9 +152,12 @@ The miner runs **anywhere it has power**, but the harsh outer moons are gated by
 
 | Tier | Max area | Module slots | Base speed | Planets it can mine |
 | --- | --- | --- | --- | --- |
-| **Tier 1** | 16 × 16 | 1 | 2 blocks/cycle | Overworld, Greenxertz, Orbital Station |
-| Tier 2 *(planned)* | 32 × 32 | 2 | 4 blocks/cycle | + **Cindara** |
+| **Tier 1** | 64 × 64 | 1 | 2 blocks/cycle | Overworld, Greenxertz, Orbital Station |
+| Tier 2 *(planned)* | 64 × 64 | 2 | 4 blocks/cycle | + **Cindara** |
 | Tier 3 *(planned)* | 64 × 64 | 4 | 8 blocks/cycle | + **Glacira** |
+
+Max area is the `quarryMaxSide` config value (default and maximum 64; see
+[Configuration](Configuration)).
 
 Mining **speed/yield also varies per planet** (the dense outer moons mine a little slower). A
 too-low tier on a gated planet pauses with "wrong planet".
@@ -174,10 +182,11 @@ too-low tier on a gated planet pauses with "wrong planet".
   hand from a Frame Casing; always drops a Frame Casing — whether a player breaks it or it decays
   away after its controller is destroyed)
 
-- Capabilities: energy **in** (any side); mined **items out** (any side); **fluid out** (any side).
+- Capabilities: energy **in** (any side); Frame Casing and upgrade modules **in** (any side — a
 
-  The frame-casing and module slots are configuration-only — they can't be piped in or out, so
-  automation can never pull your modules or casings (load casings by hand in the GUI)
+  hopper or pipe can keep the frame slots stocked); mined **items out** (any side); **fluid out**
+  (any side). Only the output slots can be extracted, so automation can never pull your modules or
+  casings back out
 
 - Config: scales with the standard `energyRateMultiplier`, `fuelCostMultiplier`, and
 
