@@ -2,7 +2,7 @@ name: Sync wiki
 
 # Publishes the in-repo wiki/ folder to this repository's GitHub wiki whenever the
 # sources change. The wiki is a separate git repo (<repo>.wiki.git); this job checks the
-# code out, clones the wiki repo, mirrors wiki/*.md into it, and pushes only if something
+# code out, clones the wiki repo, mirrors wiki/*.md (plus wiki/images/) into it, and pushes only if something
 # changed. Plain git — no third-party action needed.
 #
 # ONE-TIME SETUP (required before the first run):
@@ -54,6 +54,13 @@ jobs:
           # Mirror the tracked wiki pages into the wiki repo (drop stale pages, keep .git).
           find wiki_repo -maxdepth 1 -type f -name '*.md' -delete
           cp wiki/*.md wiki_repo/
+
+          # Copy the images the pages embed (images/<name>.gif|png). Additive: images that exist
+          # only in the wiki repo are kept, so a missing local file never breaks a live page.
+          if [ -d wiki/images ]; then
+            mkdir -p wiki_repo/images
+            cp -R wiki/images/. wiki_repo/images/
+          fi
 
           cd wiki_repo
           git config user.name "github-actions[bot]"
