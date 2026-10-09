@@ -103,7 +103,7 @@ legacy/        retired single-loader build, frozen and not shipped
 
 ## Privacy
 
-Nerospace ships **optional, anonymous** crash reporting (Sentry, EU servers) so mod bugs get found and fixed — never IPs, usernames, UUIDs, or world data. Opt out any time with `telemetryEnabled=false` in `config/nerospace.properties`. Full disclosure: [PRIVACY.md](PRIVACY.md).
+Nerospace ships anonymous crash reporting (Sentry, EU servers), **on by default and opt-out**, so mod bugs get found and fixed — never IPs, usernames, UUIDs, or world data. Opt out any time with `telemetryEnabled=false` in `config/nerospace.properties`. Full disclosure: [PRIVACY.md](PRIVACY.md).
 
 ## Contributing & feedback
 

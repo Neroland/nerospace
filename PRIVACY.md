@@ -1,9 +1,10 @@
 # Nerospace privacy & telemetry disclosure
 
-Nerospace includes optional, anonymous error reporting so that crashes and bugs caused by
-the mod can be found and fixed. This page is the full disclosure required by CurseForge's
-moderation rules for mods that use an external analytics/error service, and it documents
-how the system is designed to comply with the GDPR (EU) and POPIA (South Africa).
+Nerospace includes anonymous error reporting so that crashes and bugs caused by the mod can
+be found and fixed. It is **on by default** and **opt-out** (see
+[How to opt out](#how-to-opt-out)). This page is the full disclosure required by
+CurseForge's moderation rules for mods that use an external analytics/error service, and it
+documents how the system is designed to comply with the GDPR (EU) and POPIA (South Africa).
 
 ## What is collected
 
@@ -155,6 +156,6 @@ is enabled, as required by CurseForge moderation policy:
 
 > **Telemetry notice:** Nerospace sends anonymous error reports (stack trace + mod/game
 > versions only — never IPs, usernames, UUIDs, or world data) to the developers via
-> Sentry (EU servers) so crashes can be fixed. Opt out any time by setting
+> Sentry (EU servers) so crashes can be fixed. On by default — opt out any time by setting
 > `telemetryEnabled = false` in `config/nerospace.properties`. Full details:
 > [PRIVACY.md](https://github.com/Neroland/nerospace/blob/main/PRIVACY.md).

@@ -52,8 +52,8 @@ Want to see everything at once? In a creative world, run **`/nerospace gallery`*
 
 > **Telemetry notice:** Nerospace sends anonymous error reports (stack trace + mod/game
 > versions only — never IPs, usernames, UUIDs, or world data) to the developers via
-> Sentry (EU servers) so crashes can be fixed. Opt out any time by setting
-> `telemetryEnabled = false` in `config/nerospace-common.toml`. Full details:
+> Sentry (EU servers) so crashes can be fixed. On by default — opt out any time by setting
+> `telemetryEnabled = false` in `config/nerospace.properties`. Full details:
 > [PRIVACY.md](https://github.com/Neroland/nerospace/blob/main/PRIVACY.md).
 
 ---
