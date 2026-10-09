@@ -18,6 +18,15 @@ import io.sentry.SentryEvent;
  *   <li><b>World-data mismatch.</b> Vanilla's {@code BlockEntity.validateBlockState} rejecting saved block
  *       entity data whose block was replaced (another mod remapped or removed blocks in that chunk). Vanilla
  *       logs it and discards the stale block entity; the world keeps working, and nothing in Nerospace is wrong.</li>
+ *   <li><b>Follow-on registry lookup during registration</b> (MC-NEROSPACE-R). A Nerospace entry (block item,
+ *       block-entity type) looking up a Nerospace block that was never registered, inside the loader's register
+ *       event. The block register event aborted before reaching Nerospace (no Nerospace constructor failure was
+ *       reported alongside, so another mod's registration failure is the likely cause), leaving every Nerospace
+ *       block unbound for the next registry to trip over. If one of our own constructors failed instead, the
+ *       registration factories already report that real exception at its source; this symptom names the victim,
+ *       never the cause, either way. Matched
+ *       only on the loaders' exact unbound-holder messages with a registration frame on the stack, so an unbound
+ *       lookup at runtime still reports.</li>
  * </ul>
  */
 final class TelemetryNoise {
@@ -41,7 +50,25 @@ final class TelemetryNoise {
         if (root == null) {
             return false;
         }
-        return isStaleBlockEntity(root) || thrownByAnotherMod(root);
+        return isStaleBlockEntity(root) || isUnboundDuringRegistration(root) || thrownByAnotherMod(root);
+    }
+
+    private static boolean isUnboundDuringRegistration(Throwable root) {
+        String message = root.getMessage();
+        if (!(root instanceof NullPointerException) || message == null) {
+            return false;
+        }
+        // NeoForge DeferredHolder / Forge RegistryObject wording for a holder whose value was never bound.
+        if (!message.startsWith("Trying to access unbound value") && !message.startsWith("Registry Object not present")) {
+            return false;
+        }
+        for (StackTraceElement frame : root.getStackTrace()) {
+            String cls = frame.getClassName();
+            if (cls.endsWith(".RegisterEvent") || cls.endsWith(".DeferredRegister")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isStaleBlockEntity(Throwable root) {

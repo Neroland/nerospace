@@ -5,7 +5,9 @@ import java.util.Locale;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.ITextWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
@@ -73,15 +75,18 @@ public class RefiningCategory extends AbstractRecipeCategory<RefiningCategory.Re
         int ticks = NerospaceConfig.scaleInterval(FuelRefineryBlockEntity.WORK_TICKS,
                 NerospaceConfig.machineSpeedMultiplier());
         builder.addAnimatedRecipeArrow(ticks).setPosition(28, 11);
-        builder.addText(List.of(
+        ITextWidget text = builder.addText(List.of(
                         Component.translatable("jei.nerospace.stat.energy_cost",
                                 String.format(Locale.ROOT, "%,d",
                                         (long) ticks * FuelRefineryBlockEntity.FE_PER_TICK)),
                         Component.translatable("jei.nerospace.stat.time",
                                 String.format(Locale.ROOT, "%.1f", ticks / 20.0))),
-                        getWidth(), 20)
-                .setPosition(0, 42)
-                .setTextAlignment(HorizontalAlignment.CENTER)
-                .setColor(0xFF808080);
+                        getWidth(), 20);
+        text.setTextAlignment(HorizontalAlignment.CENTER).setColor(0xFF808080);
+        // Position through IPlaceable, not ITextWidget: older JEI builds (e.g. 30.26 on 26.2) declare no
+        // ITextWidget#setPosition, so a call bound to it throws NoSuchMethodError on an older JEI
+        // (MC-NEROSPACE-T). IPlaceable#setPosition(int, int) exists in every supported JEI build.
+        IPlaceable<?> placeable = text;
+        placeable.setPosition(0, 42);
     }
 }
