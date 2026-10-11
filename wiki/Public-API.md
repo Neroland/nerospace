@@ -39,6 +39,8 @@ server-side and interface-only.
   fuel in mB (including the empty return leg when asked), cross-dimension flag, payload mass.
 - `RouteApi.requestFlight(server, requester, FlightRequest)` — launch a manifest from the docked, fuelled
   cargo rocket on the origin pad; a `FlightRequestResult` carries the flight or the exact denial reason.
+  New `Denial` constants are only ever appended: 1.4.0 added `CANNOT_PAY` (the requester could not pay
+  the server's optional launch or docking fee). Map names you do not know to a fallback.
 - `RouteApi.flight` / `flightsOwnedBy` / `routesOwnedBy` / `cancel` — query and manage.
 - `RouteEvents.subscribe(listener)` — `onPadRegistered`, `onPadUnregistered`, `onFlightDeparted`,
   `onFlightArrived`, `onFlightHeld`, `onFlightDropped`.

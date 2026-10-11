@@ -58,6 +58,15 @@ subprojects {
                     password = gprKey
                 }
             }
+            // NeroEconomy (optional, compileOnly) — same credential rule as Core above.
+            maven {
+                name = 'NeroEconomyGitHubPackages'
+                url = 'https://maven.pkg.github.com/Neroland/neroeconomy'
+                credentials {
+                    username = gprUser
+                    password = gprKey
+                }
+            }
         }
         mavenCentral()
         maven { url 'https://maven.fabricmc.net/' }

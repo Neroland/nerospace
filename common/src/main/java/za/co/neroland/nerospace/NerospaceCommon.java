@@ -44,6 +44,9 @@ public final class NerospaceCommon {
         Services.preload();
 
         registerDataErasers();
+        // Optional NeroEconomy fees/rewards: claims its caller handle here (it must happen at common init).
+        // Inert without NeroEconomy, and every amount defaults to 0 = off.
+        za.co.neroland.nerospace.compat.neroeconomy.NerospaceEconomy.init();
         installMeteorPlanetProvider();
         contributeToSharedTab();
 

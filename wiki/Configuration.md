@@ -118,6 +118,20 @@ Tunables for [Cargo Pads](Cargo-Pad) and cargo flights. All server-authoritative
 
 `fuelCostMultiplier` also scales cargo fuel.
 
+### Economy (optional — needs NeroEconomy)
+
+Credit rewards and fees that only exist when the **NeroEconomy** mod is installed. Every amount
+defaults to `0`, which switches that feature off, so a server that changes nothing plays exactly as
+before. All server-authoritative.
+
+| Key | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `economyFirstVisitReward` | `0` | 0–1,000,000 | Credits paid once the first time a player reaches each planet. Paid from NeroEconomy's Reserve and subject to its daily payout limits; a refused reward is not retried. |
+| `economyLaunchFee` | `0` | 0–1,000,000 | Credits charged per crewed or cargo rocket launch, after every other launch check has passed. A player who cannot pay is refused the launch (a Cargo Pad shows *Cannot pay the flight fee*). |
+| `economyDockingFee` | `0` | 0–1,000,000 | Credits charged per flight bound for an orbital station, on top of the launch fee. If the launch fee is then refused, the docking fee just taken is handed back. |
+
+Fees go to NeroEconomy's Reserve. Without NeroEconomy these keys do nothing.
+
 ### Meteor events
 
 Tunables for the meteor world-event (see **[Meteor Events](Meteor-Events)**). Defaults give roughly

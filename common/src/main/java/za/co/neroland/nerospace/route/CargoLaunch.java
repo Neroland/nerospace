@@ -3,7 +3,9 @@ package za.co.neroland.nerospace.route;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 
@@ -13,6 +15,7 @@ import za.co.neroland.nerospace.api.route.FlightRequestResult;
 import za.co.neroland.nerospace.api.route.FlightRequestResult.Denial;
 import za.co.neroland.nerospace.api.route.PadHandle;
 import za.co.neroland.nerospace.api.route.RouteQuote;
+import za.co.neroland.nerospace.compat.neroeconomy.NerospaceEconomy;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 
@@ -115,6 +118,20 @@ public final class CargoLaunch {
         }
         if (rocket.getFuel() < quote.fuelMb()) {
             return FlightRequestResult.denied(Denial.NOT_ENOUGH_FUEL);
+        }
+
+        // Optional NeroEconomy fees — only after every other check passed, so a refused launch costs nothing.
+        // Keys carry the flight id this launch will get (never a player id); nothing below can fail once paid.
+        int pendingFlightId = registry.peekNextFlightId();
+        RouteRegistry.Endpoint target = registry.endpoint(server, destinationPadId);
+        String refused = NerospaceEconomy.chargeFlight(server, requester, target != null && target.station(),
+                "launch/" + pendingFlightId, "dock/" + pendingFlightId);
+        if (refused != null) {
+            ServerPlayer payer = server.getPlayerList().getPlayer(requester);
+            if (payer != null) {
+                payer.sendSystemMessage(Component.translatable(refused));
+            }
+            return FlightRequestResult.denied(Denial.CANNOT_PAY);
         }
 
         // --- Commit: fuel, record, lift-off — in that order, so a crash between steps loses fuel, never cargo.

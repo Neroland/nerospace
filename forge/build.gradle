@@ -105,6 +105,10 @@ dependencies {
     // Nerospace (see mods.toml dependency). Resolved from mavenLocal() (nerolandcore-forge-<mc>).
     implementation "za.co.neroland.nerolandcore:nerolandcore-forge-${mc}:${nerolandcoreVersion}"
 
+    // NeroEconomy — OPTIONAL. Its public API on the compile classpath only: never bundled, never required.
+    // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
+    compileOnly "za.co.neroland.neroeconomy:neroeconomy-forge-${mc}:${project.findProperty('neroeconomy_version')}"
+
     implementation 'io.sentry:sentry:8.45.0'
     jarJar(group: 'io.sentry', name: 'sentry', version: '8.45.0')
 

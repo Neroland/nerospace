@@ -33,7 +33,12 @@ public record FlightRequestResult(Optional<FlightHandle> flight, @Nullable Denia
         /** The docked rocket holds less fuel than the quote. */
         NOT_ENOUGH_FUEL,
         /** The requester already has the maximum number of live flights. */
-        TOO_MANY_FLIGHTS
+        TOO_MANY_FLIGHTS,
+        /**
+         * The requester could not pay the server's launch or docking fee (only with NeroEconomy installed and
+         * a non-zero fee configured). Added in 1.4.0 — appended, so earlier ordinals are unchanged.
+         */
+        CANNOT_PAY
     }
 
     public static FlightRequestResult accepted(FlightHandle flight) {

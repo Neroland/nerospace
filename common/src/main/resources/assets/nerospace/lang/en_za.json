@@ -16,6 +16,7 @@
   "gui.nerospace.cargo_pad.denial.origin_not_loaded": "The pad is not loaded",
   "gui.nerospace.cargo_pad.denial.pad_too_small": "Build a full 3x3 pad around the Cargo Pad",
   "gui.nerospace.cargo_pad.denial.too_many_flights": "You already have the maximum number of flights in the air",
+  "gui.nerospace.cargo_pad.denial.cannot_pay": "Cannot pay the flight fee",
   "gui.nerospace.cargo_pad.hold": "Hold: %s/%s slots",
   "gui.nerospace.cargo_pad.idle": "Ready — load the hold and pick a destination",
   "gui.nerospace.cargo_pad.in_flight": "Last flight: in transit, %ss to go",
@@ -52,5 +53,7 @@
   "item.nerospace.cargo_pad": "Cargo Pad",
   "item.nerospace.cargo_rocket": "Cargo Rocket",
   "item.nerospace.cargo_rocket.deployed": "Cargo rocket deployed on the pad — load the hold, pick a destination and press Launch",
-  "item.nerospace.cargo_rocket.deployed_need_pad": "Cargo rocket deployed. This pad reads as Tier %s — a cargo rocket needs a Tier %s pad (a full 3x3 around the Cargo Pad) to launch."
+  "item.nerospace.cargo_rocket.deployed_need_pad": "Cargo rocket deployed. This pad reads as Tier %s — a cargo rocket needs a Tier %s pad (a full 3x3 around the Cargo Pad) to launch.",
+  "message.nerospace.economy.first_visit_reward": "First landing bonus: %s credits",
+  "message.nerospace.economy.launch_refused": "Launch refused: the flight fee could not be paid."
 }

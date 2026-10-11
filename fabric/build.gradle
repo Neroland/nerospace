@@ -69,6 +69,10 @@ dependencies {
     // BEFORE Nerospace (see fabric.mod.json depends).
     implementation "za.co.neroland.nerolandcore:nerolandcore-fabric-${mc}:${nerolandcoreVersion}"
 
+    // NeroEconomy — OPTIONAL. Its public API on the compile classpath only: never bundled, never required.
+    // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
+    compileOnly "za.co.neroland.neroeconomy:neroeconomy-fabric-${mc}:${project.findProperty('neroeconomy_version')}"
+
     // Sentry SDK (telemetry/NerospaceTelemetry): compile against it + embed it as a jar-in-jar so the
     // shipped Fabric jar carries it. Counterpart to the NeoForge JarJar bundling.
     implementation 'io.sentry:sentry:8.45.0'

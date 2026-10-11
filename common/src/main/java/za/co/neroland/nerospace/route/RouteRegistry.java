@@ -474,6 +474,11 @@ public final class RouteRegistry extends SavedData {
      * Records a departure. {@code items} are copied; the caller has already removed them from the pad and
      * drained the fuel. Flags the store dirty so the flight survives a restart from this tick on.
      */
+    /** The id the next {@link #createFlight} call will assign (used as a non-identifying fee request key). */
+    public int peekNextFlightId() {
+        return this.nextFlightId;
+    }
+
     public FlightRecord createFlight(int routeId, int originPadId, int destinationPadId, String owner,
             boolean returnLeg, Endpoint origin, Endpoint destination, int fuel, List<ItemStack> items,
             long departedAt, int travelTicks) {

@@ -86,6 +86,11 @@ committing it and NeroEvents can reason about durations.
 | `cargoFlightRetentionDays` | 7 | 1..90 | in-game days a completed flight record is kept |
 | `cargoMaxFlightsPerOwner` | 16 | 1..128 | concurrent live flights per owner |
 | `cargoMaxPads` | 256 | 8..4096 | pad registry cap |
+| `economyLaunchFee` | 0 | 0..1000000 | NeroEconomy only: credits per launch (0 = off); refused → `CANNOT_PAY` |
+| `economyDockingFee` | 0 | 0..1000000 | NeroEconomy only: extra credits when the destination is a station (0 = off) |
+
+With NeroEconomy installed and a non-zero fee, `CargoLaunch.launch` charges the requester after every
+other check and before the commit, keyed `launch/<id>` / `dock/<id>` with the id the flight will get.
 
 ## 6. Flight lifecycle
 

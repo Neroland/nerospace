@@ -100,6 +100,18 @@ Server owners can switch the whole module off in `config/nerospace.properties`:
 linkModuleEnabled=false
 ```
 
+### Optional economy fees and rewards (NeroEconomy)
+
+When the optional **NeroEconomy** mod is installed **and** a server owner sets a non-zero
+`economyFirstVisitReward`, `economyLaunchFee` or `economyDockingFee` (all default to `0` = off),
+Nerospace asks NeroEconomy to pay or charge the player concerned. Nerospace stores **no new
+per-player data** for this: your UUID is handed to NeroEconomy only for that one payment and is
+never logged by Nerospace or placed in a request key (keys carry a planet id plus a world-wide
+counter, or a cargo flight number). The planet-visit store gains one world-wide number — how many
+first visits have ever been recorded — which is not tied to any player. The payment itself is a row
+in NeroEconomy's ledger, labelled `nerospace/<reason>`; what NeroEconomy keeps, how long, and how it
+is exported and erased is described in NeroEconomy's own privacy notice.
+
 ## Legal basis and your rights (GDPR / POPIA)
 
 Error reports are processed on the basis of **legitimate interest** (GDPR Art. 6(1)(f);

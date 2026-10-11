@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-11
+
+Optional economy hooks for servers running **NeroEconomy** 0.3.0-beta.1 or later. Everything is off by
+default: with NeroEconomy absent, or with the new amounts left at `0`, Nerospace behaves exactly as in
+1.3.1.
+
+### Added
+
+- **First-visit reward** (`economyFirstVisitReward`). A player's first arrival at each planet can pay a
+  one-off credit bonus from NeroEconomy's Reserve, within its daily payout limits. A refused reward
+  (Reserve short, budget spent) tells the player why and is not retried.
+- **Launch fee** (`economyLaunchFee`). Charged to the pilot of a crewed rocket or the requester of a cargo
+  flight once every other launch check has passed; a player who cannot pay is refused the launch.
+- **Docking fee** (`economyDockingFee`). Charged on top of the launch fee for flights bound for an orbital
+  station. If the launch fee is refused afterwards, the docking fee is handed back.
+- **`FlightRequestResult.Denial.CANNOT_PAY`**, appended to the public route API (existing ordinals are
+  unchanged). The Cargo Pad shows it as *Cannot pay the flight fee*.
+
+### Changed
+
+- NeroEconomy is declared as an optional dependency (Fabric `suggests`, NeoForge `optional`, Forge
+  `mandatory = false`) and compiled against `compileOnly`; it is never bundled or required.
+- The planet-visit store keeps one world-wide counter of first visits (no player data), used to give
+  each reward a unique, non-identifying request key. Older saves load unchanged.
+
+Privacy: no new per-player data is stored, and no UUID is logged or put in a request key — see
+[PRIVACY.md](PRIVACY.md).
+
 ## [1.3.1] - 2026-10-01
 
 ### Fixed

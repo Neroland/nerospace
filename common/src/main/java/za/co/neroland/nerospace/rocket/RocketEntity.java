@@ -647,6 +647,18 @@ public class RocketEntity extends Entity implements MenuProvider {
             }
             return;
         }
+        // Optional NeroEconomy launch/docking fees — charged only now that every crewed check has passed.
+        // No request key: a crewed launch has no flight id, and the charge is a single synchronous call.
+        if (this.getFirstPassenger() instanceof ServerPlayer pilot && level() instanceof ServerLevel serverLevel) {
+            String refused = za.co.neroland.nerospace.compat.neroeconomy.NerospaceEconomy.chargeFlight(
+                    serverLevel.getServer(), pilot.getUUID(),
+                    ModDimensions.STATION_LEVEL.equals(selectedDestination()), null, null);
+            if (refused != null) {
+                pilot.sendSystemMessage(Component.translatable("message.nerospace.economy.launch_refused"));
+                pilot.sendSystemMessage(Component.translatable(refused));
+                return;
+            }
+        }
         // Remember the pad we're lifting off from so the return rocket can fly straight back to it.
         this.launchOriginDim = level().dimension();
         BlockPos originPad = validPadScanOrigin();

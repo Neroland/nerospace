@@ -85,6 +85,18 @@ public final class NerospaceConfig {
     private static final ConfigValue<Integer> CARGO_MAX_PADS = SCHEMA.intRange("cargoMaxPads",
             256, 8, 4096, true, "hard cap on registered Cargo Pads (keeps a grief-spammed registry small)");
 
+    // --- Economy (only used when the optional NeroEconomy mod is installed) ----------------------
+    // Every amount defaults to 0 = off, so a server that does not opt in plays exactly as before.
+    private static final ConfigValue<Integer> ECONOMY_FIRST_VISIT_REWARD = SCHEMA.intRange("economyFirstVisitReward",
+            0, 0, 1_000_000, true, "credits paid once when a player first reaches each planet (0 = off; needs "
+            + "NeroEconomy, paid from its Reserve and subject to its sibling budgets)");
+    private static final ConfigValue<Integer> ECONOMY_LAUNCH_FEE = SCHEMA.intRange("economyLaunchFee",
+            0, 0, 1_000_000, true, "credits charged per crewed or cargo rocket launch (0 = off; needs NeroEconomy; "
+            + "a player who cannot pay is refused the launch)");
+    private static final ConfigValue<Integer> ECONOMY_DOCKING_FEE = SCHEMA.intRange("economyDockingFee",
+            0, 0, 1_000_000, true, "credits charged per flight bound for an orbital station, on top of the launch "
+            + "fee (0 = off; needs NeroEconomy)");
+
     private static volatile boolean loaded;
 
     private NerospaceConfig() {
@@ -120,6 +132,21 @@ public final class NerospaceConfig {
 
     public static int cargoMaxPads() {
         return CARGO_MAX_PADS.get();
+    }
+
+    /** Credits for a player's first arrival at each planet; 0 = off. Used only with NeroEconomy. */
+    public static int economyFirstVisitReward() {
+        return ECONOMY_FIRST_VISIT_REWARD.get();
+    }
+
+    /** Credits charged per rocket launch; 0 = off. Used only with NeroEconomy. */
+    public static int economyLaunchFee() {
+        return ECONOMY_LAUNCH_FEE.get();
+    }
+
+    /** Credits charged per flight bound for an orbital station; 0 = off. Used only with NeroEconomy. */
+    public static int economyDockingFee() {
+        return ECONOMY_DOCKING_FEE.get();
     }
 
     public static boolean isTelemetryEnabled() {

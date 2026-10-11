@@ -47,6 +47,13 @@ public final class PlanetVisitState extends SavedData {
 
     private final Map<UUID, Set<String>> visits = new LinkedHashMap<>();
 
+    /**
+     * Server-wide count of genuine first visits ever recorded. Not personal data: it is one number for the
+     * whole world, never keyed by a player, and survives erasure on purpose so it never repeats. It gives
+     * a first-visit reward a unique, non-identifying request key ({@code visit/<planet>/<sequence>}).
+     */
+    private long sequence;
+
     /** Overworld-scoped: visits are a server-wide fact about a player, not a per-dimension one. */
     public static PlanetVisitState get(MinecraftServer server) {
         return SavedDataRecovery.get(server.overworld(), TYPE, PlanetVisitState::new, RECOVERY_NAME);
@@ -57,9 +64,15 @@ public final class PlanetVisitState extends SavedData {
         boolean changed = this.visits.computeIfAbsent(player, ignored -> new LinkedHashSet<>())
                 .add(planet.asString());
         if (changed) {
+            this.sequence++;
             setDirty();
         }
         return changed;
+    }
+
+    /** The sequence number of the most recent genuine first visit (0 before any). */
+    public long sequence() {
+        return this.sequence;
     }
 
     public boolean hasVisited(UUID player, PlanetId planet) {
@@ -86,12 +99,16 @@ public final class PlanetVisitState extends SavedData {
     }
 
     public static Codec<PlanetVisitState> codec() {
-        return Entry.CODEC.listOf().optionalFieldOf("visits", List.of()).codec()
-                .xmap(PlanetVisitState::decode, PlanetVisitState::encode);
+        // "visit_sequence" is optional so files written before it existed load unchanged (sequence 0).
+        return RecordCodecBuilder.create(instance -> instance.group(
+                Entry.CODEC.listOf().optionalFieldOf("visits", List.of()).forGetter(PlanetVisitState::encode),
+                Codec.LONG.optionalFieldOf("visit_sequence", 0L).forGetter(PlanetVisitState::sequence)
+        ).apply(instance, PlanetVisitState::decode));
     }
 
-    private static PlanetVisitState decode(List<Entry> entries) {
+    private static PlanetVisitState decode(List<Entry> entries, long sequence) {
         PlanetVisitState state = new PlanetVisitState();
+        state.sequence = Math.max(0L, sequence);
         for (Entry entry : entries) {
             try {
                 state.visits.put(UUID.fromString(entry.player()), new LinkedHashSet<>(entry.planets()));
