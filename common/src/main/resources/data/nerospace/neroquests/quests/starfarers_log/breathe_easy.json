@@ -1,0 +1,41 @@
+{
+  "title": "quest.nerospace.starfarers_log.breathe_easy.title",
+  "description": "quest.nerospace.starfarers_log.breathe_easy.desc",
+  "icon": "nerospace:oxygen_suit_helmet",
+  "prerequisites": [
+    "nerospace:starfarers_log/station_visit"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:oxygen_suit_helmet",
+      "count": 1
+    },
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:oxygen_suit_chestplate",
+      "count": 1
+    },
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:oxygen_suit_leggings",
+      "count": 1
+    },
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:oxygen_suit_boots",
+      "count": 1
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 150
+    },
+    {
+      "type": "neroquests:mod_hook",
+      "gate": "nerospace:hook/oxygen_top_up"
+    }
+  ],
+  "scope": "player"
+}

@@ -1,0 +1,21 @@
+{
+  "title": "quest.nerospace.starfarers_log.industrial_power.title",
+  "description": "quest.nerospace.starfarers_log.industrial_power.desc",
+  "icon": "minecraft:redstone_block",
+  "prerequisites": [
+    "nerospace:starfarers_log/grinder_online"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerolandcore:industrial_power"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

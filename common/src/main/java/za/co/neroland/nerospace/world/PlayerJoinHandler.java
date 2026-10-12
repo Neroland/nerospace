@@ -34,6 +34,9 @@ public final class PlayerJoinHandler {
         // a live Player). Finish the job now. No-op for everyone else.
         za.co.neroland.nerospace.data.NerospaceErasure.applyOnJoin(player);
 
+        // Deliver any hook gate (Star Guide hint / oxygen top-up) that opened while this player was offline.
+        za.co.neroland.nerospace.progression.QuestHooks.onJoin(player);
+
         // Opt-out: config/nerospace.properties -> welcomeMessageEnabled=false joins silently. Checked
         // here (after the erasure sweep above, which must always run) and read fresh on every join, so
         // a `/neroland config reload` applies without a restart.

@@ -1,0 +1,102 @@
+{
+  "title": "chapter.nerospace.starfarers_log.title",
+  "icon": "nerospace:rocket_tier_1",
+  "allow_server_scope": true,
+  "quests": [
+    {
+      "quest": "nerospace:starfarers_log/first_nerosium",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/grinder_online",
+      "x": 1,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/industrial_power",
+      "x": 2,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/launch_ready",
+      "x": 3,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/reached_orbit",
+      "x": 4,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/station_visit",
+      "x": 4,
+      "y": -1
+    },
+    {
+      "quest": "nerospace:starfarers_log/breathe_easy",
+      "x": 5,
+      "y": -1
+    },
+    {
+      "quest": "nerospace:starfarers_log/first_colony",
+      "x": 5,
+      "y": -2
+    },
+    {
+      "quest": "nerospace:starfarers_log/greenxertz",
+      "x": 5,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/cindara",
+      "x": 6,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/glacira",
+      "x": 7,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/deep_space",
+      "x": 8,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:starfarers_log/stalker_hunt",
+      "x": 5,
+      "y": 1
+    },
+    {
+      "quest": "nerospace:starfarers_log/freighter",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "quest": "nerospace:starfarers_log/alien_relic",
+      "x": 1,
+      "y": 1
+    },
+    {
+      "quest": "nerospace:starfarers_log/first_freight",
+      "x": 7,
+      "y": 1
+    },
+    {
+      "quest": "nerospace:starfarers_log/terraformed_ground",
+      "x": 6,
+      "y": -1
+    },
+    {
+      "quest": "nerospace:starfarers_log/living_world",
+      "x": 7,
+      "y": -1
+    },
+    {
+      "quest": "nerospace:starfarers_log/hundred_flights",
+      "x": 8,
+      "y": 1
+    }
+  ]
+}

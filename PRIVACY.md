@@ -100,6 +100,15 @@ Server owners can switch the whole module off in `config/nerospace.properties`:
 linkModuleEnabled=false
 ```
 
+### Progression gates (Neroland Core)
+
+Nerospace also opens a handful of **player-scope progression gates** in Neroland Core's shared gate
+store — personal milestones such as *First Freight* or *Terraformed Ground*, and two "hook" gates
+another mod may open to hand you a Star Guide hint or an oxygen top-up. Each entry is your UUID plus a
+gate id, held by Core on your own server and covered by Core's privacy notice and erasure hook; Nerospace
+never logs the UUID. The world-wide freight count it publishes for shared quests is a plain number
+labelled with a dimension id — never a pad position or a player.
+
 ### Optional economy fees and rewards (NeroEconomy)
 
 When the optional **NeroEconomy** mod is installed **and** a server owner sets a non-zero

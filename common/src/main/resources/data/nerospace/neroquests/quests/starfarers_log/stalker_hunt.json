@@ -1,0 +1,22 @@
+{
+  "title": "quest.nerospace.starfarers_log.stalker_hunt.title",
+  "description": "quest.nerospace.starfarers_log.stalker_hunt.desc",
+  "icon": "minecraft:iron_sword",
+  "prerequisites": [
+    "nerospace:starfarers_log/greenxertz"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:kill_entity",
+      "entity": "nerospace:xertz_stalker",
+      "count": 5
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

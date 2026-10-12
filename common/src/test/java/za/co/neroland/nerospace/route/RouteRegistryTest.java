@@ -163,6 +163,17 @@ class RouteRegistryTest {
     }
 
     @Test
+    @DisplayName("the world-wide delivery count persists as a plain number and survives the codec round trip")
+    void deliveredTotal() {
+        RouteRegistry registry = new RouteRegistry();
+        assertEquals(0L, registry.deliveredTotal());
+        assertEquals(1L, registry.recordDelivery());
+        assertEquals(2L, registry.recordDelivery());
+        RouteRegistry copy = roundTrip(registry);
+        assertEquals(2L, copy.deliveredTotal());
+    }
+
+    @Test
     @DisplayName("retention: terminal flights are pruned after the configured window, live ones never")
     void retention() {
         RouteRegistry registry = new RouteRegistry();

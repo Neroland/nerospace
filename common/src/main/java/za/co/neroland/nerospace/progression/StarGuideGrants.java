@@ -28,6 +28,16 @@ public final class StarGuideGrants {
     /** Throttle: progression is slow, so a periodic chunk-stage check is plenty. */
     private static final int CHECK_INTERVAL_TICKS = 40;
 
+    /**
+     * Nerospace's own player-scope <em>record</em> gates, opened beside the matching guide advancements so
+     * other mods (a quest pack, for one) can read these milestones through Core without touching
+     * advancements. They have no {@code requires} and are never checked for access to anything.
+     */
+    public static final Identifier TERRAFORMED_GROUND_GATE =
+            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "terraformed_ground");
+    public static final Identifier LIVING_WORLD_GATE =
+            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "living_world");
+
     private StarGuideGrants() {
     }
 
@@ -39,9 +49,11 @@ public final class StarGuideGrants {
         int stage = Services.PLATFORM.getTerraformStage(chunk);
         if (stage >= 1) {
             grant(player, "guide/terraformed_ground");
+            ProgressionGates.open(player, TERRAFORMED_GROUND_GATE); // record gate; re-opening is a no-op
         }
         if (stage >= 3) {
             grant(player, "guide/living_world");
+            ProgressionGates.open(player, LIVING_WORLD_GATE);
         }
         driveCoreGates(player, stage);
     }

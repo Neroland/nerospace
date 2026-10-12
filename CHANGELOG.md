@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-11
+
+Quest-book content and the small progression signals behind it. Requires **Neroland Core 1.15.0**.
+Nothing here depends on NeroQuests: the quest pack is plain data inside the jar and simply stays
+dormant when NeroQuests is not installed.
+
+### Added
+
+- **Quest pack.** Ships a NeroQuests quest pack — chapter `nerospace:starfarers_log` "Starfarer's Log",
+  19 quests — that appears in the quest book when NeroQuests is installed; inert otherwise, no
+  dependency. The chapter walks the whole arc from the first Nerosium ingot through orbit, the planets,
+  colonies, freight and terraforming, including one shared "world log" quest for a hundred deliveries.
+- **Record gates.** Three player-scope Neroland Core gates — `nerospace:first_freight`,
+  `nerospace:terraformed_ground` and `nerospace:living_world` — are opened beside the matching Star
+  Guide advancements. `first_freight` uses Core's offline-capable overload, so an owner who logged off
+  while their flight was in the air still gets the milestone. They have no `requires` and gate nothing.
+- **World freight log.** The cargo-route store keeps one world-wide count of delivered flights (a plain
+  number, tied to no pad or player) and publishes a `nerospace:cargo_delivered` threshold crossing on
+  Core's bus at 1, 10, 100 and 1000 deliveries. Its scope is the destination dimension id only.
+- **Hook gates.** Two player-scope record gates other mods may open to hand a player an effect:
+  `nerospace:hook/reveal_star_guide_page` sends the player a hint naming their next Star Guide step
+  (nothing is awarded), and `nerospace:hook/oxygen_top_up` refills the personal / suit tank to its normal
+  maximum once. Each is applied on the server thread, or on the player's next login if they were
+  offline, and the gate is closed again so it can be re-armed.
+
+### Changed
+
+- Neroland Core floor raised to 1.15.0 (the gate and threshold APIs above).
+
+### Fixed
+
+- The rocket screen's pad-destination button had two conflicting `gui.nerospace.rocket.pad` lang entries;
+  it now reads `Land: <pad name>` as the screen intends.
+
+Privacy: no new per-player data is stored by Nerospace — player-scope gates live in Neroland Core's gate
+store, which Core's privacy notice covers — and no UUID is logged; see [PRIVACY.md](PRIVACY.md).
+
 ## [1.4.0] - 2026-10-11
 
 Optional economy hooks for servers running **NeroEconomy** 0.3.0-beta.1 or later. Everything is off by

@@ -1,0 +1,24 @@
+{
+  "title": "quest.nerospace.starfarers_log.first_nerosium.title",
+  "description": "quest.nerospace.starfarers_log.first_nerosium.desc",
+  "icon": "nerospace:nerosium_ingot",
+  "prerequisites": [],
+  "objectives": [
+    {
+      "type": "neroquests:collect_item",
+      "tag": "c:ingots/nerosium",
+      "count": 1
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 50
+    },
+    {
+      "type": "neroquests:mod_hook",
+      "gate": "nerospace:hook/reveal_star_guide_page"
+    }
+  ],
+  "scope": "player"
+}

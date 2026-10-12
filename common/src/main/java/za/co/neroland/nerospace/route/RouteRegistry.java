@@ -65,6 +65,8 @@ public final class RouteRegistry extends SavedData {
     private int nextPadId = 1;
     private int nextRouteId = 1;
     private int nextFlightId = 1;
+    /** World-wide count of delivered (non-return) flights. A plain number: it names no pad, owner or place. */
+    private long deliveredTotal = 0L;
 
     public RouteRegistry() {
     }
@@ -89,12 +91,13 @@ public final class RouteRegistry extends SavedData {
                 FlightRecord.CODEC.listOf().optionalFieldOf("flights", List.of()).forGetter(r -> new ArrayList<>(r.flights.values())),
                 Codec.INT.optionalFieldOf("next_pad_id", 1).forGetter(r -> r.nextPadId),
                 Codec.INT.optionalFieldOf("next_route_id", 1).forGetter(r -> r.nextRouteId),
-                Codec.INT.optionalFieldOf("next_flight_id", 1).forGetter(r -> r.nextFlightId)
+                Codec.INT.optionalFieldOf("next_flight_id", 1).forGetter(r -> r.nextFlightId),
+                Codec.LONG.optionalFieldOf("delivered_total", 0L).forGetter(r -> r.deliveredTotal)
         ).apply(inst, RouteRegistry::fromData));
     }
 
     private static RouteRegistry fromData(List<PadRecord> pads, List<RouteRecord> routes, List<FlightRecord> flights,
-            Integer nextPad, Integer nextRoute, Integer nextFlight) {
+            Integer nextPad, Integer nextRoute, Integer nextFlight, Long deliveredTotal) {
         RouteRegistry r = new RouteRegistry();
         for (PadRecord pad : pads) {
             r.pads.put(pad.id(), pad);
@@ -108,6 +111,7 @@ public final class RouteRegistry extends SavedData {
         r.nextPadId = Math.max(nextPad.intValue(), 1);
         r.nextRouteId = Math.max(nextRoute.intValue(), 1);
         r.nextFlightId = Math.max(nextFlight.intValue(), 1);
+        r.deliveredTotal = Math.max(deliveredTotal.longValue(), 0L);
         return r;
     }
 
@@ -495,6 +499,18 @@ public final class RouteRegistry extends SavedData {
     /** Mutators on a {@link FlightRecord} call this so the change is persisted. */
     void flightChanged() {
         setDirty();
+    }
+
+    /** Counts one more delivered flight and returns the new world-wide total (persisted, never per player). */
+    long recordDelivery() {
+        this.deliveredTotal++;
+        setDirty();
+        return this.deliveredTotal;
+    }
+
+    /** The world-wide number of delivered (non-return) flights so far. */
+    public long deliveredTotal() {
+        return this.deliveredTotal;
     }
 
     /** Drops terminal flights whose completion is older than the retention window. */

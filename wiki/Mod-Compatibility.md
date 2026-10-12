@@ -49,6 +49,21 @@ it, or Nerospace to read theirs.
 Nerospace's recipes are tag-based throughout, so another mod's equivalent ingredients — its glass,
 redstone, ore drops and the common `c:` material tags — work in them wherever the tag matches.
 
+## Quests (optional — NeroQuests)
+
+Nerospace bundles a quest chapter, **Starfarer's Log** (19 quests), that appears in the quest book when
+the sibling **NeroQuests** mod is installed. It follows the mod's own progression — first Nerosium, power,
+launch, orbit, the planets, suits, colonies, freight and terraforming — plus one shared world-log quest for
+a hundred cargo deliveries. NeroQuests is not required: without it the pack is inert data in the jar.
+
+The milestones behind those quests are plain Neroland Core progression gates and threshold events, so any
+mod on Core can read them: the player-scope record gates `nerospace:first_freight`,
+`nerospace:terraformed_ground` and `nerospace:living_world`, and the world channel
+`nerospace:cargo_delivered` (scope = destination dimension id; rungs 1 / 10 / 100 / 1000). Two *hook* gates,
+`nerospace:hook/reveal_star_guide_page` and `nerospace:hook/oxygen_top_up`, work the other way round: open
+one for a player and Nerospace sends them a Star Guide hint or refills their oxygen once, then closes the
+gate again. None of these gates lock anything.
+
 ## The caveat worth reading
 
 All of the above is Nerospace's half of the deal: it speaks the standard, platform-native APIs. Whether

@@ -1,0 +1,21 @@
+{
+  "title": "quest.nerospace.starfarers_log.greenxertz.title",
+  "description": "quest.nerospace.starfarers_log.greenxertz.desc",
+  "icon": "nerospace:alien_fragment",
+  "prerequisites": [
+    "nerospace:starfarers_log/reached_orbit"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:reach_dimension",
+      "dimension": "nerospace:greenxertz"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 200
+    }
+  ],
+  "scope": "player"
+}

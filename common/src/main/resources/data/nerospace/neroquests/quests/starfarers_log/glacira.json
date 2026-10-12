@@ -1,0 +1,26 @@
+{
+  "title": "quest.nerospace.starfarers_log.glacira.title",
+  "description": "quest.nerospace.starfarers_log.glacira.desc",
+  "icon": "nerospace:glacite",
+  "prerequisites": [
+    "nerospace:starfarers_log/cindara"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:reach_dimension",
+      "dimension": "nerospace:glacira"
+    },
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:glacite",
+      "count": 1
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 300
+    }
+  ],
+  "scope": "player"
+}

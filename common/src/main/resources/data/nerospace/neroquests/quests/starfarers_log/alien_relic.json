@@ -1,0 +1,22 @@
+{
+  "title": "quest.nerospace.starfarers_log.alien_relic.title",
+  "description": "quest.nerospace.starfarers_log.alien_relic.desc",
+  "icon": "nerospace:alien_core",
+  "prerequisites": [
+    "nerospace:starfarers_log/first_nerosium"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:alien_core",
+      "count": 1
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 75
+    }
+  ],
+  "scope": "player"
+}

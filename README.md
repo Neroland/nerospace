@@ -31,6 +31,8 @@ Nerospace is a complete, standalone space-progression mod for Minecraft (Java Ed
 
 The mod is built **standalone** — its only dependency is **Neroland Core**, and it needs no third-party mods — but it uses conventional `c:` tags and loader-native capability/lookup hooks, so it slots cleanly alongside the wider tech-mod ecosystem on NeoForge, Forge, and Fabric.
 
+Two sibling Neroland mods are optional extras: **NeroEconomy** adds configurable launch fees and first-visit rewards, and **NeroQuests** shows the bundled **Starfarer's Log** quest chapter (19 quests following the progression above) in its quest book. Neither is required — without them the fees stay off and the quest pack is simply inert data.
+
 ## The gameplay loop
 
 1. **Nerosium** — mine the new overworld ore; smelt it, or double your yield with the powered **Nerosium Grinder**.

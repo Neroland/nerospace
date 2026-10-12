@@ -1,0 +1,26 @@
+{
+  "title": "quest.nerospace.starfarers_log.deep_space.title",
+  "description": "quest.nerospace.starfarers_log.deep_space.desc",
+  "icon": "nerospace:rocket_tier_4",
+  "prerequisites": [
+    "nerospace:starfarers_log/glacira",
+    "nerospace:starfarers_log/first_colony"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerolandcore:deep_space"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 500
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 500
+    }
+  ],
+  "scope": "player"
+}

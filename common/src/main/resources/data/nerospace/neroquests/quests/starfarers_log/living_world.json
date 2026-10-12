@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.starfarers_log.living_world.title",
+  "description": "quest.nerospace.starfarers_log.living_world.desc",
+  "icon": "nerospace:meadow_loper_spawn_egg",
+  "prerequisites": [
+    "nerospace:starfarers_log/terraformed_ground"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:living_world"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 500
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 300
+    }
+  ],
+  "scope": "player"
+}

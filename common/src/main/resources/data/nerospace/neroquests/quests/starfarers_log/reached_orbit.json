@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.starfarers_log.reached_orbit.title",
+  "description": "quest.nerospace.starfarers_log.reached_orbit.desc",
+  "icon": "nerospace:rocket_tier_1",
+  "prerequisites": [
+    "nerospace:starfarers_log/launch_ready"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerolandcore:reached_orbit"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 150
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

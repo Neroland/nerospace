@@ -1,0 +1,21 @@
+{
+  "title": "quest.nerospace.starfarers_log.station_visit.title",
+  "description": "quest.nerospace.starfarers_log.station_visit.desc",
+  "icon": "nerospace:launch_controller",
+  "prerequisites": [
+    "nerospace:starfarers_log/reached_orbit"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:reach_dimension",
+      "dimension": "nerospace:station"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

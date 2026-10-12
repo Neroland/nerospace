@@ -199,6 +199,17 @@ public final class OxygenManager {
         Services.PLATFORM.setOxygen(player, maxOxygenFor(player) + oxygenMb);
     }
 
+    /**
+     * Tops the player's personal / suit oxygen up to its normal maximum ({@link #maxOxygenFor}). Never
+     * lowers an arrival overfill. Server-side; used by the {@code nerospace:hook/oxygen_top_up} hook gate.
+     */
+    public static void topUp(ServerPlayer player) {
+        int max = maxOxygenFor(player);
+        if (Services.PLATFORM.getOxygen(player) < max) {
+            Services.PLATFORM.setOxygen(player, max);
+        }
+    }
+
     /** Maps oxygen onto the vanilla air-supply bar (full oxygen → no bubbles shown). */
     private static void mirrorToAirSupply(Player player, int oxygen, int max) {
         int airMax = player.getMaxAirSupply();

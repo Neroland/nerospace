@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +15,9 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
+
+import za.co.neroland.nerolandcore.event.ThresholdEvents;
+import za.co.neroland.nerolandcore.progression.ProgressionGates;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.api.route.FlightState;
@@ -44,6 +48,13 @@ public final class CargoFlights {
     private static final int STATION_SEARCH_RADIUS = 6;
     /** The Star Guide advancement granted on a player's first delivered flight. */
     private static final String FIRST_FREIGHT_ADVANCEMENT = "guide/first_freight";
+    /** Player-scope record gate opened beside the advancement (offline-capable). */
+    private static final Identifier FIRST_FREIGHT_GATE =
+            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "first_freight");
+    /** World freight-log channel; scope = destination dimension id. */
+    private static final Identifier CARGO_DELIVERED_CHANNEL =
+            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "cargo_delivered");
+    private static final long[] DELIVERY_RUNGS = {1L, 10L, 100L, 1000L};
 
     private static long tick;
 
@@ -188,6 +199,9 @@ public final class CargoFlights {
         NerospaceTelemetry.breadcrumb("cargo", "delivered flight=" + flight.id());
         RouteEventDispatch.arrived(flight.view());
         grantFirstFreight(server, flight);
+        if (!flight.returnLeg()) {
+            publishDeliveryMilestone(registry.recordDelivery(), flight.destDim());
+        }
 
         RouteRecord route = flight.routeId() >= 0 ? registry.route(flight.routeId()) : null;
         boolean returnEmpty = route != null && route.returnEmpty();
@@ -284,15 +298,39 @@ public final class CargoFlights {
         level.playSound(null, x, y, z, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.6F, 0.7F);
     }
 
-    /** First delivered flight = the Star Guide "Freight" chapter's last step. Owner must be online; UUID never logged. */
+    /**
+     * First delivered flight = the Star Guide "Freight" chapter's last step. The advancement needs the owner
+     * online; the {@code nerospace:first_freight} record gate is opened through Core's offline-capable
+     * overload as well, so an owner who logged off mid-flight still has the milestone on record. The gate
+     * has no {@code requires} and is never checked for access. UUID never logged.
+     */
     private static void grantFirstFreight(MinecraftServer server, FlightRecord flight) {
         if (flight.owner().isEmpty() || flight.returnLeg()) {
             return;
         }
         UUID owner = CargoPadBlockEntity.parseUuid(flight.owner());
-        ServerPlayer player = owner == null ? null : server.getPlayerList().getPlayer(owner);
+        if (owner == null) {
+            return;
+        }
+        ProgressionGates.open(server, owner, FIRST_FREIGHT_GATE);
+        ServerPlayer player = server.getPlayerList().getPlayer(owner);
         if (player != null) {
             StarGuideGrants.grant(player, FIRST_FREIGHT_ADVANCEMENT);
+        }
+    }
+
+    /**
+     * World freight log: publishes an anonymous threshold crossing on Core's bus when the world-wide
+     * delivery count reaches a rung (1, 10, 100, 1000). The scope is the destination <em>dimension id</em>
+     * — never the owner, the pad or its position — so the event can only ever credit the world, not a player.
+     */
+    private static void publishDeliveryMilestone(long total, String destinationDimensionId) {
+        for (long rung : DELIVERY_RUNGS) {
+            if (total == rung) {
+                ThresholdEvents.fire(NerospaceCommon.MOD_ID, new ThresholdEvents.ThresholdCrossing(
+                        CARGO_DELIVERED_CHANNEL, destinationDimensionId, total, rung, true));
+                return;
+            }
         }
     }
 }

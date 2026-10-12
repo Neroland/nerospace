@@ -1,0 +1,21 @@
+{
+  "title": "quest.nerospace.starfarers_log.terraformed_ground.title",
+  "description": "quest.nerospace.starfarers_log.terraformed_ground.desc",
+  "icon": "nerospace:terraformer",
+  "prerequisites": [
+    "nerospace:starfarers_log/greenxertz"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:terraformed_ground"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    }
+  ],
+  "scope": "player"
+}

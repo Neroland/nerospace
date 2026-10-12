@@ -1,0 +1,23 @@
+{
+  "title": "quest.nerospace.starfarers_log.grinder_online.title",
+  "description": "quest.nerospace.starfarers_log.grinder_online.desc",
+  "icon": "nerospace:nerosium_grinder",
+  "prerequisites": [
+    "nerospace:starfarers_log/first_nerosium"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:nerosium_grinder",
+      "count": 1
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:item",
+      "item": "nerospace:raw_nerosium",
+      "count": 4
+    }
+  ],
+  "scope": "player"
+}

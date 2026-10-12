@@ -1,0 +1,22 @@
+{
+  "title": "quest.nerospace.starfarers_log.hundred_flights.title",
+  "description": "quest.nerospace.starfarers_log.hundred_flights.desc",
+  "icon": "nerospace:cargo_pad",
+  "prerequisites": [],
+  "objectives": [
+    {
+      "type": "neroquests:custom_event",
+      "channel": "nerospace:cargo_delivered",
+      "direction": "rising",
+      "min_value": 100,
+      "audience": "world"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 300
+    }
+  ],
+  "scope": "server"
+}
