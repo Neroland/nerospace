@@ -57,6 +57,7 @@ subprojects {
                     username = gprUser
                     password = gprKey
                 }
+                content { includeGroup 'za.co.neroland.nerolandcore' }
             }
             // NeroEconomy (optional, compileOnly) — same credential rule as Core above.
             maven {
@@ -66,6 +67,7 @@ subprojects {
                     username = gprUser
                     password = gprKey
                 }
+                content { includeGroup 'za.co.neroland.neroeconomy' }
             }
         }
         mavenCentral()

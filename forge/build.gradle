@@ -98,7 +98,7 @@ repositories {
 
 dependencies {
     implementation minecraft.dependency("net.minecraftforge:forge:${forgeVersion}")
-    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.5'
+    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.6'
 
     // Neroland Core — REQUIRED shared foundation (one energy network, progression gates, data erasure).
     // Compile + dev-runtime classpath; NOT jar-in-jar — Core ships as its own mod and loads BEFORE
@@ -109,7 +109,7 @@ dependencies {
     // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
     compileOnly "za.co.neroland.neroeconomy:neroeconomy-forge-${mc}:${project.findProperty('neroeconomy_version')}"
 
-    implementation 'io.sentry:sentry:8.45.0'
+    implementation 'io.sentry:sentry:8.60.0'
     jarJar(group: 'io.sentry', name: 'sentry', version: '8.45.0')
 
     // JEI common API only; Forge 26.x loader artifacts are not yet published on the pinned JEI lines.
