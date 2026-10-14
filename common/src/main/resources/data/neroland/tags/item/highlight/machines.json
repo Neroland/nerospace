@@ -1,0 +1,36 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nerospace:advanced_pipe_filter",
+      "required": false
+    },
+    "nerospace:pipe_filter",
+    "nerospace:universal_pipe",
+    "nerospace:cargo_pad",
+    "nerospace:docking_port",
+    "nerospace:combustion_generator",
+    "nerospace:passive_generator",
+    "nerospace:solar_panel",
+    "nerospace:solar_panel_t2",
+    "nerospace:solar_panel_t3",
+    "nerospace:fuel_refinery",
+    "nerospace:fuel_tank",
+    "nerospace:launch_controller",
+    "nerospace:launch_gantry",
+    "nerospace:rocket_launch_pad",
+    "nerospace:nerosium_grinder",
+    "nerospace:oxygen_generator",
+    "nerospace:quarry_controller",
+    "nerospace:quarry_landmark",
+    "nerospace:terraform_monitor",
+    "nerospace:terraformer",
+    "nerospace:star_guide",
+    "nerospace:village_core",
+    "nerospace:meteor_core",
+    "nerospace:landing_pod",
+    "nerospace:hydration_module",
+    "nerospace:xertz_resonator",
+    "nerospace:meteor_caller"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nerospace:capacity_upgrade",
+      "required": false
+    },
+    "nerospace:speed_upgrade",
+    "nerospace:efficiency_module",
+    "nerospace:speed_module",
+    "nerospace:evaporator_module",
+    "nerospace:fortune_module",
+    "nerospace:silk_touch_module"
+  ]
+}
