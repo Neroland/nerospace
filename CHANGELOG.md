@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-10-17
+
+### Fixed
+
+- **Nerosium ore smelts again.** Silk-Touched `nerosium_ore` and `deepslate_nerosium_ore` (including
+  blocks mined by a quarry fitted with a Silk Touch module) had no furnace or blast-furnace recipe, so
+  they could not be turned into Nerosium ingots. The recipes were lost when the sources moved into the
+  `common` module and are now restored.
+- **Nerosium storage blocks can be uncrafted.** A Nerosium block crafts back into 9 Nerosium ingots and a
+  block of raw Nerosium back into 9 raw Nerosium; both reverse recipes were lost in the same move.
+- Nerosium ore is tagged `c:ores/nerosium` (item and block) like the other Nerospace ores, so mods that
+  look ores up by common tag can find it.
+
 ## [1.5.0] - 2026-10-11
 
 Quest-book content and the small progression signals behind it. Requires **Neroland Core 1.15.0**.

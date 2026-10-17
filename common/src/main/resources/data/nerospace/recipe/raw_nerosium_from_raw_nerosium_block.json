@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nerospace:raw_nerosium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "nerospace:raw_nerosium"
+  }
+}
