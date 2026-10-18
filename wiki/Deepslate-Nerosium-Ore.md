@@ -13,6 +13,8 @@ Identical drops and uses to Nerosium Ore, but embedded in deepslate, so it is sl
 ## Obtaining
 
 - **Mining:** requires an **iron-tier pickaxe** or better. Drops **Raw Nerosium** (Fortune-affected).
+  With a **Silk Touch** pickaxe it drops the ore block instead — smelt that straight into an ingot
+  (1.5.1+) or grind it into 2 Nerosium Dust.
 - **Generation:** the deepslate form of the Overworld nerosium ore deposit (appears where the deposit
 
   intersects deepslate, in the lower part of the **y −24 to y 56** band).

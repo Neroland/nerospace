@@ -25,7 +25,8 @@ and sits deeper, rewarding a trip to the most hostile world in the mod.
 
 - Pack into a **[Block of Cindrite](Block-of-Cindrite)** for storage.
 - Upgrade a **[Terraformer](Terraformer)** to **Tier 3** (drop a Cindrite into its upgrade slot).
-- Reserved as a high-tier reagent for future content.
+- Craft **Tier 2** and **Thermal** [Oxygen Suit](Oxygen-Suit) pieces (4 Cindrite per piece).
+- Part of the **Tier 4 rocket** recipe.
 
 ## Details
 

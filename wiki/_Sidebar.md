@@ -1,6 +1,8 @@
 ### Nerospace
 
 - [Home](Home)
+- [Getting Started](Getting-Started)
+- [Powering Machines](Powering-Machines)
 - [Star Guide](Star-Guide)
 - [Planet Gravity](Planet-Gravity)
 - [Neroland Core](Neroland-Core)

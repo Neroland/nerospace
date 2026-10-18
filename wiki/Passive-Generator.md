@@ -21,11 +21,14 @@ N R N
 ## How it works
 
 - **Core slot** (GUI, hand or hopper/pipe fed): raw nerosium, a nerosium ingot, or nerosium dust.
-- Each core runs for **20 minutes**, trickling **10 FE/t** (configurable) into a 20,000 FE buffer.
-- Extract-only buffer — the pipe network pulls the power out.
+- One Raw Nerosium, Nerosium Ingot or Nerosium Dust runs for **24,000 ticks (20 minutes)**, making
+  **8 FE/t** into a **100,000 FE** buffer.
+- **Auto-push:** it pushes power into any machine or Battery that touches it. A pipe can also pull it out.
 - Weaker than the Combustion Generator but ideal as set-and-forget base power.
+- A [Nerosium Grinder](Nerosium-Grinder) uses 20 FE/t, so one Passive Generator runs a grinder at about
+  40% speed. That is fine for a start.
 
 ## Details
 
 - ID: `nerospace:passive_generator` · Tool: pickaxe, iron tier · Drops: itself
-- Config: `passiveGeneratorFePerTick`
+- Config: output scales with `energyRateMultiplier`. See [Configuration](Configuration).

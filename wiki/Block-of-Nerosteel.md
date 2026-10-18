@@ -14,7 +14,8 @@ A storage/building block of refined nerosteel. It also appears as a core compone
 
 - **Craft:** fill a 3×3 grid with **Nerosteel Ingots**.
 - **Unpack:** craft the block alone to get **9 Nerosteel Ingots** back.
-- Used as the engine core in the **Tier 1 / 2 / 3 rockets**.
+- Used as the engine core in the **Tier 1 / 2 / 3 rockets**, and also in the **Tier 4 rocket** and
+  the **[Terraformer](Terraformer)**.
 
 ## Details
 

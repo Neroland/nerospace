@@ -29,11 +29,12 @@ N N N
 
 - **Power in:** connect a Universal Pipe carrying energy (from a Combustion/Passive Generator or a
 
-  Battery). The machine stores up to 10,000 FE and cannot burn fuel directly — it is grid-only.
+  Battery). The machine stores up to **50,000 FE** and accepts up to **1,000 FE/t**. It cannot burn
+  fuel directly — it is grid-only.
 
-- **Oxygen out:** while powered it produces up to 5 mB of Oxygen per tick (2 FE per mB) into an
+- **Oxygen out:** while powered it makes **4 mB of Oxygen per tick** at **20 FE per mB** (80 FE/t
 
-  8,000 mB internal tank. Pipes connected to it can carry the gas away (cyan stream).
+  while producing) into an 8,000 mB internal tank. Pipes connected to it can carry the gas away (cyan stream).
 
 - **Oxygen field:** while the tank holds gas the machine is an oxygen **source**, slowly draining
 
@@ -47,13 +48,18 @@ N N N
 
     opening), so seal your base for full coverage. A door or gap counts as a leak.
 
-  - Search/coverage reaches up to ~16 blocks of connected air from the generator (configurable).
-- **Loss:** if the tank runs dry or the machine is broken, the oxygen **evaporates over ~10 seconds**
+  - Coverage reaches up to 16 blocks of connected air from the generator. In open space the bubble
+    has a radius of about 14 blocks. These values are fixed.
+- **Loss:** if the tank runs dry or the machine is broken, the oxygen **evaporates over about 10
 
-  (configurable).
+  seconds**.
+
+- **Redstone off switch:** a redstone signal next to the generator turns it off, and its air bubble
+
+  collapses.
 
 - **HUD:** a cyan **O₂ bar** appears above the hotbar in airless dimensions (it turns red when low).
-- **Airlock:** a player wearing a full [Oxygen Suit](Oxygen-Suit) within a few blocks (default 3)
+- **Airlock:** a player wearing a full [Oxygen Suit](Oxygen-Suit) within **4 blocks**
 
   refills the suit's air directly from the machine's tank, draining the gas — handy at a base door
   even when the room itself isn't breathable yet.
@@ -70,4 +76,5 @@ long as the grid is up. Pipe surplus oxygen into a **Gas Tank** as a buffer for 
 
 - ID: `nerospace:oxygen_generator` · Tool: pickaxe, iron tier · Drops: itself
 - GUI: power gauge + oxygen tank gauge with a Producing/No-power status
-- Config: `oxygenBubbleRadius`, `oxygenLeakRange`, `oxygenEvaporateSeconds`, `oxygenBreathableThreshold`, …
+- Bubble radius (14), leak range (16 blocks), evaporate time (10 s), breathable threshold (6) and
+  airlock radius (4) are fixed, not config keys. See [Configuration](Configuration) for what you can tune.

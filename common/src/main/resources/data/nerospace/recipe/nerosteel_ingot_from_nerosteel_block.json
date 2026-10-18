@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nerospace:nerosteel_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "nerospace:nerosteel_ingot"
+  }
+}

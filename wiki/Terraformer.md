@@ -36,7 +36,8 @@ N B N
 
 - **Grid power:** runs exclusively on piped energy — connect a Universal Pipe carrying FE. Its
 
-  100,000 FE buffer drains as it works (higher tiers / more power = faster).
+  100,000 FE buffer drains as it works and accepts up to **2,000 FE/t** (higher tiers / more power =
+  faster). It converts at most **48 columns per tick** (a fixed limit to protect server speed).
 
 - **Expanding frontiers:** each work cycle it converts a ring of surface columns per stage, then grows
 
@@ -62,17 +63,18 @@ N B N
 
 - **Cosmetic drift:** settled land keeps sprouting sparse ground cover on its own — pure garnish,
 
-  budgeted and toggleable (`terraformDriftEnabled`).
+  with a small fixed budget.
 
 - **Tiers:** drop an upgrade into the upgrade slot — a **Nerosteel Ingot → Tier 2**, a **Cindrite →
 
   Tier 3**. Higher tiers convert more columns per cycle; **Tier 3** also seeds a low rate of ore into
-  the converted subsurface (configurable, defaults to Nerospace ores).
+  the converted subsurface (Nerospace ores).
 
 - **Lazy / catch-up:** columns in unloaded chunks are skipped and converted later when you explore into
 
-  them — all stages replay on chunk load, so a terraformed planet finishes as you walk it (no forced
-  chunk-loading by default).
+  them — all stages replay on chunk load, so a terraformed planet finishes as you walk it. By default
+  it does not force-load chunks. Set `terraformerForceLoadEnabled = true` to keep a small window of
+  chunks loaded while it runs (costs server memory and speed).
 
 - **Old worlds:** existing Terraformers keep working untouched — their land counts as stage 1 and the
 
@@ -85,7 +87,6 @@ N B N
 
   [Terraform Monitor](Terraform-Monitor) (stage readout + comparator)
 
-- Config: `terraformWaterEnabled`, `terraformWaterMaxDepth`, `terraformDriftEnabled`,
+- Config: only `terraformerForceLoadEnabled` (default `false`). Speed and energy also follow the
 
-  `terraformDriftPerSecond`, `terraformFaunaEnabled`, `terraformPlantsEnabled`,
-  `terraformResourcesEnabled`, `terraformResourceOres`, `terraformMaxColumnsPerTick`, …
+  global multipliers. See [Configuration](Configuration).

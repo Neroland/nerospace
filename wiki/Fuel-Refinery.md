@@ -33,7 +33,7 @@ N R N
 
   pipes feed them through the item capability — coal routes to carbon, blaze to catalyst automatically.
 
-- **Power:** grid power only (insert-capped 1,000 FE/tick). Feed it from a generator or Battery over
+- **Power:** grid power only. It holds **40,000 FE** and accepts up to 1,000 FE/tick. Feed it from a generator or Battery over
 
   [Universal Pipes](Universal-Pipe).
 
@@ -43,10 +43,11 @@ N R N
   clicking.
 
 - **Output:** the internal **8,000 mB** tank exposes the fluid capability, so pipes carry the fuel away.
+- **Auto-push:** it pushes up to **200 mB/t** of fuel into any tank or pipe that touches it, by itself.
 - **Comparator:** emits a redstone signal scaled to its fuel level.
 
-All rates scale with the config multipliers (`energyRate`, `fuelCost`, `machineSpeed`) — see
-[Configuration](Configuration).
+`fuelCostMultiplier` scales the power use (FE/t) and `machineSpeedMultiplier` scales the cycle time.
+`energyRateMultiplier` does not apply. See [Configuration](Configuration).
 
 ## Details
 

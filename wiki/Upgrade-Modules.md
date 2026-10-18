@@ -33,7 +33,7 @@ has **1 module slot at Tier 1** (more at higher tiers).
 | **Efficiency Module** | −15% energy cost per module | Floors at 25% of the base cost. |
 | **Fortune Module** | Applies Fortune to mined blocks | Stacks up to Fortune III. |
 | **Silk Touch Module** | Mines blocks with Silk Touch | **Overrides** Fortune when present. |
-| **Evaporator Module** | Destroys liquids instead of buffering them | Keeps the quarry's fluid buffer empty — nothing to pipe away. Texture is placeholder art for now. |
+| **Evaporator Module** | Destroys liquids instead of buffering them | Keeps the quarry's fluid buffer empty — nothing to pipe away. |
 
 **Craft** — every module shares one frame with a signature centre item:
 

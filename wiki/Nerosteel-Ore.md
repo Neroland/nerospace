@@ -19,7 +19,7 @@ your first rocket is reachable before you ever leave home.
 - **Generation:**
   - **Overworld:** a **rare, deep** seam — roughly **y −56 to y 16** (peaking below sea level), about a
 
-    quarter the frequency of Greenxertz. Enough to bootstrap the power grid and a first rocket.
+    40% as common as on Greenxertz (4 veins per chunk vs 10). Enough to bootstrap the power grid and a first rocket.
 
   - **Greenxertz:** common throughout the dimension, in a triangular band roughly **y −32 to y 72** —
 
@@ -28,6 +28,7 @@ your first rocket is reachable before you ever leave home.
 ## Use
 
 - Smelt or blast **Raw Nerosteel** (or the ore) into a **Nerosteel Ingot**.
+- The [Nerosium Grinder](Nerosium-Grinder) turns 1 ore into **2 Raw Nerosteel**.
 - Nerosteel Ingots craft the [Rocket Launch Pad](Rocket-Launch-Pad), [Fuel Tank](Fuel-Tank),
 
   [Oxygen Generator](Oxygen-Generator), [Station Floor](Station-Floor)/[Wall](Station-Wall), the

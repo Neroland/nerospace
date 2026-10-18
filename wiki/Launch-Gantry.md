@@ -39,7 +39,8 @@ N S N
 - **Tier gating:**
   - **Tier 4** deploys and launches **only** on a Heavy Launch Complex.
   - **Tier 3** accepts the Heavy complex **or** its classic 3×3 + [Station Wall](Station-Wall) ring.
-  - Tiers 1–2 are happy on a plain 3×3 (and on the Heavy complex, of course).
+  - **Tier 2** needs a full 3×3 pad (or the Heavy complex).
+  - **Tier 1** needs only **one** pad block (or anything bigger).
   - The checks re-run at launch — breaking the gantry (or pad blocks) under a deployed rocket
 
     grounds it.

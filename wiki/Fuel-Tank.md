@@ -29,8 +29,10 @@ N G N
 - **Capacity:** 32,000 mB of rocket fuel.
 - **Filling:** right-click with a **Rocket Fuel Bucket** or **Canister** to add fuel (empty bucket is
 
-  returned); a fluid pipe can fill it via the fluid capability. Empty-hand right-click prints the
-  current fuel level.
+  returned); a fluid pipe can fill it via the fluid capability. Empty-hand right-click opens the
+  **Fuel Tank screen**.
+
+- **Draining:** right-click with an **empty bucket** to take out a **Rocket Fuel Bucket**.
 
 - **Canister auto-feed:** hoppers and [Universal Pipes](Universal-Pipe) can insert **Rocket Fuel
 
@@ -39,8 +41,7 @@ N G N
 
 - **Auto-fuelling:** when a rocket is on an adjacent launch pad, the tank pumps fuel into it. A
 
-  complete **3×3 launch pad** pumps **4× faster** (160 vs 40 mB/tick) — and since the multiblock
-  gating pass a rocket can only deploy on a full 3×3 anyway. On a
+  complete **3×3 launch pad** pumps **4× faster** (160 vs 40 mB/tick). On a
   **[Heavy Launch Complex](Launch-Gantry)** (5×5 + gantry) the rate rises to **480 mB/t** (12×),
   filling a Tier 4's 24,000 mB tank in under a minute.
 

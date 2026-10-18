@@ -46,17 +46,23 @@ Each tier folds the **previous panel** into its recipe, so upgrading reuses what
 
 - **Sunlight in, FE out.** Output follows the sun: full at noon, tapering to **nothing at night**.
 
-  The panel needs a **clear view of the sky** — anything solid directly above it stops generation.
+  In normal dimensions the panel needs a **clear view of the sky** — anything solid directly above it
+  stops generation.
 
-- **Weather** cuts output: rain/snow drops it to ~40%, a thunderstorm to ~25%.
+- **Weather:** there is no fixed rain or thunder penalty. Output follows how dark the sky is:
+
+  output × (10 − sky darkness) / 10. Rain and storms darken the sky, so output drops with them.
+
 - **Airless dimensions** (Orbital Station, Greenxertz, Cindara, Glacira, founded stations) have a
 
-  permanent sun, so panels there run at full **and earn a ×2 bonus** — solar is the natural off-world
-  power source.
+  permanent sun, so panels there run at full **and earn a ×2 bonus**. They also do **not** need a
+  view of the sky there. Solar is the natural off-world power source.
 
-- Output and storage scale by tier (all values × the `energyRateMultiplier` config). The buffer is
+- Output and storage scale by tier (all values × the `energyRateMultiplier` config). The buffer
 
-  **extract-only** — it never accepts a push.
+  never accepts a push from outside.
+
+- **Auto-push:** panels push power into any machine or Battery that touches them.
 
 | Tier | Footprint | Output @ noon | Storage |
 | --- | --- | --- | --- |
@@ -101,7 +107,8 @@ time, so a field of them moves in lockstep.
 
 ## Details
 
-- IDs: `nerospace:solar_panel_t1` / `_t2` / `_t3` · Tool: pickaxe, iron tier
+- IDs: `nerospace:solar_panel` (Tier 1) / `nerospace:solar_panel_t2` / `nerospace:solar_panel_t3`
+- Tool: Tier 1 needs an iron pickaxe; Tier 2 and Tier 3 need any pickaxe.
 - Tier 1 drops itself; Tier 2/3 return one item for the whole multiblock when any cell is broken.
 - Emits a comparator signal from the array's charge.
 - Config: `energyRateMultiplier` (scales both output and storage). See **[Configuration](Configuration)**.

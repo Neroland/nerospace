@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.2] - 2026-10-18
+
+### Fixed
+
+- **Every silk-touched ore can be smelted.** Nerosteel, Xertz Quartz, Cindrite and Glacite ore blocks now
+  smelt and blast into their ingot or gem, like Nerosium ore already did. Before, only the Nerosium
+  Grinder could process them.
+- **Nerosteel, Cindrite and Glacite blocks can be uncrafted** back into 9 ingots or gems, matching the
+  Nerosium blocks.
+
+### Documentation
+
+- New wiki pages **Getting Started** (a plain step-by-step progression guide) and **Powering Machines**.
+- Wiki corrected against the code: machines need a generator (the Nerosium Grinder never self-charged),
+  generator, oxygen, pipe and solar numbers, launch fuel costs, launch-pad sizes per rocket tier, and
+  configuration keys that no longer exist.
+
 ## [1.5.1] - 2026-10-17
 
 ### Fixed

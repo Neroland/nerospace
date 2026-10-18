@@ -10,15 +10,19 @@ tank instead of suffocating. The tank refills instantly in any breathable zone (
 terraformed ground, launch-pad safe zone) — and, since the suit-and-station integration, also at
 **airlocks** (below).
 
-|  | Tier 1 Oxygen Suit | Tier 2 Oxygen Suit |
+| | Tier 1 Oxygen Suit | Tier 2 Oxygen Suit |
 | --- | --- | --- |
-| Air tank | 300 (`oxygenMax`) | **600** (`oxygenSuitT2Max`) |
-| Airlock refill | 20 air / ~0.5 s | **40 air / ~0.5 s** |
+| Air tank | 900 | 900 |
+| Airlock refill | 90 air / 10 ticks | 90 air / 10 ticks |
 | Protection | diamond-class | slightly tougher, +toughness |
 | Repair material | Nerosteel Ingot | Cindrite |
 
-A **mixed** T1/T2 set still works as life support but counts as **Tier 1** for tank size and refill
-speed. Any missing piece = no life support.
+Every full suit (Tier 1, Tier 2, Thermal or Cryo) holds **900 air**. Without a suit you have only
+**300 air** (your own lungs). A **mixed** set still works as life support. Any missing piece = no
+life support.
+
+**Drain:** with a full suit you lose **3 air** per check (every 10 ticks). With no suit you lose
+**30 air** per check. An unshielded hazard (below) multiplies drain by **4**.
 
 ## Hazard variants — Thermal & Cryo Suits
 
@@ -27,16 +31,16 @@ overtime — oxygen drains at **4×** the normal rate (there's no separate damag
 the danger). The HUD badge warns with a red **HEAT!** / **COLD!** while you're exposed, with ember
 puffs (Cindara) or a creeping frost vignette (Glacira) as feedback.
 
-|  | **Thermal Suit** | **Cryo Suit** |
+| | **Thermal Suit** | **Cryo Suit** |
 | --- | --- | --- |
 | Shields against | Cindara heat | Glacira cold |
 | Craft (per piece) | Tier 2 piece + 4 **Cindrite** | Tier 2 piece + 4 **Glacite** |
 | Repair material | Cindrite | Glacite |
-| Class | Tier 2 (tank 600, fast refill) | Tier 2 (tank 600, fast refill) |
+| Class | Tier 2 (tank 900) | Tier 2 (tank 900) |
 
 The shield engages only when **all four pieces match** the hazard; the HUD badge then shows
 **SUIT HEAT** / **SUIT COLD** and oxygen drains at the normal 1× rate. Mixing variant pieces with
-other Tier 2 pieces keeps Tier-2 capacity — you just lose the hazard shield.
+other pieces keeps life support — you just lose the hazard shield.
 
 ## Progression note
 
@@ -46,9 +50,9 @@ glacite and the Cryo Suit on Glacira.
 
 ## Airlock refill
 
-Within a few blocks (default **3**, `oxygenAirlockRadius`) of a [Gas Tank](Gas-Tank) or
-[Oxygen Generator](Oxygen-Generator) **holding Oxygen**, a worn suit refills its air from that store —
-each air unit drains gas (default **5 mB**, `oxygenAirlockMbPerAir`). A Gas Tank at the base entrance
+Within **4 blocks** of a [Gas Tank](Gas-Tank) or [Oxygen Generator](Oxygen-Generator) **holding
+Oxygen**, a worn suit refills from that store. Every suit gets **90 air** per check (every 10 ticks).
+Each air unit costs **2 mB** of oxygen (scaled by `fuelCostMultiplier`). A Gas Tank at the base entrance
 therefore acts as an airlock: step inside, top up, head back out. The Creative Gas Tank works too.
 
 ## Obtaining
@@ -77,6 +81,6 @@ rocket.
   `nerospace:oxygen_suit_t2_{...}`, `nerospace:oxygen_suit_heat_{...}` (Thermal),
   `nerospace:oxygen_suit_cold_{...}` (Cryo)
 
-- Config: `oxygenMax`, `oxygenSuitT2Max`, `oxygenSuitDrain`, `oxygenAirlockRadius`,
+- Config: `oxygenCapacityMultiplier` (air capacity) and `oxygenDrainMultiplier` (drain speed). See
 
-  `oxygenAirlockRefillPerCheck`, `oxygenAirlockMbPerAir`
+  [Configuration](Configuration).

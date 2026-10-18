@@ -41,8 +41,8 @@ being infinite). Diamond-class protection, repaired with nerosteel.
 
 The suit also refills at **airlocks**: standing within a few blocks of a [Gas Tank](Gas-Tank) (now
 provided by [Neroland Core](Neroland-Core)) or [Oxygen Generator](Oxygen-Generator) that holds Oxygen
-tops the suit up from that store (draining the gas). A **Tier 2 Oxygen Suit** (each piece = Tier 1 piece + 4 Cindrite) doubles the air tank (600)
-and the airlock refill speed — a mixed T1/T2 set counts as Tier 1.
+tops the suit up from that store (draining the gas). A **Tier 2 Oxygen Suit** (each piece = Tier 1 piece + 4 Cindrite) is tougher armour. It does
+**not** hold more air: every full suit holds 900 air and refills at the same speed.
 
 Two **hazard variants** of the Tier 2 suit shield you from planetary extremes (unprotected exposure
 **quadruples** oxygen drain): the **Thermal Suit** (T2 piece + 4 Cindrite) for Cindara's heat and the
@@ -100,7 +100,7 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 - **Star Guide Book** — Book + Raw Nerosium (shapeless). Right-click to open the
 
-  **[Star Guide](Star-Guide)**, the interactive 7-chapter progression tree.
+  **[Star Guide](Star-Guide)**, the interactive progression tree (10 chapters, 45 steps).
 
 - **[Star Guide](Star-Guide)** (pedestal block) — holds the book, projects a next-goal hologram.
 
@@ -116,7 +116,15 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 - **Meteor Tracker** — points to the nearest meteor (held action-bar readout: state, heading,
 
-  distance). Creative for now; a survival craft comes with the scanner.
+  distance). Craft (shaped):
+
+  ```text
+  . N .
+  R C R
+  . N .
+  ```
+
+  `N` = Nerosteel Ingot · `R` = Redstone · `C` = Compass
 
 - **Meteor Caller** — creative-only: right-click a block to call a meteor down onto it.
 

@@ -115,8 +115,8 @@ accepts energy from **any side** — run a [Universal Pipe](Universal-Pipe) from
 generators works too.
 
 A Tier 1 quarry with no modules mines about **4 blocks a second**, using roughly **8 FE/t** — a
-single [Combustion Generator](Combustion-Generator) (60 FE/t) or even a [Passive
-Generator](Passive-Generator) (10 FE/t) keeps it running. If power runs out it shows
+single [Combustion Generator](Combustion-Generator) (20 FE/t) or even a [Passive
+Generator](Passive-Generator) (8 FE/t) keeps it running. If power runs out it shows
 *Paused — out of power* and continues on its own once energy arrives.
 
 ## 7. Collect the output

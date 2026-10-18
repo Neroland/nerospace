@@ -1,184 +1,145 @@
 # Configuration
 
-Nerospace's config is deliberately small: the mod owns its base balance numbers in code, and packs
-tune them through **six multipliers**. Everything else is genuinely absolute — booleans, radii,
-performance caps, advanced simulation tuning and client visual preferences.
+Nerospace's config is small on purpose. The mod keeps its base balance numbers in code. Packs and
+servers tune them with **six multipliers**. The other keys are simple switches and limits.
 
-> **Managed by [Neroland Core](Neroland-Core).** The balance config lives in
-> `config/nerospace.properties` and is owned by Core: reload it live with `/neroland config reload`
-> (no restart), and the gameplay-balance multipliers are **server-authoritative** — a connected
-> client always uses the server's values. The `telemetryEnabled` opt-out is the exception: it stays a
-> personal, per-client choice a server can never force. Existing files migrate in place (the keys are
-> unchanged). Keys read by the deeper simulation systems (atmosphere, meteors, terraformer) are
-> documented below for reference.
+> **Managed by [Neroland Core](Neroland-Core).** The config file is `config/nerospace.properties`.
+> Core owns it. Reload it live with `/neroland config reload` (no restart needed). Most keys are
+> **server-authoritative**: when you join a server, your game uses the server's values. The one
+> exception is `telemetryEnabled`. It is a personal choice on each client, and a server can never
+> change it. Existing files migrate in place.
 >
-> **Breaking change (pre-1.0):** the old flat key list (`oxygenMax`, `batteryCapacity`,
-> `combustionGeneratorFePerTick`, …) was removed without migration. Delete your old
-> `nerospace-common.toml` and let it regenerate.
+> **Only the keys on this page exist.** Older wiki pages and older versions listed many more keys
+> (oxygen field, atmosphere, client visuals, terraformer and meteor keys). Those keys are gone. The
+> values they used to set are now fixed in code.
 
 ## The six multipliers
 
-All six default to `1.0` and are clamped to **0.1 – 10.0**. Internally every scaled value is
-clamped to at least 1, so extreme settings can never zero a rate, divide by zero, or stall
-progression (e.g. the rocket launch cost is additionally clamped to the tank size, so a launch is
-always possible with a full tank).
+All six default to `1.0`. Each one can be set from **0.1 to 10.0**. Every scaled value is kept at
+1 or more, so an extreme setting never stops a machine or breaks progression.
 
-| Key | What it scales | Base values |
+| Key | What it scales | Base values (at 1.0) |
 | --- | --- | --- |
-| `oxygenDrainMultiplier` | How fast oxygen is consumed: bare-lungs drain, suit tank drain, suffocation damage. >1 = harsher planets. | drain 2/t · suit drain 1/check · damage 1 half-heart |
-| `oxygenCapacityMultiplier` | Air capacities: the player's oxygen supply and the Tier 2 suit tank. | player 300 · T2 suit 600 |
-| `energyRateMultiplier` | The energy & storage economy: generator output, energy pipe throughput, and Nerospace's own buffer/tank capacities (Fuel Tank, pipe buffers, machine buffers, rocket fuel tanks). | combustion 60 FE/t · passive 10 FE/t · energy pipe 4,000 FE/t & 8,000 FE · fluid/gas pipe 4,000 mB · fuel tank 32,000 mB · machine buffers 10k–100k FE · rocket tanks 3,000/6,000/12,000 mB |
-| `fuelCostMultiplier` | Consumable costs: rocket fuel per launch (clamped to tank size), airlock oxygen-gas per air unit, machine energy costs. | launch 1,000/2,000/4,000 mB (T1/T2/T3) · airlock 5 mB/air · Terraformer 12 FE/block · Grinder 30 FE/t · O₂ Generator 2 FE/mB |
-| `machineSpeedMultiplier` | Machine working speed: grinder craft time, oxygen make/emit rate, fuel tank pump rate, airlock refill rate, fluid/gas pipe throughput, item pipe travel & extraction, Terraformer work interval. | grinder 100 t/item · O₂ make 5 / emit 2 mB/t · pump 40 / 160 (3×3) mB/t · refill 20 air/check · fluid pipe 500 / gas pipe 250 mB/t · item pipe 10 t/block, pulse every 10 t · Terraformer cycle every 8 t |
-| `gravityMultiplier` | A global scale on every world's [gravity](Planet-Gravity) — players, mobs, dropped items, projectiles, and falling meteors. <1 = floatier everywhere, >1 = heavier. | Per-dimension defaults: Station ~0.1× · Glacira ~0.4× · Greenxertz ~0.6× · Cindara ~0.8× · Overworld & terraformed ground 1.0× |
+| `energyRateMultiplier` | The FE/t that generators make: Combustion Generator, Passive Generator and Solar Panels. It also scales solar panel buffers. It does **not** change the Fuel Tank or the Grinder buffer. | Combustion 20 FE/t · Passive 8 FE/t · Solar 20 / 100 / 400 FE/t (Tier 1 / 2 / 3) |
+| `oxygenDrainMultiplier` | How fast air drains when you are not in a safe zone. Higher = harsher. | Bare lungs 30 air per check · full suit 3 air per check (one check = 10 ticks) · ×4 in an unshielded hazard |
+| `oxygenCapacityMultiplier` | How much air the player and suits hold. | No suit 300 · any full suit 900 |
+| `fuelCostMultiplier` | Fuel and energy costs: fuel per rocket launch (never more than the tank), oxygen per air at an airlock, and machine energy costs. Also cargo fuel. | Launch: 2,500 mB to another dimension, or 500 mB + 60 mB per 100 blocks in the same dimension · airlock 2 mB per air · Grinder 20 FE/t · O₂ Generator 20 FE per mB |
+| `machineSpeedMultiplier` | How fast machines work. Higher = faster (shorter work time). | Grinder 200 ticks per item |
+| `gravityMultiplier` | A global scale on every world's [gravity](Planet-Gravity): players, mobs, items, projectiles and falling meteors. Below 1 = floatier, above 1 = heavier. | Station ~0.1× · Glacira ~0.4× · Greenxertz ~0.6× · Cindara ~0.8× · Overworld and terraformed ground 1.0× |
 
-Examples: `oxygenDrainMultiplier = 2.0` halves how long air lasts; `machineSpeedMultiplier = 2.0`
-makes the grinder craft in 50 ticks and the Terraformer work twice as often;
-`energyRateMultiplier = 0.5` halves generator output *and* storage, keeping the economy's shape.
+Examples: `oxygenDrainMultiplier = 2.0` makes air last half as long. `machineSpeedMultiplier = 2.0`
+makes the grinder finish an item in 100 ticks. `energyRateMultiplier = 0.5` halves generator output.
 
-Notes on extremes: at `0.1` every rate clamps to ≥1 (nothing stops working, it just gets slow);
-at `10.0` machine input limits (e.g. the O₂ Generator's 500 FE/t insert cap) may become the
-bottleneck before the multiplied rate — intended, since those caps protect grid balance.
+At `10.0`, a machine's input limit (for example the O₂ Generator's 1,000 FE/t) may become the real
+limit before the multiplied rate does. This is on purpose.
 
-## Absolute keys
+## Fixed base values
+
+These numbers are fixed in code. They are listed here so you can plan builds.
+
+| Thing | Value |
+| --- | --- |
+| Universal Pipe (each layer) | holds 8,000 · moves up to 1,000 FE/t or 1,000 mB/t |
+| Universal Pipe (items) | 8 ticks per block · pulls 16 items every 4 ticks |
+| Oxygen Generator | makes 4 mB/t · accepts up to 1,000 FE/t · 50,000 FE buffer · 8,000 mB tank |
+| Airlock | 90 air per check (every 10 ticks) · radius 4 blocks |
+| Rocket fuel tanks | 3,000 / 6,000 / 12,000 / 24,000 mB (Tier 1 / 2 / 3 / 4) |
+| Terraformer | up to 48 columns per tick · accepts up to 2,000 FE/t |
+| Meteors | about one every 9,000 s · 30 s warning · 200–500 blocks away · up to 4 sites |
+
+## Other keys
 
 ### Telemetry
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `telemetryEnabled` | `true` | Anonymous Nerospace-only crash reports (Sentry, EU servers, POPIA/GDPR-scrubbed — see `PRIVACY.md`). Set `false` to opt out; applies immediately on config reload. |
-
-### Atmosphere
-
-| Key | Default | Range | Meaning |
-| --- | --- | --- | --- |
-| `atmosphereDamageEnabled` | `true` | — | Master switch: whether airless dimensions hurt unprotected players. |
-| `atmosphereSafeRadius` | `6` | 0–32 | Blocks from a Rocket Launch Pad treated as a safe, pressurised zone. |
-
-### Oxygen structure
-
-| Key | Default | Range | Meaning |
-| --- | --- | --- | --- |
-| `oxygenBubbleRadius` | `14` | 0–32 | Falloff radius of a generator's breathable bubble in open/leaky space (sealed rooms fill completely regardless). |
-| `oxygenAirlockRadius` | `3` | 0–16 | Radius within which a worn suit refills from a Gas Tank / Oxygen Generator holding Oxygen. `0` disables airlock refilling. |
-
-### Oxygen field simulation (ADVANCED)
-
-Simulation tuning, **not** balance — wrong values can break oxygen/terraforming behaviour. Leave
-at defaults unless debugging server performance.
-
-| Key | Default | Range | Meaning |
-| --- | --- | --- | --- |
-| `oxygenMaxConcentration` | `15` | 1–15 | Max per-block oxygen concentration in the field. |
-| `oxygenBreathableThreshold` | `6` | 1–15 | Concentration at/above which a cell is breathable. |
-| `oxygenDiffusionRate` | `0.22` | 0–0.4 | Fraction of the neighbour gradient flowing into a cell per sim step. |
-| `oxygenDecayPerStep` | `0.18` | 0–5 | Oxygen bled to vacuum per sim step (keeps open-air bubbles finite). |
-| `oxygenSimIntervalTicks` | `5` | 1–100 | Server ticks between field relaxation passes. |
-| `oxygenMaxActiveCellsPerSource` | `4096` | 64–65536 | Safety cap on simulated cells per source (TPS guard). |
-| `oxygenLeakRange` | `16` | 4–64 | Max flood-fill distance from a generator for leaks/room walls. |
-| `oxygenEvaporateSeconds` | `10` | 1–120 | How long oxygen lingers once unsupplied or leaking. |
-| `oxygenSyncRadius` | `32` | 8–128 | Radius around a source within which the field simulates and syncs; sources with no player in range pause. |
-
-### Client visuals
-
-| Key | Default | Range | Meaning |
-| --- | --- | --- | --- |
-| `oxygenVisualQuality` | `FULL` | OFF/MINIMAL/FULL | Oxygen visuals: OFF (none), MINIMAL (HUD + sparse particles), FULL (+ haze tint + boundary shimmer). |
-| `oxygenParticleIntensity` | `1.0` | 0–4 | Drifting-particle density (0 disables just this layer). |
-| `oxygenHazeIntensity` | `1.0` | 0–2 | Haze/fog-tint alpha inside breathable air (0 disables the layer). |
-| `oxygenBoundaryIntensity` | `1.0` | 0–2 | Boundary-shimmer membrane alpha (0 disables the layer). |
-| `oxygenDebugLog` | `false` | — | Verbose, non-personal oxygen/terraform logging (never player identifiers — POPIA/GDPR). |
+| `telemetryEnabled` | `true` | Anonymous, Nerospace-only crash reports (Sentry, EU servers, POPIA/GDPR-scrubbed — see `PRIVACY.md`). Set `false` to opt out. Applies on config reload. Each player decides this for their own client. |
 
 ### Terraformer
 
-| Key | Default | Range | Meaning |
-| --- | --- | --- | --- |
-| `terraformPlantsEnabled` | `true` | — | Scatter grass/flowers/saplings on converted ground. |
-| `terraformWaterEnabled` | `true` | — | Fill low/exposed cells with water. |
-| `terraformResourcesEnabled` | `true` | — | Tier-3 Terraformer seeds ores into the converted subsurface (low rate). |
-| `terraformResourceOres` | Nerospace ores | list | Ore block ids the Tier-3 Terraformer may seed. |
-| `terraformMaxColumnsPerTick` | `48` | 1–4096 | Hard per-tick work cap regardless of tier (TPS guard). |
-| `terraformForceLoadChunks` | `false` | — | Force-load a bounded arc around the working frontier (TPS footgun — off by default). |
-| `terraformMaxForcedChunks` | `16` | 0–256 | Guard on force-loaded chunks. |
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `terraformerForceLoadEnabled` | `false` | A running [Terraformer](Terraformer) keeps a small window of chunks loaded, so it keeps working while you are away. Off by default because it costs server memory and speed. |
+
+### NeroLink
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `linkModuleEnabled` | `true` | Share Nerospace data with the NeroLink companion app: your own rockets, stations, planets, life support and Star Guide progress (never another player's). Set `false` and the app shows Nerospace as absent. The server decides. |
 
 ### Cargo rockets
 
-Tunables for [Cargo Pads](Cargo-Pad) and cargo flights. All server-authoritative.
+Settings for [Cargo Pads](Cargo-Pad) and cargo flights. The server decides all of them.
 
 | Key | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `cargoPadSlots` | `18` | 1–27 | Usable hold slots on a Cargo Pad — the payload one cargo rocket carries. |
 | `cargoFuelCapacity` | `16000` | 1,000–64,000 | Rocket fuel (mB) a Cargo Pad's pipe-fed buffer holds. |
-| `cargoTravelTimeMultiplier` | `1.0` | 0.1–10 | Scales cargo flight time. |
-| `cargoHoldRetrySeconds` | `30` | 5–600 | How often a holding flight retries its landing. |
-| `cargoHoldTimeoutMinutes` | `30` | 1–1,440 | Holding time before the cargo is dropped as a Cargo Crate at the destination (never deleted). |
-| `cargoFlightRetentionDays` | `7` | 1–90 | In-game days a completed flight record is kept before it is pruned. |
-| `cargoMaxFlightsPerOwner` | `16` | 1–128 | Concurrent live flights one player may have. |
-| `cargoMaxPads` | `256` | 8–4,096 | Hard cap on registered Cargo Pads. |
+| `cargoTravelTimeMultiplier` | `1.0` | 0.1–10 | Scales cargo flight time (higher = slower). |
+| `cargoHoldRetrySeconds` | `30` | 5–600 | How often a holding flight tries to land again. |
+| `cargoHoldTimeoutMinutes` | `30` | 1–1,440 | How long a flight holds before its cargo is dropped as a Cargo Crate at the destination (never deleted). |
+| `cargoFlightRetentionDays` | `7` | 1–90 | In-game days a finished flight record is kept. |
+| `cargoMaxFlightsPerOwner` | `16` | 1–128 | Live flights one player may have at once. |
+| `cargoMaxPads` | `256` | 8–4,096 | Most Cargo Pads that can be registered. |
 
 `fuelCostMultiplier` also scales cargo fuel.
 
 ### Economy (optional — needs NeroEconomy)
 
-Credit rewards and fees that only exist when the **NeroEconomy** mod is installed. Every amount
-defaults to `0`, which switches that feature off, so a server that changes nothing plays exactly as
-before. All server-authoritative.
+Credit rewards and fees. They only do something when the **NeroEconomy** mod is installed. Every
+amount defaults to `0`, which turns that feature off. The server decides all of them.
 
 | Key | Default | Range | Meaning |
 | --- | --- | --- | --- |
-| `economyFirstVisitReward` | `0` | 0–1,000,000 | Credits paid once the first time a player reaches each planet. Paid from NeroEconomy's Reserve and subject to its daily payout limits; a refused reward is not retried. |
-| `economyLaunchFee` | `0` | 0–1,000,000 | Credits charged per crewed or cargo rocket launch, after every other launch check has passed. A player who cannot pay is refused the launch (a Cargo Pad shows *Cannot pay the flight fee*). |
-| `economyDockingFee` | `0` | 0–1,000,000 | Credits charged per flight bound for an orbital station, on top of the launch fee. If the launch fee is then refused, the docking fee just taken is handed back. |
+| `economyFirstVisitReward` | `0` | 0–1,000,000 | Credits paid once, the first time a player reaches each planet. Paid from NeroEconomy's Reserve and limited by its daily payout limits. A refused reward is not tried again. |
+| `economyLaunchFee` | `0` | 0–1,000,000 | Credits charged per crewed or cargo launch, after all other launch checks pass. A player who cannot pay cannot launch (a Cargo Pad shows *Cannot pay the flight fee*). |
+| `economyDockingFee` | `0` | 0–1,000,000 | Credits charged per flight to an orbital station, on top of the launch fee. If the launch fee is then refused, the docking fee is given back. |
 
 Fees go to NeroEconomy's Reserve. Without NeroEconomy these keys do nothing.
-
-### Meteor events
-
-Tunables for the meteor world-event (see **[Meteor Events](Meteor-Events)**). Defaults give roughly
-one natural meteor every 2–3 play-hours per active dimension; the Meteor Caller works regardless.
-
-| Key | Default | Range | Meaning |
-| --- | --- | --- | --- |
-| `meteorNaturalSpawn` | `true` | — | Whether meteors fall naturally near players. |
-| `meteorAvgIntervalSeconds` | `9000` | 60–1,000,000 | Average seconds between natural impacts (randomised 0.66×–1.33×). |
-| `meteorWarningSeconds` | `30` | 0–600 | Warning window a meteor is tracked as *incoming* before it falls. |
-| `meteorMinDistance` | `200` | 0–2,000 | Min horizontal distance from the anchor player a meteor targets. |
-| `meteorMaxDistance` | `500` | 16–4,000 | Max horizontal distance a meteor targets. |
-| `meteorCraterRadius` | `3` | 1–8 | Radius of the crater carved (kept modest to avoid griefing builds). |
-| `meteorMaxActiveSites` | `4` | 1–64 | Max simultaneous scheduled/falling meteors per dimension. |
-| `meteorLootBonusRolls` | `3` | 0–32 | Weighted bonus loot rolls on top of the guaranteed alien fragments. |
-| `meteorDebugLog` | `false` | — | Verbose, non-personal meteor logging (dimension + coordinates only — POPIA/GDPR). |
 
 ### Quarry
 
 | Key | Default | Range | Meaning |
 | --- | --- | --- | --- |
-| `quarryMaxSide` | `64` | 4–64 | Max side length (blocks) of a quarry's landmark claim; tiers may cap lower. |
-| `quarryFrameDecayTicks` | `600` | 20–24,000 | Base delay before an orphaned frame block crumbles and drops its casing. Each block waits `base + rand(base×7)` ticks, so the default spreads the ring's decay over ~30 s – 4 min. |
+| `quarryMaxSide` | `64` | 4–64 | Longest side (in blocks) of a quarry's landmark area. |
+| `quarryFrameDecayTicks` | `600` | 20–24,000 | Base delay before a left-behind frame block crumbles and drops its casing. Each block waits `base + random(base × 7)` ticks, so with the default the ring falls apart over about 30 s to 4 min. |
 
 ### Alien villages
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `alienRaidsEnabled` | `true` | Whether claimed alien villages are raided by hostile mobs at night. Set `false` to opt out; applies on config reload. |
+| `alienRaidsEnabled` | `true` | Hostile mobs raid claimed alien villages at night. Set `false` to turn raids off. Applies on config reload. |
 
 ### Chat
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `welcomeMessageEnabled` | `true` | Whether the two-line Nerospace welcome (the Star Guide Book prompt and the feedback link) is sent to a player when they join the world. Set `false` to join silently; applies on config reload. Server-authoritative — the server sends the message, so the server decides. |
+| `welcomeMessageEnabled` | `true` | Send the two-line Nerospace welcome (the Star Guide Book prompt and the feedback link) when a player joins. Set `false` to join silently. Applies on config reload. The server decides. |
 
-## Removed keys (for modpack authors migrating)
+## Removed keys (for modpack authors)
 
-Folded into multipliers: `atmosphereDamage`, `oxygenMax`, `oxygenDrainPerTick`, `oxygenSuitDrain`,
-`oxygenSuitT2Max`, `oxygenAirlockRefillPerCheck`, `oxygenAirlockMbPerAir`,
-`terraformEnergyPerBlock`, `terraformWorkIntervalTicks`, `energyPipeCapacity`,
-`energyPipeThroughput`, `fluidPipeCapacity`, `fluidPipeThroughput`, `gasPipeCapacity`,
-`gasPipeThroughput`, `itemPipeTicksPerBlock`, `itemPipeExtractAmount`, `itemPipeExtractPeriod`,
-`batteryCapacity`, `fluidTankCapacity`, `gasTankCapacity`, `combustionGeneratorFePerTick`,
-`passiveGeneratorFePerTick`.
+These keys no longer exist. If they are still in your file, they do nothing.
 
-Removed outright: `logDirtBlock`, `magicNumber`, `magicNumberIntroduction`, `items` (template
-leftovers), `oxygenSealedRoomMax` (dead — the oxygen field replaced the sealed-room flood-fill),
-`terraformPlantChance`, `terraformResourceChance` (internalised; the booleans above still gate
-the features).
+- Folded into the multipliers or fixed in code: `atmosphereDamage`, `oxygenMax`, `oxygenDrainPerTick`,
+  `oxygenSuitDrain`, `oxygenSuitT2Max`, `oxygenAirlockRadius`, `oxygenAirlockRefillPerCheck`,
+  `oxygenAirlockMbPerAir`, `terraformEnergyPerBlock`, `terraformWorkIntervalTicks`,
+  `energyPipeCapacity`, `energyPipeThroughput`, `fluidPipeCapacity`, `fluidPipeThroughput`,
+  `gasPipeCapacity`, `gasPipeThroughput`, `itemPipeTicksPerBlock`, `itemPipeExtractAmount`,
+  `itemPipeExtractPeriod`, `batteryCapacity`, `fluidTankCapacity`, `gasTankCapacity`,
+  `combustionGeneratorFePerTick`, `passiveGeneratorFePerTick`.
+- Atmosphere and oxygen field: `atmosphereDamageEnabled`, `atmosphereSafeRadius`,
+  `oxygenBubbleRadius`, `oxygenMaxConcentration`, `oxygenBreathableThreshold`,
+  `oxygenDiffusionRate`, `oxygenDecayPerStep`, `oxygenSimIntervalTicks`,
+  `oxygenMaxActiveCellsPerSource`, `oxygenLeakRange`, `oxygenEvaporateSeconds`, `oxygenSyncRadius`.
+- Client visuals: `oxygenVisualQuality`, `oxygenParticleIntensity`, `oxygenHazeIntensity`,
+  `oxygenBoundaryIntensity`, `oxygenDebugLog`.
+- Terraformer: `terraformPlantsEnabled`, `terraformWaterEnabled`, `terraformWaterMaxDepth`,
+  `terraformDriftEnabled`, `terraformDriftPerSecond`, `terraformFaunaEnabled`,
+  `terraformResourcesEnabled`, `terraformResourceOres`, `terraformMaxColumnsPerTick`,
+  `terraformForceLoadChunks`, `terraformMaxForcedChunks`, `terraformPlantChance`,
+  `terraformResourceChance`.
+- Meteors: `meteorNaturalSpawn`, `meteorAvgIntervalSeconds`, `meteorWarningSeconds`,
+  `meteorMinDistance`, `meteorMaxDistance`, `meteorCraterRadius`, `meteorMaxActiveSites`,
+  `meteorLootBonusRolls`, `meteorDebugLog`.
+- Template leftovers: `logDirtBlock`, `magicNumber`, `magicNumberIntroduction`, `items`,
+  `oxygenSealedRoomMax`.

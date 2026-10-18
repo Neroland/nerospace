@@ -14,6 +14,9 @@ stone-height variant; the [Deepslate Nerosium Ore](Deepslate-Nerosium-Ore) varia
 ## Obtaining
 
 - **Mining:** requires an **iron-tier pickaxe** or better. Drops **Raw Nerosium** (affected by Fortune).
+- **Got the ore block instead of Raw Nerosium?** Your pickaxe has **Silk Touch**. That's fine: smelt the
+  ore block straight into an ingot (needs Nerospace **1.5.1** or newer), or grind it into 2 Nerosium Dust.
+  Use a pickaxe *without* Silk Touch if you want Raw Nerosium.
 - **Generation:** spawns in **all Overworld biomes** in the underground-ores step, in a triangular
 
   height band roughly **y −24 to y 56** (peaking around y 16), at a similar rate to iron.

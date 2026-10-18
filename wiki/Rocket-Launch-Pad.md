@@ -26,18 +26,40 @@ N N N
 
 ## How it works
 
-- **Deploy:** right-click the pad with a rocket item to place the rocket entity on it. **A complete,
+- **Deploy:** right-click any pad block with a rocket item to place the rocket on it. The pad size is
 
-  aligned 3×3 pad is required** — deploying on a partial pad shows a clear message instead. The same
-  check re-runs at launch, so breaking pad blocks under a deployed rocket grounds it.
+  checked **at launch**. If the pad is too small for the rocket's tier, the launch is blocked with a
+  clear message. Breaking pad blocks under a deployed rocket can ground it.
 
-- **Tier gating:**
-  - **Tier 3** additionally requires the 3×3 pad to be **ringed with
+- **Pad size per tier** (a bigger pad always works for a smaller rocket):
+  - **Tier 1** — one pad block.
+  - **Tier 2** — a full, aligned 3×3 pad.
+  - **Tier 3** — a 3×3 pad **ringed with [Station Wall](Station-Wall)** (the 16-block border of the
 
-    [Station Wall](Station-Wall)** (the 16-block border of the surrounding 5×5, at pad level) —
-    **or** a [Heavy Launch Complex](Launch-Gantry); either works.
+    surrounding 5×5, at pad level), or a [Heavy Launch Complex](Launch-Gantry).
 
-  - **Tier 4** deploys **only** on the Heavy Launch Complex.
+  - **Tier 4** — the Heavy Launch Complex only.
+
+- **Rocket numbers per tier:**
+
+  | Tier | Fuel tank | Onboard oxygen | Onboard power |
+  | --- | --- | --- | --- |
+  | 1 | 3,000 mB | 2,000 mB | 4,000 FE |
+  | 2 | 6,000 mB | 4,000 mB | 8,000 FE |
+  | 3 | 12,000 mB | 8,000 mB | 16,000 FE |
+  | 4 | 24,000 mB | 16,000 mB | 30,000 FE |
+
+- **Fuel per launch** is the same for every tier. It depends on the trip:
+
+  - a trip to **another dimension** costs **2,500 mB** (500 base + 2,000);
+  - a hop **inside the same dimension** costs **500 mB + 60 mB per 100 blocks**.
+
+  Both scale with `fuelCostMultiplier`. See [Configuration](Configuration).
+
+- **Tip:** a Tier 1 rocket reaches the station with only about **500 mB** left. Carry at least
+
+  **2 Rocket Fuel Canisters** so you can fly home.
+
 - **Heavy Launch Complex:** a complete, aligned **5×5 pad** plus at least one
 
   **[Launch Gantry](Launch-Gantry)** module adjacent at pad level. Right-click the gantry to board

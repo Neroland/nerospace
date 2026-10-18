@@ -18,7 +18,7 @@ resource layers ride the same connection graph simultaneously:
 | Energy (FE) | red | shared pool, balanced across all segments |
 | Fluid | blue | **one fluid per network** — the first fluid in claims it until drained |
 | Gas | cyan (oxygen), pale blue (hydrogen), grey (other gases) | one gas per network; **breaking a pipe vents its gas** (visible puff) |
-| Items | — | travel as **visible packets** (~2 blocks/s), round-robin between destinations |
+| Items | — | travel as **visible packets** (~2.5 blocks/s), round-robin between destinations |
 
 ## Obtaining
 
@@ -45,11 +45,14 @@ N N N
 
 - **Energy/fluid/gas:** the network pulls from providers, pushes to receivers and balances its own
 
-  buffers — coloured pulse streams show what's flowing where.
+  buffers — coloured pulse streams show what's flowing where. Each layer holds **8,000** (FE or mB)
+  and moves up to **1,000 per tick**.
 
 - **Items:** pulling faces extract from inventories; packets physically travel through the tube,
 
   re-route at junctions, and **never spill** — if every destination is full they park and wait.
+  Items move **8 ticks per block** (about 2.5 blocks a second). A pulling face takes **16 items
+  every 4 ticks**.
   Breaking a pipe drops the items inside it.
 
 - **Filters & upgrades:** see [Pipe Filters and Upgrades](Pipe-Filters-and-Upgrades).
@@ -96,6 +99,6 @@ a single line serves both a source and a sink (set the source-side face to In so
 ## Details
 
 - ID: `nerospace:universal_pipe` · Tool: pickaxe, iron tier · Drops: itself
-- Config: `energyPipeCapacity/Throughput`, `fluidPipe…`, `gasPipe…`, `itemPipeTicksPerBlock`,
+- Config: the pipe has no own config keys. Speeds follow the global multipliers — see
 
-  `itemPipeExtractAmount`, `itemPipeExtractPeriod`
+  [Configuration](Configuration).

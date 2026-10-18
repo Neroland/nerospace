@@ -24,8 +24,15 @@ meteor in the action bar:
 - **Heading** — a compass direction (N, NE, E, …) toward the site.
 - **Distance** — how far off it is, in metres.
 
-It's a creative item for now (no survival recipe yet) — a survival craft is planned alongside the
-scanner system below.
+You can craft it in survival (shaped):
+
+```text
+. N .
+R C R
+. N .
+```
+
+`N` = Nerosteel Ingot · `R` = Redstone · `C` = Compass
 
 ## Loot
 
@@ -52,13 +59,18 @@ survival.
 
 ## Configuration
 
-Meteor frequency, the warning window, target distance, crater size and loot generosity are all tunable
-— see the **Meteor events** section of **[Configuration](Configuration)**. Natural spawning can be
-turned off entirely (the Meteor Caller still works).
+Meteor pacing is fixed. There are no meteor config keys. The fixed values are:
+
+- about one natural meteor every **9,000 seconds** (2.5 hours), near an active player;
+- a **30 second** warning before it falls;
+- it lands **200 to 500 blocks** away;
+- up to **4** meteor sites at once per dimension.
+
+See **[Configuration](Configuration)** for the keys that do exist.
 
 ## Details
 
-- Trigger: rare timer near players (≈ one per 2–3 play-hours by default, configurable).
+- Trigger: rare timer near players (about one every 9,000 seconds; fixed).
 - Dimensions: Overworld, Greenxertz, Cindara, Glacira (not the void station).
 - Gravity: meteors descend more slowly on low-[gravity](Planet-Gravity) worlds.
 - Blocks: [Meteor Rock](Meteor-Rock), [Meteor Core](Meteor-Core) · Entity: `nerospace:falling_meteor`.

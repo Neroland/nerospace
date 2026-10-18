@@ -1,7 +1,7 @@
 # Nerospace Wiki
 
-**Nerospace** is a space-exploration / tech-progression mod for Minecraft (Java Edition), built on
-**NeoForge for Minecraft 26.1**. Mine alien materials, build machines, craft rockets, travel to other
+**Nerospace** is a space-exploration / tech-progression mod for Minecraft (Java Edition), for
+**NeoForge, Fabric and Forge** on **Minecraft 26.1.2, 26.2 and 26.3**. Mine alien materials, build machines, craft rockets, travel to other
 worlds, survive their airless atmospheres with oxygen gear, found your own orbital stations, and
 eventually **terraform** a dead planet into livable, rained-on ground.
 
@@ -10,13 +10,18 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 
 ## Getting started
 
+> 🚀 **New player? Start with the step-by-step [Getting Started](Getting-Started) guide.** Machine stuck
+> at 0% power? See **[Powering Machines](Powering-Machines)**.
+
 1. Mine **Nerosium Ore** in the Overworld — and craft a **[Star Guide Book](Star-Guide)**
 
-   (Book + Raw Nerosium) right away: it's the in-game version of this wiki, a live 7-chapter
+   (Book + Raw Nerosium) right away: it's the in-game version of this wiki, a live 10-chapter
    progression tree that always shows your next step.
 
-2. Build a **Nerosium Grinder** to double your ore yield via **Nerosium Dust**.
-3. Craft a Tier 1 **Rocket** and a 3×3 **[Launch Pad](Rocket-Launch-Pad)** and fly to the Orbital
+2. Mine **Nerosteel Ore** deep in the Overworld (below y 16) and build a **generator** — every machine
+   needs power. Then build a **Nerosium Grinder** to double your ore yield via **Nerosium Dust**.
+3. Craft a Tier 1 **Rocket** and a **[Launch Pad](Rocket-Launch-Pad)** (Tier 1 needs just one pad
+   block; Tier 2 needs a full 3×3) and fly to the Orbital
 
    Station; progress to **Nerosteel** and **Xertz Quartz** on Greenxertz.
 

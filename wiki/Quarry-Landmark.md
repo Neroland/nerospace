@@ -53,6 +53,6 @@ I
 
 ## Details
 
-- ID: `nerospace:quarry_landmark` · Tool: pickaxe · Drops: itself
+- ID: `nerospace:quarry_landmark` · Tool: any tool or your hand · Drops: itself
 - See the [Quarry Setup Guide](Quarry-Setup-Guide) for a step-by-step walkthrough, and
   [Quarry Controller](Quarry-Controller) for the full reference.

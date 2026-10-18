@@ -35,15 +35,21 @@ C C C
 
   The ore-block recipes mean **silk-touched ore** (hand-mined or from the quarry's Silk Touch Module)
   is never a dead end — grind it back into its raw material or gem.
-- **Power:** it has an internal energy buffer (10,000 FE) and currently **self-charges**
-
-  (~15 FE/tick), spending ~30 FE/tick while grinding. A full grind takes ~100 progress ticks.
+- **Power:** the grinder does **not** make its own power — it shows **0%** until you connect a power
+  source. Place a **[Passive Generator](Passive-Generator)** (feed it Raw Nerosium) or a
+  **[Combustion Generator](Combustion-Generator)** (feed it coal) **right next to it**: generators push
+  power into touching machines on their own, no cable needed. Further away, link them with
+  **[Universal Pipes](Universal-Pipe)** or a Neroland Core **[Battery](Battery)**. See
+  **[Powering Machines](Powering-Machines)**.
+- **Numbers:** 20,000 FE buffer, accepts up to 500 FE/tick, uses **20 FE/tick** while grinding, and one
+  item takes **200 ticks (10 seconds)** — so one grind costs 4,000 FE.
 
 - **Automation:** the inventory is exposed via the item capability — hoppers/pipes can **insert into
 
   the input from the top or sides and extract dust from the bottom**.
 
-- **GUI:** shows a power gauge and grind-progress; emits a **comparator signal** from its energy level.
+- **GUI:** shows a power gauge and grind progress. If the power bar stays at **0%**, nothing is
+  feeding it — put a generator next to it.
 
 ## Grinding meteor rock — random space materials
 
