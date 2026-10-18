@@ -73,6 +73,11 @@ public class GrindingCategory extends AbstractRecipeCategory<GrinderRecipes.Grin
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, GrinderRecipes.Grinding recipe,
             IFocusGroup focuses) {
+        // Guarded: an older installed JEI must degrade to a page without extras, not crash (MC-NEROSPACE-V).
+        JeiExtras.run("grinding", () -> addExtras(builder));
+    }
+
+    private void addExtras(IRecipeExtrasBuilder builder) {
         int ticks = NerospaceConfig.scaleInterval(NerosiumGrinderBlockEntity.MAX_PROGRESS,
                 NerospaceConfig.machineSpeedMultiplier());
         builder.addAnimatedRecipeArrow(ticks).setPosition(28, 5);

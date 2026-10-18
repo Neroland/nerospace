@@ -3,7 +3,11 @@
   "category": "misc",
   "ingredients": [
     "minecraft:book",
-    "nerospace:raw_nerosium"
+    [
+      "nerospace:raw_nerosium",
+      "nerospace:nerosium_ore",
+      "nerospace:deepslate_nerosium_ore"
+    ]
   ],
   "result": {
     "id": "nerospace:star_guide_book"

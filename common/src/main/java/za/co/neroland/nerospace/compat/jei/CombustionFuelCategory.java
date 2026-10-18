@@ -54,6 +54,11 @@ public class CombustionFuelCategory extends AbstractRecipeCategory<CombustionFue
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, CombustionFuel recipe, IFocusGroup focuses) {
+        // Guarded: an older installed JEI must degrade to a page without extras, not crash (MC-NEROSPACE-V).
+        JeiExtras.run("combustion_fuel", () -> addExtras(builder, recipe));
+    }
+
+    private void addExtras(IRecipeExtrasBuilder builder, CombustionFuel recipe) {
         builder.addAnimatedRecipeFlame(recipe.burnTicks()).setPosition(30, 7);
         int fePerTick = NerospaceConfig.scale(CombustionGeneratorBlockEntity.FE_PER_TICK,
                 NerospaceConfig.energyRateMultiplier());

@@ -79,6 +79,11 @@ public final class NeoForgeRegistrationFactory implements RegistrationProvider.F
                 public Identifier id() {
                     return id;
                 }
+
+                @Override
+                public boolean isPresent() {
+                    return holder.isBound();
+                }
             };
         }
     }

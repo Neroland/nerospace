@@ -3,7 +3,11 @@
   "category": "misc",
   "key": {
     "P": "#minecraft:planks",
-    "R": "#c:raw_materials/nerosium",
+    "R": [
+      "nerospace:raw_nerosium",
+      "nerospace:nerosium_ore",
+      "nerospace:deepslate_nerosium_ore"
+    ],
     "S": "#c:cobblestones"
   },
   "pattern": [

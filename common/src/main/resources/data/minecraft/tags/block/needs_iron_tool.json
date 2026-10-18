@@ -23,6 +23,8 @@
     "nerospace:terraform_monitor",
     "nerospace:star_guide",
     "nerospace:solar_panel",
+    "nerospace:solar_panel_t2",
+    "nerospace:solar_panel_t3",
     "nerospace:fuel_tank",
     "nerospace:fuel_refinery",
     "nerospace:quarry_controller",

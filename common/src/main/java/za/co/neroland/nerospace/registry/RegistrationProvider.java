@@ -37,6 +37,17 @@ public interface RegistrationProvider<T> {
         R get();
 
         Identifier id();
+
+        /**
+         * Whether {@link #get()} can currently return a value. Always true on Fabric (eager registration).
+         * On Forge / NeoForge it is false before the register event has bound the entry and, on a Forge
+         * client, after the registries were replaced by a server snapshot that does not contain it (joining
+         * a server without Nerospace drops every client-only entry; MC-NEROSPACE-W). Per-tick client code
+         * must check this instead of letting {@link #get()} throw.
+         */
+        default boolean isPresent() {
+            return true;
+        }
     }
 
     /** Loader-provided bridge to the platform registry. */

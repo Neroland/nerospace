@@ -70,6 +70,13 @@ public final class ForgeRegistrationFactory implements RegistrationProvider.Fact
                 public Identifier id() {
                     return id;
                 }
+
+                @Override
+                public boolean isPresent() {
+                    // Empty before RegisterEvent and after Forge injects a server registry snapshot that
+                    // lacks this id (client joined a server without Nerospace) - MC-NEROSPACE-W.
+                    return holder.isPresent();
+                }
             };
         }
     }

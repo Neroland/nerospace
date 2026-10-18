@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.2] - 2026-10-18'
+
+### Fixed
+
+- **Breaking a Launch Controller no longer deletes the building materials inside it.** The Launch
+  Pads, Station Wall and Launch Gantry blocks loaded into its slots now drop as items when any part of
+  the console is broken, alongside the controller itself.
+- **Ores drop their raw material again on Minecraft 26.3** (NeoForge, Fabric and Forge). Mining Nerosium
+  (and Deepslate Nerosium), Nerosteel, Xertz Quartz, Cindrite or Glacite ore with a normal pickaxe dropped
+  the ore block itself, as if the pickaxe had Silk Touch. Minecraft 26.3 changed the loot-table file
+  format and silently ignored the old Silk Touch check, so the "drop the ore block" branch always won.
+  The 26.3 builds now ship every Nerospace loot table in the new format: ores drop raw materials and gems
+  (with Fortune), Silk Touch still gives the ore block, and creature drops and explosion rules work as
+  intended. 26.1.2 and 26.2 were not affected.
+- **Forge: no more client crash loop from the Meteor Tracker readout** (MC-NEROSPACE-W). When the Forge
+  client's item registry no longer held Nerospace's items (for example after joining a server that does
+  not run Nerospace), the Meteor Tracker check threw on every client tick. Registry entries can now be
+  checked for presence on every loader, and the readout simply stays quiet while the item is absent.
+- **An older JEI no longer crashes the recipe screen** (MC-NEROSPACE-V, follow-up to MC-NEROSPACE-T).
+  The Nerosium Grinder, Fuel Refinery and Combustion Generator pages now show without their energy/time
+  readout, instead of crashing, if the installed JEI lacks a widget method this build uses. Each jar also
+  declares the oldest JEI it supports for its Minecraft line (26.1.2: 29.5.0.24, 26.2: 30.0.0.1,
+  26.3: 31.0.0.3). JEI is still optional; only a JEI older than that is refused at launch.
+- The Tier 2 and Tier 3 Solar Panels now need an iron pickaxe or better to drop, the same as the
+  basic Solar Panel.
+
 ## [1.5.2] - 2026-10-18
 
 ### Fixed
@@ -16,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Grinder could process them.
 - **Nerosteel, Cindrite and Glacite blocks can be uncrafted** back into 9 ingots or gems, matching the
   Nerosium blocks.
+- **The Star Guide Book and Star Guide pedestal accept a Nerosium Ore block** (stone or deepslate) as
+  well as Raw Nerosium, so a player holding only ore blocks is never locked out of the guide.
 
 ### Documentation
 

@@ -72,6 +72,11 @@ public class RefiningCategory extends AbstractRecipeCategory<RefiningCategory.Re
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, RefiningRecipe recipe, IFocusGroup focuses) {
+        // Guarded: an older installed JEI must degrade to a page without extras, not crash (MC-NEROSPACE-V).
+        JeiExtras.run("refining", () -> addExtras(builder));
+    }
+
+    private void addExtras(IRecipeExtrasBuilder builder) {
         int ticks = NerospaceConfig.scaleInterval(FuelRefineryBlockEntity.WORK_TICKS,
                 NerospaceConfig.machineSpeedMultiplier());
         builder.addAnimatedRecipeArrow(ticks).setPosition(28, 11);

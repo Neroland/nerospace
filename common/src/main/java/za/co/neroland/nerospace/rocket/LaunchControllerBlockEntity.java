@@ -435,6 +435,29 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
         return new LaunchControllerMenu(containerId, playerInventory, this.inputs, this.data, this);
     }
 
+    // --- Removal -------------------------------------------------------------
+
+    /**
+     * Breaking the console spills the three building-material slots. Only the core cell carries this
+     * block entity, and every way the structure comes down removes the core exactly once — broken
+     * directly, or via {@link LaunchControllerBlock#breakStructure} when a {@link LaunchControllerPartBlock}
+     * is broken, or by an explosion — so the slots spill exactly once. They are emptied as they drop,
+     * so a re-entrant call could find nothing left. World-inert apart from the drops.
+     */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level == null || this.level.isClientSide()) {
+            return;
+        }
+        for (int i = 0; i < SLOTS; i++) {
+            ItemStack stack = this.inputs.removeItemNoUpdate(i);
+            if (!stack.isEmpty()) {
+                Containers.dropItemStack(this.level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
+            }
+        }
+    }
+
     // --- Persistence ---------------------------------------------------------
 
     @Override

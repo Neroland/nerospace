@@ -52,6 +52,11 @@ public final class FabricRegistrationFactory implements RegistrationProvider.Fac
                 public Identifier id() {
                     return id;
                 }
+
+                @Override
+                public boolean isPresent() {
+                    return true; // registered eagerly above; the value can never be absent
+                }
             };
         }
     }

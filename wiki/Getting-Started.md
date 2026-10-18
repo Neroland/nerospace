@@ -3,7 +3,8 @@
 New to Nerospace? Follow these steps in order. Each step tells you what to get and what to build next.
 Click any link for the full page.
 
-> **Tip:** craft a **[Star Guide Book](Star-Guide)** (Book + Raw Nerosium) as soon as you can. It is this
+> **Tip:** craft a **[Star Guide Book](Star-Guide)** (Book + Raw Nerosium, or Book + a Nerosium Ore
+> block) as soon as you can. It is this
 > guide inside the game and always shows your next step.
 
 ## Step 1 — Find Nerosium
@@ -11,8 +12,11 @@ Click any link for the full page.
 - **Where:** in the Overworld, underground, between **y −24 and y 56**. It is about as common as iron.
 - **Tool:** an **iron pickaxe** or better.
 - **What you get:** **Raw Nerosium**.
-  - If you get the **ore block** instead, your pickaxe has **Silk Touch**. You can still smelt the ore
-    block into an ingot.
+  - If you get the **ore block** instead, that's OK: smelt the ore block into an ingot, grind it into
+    2 dust, or use it for the Star Guide Book. (Normally this only happens with **Silk Touch** — if
+    it happens without, please tell us on Discord.)
+  - **JEI doesn't show mining drops.** Raw Nerosium only comes from breaking the ore, so you won't
+    find a crafting recipe for it.
 - **Next:** smelt Raw Nerosium in a furnace to get **Nerosium Ingots**.
 
 ## Step 2 — Find Nerosteel

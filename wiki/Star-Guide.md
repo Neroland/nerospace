@@ -16,6 +16,7 @@ live — finish something anywhere and the tree lights up.
 ## Obtaining
 
 **Star Guide Book** (shapeless): **Book + Raw Nerosium** — available minutes into a playthrough.
+A **Nerosium Ore** or **Deepslate Nerosium Ore** block also works in place of the Raw Nerosium.
 
 **Star Guide** pedestal (shaped):
 
@@ -25,7 +26,7 @@ live — finish something anywhere and the tree lights up.
 S S S
 ```
 
-`R` = Raw Nerosium · `P` = any Planks · `S` = Cobblestone
+`R` = Raw Nerosium (or a Nerosium Ore block) · `P` = any Planks · `S` = Cobblestone
 
 ## How it works
 

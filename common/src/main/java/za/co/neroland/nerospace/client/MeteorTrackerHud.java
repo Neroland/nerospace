@@ -30,6 +30,12 @@ public final class MeteorTrackerHud {
         if (mc.player == null || mc.level == null || mc.isPaused()) {
             return;
         }
+        // On a Forge client connected to a server without Nerospace, the server's registry snapshot drops
+        // every Nerospace item, so the entry is empty and get() would throw every tick (MC-NEROSPACE-W).
+        // Nobody can be holding a tracker then, so there is nothing to show.
+        if (!ModItems.METEOR_TRACKER.isPresent()) {
+            return;
+        }
         boolean holding = mc.player.getMainHandItem().is(ModItems.METEOR_TRACKER.get())
                 || mc.player.getOffhandItem().is(ModItems.METEOR_TRACKER.get());
         if (!holding) {

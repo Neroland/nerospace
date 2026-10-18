@@ -54,3 +54,13 @@ type = "optional"
 versionRange = "[0.3.0-beta.1,)"
 ordering = "AFTER"
 side = "BOTH"
+
+# JEI — optional recipe-viewer compat. Floor = the oldest JEI on this Minecraft line that the compat/jei
+# plugin is known to work with (jei_min_version_<mc> in gradle.properties); an older JEI is refused with a
+# clear message instead of crashing in the recipe screen (MC-NEROSPACE-V).
+[[dependencies.${mod_id}]]
+modId = "jei"
+type = "optional"
+versionRange = "${jei_version_range}"
+ordering = "NONE"
+side = "CLIENT"
