@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import net.minecraft.resources.Identifier;
 
 import za.co.neroland.nerolandcore.meteor.MeteorPlanets;
-import za.co.neroland.nerolandcore.registry.CoreCreativeTab;
 
 import za.co.neroland.nerospace.data.NerospaceErasure;
 import za.co.neroland.nerospace.link.NerospaceLinkModule;
@@ -48,7 +47,6 @@ public final class NerospaceCommon {
         // Inert without NeroEconomy, and every amount defaults to 0 = off.
         za.co.neroland.nerospace.compat.neroeconomy.NerospaceEconomy.init();
         installMeteorPlanetProvider();
-        contributeToSharedTab();
         // Hook gates (Star Guide hint, oxygen top-up): listens on Core's gate bus; no quest mod is imported.
         za.co.neroland.nerospace.progression.QuestHooks.init();
 
@@ -72,26 +70,6 @@ public final class NerospaceCommon {
             Identifier dim = player.level().dimension().identifier();
             return MOD_ID.equals(dim.getNamespace()) ? dim : null;
         });
-    }
-
-    /**
-     * Surfaces Nerospace's signature materials + key progression items in Neroland Core's shared
-     * "Neroland" creative tab (so a multi-mod pack shows one organised cross-mod tab), while Nerospace's
-     * full catalogue stays in its own dedicated {@code ModCreativeTab}. The suppliers are lazy — resolved
-     * by the tab at display time, never during this (pre-registration) init call — so they are safe on
-     * every loader. Nerospace already publishes the {@code c:} convention tags for these materials, so
-     * recipe/automation interop needs no further wiring.
-     */
-    private static void contributeToSharedTab() {
-        CoreCreativeTab.add(() -> ModItems.RAW_NEROSIUM.get());
-        CoreCreativeTab.add(() -> ModItems.NEROSIUM_INGOT.get());
-        CoreCreativeTab.add(() -> ModItems.NEROSIUM_DUST.get());
-        CoreCreativeTab.add(() -> ModItems.NEROSTEEL_INGOT.get());
-        CoreCreativeTab.add(() -> ModItems.XERTZ_QUARTZ.get());
-        CoreCreativeTab.add(() -> ModItems.CINDRITE.get());
-        CoreCreativeTab.add(() -> ModItems.GLACITE.get());
-        CoreCreativeTab.add(() -> ModItems.STAR_GUIDE_BOOK.get());
-        CoreCreativeTab.add(() -> ModItems.STATION_CHARTER.get());
     }
 
     /**
