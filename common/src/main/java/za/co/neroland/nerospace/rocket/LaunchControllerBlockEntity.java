@@ -71,6 +71,8 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     private static final int POWER_RATE = 200;
 
     private int targetTier = 1;
+    /** The tier the formation in front of the controller actually forms right now (0 = none). */
+    private int builtTier;
     private boolean hologram;
     private int mode; // 0 = pad build, 1 = launch
     private final SimpleContainer inputs = new SimpleContainer(SLOTS);
@@ -120,6 +122,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
                 case 18 -> rocketDest;
                 case 19 -> rocketMask;
                 case 20 -> rocketLaunchable ? 1 : 0;
+                case 21 -> builtTier;
                 default -> 0;
             };
         }
@@ -131,7 +134,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
 
         @Override
         public int getCount() {
-            return 21;
+            return 22;
         }
     };
 
@@ -273,6 +276,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
             return;
         }
         this.cacheTick = this.level.getGameTime();
+        syncBuiltTier();
         this.needed[0] = 0;
         this.needed[1] = 0;
         this.needed[2] = 0;
@@ -301,6 +305,30 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
         } else {
             this.rocketLaunchable = false;
         }
+    }
+
+    /**
+     * Reads the tier the formation in front of the controller actually forms, using the same geometry
+     * check a rocket uses at launch, and raises the target tier to match. Without this a pad built by
+     * hand left the controller stuck on whatever tier was last picked in its menu. Never lowers the
+     * target: picking a tier above what is built is how a player plans an upgrade.
+     *
+     * @return whether the target tier changed
+     */
+    private boolean syncBuiltTier() {
+        if (this.level == null || this.level.isClientSide()) {
+            return false;
+        }
+        Direction facing = getBlockState().getValue(LaunchControllerBlock.FACING);
+        BlockPos centre = getBlockPos().relative(facing, PAD_OFFSET);
+        this.builtTier = LaunchPadMultiblock.padTierContaining(this.level,
+                LaunchPadMultiblock.connectedPads(this.level, centre), centre);
+        if (this.builtTier > this.targetTier) {
+            this.targetTier = this.builtTier;
+            markChangedAndSync();
+            return true;
+        }
+        return false;
     }
 
     /** The non-launching rocket docked on the pad this controller builds, or {@code null}. */
@@ -393,6 +421,11 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) {
             return;
+        }
+        // Pick up hand-built pads once a second, so the hologram and menu follow the real formation
+        // even when nobody has the console open.
+        if (level.getGameTime() % 20L == 0L && syncBuiltTier()) {
+            this.cacheTick = -1L;
         }
         Direction facing = state.getValue(LaunchControllerBlock.FACING);
         RocketEntity rocket = LaunchPadMultiblock.dockedRocket(level, pos.relative(facing, PAD_OFFSET));

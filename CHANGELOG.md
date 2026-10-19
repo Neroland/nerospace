@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.5] - 2026-10-19
+
+### Changed
+
+- **Hand-built launch pads now say when they're ready.** Placing the block that completes a pad tier
+  (a single pad, the last pad of a 3×3, the 16th Station Wall of the ring, or the Launch Gantry of a
+  Heavy Launch Complex) shows "✔ Launch pad ready: Tier N — place a rocket" above the hotbar with a
+  chime and particles, so it's clear the only step left is to place a rocket. Placements that don't
+  complete a tier stay silent.
+- **Clearer launch pad report.** Right-clicking a pad with an empty hand now gives three short,
+  colour-coded lines: the tier (in bold gold) and block count, a green "✔ Ready — place a rocket" line
+  while no rocket is docked, and a muted gray hint for the next tier.
+- **The Launch Controller follows pads built by hand.** It now reads the formation in front of it and
+  raises its selected tier to match, instead of staying on whatever tier was last picked in its menu.
+  Its build screen also shows the tier of the pad in place.
+
 ## [1.5.4] - 2026-10-18
 
 ### Fixed

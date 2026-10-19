@@ -111,6 +111,11 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
         return this.data.get(0);
     }
 
+    /** The tier the pad in front of the controller actually forms (0 = no pad there). */
+    public int builtTier() {
+        return this.data.get(21);
+    }
+
     public int neededPads() {
         return this.data.get(1);
     }

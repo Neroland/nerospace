@@ -119,11 +119,20 @@ the square at pad level. No Station Walls are needed.
 
 ## 4. Check it and deploy the rocket
 
-**Right-click any pad block with an empty hand.** Chat shows the pad's size and tier, and what to
-build next:
+**The pad tells you when it's ready.** When the block you place completes a tier (the last pad of
+the 3×3, the 16th Station Wall, or the gantry), a message appears above your hotbar, the pad chimes
+and sparkles:
 
-> Launch pad: 9 block(s) — Pad Tier 2
-> Pad Tier 2 (3x3). Ring the 3x3 with Station Wall for Pad Tier 3.
+> ✔ Launch pad ready: **Tier 3** — place a rocket
+
+There is nothing else to switch on. Once you see that message, all that's left is to place a rocket.
+
+**Right-click any pad block with an empty hand** to check it at any time. Chat shows the pad's tier
+and size, confirms it's ready for a rocket, and says what to build next:
+
+> Launch Pad **Tier 2** · 9 blocks
+> ✔ Ready — place a rocket (up to **Tier 2**)
+> Next: ring the 3x3 with 16 Station Walls for Tier 3
 
 Don't sneak while you do this: sneaking with an empty hand on a pad you named as a travel stop
 removes it from the travel list.

@@ -5,12 +5,15 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
@@ -93,14 +96,34 @@ public final class LaunchPadMultiblock {
      * @return the best tier 1..4 the cluster forms, or 0 if {@code pads} is empty.
      */
     public static int padTier(Level level, Set<BlockPos> pads) {
+        return tierOf(level::getBlockState, pads);
+    }
+
+    /**
+     * The tier {@code pads} formed before the block at {@code placed} went down: the same check as
+     * {@link #padTier}, with that position read as air and dropped from the cluster. A placement that
+     * makes {@link #padTier} exceed this is the one that completed a new tier.
+     */
+    public static int padTierWithout(Level level, Set<BlockPos> pads, BlockPos placed) {
+        Set<BlockPos> rest = new HashSet<>(pads);
+        rest.remove(placed);
+        BlockState air = Blocks.AIR.defaultBlockState();
+        return tierOf(pos -> pos.equals(placed) ? air : level.getBlockState(pos), rest);
+    }
+
+    /** {@link #padTier} against any block-state lookup. */
+    private static int tierOf(Function<BlockPos, BlockState> states, Set<BlockPos> pads) {
         if (pads.isEmpty()) {
             return 0;
         }
-        if (isHeavyComplex(level, pads)) {
+        BlockPos corner5 = fullSquareCorner(pads, 5);
+        if (corner5 != null && ringHas(states, corner5, 5, state -> state.getBlock() instanceof LaunchGantryBlock)) {
             return 4;
         }
-        if (hasStationWallRing(level, pads)) {
-            return 3;
+        for (BlockPos corner : pads) {
+            if (isThreeByThreeFrom(pads, corner) && wallRingAt(states, corner)) {
+                return 3;
+            }
         }
         if (isFullThreeByThree(pads)) {
             return 2;
@@ -206,15 +229,19 @@ public final class LaunchPadMultiblock {
     }
 
     /** Whether any cell of the border ring around the {@code size} square matches {@code predicate}. */
-    public static boolean borderRingHas(Level level, BlockPos corner, int size,
-            java.util.function.Predicate<BlockState> predicate) {
+    public static boolean borderRingHas(Level level, BlockPos corner, int size, Predicate<BlockState> predicate) {
+        return ringHas(level::getBlockState, corner, size, predicate);
+    }
+
+    private static boolean ringHas(Function<BlockPos, BlockState> states, BlockPos corner, int size,
+            Predicate<BlockState> predicate) {
         for (int dx = -1; dx <= size; dx++) {
             for (int dz = -1; dz <= size; dz++) {
                 if (dx != -1 && dx != size && dz != -1 && dz != size) {
                     continue; // interior — the pad itself
                 }
                 BlockPos pos = new BlockPos(corner.getX() + dx, corner.getY(), corner.getZ() + dz);
-                if (predicate.test(level.getBlockState(pos))) {
+                if (predicate.test(states.apply(pos))) {
                     return true;
                 }
             }
@@ -234,13 +261,17 @@ public final class LaunchPadMultiblock {
 
     /** Whether the 5x5 border around the 3x3 with min-corner {@code corner} is all Station Wall. */
     private static boolean hasRingAt(Level level, BlockPos corner) {
+        return wallRingAt(level::getBlockState, corner);
+    }
+
+    private static boolean wallRingAt(Function<BlockPos, BlockState> states, BlockPos corner) {
         for (int dx = -1; dx <= 3; dx++) {
             for (int dz = -1; dz <= 3; dz++) {
                 if (dx != -1 && dx != 3 && dz != -1 && dz != 3) {
                     continue; // interior — the pad itself
                 }
                 BlockPos pos = new BlockPos(corner.getX() + dx, corner.getY(), corner.getZ() + dz);
-                if (!level.getBlockState(pos).is(za.co.neroland.nerospace.registry.ModBlocks.STATION_WALL.get())) {
+                if (!states.apply(pos).is(za.co.neroland.nerospace.registry.ModBlocks.STATION_WALL.get())) {
                     return false;
                 }
             }

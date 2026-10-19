@@ -2,12 +2,14 @@ package za.co.neroland.nerospace.rocket;
 
 import java.util.Set;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -18,6 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The craftable launch mount: a short pad a rocket is assembled onto. A {@link RocketItem} may only
@@ -46,6 +50,13 @@ public class RocketLaunchPadBlock extends Block {
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    /** Announce the pad tier this block completes, so a hand-built pad says when it is ready. */
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        LaunchPadFeedback.onPartPlaced(level, pos, placer);
     }
 
     @Override
@@ -93,9 +104,14 @@ public class RocketLaunchPadBlock extends Block {
         }
         Set<BlockPos> pads = LaunchPadMultiblock.connectedPads(level, pos);
         int tier = LaunchPadMultiblock.padTier(level, pads);
-        // Summary line: cluster size + the highest rocket tier this pad can launch.
-        player.sendSystemMessage(Component.translatable(
-                "block.nerospace.rocket_launch_pad.report.summary", pads.size(), tier));
+        // Summary line: the tier (highlighted) and the cluster size.
+        player.sendSystemMessage(Component.translatable("block.nerospace.rocket_launch_pad.report.summary",
+                tierLabel(tier), pads.size()).withStyle(ChatFormatting.AQUA));
+        // Say plainly that the pad is ready, so nobody goes looking for a missing step.
+        if (LaunchPadMultiblock.rocketAbove(level, pads) == null) {
+            player.sendSystemMessage(Component.translatable("block.nerospace.rocket_launch_pad.report.ready",
+                    tierLabel(tier)).withStyle(ChatFormatting.GREEN));
+        }
         // Next-tier build hint (or "max" once the Heavy Launch Complex is formed).
         String hint = switch (tier) {
             case 1 -> "block.nerospace.rocket_launch_pad.report.next_t2";
@@ -103,7 +119,14 @@ public class RocketLaunchPadBlock extends Block {
             case 3 -> "block.nerospace.rocket_launch_pad.report.next_t4";
             default -> "block.nerospace.rocket_launch_pad.report.max";
         };
-        player.sendSystemMessage(Component.translatable(hint));
+        player.sendSystemMessage(Component.translatable(hint)
+                .withStyle(tier >= 4 ? ChatFormatting.GOLD : ChatFormatting.GRAY));
         return InteractionResult.SUCCESS;
+    }
+
+    /** "Tier N" in bold gold, the one part of a pad message the eye should land on. */
+    public static Component tierLabel(int tier) {
+        return Component.translatable("block.nerospace.rocket_launch_pad.tier", tier)
+                .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD);
     }
 }

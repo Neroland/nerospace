@@ -140,6 +140,9 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         label(g, Component.translatable("gui.nerospace.launch_controller.needed",
                         this.menu.neededPads(), this.menu.neededWall(), this.menu.neededGantry()),
                 8, SLOT_Y + 20, 0xFFCFE7FF);
+        // The tier the pad actually forms, so a hand-built pad shows up here too.
+        label(g, Component.translatable("gui.nerospace.launch_controller.built_tier", this.menu.builtTier()),
+                8, SLOT_Y + 30, SUBTLE);
 
         // Resource hub levels (fed by pipes/cables → pumped into the docked rocket) — full-width bars.
         int gx = 46;

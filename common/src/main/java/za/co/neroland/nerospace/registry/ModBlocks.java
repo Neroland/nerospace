@@ -77,8 +77,11 @@ public final class ModBlocks {
     // --- Station + alien decorative + meteor --------------------------------
     public static final RegistryEntry<Block> STATION_FLOOR = block("station_floor",
             p -> p.mapColor(MapColor.METAL).strength(4.0F, 12.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
-    public static final RegistryEntry<Block> STATION_WALL = block("station_wall",
-            p -> p.mapColor(MapColor.COLOR_LIGHT_GRAY).strength(4.0F, 12.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
+    /** A {@link za.co.neroland.nerospace.rocket.StationWallBlock} so a finished Tier 3 pad ring is announced. */
+    public static final RegistryEntry<Block> STATION_WALL = BLOCKS.register("station_wall",
+            key -> new za.co.neroland.nerospace.rocket.StationWallBlock(BlockBehaviour.Properties.of()
+                    .setId(key).mapColor(MapColor.COLOR_LIGHT_GRAY).strength(4.0F, 12.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
     public static final RegistryEntry<Block> ALIEN_BRICKS = block("alien_bricks",
             p -> p.mapColor(MapColor.COLOR_GREEN).strength(1.5F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
     public static final RegistryEntry<Block> CRACKED_ALIEN_BRICKS = block("cracked_alien_bricks",
