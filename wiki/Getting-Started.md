@@ -61,7 +61,8 @@ Every fuel recipe needs **Blaze Powder**, so go to the Nether and get some blaze
 
 - **[Launch Pad](Rocket-Launch-Pad):** 8 Nerosteel Ingots + Block of Nerosium.
 - **Tier 1 Rocket:** 5 Nerosteel Ingots + Block of Nerosteel + Rocket Fuel Canister.
-- A Tier 1 rocket only needs **one** launch pad block.
+- A Tier 1 rocket only needs **one** launch pad block. Bigger rockets need bigger pads: see the
+  [Launch Pad Build Guide](Launch-Pad-Build-Guide).
 - Fill the rocket with fuel: right-click it with canisters.
 - A trip to another world costs **2,500 mB** of fuel. **Bring at least 2 extra canisters** to fly home.
 

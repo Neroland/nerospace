@@ -49,6 +49,8 @@ N S N
 
   base rate) — a Tier 4's 24,000 mB tank fills in under a minute.
 
+See the [Launch Pad Build Guide](Launch-Pad-Build-Guide) for the full Tier 4 layout.
+
 ## Details
 
 - ID: `nerospace:launch_gantry` · Tool: pickaxe, iron tier · Drops: itself

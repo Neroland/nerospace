@@ -80,6 +80,9 @@ N N N
 
   land. Build an [Oxygen Generator](Oxygen-Generator) base for anything beyond the landing area.
 
+> **Building one?** The [Launch Pad Build Guide](Launch-Pad-Build-Guide) has a layout plan and
+> material list for every tier.
+
 ## Pad-to-pad travel
 
 Launch pads double as the waypoints of rocket travel.
