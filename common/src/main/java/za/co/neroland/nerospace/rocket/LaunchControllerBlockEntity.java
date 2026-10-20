@@ -73,6 +73,9 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     private int targetTier = 1;
     /** The tier the formation in front of the controller actually forms right now (0 = none). */
     private int builtTier;
+
+    /** Synced data slots (0..21). The menu sizes its client-side mirror from this — keep them in lockstep. */
+    public static final int DATA_COUNT = 22;
     private boolean hologram;
     private int mode; // 0 = pad build, 1 = launch
     private final SimpleContainer inputs = new SimpleContainer(SLOTS);
@@ -134,7 +137,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
 
         @Override
         public int getCount() {
-            return 22;
+            return DATA_COUNT;
         }
     };
 

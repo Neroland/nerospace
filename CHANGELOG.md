@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.6] - 2026-10-20
+
+### Fixed
+
+- **Opening the Launch Controller no longer crashes the game** (MC-NEROSPACE-X). In 1.5.5 the build
+  screen tried to show the tier of the pad in place before the client had room for it, so opening the
+  console crashed with "Rendering screen". The screen now opens normally and shows the built tier.
+
 ## [1.5.5] - 2026-10-19
 
 ### Changed

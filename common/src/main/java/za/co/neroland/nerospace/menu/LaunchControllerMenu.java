@@ -35,7 +35,7 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
     public static final int BUTTON_LAUNCH = 8;
 
     private static final int SLOTS = 3;
-    private static final int DATA_COUNT = 21;
+    private static final int DATA_COUNT = LaunchControllerBlockEntity.DATA_COUNT;
 
     private final Container container;
     private final ContainerData data;
