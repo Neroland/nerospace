@@ -18,9 +18,10 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.data.SavedDataRecovery;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.ModDimensions;
-import za.co.neroland.nerospace.world.SavedDataRecovery;
 
 /**
  * The server-global registry of player-founded stations. Stored on the overworld (always loaded) via

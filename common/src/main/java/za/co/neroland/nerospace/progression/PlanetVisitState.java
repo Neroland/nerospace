@@ -16,9 +16,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataRecovery;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.api.PlanetId;
-import za.co.neroland.nerospace.world.SavedDataRecovery;
 
 /**
  * UUID-keyed historical planet visits, backing {@link za.co.neroland.nerospace.api.NerospaceVisits}.

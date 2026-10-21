@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.entity.EntityTypeTest;
 
 import za.co.neroland.nerolandcore.data.PlayerDataErasure;
+import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.entity.AlienVillager;
@@ -21,7 +22,6 @@ import za.co.neroland.nerospace.progression.PlanetVisitState;
 import za.co.neroland.nerospace.rocket.StationRegistry;
 import za.co.neroland.nerospace.route.RouteRegistry;
 import za.co.neroland.nerospace.world.OxygenManager;
-import za.co.neroland.nerospace.world.SavedDataRecovery;
 
 /**
  * Registers Nerospace's player-keyed stores with Neroland Core's shared {@link PlayerDataErasure} hook, so

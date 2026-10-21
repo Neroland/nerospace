@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.7] - 2026-10-20
+
+### Changed
+
+- **Internal: saved-data crash recovery now comes from Neroland Core.** Nerospace's own copy of the
+  corrupt-save guard was removed and all of its saved data (meteor events, planet visits, launch pads,
+  stations, oxygen fields and contributions, terraformers and terraform overlays) now uses the shared
+  guard that ships in Neroland Core 1.15.0, as cargo routes already did. Existing last-known-good
+  backup files keep the same names and are still used. The shared guard also catches save files that
+  load silently empty or half-read, restoring the backup instead of overwriting it. Nothing changes
+  in gameplay.
+
 ## [1.5.6] - 2026-10-20
 
 ### Fixed

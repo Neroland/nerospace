@@ -17,8 +17,9 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataRecovery;
+
 import za.co.neroland.nerospace.NerospaceCommon;
-import za.co.neroland.nerospace.world.SavedDataRecovery;
 
 /**
  * Per-{@link ServerLevel} driver + persistent state for natural meteor events (meteor-events design

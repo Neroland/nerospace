@@ -18,8 +18,9 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.data.SavedDataRecovery;
+
 import za.co.neroland.nerospace.NerospaceCommon;
-import za.co.neroland.nerospace.world.SavedDataRecovery;
 
 /**
  * Server-global registry of launch pads commissioned as named travel nodes. A rocket arriving in a
