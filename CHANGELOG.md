@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-23
+
+### Changed
+
+- **Rockets rebuilt as detailed, animated hulls.** Every tier is a new model: a stepped nose cone,
+  plated hull with tier livery and numeral, an engine bell you can see into, raked tail fins, four
+  landing legs, a boarding hatch with a ladder, navigation beacons and a strobe. Each tier adds to the
+  last — Tier 2 gains twin strap-on boosters and a spinning radar dish, Tier 3 a main bell ringed by
+  four verniers, fold-out solar wings, a scanning dish boom and a panoramic canopy, Tier 4 a wide
+  five-engine core with four boosters, grid fins, heavy legs and the tallest nose.
+- **The cockpit is real.** The window band is cut out of the hull and glazed from the inside with tinted
+  glass; behind it is a lit cabin liner with a console, screen, ceiling lamp and wall strips. The rider's
+  eyes sit exactly on the window band of their tier, so you look out through the glass in first person
+  and onlookers see the lit cockpit (and, while the hatch is open, straight in through the doorway).
+- **Launch animations.** On the pad the hatch stands open while nobody is aboard, dishes turn or scan,
+  beacons blink and solar wings stand deployed; fuelled hulls vent a little vapour. On launch the hatch
+  seals, additive exhaust plumes bloom and flicker under every bell, the hull shudders, a pad cloud rolls
+  outward, wings and the dish boom fold in; during the climb the landing legs sweep up along the hull,
+  the bells gimbal, grid fins deploy and the boosters cut off and fall away past two-thirds of the ascent.
+- Rockets are now lit by the world (hull and glass) with only lamps, beacons and exhaust full-bright, so
+  they no longer glow at night. Visual scales are now 1.5 / 1.8 / 2.1 / 2.4 (cargo 1.9); the hull is
+  culled on its visual envelope, so a tall rocket no longer vanishes when its small hitbox leaves view.
+
+### Internal
+
+- Rocket geometry, Blockbench files and texture sheets are generated from one spec,
+  `tools/rocket_models.py` (also run by `genAssets`); the hand-mirrored 128×128 painter and the
+  `RocketT2Model`/`RocketT3Model`/`RocketT4Model` classes are gone, and `model_sync.py` no longer
+  tracks the rockets. Client runtime checks: `docs/RUNTIME-VERIFICATION.md` → "Rocket visuals".
+
 ## [1.5.7] - 2026-10-20
 
 ### Changed

@@ -52,7 +52,13 @@ public class CargoRocketEntity extends RocketEntity {
 
     @Override
     public float visualScale() {
-        return 2.2F;
+        return 1.9F;
+    }
+
+    /** No crew, no boarding: the hatch stays sealed. */
+    @Override
+    protected boolean hatchOpens() {
+        return false;
     }
 
     /** Uncrewed: nobody boards a cargo rocket. */

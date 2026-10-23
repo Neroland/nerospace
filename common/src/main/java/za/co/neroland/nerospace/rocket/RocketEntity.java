@@ -35,6 +35,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.fluid.FluidTank;
@@ -95,6 +96,25 @@ public class RocketEntity extends Entity implements MenuProvider {
     public static final int PLATFORM_Y = 64;
 
     private int launchTicks;
+
+    // --- Client-side presentation state (never saved or synced) ---------------
+
+    /** Ticks of the ignition ramp the renderer animates (plume bloom, hull shudder, hatch seal). */
+    public static final int IGNITION_TICKS = 12;
+    /**
+     * The rider's eye line per tier, in model pixels above the pad: the window band of each hull is
+     * centred on it. MUST mirror the {@code eye} values in {@code tools/rocket_models.py} (the
+     * generator verifies this).
+     */
+    private static final float[] RIDER_EYE_PX = {43F, 49F, 53F, 57F};
+    /** A standing player's eye (1.62) minus the vehicle attachment riders are seated by (0.6). */
+    private static final double RIDER_EYE_ABOVE_SEAT = 1.02D;
+    private static final double HULL_WALL_PX = 7.0D;
+
+    private float launchAnim;
+    private float launchAnimPrev;
+    private float hatchAnim;
+    private float hatchAnimPrev;
 
     /** Where this rocket lifted off from (transient — used when it completes its launch this session). */
     @Nullable
@@ -195,23 +215,72 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     // --- Per-tier presentation ----------------------------------------------
 
-    /** Render scale by tier — bigger boosters genuinely LOOK bigger (T1 keeps the old size). */
+    /** Render scale by tier — bigger boosters genuinely LOOK bigger. */
     public float visualScale() {
         return switch (getTier()) {
-            case TIER_1 -> 1.6F;
-            case TIER_2 -> 2.0F;
-            case TIER_3 -> 2.4F;
-            case TIER_4 -> 2.8F;
+            case TIER_1 -> 1.5F;
+            case TIER_2 -> 1.8F;
+            case TIER_3 -> 2.1F;
+            case TIER_4 -> 2.4F;
         };
     }
 
     // Note: the root overrides NeoForge's shouldRiderSit() (a loader extension, not vanilla) to make
     // the rider STAND at the console; that hook has no cross-loader equivalent, so it is omitted here.
 
-    /** Stand the rider so their eyes line up with the hull's window band (scaled by tier). */
+    /** Seat the rider so their eyes sit exactly on the hull's window band (scaled by tier). */
     @Override
     protected Vec3 getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float scale) {
-        return new Vec3(0.0D, Math.max(0.4D, 2.1875D * visualScale() - 1.62D), 0.0D);
+        double eye = RIDER_EYE_PX[getTier().ordinal()] * visualScale() / 16.0D;
+        return new Vec3(0.0D, Math.max(0.4D, eye - RIDER_EYE_ABOVE_SEAT), 0.0D);
+    }
+
+    /**
+     * The visual envelope the renderer culls on: the hitbox is a 1×3 column but the hull is several
+     * times taller, and the exhaust plume / separated boosters reach well below it.
+     */
+    public AABB visualBounds() {
+        double s = visualScale();
+        AABB box = getBoundingBox();
+        return new AABB(box.minX - 2.0D * s, box.minY - 5.0D * s, box.minZ - 2.0D * s,
+                box.maxX + 2.0D * s, box.minY + 6.0D * s, box.maxZ + 2.0D * s);
+    }
+
+    /** Ascent progress 0..1 as this client has seen it (the server's counter is not synced). */
+    public float launchProgress(float partialTick) {
+        return Mth.clamp(Mth.lerp(partialTick, this.launchAnimPrev, this.launchAnim) / LAUNCH_DURATION, 0.0F, 1.0F);
+    }
+
+    /** Ignition ramp 0..1 over the first {@link #IGNITION_TICKS} of the ascent. */
+    public float ignition(float partialTick) {
+        return Mth.clamp(Mth.lerp(partialTick, this.launchAnimPrev, this.launchAnim) / IGNITION_TICKS, 0.0F, 1.0F);
+    }
+
+    /** Hatch opening 0 (sealed) .. 1 (open). */
+    public float hatchOpen(float partialTick) {
+        return Mth.lerp(partialTick, this.hatchAnimPrev, this.hatchAnim);
+    }
+
+    /** Whether this hull's hatch swings open on the pad (an uncrewed cargo hull stays sealed). */
+    protected boolean hatchOpens() {
+        return true;
+    }
+
+    /** Client tick: advance the ignition counter and ease the hatch; vent a little fuel vapour at rest. */
+    private void tickPresentation() {
+        this.launchAnimPrev = this.launchAnim;
+        this.launchAnim = isLaunching() ? Math.min(LAUNCH_DURATION, this.launchAnim + 1.0F) : 0.0F;
+        this.hatchAnimPrev = this.hatchAnim;
+        float target = !isLaunching() && hatchOpens() && getPassengers().isEmpty() ? 1.0F : 0.0F;
+        this.hatchAnim += (target - this.hatchAnim) * 0.16F;
+        if (!isLaunching() && getFuel() > 0 && this.random.nextInt(7) == 0) {
+            double s = visualScale();
+            double angle = this.random.nextDouble() * Math.PI * 2.0D;
+            double r = (HULL_WALL_PX / 16.0D) * s;
+            level().addParticle(ParticleTypes.SNOWFLAKE, getX() + Math.cos(angle) * r,
+                    getY() + (0.8D + 0.6D * this.random.nextDouble()) * s, getZ() + Math.sin(angle) * r,
+                    0.0D, -0.015D, 0.0D);
+        }
     }
 
     /** Convenience constructor for spawning from the rocket item. */
@@ -698,6 +767,10 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
         //?}
 
+        if (level().isClientSide()) {
+            tickPresentation();
+        }
+
         if (isLaunching()) {
             if (level().isClientSide()) {
                 spawnLaunchParticles();
@@ -778,15 +851,33 @@ public class RocketEntity extends Entity implements MenuProvider {
         level.addFreshEntity(landed);
     }
 
+    /**
+     * Client-side exhaust: a pad cloud rolling outward during ignition, then flame at the bells and a
+     * smoke column trailing below the climbing hull. The flame itself is the renderer's plume model.
+     */
     protected void spawnLaunchParticles() {
+        double s = visualScale();
         double bx = this.getX();
         double by = this.getY();
         double bz = this.getZ();
-        for (int i = 0; i < 4; i++) {
-            double ox = (this.random.nextDouble() - 0.5D) * 0.4D;
-            double oz = (this.random.nextDouble() - 0.5D) * 0.4D;
-            level().addParticle(ParticleTypes.FLAME, bx + ox, by - 0.2D, bz + oz, 0.0D, -0.1D, 0.0D);
-            level().addParticle(ParticleTypes.LARGE_SMOKE, bx + ox, by - 0.4D, bz + oz, 0.0D, -0.05D, 0.0D);
+        if (this.launchAnim < IGNITION_TICKS + 10) {
+            for (int i = 0; i < 6; i++) {
+                double angle = this.random.nextDouble() * Math.PI * 2.0D;
+                double r = 0.3D + this.random.nextDouble() * 0.5D * s;
+                double dx = Math.cos(angle);
+                double dz = Math.sin(angle);
+                level().addParticle(ParticleTypes.CLOUD, bx + dx * r, by + 0.15D, bz + dz * r,
+                        dx * 0.12D * s, 0.01D, dz * 0.12D * s);
+            }
+        }
+        double ign = ignition(1.0F);
+        for (int i = 0; i < 3; i++) {
+            double ox = (this.random.nextDouble() - 0.5D) * 0.3D * s;
+            double oz = (this.random.nextDouble() - 0.5D) * 0.3D * s;
+            level().addParticle(ParticleTypes.FLAME, bx + ox, by + 0.1D * s, bz + oz,
+                    0.0D, -0.25D - 0.2D * this.random.nextDouble(), 0.0D);
+            level().addParticle(ParticleTypes.LARGE_SMOKE, bx + ox * 2.0D, by - 0.6D * s * ign, bz + oz * 2.0D,
+                    0.0D, -0.08D, 0.0D);
         }
     }
 

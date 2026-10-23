@@ -2,7 +2,8 @@
 
 An **uncrewed** rocket that carries a [Cargo Pad](Cargo-Pad)'s hold to another pad. Nobody boards it,
 it has no flight console, and it never decides to launch — the pad it stands on does, by hand or on a
-schedule. It borrows the Tier 2 hull and livery and carries 12,000 mB of rocket fuel.
+schedule. It borrows the Tier 2 hull and livery (see [Rockets](Rockets)) — with its hatch sealed and no
+boarding ladder — and carries 12,000 mB of rocket fuel.
 
 ## Cargo Hull
 

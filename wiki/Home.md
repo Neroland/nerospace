@@ -63,6 +63,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 
   and off-world ores; track them with the Meteor Tracker.
 
+- **[Rockets](Rockets)** — the four crewed hulls, their lit cockpits and windows, and what they do on
+  the pad and during launch.
 - **[Cargo Pad](Cargo-Pad)** and **[Cargo Rocket](Cargo-Rocket)** — automated freight between pads and
   stations: load a hold, pick a destination, and cargo flies with nobody at either end.
 - **[Star Guide](Star-Guide)** — the in-game progression guide.

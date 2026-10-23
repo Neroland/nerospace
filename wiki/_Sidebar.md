@@ -62,6 +62,7 @@
 **Blocks — Structures**
 
 - [Launch Pad Build Guide](Launch-Pad-Build-Guide)
+- [Rockets](Rockets)
 - [Rocket Launch Pad](Rocket-Launch-Pad)
 - [Cargo Pad](Cargo-Pad)
 - [Cargo Rocket](Cargo-Rocket)

@@ -4,6 +4,34 @@ Checklists that need a running client/server, run before a release. Record what 
 cell, at the bottom of each section. Nothing here needs a real player account: single-player or a
 LAN world is enough. **Never run these against a production server or its saves.**
 
+## Rocket visuals (1.6.0)
+
+Cell: any dev client; a creative world with a Tier 1 pad, a 3×3, a ringed 3×3 and a Heavy Launch Complex.
+
+1. **Deploy all four tiers** (and a Cargo Rocket on a Cargo Pad). Expect: four clearly different hulls,
+   each taller and busier than the last; livery red / purple / gold-green / ice-cyan with the tier
+   numeral on the hull; legs planted on the pad, hatch standing open with a ladder (sealed and no ladder
+   on the cargo hull); beacons blinking red/green, strobe flashing; Tier 2 dish spinning, Tier 3 dish boom
+   scanning, Tier 3 solar wings deployed. At night the hulls are dark and only lamps/beacons glow.
+2. **Windows.** From outside: tinted glass, a lit cabin behind it, console screen visible. Open the console
+   and press Launch on each tier, then press F5 back to first person during the first second: your eye
+   line is centred on the window band, you see the pad/world through the glass, the cabin liner, console
+   and ceiling lamp are around you, and the hatch has sealed. Nothing clips into the camera.
+3. **Launch.** Expect in order: hatch seals, plumes bloom and flicker under every bell (cores
+   white-hot, tier-coloured fringe), hull shudders, a cloud rolls across the pad; wings / dish boom fold in
+   during the first half second; legs sweep out and up along the hull; bells wobble; Tier 4 grid fins
+   deploy about a third of the way up; Tier 2 / Tier 4 boosters go dark and fall away past two-thirds of
+   the climb. The rocket never pops out of view while any part of it is on screen (look up as it passes).
+4. **Fuelled, idle.** A fuelled hull vents occasional snowflake-like vapour at its wall; an empty one does not.
+5. **Blockbench.** Open `art/blockbench/entity/rocket_t4.bbmodel`: bones, pivots and rotations load and
+   the texture lines up (viewing surface only — edits go in `tools/rocket_models.py`).
+
+### Record
+
+| Date | Cell | Steps run | Result | Notes |
+| --- | --- | --- | --- | --- |
+| — | — | — | not yet run | Built by an agent session without a client. All nine cells compile and `tools/rocket_models.py --check` is clean; the checklist above is what the owner runs before tagging. |
+
 ## Cargo rockets (1.3.0)
 
 Cell: 26.3 NeoForge dev client at minimum (`:neoforge:26.3:runClient`), creative world with cheats.

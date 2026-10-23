@@ -131,12 +131,21 @@
   `common/src/main/resources/assets/nerospace/textures/{block,item}/<id>.png`. Don't hand-paint textures
   pixel-by-pixel; let the generators own trivial model JSON. (Non-trivial models — solar housing, pipe
   glass, GUIs, per-node icon `*_item.json` — ARE hand-authored here.)
-- Entity models: `tools/model_sync.py --multiloader` keeps `art/blockbench/entity/<name>.bbmodel` ↔ Java
+- Creature entity models: `tools/model_sync.py --multiloader` keeps `art/blockbench/entity/<name>.bbmodel` ↔ Java
   `EntityModel.createBodyLayer()` in sync both ways (markers `// model_sync:begin`/`:end`; one cube per
   bone, `bb_y = 24 - java_y`; `./gradlew syncModels`). Edit either side and build to converge.
+- **Rocket entity models are SPEC-DRIVEN: `tools/rocket_models.py --multiloader`** (also run by
+  `genAssets`). One Python spec per tier (bones with pivots/rotations, cubes tagged by render pass
+  hull/glass/glow/plume and by paint material) generates the marker block in
+  `client/RocketGeometry.java`, writes `art/blockbench/entity/rocket_t*.bbmodel` ONE-WAY (viewing surface
+  only) and paints the 256×256 `textures/entity/rocket_t*.png` sheets (auto-packed UVs, window holes,
+  plume gradients). Edit the Python, never the generated Java/bbmodel/PNG; `--check` reports drift. The
+  animation (hatch, legs, gimbal, plumes, booster separation, wings, dishes, beacons) is hand-written in
+  `client/RocketModel.setupAnim` and addresses bones by the generated names. `RocketEntity.RIDER_EYE_PX`
+  must equal the spec's per-tier `eye` lines (the generator verifies).
 - Palettes (keep families distinct): nerosium = red/purple; Greenxertz (nerosteel / xertz quartz) =
-  green/steel; rockets = steel + per-tier accent (T1 red, T2 nerosium-purple + boosters, T3 gold/green).
-  Editable `.bbmodel` sources in `art/blockbench/{block,item,entity}/`.
+  green/steel; rockets = steel + per-tier accent (T1 red, T2 nerosium-purple + boosters, T3 gold/green,
+  T4 ice-cyan). Editable `.bbmodel` sources in `art/blockbench/{block,item,entity}/`.
 - Branding: `tools/gen_logo.py` → `art/logo/`; in-game mods-list icon
   `common/src/main/resources/nerospace_logo.png` (referenced by `logoFile` in each loader manifest).
 

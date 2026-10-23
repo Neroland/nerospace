@@ -326,7 +326,7 @@ tasks.register('syncModels') {
 // ---------------------------------------------------------------------------
 tasks.register('genAssets') {
     group = 'nerospace'
-    description = 'Regenerate textures + Blockbench block/item models into common (additive).'
+    description = 'Regenerate textures + Blockbench block/item models into common (additive) and the rocket entity models (spec-driven).'
     def repoRoot = rootProject.projectDir
     def pythonOverride = providers.gradleProperty('pythonCmd').getOrNull()
     def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
@@ -358,7 +358,7 @@ tasks.register('genAssets') {
         if (python == null) {
             throw new GradleException("genAssets: no Python found; set -PpythonCmd=<path>. pyenv root: ${pyenvRoot}")
         }
-        ['tools/gen_textures.py', 'tools/gen_bbmodels.py'].each { script ->
+        ['tools/gen_textures.py', 'tools/gen_bbmodels.py', 'tools/rocket_models.py'].each { script ->
             def proc = wrap(python + [script, '--multiloader']).execute(null, repoRoot)
             def out = new StringBuilder(); def err = new StringBuilder()
             proc.consumeProcessOutput(out, err); proc.waitFor()

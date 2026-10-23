@@ -22,7 +22,7 @@ How it stays robust:
 Direction is chosen by file mtime (newest wins) unless forced with --to-java / --to-bbmodel.
 
 Limitations (by design, for robustness): one cube per bone, no per-bone rotation, box-UV only. These
-cover the current Nerospace models; Blockbench remains the place to do richer modelling, but then the
+cover the creature models (the rockets live in tools/rocket_models.py); Blockbench remains the place to do richer modelling, but then the
 Java must be exported via Blockbench's own "Export Java Entity" rather than this tool.
 
 Usage:
@@ -76,10 +76,9 @@ REGISTRY = [
     _entry("MeadowLoperModel", "meadow_loper"),
     _entry("EmberStrutterModel", "ember_strutter"),
     _entry("WoollyDriftModel", "woolly_drift"),
-    _entry("RocketModel", "rocket_t1"),
-    _entry("RocketT2Model", "rocket_t2"),
-    _entry("RocketT3Model", "rocket_t3"),
-    _entry("RocketT4Model", "rocket_t4"),
+    # The rockets are NOT synced here: their bone trees (rotated/pivoted, many cubes per bone) are
+    # generated into client/RocketGeometry.java by tools/rocket_models.py, which also writes the
+    # rocket_t*.bbmodel files one-way and paints the texture sheets. Edit that spec instead.
 ]
 
 # A part = dict(name, uv=[u,v], box=[x,y,z,w,h,d])  (box in ABSOLUTE java coords)
