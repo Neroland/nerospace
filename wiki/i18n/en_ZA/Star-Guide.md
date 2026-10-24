@@ -1,0 +1,57 @@
+# Star Guide
+
+<!-- nerospace:render -->
+
+<p align="right"><img src="images/star_guide.gif" alt="Star Guide" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
+The in-game progression guide — a pedestal, a book, and a live quest tree.
+
+## Overview
+
+The Star Guide is Nerospace's built-in tutorial and progression tracker: an interactive tree of
+**10 chapters and 45 steps**, from your first nerosium ore to an automated interplanetary supply line.
+Completion is tracked per player through the mod's **advancement tree**, so the guide is always
+live — finish something anywhere and the tree lights up.
+
+## Obtaining
+
+**Star Guide Book** (shapeless): **Book + Raw Nerosium** — available minutes into a playthrough.
+A **Nerosium Ore** or **Deepslate Nerosium Ore** block also works in place of the Raw Nerosium.
+
+**Star Guide** pedestal (shaped):
+
+```text
+. R .
+. P .
+S S S
+```
+
+`R` = Raw Nerosium (or a Nerosium Ore block) · `P` = any Planks · `S` = Cobblestone
+
+## How it works
+
+- **Read anywhere:** right-click with the **Star Guide Book** in hand to open the guide GUI.
+
+- **Pedestal:** right-click the empty pedestal with the book to install it (lectern-style; breaking
+
+  the pedestal or sneak-right-clicking pops the book back out). An installed pedestal projects a
+  rotating **hologram of your next goal**, and right-clicking it opens the same GUI.
+
+- **The tree:** chapters cover \*\*Nerosium → Machines → Power Grid → Rocketry → New Worlds →
+
+  [Mining](Quarry-Controller) → Surviving Vacuum → Terraforming → Meteor Events →
+  [Freight](Cargo-Pad)\*\*. Completed steps pulse; each step
+  carries guide text telling you exactly what to do next.
+
+- **Mining chapter:** the quarry automation track — [Quarry Landmark](Quarry-Landmark) →
+
+  [Frame Casing](Upgrade-Modules) → [Quarry Controller](Quarry-Controller) →
+  [Upgrade Modules](Upgrade-Modules). Gated behind nerosteel (Greenxertz), since the frame is built
+  from it.
+
+- **Comparator:** the pedestal emits a signal when a book is installed.
+
+## Details
+
+- IDs: `nerospace:star_guide` (block) · `nerospace:star_guide_book` (item)
