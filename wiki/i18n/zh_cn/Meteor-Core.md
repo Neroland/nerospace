@@ -1,20 +1,23 @@
 # 陨石核心
 
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Meteor-Core.md)。
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/meteor_core.png" alt="Meteor Core" width="150" align="right"></p>
+
+<p align="right"><img src="images/meteor_core.png" alt="Meteor Core" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 陨石坑中心的发光方块——陨石的战利品“箱子”。
 
 ## 概述
 
-每颗坠落的陨石都会在陨石坑底部放置一个陨石核心（参见 **[陨石事件](Meteor-Events.md)**）。它保存着陨石的随机战利品，在陨石着陆时**一次性**随机生成，之后固定不变，因此任何到达它的人看到的内容都完全相同。
+Every fallen meteor seats a Meteor Core at the bottom of its crater (see
+**[Meteor Events](Meteor-Events)**). It holds the meteor's RNG loot, rolled **once** when the meteor
+lands and then fixed, so the contents are identical for everyone who reaches it.
 
-## 获取方式
+## Obtaining
 
-**无法合成。**陨石核心由陨石撞击放置。**破坏它即可获得战利品**（破坏即掉落）：储存的物品会散落在它所在的位置——少量**外星碎片**，加上按权重额外随机掉落的粗矿以及更稀有的**外星科技废料**／**外星核心**。
+**Not craftable.** A Meteor Core is placed by a meteor impact. **Break it to claim the loot**
+(break-to-loot): the stored stacks spill out where it stood — a handful of **Alien Fragments** plus
+weighted bonus rolls of raw ores and the rarer **Alien Tech Scrap** / **Alien Core**.
 
 ## 用途
 

@@ -1,8 +1,6 @@
 # Cestino
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Trash-Can.md).
-
-> **Spostato in Neroland Core.** Il Cestino ora è incluso nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:trash_can`**, così ogni mod Neroland usa un unico insieme di blocchi di stoccaggio. Si fabbrica e si usa esattamente come prima: vedi la **wiki di Neroland Core** (pagina *Trash Can*) per tutti i dettagli.
+> **Spostato in Neroland Core.** Il Cestino ora è incluso nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:trash_can`**, così ogni mod Neroland usa un unico insieme di blocchi di stoccaggio. Si fabbrica e si usa esattamente come prima: vedi la **wiki di Neroland Core** (pagina _Trash Can_) per tutti i dettagli.
 
 Un pozzo senza fondo: oggetti, fluidi o gas immessi con tubi o tramogge vengono distrutti (solo ingresso, nessuna estrazione), tramite un'interfaccia simile al baule con un solo slot di scarico.
 

@@ -1,7 +1,5 @@
 # Eventi meteora
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Meteor-Events.md).
-
 Le meteore in caduta sono un **evento del mondo**: rari schianti che seminano nell'Overworld (e sui pianeti) materiali alieni e una spinta iniziale di minerali extraterrestri, senza bisogno di un razzo per avere un primo assaggio di ciò che c'è là fuori.
 
 ## Panoramica
@@ -14,7 +12,7 @@ Gli impatti avvengono **quando ti avvicini** al sito: le meteore vengono program
 
 Il **Localizzatore di meteore** è una bussola di preallarme. Mentre lo tieni in mano, mostra nella barra delle azioni la meteora tracciata più vicina:
 
-- **Stato**: *In arrivo* (ancora in caduta / non ancora atterrata) o *Atterrata* (il cratere ti aspetta).
+- **Stato**: _In arrivo_ (ancora in caduta / non ancora atterrata) o _Atterrata_ (il cratere ti aspetta).
 - **Direzione**: una direzione della bussola (N, NE, E, …) verso il sito.
 - **Distanza**: quanto è lontana, in metri.
 
@@ -32,11 +30,11 @@ R C R
 
 Rompere il [Nucleo di meteora](Meteor-Core.md) sparge il contenuto della meteora (rompi e raccogli). Il bottino viene estratto **una sola volta** quando la meteora atterra e poi fissato, quindi è lo stesso per chiunque la raggiunga: niente trucchi per ripetere l'estrazione. Una meteora porta sempre una manciata di **Frammenti alieni**, più estrazioni bonus ponderate di minerali grezzi esistenti (Nerosium grezzo, Nerosteel grezzo, quarzo Xertz) e dei più rari **Rottami di tecnologia aliena** e **Nucleo alieno**.
 
-| Oggetto | Rarità | Ruolo |
-| --- | --- | --- |
-| **Frammento alieno** | comune (garantito) | Futura materia prima per lo **scanner**. |
-| **Rottami di tecnologia aliena** | non comune | Futura fabbricazione di potenziamenti. |
-| **Nucleo alieno** | raro | Requisito di alto valore per scanner/potenziamenti. |
+| Oggetto                          | Rarità                                | Ruolo                                                               |
+| -------------------------------- | ------------------------------------- | ------------------------------------------------------------------- |
+| **Frammento alieno**             | comune (garantito) | Futura materia prima per lo **scanner**.            |
+| **Rottami di tecnologia aliena** | non comune                            | Futura fabbricazione di potenziamenti.              |
+| **Nucleo alieno**                | raro                                  | Requisito di alto valore per scanner/potenziamenti. |
 
 I tre sono raggruppati nel tag oggetto `nerospace:alien_materials` per ricette future. Lo scanner che li trasforma in potenziamenti è nella **[Roadmap](Roadmap.md)** / nelle **[Funzionalità future](Future-Features.md)**.
 

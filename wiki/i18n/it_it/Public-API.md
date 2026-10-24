@@ -1,7 +1,5 @@
 # API di integrazione pubblica
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Public-API.md).
-
 Nerospace espone alle altre mod un'unica superficie di integrazione supportata: il pacchetto Java `za.co.neroland.nerospace.api`. Tutto ciò che è fuori da quel pacchetto è interno e può cambiare senza preavviso.
 
 Questa pagina è per gli **sviluppatori di mod**. Se sei un giocatore, niente di tutto ciò richiede configurazione: l'API resta inattiva finché un'altra mod non la usa.
@@ -28,7 +26,8 @@ L'API delle rotte a livello di piattaforma dietro le [Piattaforme cargo](Cargo-P
 
 - `RouteApi.padsVisibleTo(server, uuid)`: le piattaforme verso cui quel giocatore può spedire (le sue, quelle condivise con lui, quelle pubbliche, le stazioni che gestisce). Mai un elenco dell'intero server.
 - `RouteApi.quote(server, origin, destination, manifest, returnEmpty)`: un `RouteQuote`: tick di viaggio, carburante in mB (compreso il ritorno a vuoto se richiesto), flag tra dimensioni, massa del carico.
-- `RouteApi.requestFlight(server, requester, FlightRequest)`: lancia un carico dal razzo cargo attraccato e rifornito sulla piattaforma di origine; un `FlightRequestResult` contiene il volo o il motivo esatto del rifiuto. Le nuove costanti `Denial` vengono solo aggiunte in fondo: la 1.4.0 ha aggiunto `CANNOT_PAY` (il richiedente non ha potuto pagare la tariffa facoltativa di lancio o di attracco del server). Associa i nomi che non conosci a un valore di ripiego.
+- `RouteApi.requestFlight(server, requester, FlightRequest)`: lancia un carico dal razzo cargo attraccato e rifornito sulla piattaforma di origine; un `FlightRequestResult` contiene il volo o il motivo esatto del rifiuto.
+  Le nuove costanti `Denial` vengono solo aggiunte in fondo: la 1.4.0 ha aggiunto `CANNOT_PAY` (il richiedente non ha potuto pagare la tariffa facoltativa di lancio o di attracco del server). Associa i nomi che non conosci a un valore di ripiego.
 - `RouteApi.flight` / `flightsOwnedBy` / `routesOwnedBy` / `cancel`: interrogazione e gestione.
 - `RouteEvents.subscribe(listener)`: `onPadRegistered`, `onPadUnregistered`, `onFlightDeparted`, `onFlightArrived`, `onFlightHeld`, `onFlightDropped`.
 
@@ -46,16 +45,16 @@ fuelMb      = (1000 + 100 × massUnits) × max(0.1, gOrigin)      (+ the same fo
 
 `NerospaceEnvironment.at(ServerLevel, BlockPos)` restituisce un `EnvironmentSnapshot` immutabile:
 
-| Campo | Significato |
-|---|---|
-| `loaded` | `false` quando il chunk non è caricato: in quel caso ogni altro campo è un valore predefinito sicuro, non una lettura |
-| `planet` | il pianeta di Nerospace, oppure vuoto sulla Terra e in qualsiasi dimensione non di Nerospace |
-| `atmosphere` | `VACUUM`, `PRESSURIZED`, `TERRAFORMING` o `BREATHABLE` |
-| `hazard` | il pericolo ambientale del pianeta |
-| `gravity` | fattore di gravità, `1.0` = normale terrestre |
-| `oxygen` | 0-15, l'area di ossigeno più eventuali contributi esterni |
-| `terraformStage` | 0-3 |
-| `breathable` | se un giocatore può respirare qui senza tuta |
+| Campo            | Significato                                                                                                                           |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `loaded`         | `false` quando il chunk non è caricato: in quel caso ogni altro campo è un valore predefinito sicuro, non una lettura |
+| `planet`         | il pianeta di Nerospace, oppure vuoto sulla Terra e in qualsiasi dimensione non di Nerospace                                          |
+| `atmosphere`     | `VACUUM`, `PRESSURIZED`, `TERRAFORMING` o `BREATHABLE`                                                                                |
+| `hazard`         | il pericolo ambientale del pianeta                                                                                                    |
+| `gravity`        | fattore di gravità, `1.0` = normale terrestre                                                                                         |
+| `oxygen`         | 0-15, l'area di ossigeno più eventuali contributi esterni                                                                             |
+| `terraformStage` | 0-3                                                                                                                                   |
+| `breathable`     | se un giocatore può respirare qui senza tuta                                                                                          |
 
 Due comportamenti da conoscere:
 
@@ -70,13 +69,15 @@ L'evento ti consegna un giocatore attivo, perché di solito i listener devono co
 
 ## Contribuire con ossigeno
 
-`NerospaceOxygen.contribute(level, source, center, radius, strength, durationTicks)` registra una sorgente di ossigeno limitata e con scadenza che Nerospace include nelle risposte su respirabilità e ambiente. Limiti: raggio ≤ 64, intensità ≤ 15, durata ≤ un'ora. Contribuire di nuovo con lo stesso id sorgente sostituisce il valore precedente, quindi lo schema naturale «questa macchina ora produce N» è idempotente. `remove(level, source)` lo ritira.
+`NerospaceOxygen.contribute(level, source, center, radius, strength, durationTicks)` registra una sorgente di ossigeno limitata e con scadenza che Nerospace include nelle risposte su respirabilità e ambiente.
+Limiti: raggio ≤ 64, intensità ≤ 15, durata ≤ un'ora. Contribuire di nuovo con lo stesso id sorgente sostituisce il valore precedente, quindi lo schema naturale «questa macchina ora produce N» è idempotente.
+`remove(level, source)` lo ritira.
 
 I contributi devono essere rinnovati prima della scadenza. È voluto: una macchina distrutta mentre il suo chunk non è caricato non può lasciare dietro di sé aria gratuita permanente.
 
 ## Sovrapposizioni di terraformazione
 
-`NerospaceTerraforming` applica e annulla sovrapposizioni regionali reversibili. Una sovrapposizione cambia ciò che Nerospace *riporta* su una regione senza riscrivere un solo blocco, ed è questo che rende l'annullamento istantaneo e senza perdite. La copertura è **orizzontale**: una regione va dal substrato roccioso al limite di costruzione come una colonna, così come la terraformazione fisica contrassegna un intero chunk anziché una bolla. Ogni regione registra la fase fisica del chunk sottostante, quindi rimuovere una sovrapposizione ripristina quella base invece di cancellare progressi reali.
+`NerospaceTerraforming` applica e annulla sovrapposizioni regionali reversibili. Una sovrapposizione cambia ciò che Nerospace _riporta_ su una regione senza riscrivere un solo blocco, ed è questo che rende l'annullamento istantaneo e senza perdite. La copertura è **orizzontale**: una regione va dal substrato roccioso al limite di costruzione come una colonna, così come la terraformazione fisica contrassegna un intero chunk anziché una bolla. Ogni regione registra la fase fisica del chunk sottostante, quindi rimuovere una sovrapposizione ripristina quella base invece di cancellare progressi reali.
 
 **Ogni modifica viene rifiutata finché il server non installa una politica di rivendicazione:**
 

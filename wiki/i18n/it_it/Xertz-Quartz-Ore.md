@@ -1,9 +1,8 @@
 # Minerale di quarzo Xertz
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Xertz-Quartz-Ore.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/xertz_quartz_ore.png" alt="Xertz Quartz Ore" width="150" align="right"></p>
+
+<p align="right"><img src="images/xertz_quartz_ore.png" alt="Xertz Quartz Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Un minerale cristallino verde pallido su **Greenxertz**, l'equivalente del quarzo del Nether in questa mod.
@@ -12,7 +11,7 @@ Un minerale cristallino verde pallido su **Greenxertz**, l'equivalente del quarz
 
 Il quarzo Xertz si comporta come il quarzo del Nether: il minerale lascia cadere la gemma **direttamente** (senza fusione) ed è abbondante. È una gemma da fabbricazione per pannelli solari, filtri per tubi e potenziamenti.
 
-## Come ottenerlo
+## Obtaining
 
 - **Estrazione:** va bene qualsiasi piccone. Lascia cadere direttamente **quarzo Xertz** (influenzato da Fortuna). Se preferisci, il minerale si può anche
 
@@ -29,6 +28,8 @@ Il quarzo Xertz si comporta come il quarzo del Nether: il minerale lascia cadere
   il **Filtro per tubi avanzato** e il **Potenziamento di capacità** (vedi [Filtri per tubi e potenziamenti](Pipe-Filters-and-Upgrades.md)).
 
 - Nota: la **[Tanica di carburante per razzi](Items.md#rockets--fuel)** **non** usa il quarzo Xertz. Si fa con polvere di blaze + carbone + lingotto di ferro.
+
+  Powder + Coal + Iron Ingot.
 
 ## Dettagli
 

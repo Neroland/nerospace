@@ -1,14 +1,12 @@
 # Strutture aliene
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Alien-Structures.md).
-
 Gli insediamenti e le rovine dei pianeti alieni: generati proceduralmente con il set di decorazioni aliene e distanziati in modo da non affollare mai il mondo.
 
 ## Panoramica
 
 In superficie si generano tre strutture, tutte costruite con i **[blocchi decorativi alieni](Alien-Decoration.md)** dall'aspetto futuristico: podi di piastrelle, mura di mattoni con **fasce di finestre di cristallo luminose**, **pilastri d'angolo illuminati** più alti, **tetti affusolati** e **guglie di cristallo**. Ognuna contiene un **[Nucleo del villaggio](Village-Core.md)**.
 
-## Borgo
+## Hamlet
 
 Un piccolo avamposto alieno: la scoperta più comune e il tuo «villaggio iniziale».
 
@@ -26,7 +24,7 @@ Una grande sala aliena consumata e semisepolta: non comune.
 
   Nerosium e smeraldi.
 
-## Megalopoli
+## Mega-City
 
 L'enorme insediamento alieno di fine gioco: rarissimo, e una vera spedizione.
 
@@ -41,9 +39,10 @@ L'enorme insediamento alieno di fine gioco: rarissimo, e una vera spedizione.
 Per evitare che le strutture si raggruppino (e per limitare quante ne compaiono in un'area), tutte e tre condividono una **griglia a regioni** deterministica:
 
 - Il mondo è diviso in **celle di 16×16 chunk** (≈256 blocchi).
+
 - Ogni cella ospita **al massimo una** struttura, scelta con un hash ponderato: ~26% Borgo, ~8% Rovina, ~2%
 
-  Megalopoli, e il resto **vuoto** per lasciare respiro.
+  Mega-City, and the rest **empty** for breathing room.
 
 - La struttura si trova in un chunk di ancoraggio deterministico all'interno della cella, lontano dal bordo così l'ingombro
 

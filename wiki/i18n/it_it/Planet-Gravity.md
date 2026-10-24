@@ -1,20 +1,18 @@
 # Gravità planetaria
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Planet-Gravity.md).
-
 Ogni mondo di Nerospace ha la **propria gravità**. L'Overworld è normale, la **Stazione orbitale** è quasi senza peso e i pianeti stanno nel mezzo: quanto salti in alto, quanto velocemente cadi e quanto lontano vola un oggetto lanciato cambiano tutti a seconda di dove ti trovi.
 
 ## La gravità in sintesi
 
 I valori sono relativi alla normale gravità dell'Overworld (`1.0×`). Sono i valori predefiniti attuali e si possono regolare completamente con l'opzione di configurazione [`gravityMultiplier`](Configuration.md).
 
-| Dimensione | Gravità | Sensazione |
-| --- | --- | --- |
-| Overworld | `1.0×` | Normale. |
-| **Stazione orbitale** | `~0.1×` | Quasi senza peso: salti lunghi e fluttuanti. |
-| **Greenxertz** | `~0.6×` | Leggera: salti notevolmente più alti, atterraggi più morbidi. |
-| **Cindara** | `~0.8×` | Leggermente bassa: un po' più fluttuante che a casa. |
-| **Glacira** | `~0.4×` | Bassa: grandi balzi lenti sul ghiaccio. |
+| Dimensione            | Gravità | Sensazione                                                                                    |
+| --------------------- | ------- | --------------------------------------------------------------------------------------------- |
+| Overworld             | `1.0×`  | Normale.                                                                      |
+| **Stazione orbitale** | `~0.1×` | Quasi senza peso: salti lunghi e fluttuanti.                  |
+| **Greenxertz**        | `~0.6×` | Leggera: salti notevolmente più alti, atterraggi più morbidi. |
+| **Cindara**           | `~0.8×` | Leggermente bassa: un po' più fluttuante che a casa.          |
+| **Glacira**           | `~0.4×` | Low — big, slow bounds across the ice.                                        |
 
 Una gravità più bassa significa un **salto più alto** e una **caduta più lenta**, quindi subisci anche **meno danni da caduta**: un lungo volo su Glacira che nell'Overworld ti ferirebbe è sopravvivibile.
 
@@ -38,7 +36,7 @@ Il terreno recuperato ritrova il suo peso. Quando un [Terraformatore](Terraforme
 
 ## Configurazione
 
-- **[`gravityMultiplier`](Configuration.md)** (`0.1`–`10`, predefinito `1.0`): una scala globale su *tutta* la gravità. Impostalo sotto `1` per un gioco ancora più fluttuante ovunque, o sopra `1` per uno più pesante.
+- **[`gravityMultiplier`](Configuration.md)** (`0.1`–`10`, predefinito `1.0`): una scala globale su _tutta_ la gravità. Impostalo sotto `1` per un gioco ancora più fluttuante ovunque, o sopra `1` per uno più pesante.
 
 ## Controllare la gravità nel gioco
 

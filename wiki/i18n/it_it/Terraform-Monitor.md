@@ -1,14 +1,13 @@
 # Monitor di terraformazione
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Terraform-Monitor.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/terraform_monitor.gif" alt="Terraform Monitor" width="150" align="right"></p>
+
+<p align="right"><img src="images/terraform_monitor.gif" alt="Terraform Monitor" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Il blocco di lettura per la terraformazione avanzata: mostra i raggi delle fasi del [Terraformatore](Terraformer.md) più vicino, la sua riserva di idratazione e il motivo di un eventuale blocco, e segnala tramite comparatore la **fase di terraformazione del terreno locale**.
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma):
 

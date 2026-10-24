@@ -1,23 +1,22 @@
 # Guida alla costruzione della rampa di lancio
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Launch-Pad-Build-Guide.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/rocket_launch_pad.png" alt="Rocket Launch Pad" width="150" align="right"></p>
+
+<p align="right"><img src="images/rocket_launch_pad.png" alt="Rocket Launch Pad" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Una guida passo passo per costruire una rampa di lancio per ogni livello di razzo, da un singolo blocco per il tuo primo volo fino al Complesso di lancio pesante. Per il riferimento completo sui blocchi vedi [Rampa di lancio per razzi](Rocket-Launch-Pad.md) e [Torre di lancio](Launch-Gantry.md).
 
-## In sintesi
+## At a glance
 
 Ogni livello di razzo richiede una rampa più grande. Una rampa più grande funziona sempre per un razzo più piccolo.
 
-| Livello della rampa | Cosa costruire | Lancia | Sblocca |
-| --- | --- | --- | --- |
-| **1** | Un blocco Rampa di lancio | Razzi di livello 1 | La Stazione orbitale |
-| **2** | Un 3×3 completo di Rampe di lancio | Razzi di livello 1–2, Razzi cargo | Greenxertz |
-| **3** | Un 3×3 di Rampe di lancio, circondato da 16 Pareti della stazione | Razzi di livello 1–3 | Cindara |
-| **4** | Un 5×5 di Rampe di lancio più una Torre di lancio (il **Complesso di lancio pesante**) | Ogni razzo | Glacira |
+| Pad tier | Cosa costruire                                                                                            | Launches                          | Sblocca              |
+| -------- | --------------------------------------------------------------------------------------------------------- | --------------------------------- | -------------------- |
+| **1**    | Un blocco Rampa di lancio                                                                                 | Tier 1 rockets                    | La Stazione orbitale |
+| **2**    | Un 3×3 completo di Rampe di lancio                                                                        | Razzi di livello 1–2, Razzi cargo | Greenxertz           |
+| **3**    | Un 3×3 di Rampe di lancio, circondato da 16 Pareti della stazione                                         | Razzi di livello 1–3              | Cindara              |
+| **4**    | Un 5×5 di Rampe di lancio più una Torre di lancio (il **Complesso di lancio pesante**) | Ogni razzo                        | Glacira              |
 
 1. Fabbrica le parti per il livello che vuoi.
 2. Disponile su un terreno piano, **tutte alla stessa altezza**.
@@ -26,27 +25,28 @@ Ogni livello di razzo richiede una rampa più grande. Una rampa più grande funz
 
 ## 1. Fabbrica le parti
 
-| Parte | Ricetta | Produce |
-| --- | --- | --- |
-| [Rampa di lancio per razzi](Rocket-Launch-Pad.md) | 8 lingotti di Nerosteel attorno a un [Blocco di Nerosium](Block-of-Nerosium.md) | 1 |
-| [Blocco di Nerosium](Block-of-Nerosium.md) | 9 lingotti di Nerosium | 1 |
-| [Parete della stazione](Station-Wall.md) | 8 lingotti di Nerosteel attorno a un lingotto di ferro | 8 |
-| [Torre di lancio](Launch-Gantry.md) | 6 lingotti di Nerosteel, sbarre di ferro e una Parete della stazione (vedi la sua pagina) | 1 |
+| Parte                                             | Ricetta                                                                                                      | Produce |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------- |
+| [Rampa di lancio per razzi](Rocket-Launch-Pad.md) | 8 lingotti di Nerosteel attorno a un [Blocco di Nerosium](Block-of-Nerosium.md)                              | 1       |
+| [Blocco di Nerosium](Block-of-Nerosium.md)        | 9 lingotti di Nerosium                                                                                       | 1       |
+| [Parete della stazione](Station-Wall.md)          | 8 lingotti di Nerosteel attorno a un lingotto di ferro                                                       | 8       |
+| [Torre di lancio](Launch-Gantry.md)               | 6 lingotti di Nerosteel, sbarre di ferro e una Parete della stazione (vedi la sua pagina) | 1       |
 
 **Quanto costa ogni livello, partendo da zero:**
 
-| Livello della rampa | Blocchi | Lingotti di Nerosteel | Lingotti di Nerosium | Altro |
-| --- | --- | --- | --- | --- |
-| 1 | 1 rampa | 8 | 9 | — |
-| 2 | 9 rampe | 72 | 81 | — |
-| 3 | 9 rampe + 16 Pareti della stazione | 88 | 81 | 2 lingotti di ferro |
-| 4 | 25 rampe + 1 Torre di lancio | 214 | 225 | 1 lingotto di ferro, 1 sbarre di ferro |
+| Pad tier | Blocchi                            | Lingotti di Nerosteel | Lingotti di Nerosium | Altro                                  |
+| -------- | ---------------------------------- | --------------------- | -------------------- | -------------------------------------- |
+| 1        | 1 pad                              | 8                     | 9                    | —                                      |
+| 2        | 9 rampe                            | 72                    | 81                   | —                                      |
+| 3        | 9 rampe + 16 Pareti della stazione | 88                    | 81                   | 2 lingotti di ferro                    |
+| 4        | 25 rampe + 1 Torre di lancio       | 214                   | 225                  | 1 lingotto di ferro, 1 sbarre di ferro |
 
 > **Consiglio:** ogni livello riutilizza il precedente. Passare dal livello 2 al livello 3 costa solo le 16 pareti, e quando passi al livello 4 puoi recuperarle (una di esse va nella torre).
 
 ## 2. Scegli il posto
 
-- **Piano e livellato.** I blocchi della rampa si uniscono solo quando sono **affiancati alla stessa altezza**. I blocchi che si toccano solo in un angolo, o che sono un blocco più in alto, non contano.
+- **Piano e livellato.** I blocchi della rampa si uniscono solo quando sono **affiancati alla stessa altezza**.
+  I blocchi che si toccano solo in un angolo, o che sono un blocco più in alto, non contano.
 - **Tienile separate.** Ogni blocco di rampa che ne tocca un altro diventa un'unica rampa, e una rampa ospita **un solo razzo**. Lascia almeno un blocco di spazio tra le rampe che vuoi usare per razzi diversi.
 - **Spazio per respirare.** Puoi respirare entro circa 6 blocchi da una rampa di lancio, così chi arriva non soffoca all'atterraggio. Tutto ciò che è più lontano richiede una base con un [Generatore di ossigeno](Oxygen-Generator.md).
 - **Sulla Stazione orbitale** c'è già una rampa 3×3 costruita per te.
@@ -123,15 +123,13 @@ Non accovacciarti mentre lo fai: un clic da accovacciato a mani vuote su una ram
 
 **Schierare:** fai clic destro sulla rampa con l'oggetto razzo. Il razzo si posiziona al centro del 5×5 (o del 3×3, se non c'è un 5×5). Puoi schierarlo su qualsiasi rampa, anche una costruita a metà, e completare la costruzione attorno al razzo. Il controllo della dimensione avviene solo **al lancio**. Se la rampa è troppo piccola, la chat ti dice quale livello viene riconosciuto. Comunque, è più semplice completare prima la rampa così il razzo si posiziona al centro.
 
-<a id="5-fuel-it"></a>
-
 ## 5. Riforniscilo
 
-| Rampa | Un Serbatoio di carburante pompa |
-| --- | --- |
-| Rampa parziale (non un quadrato completo) | 40 mB per tick |
-| 3×3 completo | 160 mB per tick (4 volte più veloce) |
-| Complesso di lancio pesante | 480 mB per tick (12 volte più veloce) |
+| Pad                                                          | Un Serbatoio di carburante pompa                         |
+| ------------------------------------------------------------ | -------------------------------------------------------- |
+| Rampa parziale (non un quadrato completo) | 40 mB per tick                                           |
+| 3×3 completo                                                 | 160 mB per tick (4 volte più veloce)  |
+| Complesso di lancio pesante                                  | 480 mB per tick (12 volte più veloce) |
 
 - **[Serbatoio di carburante](Fuel-Tank.md):** piazzalo accanto a un qualsiasi blocco della rampa, all'altezza della rampa. Pompa in qualunque razzo si trovi sulla rampa.
 - **[Tubo universale](Universal-Pipe.md):** qualsiasi blocco della rampa accetta carburante per razzi (livello fluidi), ossigeno (livello gas) e Taniche di carburante per razzi (livello oggetti) e li passa al razzo attraccato. È il modo per rifornire una rampa di **livello 3**: porta il tubo fino a un blocco della rampa da sotto.
@@ -155,7 +153,8 @@ Costruisce sopra ciò che c'è già, quindi puoi potenziare una rampa livello pe
 - **«Questa rampa di lancio è riconosciuta come livello X, ma questo è un razzo di livello Y»** → il quadrato sotto il razzo non è completo. Fai clic destro su una rampa a mani vuote per vedere cosa manca. Il quadrato deve essere quello su cui si trova il razzo, non un altro altrove sulla stessa rampa.
 - **La rampa viene riconosciuta a un livello più basso del previsto** → controlla che ogni blocco sia alla stessa altezza, che non manchi alcun blocco di rampa e che l'anello del livello 3 abbia tutte e 16 le Pareti della stazione, angoli compresi.
 - **«Rampa occupata»** → la rampa ha già un razzo. Due rampe che si toccano contano come una sola.
-- **Un razzo schierato non parte più** → un blocco di rampa, una parete o la torre sotto di esso è stato rotto. Rimettilo al suo posto.
+- **Un razzo schierato non parte più** → un blocco di rampa, una parete o la torre sotto di esso è stato rotto.
+  Rimettilo al suo posto.
 - **La torre non ti fa salire a bordo** → è in un angolo. Spostala al centro di un lato.
 - I **Razzi cargo** richiedono una [Piattaforma cargo](Cargo-Pad.md) all'interno di un 3×3 completo. La Piattaforma cargo conta come uno dei nove blocchi di rampa.
 

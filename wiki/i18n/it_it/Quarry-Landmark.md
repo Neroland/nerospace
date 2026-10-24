@@ -1,9 +1,8 @@
-# Segnaposto della cava
-
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Quarry-Landmark.md).
+# Quarry Landmark
 
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/quarry_landmark.gif" alt="Quarry Landmark" width="150" align="right"></p>
+
+<p align="right"><img src="images/quarry_landmark.gif" alt="Quarry Landmark" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Un segnaposto d'angolo che definisce l'area che un [Controllore della cava](Quarry-Controller.md) estrarrà.
@@ -14,7 +13,7 @@ I segnaposto sono il modo in cui disegni l'area di una cava. Ognuno proietta **l
 
 > I segnaposto sono facoltativi: puoi invece delimitare tu stesso il rettangolo con **blocchi del telaio** piazzati a mano (l'Involucro del telaio si può piazzare) e mettere il controllore accanto all'anello chiuso: vedi [Controllore della cava](Quarry-Controller.md).
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma, ne produce 3):
 

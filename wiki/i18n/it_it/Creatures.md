@@ -1,7 +1,5 @@
 # Creature
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Creatures.md).
-
 La vita nativa dei pianeti di Nerospace. Ognuna ha una geometria su misura, un'animazione di camminata, una **tavolozza di texture** distinta regolata a mano e un **bagliore emissivo** su occhi/cristalli/braci che risplende al buio.
 
 ## Greenxertz
@@ -12,7 +10,7 @@ Un bipede cristallino alto ed eretto: il predatore al vertice del pianeta. Usa u
 
 **Aspetto:** una pelle di cristallo verde smeraldo/verde acqua scuro attraversata da sfaccettature angolari ciano; braccia a lama, cresta e pinne dorsali sono di cristallo più luminoso con bordi che brillano. Le sfaccettature e gli occhi sono emissivi, così al buio appare come una fredda sagoma ciano.
 
-**Suoni:** squittisce quando è inattivo, strilla quando viene ferito, va in frantumi alla morte. *(L'audio segnaposto riutilizza i suoni del ragno del gioco base finché non verrà registrato un audio su misura: vedi «Note sui suoni» più sotto.)*
+**Suoni:** squittisce quando è inattivo, strilla quando viene ferito, va in frantumi alla morte. _(L'audio segnaposto riutilizza i suoni del ragno del gioco base finché non verrà registrato un audio su misura: vedi «Note sui suoni» più sotto.)_
 
 ### Strisciante di quarzo: «Zampettatore di geode» (neutrale)
 
@@ -20,15 +18,15 @@ Uno strisciante basso e a cupola con sei zampe e un grappolo di cristalli sul do
 
 **Aspetto:** un carapace di quarzo pallido e lattiginoso diviso da giunture più scure, con deboli venature di quarzo rosa. Brillano solo il grappolo di cristalli verdi sul dorso (e gli occhi): il guscio corazzato resta quarzo solido e non emissivo.
 
-**Suoni:** zampetta quando è inattivo, scricchiola quando viene ferito, si sbriciola alla morte. *(Il segnaposto riutilizza i suoni del pesciolino d'argento del gioco base.)*
+**Suoni:** zampetta quando è inattivo, scricchiola quando viene ferito, si sbriciola alla morte. _(Il segnaposto riutilizza i suoni del pesciolino d'argento del gioco base.)_
 
 ### Verdino: «Germoglio» (passivo)
 
 Una piccola creaturina paffuta che vive a terra, con una testa enorme e sfacciata e una cresta di foglie. Una forma di vita ambientale innocua; trotterella su due gambette tozze.
 
-**Aspetto:** verdi screziati morbidi e amichevoli con un ventre più chiaro e delicate macchie più scure, sormontati da una cresta frondosa. È volutamente l'*unica* creatura che brilla appena: solo un minuscolo luccichio nei suoi grandi occhi scuri.
+**Aspetto:** verdi screziati morbidi e amichevoli con un ventre più chiaro e delicate macchie più scure, sormontati da una cresta frondosa. È volutamente l'_unica_ creatura che brilla appena: solo un minuscolo luccichio nei suoi grandi occhi scuri.
 
-**Suoni:** cinguetta quando è inattivo, squittisce quando viene ferito, appassisce alla morte. *(Il segnaposto riutilizza i suoni del panda del gioco base per una voce morbida e dolce.)*
+**Suoni:** cinguetta quando è inattivo, squittisce quando viene ferito, appassisce alla morte. _(Il segnaposto riutilizza i suoni del panda del gioco base per una voce morbida e dolce.)_
 
 ### Villico alieno: «Il diffidente» (sociale)
 
@@ -36,13 +34,14 @@ Gli alieni sociali dei pianeti: vedi la pagina dedicata **[Villici alieni](Alien
 
 ## Cindara
 
-### Predatore di cenere: «Colosso di magma» (ostile)
+### Cinder Stalker — "Magma Hulk" (hostile)
 
-Un pesante quadrupede cornuto della luna vulcanica, con placche dorsali di ossidiana e braci luminose. Immune al fuoco e aggressivo: la minaccia principale su Cindara.
+Un pesante quadrupede cornuto della luna vulcanica, con placche dorsali di ossidiana e braci luminose.
+Immune al fuoco e aggressivo: la minaccia principale su Cindara.
 
 **Aspetto:** una pelle carbone/ossidiana venata di crepe di lava ramificate e luminose rosso-arancio; corna e placche dorsali di ossidiana le cui giunture ardono. Le crepe e gli occhi di brace sono emissivi, così al buio cova come un fuoco.
 
-**Suoni:** cova sotto la cenere quando è inattivo, ruggisce quando viene ferito, si raffredda alla morte. *(Il segnaposto riutilizza i suoni del blaze del gioco base.)*
+**Suoni:** cova sotto la cenere quando è inattivo, ruggisce quando viene ferito, si raffredda alla morte. _(Il segnaposto riutilizza i suoni del blaze del gioco base.)_
 
 ## Glacira
 
@@ -52,11 +51,9 @@ Un predatore alto e allampanato che si aggira sulla luna ghiacciata su quattro z
 
 **Aspetto:** placche glaciali pallide su una pelle blu intenso; le spine di schegge e gli occhi brillano di un freddo bianco brina.
 
-**Suoni:** scricchiola quando è inattivo, si scheggia quando viene ferito, va in frantumi alla morte. *(Il segnaposto riutilizza i suoni dello stray del gioco base.)*
+**Suoni:** scricchiola quando è inattivo, si scheggia quando viene ferito, va in frantumi alla morte. _(Il segnaposto riutilizza i suoni dello stray del gioco base.)_
 
 ## Boss
-
-<a id="ruin-warden"></a>
 
 ### Guardiano delle rovine
 
@@ -74,9 +71,10 @@ Un placido grosso erbivoro: un corpo profondo a botte su zampe robuste, testa la
 
 ### Pollo di brace (Cindara: analogo della gallina)
 
-Un piccolo uccello di terra ombroso con piume arancio brace, una cresta e un rapido incedere su due zampe. Resistente al fuoco, come tutto ciò che sopravvive su Cindara. **Si alleva con i semi; lascia cadere Coscia di pollo di brace** (cibo). Le sue screziature di brace brillano debolmente al buio.
+Un piccolo uccello di terra ombroso con piume arancio brace, una cresta e un rapido incedere su due zampe.
+Resistente al fuoco, come tutto ciò che sopravvive su Cindara. **Si alleva con i semi; lascia cadere Coscia di pollo di brace** (cibo). Le sue screziature di brace brillano debolmente al buio.
 
-### Vagante lanoso (Glacira: analogo della pecora)
+### Woolly Drift (Glacira — sheep-analogue)
 
 Un erbivoro simile a un cumulo di neve arruffato: un unico grande vello arrotondato, increspato da ciuffi compattati dal vento, su zampe tozze. Resistente al freddo (non accumula congelamento). **Si alleva con il grano; lascia cadere Vello di vagante** (si fabbrica in 4 fili).
 

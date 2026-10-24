@@ -1,6 +1,4 @@
-# Razzi
-
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Rockets.md).
+# Rockets
 
 I quattro razzi con equipaggio che ti portano fuori dalla Terra, che aspetto ha ciascuno e cosa fa sulla rampa e in volo. Per i valori del carburante, le dimensioni delle rampe e le destinazioni vedi [Rampa di lancio per razzi](Rocket-Launch-Pad.md); per lo scafo da trasporto senza equipaggio vedi [Razzo cargo](Cargo-Rocket.md).
 
@@ -8,12 +6,12 @@ I quattro razzi con equipaggio che ti portano fuori dalla Terra, che aspetto ha 
 
 Schiera l'oggetto razzo su una [rampa di lancio](Rocket-Launch-Pad.md), riforniscilo, fai clic destro per aprire la console di volo e premi **Lancia**. Sali a bordo quando i motori si accendono e arrivi sulla rampa di destinazione pochi secondi dopo. Ogni livello può comunque volare verso le destinazioni di tutti i livelli inferiori.
 
-| Livello | Raggiunge | Rampa | Aspetto |
-| --- | --- | --- | --- |
-| **Livello 1** | Stazione orbitale | un blocco di rampa | Livrea rossa, ugello singolo, quattro alette inclinate, quattro gambe di atterraggio, cabina con oblò |
-| **Livello 2** | + Greenxertz | 3×3 | Livrea viola Nerosium, due booster laterali, antenna radar rotante, due alette |
-| **Livello 3** | + Cindara | 3×3 circondato | Livrea oro / verde, ugello principale circondato da quattro motori vernier, ali solari ripiegabili, braccio con antenna di scansione, cupola panoramica, ogiva lunga |
-| **Livello 4** | + Glacira | Complesso di lancio pesante | Livrea azzurro ghiaccio, ampio stadio centrale a cinque motori, quattro booster, alette a griglia, gambe pesanti, l'ogiva più alta |
+| Tier          | Raggiunge         | Pad                         | Aspetto                                                                                                                                                              |
+| ------------- | ----------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Livello 1** | Stazione orbitale | un blocco di rampa          | Livrea rossa, ugello singolo, quattro alette inclinate, quattro gambe di atterraggio, cabina con oblò                                                                |
+| **Livello 2** | + Greenxertz      | 3×3                         | Livrea viola Nerosium, due booster laterali, antenna radar rotante, due alette                                                                                       |
+| **Livello 3** | + Cindara         | 3×3 circondato              | Livrea oro / verde, ugello principale circondato da quattro motori vernier, ali solari ripiegabili, braccio con antenna di scansione, cupola panoramica, ogiva lunga |
+| **Livello 4** | + Glacira         | Complesso di lancio pesante | Livrea azzurro ghiaccio, ampio stadio centrale a cinque motori, quattro booster, alette a griglia, gambe pesanti, l'ogiva più alta                                   |
 
 Ogni livello è più grande del precedente, sia nella geometria sia nella scala, così la progressione si legge da un capo all'altro della base.
 

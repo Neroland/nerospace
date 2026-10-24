@@ -1,0 +1,96 @@
+# Nerosium Grinder
+
+<!-- nerospace:render -->
+
+<p align="right"><img src="images/nerosium_grinder.gif" alt="Nerosium Grinder" width="150" align="right"></p>
+<!-- /nerospace:render -->
+
+Your first machine — grinds ore into dust to double your metal yield.
+
+## Overview
+
+The Nerosium Grinder processes nerosium inputs into **Nerosium Dust** over time. Since each dust smelts
+back into a Nerosium Ingot, grinding ore before smelting **doubles** your ingot output.
+
+## Obtaining
+
+**Craft** (shaped):
+
+```text
+I I I
+I F I
+C C C
+```
+
+`I` = Nerosium Ingot · `F` = Furnace · `C` = Cobblestone
+
+## How it works
+
+- **Slots:** an **input** (top/sides) and a **four-slot output buffer** (extracted from the bottom).
+  The buffer gives pipes room to keep up; if it fills, the grinder **pauses** rather than overflowing.
+
+- **Grinding recipes:**
+
+  - Nerosium Ore / Deepslate Nerosium Ore / Raw Nerosium → **2 Nerosium Dust**
+  - Nerosium Ingot → **1 Nerosium Dust**
+  - Nerosteel Ore → **2 Raw Nerosteel**
+  - Cindrite Ore → **2 Cindrite** · Glacite Ore → **2 Glacite** · Xertz Quartz Ore → **2 Xertz Quartz**
+
+  The ore-block recipes mean **silk-touched ore** (hand-mined or from the quarry's Silk Touch Module)
+  is never a dead end — grind it back into its raw material or gem.
+
+- **Power:** the grinder does **not** make its own power — it shows **0%** until you connect a power
+  source. Place a **[Passive Generator](Passive-Generator)** (feed it Raw Nerosium) or a
+  **[Combustion Generator](Combustion-Generator)** (feed it coal) **right next to it**: generators push
+  power into touching machines on their own, no cable needed. Further away, link them with
+  **[Universal Pipes](Universal-Pipe)** or a Neroland Core **[Battery](Battery)**. See
+  **[Powering Machines](Powering-Machines)**.
+
+- **Numbers:** 20,000 FE buffer, accepts up to 500 FE/tick, uses **20 FE/tick** while grinding, and one
+  item takes **200 ticks (10 seconds)** — so one grind costs 4,000 FE.
+
+- **Automation:** the inventory is exposed via the item capability — hoppers/pipes can \*\*insert into
+
+  the input from the top or sides and extract dust from the bottom\*\*.
+
+- **GUI:** shows a power gauge and grind progress. If the power bar stays at **0%**, nothing is
+  feeding it — put a generator next to it.
+
+## Grinding meteor rock — random space materials
+
+Feed the grinder a **[Meteor Rock](Meteor-Rock)** and it follows a different, random path: instead of a
+fixed recipe it produces a weighted-random material drawn from **[Neroland Core](Neroland-Core)'s Meteor
+Material Registry**. Every Nero mod registers its grindable materials into Core once, so the pool grows
+automatically with whatever mods are installed — the grinder never needs to know about them.
+
+- **What you get:** one **primary** material per rock, plus — occasionally — a bonus **exotic** item.
+  Nerospace contributes its raw materials and signature planet ores to the pool.
+- **Planet-locked signature ores:** each planet's **signature ore** only enters the pool when you grind
+  _on that planet_ — and is heavily weighted there (the planet-bias multiplier). Grind on Greenxertz for
+  Xertz Quartz and Raw Nerosteel, on Cindara for Cindrite, on Glacira for Glacite. Off a planet (e.g. on
+  Earth) those materials drop out entirely. Being on the planet _is_ the gate — there's no separate
+  progression lock, so you can never be stranded on a world unable to grind its own ore.
+- **Progression-gated alien tech:** the **alien materials** aren't tied to a planet, so they can roll on any
+  world — and are instead paced by **Core gates**. Alien Fragments unlock at **Reached Orbit**; Alien Tech
+  Scrap and the exotic **Alien Core** at **First Colony**. This keeps the rare end-game drops out of early
+  overworld meteor grinds.
+- **Operator context:** the gate/planet check uses the **operator** — the last player to open the grinder,
+  or the owner of the station it sits in. With no operator online (and no eligible material) the grind
+  simply waits, so an unattended grinder never wastes a rock. If the **output buffer is full**, the grinder
+  **pauses** with the result held and the meteor rock kept — it never drops items into the world; grinding
+  resumes the moment a slot frees up.
+- **Recipe book:** the random pool is browsable in **JEI** or **EMI** — look up the grinder and the meteor entry shows
+  the whole `neroland:meteor/grindable` material set.
+
+Privacy: the registry stores **no player data** — only item metadata. The operator is held by UUID for
+gate context only, never logged (POPIA/GDPR).
+
+## Tips
+
+Feed it raw nerosium or ore, pipe the dust into a furnace array, and you get 2 ingots per ore instead
+of 1. Save your **Meteor Rocks** for the random-material grind — and grind them _on the matching planet_
+to bias the roll toward that planet's signature ore.
+
+## Details
+
+- ID: `nerospace:nerosium_grinder` · Tool: pickaxe, iron tier · Drops: itself
