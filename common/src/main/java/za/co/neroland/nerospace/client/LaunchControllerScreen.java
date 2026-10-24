@@ -52,7 +52,7 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         for (int i = 0; i < 4; i++) {
             final int tier = i + 1;
             SpaceButton b = new SpaceButton(this.leftPos + 8 + i * 40, this.topPos + 18, 36, 14,
-                    Component.literal("T" + tier), ACCENT, btn -> sendButton(tier));
+                    Component.translatable("gui.nerospace.launch_controller.tier_button", tier), ACCENT, btn -> sendButton(tier));
             this.addRenderableWidget(b);
             this.tierButtons.add(b);
         }
@@ -147,11 +147,11 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         // Resource hub levels (fed by pipes/cables → pumped into the docked rocket) — full-width bars.
         int gx = 46;
         int gw = W - gx - 8;
-        label(g, Component.literal("Fuel"), 8, 73, 0xFFFFC9B0);
+        label(g, Component.translatable("gui.nerospace.launch_controller.hub.fuel"), 8, 73, 0xFFFFC9B0);
         hGauge(g, gx, 73, gw, 5, this.menu.fuelFrac(), FUEL);
-        label(g, Component.literal("O2"), 8, 81, 0xFFBFEFFF);
+        label(g, Component.translatable("gui.nerospace.launch_controller.hub.oxygen"), 8, 81, 0xFFBFEFFF);
         hGauge(g, gx, 81, gw, 5, this.menu.oxygenFrac(), O2);
-        label(g, Component.literal("Power"), 8, 89, 0xFFF6DC8A);
+        label(g, Component.translatable("gui.nerospace.launch_controller.hub.power"), 8, 89, 0xFFF6DC8A);
         hGauge(g, gx, 89, gw, 5, this.menu.powerFrac(), POWER);
     }
 
@@ -165,10 +165,10 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         hGauge(g, 8, 41, W - 16, 6, this.menu.rocketFuelFrac(), FUEL);
         label(g, Component.translatable("gui.nerospace.rocket.oxygen_label"), 8, 50, 0xFFBFEFFF);
         hGauge(g, 8, 59, W - 16, 6, this.menu.rocketOxygenFrac(), O2);
-        label(g, Component.literal("POWER"), 8, 68, 0xFFF6DC8A);
+        label(g, Component.translatable("gui.nerospace.rocket.power_label"), 8, 68, 0xFFF6DC8A);
         hGauge(g, 8, 77, W - 16, 6, this.menu.rocketPowerFrac(), POWER);
 
-        this.destButton.setMessage(Component.literal("» " + this.menu.rocketDestName()));
+        this.destButton.setMessage(Component.translatable("gui.nerospace.launch_controller.destination", this.menu.rocketDestDisplayName()));
         this.launchButton.active = this.menu.rocketLaunchable();
     }
 

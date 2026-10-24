@@ -176,21 +176,24 @@ public class UniversalPipeBlock extends BaseEntityBlock {
                 return InteractionResult.SUCCESS;
             }
             // Read out what is flowing through this segment (energy / fluid / gas / items).
-            serverPlayer.sendSystemMessage(Component.literal("§eEnergy: " + pipe.getEnergy().getAmount() + " FE"));
+            serverPlayer.sendSystemMessage(Component.translatable("block.nerospace.universal_pipe.readout.energy",
+                    pipe.getEnergy().getAmount()).withStyle(net.minecraft.ChatFormatting.YELLOW));
             if (pipe.getFluidTank().getFluid() != Fluids.EMPTY) {
-                serverPlayer.sendSystemMessage(Component.literal("§bFluid: " + pipe.getFluidTank().getAmount() + " mB"));
+                serverPlayer.sendSystemMessage(Component.translatable("block.nerospace.universal_pipe.readout.fluid",
+                        pipe.getFluidTank().getAmount()).withStyle(net.minecraft.ChatFormatting.AQUA));
             }
             NeroGasStorage gas = pipe.getCoreGas();
             if (!NeroGases.isEmpty(gas.getGas()) && gas.getAmount() > 0) {
-                serverPlayer.sendSystemMessage(Component.literal("§aGas: " + gas.getAmount() + " mB ")
-                        .append(NeroGases.label(gas.getGas())));
+                serverPlayer.sendSystemMessage(Component.translatable("block.nerospace.universal_pipe.readout.gas",
+                        gas.getAmount(), NeroGases.label(gas.getGas())).withStyle(net.minecraft.ChatFormatting.GREEN));
             }
             int items = 0;
             for (int i = 0; i < pipe.getContainerSize(); i++) {
                 items += pipe.getItem(i).getCount();
             }
             if (items > 0) {
-                serverPlayer.sendSystemMessage(Component.literal("§fItems in transit: " + items));
+                serverPlayer.sendSystemMessage(Component.translatable("block.nerospace.universal_pipe.items", items)
+                        .withStyle(net.minecraft.ChatFormatting.WHITE));
             }
         }
         return InteractionResult.SUCCESS;

@@ -93,7 +93,7 @@ public final class OxygenHud {
 
         // Labels stack upward, each on its own line above the bar.
         int line = barY - 10;
-        g.text(mc.font, Component.literal("O2  " + Math.round(frac * 100) + "%"), barX, line, LABEL, true);
+        g.text(mc.font, Component.translatable("hud.nerospace.oxygen", Math.round(frac * 100)), barX, line, LABEL, true);
 
         // Suit badge (armour slots are already client-synced): an active hazard SHIELD outranks the
         // capacity tier on the badge — both axes still apply.
@@ -102,18 +102,18 @@ public final class OxygenHud {
         if (shield != OxygenManager.HazardShield.NONE) {
             boolean heat = shield == OxygenManager.HazardShield.HEAT;
             line -= 10;
-            g.text(mc.font, Component.literal(heat ? "SUIT HEAT" : "SUIT COLD"), barX, line, heat ? HEAT : COLD, true);
+            g.text(mc.font, Component.translatable(heat ? "hud.nerospace.suit_heat" : "hud.nerospace.suit_cold"), barX, line, heat ? HEAT : COLD, true);
         } else if (suit != OxygenManager.SuitTier.NONE) {
             boolean t2 = suit == OxygenManager.SuitTier.TIER_2;
             line -= 10;
-            g.text(mc.font, Component.literal(t2 ? "SUIT T2" : "SUIT T1"), barX, line, t2 ? TIER2 : TIER1, true);
+            g.text(mc.font, Component.translatable(t2 ? "hud.nerospace.suit_t2" : "hud.nerospace.suit_t1"), barX, line, t2 ? TIER2 : TIER1, true);
         }
 
         // Uncountered dimension hazard: a red warning on its own line so the x4 drain is never mysterious.
         OxygenManager.HazardShield hazard = OxygenManager.hazardFor(player.level().dimension());
         if (hazard != OxygenManager.HazardShield.NONE && shield != hazard) {
             line -= 10;
-            g.text(mc.font, Component.literal(hazard == OxygenManager.HazardShield.HEAT ? "HEAT!" : "COLD!"),
+            g.text(mc.font, Component.translatable(hazard == OxygenManager.HazardShield.HEAT ? "hud.nerospace.hazard_heat" : "hud.nerospace.hazard_cold"),
                     barX, line, LOW, true);
         }
     }

@@ -190,6 +190,14 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
         return key == null ? "—" : za.co.neroland.nerospace.rocket.Destinations.name(key);
     }
 
+    /** Localised display name of the docked rocket's selected destination (for the GUI). */
+    public net.minecraft.network.chat.Component rocketDestDisplayName() {
+        net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> key =
+                za.co.neroland.nerospace.rocket.Destinations.byIndex(this.data.get(18));
+        return key == null ? net.minecraft.network.chat.Component.literal("—")
+                : za.co.neroland.nerospace.rocket.Destinations.displayName(key);
+    }
+
     @Override
     public boolean stillValid(Player player) {
         return this.container.stillValid(player);

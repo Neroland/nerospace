@@ -92,11 +92,11 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         this.hereHintApplied = false; // extractForeground swaps in the "you are here" hint when needed
         for (int i = 0; i < count; i++) {
             final int index = i;
-            String fullName = Destinations.name(ALL_DESTINATIONS.get(i));
+            ResourceKey<Level> destKey = ALL_DESTINATIONS.get(i);
             SpaceButton node = new SpaceButton(x, this.topPos + DEST_ROW_Y, NODE_W, 15,
-                    Component.literal(shortName(fullName)), ACCENT,
+                    Destinations.shortDisplayName(destKey), ACCENT,
                     b -> onSelectDestination(index));
-            node.setTooltip(Tooltip.create(Component.literal(fullName)));
+            node.setTooltip(Tooltip.create(Destinations.displayName(destKey)));
             this.addRenderableWidget(node);
             this.destinationButtons.add(node);
             x += NODE_W + NODE_GAP;
@@ -211,10 +211,10 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
                 ? Destinations.indexOf(this.minecraft.level.dimension()) : -1;
         boolean hereExtra = hereIndex >= 0 && (mask & (1 << hereIndex)) == 0; // shown but not selectable
         if (hereIndex >= 0 && hereExtra != this.hereHintApplied) {
-            String fullName = Destinations.name(ALL_DESTINATIONS.get(hereIndex));
+            Component fullName = Destinations.displayName(ALL_DESTINATIONS.get(hereIndex));
             this.destinationButtons.get(hereIndex).setTooltip(Tooltip.create(hereExtra
                     ? Component.translatable("gui.nerospace.rocket.here", fullName)
-                    : Component.literal(fullName)));
+                    : fullName));
             this.hereHintApplied = hereExtra;
         }
         int shown = reachable + (hereExtra ? 1 : 0);
@@ -304,7 +304,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
         // Destination name along the viewport floor.
         if (selected >= 0 && selected < ALL_DESTINATIONS.size()) {
-            labelCentered(g, Component.literal(Destinations.name(ALL_DESTINATIONS.get(selected))),
+            labelCentered(g, Destinations.displayName(ALL_DESTINATIONS.get(selected)),
                     VX, VW, VY + VH - 10, TITLE);
         }
     }
@@ -384,17 +384,6 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         int gg = Math.min(255, ((argb >> 8) & 0xFF) + 90);
         int b = Math.min(255, (argb & 0xFF) + 90);
         return 0xFF000000 | (r << 16) | (gg << 8) | b;
-    }
-
-    private static String shortName(String full) {
-        return switch (full) {
-            case "Home" -> "Home";
-            case "Orbital Station" -> "Station";
-            case "Greenxertz" -> "Xertz";
-            case "Cindara" -> "Cind";
-            case "Glacira" -> "Glac";
-            default -> full;
-        };
     }
 
     private void onSelectDestination(int index) {

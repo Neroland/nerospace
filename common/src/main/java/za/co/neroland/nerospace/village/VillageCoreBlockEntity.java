@@ -112,7 +112,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         }
         stack.shrink(add);
         this.stockpile += add;
-        player.sendSystemMessage(Component.literal("Stockpile: " + this.stockpile + " Nerosteel."));
+        player.sendSystemMessage(Component.translatable("message.nerospace.village_core.stockpile", this.stockpile));
         setChanged();
     }
 
@@ -120,25 +120,23 @@ public class VillageCoreBlockEntity extends BlockEntity {
         if (this.jobType != null) {
             int total = placements().size();
             int pct = total == 0 ? 100 : (int) (100.0 * this.progress / total);
-            player.sendSystemMessage(Component.literal("Constructing " + label(this.jobType) + "… " + pct + "%"));
+            player.sendSystemMessage(Component.translatable("message.nerospace.village_core.constructing", label(this.jobType), pct));
             return;
         }
         Type next = Type.byOrdinalOrNull(this.builtCount);
         if (next == null) {
-            player.sendSystemMessage(Component.literal("The village is fully built. The aliens are grateful."));
+            player.sendSystemMessage(Component.translatable("message.nerospace.village_core.complete"));
             return;
         }
         int tier = villageTier(player);
         if (tier < next.reqTier) {
-            player.sendSystemMessage(Component.literal(
-                    "The villagers won't follow your plans yet — reach trust tier " + next.reqTier
-                            + " (you are tier " + tier + ")."));
+            player.sendSystemMessage(Component.translatable(
+                    "message.nerospace.village_core.tier_locked", next.reqTier, tier));
             return;
         }
         if (this.stockpile < next.cost) {
-            player.sendSystemMessage(Component.literal(
-                    "Teaching the " + label(next) + " needs " + next.cost + " Nerosteel in the stockpile (have "
-                            + this.stockpile + ")."));
+            player.sendSystemMessage(Component.translatable(
+                    "message.nerospace.village_core.needs_stockpile", label(next), next.cost, this.stockpile));
             return;
         }
         this.stockpile -= next.cost;
@@ -152,7 +150,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         this.progress = 0;
         this.buildTick = 0;
         this.jobPlacements = VillageBuildings.build(next);
-        player.sendSystemMessage(Component.literal("Construction begins: " + label(next) + "."));
+        player.sendSystemMessage(Component.translatable("message.nerospace.village_core.construction_begins", label(next)));
         setChanged();
     }
 
@@ -171,12 +169,12 @@ public class VillageCoreBlockEntity extends BlockEntity {
         this.outBread = 0;
         this.outIngot = 0;
         if (bread > 0 || ingot > 0) {
-            player.sendSystemMessage(Component.literal("Collected " + bread + " bread, " + ingot + " nerosteel."));
+            player.sendSystemMessage(Component.translatable("message.nerospace.village_core.collected", bread, ingot));
         }
         Quest q = Quest.byOrdinalOrNull(this.questOrdinal);
         if (q != null) {
-            player.sendSystemMessage(Component.literal(
-                    "Village task: bring " + q.count + "x " + itemLabel(q) + " for " + q.reward + " emeralds + trust."));
+            player.sendSystemMessage(Component.translatable(
+                    "message.nerospace.village_core.task", q.count, new ItemStack(q.item()).getHoverName(), q.reward));
         }
         setChanged();
     }
@@ -190,7 +188,7 @@ public class VillageCoreBlockEntity extends BlockEntity {
         stack.shrink(q.count);
         give(player, new ItemStack(q.rewardItem(), q.reward));
         grantVillageReputation(player, q.reward);
-        player.sendSystemMessage(Component.literal("The villagers thank you. (+" + q.reward + " trust)"));
+        player.sendSystemMessage(Component.translatable("message.nerospace.village_core.thanks", q.reward));
         rollQuest();
         setChanged();
         return true;
@@ -323,19 +321,11 @@ public class VillageCoreBlockEntity extends BlockEntity {
         }
     }
 
-    private static String label(Type t) {
-        return switch (t) {
-            case HUT -> "Hut";
-            case WORKSHOP -> "Workshop";
-        };
-    }
-
-    private static String itemLabel(Quest q) {
-        return switch (q) {
-            case XERTZ_QUARTZ -> "Xertz Quartz";
-            case RAW_NEROSTEEL -> "Raw Nerosteel";
-            case ALIEN_FRAGMENT -> "Alien Fragment";
-        };
+    private static Component label(Type t) {
+        return Component.translatable(switch (t) {
+            case HUT -> "message.nerospace.village_core.building.hut";
+            case WORKSHOP -> "message.nerospace.village_core.building.workshop";
+        });
     }
 
     // --- Persistence ----------------------------------------------------------

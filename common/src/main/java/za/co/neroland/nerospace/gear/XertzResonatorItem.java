@@ -42,8 +42,8 @@ public class XertzResonatorItem extends Item {
                     }
                 }
             }
-            player.sendSystemMessage(Component.literal(
-                    "Xertz resonance: " + count + " ore blocks within " + RADIUS + " blocks."));
+            player.sendSystemMessage(Component.translatable(
+                    "message.nerospace.xertz_resonator.count", count, RADIUS));
         }
         return InteractionResult.SUCCESS;
     }

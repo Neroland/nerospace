@@ -35,7 +35,7 @@ public class QuarryScreen extends TexturedContainerScreen<QuarryMenu> {
         float energyFrac = maxEnergy == 0 ? 0f : (float) energy / maxEnergy;
         int pct = maxEnergy == 0 ? 0 : energy * 100 / maxEnergy;
 
-        label(g, Component.literal("Power: " + pct + "%"), 8, 80, TITLE);
+        label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 80, TITLE);
         segGauge(g, 8, 90, 160, 3, energyFrac, ACCENT);
 
         QuarryControllerBlockEntity.State state = this.menu.getState();
@@ -51,14 +51,14 @@ public class QuarryScreen extends TexturedContainerScreen<QuarryMenu> {
         if (state == QuarryControllerBlockEntity.State.MINING
                 || state == QuarryControllerBlockEntity.State.BUILDING_FRAME) {
             int depth = Math.max(0, this.menu.getRefY() - this.menu.getCurrentY());
-            Component depthLine = Component.literal("Depth: " + depth);
+            Component depthLine = Component.translatable("gui.nerospace.quarry.depth", depth);
             label(g, depthLine, 168 - this.font.width(depthLine), 97, SUBTLE);
         }
 
         int fluid = this.menu.getFluid();
         int maxFluid = this.menu.getMaxFluid();
         float fluidFrac = maxFluid == 0 ? 0f : (float) fluid / maxFluid;
-        label(g, Component.literal("Fluid: " + fluid + " mB"), 8, 106, 0xFFB9D7FF);
+        label(g, Component.translatable("gui.nerospace.quarry.fluid", fluid), 8, 106, 0xFFB9D7FF);
         fluidGauge(g, 96, 107, 72, 3, fluidFrac, FLUID);
     }
 }

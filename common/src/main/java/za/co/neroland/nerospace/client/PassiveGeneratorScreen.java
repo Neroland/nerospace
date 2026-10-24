@@ -40,7 +40,7 @@ public class PassiveGeneratorScreen extends TexturedContainerScreen<PassiveGener
         int max = this.menu.capacity();
         int pct = max == 0 ? 0 : energy * 100 / max;
         float frac = max == 0 ? 0f : (float) energy / max;
-        label(g, Component.literal("Power: " + pct + "%"), 8, 20, 0xFFF0CFEA);
+        label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 20, 0xFFF0CFEA);
         segGauge(g, 8, 31, 160, 6, frac, ACCENT);
     }
 

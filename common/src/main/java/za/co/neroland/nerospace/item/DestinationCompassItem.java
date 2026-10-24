@@ -77,6 +77,6 @@ public class DestinationCompassItem extends Item {
         player.sendSystemMessage(returning
                 ? Component.translatable("item.nerospace.destination_compass.return")
                 : Component.translatable("item.nerospace.destination_compass.travel",
-                        Destinations.name(this.destination)));
+                        Destinations.displayName(this.destination)));
     }
 }

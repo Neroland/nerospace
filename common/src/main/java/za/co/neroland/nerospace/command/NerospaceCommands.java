@@ -126,7 +126,7 @@ public final class NerospaceCommands {
     private static int reportGravity(CommandSourceStack source) {
         ServerPlayer player = source.getPlayer();
         if (player == null) {
-            source.sendFailure(Component.literal("Run this as a player."));
+            source.sendFailure(Component.translatable("command.nerospace.player_only"));
             return 0;
         }
         ServerLevel level = player.level();
@@ -135,29 +135,31 @@ public final class NerospaceCommands {
 
         String src;
         if (biome.is(ModTags.Biomes.GRAVITY_MICRO)) {
-            src = "biome tag gravity_micro";
+            src = "command.nerospace.gravity.source.micro";
         } else if (biome.is(ModTags.Biomes.GRAVITY_LOW)) {
-            src = "biome tag gravity_low";
+            src = "command.nerospace.gravity.source.low";
         } else if (biome.is(ModTags.Biomes.GRAVITY_HIGH)) {
-            src = "biome tag gravity_high";
+            src = "command.nerospace.gravity.source.high";
         } else {
-            src = "dimension default";
+            src = "command.nerospace.gravity.source.dimension";
         }
 
         double factor = GravityManager.factorAt(level, pos);
         double mult = NerospaceConfig.gravityMultiplier();
         Identifier biomeId = biome.unwrapKey().map(k -> k.identifier()).orElse(null);
         AttributeInstance gravityAttr = player.getAttribute(Attributes.GRAVITY);
-        String attrText = gravityAttr != null
-                ? String.format("%.4f (vanilla 0.0800)", gravityAttr.getValue())
-                : "ABSENT (player has no GRAVITY attribute!)";
+        Component attrText = gravityAttr != null
+                ? Component.translatable("command.nerospace.gravity.attribute",
+                        String.format(java.util.Locale.ROOT, "%.4f", gravityAttr.getValue()))
+                : Component.translatable("command.nerospace.gravity.attribute_absent");
 
-        String message = String.format(
-                "Gravity here: %.3f×  (source: %s; config ×%.2f)%nDimension: %s   Biome: %s%n"
-                        + "Your GRAVITY attribute: %s",
-                factor, src, mult, level.dimension().identifier(),
-                biomeId == null ? "(unknown)" : biomeId, attrText);
-        source.sendSuccess(() -> Component.literal(message), false);
+        Component message = Component.translatable("command.nerospace.gravity.report",
+                String.format(java.util.Locale.ROOT, "%.3f", factor), Component.translatable(src),
+                String.format(java.util.Locale.ROOT, "%.2f", mult), level.dimension().identifier().toString(),
+                biomeId == null ? Component.translatable("command.nerospace.gravity.biome_unknown")
+                        : Component.literal(biomeId.toString()),
+                attrText);
+        source.sendSuccess(() -> message, false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -184,7 +186,7 @@ public final class NerospaceCommands {
     private static int removeStation(CommandSourceStack source, int slot) {
         ServerPlayer player = source.getPlayer();
         if (player == null) {
-            source.sendFailure(Component.literal("Run this as a player."));
+            source.sendFailure(Component.translatable("command.nerospace.player_only"));
             return 0;
         }
         StationRegistry registry = StationRegistry.get(source.getServer());
@@ -235,7 +237,7 @@ public final class NerospaceCommands {
         } catch (RuntimeException ex) {
             NerospaceTelemetry.captureHandledException(ex, "command", "/nerospace " + commandName);
             NerospaceCommon.LOGGER.error("[Nerospace] /nerospace {} failed", commandName, ex);
-            source.sendFailure(Component.literal("Nerospace " + commandName + " failed; see latest.log."));
+            source.sendFailure(Component.translatable("command.nerospace.failed", commandName));
             return 0;
         }
     }
@@ -248,11 +250,11 @@ public final class NerospaceCommands {
     private static int buildGallery(CommandSourceStack source) {
         ServerPlayer player = source.getPlayer();
         if (player == null) {
-            source.sendFailure(Component.literal("Run this as a player."));
+            source.sendFailure(Component.translatable("command.nerospace.player_only"));
             return 0;
         }
         if (!player.getAbilities().instabuild) {
-            source.sendFailure(Component.literal("The Nerospace gallery is creative-only."));
+            source.sendFailure(Component.translatable("command.nerospace.gallery.creative_only"));
             return 0;
         }
         ServerLevel level = player.level();
@@ -412,16 +414,16 @@ public final class NerospaceCommands {
                 level.setBlockAndUpdate(new BlockPos(ax + dx, fy, az + dz), floor);
             }
         }
-        spawnSuitStand(level, new BlockPos(ax + suit0, fy + 1, az), Component.literal("Oxygen Suit"), SUIT_YAW,
+        spawnSuitStand(level, new BlockPos(ax + suit0, fy + 1, az), Component.translatable("command.nerospace.gallery.label.oxygen_suit"), SUIT_YAW,
                 ModItems.OXYGEN_SUIT_HELMET.get(), ModItems.OXYGEN_SUIT_CHESTPLATE.get(),
                 ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_BOOTS.get());
-        spawnSuitStand(level, new BlockPos(ax + suit1, fy + 1, az), Component.literal("Tier 2 Oxygen Suit"), SUIT_YAW,
+        spawnSuitStand(level, new BlockPos(ax + suit1, fy + 1, az), Component.translatable("command.nerospace.gallery.label.oxygen_suit_t2"), SUIT_YAW,
                 ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
                 ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get());
-        spawnSuitStand(level, new BlockPos(ax + suit2, fy + 1, az), Component.literal("Thermal Suit"), SUIT_YAW,
+        spawnSuitStand(level, new BlockPos(ax + suit2, fy + 1, az), Component.translatable("command.nerospace.gallery.label.thermal_suit"), SUIT_YAW,
                 ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(),
                 ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_HEAT_BOOTS.get());
-        spawnSuitStand(level, new BlockPos(ax + suit3, fy + 1, az), Component.literal("Cryo Suit"), SUIT_YAW,
+        spawnSuitStand(level, new BlockPos(ax + suit3, fy + 1, az), Component.translatable("command.nerospace.gallery.label.cryo_suit"), SUIT_YAW,
                 ModItems.OXYGEN_SUIT_COLD_HELMET.get(), ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get(),
                 ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get(), ModItems.OXYGEN_SUIT_COLD_BOOTS.get());
         BlockPos guidePos = new BlockPos(ax + guideX, fy + 1, az);
@@ -448,11 +450,11 @@ public final class NerospaceCommands {
         level.setBlockAndUpdate(new BlockPos(rx + 1, fy + 1, rz0 + 1), pad);
         level.setBlockAndUpdate(new BlockPos(rx + 3, fy + 1, rz0 + 1), ModBlocks.FUEL_TANK.get().defaultBlockState());
         spawnRocket(level, rx + 1, fy + 1, rz0 + 1, RocketTier.TIER_1);
-        spawnLabelStand(level, new BlockPos(rx + 1, fy + 5, rz0 + 1), Component.literal("Tier 1 — single pad"));
+        spawnLabelStand(level, new BlockPos(rx + 1, fy + 5, rz0 + 1), Component.translatable("command.nerospace.gallery.label.rocket_tier_1"));
         // T2 (3x3).
         fillPad(level, new BlockPos(rx + 8, fy + 1, rz0), 3, pad);
         spawnRocket(level, rx + 9, fy + 1, rz0 + 1, RocketTier.TIER_2);
-        spawnLabelStand(level, new BlockPos(rx + 9, fy + 6, rz0 + 1), Component.literal("Tier 2 — 3x3 pad"));
+        spawnLabelStand(level, new BlockPos(rx + 9, fy + 6, rz0 + 1), Component.translatable("command.nerospace.gallery.label.rocket_tier_2"));
         // T3 (3x3 ringed with Station Wall).
         fillPad(level, new BlockPos(rx + 16, fy + 1, rz0), 3, pad);
         BlockState wall = ModBlocks.STATION_WALL.get().defaultBlockState();
@@ -464,7 +466,7 @@ public final class NerospaceCommands {
             }
         }
         spawnRocket(level, rx + 17, fy + 1, rz0 + 1, RocketTier.TIER_3);
-        spawnLabelStand(level, new BlockPos(rx + 17, fy + 6, rz0 + 1), Component.literal("Tier 3 — Station Wall ring"));
+        spawnLabelStand(level, new BlockPos(rx + 17, fy + 6, rz0 + 1), Component.translatable("command.nerospace.gallery.label.rocket_tier_3"));
         // T4 (Heavy Launch Complex: 5x5 + gantry + fuel tank). The gantry renders as the animated
         // service tower — it reclines to release the rocket on launch, then swings back upright.
         fillPad(level, new BlockPos(rx + 24, fy + 1, rz0 - 1), 5, pad);
@@ -474,7 +476,7 @@ public final class NerospaceCommands {
                 ModBlocks.FUEL_TANK.get().defaultBlockState());
         spawnRocket(level, rx + 26, fy + 1, rz0 + 1, RocketTier.TIER_4);
         spawnLabelStand(level, new BlockPos(rx + 26, fy + 7, rz0 + 1),
-                Component.literal("Tier 4 — Heavy Launch Complex (animated gantry tower)"));
+                Component.translatable("command.nerospace.gallery.label.rocket_tier_4"));
 
         // ROCKET O2 FUELLING (Phase 2): an endless Gas Tank → gas pipe → launch pad charges a docked
         // rocket's onboard oxygen tank live (the rocket starts with empty O2 so the line visibly fills it).
@@ -486,7 +488,7 @@ public final class NerospaceCommands {
         setAllModes(level, new BlockPos(o2x + 1, fy + 1, o2z), Direction.WEST, PipeIoMode.IN);
         setAllModes(level, new BlockPos(o2x + 1, fy + 1, o2z), Direction.EAST, PipeIoMode.OUT);
         spawnRocket(level, o2x + 2, fy + 1, o2z, RocketTier.TIER_1, RocketTier.TIER_1.fuelCapacity(), 0);
-        spawnLabelStand(level, new BlockPos(o2x + 1, fy + 4, o2z), Component.literal("Rocket O2 Fuelling"));
+        spawnLabelStand(level, new BlockPos(o2x + 1, fy + 4, o2z), Component.translatable("command.nerospace.gallery.label.rocket_oxygen"));
 
         // TRAVEL NODE (Phase 5): a launch pad doubles as a named pad-to-pad landing node — apply a Name
         // Tag to commission it (a rocket then lands here). Shown as a labelled standalone pad.
@@ -494,7 +496,7 @@ public final class NerospaceCommands {
         int tnz = rz0 + 4;
         level.setBlockAndUpdate(new BlockPos(tnx, fy + 1, tnz), pad);
         spawnLabelStand(level, new BlockPos(tnx, fy + 3, tnz),
-                Component.literal("Travel Node — Name-Tag a pad to register"));
+                Component.translatable("command.nerospace.gallery.label.travel_node"));
 
         // FREIGHT (cargo rockets, 1.3.0): two Cargo Pads on 3x3 footprints, one strip north of the rocket
         // row. Pad A carries a docked, fuelled Cargo Rocket with a loaded hold, an adjacent Fuel Tank and a
@@ -545,11 +547,11 @@ public final class NerospaceCommands {
         // Live quarry claim/build displays: three sizes with landmarks + adjacent controllers. The
         // frames are intentionally NOT pre-placed; watch them build at the real animation speed.
         buildGalleryQuarry(level, floor, origin.getX() + 42, origin.getZ() - 40, fy, 8,
-                Component.literal("Miner T1 - 9x9"));
+                Component.translatable("command.nerospace.gallery.label.miner", 1, 9, 9));
         buildGalleryQuarry(level, floor, origin.getX() + 58, origin.getZ() - 56, fy, 16,
-                Component.literal("Miner T2 - 17x17"));
+                Component.translatable("command.nerospace.gallery.label.miner", 2, 17, 17));
         buildGalleryQuarry(level, floor, origin.getX() + 86, origin.getZ() - 72, fy, 32,
-                Component.literal("Miner T3 - 33x33"));
+                Component.translatable("command.nerospace.gallery.label.miner", 3, 33, 33));
 
         // SOLAR ARRAYS (SOLAR_PANEL_DESIGN, SW bearing): one unit per tier, then a multi-unit seam-joined
         // field per tier (so the per-cell trackers reading as one surface is visible), plus a
@@ -580,19 +582,9 @@ public final class NerospaceCommands {
             }
         }
         spawnLabelStand(level, new BlockPos(lcx + 3, fy + 4, lcz),
-                Component.literal("Launch Controller — pad builder + launch hub (hologram on)"));
+                Component.translatable("command.nerospace.gallery.label.launch_controller"));
 
-        source.sendSuccess(() -> Component.literal("Built the Nerospace gallery: "
-                + blocks.size() + " blocks, 4 RUNNING machine clusters (grinder line, fuel refinery "
-                + "line, oxygen generator + lever, terraformer crew + lever — flip a lever to start "
-                + "those two), 4 live pipe scenarios (energy/fluid/gas/items), all 4 suit variants, "
-                + "a loaded Star Guide pedestal, all 4 rocket tiers on their distinct pads (single, "
-                + "3x3, walled ring, Heavy Launch Complex w/ animated gantry) with full fuel + oxygen "
-                + "tanks, a live rocket-O2 fuelling line and a travel-node pad, 8 creatures (frozen for clean shots), "
-                + "a meteor crash site (crater + loot core + hovering meteor), live quarry build "
-                + "displays for 3 miner tiers, and the solar arrays "
-                + "(T1/T2/T3 single units + a seam-joined field per tier + a cabled hookup showing "
-                + "the power connector)."), false);
+        source.sendSuccess(() -> Component.translatable("command.nerospace.gallery.built", blocks.size()), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -605,11 +597,11 @@ public final class NerospaceCommands {
     private static int clearGallery(CommandSourceStack source) {
         ServerPlayer player = source.getPlayer();
         if (player == null) {
-            source.sendFailure(Component.literal("Run this as a player."));
+            source.sendFailure(Component.translatable("command.nerospace.player_only"));
             return 0;
         }
         if (!player.getAbilities().instabuild) {
-            source.sendFailure(Component.literal("The Nerospace gallery is creative-only."));
+            source.sendFailure(Component.translatable("command.nerospace.gallery.creative_only"));
             return 0;
         }
         ServerLevel level = player.level();
@@ -652,8 +644,8 @@ public final class NerospaceCommands {
 
         int clearedBlocks = cleared;
         int removedEntities = removed;
-        source.sendSuccess(() -> Component.literal("Cleared the Nerospace gallery: " + clearedBlocks
-                + " blocks → air, " + removedEntities + " entities removed."), false);
+        source.sendSuccess(() -> Component.translatable("command.nerospace.gallery.cleared",
+                clearedBlocks, removedEntities), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -855,11 +847,11 @@ public final class NerospaceCommands {
         }
 
         spawnLabelStand(level, new BlockPos(ax + 1, fy + 6, az + 1),
-                Component.literal("Cargo Pad A — loaded + fuelled; open it and press Launch"));
+                Component.translatable("command.nerospace.gallery.label.cargo_pad_a"));
         spawnLabelStand(level, new BlockPos(bx + 1, fy + 5, az + 1),
-                Component.literal("Cargo Pad B — destination; pipe pulls the delivery into the chest"));
+                Component.translatable("command.nerospace.gallery.label.cargo_pad_b"));
         spawnLabelStand(level, new BlockPos(ax + 8, fy + 4, az + 1),
-                Component.literal("Freight — uncrewed cargo rockets between pads and stations (1.3.0)"));
+                Component.translatable("command.nerospace.gallery.label.freight"));
     }
 
     private static void fillPad(ServerLevel level, BlockPos corner, int size, BlockState pad) {

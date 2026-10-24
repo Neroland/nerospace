@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.rocket;
 
 import java.util.List;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
@@ -112,6 +113,38 @@ public final class Destinations {
             return "Glacira";
         }
         return "Unknown";
+    }
+
+    /**
+     * Localised player-facing name ({@code destination.nerospace.<id>}). {@link #name} stays the stable
+     * English id for logs, telemetry breadcrumbs, the public route API and network payloads.
+     */
+    public static Component displayName(ResourceKey<Level> key) {
+        return Component.translatable("destination.nerospace." + langId(key));
+    }
+
+    /** Localised short label for the cramped destination node buttons. */
+    public static Component shortDisplayName(ResourceKey<Level> key) {
+        return Component.translatable("destination.nerospace." + langId(key) + ".short");
+    }
+
+    private static String langId(ResourceKey<Level> key) {
+        if (key.equals(Level.OVERWORLD)) {
+            return "home";
+        }
+        if (key.equals(ModDimensions.STATION_LEVEL)) {
+            return "station";
+        }
+        if (key.equals(ModDimensions.GREENXERTZ_LEVEL)) {
+            return "greenxertz";
+        }
+        if (key.equals(ModDimensions.CINDARA_LEVEL)) {
+            return "cindara";
+        }
+        if (key.equals(ModDimensions.GLACIRA_LEVEL)) {
+            return "glacira";
+        }
+        return "unknown";
     }
 
     private static int firstAvailable(int mask) {

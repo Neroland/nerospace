@@ -25,7 +25,6 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
     private static final int INK = 0xFF05080D;
     private static final int SOCKET = 0xFF141A24;
 
-    private static final String[] FACE_NAMES = {"Down", "Up", "North", "South", "West", "East"};
 
     public PipeConfigScreen(PipeConfigMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, 176, 240);
@@ -39,7 +38,7 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
         super.init();
         // Layer cycler.
         this.addRenderableWidget(new SpaceButton(this.leftPos + 100, this.topPos + 16, 68, 14,
-                Component.literal("Layer ▸"), ACCENT, b -> sendButton(PipeConfigMenu.BUTTON_CYCLE_TYPE)));
+                Component.translatable("gui.nerospace.pipe_config.cycle_layer"), ACCENT, b -> sendButton(PipeConfigMenu.BUTTON_CYCLE_TYPE)));
         // One mode cycler per face, aligned with its row.
         for (int i = 0; i < 6; i++) {
             final int face = i;
@@ -72,7 +71,7 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
         super.extractContents(extractor, mouseX, mouseY, partialTick);
 
         // Selected layer.
-        extractor.text(this.font, Component.literal("Layer: ").append(this.menu.getSelectedType().label()),
+        extractor.text(this.font, Component.translatable("gui.nerospace.pipe_config.layer", this.menu.getSelectedType().label()),
                 this.leftPos + 8, this.topPos + 19, TITLE, false);
         // Per-face rows: colour chip (matches the in-world Configurator shading) + face + mode.
         for (int i = 0; i < 6; i++) {
@@ -81,7 +80,8 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
             extractor.fill(this.leftPos + 8, rowY + 4, this.leftPos + 16, rowY + 12, INK);
             extractor.fill(this.leftPos + 9, rowY + 5, this.leftPos + 15, rowY + 11, chip);
             Component mode = Component.translatable("pipe.nerospace.mode." + this.menu.getFaceMode(i).getSerializedName());
-            Component line = Component.literal(FACE_NAMES[i] + ": ").append(mode);
+            Component line = Component.translatable("gui.nerospace.pipe_config.face_row",
+                    Component.translatable("pipe.nerospace.face." + Direction.from3DDataValue(i).getSerializedName()), mode);
             extractor.text(this.font, line, this.leftPos + 20, rowY + 4, SUBTLE, false);
         }
     }

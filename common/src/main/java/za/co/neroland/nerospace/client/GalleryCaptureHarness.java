@@ -170,14 +170,14 @@ public final class GalleryCaptureHarness {
             return 0;
         }
         if (running) {
-            mc.player.sendSystemMessage(Component.literal("Gallery capture already running."));
+            mc.player.sendSystemMessage(Component.translatable("message.nerospace.capture.already_running"));
             return 0;
         }
         QUEUE.clear();
         QUEUE.addAll(galleryQueue(time));
         begin(mc);
-        mc.player.sendSystemMessage(Component.literal("Gallery capture: rebuilding scene, time=" + time + ", "
-                + QUEUE.size() + " shots → screenshots/nerospace/ (overlays hidden)."));
+        mc.player.sendSystemMessage(Component.translatable("message.nerospace.capture.gallery_started",
+                time, QUEUE.size()));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -187,14 +187,14 @@ public final class GalleryCaptureHarness {
             return 0;
         }
         if (running) {
-            mc.player.sendSystemMessage(Component.literal("Capture already running."));
+            mc.player.sendSystemMessage(Component.translatable("message.nerospace.capture.busy"));
             return 0;
         }
         QUEUE.clear();
         QUEUE.addAll(buildPlanetShots(time));
         begin(mc);
-        mc.player.sendSystemMessage(Component.literal("Planet capture: " + QUEUE.size()
-                + " self-contained scenes across dimensions, time=" + time + " → screenshots/nerospace/."));
+        mc.player.sendSystemMessage(Component.translatable("message.nerospace.capture.planets_started",
+                QUEUE.size(), time));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -204,15 +204,15 @@ public final class GalleryCaptureHarness {
             return 0;
         }
         if (running) {
-            mc.player.sendSystemMessage(Component.literal("Capture already running."));
+            mc.player.sendSystemMessage(Component.translatable("message.nerospace.capture.busy"));
             return 0;
         }
         QUEUE.clear();
         QUEUE.addAll(galleryQueue(time));
         QUEUE.addAll(buildPlanetShots(time));
         begin(mc);
-        mc.player.sendSystemMessage(Component.literal("Full capture: " + QUEUE.size()
-                + " shots (gallery + planets), time=" + time + " → screenshots/nerospace/."));
+        mc.player.sendSystemMessage(Component.translatable("message.nerospace.capture.all_started",
+                QUEUE.size(), time));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -399,7 +399,7 @@ public final class GalleryCaptureHarness {
         RenderTarget target = mainRenderTarget(mc);
         if (target == null) {
             if (mc.player != null) {
-                mc.player.sendSystemMessage(Component.literal("Capture: could not resolve the render target."));
+                mc.player.sendSystemMessage(Component.translatable("message.nerospace.capture.no_target"));
             }
             return;
         }
@@ -422,7 +422,7 @@ public final class GalleryCaptureHarness {
         current = null;
         QUEUE.clear();
         if (mc.player != null) {
-            mc.player.sendSystemMessage(Component.literal("Capture done — see screenshots/nerospace/."));
+            mc.player.sendSystemMessage(Component.translatable("message.nerospace.capture.done"));
         }
     }
 

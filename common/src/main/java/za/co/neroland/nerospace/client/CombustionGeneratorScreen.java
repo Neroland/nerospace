@@ -40,7 +40,7 @@ public class CombustionGeneratorScreen extends TexturedContainerScreen<Combustio
         int max = this.menu.capacity();
         int pct = max == 0 ? 0 : energy * 100 / max;
         float frac = max == 0 ? 0f : (float) energy / max;
-        label(g, Component.literal("Power: " + pct + "%"), 8, 20, 0xFFFFE0B0);
+        label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 20, 0xFFFFE0B0);
         segGauge(g, 8, 31, 160, 6, frac, ACCENT);
     }
 

@@ -139,7 +139,7 @@ public class CargoPadScreen extends TexturedContainerScreen<CargoPadMenu> {
         this.intervalDown.visible = interval;
         this.intervalUp.visible = interval;
         if (interval) {
-            labelCentered(g, Component.literal(this.menu.intervalMinutes() + "m"), 128, 28, ROW_SCHEDULE + 2, SUBTLE);
+            labelCentered(g, Component.translatable("gui.nerospace.cargo_pad.interval", this.menu.intervalMinutes()), 128, 28, ROW_SCHEDULE + 2, SUBTLE);
         }
 
         // --- Fuel row --------------------------------------------------------------------

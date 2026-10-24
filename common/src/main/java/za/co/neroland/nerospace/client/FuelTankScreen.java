@@ -42,7 +42,7 @@ public class FuelTankScreen extends TexturedContainerScreen<FuelTankMenu> {
         int pct = this.menu.getFuelPercent();
         float frac = pct / 100f;
 
-        label(g, Component.literal("Fuel: " + pct + "%"), 8, 20, 0xFFFFD9A0);
+        label(g, Component.translatable("gui.nerospace.fuel_tank.fuel", pct), 8, 20, 0xFFFFD9A0);
         fluidGauge(g, 8, 31, 160, 12, frac, ACCENT);
         label(g, Component.literal(this.menu.getFuel() + " / " + this.menu.getCapacity() + " mB"), 8, 50, 0xFFB9C6D4);
     }

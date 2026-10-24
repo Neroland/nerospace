@@ -55,7 +55,7 @@ public class NerosiumGrinderScreen extends TexturedContainerScreen<NerosiumGrind
         int max = this.menu.capacity();
         int pct = max == 0 ? 0 : energy * 100 / max;
         float frac = max == 0 ? 0f : (float) energy / max;
-        label(g, Component.literal("Power: " + pct + "%"), 8, 18, 0xFFE9C2DC);
+        label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 18, 0xFFE9C2DC);
         segGauge(g, 8, 28, 160, 4, frac, ACCENT);
 
         int maxProg = this.menu.maxProgress();
