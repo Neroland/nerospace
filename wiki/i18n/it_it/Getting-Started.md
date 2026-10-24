@@ -1,8 +1,7 @@
 # Per iniziare
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Getting-Started.md).
-
-Sei nuovo di Nerospace? Segui questi passi in ordine. Ogni passo ti dice cosa procurarti e cosa costruire dopo. Fai clic su un link qualsiasi per la pagina completa.
+Sei nuovo di Nerospace? Segui questi passi in ordine. Ogni passo ti dice cosa procurarti e cosa costruire dopo.
+Fai clic su un link qualsiasi per la pagina completa.
 
 > **Consiglio:** fabbrica il prima possibile un **[Libro della Guida stellare](Star-Guide.md)** (Libro + Nerosium grezzo, oppure Libro + un blocco di Minerale di Nerosium). È questa guida dentro il gioco e mostra sempre il tuo prossimo passo.
 
@@ -31,12 +30,14 @@ Le macchine non producono energia da sole. Prima ti serve un generatore.
 - **[Generatore a combustione](Combustion-Generator.md):** 7 lingotti di Nerosteel + fornace + redstone. Brucia carbone.
 - **[Generatore passivo](Passive-Generator.md):** 7 lingotti di Nerosteel + Blocco di Nerosium + redstone. Brucia un Nerosium grezzo per 20 minuti.
 
-Piazza il generatore **a contatto** con la macchina. Invia energia da solo, senza bisogno di cavi. Leggi **[Alimentare le macchine](Powering-Machines.md)** se una macchina mostra lo 0% di energia.
+Piazza il generatore **a contatto** con la macchina. Invia energia da solo, senza bisogno di cavi.
+Leggi **[Alimentare le macchine](Powering-Machines.md)** se una macchina mostra lo 0% di energia.
 
 ## Passo 4: costruisci un Macinatore di Nerosium
 
 - **Ricetta:** 5 lingotti di Nerosium + fornace + 3 pietrisco.
-- Metti dentro Nerosium grezzo → ottieni **2 Polvere di Nerosium**. Fondi ogni polvere in un lingotto. Sono il **doppio** dei lingotti rispetto a fondere il grezzo.
+- Metti dentro Nerosium grezzo → ottieni **2 Polvere di Nerosium**. Fondi ogni polvere in un lingotto.
+  Sono il **doppio** dei lingotti rispetto a fondere il grezzo.
 - Mettigli accanto un generatore, altrimenti resterà allo **0% di energia**.
 
 Vedi **[Macinatore di Nerosium](Nerosium-Grinder.md)**.
@@ -45,7 +46,8 @@ Vedi **[Macinatore di Nerosium](Nerosium-Grinder.md)**.
 
 Ogni ricetta del carburante richiede **polvere di blaze**, quindi prima vai nel Nether a procurarti qualche verga di blaze.
 
-- **Metodo facile:** fabbrica **Taniche di carburante per razzi**: polvere di blaze + carbone + lingotto di ferro danno 2 taniche. Ogni tanica contiene 1.000 mB di carburante.
+- **Metodo facile:** fabbrica **Taniche di carburante per razzi**: polvere di blaze + carbone + lingotto di ferro danno 2 taniche.
+  Ogni tanica contiene 1.000 mB di carburante.
 - **Metodo con macchina:** una **[Raffineria di carburante](Fuel-Refinery.md)** trasforma 1 carbone + 1 polvere di blaze in 2.000 mB di carburante. Conservalo in un **[Serbatoio di carburante](Fuel-Tank.md)**.
 
 ## Passo 6: costruisci un razzo e una rampa di lancio
@@ -66,12 +68,12 @@ Ogni luogo in cui puoi volare è **privo d'aria**. Senza tuta finisci l'aria in 
 
 ## Passo 8: vola nello spazio
 
-| Razzo | Rampa necessaria | Dove può andare | Novità sul posto |
-| --- | --- | --- | --- |
-| Livello 1 | 1 blocco di rampa | Stazione orbitale | Una base sicura nello spazio |
-| Livello 2 | Rampa 3×3 completa | + **Greenxertz** | Tanto Nerosteel, **quarzo Xertz**, villaggi alieni |
-| Livello 3 | Rampa 3×3 con un anello di Parete della stazione | + **Cindara** | **Cindrite** (caldissimo: porta una Tuta termica) |
-| Livello 4 | Complesso di lancio pesante (con una [Torre di lancio](Launch-Gantry.md)) | + **Glacira** | **Glacite** (freddissimo: porta una Tuta criogenica) |
+| Rocket    | Pad you need                                                                                 | Dove può andare   | Novità sul posto                                                                        |
+| --------- | -------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------- |
+| Livello 1 | 1 blocco di rampa                                                                            | Stazione orbitale | Una base sicura nello spazio                                                            |
+| Livello 2 | Rampa 3×3 completa                                                                           | + **Greenxertz**  | Tanto Nerosteel, **quarzo Xertz**, villaggi alieni                                      |
+| Livello 3 | Rampa 3×3 con un anello di Parete della stazione                                             | + **Cindara**     | **Cindrite** (caldissimo: porta una Tuta termica)    |
+| Livello 4 | Complesso di lancio pesante (con una [Torre di lancio](Launch-Gantry.md)) | + **Glacira**     | **Glacite** (freddissimo: porta una Tuta criogenica) |
 
 Ogni nuovo razzo si fabbrica a partire da quello precedente. La Stazione orbitale ha già una rampa 3×3, quindi da lì puoi lanciare un razzo di livello 2.
 
@@ -86,9 +88,10 @@ Ogni nuovo razzo si fabbrica a partire da quello precedente. La Stazione orbital
 
 - **[Carta della stazione](Station-Charter.md)**: costruisci le tue stazioni spaziali.
 - **[Piattaforma cargo](Cargo-Pad.md) e [Razzo cargo](Cargo-Rocket.md)**: invia oggetti tra le basi in automatico.
-- **[Terraformatore](Terraformer.md)**: trasforma un pianeta morto in terra verde con aria, acqua e animali. Ti serve la Glacite per l'acqua, quindi raggiungi prima Glacira.
+- **[Terraformatore](Terraformer.md)**: trasforma un pianeta morto in terra verde con aria, acqua e animali.
+  Ti serve la Glacite per l'acqua, quindi raggiungi prima Glacira.
 
-## Bloccato?
+## Stuck?
 
 - **Macchina allo 0% di energia** → [Alimentare le macchine](Powering-Machines.md).
 - **Hai ottenuto blocchi di minerale invece dei materiali grezzi** → il tuo piccone ha Tocco di velluto. Fondi il blocco o macinalo.
