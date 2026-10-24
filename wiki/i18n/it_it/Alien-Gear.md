@@ -1,7 +1,5 @@
 # Equipaggiamento alieno
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Alien-Gear.md).
-
 L'equipaggiamento esclusivo dell'Artefice: oggetti potenti che solo i villici alieni più fidati sono disposti a cederti.
 
 ## Panoramica
@@ -20,7 +18,8 @@ Mentre li **porti nell'inventario**, la tecnologia gravitazionale aliena attutis
 
 `nerospace:xertz_resonator`
 
-**Fai clic destro** per sondare la pietra circostante: indica quanti **blocchi di minerale** si trovano entro 8 blocchi. Corrisponde al tag comune `c:ores`, quindi trova i minerali di **qualsiasi mod**: un aiuto alla prospezione tra mod diverse.
+**Fai clic destro** per sondare la pietra circostante: indica quanti **blocchi di minerale** si trovano entro 8 blocchi.
+Corrisponde al tag comune `c:ores`, quindi trova i minerali di **qualsiasi mod**: un aiuto alla prospezione tra mod diverse.
 
 **Come ottenerlo:** scambio al livello di fiducia 4 (16 smeraldi), oppure bottino della camera blindata della fortezza della Megalopoli.
 
