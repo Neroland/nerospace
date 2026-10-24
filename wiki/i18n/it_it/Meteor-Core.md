@@ -1,9 +1,8 @@
 # Nucleo di meteora
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Meteor-Core.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/meteor_core.png" alt="Meteor Core" width="150" align="right"></p>
+
+<p align="right"><img src="images/meteor_core.png" alt="Meteor Core" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Il blocco luminoso al centro di un cratere: lo «scrigno» del bottino della meteora.
@@ -12,7 +11,7 @@ Il blocco luminoso al centro di un cratere: lo «scrigno» del bottino della met
 
 Ogni meteora caduta colloca un Nucleo di meteora sul fondo del suo cratere (vedi **[Eventi meteora](Meteor-Events.md)**). Contiene il bottino casuale della meteora, estratto **una sola volta** all'impatto e poi fissato, così il contenuto è identico per chiunque lo raggiunga.
 
-## Come ottenerlo
+## Obtaining
 
 **Non fabbricabile.** Un Nucleo di meteora viene piazzato dall'impatto di una meteora. **Rompilo per ottenere il bottino** (rompi e raccogli): le pile memorizzate si spargono dove si trovava: una manciata di **Frammenti alieni** più estrazioni bonus ponderate di minerali grezzi e dei più rari **Rottami di tecnologia aliena** / **Nucleo alieno**.
 
