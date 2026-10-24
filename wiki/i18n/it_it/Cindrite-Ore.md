@@ -1,9 +1,8 @@
 # Minerale di Cindrite
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Cindrite-Ore.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/cindrite_ore.png" alt="Cindrite Ore" width="150" align="right"></p>
+
+<p align="right"><img src="images/cindrite_ore.png" alt="Cindrite Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Il cristallo simbolo della luna vulcanica **Cindara**.
@@ -12,7 +11,7 @@ Il cristallo simbolo della luna vulcanica **Cindara**.
 
 La Cindrite è una gemma luminosa color brace che si trova solo su Cindara. È più rara dei minerali di Greenxertz e si trova più in profondità: la ricompensa per un viaggio nel mondo più ostile della mod.
 
-## Come ottenerlo
+## Obtaining
 
 - **Estrazione:** richiede un **piccone di livello ferro** o migliore. Lascia cadere direttamente la gemma di **Cindrite**
 
