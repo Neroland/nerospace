@@ -1,8 +1,6 @@
 # Batteria
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Battery.md).
-
-> **Spostata in Neroland Core.** La Batteria ora è inclusa nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:battery`**, così ogni mod Neroland usa un unico insieme di blocchi di stoccaggio. Si fabbrica e si usa esattamente come prima: vedi la **wiki di Neroland Core** (pagina *Battery*) per tutti i dettagli.
+> **Spostata in Neroland Core.** La Batteria ora è inclusa nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:battery`**, così ogni mod Neroland usa un unico insieme di blocchi di stoccaggio. Si fabbrica e si usa esattamente come prima: vedi la **wiki di Neroland Core** (pagina _Battery_) per tutti i dettagli.
 
 Un accumulatore passivo di **energia Nero** che fa da riserva alla tua rete: i generatori la caricano e le macchine la scaricano, su ogni lato. La variante **Batteria creativa** è una sorgente/pozzo infinita per i test.
 
