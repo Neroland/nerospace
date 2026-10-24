@@ -1,7 +1,5 @@
 # Backup dei dati salvati
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Saved-Data-Backups.md).
-
 Nerospace conserva lo stato del mondo (fonti di ossigeno, avanzamento dei terraformatori, siti delle meteore, i registri delle [rampe di lancio](Rocket-Launch-Pad.md) e delle [stazioni](Station-Charter.md) e il registro delle [rotte cargo](Cargo-Pad.md), cioè piattaforme, rotte e voli in corso) nei file dei dati salvati del mondo, accanto a quelli del gioco base. A partire dalle versioni successive alla 1.0.0, la mod protegge questo stato anche dai problemi del disco.
 
 ## Cosa fa
