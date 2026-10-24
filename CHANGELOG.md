@@ -7,6 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Compatibility
+
+- **2.0.0 is a content release, not a breaking one: existing worlds keep working.** Every block, item,
+  dimension and saved-data id from 1.6.0 keeps its id; saved stations, pads, rockets, terraformers,
+  oxygen fields, routes, Star Guide progress and config files load unchanged. Chunks already generated
+  on Greenxertz, Cindara and Glacira keep their terrain; only newly generated chunks use the new
+  worldgen, so a visible seam between old and new terrain is expected. Back up your world before
+  upgrading, as always.
+- Planet API stays compatible: `PlanetTraits` keeps its 1.x constructor and every 1.x accessor
+  (`planet`, `defaultGravity`, `airless`, `hazard`) and only gains new components; `Hazard` gains
+  `RADIATION` at the end; `NerospacePlanets.all()` keeps the 1.x order and appends the new worlds. Mods that
+  switch on a hazard name should treat unknown names as "no hazard".
+- Rocket destination numbers are append-only (the Moon, Mars and Nyxara take 5, 6 and 7), every rocket tier
+  keeps its 1.x destinations and its 1.x default selection, and a rocket saved mid-flight still lands where
+  it was going.
+- All 24 existing config keys keep their names and defaults; new keys are added with safe defaults.
+- New saved data (`nerospace:planet_clock`, `nerospace:planet_weather`) is per planet, holds no player
+  data, and starts fresh on an upgraded world.
+
+### Added
+
+- **Seven worlds in one planet registry.** The Moon, Mars and Nyxara join Greenxertz, Cindara, Glacira and
+  the orbital station as planet definitions (their worlds arrive in a later 2.0 build; until a world exists
+  on the server it is hidden from rockets, the Launch Controller and commands). Gravity, hazards, terraform
+  results, villagers, quarry speed and meteor showers now read from each planet's definition instead of
+  hard-coded lists — the three existing planets and the station behave exactly as before.
+- **Planet traits.** `PlanetTraits` adds archetype, temperature band, radiation, day length, sky profile,
+  terraform target, villager culture and colony profile; `NerospacePlanets.hazardAt(level, pos)` gives the
+  hazard at an exact spot (biomes and weather can differ from the planet's main hazard).
+- **Planet clocks.** Every planet has its own day: the Moon about 28 days, Mars a 24.6-hour sol, Cindara
+  two days with an eclipse, Glacira three days with long twilights, the station and Nyxara fixed.
+  Greenxertz keeps its real day (beds, raids and `/time` work as before). Clocks are visual and mechanical
+  only — they never change block or sky light. Operators: `/nerospace clock <planet> [get|set <phase>|freeze|thaw]`.
+- **Planet weather.** Spore blooms on Greenxertz (nausea outside a sealed suit or oxygen field), dust storms
+  on Mars (radiation outdoors, dimmer sun), ash fall on Cindara, diamond dust on Glacira and flares on Nyxara;
+  the Moon and the station stay clear. Server-decided and synced to clients for display. Operators:
+  `/nerospace weather <planet> [get|start [intensity]|clear]`. Config: `weather.enabled`,
+  `weather.frequencyMultiplier`, `weather.durationMultiplier`, `weather.particleBudget` and
+  `weather.<planet>.enabled`. Clocks and weather keep running on loaded planets with nobody there, so
+  unattended machines see the same sky as visitors.
+- **Sky profiles.** Planet skies are now described by `assets/nerospace/sky/<planet>.json` and drawn by one
+  data-driven renderer. This build ships placeholder profiles, so every sky looks exactly as before.
+- **Server caps for the new planet blocks.** `blocks.sporeMossCap`, `blocks.shadowLichenCap`,
+  `blocks.regolithDriftCap`, `blocks.ashLayerCap`, `blocks.frostCrystalCap`, `blocks.dawnbandCap`,
+  `blocks.gravityOverrideCap` and `blocks.methaneChainCap` let a server lower (never raise) the per-chunk limits
+  on spreading, drifting, growing and exploding blocks. The blocks themselves arrive with their planets.
+- **New block tags for datapacks:** `nerospace:airtight` (a sealing hull the oxygen field always respects),
+  `nerospace:lightning_safe`, `nerospace:hydration_immune`, `nerospace:xertz_rootable`,
+  `nerospace:beam_refractors` and `nerospace:lava_immune`. Mods that build beams can use the new
+  `api.optics.BeamRefraction` helper.
+
+### Changed
+
+- **Solar panels on planets follow the planet's day.** A panel peaks at that planet's noon, dips at night and
+  in a Mars dust storm, and over a full day gives at least the old constant double rate on every planet
+  (peaks are higher to make up for the nights). The station stays a constant double rate. Set
+  `solar.clockDriven=false` to restore the old constant output.
+- The gallery backdrop dimension and the orbital station no longer count as planet surfaces for meteor
+  material weighting.
+
 ### Fixed
 
 - Crafting recipes now unlock in the recipe book the first time a player picks up one of their ingredients (92 recipe-unlock advancements, generated by `tools/gen_recipe_unlocks.py`; run it again after adding a recipe, `--check` verifies).

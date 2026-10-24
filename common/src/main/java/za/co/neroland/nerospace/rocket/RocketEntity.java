@@ -359,7 +359,9 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /** Bitmask of global destinations currently available to this rocket. */
     public int destinationMask() {
-        int mask = Destinations.availableMask(getTier(), level().dimension());
+        // Planets whose dimension is absent on this server are hidden (server-side; the client reads the synced mask).
+        int mask = Destinations.availableMask(getTier(), level().dimension(),
+                level() instanceof ServerLevel serverLevel ? serverLevel.getServer() : null);
         // Same-dimension hops: allow the current dimension as a destination when it has registered pads.
         if (level() instanceof ServerLevel server) {
             int self = Destinations.indexOf(level().dimension());
@@ -716,6 +718,16 @@ public class RocketEntity extends Entity implements MenuProvider {
             }
             return;
         }
+        // Core progression gate read at LAUNCH (never at load): Nyxara needs deep_space open for the pilot.
+        if (this.getFirstPassenger() instanceof ServerPlayer gated) {
+            var gatedPlanet = za.co.neroland.nerospace.world.planet.Planets.get(selectedDestination());
+            if (gatedPlanet != null && gatedPlanet.coreGate().isPresent()
+                    && !za.co.neroland.nerolandcore.progression.ProgressionGates.isOpen(gated, gatedPlanet.coreGate().get())) {
+                gated.sendSystemMessage(Component.translatable("entity.nerospace.rocket.gate_locked",
+                        Destinations.displayName(gatedPlanet.dimension())));
+                return;
+            }
+        }
         // Optional NeroEconomy launch/docking fees — charged only now that every crewed check has passed.
         // No request key: a crewed launch has no flight id, and the charge is a single synchronous call.
         if (this.getFirstPassenger() instanceof ServerPlayer pilot && level() instanceof ServerLevel serverLevel) {
@@ -991,7 +1003,8 @@ public class RocketEntity extends Entity implements MenuProvider {
                 // Neroland Core progression (one-directional): a completed launch reaches orbit; arriving
                 // at a far planet is a deep-space milestone. tryOpen respects the gate `requires` chain.
                 za.co.neroland.nerospace.progression.StarGuideGrants.driveReachedOrbit(player);
-                if (targetKey.equals(ModDimensions.CINDARA_LEVEL) || targetKey.equals(ModDimensions.GLACIRA_LEVEL)) {
+                var arrivedPlanet = za.co.neroland.nerospace.world.planet.Planets.get(targetKey);
+                if (arrivedPlanet != null && arrivedPlanet.unlockTier() >= RocketTier.TIER_3.level()) {
                     za.co.neroland.nerospace.progression.StarGuideGrants.driveDeepSpace(player);
                 }
             }

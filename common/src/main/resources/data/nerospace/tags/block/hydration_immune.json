@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "nerospace:permafrost", "required": false}
+  ]
+}

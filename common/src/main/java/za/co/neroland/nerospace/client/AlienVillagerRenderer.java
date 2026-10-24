@@ -53,6 +53,8 @@ public class AlienVillagerRenderer
         return switch (state.planet) {
             case CINDARA -> CINDARA;
             case GLACIRA -> GLACIRA;
+            // No Duskborn skin until the art pass; the base skin keeps the entity renderable.
+            case NYXARA -> BASE;
             case GREENXERTZ -> (state.biomeId != null && state.biomeId.contains("meadow")) ? MEADOW : BASE;
         };
     }

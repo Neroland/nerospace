@@ -8,10 +8,12 @@ package za.co.neroland.nerospace.api;
  * ones will not be removed or renamed.</p>
  */
 public enum Hazard {
-    /** No environmental hazard (Greenxertz, the orbital station, and any non-Nerospace dimension). */
+    /** No environmental hazard (Greenxertz, the Moon, the orbital station, and any non-Nerospace dimension). */
     NONE,
     /** Extreme heat (Cindara). Countered by a full Heat suit variant. */
     HEAT,
-    /** Extreme cold (Glacira). Countered by a full Cryo suit variant. */
-    COLD
+    /** Extreme cold (Glacira, Mars). Countered by a full Cryo suit variant. */
+    COLD,
+    /** Ionising radiation (Nyxara, and Mars during a dust storm). Countered by a Rad Lining suit upgrade. */
+    RADIATION
 }

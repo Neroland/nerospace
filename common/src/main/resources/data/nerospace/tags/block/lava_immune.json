@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "nerospace:magma_glass", "required": false}
+  ]
+}

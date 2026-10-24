@@ -3,7 +3,8 @@ package za.co.neroland.nerospace.machine.quarry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
-import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
  * Quarry progression tiers. A tier gates the largest square the quarry may claim ({@link #maxAreaSide}),
@@ -56,13 +57,8 @@ public enum MinerTier {
     }
 
     public static int requiredTier(ResourceKey<Level> dimension) {
-        if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
-            return 3;
-        }
-        if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
-            return 2;
-        }
-        return 1;
+        PlanetDefinition planet = Planets.get(dimension);
+        return planet == null ? 1 : planet.minerTier();
     }
 
     public static MinerTier byOrdinal(int ordinal) {

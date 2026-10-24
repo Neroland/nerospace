@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "nerospace:hull_plating", "required": false},
+    {"id": "nerospace:hull_window", "required": false}
+  ]
+}

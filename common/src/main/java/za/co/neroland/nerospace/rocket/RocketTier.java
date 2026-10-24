@@ -12,11 +12,12 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  * Rocket progression tiers. Each tier defines its fuel tank capacity, the fuel burned per launch
  * (both in millibuckets), and the ordered list of destinations it can reach. Destinations are
  * cumulative: a higher tier can still fly to every lower-tier destination, and the player picks the
- * target in the in-rocket UI. The tier's <em>signature</em> destination (the newest one it unlocks)
- * is the last entry and the default selection.
+ * target in the in-rocket UI. The tier's <em>signature</em> destination is pinned explicitly (it is the
+ * default selection, and is the 1.x default for every tier — appending a destination never moves it).
  *
- * <p><b>Destination progression:</b> Tier 1 reaches the Orbital Station; Tier 2 adds Greenxertz;
- * Tier 3 adds Cindara; Tier 4 adds Glacira.</p>
+ * <p><b>Destination progression:</b> Tier 1 reaches the Orbital Station and the Moon; Tier 2 adds
+ * Greenxertz and Mars; Tier 3 adds Cindara; Tier 4 adds Glacira and Nyxara. Lists are append-only per tier
+ * (pre-global rocket saves index into them).</p>
  *
  * <p><b>Launch-pad progression</b> (the footprint a rocket of this tier must stand on — a higher pad
  * always satisfies a lower-tier rocket, see {@link LaunchPadMultiblock#padTier}):</p>
@@ -32,23 +33,28 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  */
 public enum RocketTier {
 
-    TIER_1(1, 3_000, 1_000, 2_000, 4_000, List.of(ModDimensions.STATION_LEVEL)),
-    TIER_2(2, 6_000, 2_000, 4_000, 8_000, List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL)),
-    TIER_3(3, 12_000, 4_000, 8_000, 16_000, List.of(
+    // Persisted by ORDINAL: never reorder. Destination lists: 1.x prefix unchanged, 2.0 entries appended.
+    TIER_1(1, 3_000, 1_000, 2_000, 4_000, ModDimensions.STATION_LEVEL,
+            List.of(ModDimensions.STATION_LEVEL, ModDimensions.LUNA_LEVEL)),
+    TIER_2(2, 6_000, 2_000, 4_000, 8_000, ModDimensions.GREENXERTZ_LEVEL,
+            List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.MARS_LEVEL)),
+    TIER_3(3, 12_000, 4_000, 8_000, 16_000, ModDimensions.CINDARA_LEVEL, List.of(
             ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL)),
-    TIER_4(4, 24_000, 8_000, 16_000, 30_000, List.of(
+    TIER_4(4, 24_000, 8_000, 16_000, 30_000, ModDimensions.GLACIRA_LEVEL, List.of(
             ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
-            ModDimensions.GLACIRA_LEVEL));
+            ModDimensions.GLACIRA_LEVEL, ModDimensions.NYXARA_LEVEL));
 
     private final int level;
     private final int fuelCapacity;
     private final int fuelPerLaunch;
     private final int oxygenCapacity;
     private final int powerCapacity;
+    private final ResourceKey<Level> signature;
     private final List<ResourceKey<Level>> destinations;
 
     RocketTier(int level, int fuelCapacity, int fuelPerLaunch, int oxygenCapacity, int powerCapacity,
-            List<ResourceKey<Level>> destinations) {
+            ResourceKey<Level> signature, List<ResourceKey<Level>> destinations) {
+        this.signature = signature;
         this.level = level;
         this.fuelCapacity = fuelCapacity;
         this.fuelPerLaunch = fuelPerLaunch;
@@ -87,7 +93,7 @@ public enum RocketTier {
                 this.fuelCapacity);
     }
 
-    /** Ordered list of reachable destinations (lowest unlock first, signature destination last). */
+    /** Ordered list of reachable destinations (1.x entries first, 2.0 entries appended). */
     public List<ResourceKey<Level>> destinations() {
         return this.destinations;
     }
@@ -97,9 +103,14 @@ public enum RocketTier {
         return !this.destinations.isEmpty();
     }
 
-    /** Default selection: the tier's signature (newest) destination. */
+    /** The tier's signature destination: its default selection, pinned to the 1.x value. */
+    public ResourceKey<Level> signature() {
+        return this.signature;
+    }
+
+    /** Default selection: the index of the tier's {@link #signature()} in {@link #destinations()}. */
     public int defaultDestinationIndex() {
-        return Math.max(0, this.destinations.size() - 1);
+        return Math.max(0, this.destinations.indexOf(this.signature));
     }
 
     /** Safe destination lookup by index (clamped). */

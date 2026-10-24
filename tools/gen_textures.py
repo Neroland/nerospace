@@ -22,6 +22,7 @@ except ModuleNotFoundError:
     print("gen_textures: Pillow not installed; skipping texture generation (pip install pillow).")
     sys.exit(0)
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from nerospace_target import src_base, target_label
 
 # Target the root mod by default, or multiloader/common with --multiloader (NEROSPACE_TARGET=multiloader).
@@ -3128,3 +3129,11 @@ if __name__ == "__main__":
     gen_meteor_tracker()
     gen_meteor_caller()
     gen_falling_meteor_entity()
+    # Planets & stations rework (2.0.0): the per-planet texture families + id table live in
+    # tools/gen_planet_textures.py. Gated (ENABLED / --planets) until Stage 3 registers the ids;
+    # until then this call writes nothing. Additive-only like everything above.
+    try:
+        import gen_planet_textures
+        gen_planet_textures.write_all(BLOCK_DIR, ITEM_DIR)
+    except ImportError:
+        print("gen_textures: gen_planet_textures.py not found; planet families skipped.")

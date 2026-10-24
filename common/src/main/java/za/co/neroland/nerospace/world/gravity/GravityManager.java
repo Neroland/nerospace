@@ -1,7 +1,5 @@
 package za.co.neroland.nerospace.world.gravity;
 
-import java.util.Map;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
@@ -19,10 +17,12 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.Vec3;
 
+import za.co.neroland.nerospace.block.world.BlockGravityOverrides;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.platform.Services;
-import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModTags;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
  * Per-dimension / per-biome gravity (GRAVITY_DESIGN.md). Cross-loader server-side driver: each loader calls
@@ -32,7 +32,7 @@ import za.co.neroland.nerospace.registry.ModTags;
  *
  * <p><b>Resolution.</b> {@link #factorAt(ServerLevel, BlockPos)} resolves a gravity factor for a position:
  * a biome carrying a {@link ModTags.Biomes gravity tag} overrides its dimension's flat default; otherwise the
- * dimension default ({@link #DIMENSION_DEFAULTS}); otherwise {@code 1.0} (Earth-normal). The result is scaled
+ * dimension default (the planet's {@code defaultGravity} trait); otherwise {@code 1.0} (Earth-normal). The result is scaled
  * by the global {@link NerospaceConfig#gravityMultiplier()} balance knob. {@code 1.0} means "do nothing".</p>
  *
  * <p><b>Phase 1 — living entities.</b> Players and mobs are adjusted through the vanilla {@code GRAVITY}
@@ -47,12 +47,11 @@ public final class GravityManager {
     /** Stable id for the gravity attribute modifier (26.x uses {@link Identifier}, not ResourceLocation). */
     private static final Identifier MODIFIER_ID = Identifier.fromNamespaceAndPath("nerospace", "dimension_gravity");
 
-    /** Flat per-dimension gravity defaults (first-pass values; tuned during the Phase 4 playtest). */
-    private static final Map<ResourceKey<Level>, Double> DIMENSION_DEFAULTS = Map.of(
-            ModDimensions.GREENXERTZ_LEVEL, 0.6,
-            ModDimensions.CINDARA_LEVEL, 0.8,
-            ModDimensions.GLACIRA_LEVEL, 0.4,
-            ModDimensions.STATION_LEVEL, 0.1);   // orbital station = near-zero g
+    /** Flat per-dimension gravity default: the planet's {@code defaultGravity} trait, 1.0 off-planet. */
+    private static double dimensionDefault(ResourceKey<Level> dimension) {
+        PlanetDefinition planet = Planets.get(dimension);
+        return planet == null ? 1.0 : planet.traits().defaultGravity();
+    }
 
     /** Biome-tag override factors, checked most-specific first. */
     private static final double MICRO_FACTOR = 0.15;
@@ -75,6 +74,12 @@ public final class GravityManager {
      * gravity).
      */
     public static double factorAt(ServerLevel level, BlockPos pos) {
+        // Block overrides (decision 002 §10.4) come first: Gravity Plate beats Gravity Shard, then lowest factor.
+        // A Shard's negative factor is intentional (slow levitation), so the floor below does not apply to it.
+        double block = BlockGravityOverrides.factorAt(level, pos);
+        if (!Double.isNaN(block)) {
+            return block < 0.0 ? block : block * NerospaceConfig.gravityMultiplier();
+        }
         Holder<Biome> biome = level.getBiome(pos);
         double base;
         if (biome.is(ModTags.Biomes.GRAVITY_MICRO)) {
@@ -86,7 +91,7 @@ public final class GravityManager {
         } else if (isTerraformed(level, pos)) {
             base = NORMAL_FACTOR;
         } else {
-            base = DIMENSION_DEFAULTS.getOrDefault(level.dimension(), 1.0);
+            base = dimensionDefault(level.dimension());
         }
         return Math.max(0.0, base * NerospaceConfig.gravityMultiplier());
     }
@@ -112,7 +117,7 @@ public final class GravityManager {
      * {@link #factorAt(ServerLevel, BlockPos)}.
      */
     public static double defaultFactor(ResourceKey<Level> dimension) {
-        double base = DIMENSION_DEFAULTS.getOrDefault(dimension, 1.0);
+        double base = dimensionDefault(dimension);
         return Math.max(0.0, base * NerospaceConfig.gravityMultiplier());
     }
 
@@ -146,7 +151,7 @@ public final class GravityManager {
                     applyToLiving(living, factorAt(level, pos));
                 }
             }
-            if (DIMENSION_DEFAULTS.containsKey(level.dimension())) {
+            if (Planets.isPlanet(level.dimension())) {
                 for (Entity entity : level.getEntities(EntityTypeTest.forClass(Entity.class),
                         e -> !(e instanceof LivingEntity))) {
                     applyMotionCorrection(level, entity);

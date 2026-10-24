@@ -62,7 +62,7 @@ public final class OxygenHud {
         if (player == null || player.isSpectator() || player.getAbilities().instabuild) {
             return;
         }
-        if (!OxygenFieldEvents.FIELD_DIMENSIONS.contains(player.level().dimension())) {
+        if (!OxygenFieldEvents.isFieldDimension(player.level().dimension())) {
             return;
         }
         int max = player.getMaxAirSupply();
@@ -113,7 +113,12 @@ public final class OxygenHud {
         OxygenManager.HazardShield hazard = OxygenManager.hazardFor(player.level().dimension());
         if (hazard != OxygenManager.HazardShield.NONE && shield != hazard) {
             line -= 10;
-            g.text(mc.font, Component.translatable(hazard == OxygenManager.HazardShield.HEAT ? "hud.nerospace.hazard_heat" : "hud.nerospace.hazard_cold"),
+            String hazardKey = switch (hazard) {
+                case HEAT -> "hud.nerospace.hazard_heat";
+                case RADIATION -> "hud.nerospace.hazard_radiation";
+                default -> "hud.nerospace.hazard_cold";
+            };
+            g.text(mc.font, Component.translatable(hazardKey),
                     barX, line, LOW, true);
         }
     }

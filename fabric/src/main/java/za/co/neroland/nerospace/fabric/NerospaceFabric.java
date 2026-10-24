@@ -117,6 +117,8 @@ public final class NerospaceFabric implements ModInitializer {
             OxygenFieldEvents.tick(server);
             TerraformDrift.tick(server);
             GravityManager.tick(server);
+            // Planet clock + weather + client sync (one common entry point; see docs/MULTILOADER.md).
+            za.co.neroland.nerospace.world.planet.PlanetTicks.serverTick(server);
             za.co.neroland.nerospace.route.CargoFlights.tick(server);
             // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
             za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(server);

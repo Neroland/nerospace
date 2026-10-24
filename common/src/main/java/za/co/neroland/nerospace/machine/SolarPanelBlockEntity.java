@@ -1,7 +1,5 @@
 package za.co.neroland.nerospace.machine;
 
-import java.util.Set;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -24,7 +22,12 @@ import za.co.neroland.nerolandcore.sideconfig.SidePreset;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
-import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.config.NerospaceConfig;
+import za.co.neroland.nerospace.world.planet.PlanetClock;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.PlanetWeather;
+import za.co.neroland.nerospace.world.planet.Planets;
+import za.co.neroland.nerospace.world.planet.SolarMath;
 
 /**
  * One solar panel. Adjacent same-tier panels pool into a {@link SolarArray}: total storage and
@@ -35,16 +38,11 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  *
  * <p>Cross-loader port: rebuilt on the multiloader {@link EnergyBuffer} (the NeoForge transfer
  * {@code SimpleEnergyHandler} isn't ported); daylight uses vanilla {@code getSkyDarken} rather than the
- * NeoForge-only dimension clock, and the airless 2× bonus keys off {@link ModDimensions} (no
- * {@code ModDimensionTypes}). Every panel is a 1×1 self-anchor here; the N×N multiblock + sun-tracking
+ * NeoForge-only dimension clock. On a Nerospace planet (2.0) the panel follows the planet clock instead — see
+ * {@link #solarFactor}. Every panel is a 1×1 self-anchor here; the N×N multiblock + sun-tracking
  * renderer are a deferred enhancement.</p>
  */
 public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured {
-
-    /** The mod's airless planets/station — permanent sun, no weather (the solar 2× bonus). */
-    private static final Set<ResourceKey<Level>> AIRLESS = Set.of(
-            ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
-            ModDimensions.STATION_LEVEL, ModDimensions.GLACIRA_LEVEL);
 
     private final SolarTier tier;
     private final EnergyBuffer energy;
@@ -181,6 +179,28 @@ public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured
     }
 
     /**
+     * FE this unit adds this tick given a planet factor already computed once for the whole array this tick
+     * ({@link #planetFactor}); off-planet ({@code planetFactor < 0}) it falls back to the per-panel sky check.
+     */
+    public int generationThisTick(ServerLevel level, float planetFactor) {
+        float factor = planetFactor >= 0.0F ? planetFactor : solarFactor(level, this.worldPosition);
+        return Math.round(this.tier.fePerTick() * factor);
+    }
+
+    /**
+     * The planet solar factor for {@code level} this tick (the same for every panel on a planet: no roof check
+     * there), or {@code -1} off-planet where each panel needs its own sky view. Call once per array tick.
+     */
+    public static float planetFactor(ServerLevel level) {
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet == null || !planet.traits().airless()) {
+            return -1.0F;
+        }
+        return (float) SolarMath.factor(planet, PlanetClock.phase(level), PlanetWeather.solarFactor(level),
+                NerospaceConfig.solarClockDriven());
+    }
+
+    /**
      * Daylight factor in [0, 2]: a daylight curve (0 at night / when roofed over), and doubled in the
      * airless dimensions (permanent sun, no weather).
      *
@@ -189,14 +209,26 @@ public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured
      * daylight and ramps toward ~11 at night — and rises during rain/thunder, so weather is already
      * folded in (no separate multiplier needed).</p>
      */
-    /** True in the mod's airless dimensions (permanent sun, no weather) — drives the solar 2× bonus. */
+    /**
+     * True on a Nerospace planet (every one is airless): no roof or vanilla-weather check applies there, as in
+     * 1.x. Client-safe (the renderer uses it to pick its pose source).
+     */
     public static boolean isAirless(Level level) {
-        return AIRLESS.contains(level.dimension());
+        return isPlanet(level.dimension());
+    }
+
+    private static boolean isPlanet(ResourceKey<Level> dimension) {
+        PlanetDefinition planet = Planets.get(dimension);
+        return planet != null && planet.traits().airless();
     }
 
     private static float solarFactor(ServerLevel level, BlockPos pos) {
-        if (AIRLESS.contains(level.dimension())) {
-            return 2.0F; // permanent sun in orbit / on an airless moon, no weather — the 2x bonus
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet != null && planet.traits().airless()) {
+            // 2.0: follows the planet clock and weather, averaging at least the 1.x flat 2x over a day (the
+            // station stays a constant 2x). solar.clockDriven=false restores the flat 2x. No roof check, as in 1.x.
+            return (float) SolarMath.factor(planet, PlanetClock.phase(level), PlanetWeather.solarFactor(level),
+                    NerospaceConfig.solarClockDriven());
         }
         if (!level.canSeeSky(pos.above())) {
             return 0.0F; // roofed over — no sun reaches the panel

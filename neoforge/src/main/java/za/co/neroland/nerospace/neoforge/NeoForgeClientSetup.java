@@ -58,6 +58,8 @@ public final class NeoForgeClientSetup {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterFluidModels);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterEntityRenderers);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterGuiLayers);
+        // Planet sky: profile reload listener + (26.3) the custom skybox hook. Inert in Stage 1.
+        NeoForgeSky.init(modEventBus);
         // Suppress the vanilla air-bubble row on airless dimensions (the bespoke gauge is the readout there).
         NeoForge.EVENT_BUS.addListener(NeoForgeClientSetup::onRenderGuiLayer);
         // Meteor Tracker readout + oxygen-field visuals + the screenshot harness — game-bus client tick
@@ -91,7 +93,7 @@ public final class NeoForgeClientSetup {
         }
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null
-                && OxygenFieldEvents.FIELD_DIMENSIONS.contains(mc.player.level().dimension())) {
+                && OxygenFieldEvents.isFieldDimension(mc.player.level().dimension())) {
             event.setCanceled(true);
         }
     }

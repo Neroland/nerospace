@@ -1,12 +1,12 @@
 # Multiloader & multi-version support for Nerospace
 
-Nerospace ships from one source tree to **six** build cells:
+Nerospace ships from one source tree to **nine** build cells:
 
-| Loader | MC 26.1.2 | MC 26.2 |
-| --- | --- | --- |
-| NeoForge | `:neoforge:26.1.2` | `:neoforge:26.2` |
-| MinecraftForge / Forge | `:forge:26.1.2` | `:forge:26.2` |
-| Fabric | `:fabric:26.1.2` | `:fabric:26.2` |
+| Loader | MC 26.1.2 | MC 26.2 | MC 26.3 |
+| --- | --- | --- | --- |
+| NeoForge | `:neoforge:26.1.2` | `:neoforge:26.2` | `:neoforge:26.3` |
+| MinecraftForge / Forge | `:forge:26.1.2` | `:forge:26.2` | `:forge:26.3` |
+| Fabric | `:fabric:26.1.2` | `:fabric:26.2` | `:fabric:26.3` |
 
 The build is flattened to the repo root. `common/` is shared vanilla-style code, and each loader subtree
 contains only loader-specific bootstrapping, manifests, services, capabilities/lookups, events, networking,
@@ -69,6 +69,20 @@ The rocket launch pad has no block entity. NeoForge and Fabric expose block-leve
 directly. Forge keeps Nerospace pipe fluid refueling through the `FluidLookup` special case; broader
 Forge-standard item automation for that non-BE block should be runtime-tested before advertising parity.
 
+### Planet clock, weather and sky hooks (per-loader call sites)
+
+The planet work has one common entry point per concern; each loader calls it from its own hook. When you add
+a loader or move a hook, update all three.
+
+| Concern | Common entry point | Fabric | NeoForge | Forge |
+| --- | --- | --- | --- | --- |
+| Planet clock + weather tick + client sync | `world.planet.PlanetTicks.serverTick(server)` | `NerospaceFabric`: `ServerTickEvents.END_SERVER_TICK` | `NerospaceNeoForge`: `ServerTickEvent.Post` | `NerospaceForge`: `TickEvent.ServerTickEvent.Post` |
+| Sky profile loading | `client.sky.SkyProfiles.INSTANCE` (reload listener) | `NerospaceFabricClient`: `ResourceLoader.get(CLIENT_RESOURCES).registerReloadListener` | `NeoForgeSky`: `AddClientReloadListenersEvent` | `ForgeClientSetup`: `RegisterClientReloadListenersEvent` |
+| Sky drawing | `client.sky.PlanetSkyRenderer.renderCurrent(level)` | none yet (no Fabric API sky hook on 26.x) | `NeoForgeSky`: `CustomSkyboxRenderer` `nerospace:planet` (26.3 only) | none yet |
+
+Sky colours are carried by the dimension types themselves, so a cell without a sky hook still shows the
+planet's colours; the renderer only adds bodies, auroras and the like on top.
+
 ## Build
 
 Run from the repo root:
@@ -81,8 +95,8 @@ Run from the repo root:
 
 Jars land in `<loader>/versions/<mc>/build/libs/`.
 
-CI builds the same six-cell matrix in `.github/workflows/multiloader.yml`. Publishing builds all six cells
-and tags the release for `fabric`, `neoforge`, `forge`, `26.1.2`, and `26.2`.
+CI builds the same nine-cell matrix in `.github/workflows/multiloader.yml`. Publishing builds all nine cells
+and tags the release for `fabric`, `neoforge`, `forge`, `26.1.2`, `26.2`, and `26.3`.
 
 ## IDE
 

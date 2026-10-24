@@ -44,6 +44,13 @@ public final class ModTags {
         public static final TagKey<Biome> GRAVITY_LOW = biomeTag("nerospace", "gravity_low");
         /** High-gravity biomes (~1.5× — dense basins). */
         public static final TagKey<Biome> GRAVITY_HIGH = biomeTag("nerospace", "gravity_high");
+
+        // --- Per-biome hazard overrides (2.0) ---------------------------------
+        // A biome carrying one of these replaces its planet's primary hazard at that position
+        // (NerospacePlanets.hazardAt). Radiation outranks heat, heat outranks cold.
+        public static final TagKey<Biome> HAZARD_RADIATION = biomeTag("nerospace", "hazard/radiation");
+        public static final TagKey<Biome> HAZARD_HEAT = biomeTag("nerospace", "hazard/heat");
+        public static final TagKey<Biome> HAZARD_COLD = biomeTag("nerospace", "hazard/cold");
     }
 
     public static final class Blocks {
@@ -73,6 +80,21 @@ public final class ModTags {
         public static final TagKey<Block> OXYGEN_SEALING = blockTag("nerospace", "oxygen_sealing");
         /** Non-full / leaky blocks: allow PARTIAL flow (fences, slabs, torches, open trapdoors). */
         public static final TagKey<Block> OXYGEN_LEAKS = blockTag("nerospace", "oxygen_leaks");
+        /**
+         * Airtight hull (decision 002 §10.5): a subset of {@link #OXYGEN_SEALING} — Hull Plating and Hull Window
+         * only. The oxygen field treats it as a seal; the Station Console counts it for "pressurised".
+         */
+        public static final TagKey<Block> AIRTIGHT = blockTag("nerospace", "airtight");
+        /** Tops that cancel a Cindara ember strike (Basalt Spire). */
+        public static final TagKey<Block> LIGHTNING_SAFE = blockTag("nerospace", "lightning_safe");
+        /** Ground a Hydration Module can never thaw (Permafrost). */
+        public static final TagKey<Block> HYDRATION_IMMUNE = blockTag("nerospace", "hydration_immune");
+        /** The only substrate Xertz crops and Spore Moss root in (Xertz Soil). */
+        public static final TagKey<Block> XERTZ_ROOTABLE = blockTag("nerospace", "xertz_rootable");
+        /** Blocks a beam can be deflected by (Void Crystal); additive API, see {@code api.optics.BeamRefraction}. */
+        public static final TagKey<Block> BEAM_REFRACTORS = blockTag("nerospace", "beam_refractors");
+        /** Blocks custom lava interactions must never replace (Magma Glass). */
+        public static final TagKey<Block> LAVA_IMMUNE = blockTag("nerospace", "lava_immune");
         /** Blocks that act as oxygen sources for the field (generators; later: alien flora). */
         public static final TagKey<Block> OXYGEN_SOURCE = blockTag("nerospace", "oxygen_source");
 

@@ -69,6 +69,8 @@ public final class NerospaceForge {
             OxygenFieldEvents.tick(event.server());
             TerraformDrift.tick(event.server());
             GravityManager.tick(event.server());
+            // Planet clock + weather + client sync (one common entry point; see docs/MULTILOADER.md).
+            za.co.neroland.nerospace.world.planet.PlanetTicks.serverTick(event.server());
             za.co.neroland.nerospace.route.CargoFlights.tick(event.server());
             // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
             za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(event.server());

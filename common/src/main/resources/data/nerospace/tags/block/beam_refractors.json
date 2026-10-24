@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "nerospace:void_crystal", "required": false}
+  ]
+}

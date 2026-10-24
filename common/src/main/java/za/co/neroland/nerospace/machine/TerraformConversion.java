@@ -9,7 +9,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 //? if <26.3 {
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 //?}
@@ -27,7 +26,9 @@ import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import za.co.neroland.nerospace.platform.Services;
-import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
+import za.co.neroland.nerospace.world.planet.TreeStyle;
 import za.co.neroland.nerospace.registry.ModTags;
 import za.co.neroland.nerospace.world.ModBiomes;
 import za.co.neroland.nerospace.world.TerraformFauna;
@@ -209,16 +210,18 @@ public final class TerraformConversion {
         bumpStage(chunk, 3);
     }
 
-    /** The mature stage-3 biome for this dimension (§4); unknown dimensions settle as meadow. */
+    /**
+     * The mature stage-3 biome for this dimension (§4): the planet's terraform target. Unknown dimensions, planets
+     * without a target, and targets whose biome is not registered yet settle as meadow (the 1.x fallback).
+     */
     public static ResourceKey<Biome> matureBiomeFor(ServerLevel level) {
-        ResourceKey<Level> dimension = level.dimension();
-        if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
-            return ModBiomes.TERRAFORMED_SAVANNA;
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet == null) {
+            return ModBiomes.TERRAFORMED_MEADOW;
         }
-        if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
-            return ModBiomes.TERRAFORMED_TUNDRA;
-        }
-        return ModBiomes.TERRAFORMED_MEADOW;
+        return planet.terraformLiving()
+                .filter(key -> level.registryAccess().lookupOrThrow(Registries.BIOME).get(key).isPresent())
+                .orElse(ModBiomes.TERRAFORMED_MEADOW);
     }
 
     /** Sparse GROWN trees on Living ground (§4): vanilla features, themed per planet. */
@@ -231,19 +234,18 @@ public final class TerraformConversion {
         if (!level.getBlockState(ground).is(Blocks.GRASS_BLOCK) || !level.getBlockState(above).isAir()) {
             return;
         }
-        ResourceKey<Level> dimension = level.dimension();
+        PlanetDefinition planet = Planets.get(level.dimension());
+        TreeStyle style = planet == null ? TreeStyle.OAK_BIRCH : planet.treeStyle();
         //? if >=26.3 {
         /*ResourceKey<net.minecraft.world.level.levelgen.feature.Feature> tree;
         *///?} else {
         ResourceKey<ConfiguredFeature<?, ?>> tree;
         //?}
-        if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
-            tree = TreeFeatures.ACACIA;
-        } else if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
-            tree = TreeFeatures.SPRUCE;
-        } else {
-            tree = level.getRandom().nextBoolean() ? TreeFeatures.OAK : TreeFeatures.BIRCH;
-        }
+        tree = switch (style) {
+            case ACACIA -> TreeFeatures.ACACIA;
+            case SPRUCE -> TreeFeatures.SPRUCE;
+            case OAK_BIRCH -> level.getRandom().nextBoolean() ? TreeFeatures.OAK : TreeFeatures.BIRCH;
+        };
         //? if >=26.3 {
         /*level.registryAccess().lookupOrThrow(Registries.FEATURE).get(tree)
         *///?} else {

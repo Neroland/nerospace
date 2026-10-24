@@ -54,6 +54,9 @@ public final class ForgeClientSetup {
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(ForgeClientSetup::onRegisterEntityRenderers);
         ModelEvent.BakeFluidModels.BUS.addListener(ForgeClientSetup::onBakeFluidModels);
         AddGuiOverlayLayersEvent.BUS.addListener(ForgeClientSetup::onAddGuiLayers);
+        // Planet sky profiles (client resources, reload with F3+T). Forge has no sky hook yet: data-only cell.
+        net.minecraftforge.client.event.RegisterClientReloadListenersEvent.BUS.addListener(event ->
+                event.registerReloadListener(za.co.neroland.nerospace.client.sky.SkyProfiles.INSTANCE));
         TickEvent.ClientTickEvent.Post.BUS.addListener(event -> {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();

@@ -42,7 +42,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 import za.co.neroland.nerospace.menu.MenuOpener;
-import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.village.AlienTrades;
 import za.co.neroland.nerospace.village.Reputation;
@@ -64,7 +65,29 @@ public class AlienVillager extends PathfinderMob implements Merchant {
 
     /** Which planet's species this villager belongs to (drives palette + silhouette later). */
     public enum Planet {
-        GREENXERTZ, CINDARA, GLACIRA;
+        // Persisted by ORDINAL ("Planet" NBT + synced data): append only, never reorder.
+        GREENXERTZ("xertz"), CINDARA("ember_kin"), GLACIRA("frostbound"), NYXARA("duskborn");
+
+        private final String culture;
+
+        Planet(String culture) {
+            this.culture = culture;
+        }
+
+        /** The villager culture id this species belongs to ({@code nerospace:<culture>}). */
+        public net.minecraft.resources.Identifier culture() {
+            return net.minecraft.resources.Identifier.fromNamespaceAndPath("nerospace", this.culture);
+        }
+
+        /** The species for a culture id, or GREENXERTZ (the 1.x default) when none matches. */
+        public static Planet byCulture(net.minecraft.resources.Identifier culture) {
+            for (Planet p : values()) {
+                if (p.culture().equals(culture)) {
+                    return p;
+                }
+            }
+            return GREENXERTZ;
+        }
 
         public static Planet byOrdinal(int i) {
             Planet[] values = values();
@@ -143,14 +166,10 @@ public class AlienVillager extends PathfinderMob implements Merchant {
     }
 
     private Planet planetForDimension() {
-        var dim = this.level().dimension();
-        if (dim == ModDimensions.CINDARA_LEVEL) {
-            return Planet.CINDARA;
-        }
-        if (dim == ModDimensions.GLACIRA_LEVEL) {
-            return Planet.GLACIRA;
-        }
-        return Planet.GREENXERTZ;
+        // The planet's villager culture; a world without one (or a non-planet dimension) keeps the 1.x default.
+        PlanetDefinition planet = Planets.get(this.level().dimension());
+        return planet == null ? Planet.GREENXERTZ
+                : planet.traits().villagerCulture().map(Planet::byCulture).orElse(Planet.GREENXERTZ);
     }
 
     // --- Interaction: gifts + trading -----------------------------------------

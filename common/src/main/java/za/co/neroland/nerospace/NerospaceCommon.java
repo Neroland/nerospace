@@ -3,8 +3,6 @@ package za.co.neroland.nerospace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.minecraft.resources.Identifier;
-
 import za.co.neroland.nerolandcore.meteor.MeteorPlanets;
 
 import za.co.neroland.nerospace.data.NerospaceErasure;
@@ -59,16 +57,17 @@ public final class NerospaceCommon {
     /**
      * Installs Nerospace as the planet-lookup provider for Neroland Core's Meteor Material Registry — the
      * seam Core's resolver uses to weight planet-bound materials and apply the planet-bias multiplier
-     * (see {@code ../neroland-core/docs/METEOR-MATERIAL-REGISTRY.md}). When a grind happens in a Nerospace
-     * dimension (any {@code nerospace:*} dimension is a planet/space body), we report that dimension's
-     * identifier as the "current planet"; anywhere else (Earth / another mod's dimension) we return
-     * {@code null}, so Core treats the grind as off-world and planet-bound entries simply drop out of the
-     * pool. The provider is server-side, loader-agnostic, and stores nothing per player (POPIA/GDPR).
+     * (see Core's meteor material registry docs). When a grind happens on a Nerospace planet surface we report
+     * that dimension's identifier as the "current planet"; anywhere else (Earth, another mod's dimension, the
+     * orbital station void, or the dev gallery backdrop dimension) we return {@code null}, so Core treats the
+     * grind as off-world and planet-bound entries simply drop out of the pool. The provider is server-side, loader-agnostic, and stores nothing per player (POPIA/GDPR).
      */
     private static void installMeteorPlanetProvider() {
         MeteorPlanets.setProvider(player -> {
-            Identifier dim = player.level().dimension().identifier();
-            return MOD_ID.equals(dim.getNamespace()) ? dim : null;
+            var planet = za.co.neroland.nerospace.world.planet.Planets.get(player.level().dimension());
+            return planet != null
+                    && planet.traits().archetype() != za.co.neroland.nerospace.api.PlanetArchetype.ORBITAL
+                    ? planet.id().id() : null;
         });
     }
 

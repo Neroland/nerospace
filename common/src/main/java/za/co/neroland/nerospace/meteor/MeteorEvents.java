@@ -1,7 +1,5 @@
 package za.co.neroland.nerospace.meteor;
 
-import java.util.Set;
-
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -11,7 +9,8 @@ import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.network.MeteorSyncPayload;
 import za.co.neroland.nerospace.network.ModNetwork;
-import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
 import za.co.neroland.nerospace.registry.ModItems;
 
 /**
@@ -28,12 +27,14 @@ import za.co.neroland.nerospace.registry.ModItems;
  */
 public final class MeteorEvents {
 
-    /** Surface worlds meteors fall on (the void station is excluded — nothing to crater). */
-    public static final Set<ResourceKey<Level>> METEOR_DIMENSIONS = Set.of(
-            Level.OVERWORLD,
-            ModDimensions.GREENXERTZ_LEVEL,
-            ModDimensions.CINDARA_LEVEL,
-            ModDimensions.GLACIRA_LEVEL);
+    /** Surface worlds meteors fall on: the Overworld and every planet with a surface (not the station void). */
+    public static boolean isMeteorDimension(ResourceKey<Level> dimension) {
+        if (Level.OVERWORLD.equals(dimension)) {
+            return true;
+        }
+        PlanetDefinition planet = Planets.get(dimension);
+        return planet != null && planet.meteorSurface();
+    }
 
     /** How often the nearest-site snapshot is pushed to tracker holders. */
     private static final int SYNC_INTERVAL_TICKS = 10;
@@ -44,7 +45,7 @@ public final class MeteorEvents {
     /** Ticks the meteor scheduler on every eligible loaded dimension, and syncs the tracker readout. */
     public static void tick(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
-            if (!METEOR_DIMENSIONS.contains(level.dimension())) {
+            if (!isMeteorDimension(level.dimension())) {
                 continue;
             }
             MeteorEventManager manager = MeteorEventManager.get(level);

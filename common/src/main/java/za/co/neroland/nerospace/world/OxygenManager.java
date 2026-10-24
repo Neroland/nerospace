@@ -1,7 +1,5 @@
 package za.co.neroland.nerospace.world;
 
-import java.util.Set;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -17,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import za.co.neroland.nerospace.api.Hazard;
 import za.co.neroland.nerospace.api.NerospaceOxygen;
 import za.co.neroland.nerospace.api.NerospaceTerraforming;
 import za.co.neroland.nerospace.api.NerospaceVisits;
@@ -26,9 +25,11 @@ import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModBlocks;
-import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.rocket.RocketEntity;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.PlanetHazards;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
  * Oxygen / atmosphere survival (Phase 8c, simplified cross-loader port). On airless Nerospace
@@ -79,11 +80,6 @@ public final class OxygenManager {
     /** Gas (mB) consumed per air unit restored — the conversion rate from a tank's oxygen to suit air. */
     private static final int AIRLOCK_MB_PER_AIR = 2;
 
-    /** Every Nerospace planet (and the vacuum of the station) is airless. */
-    private static final Set<ResourceKey<Level>> PLANETS = Set.of(
-            ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
-            ModDimensions.STATION_LEVEL, ModDimensions.GLACIRA_LEVEL);
-
     private OxygenManager() {
     }
 
@@ -93,7 +89,8 @@ public final class OxygenManager {
      * facade so consumers needn't hard-code the dimension set.
      */
     public static boolean isAirless(ResourceKey<Level> dimension) {
-        return PLANETS.contains(dimension);
+        PlanetDefinition planet = Planets.get(dimension);
+        return planet != null && planet.traits().airless();
     }
 
     /** Per-player server tick (called from each loader's server-tick hook). */
@@ -313,6 +310,20 @@ public final class OxygenManager {
         return units;
     }
 
+    /**
+     * Whether the player is sealed off from the planet's atmosphere: a full suit of any variant, or standing in
+     * a breathable zone (oxygen field, terraformed ground, launch pad). Weather effects that act on an exposed
+     * player (spore nausea, storm radiation) check this. Server-side.
+     */
+    public static boolean isSealedFromAtmosphere(ServerLevel level, Player player) {
+        return isFullSuit(player) || isBreathable(level, player.blockPosition());
+    }
+
+    /** Whether {@code pos} is inside a breathable zone (oxygen field, terraformed ground, pad radius). */
+    public static boolean isBreathableAt(ServerLevel level, BlockPos pos) {
+        return level.hasChunkAt(pos) && isBreathable(level, pos);
+    }
+
     /** Whether the player wears a full set of Oxygen Suit pieces (any tier / hazard variant counts). */
     private static boolean isFullSuit(Player player) {
         return isSuitPiece(player.getItemBySlot(EquipmentSlot.HEAD),
@@ -342,7 +353,17 @@ public final class OxygenManager {
 
     /** Per-planet environmental hazard a suit variant must counter (NONE elsewhere). */
     public enum HazardShield {
-        NONE, HEAT, COLD
+        NONE, HEAT, COLD, RADIATION;
+
+        /** The internal mirror of a public {@link Hazard}. */
+        public static HazardShield of(Hazard hazard) {
+            return switch (hazard) {
+                case HEAT -> HEAT;
+                case COLD -> COLD;
+                case RADIATION -> RADIATION;
+                case NONE -> NONE;
+            };
+        }
     }
 
     /** Oxygen-suit capacity tier worn (orthogonal to the heat/cold {@link HazardShield} variant). */
@@ -370,20 +391,23 @@ public final class OxygenManager {
                 && player.getItemBySlot(EquipmentSlot.FEET).is(feet);
     }
 
-    /** The hazard a dimension carries: Cindara runs hot, Glacira runs cold. (Public for the HUD.) */
+    /**
+     * The primary hazard a dimension carries, from its planet traits (Cindara runs hot, Glacira cold; NONE off
+     * a planet). Public for the HUD. Per-position overlays (biome tags, weather) are {@link #hazardAt}.
+     */
     public static HazardShield hazardFor(ResourceKey<Level> dimension) {
-        if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
-            return HazardShield.HEAT;
-        }
-        if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
-            return HazardShield.COLD;
-        }
-        return HazardShield.NONE;
+        PlanetDefinition planet = Planets.get(dimension);
+        return planet == null ? HazardShield.NONE : HazardShield.of(planet.traits().hazard());
+    }
+
+    /** The hazard at an exact position (biome and weather overlays included). Server-side. */
+    public static HazardShield hazardAt(ServerLevel level, BlockPos pos) {
+        return HazardShield.of(PlanetHazards.at(level, pos));
     }
 
     /** Drain factor for the player: ×{@link #HAZARD_DRAIN_MULTIPLIER} on an uncountered hazard, else 1. */
     private static int hazardDrainMultiplier(ServerLevel level, Player player) {
-        HazardShield hazard = hazardFor(level.dimension());
+        HazardShield hazard = hazardAt(level, player.blockPosition());
         if (hazard == HazardShield.NONE || hazardShield(player) == hazard) {
             return 1;
         }
@@ -430,14 +454,14 @@ public final class OxygenManager {
      * never double-dips), sparse smoke shimmer on the hot one.
      */
     private static void hazardFeedback(ServerLevel level, Player player) {
-        HazardShield hazard = hazardFor(level.dimension());
+        HazardShield hazard = hazardAt(level, player.blockPosition());
         if (hazard == HazardShield.NONE || hazardShield(player) == hazard) {
             return;
         }
         if (hazard == HazardShield.COLD) {
             int cap = player.getTicksRequiredToFreeze() - 2; // never "fully frozen" => no freeze damage
             player.setTicksFrozen(Math.min(cap, player.getTicksFrozen() + CHECK_INTERVAL_TICKS * 2 + 15));
-        } else if (player.tickCount % (CHECK_INTERVAL_TICKS * 4) == 0) {
+        } else if (hazard == HazardShield.HEAT && player.tickCount % (CHECK_INTERVAL_TICKS * 4) == 0) {
             level.sendParticles(ParticleTypes.SMOKE,
                     player.getX(), player.getY() + 1.2D, player.getZ(), 3, 0.25D, 0.4D, 0.25D, 0.01D);
         }

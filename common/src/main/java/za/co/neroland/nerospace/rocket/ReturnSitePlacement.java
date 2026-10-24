@@ -9,7 +9,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import za.co.neroland.nerospace.registry.ModBlocks;
-import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.api.PlanetArchetype;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /** Builds or reuses return sites at rocket arrival points. */
 public final class ReturnSitePlacement {
@@ -24,7 +26,8 @@ public final class ReturnSitePlacement {
 
     public static Arrival place(ServerLevel level, net.minecraft.resources.ResourceKey<Level> target,
             BlockPos preferred, RocketTier tier, int carriedFuelMb) {
-        if (target.equals(ModDimensions.STATION_LEVEL)) {
+        PlanetDefinition planet = Planets.get(target);
+        if (planet != null && planet.traits().archetype() == PlanetArchetype.ORBITAL) {
             return placeStationDock(level, preferred, tier, carriedFuelMb);
         }
         return placeLandingPod(level, preferred.getX(), preferred.getZ(), tier, carriedFuelMb);

@@ -6,6 +6,8 @@
     "nerospace:raw_nerosium_block",
     "nerospace:nerosteel_block",
     "nerospace:cindrite_block",
-    "nerospace:glacite_block"
+    "nerospace:glacite_block",
+    {"id": "nerospace:hull_plating", "required": false},
+    {"id": "nerospace:hull_window", "required": false}
   ]
 }

@@ -87,6 +87,10 @@ public final class NerospaceFabricClient implements ClientModInitializer {
 
         registerFluidRendering();
         registerOxygenHud();
+        // Planet sky profiles (client resources, reload with F3+T). Fabric API has no sky hook on 26.x: data-only.
+        net.fabricmc.fabric.api.resource.v1.ResourceLoader.get(net.minecraft.server.packs.PackType.CLIENT_RESOURCES)
+                .registerReloadListener(za.co.neroland.nerospace.client.sky.SkyProfiles.ID,
+                        za.co.neroland.nerospace.client.sky.SkyProfiles.INSTANCE);
 
         // Meteor Tracker readout + oxygen-field visuals + the screenshot harness — counterpart to
         // NeoForge's ClientTickEvent.Post.
@@ -114,7 +118,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         HudElementRegistry.replaceElement(VanillaHudElements.AIR_BAR, original -> (graphics, delta) -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null
-                    && OxygenFieldEvents.FIELD_DIMENSIONS.contains(mc.player.level().dimension())) {
+                    && OxygenFieldEvents.isFieldDimension(mc.player.level().dimension())) {
                 return; // suppress vanilla air bubbles on airless dims
             }
             original.extractRenderState(graphics, delta);

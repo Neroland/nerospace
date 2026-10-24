@@ -1,6 +1,6 @@
 # Project context for AI coding agents — nerospace
 
-> This and `CLAUDE.md` are kept identical; update both together.
+> `AGENTS.md` and `CLAUDE.md` are kept byte-identical; update both together.
 
 ## The mod
 

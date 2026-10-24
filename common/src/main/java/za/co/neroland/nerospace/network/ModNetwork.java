@@ -90,6 +90,11 @@ public final class ModNetwork {
         // Cargo Pad: server → the viewer of one open pad menu, the destination labels they may pick from.
         clientbound(CargoPadSyncPayload.TYPE, CargoPadSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientCargoPads::accept);
+        // Planet clock + weather: server → the player's client, render-only (sky, HUD dial). Pure data holders.
+        clientbound(PlanetClockPayload.TYPE, PlanetClockPayload.STREAM_CODEC,
+                za.co.neroland.nerospace.client.ClientPlanetClock::accept);
+        clientbound(PlanetWeatherPayload.TYPE, PlanetWeatherPayload.STREAM_CODEC,
+                za.co.neroland.nerospace.client.ClientPlanetWeather::accept);
         // Station Charter: client (naming screen) → server, founds the named station without teleporting.
         serverbound(FoundStationPayload.TYPE, FoundStationPayload.STREAM_CODEC,
                 (payload, player) -> za.co.neroland.nerospace.item.StationCharterItem.foundFromUi(player, payload.name()));

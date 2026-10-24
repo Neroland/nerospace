@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import net.minecraft.core.BlockPos;
 
+import za.co.neroland.nerospace.block.rules.AirtightRules;
 import za.co.neroland.nerospace.registry.ModTags;
 
 /**
@@ -30,7 +31,7 @@ public final class OxygenField {
         if (state.isAir()) {
             return true;
         }
-        if (state.is(ModTags.Blocks.OXYGEN_SEALING)) {
+        if (state.is(ModTags.Blocks.OXYGEN_SEALING) || state.is(ModTags.Blocks.AIRTIGHT)) {
             return false;
         }
         if (state.getBlock() instanceof DoorBlock || state.getBlock() instanceof TrapDoorBlock) {
@@ -42,6 +43,11 @@ public final class OxygenField {
         // Fallback: anything that isn't a full solid cube is treated as leaky (holds + bleeds);
         // a full solid cube seals even without an explicit tag.
         return !state.isCollisionShapeFullBlock(level, pos);
+    }
+
+    /** @return true for an airtight-counted hull cell ({@code nerospace:airtight}: Hull Plating, Hull Window). */
+    public static boolean isAirtight(BlockState state) {
+        return AirtightRules.isAirtight(state.is(ModTags.Blocks.AIRTIGHT));
     }
 
     /** @return true for non-full / leaky cells that bleed oxygen to the void faster (openings). */

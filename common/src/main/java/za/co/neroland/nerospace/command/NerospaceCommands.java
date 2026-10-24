@@ -91,21 +91,24 @@ public final class NerospaceCommands {
      * {@code RegisterCommandsEvent}, Fabric {@code CommandRegistrationCallback}) with the dispatcher.
      */
     public static void register(com.mojang.brigadier.CommandDispatcher<CommandSourceStack> dispatcher) {
-        // Player-only; the executor further restricts to creative. (Commands themselves require the
-        // world to have cheats/commands enabled, so this is effectively creative + commands gated.)
+        // gallery / gravity / station are player-only (the requirement sits on each of them, not on the shared
+        // root, so the ops clock/weather commands below stay usable from the console and command blocks); the
+        // executors further restrict to creative.
         dispatcher.register(
                 Commands.literal("nerospace")
-                        .requires(src -> src.getPlayer() != null)
                         .then(Commands.literal("gallery")
+                                .requires(src -> src.getPlayer() != null)
                                 .executes(ctx -> runSafely(ctx.getSource(), "gallery",
                                         () -> buildGallery(ctx.getSource())))
                                 .then(Commands.literal("clear")
                                         .executes(ctx -> runSafely(ctx.getSource(), "gallery clear",
                                                 () -> clearGallery(ctx.getSource())))))
                         .then(Commands.literal("gravity")
+                                .requires(src -> src.getPlayer() != null)
                                 .executes(ctx -> runSafely(ctx.getSource(), "gravity",
                                         () -> reportGravity(ctx.getSource()))))
                         .then(Commands.literal("station")
+                                .requires(src -> src.getPlayer() != null)
                                 .then(Commands.literal("list")
                                         .executes(ctx -> runSafely(ctx.getSource(), "station list",
                                                 () -> listStations(ctx.getSource()))))
@@ -116,6 +119,10 @@ public final class NerospaceCommands {
                                                 .executes(ctx -> runSafely(ctx.getSource(), "station remove",
                                                         () -> removeStation(ctx.getSource(),
                                                                 IntegerArgumentType.getInteger(ctx, "slot"))))))));
+        // Ops-only planet clock + weather controls (permission level 2, consoles and command blocks too).
+        dispatcher.register(PlanetCommands.build());
+        // Dev-environment-only measurement tools (operator, refused outside a dev run).
+        dispatcher.register(DevCommands.build());
     }
 
     /**

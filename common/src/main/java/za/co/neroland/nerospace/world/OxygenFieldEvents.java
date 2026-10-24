@@ -1,7 +1,5 @@
 package za.co.neroland.nerospace.world;
 
-import java.util.Set;
-
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -10,7 +8,7 @@ import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.network.ModNetwork;
 import za.co.neroland.nerospace.network.OxygenFieldSyncPayload;
-import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
  * Cross-loader server-side driver for the oxygen field (terraform design §1.3). Each loader calls
@@ -25,10 +23,10 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  */
 public final class OxygenFieldEvents {
 
-    /** Dimensions whose atmosphere is driven by the oxygen field. */
-    public static final Set<ResourceKey<Level>> FIELD_DIMENSIONS = Set.of(
-            ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL, ModDimensions.STATION_LEVEL,
-            ModDimensions.GLACIRA_LEVEL);
+    /** Whether a dimension's atmosphere is driven by the oxygen field: every airless Nerospace planet. */
+    public static boolean isFieldDimension(ResourceKey<Level> dimension) {
+        return Planets.isPlanet(dimension) && OxygenManager.isAirless(dimension);
+    }
 
     /** Server ticks between field relaxation passes (inlined from Config.OXYGEN_SIM_INTERVAL_TICKS). */
     private static final int SIM_INTERVAL_TICKS = 5;
@@ -43,7 +41,7 @@ public final class OxygenFieldEvents {
     /** Runs one throttled field pass per eligible dimension, and syncs the nearby field to clients. */
     public static void tick(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
-            if (!FIELD_DIMENSIONS.contains(level.dimension())) {
+            if (!isFieldDimension(level.dimension())) {
                 continue;
             }
             long time = level.getGameTime();

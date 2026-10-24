@@ -97,6 +97,62 @@ public final class NerospaceConfig {
             0, 0, 1_000_000, true, "credits charged per flight bound for an orbital station, on top of the launch "
             + "fee (0 = off; needs NeroEconomy)");
 
+    // --- 2.0 planets: clock, weather, solar and later-stage keys (all server-authoritative) --------------
+    // Every 1.x key above keeps its name, type and default. These are appended; a 1.x file loads unchanged and
+    // gains them on the next write.
+    private static final ConfigValue<Boolean> BLOCKS_NYX_STONE_LIGHT_ABSORB = SCHEMA.bool("blocks.nyxStoneLightAbsorb",
+            true, true, "Nyx Stone dims light around it (false = it only blocks light)");
+    private static final ConfigValue<Boolean> BLOCKS_METHANE_ICE_BREAKS_BLOCKS = SCHEMA.bool("blocks.methaneIceBreaksBlocks",
+            false, true, "Methane Ice explosions break blocks (false by default: they hurt entities only, no craters)");
+    // Per-chunk caps from decision 002 §10.2 ("config may lower, never raise"): default = max = the locked number.
+    private static final ConfigValue<Integer> CAP_SPORE_MOSS = SCHEMA.intRange("blocks.sporeMossCap",
+            48, 0, 48, true, "max Spore Moss per chunk (0..48)");
+    private static final ConfigValue<Integer> CAP_SHADOW_LICHEN = SCHEMA.intRange("blocks.shadowLichenCap",
+            32, 0, 32, true, "max Shadow Lichen faces per chunk (0..32)");
+    private static final ConfigValue<Integer> CAP_REGOLITH_DRIFT = SCHEMA.intRange("blocks.regolithDriftCap",
+            16, 0, 16, true, "max Red Regolith dune-drift moves per chunk per dust storm (0..16)");
+    private static final ConfigValue<Integer> CAP_ASH_LAYER = SCHEMA.intRange("blocks.ashLayerCap",
+            4, 0, 4, true, "max Ash Layer height ash fall builds up (0..4; players can still stack to 8)");
+    private static final ConfigValue<Integer> CAP_FROST_CRYSTAL = SCHEMA.intRange("blocks.frostCrystalCap",
+            64, 0, 64, true, "max Frost Crystal Clusters that grow per chunk when diamond dust ends (0..64)");
+    private static final ConfigValue<Integer> CAP_DAWNBAND = SCHEMA.intRange("blocks.dawnbandCap",
+            256, 0, 256, true, "max Dawnband Stone per chunk that light up per flare (0..256)");
+    private static final ConfigValue<Integer> CAP_GRAVITY_OVERRIDE = SCHEMA.intRange("blocks.gravityOverrideCap",
+            64, 0, 64, true, "max Gravity Shard Blocks + Gravity Plates per chunk (0..64)");
+    private static final ConfigValue<Integer> CAP_METHANE_CHAIN = SCHEMA.intRange("blocks.methaneChainCap",
+            4, 0, 4, true, "max Methane Ice explosions per chunk per 5 seconds (0..4)");
+    private static final ConfigValue<Boolean> WEATHER_ENABLED = SCHEMA.bool("weather.enabled", true, true,
+            "planet weather (dust storms, ash fall, diamond dust, spore blooms, flares). false = clear skies everywhere");
+    private static final ConfigValue<Double> WEATHER_FREQUENCY = SCHEMA.doubleRange("weather.frequencyMultiplier",
+            1.0D, MULT_MIN, MULT_MAX, true, "scales how often planet weather starts (higher = more often)");
+    private static final ConfigValue<Double> WEATHER_DURATION = SCHEMA.doubleRange("weather.durationMultiplier",
+            1.0D, MULT_MIN, MULT_MAX, true, "scales how long planet weather lasts");
+    private static final ConfigValue<Integer> WEATHER_PARTICLE_BUDGET = SCHEMA.intRange("weather.particleBudget",
+            1000, 0, 4000, true, "weather particles a client may spawn per second (0..4000)");
+    // Per-planet weather switches, read by key through planetWeatherEnabled (each planet definition names its
+    // key, weather.<planet>.enabled). Declared here, in this order, so they appear in the file.
+    static {
+        SCHEMA.bool("weather.greenxertz.enabled", true, true, "spore blooms on Greenxertz");
+        SCHEMA.bool("weather.mars.enabled", true, true, "dust storms on Mars");
+        SCHEMA.bool("weather.cindara.enabled", true, true, "ash fall on Cindara");
+        SCHEMA.bool("weather.glacira.enabled", true, true, "diamond dust on Glacira");
+        SCHEMA.bool("weather.nyxara.enabled", true, true, "flares on Nyxara");
+    }
+    private static final ConfigValue<Boolean> CLOCK_ENABLED = SCHEMA.bool("clock.enabled", true, true,
+            "planet day/night clocks. false = every planet clock holds at noon (Greenxertz keeps its real day)");
+    private static final ConfigValue<Boolean> SOLAR_CLOCK_DRIVEN = SCHEMA.bool("solar.clockDriven", true, true,
+            "solar panels on planets follow the planet's day and weather (averaging at least the old output). "
+            + "false = the 1.x flat double rate on every Nerospace world");
+    private static final ConfigValue<Integer> LANDING_POD_SEARCH_RADIUS = SCHEMA.intRange("landing.podSearchRadius",
+            24, 6, 24, true, "how far (blocks) an arriving rocket searches for a safe Landing Pod site (6..24)");
+    private static final ConfigValue<Integer> STATIONS_MAX_MEMBERS = SCHEMA.intRange("stations.maxMembers",
+            16, 0, 16, true, "members a station owner may add (0..16)");
+    private static final ConfigValue<Integer> STATIONS_MAX_MODULES = SCHEMA.intRange("stations.maxModules",
+            8, 0, 8, true, "modules a station may have (0..8)");
+    private static final ConfigValue<Integer> NYXARA_TWILIGHT_BAND_WIDTH = SCHEMA.intRange("nyxara.twilightBandWidth",
+            2048, 512, 16384, true, "full width (blocks) of Nyxara's habitable twilight band (512..16384); applies "
+            + "to new worlds only - an existing world keeps the width it was created with");
+
     private static volatile boolean loaded;
 
     private NerospaceConfig() {
@@ -147,6 +203,111 @@ public final class NerospaceConfig {
     /** Credits charged per flight bound for an orbital station; 0 = off. Used only with NeroEconomy. */
     public static int economyDockingFee() {
         return ECONOMY_DOCKING_FEE.get();
+    }
+
+    public static boolean nyxStoneLightAbsorb() {
+        return BLOCKS_NYX_STONE_LIGHT_ABSORB.get();
+    }
+
+    public static boolean methaneIceBreaksBlocks() {
+        return BLOCKS_METHANE_ICE_BREAKS_BLOCKS.get();
+    }
+
+    public static int sporeMossCap() {
+        return CAP_SPORE_MOSS.get();
+    }
+
+    public static int shadowLichenCap() {
+        return CAP_SHADOW_LICHEN.get();
+    }
+
+    public static int regolithDriftCap() {
+        return CAP_REGOLITH_DRIFT.get();
+    }
+
+    public static int ashLayerCap() {
+        return CAP_ASH_LAYER.get();
+    }
+
+    public static int frostCrystalCap() {
+        return CAP_FROST_CRYSTAL.get();
+    }
+
+    public static int dawnbandCap() {
+        return CAP_DAWNBAND.get();
+    }
+
+    public static int gravityOverrideCap() {
+        return CAP_GRAVITY_OVERRIDE.get();
+    }
+
+    public static int methaneChainCap() {
+        return CAP_METHANE_CHAIN.get();
+    }
+
+    /** Master weather switch (default true). */
+    public static boolean weatherEnabled() {
+        return WEATHER_ENABLED.get();
+    }
+
+    /**
+     * A per-planet weather switch read by its schema key ({@code weather.<planet>.enabled}, named by the planet
+     * definition). A key missing from the schema is a wiring bug: it logs once and reads as enabled.
+     */
+    public static boolean planetWeatherEnabled(String key) {
+        ConfigValue<?> value = SCHEMA.value(key);
+        if (value != null && value.get() instanceof Boolean on) {
+            return on;
+        }
+        if (MISSING_WEATHER_KEYS.add(key)) {
+            za.co.neroland.nerospace.NerospaceCommon.LOGGER.warn("[Nerospace] no config key {}; weather stays on", key);
+        }
+        return true;
+    }
+
+    private static final java.util.Set<String> MISSING_WEATHER_KEYS = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    public static double weatherFrequencyMultiplier() {
+        return WEATHER_FREQUENCY.get();
+    }
+
+    public static double weatherDurationMultiplier() {
+        return WEATHER_DURATION.get();
+    }
+
+    public static int weatherParticleBudget() {
+        return WEATHER_PARTICLE_BUDGET.get();
+    }
+
+    /** Whether planet clocks run (default true); false pins every PlanetClock planet at noon. */
+    public static boolean clockEnabled() {
+        return CLOCK_ENABLED.get();
+    }
+
+    /** Whether planet solar output follows the clock (default true); false = the 1.x flat 2x. */
+    public static boolean solarClockDriven() {
+        return SOLAR_CLOCK_DRIVEN.get();
+    }
+
+    public static int landingPodSearchRadius() {
+        return LANDING_POD_SEARCH_RADIUS.get();
+    }
+
+    public static int stationsMaxMembers() {
+        return STATIONS_MAX_MEMBERS.get();
+    }
+
+    public static int stationsMaxModules() {
+        return STATIONS_MAX_MODULES.get();
+    }
+
+    public static int nyxaraTwilightBandWidth() {
+        return NYXARA_TWILIGHT_BAND_WIDTH.get();
+    }
+
+    /** The schema (read-only use: tests and diagnostics). */
+    public static ConfigSchema schema() {
+        return SCHEMA;
     }
 
     public static boolean isTelemetryEnabled() {

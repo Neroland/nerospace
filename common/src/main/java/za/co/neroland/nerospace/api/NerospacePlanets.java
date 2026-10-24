@@ -1,7 +1,6 @@
 package za.co.neroland.nerospace.api;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import net.minecraft.core.BlockPos;
@@ -12,9 +11,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.NerospaceCommon;
-import za.co.neroland.nerospace.registry.ModDimensions;
-import za.co.neroland.nerospace.world.OxygenManager;
 import za.co.neroland.nerospace.world.gravity.GravityManager;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.PlanetHazards;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
  * Public, read-only facade over Nerospace planet identity and traits.
@@ -37,15 +37,15 @@ public final class NerospacePlanets {
     public static final PlanetId GLACIRA = of("glacira");
     /** The orbital station void ({@code nerospace:station}) — near-zero gravity, airless. */
     public static final PlanetId STATION = of("station");
+    /** The Moon ({@code nerospace:luna}) — added in 2.0. Its dimension may not exist on every server yet. */
+    public static final PlanetId LUNA = of("luna");
+    /** Mars ({@code nerospace:mars}) — added in 2.0. Its dimension may not exist on every server yet. */
+    public static final PlanetId MARS = of("mars");
+    /** Nyxara ({@code nerospace:nyxara}) — added in 2.0. Its dimension may not exist on every server yet. */
+    public static final PlanetId NYXARA = of("nyxara");
 
-    private static final List<PlanetId> ALL = List.of(GREENXERTZ, CINDARA, GLACIRA, STATION);
-
-    /** Dimension key → planet id (keys are interned, so a direct map lookup is exact). */
-    private static final Map<ResourceKey<Level>, PlanetId> BY_DIMENSION = Map.of(
-            ModDimensions.GREENXERTZ_LEVEL, GREENXERTZ,
-            ModDimensions.CINDARA_LEVEL, CINDARA,
-            ModDimensions.GLACIRA_LEVEL, GLACIRA,
-            ModDimensions.STATION_LEVEL, STATION);
+    /** 1.x order first, 2.0 planets appended. */
+    private static final List<PlanetId> ALL = List.of(GREENXERTZ, CINDARA, GLACIRA, STATION, LUNA, MARS, NYXARA);
 
     private NerospacePlanets() {
     }
@@ -55,14 +55,19 @@ public final class NerospacePlanets {
         return new PlanetId(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path));
     }
 
-    /** Every Nerospace planet id, in a stable order. The returned list is immutable. */
+    /**
+     * Every Nerospace planet id, in a stable order: Greenxertz, Cindara, Glacira, Station, then (2.0) Luna,
+     * Mars, Nyxara. New planets are only ever appended. A planet whose dimension is not present on a given
+     * server is still listed; check {@code server.getLevel(id.dimension())} before travelling there.
+     * The returned list is immutable.
+     */
     public static List<PlanetId> all() {
         return ALL;
     }
 
     /** The planet for a dimension key, or empty for Earth / any non-Nerospace dimension. */
     public static Optional<PlanetId> byDimension(ResourceKey<Level> dimension) {
-        return Optional.ofNullable(dimension == null ? null : BY_DIMENSION.get(dimension));
+        return Planets.byDimension(dimension).map(PlanetDefinition::id);
     }
 
     /** The planet for a dimension identifier (e.g. {@code nerospace:cindara}), or empty if not a planet. */
@@ -104,17 +109,33 @@ public final class NerospacePlanets {
         return level == null ? Optional.empty() : byDimension(level.dimension());
     }
 
-    /** The read-only {@link PlanetTraits} for a planet (gravity default, airless flag, hazard). */
+    /**
+     * The read-only {@link PlanetTraits} for a planet. {@code defaultGravity} is config-scaled. An id that is
+     * not a Nerospace planet yields Earth-like neutral traits (gravity 1.0, breathable, no hazard).
+     */
     public static PlanetTraits traits(PlanetId planet) {
         if (planet == null) {
             throw new IllegalArgumentException("planet must not be null");
         }
         ResourceKey<Level> dimension = planet.dimension();
-        return new PlanetTraits(
-                planet,
-                GravityManager.defaultFactor(dimension),
-                OxygenManager.isAirless(dimension),
-                hazard(dimension));
+        return Planets.byId(planet)
+                .map(p -> p.traits().withDefaultGravity(GravityManager.defaultFactor(dimension)))
+                .orElseGet(() -> new PlanetTraits(planet, GravityManager.defaultFactor(dimension), false, Hazard.NONE));
+    }
+
+    /**
+     * The environmental hazard at an exact position. Usually the planet's primary
+     * {@link PlanetTraits#hazard()}, but a biome can carry a different one (Nyxara's day side runs hot, its night
+     * side is cold and irradiated) and some weather adds radiation (a Mars dust storm). {@link Hazard#NONE} for
+     * any non-Nerospace dimension. Server-side; reads only already-loaded state.
+     *
+     * @since 2.0.0
+     */
+    public static Hazard hazardAt(ServerLevel level, BlockPos pos) {
+        if (level == null || pos == null) {
+            return Hazard.NONE;
+        }
+        return PlanetHazards.at(level, pos);
     }
 
     /**
@@ -124,13 +145,5 @@ public final class NerospacePlanets {
      */
     public static double gravityAt(ServerLevel level, BlockPos pos) {
         return GravityManager.factorAt(level, pos);
-    }
-
-    private static Hazard hazard(ResourceKey<Level> dimension) {
-        return switch (OxygenManager.hazardFor(dimension)) {
-            case HEAT -> Hazard.HEAT;
-            case COLD -> Hazard.COLD;
-            case NONE -> Hazard.NONE;
-        };
     }
 }

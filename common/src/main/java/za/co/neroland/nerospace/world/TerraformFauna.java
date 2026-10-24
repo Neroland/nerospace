@@ -1,18 +1,17 @@
 package za.co.neroland.nerospace.world;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
 import org.jetbrains.annotations.Nullable;
 
-import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.registry.ModEntities;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
  * Starter-herd seeding for Living terraformed ground (DEEPER_TERRAFORM_DESIGN.md §5). Natural
@@ -36,14 +35,11 @@ public final class TerraformFauna {
     /** The livestock species seeded on this dimension's Living ground (§5), or null for none. */
     @Nullable
     public static EntityType<?> livestockFor(ServerLevel level) {
-        ResourceKey<Level> dimension = level.dimension();
-        if (ModDimensions.CINDARA_LEVEL.equals(dimension)) {
-            return ModEntities.EMBER_STRUTTER.get();
-        }
-        if (ModDimensions.GLACIRA_LEVEL.equals(dimension)) {
-            return ModEntities.WOOLLY_DRIFT.get();
-        }
-        return ModEntities.MEADOW_LOPER.get();
+        // The planet's own livestock; a planet without one (and any non-planet dimension) keeps the 1.x
+        // fallback, the Meadow Loper.
+        PlanetDefinition planet = Planets.get(level.dimension());
+        EntityType<?> species = planet == null ? null : planet.livestock();
+        return species != null ? species : ModEntities.MEADOW_LOPER.get();
     }
 
     /** Maybe seed a starter pair on a freshly Living column (sparse, population-capped). */

@@ -232,6 +232,10 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
 
         JsonArray rows = new JsonArray();
         for (PlanetId planet : NerospacePlanets.all()) {
+            // Hidden planets (dimension not present on this server) never reach the companion app.
+            if (server.getLevel(planet.dimension()) == null) {
+                continue;
+            }
             PlanetTraits traits = NerospacePlanets.traits(planet);
             JsonObject row = new JsonObject();
             row.addProperty("id", planet.asString());

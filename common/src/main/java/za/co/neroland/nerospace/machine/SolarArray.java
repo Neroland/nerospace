@@ -117,8 +117,10 @@ public final class SolarArray {
         // Each unit contributes its own daylight-scaled output; the sum is the array's generation. Add
         // into the per-unit buffers, then balance them into one pool.
         long total = 0L;
+        // The planet factor (clock + weather) is the same for every unit: compute it once per array tick.
+        float planetFactor = SolarPanelBlockEntity.planetFactor(level);
         for (SolarPanelBlockEntity unit : units) {
-            unit.generate(unit.generationThisTick(level));
+            unit.generate(unit.generationThisTick(level, planetFactor));
             total += unit.energy().getRaw();
         }
         int n = units.size();
