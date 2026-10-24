@@ -1,9 +1,8 @@
 # Roccia di meteora
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Meteor-Rock.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/meteor_rock.png" alt="Meteor Rock" width="150" align="right"></p>
+
+<p align="right"><img src="images/meteor_rock.png" alt="Meteor Rock" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 La roccia carbonizzata e debolmente luminosa lasciata dallo schianto di una meteora.
@@ -12,7 +11,7 @@ La roccia carbonizzata e debolmente luminosa lasciata dallo schianto di una mete
 
 La Roccia di meteora forma il piccolo cratere attorno a una meteora caduta (vedi **[Eventi meteora](Meteor-Events.md)**). È un blocco da costruzione estetico di roccia spaziale (basalto scuro venato di un bagliore alieno ciano/verde acqua) e il segnale visibile da lontano di un luogo d'impatto.
 
-## Come ottenerla
+## Obtaining
 
 - **Estrazione:** qualsiasi piccone; serve l'attrezzo giusto perché lasci un drop. Lascia cadere se stessa, così puoi raccoglierla e
 
