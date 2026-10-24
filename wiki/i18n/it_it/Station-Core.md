@@ -1,9 +1,8 @@
 # Nucleo della stazione
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Station-Core.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/station_core.png" alt="Station Core" width="150" align="right"></p>
+
+<p align="right"><img src="images/station_core.png" alt="Station Core" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Il blocco di ancoraggio permanente di una stazione fondata da un giocatore.
@@ -12,9 +11,9 @@ Il blocco di ancoraggio permanente di una stazione fondata da un giocatore.
 
 Ogni stazione fondata con una **[Carta della stazione](Station-Charter.md)** è costruita attorno a un Nucleo della stazione al centro. Il Nucleo segna la registrazione della stazione e mantiene persistente l'intera struttura: finché resta al suo posto, la stazione è elencata come destinazione per i razzi ed è raggiungibile.
 
-## Come ottenerlo
+## Obtaining
 
-**Non fabbricabile.** Un Nucleo della stazione viene piazzato automaticamente quando si fonda una stazione (tramite la schermata di denominazione della carta o l'opzione di attracco *Nuova stazione* del razzo). Emette una luce tenue ed è **indistruttibile**: la stazione è permanente, quindi le tue costruzioni al suo interno sono al sicuro.
+**Non fabbricabile.** Un Nucleo della stazione viene piazzato automaticamente quando si fonda una stazione (tramite la schermata di denominazione della carta o l'opzione di attracco _Nuova stazione_ del razzo). Emette una luce tenue ed è **indistruttibile**: la stazione è permanente, quindi le tue costruzioni al suo interno sono al sicuro.
 
 ## Come funziona
 
