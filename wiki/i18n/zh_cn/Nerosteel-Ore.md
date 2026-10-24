@@ -1,28 +1,29 @@
 # Nerosteel矿石
 
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Nerosteel-Ore.md)。
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/nerosteel_ore.png" alt="Nerosteel Ore" width="150" align="right"></p>
+
+<p align="right"><img src="images/nerosteel_ore.png" alt="Nerosteel Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 **Greenxertz** 行星的主要金属。
 
 ## 概述
 
-Nerosteel 是一种铁级金属，也是中期合成的支柱——火箭、氧气服、机器和空间站方块都由 **Nerosteel锭**制成。**Greenxertz** 是它的家园和丰富来源，但**主世界**中也有一条小而深的矿脉，因此在你离开家园之前，就能获得限制你第一枚火箭的这种金属。
+Nerosteel 是一种铁级金属，也是中期合成的支柱——火箭、氧气服、机器和空间站方块都由 **Nerosteel锭**制成。**Greenxertz** 是它的家园和丰富来源，但**主世界**中也有一条小而深的矿脉，因此在你离开家园之前，就能获得限制你第一枚火箭的这种金属。 **Greenxertz** is its home and
+its abundant source, but a small, deep seam also occurs on the **Overworld** so the metal that gates
+your first rocket is reachable before you ever leave home.
 
-## 获取方式
+## Obtaining
 
-- **挖掘：**需要**铁级镐**或更好的镐。掉落**粗Nerosteel**（受时运影响）。
+- **挖掘：**需要**铁级镐**或更好的镐。掉落**粗Nerosteel**（受时运影响）。 Drops **Raw Nerosteel** (Fortune-affected).
 - **生成：**
   - **主世界：**一条**稀有、深埋**的矿脉——大约 **y −56 到 y 16**（在海平面以下最多），常见程度约为
 
-    Greenxertz 的 40%（每区块 4 条矿脉对比 10 条）。足以启动电网和第一枚火箭。
+    40% as common as on Greenxertz (4 veins per chunk vs 10). Enough to bootstrap the power grid and a first rocket.
 
-  - **Greenxertz：**在整个维度中都很常见，分布在大约 **y −32 到 y 72** 的三角形区间内——
+  - \*\*Greenxertz：\*\*在整个维度中都很常见，分布在大约 **y −32 到 y 72** 的三角形区间内——
 
-    抵达后大量开采的好地方。
+    the place to mine it in bulk once you arrive.
 
 ## 用途
 
