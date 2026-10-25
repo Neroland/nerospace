@@ -1,9 +1,8 @@
 # Serbatoio di carburante
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Fuel-Tank.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/fuel_tank.png" alt="Fuel Tank" width="150" align="right"></p>
+
+<p align="right"><img src="images/fuel_tank.png" alt="Fuel Tank" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Conserva carburante per razzi e rifornisce automaticamente un razzo posato su una rampa di lancio adiacente.
@@ -12,7 +11,7 @@ Conserva carburante per razzi e rifornisce automaticamente un razzo posato su un
 
 Il Serbatoio di carburante è il primo tassello dell'automazione della rampa: contiene una grande riserva di **Carburante per razzi** e, a ogni tick, lo pompa in un razzo posato su una **[Rampa di lancio per razzi](Rocket-Launch-Pad.md)** collegata, così non devi riempire a mano i razzi con le taniche.
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma):
 
@@ -27,6 +26,7 @@ N G N
 ## Come funziona
 
 - **Capacità:** 32.000 mB di carburante per razzi.
+
 - **Riempimento:** fai clic destro con un **Secchio di carburante per razzi** o una **Tanica** per aggiungere carburante (ti viene restituito il secchio vuoto);
 
   un tubo per fluidi può riempirlo tramite la capability per i fluidi. Un clic destro a mani vuote apre la
@@ -34,9 +34,9 @@ N G N
 
 - **Svuotamento:** fai clic destro con un **secchio vuoto** per prelevare un **Secchio di carburante per razzi**.
 
-- **Alimentazione automatica con taniche:** tramogge e [Tubi universali](Universal-Pipe.md) possono inserire **Taniche di carburante
+- **Alimentazione automatica con taniche:** tramogge e [Tubi universali](Universal-Pipe.md) possono inserire \*\*Taniche di carburante
 
-  per razzi** tramite la capability per gli oggetti del serbatoio: ognuna viene convertita in **1.000 mB** di carburante al tick successivo.
+  per razzi\*\* tramite la capability per gli oggetti del serbatoio: ognuna viene convertita in **1.000 mB** di carburante al tick successivo.
   Abbinalo a una [Raffineria di carburante](Fuel-Refinery.md) (o a una linea di taniche) per un rifornimento completamente automatico.
 
 - **Rifornimento automatico:** quando un razzo si trova su una rampa adiacente, il serbatoio vi pompa carburante. Una
