@@ -1,8 +1,6 @@
 # Serbatoio di fluidi
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Fluid-Tank.md).
-
-> **Spostato in Neroland Core.** Il Serbatoio di fluidi ora è incluso nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:fluid_tank`**, così ogni mod Neroland usa un unico insieme di blocchi di stoccaggio. Si fabbrica e si usa esattamente come prima: vedi la **wiki di Neroland Core** (pagina *Fluid Tank*) per tutti i dettagli. (Da non confondere con la macchina [Serbatoio di carburante](Fuel-Tank.md) per rifornire i razzi, che resta in Nerospace.)
+> **Spostato in Neroland Core.** Il Serbatoio di fluidi ora è incluso nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:fluid_tank`**, così ogni mod Neroland usa un unico insieme di blocchi di stoccaggio. Si fabbrica e si usa esattamente come prima: vedi la **wiki di Neroland Core** (pagina _Fluid Tank_) per tutti i dettagli. (Da non confondere con la macchina [Serbatoio di carburante](Fuel-Tank.md) per rifornire i razzi, che resta in Nerospace.)
 
 Un deposito passivo per un singolo fluido: fai clic destro con un secchio per riempirlo o svuotarlo, oppure immetti ed estrai fluidi con i tubi su ogni lato. La variante **Serbatoio di fluidi creativo** fornisce un fluido all'infinito.
 
