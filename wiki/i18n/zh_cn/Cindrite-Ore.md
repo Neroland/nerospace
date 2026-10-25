@@ -1,24 +1,24 @@
 # Cindrite矿石
 
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Cindrite-Ore.md)。
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/cindrite_ore.png" alt="Cindrite Ore" width="150" align="right"></p>
+
+<p align="right"><img src="images/cindrite_ore.png" alt="Cindrite Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 火山卫星 **Cindara** 的标志性水晶。
 
 ## 概述
 
-Cindrite 是一种发光的余烬色宝石，只在 Cindara 上出现。它比 Greenxertz 的矿石更稀有，埋藏也更深，是对前往本模组中最恶劣世界的奖励。
+Cindrite 是一种发光的余烬色宝石，只在 Cindara 上出现。它比 Greenxertz 的矿石更稀有，埋藏也更深，是对前往本模组中最恶劣世界的奖励。 It is rarer than the Greenxertz ores
+and sits deeper, rewarding a trip to the most hostile world in the mod.
 
-## 获取方式
+## Obtaining
 
-- **挖掘：**需要**铁级镐**或更好的镐。直接掉落 **Cindrite** 宝石
+- **挖掘：**需要**铁级镐**或更好的镐。直接掉落 **Cindrite** 宝石 Drops the **Cindrite** gem directly
 
   （受时运影响）。
 
-- **生成：**在 **Cindara** 维度中生成，分布在大约 **y −48 到 y 48** 的三角形区间内——
+- \*\*生成：\*\*在 **Cindara** 维度中生成，分布在大约 **y −48 到 y 48** 的三角形区间内——
 
   比 Greenxertz 的矿石更稀有。
 
