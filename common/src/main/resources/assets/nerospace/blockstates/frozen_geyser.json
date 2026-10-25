@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "charged=false": {
+      "model": "nerospace:block/frozen_geyser"
+    },
+    "charged=true": {
+      "model": "nerospace:block/frozen_geyser"
+    }
+  }
+}

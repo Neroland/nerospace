@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings("unused")
 class BlockGravityRulesTest {
 
-    private static BlockGravityRules.Override shard() {
-        return new BlockGravityRules.Override(BlockGravityRules.Kind.SHARD, BlockGravityRules.SHARD_FACTOR);
+    private static BlockGravityRules.GravityOverride shard() {
+        return new BlockGravityRules.GravityOverride(BlockGravityRules.Kind.SHARD, BlockGravityRules.SHARD_FACTOR);
     }
 
-    private static BlockGravityRules.Override plate() {
-        return new BlockGravityRules.Override(BlockGravityRules.Kind.PLATE, BlockGravityRules.PLATE_FACTOR);
+    private static BlockGravityRules.GravityOverride plate() {
+        return new BlockGravityRules.GravityOverride(BlockGravityRules.Kind.PLATE, BlockGravityRules.PLATE_FACTOR);
     }
 
     @Test
@@ -42,8 +42,8 @@ class BlockGravityRulesTest {
     @Test
     @DisplayName("same kind → lowest factor")
     void lowest() {
-        var a = new BlockGravityRules.Override(BlockGravityRules.Kind.SHARD, -0.15);
-        var b = new BlockGravityRules.Override(BlockGravityRules.Kind.SHARD, -0.3);
+        var a = new BlockGravityRules.GravityOverride(BlockGravityRules.Kind.SHARD, -0.15);
+        var b = new BlockGravityRules.GravityOverride(BlockGravityRules.Kind.SHARD, -0.3);
         assertEquals(-0.3, BlockGravityRules.factor(1.0, List.of(a, b)));
         assertEquals(-0.3, BlockGravityRules.factor(1.0, List.of(b, a)));
     }
@@ -68,6 +68,23 @@ class BlockGravityRulesTest {
         assertFalse(BlockGravityRules.inColumn(0, 6, 0));
         assertTrue(BlockGravityRules.inColumn(0, 6, 0, BlockGravityRules.Kind.PLATE));
         assertFalse(BlockGravityRules.inColumn(1, 1, 0, BlockGravityRules.Kind.PLATE));
+    }
+
+    @Test
+    @DisplayName("shard drift is weightless + upward at most levitation I, never an acceleration")
+    void shardDrift() {
+        assertEquals(0.05, BlockGravityRules.LEVITATION_I_SPEED, 1.0e-12, "vanilla levitation I terminal speed");
+        double dy = 0.0;
+        for (int t = 0; t < 200; t++) {
+            dy = BlockGravityRules.shardDrift(dy);
+            assertTrue(dy <= BlockGravityRules.LEVITATION_I_SPEED + 1.0e-12, "tick " + t + " dy " + dy);
+        }
+        assertEquals(BlockGravityRules.LEVITATION_I_SPEED, dy, 1.0e-12);
+        assertEquals(0.05, BlockGravityRules.shardDrift(1.2), 1.0e-12, "a fast riser is clamped down");
+        assertEquals(-0.95, BlockGravityRules.shardDrift(-1.0), 1.0e-12, "a faller decelerates, no instant stop");
+        assertEquals(0.05, BlockGravityRules.shardDrift(Double.NaN), 1.0e-12);
+        assertTrue(BlockGravityRules.SHARD_LEVITATION_TICKS > 10, "outlives one 10-tick gravity check");
+        assertTrue(BlockGravityRules.SHARD_FACTOR < 0.0, "negative = shard marker");
     }
 
     @Test

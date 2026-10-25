@@ -24,8 +24,15 @@ import za.co.neroland.nerospace.registry.ModItems;
  */
 public final class StarGuide {
 
-    /** One step of a chapter: icon + lang keys + the advancement that completes it. */
-    public record Step(String id, Supplier<? extends ItemLike> icon, Identifier advancement) {
+    /**
+     * One step of a chapter: icon + lang keys + the advancement that completes it. A {@code hidden} step is not
+     * shown, hinted or counted toward the chapter until it is complete (the Luna cheese step).
+     */
+    public record Step(String id, Supplier<? extends ItemLike> icon, Identifier advancement, boolean hidden) {
+
+        public Step(String id, Supplier<? extends ItemLike> icon, Identifier advancement) {
+            this(id, icon, advancement, false);
+        }
 
         public String titleKey() {
             return "gui.nerospace.star_guide.step." + this.id;
@@ -46,6 +53,28 @@ public final class StarGuide {
         public String titleKey() {
             return "gui.nerospace.star_guide.chapter." + this.id;
         }
+
+        /** Whether step {@code index} is shown for completion {@code mask}: every visible step, a hidden one once done. */
+        public boolean isShown(int index, int mask) {
+            return !this.steps.get(index).hidden() || (mask & (1 << index)) != 0;
+        }
+
+        /** Bits of the steps that count toward finishing the chapter (hidden steps never do). */
+        public int requiredMask() {
+            int mask = 0;
+            for (int i = 0; i < this.steps.size(); i++) {
+                if (!this.steps.get(i).hidden()) {
+                    mask |= 1 << i;
+                }
+            }
+            return mask;
+        }
+
+        /** Whether every required step is complete in {@code mask}. */
+        public boolean isComplete(int mask) {
+            int required = requiredMask();
+            return (mask & required) == required;
+        }
     }
 
     private static Identifier adv(String path) {
@@ -54,6 +83,10 @@ public final class StarGuide {
 
     private static Step step(String id, Supplier<? extends ItemLike> icon, String advancementPath) {
         return new Step(id, icon, adv(advancementPath));
+    }
+
+    private static Step hiddenStep(String id, Supplier<? extends ItemLike> icon, String advancementPath) {
+        return new Step(id, icon, adv(advancementPath), true);
     }
 
     /** The chapters (order = chapter index used by menu completion bitmasks). */
@@ -115,15 +148,23 @@ public final class StarGuide {
             new Chapter("freight", List.of(
                     step("cargo_pad", () -> ModBlocks.CARGO_PAD.get(), "guide/cargo_pad"),
                     step("cargo_rocket", () -> ModItems.CARGO_ROCKET.get(), "guide/cargo_rocket"),
-                    step("first_freight", () -> ModItems.CARGO_CRATE.get(), "guide/first_freight"))));
+                    step("first_freight", () -> ModItems.CARGO_CRATE.get(), "guide/first_freight"))),
+            // ---- 2.0: Worlds chapters, APPENDED after the ten frozen 1.x chapters (index 10+). Chapter index and
+            // step position are bitmask bits, so nothing above this line may move and new steps only append.
+            // worlds_luna starts with the arrival step. The remaining Worlds steps go in BEFORE the hidden cheese
+            // step while 2.0.0 is unreleased (the layout freezes at release); the cheese step stays last.
+            new Chapter("worlds_luna", List.of(
+                    step("luna", () -> za.co.neroland.nerospace.world.planet.luna.LunaContent.REGOLITH_ITEM.get(), "luna"),
+                    hiddenStep("big_cheese", () -> za.co.neroland.nerospace.world.planet.luna.LunaContent.MOON_CHEESE.get(),
+                            "luna/the_big_cheese"))));
 
     public static final int CHAPTER_COUNT = CHAPTERS.size();
 
     private StarGuide() {
     }
 
-    /** Total step count across all chapters (sanity bound for menu button ids). */
+    /** Total step count across all chapters, hidden steps excluded (they are bonuses, never required). */
     public static int totalSteps() {
-        return CHAPTERS.stream().mapToInt(c -> c.steps().size()).sum();
+        return CHAPTERS.stream().mapToInt(c -> Integer.bitCount(c.requiredMask())).sum();
     }
 }

@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "lens=0": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=1": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=2": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=3": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=4": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=5": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=6": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=7": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=8": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=9": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=10": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=11": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=12": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=13": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=14": {
+      "model": "nerospace:block/crater_glass"
+    },
+    "lens=15": {
+      "model": "nerospace:block/crater_glass"
+    }
+  }
+}

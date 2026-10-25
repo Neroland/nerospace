@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "nerospace:block/bio_bark_log_top",
+    "side": "nerospace:block/bio_bark_log"
+  }
+}

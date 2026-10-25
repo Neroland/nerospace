@@ -2,33 +2,42 @@ package za.co.neroland.nerospace.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.level.Level;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.api.Hazard;
+import za.co.neroland.nerospace.api.PlanetTraits;
+import za.co.neroland.nerospace.client.ui.PlanetAccents;
+import za.co.neroland.nerospace.client.ui.PlanetCard;
+import za.co.neroland.nerospace.client.ui.PlanetCardData;
 import za.co.neroland.nerospace.rocket.Destinations;
+import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.rocket.RocketMenu;
+import za.co.neroland.nerospace.world.OxygenManager;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
+import za.co.neroland.nerospace.world.planet.WeatherEvent;
 
 /**
- * The in-rocket flight console: a large, fully procedural sci-fi panel (no texture asset). The left
- * half is an animated viewport — a scrolling starfield, the selected destination rendered as a glowing
- * planet, and the rocket flying a dotted trajectory toward it. The right half is the instrument cluster:
- * a fuel gauge, an oxygen (life-support) gauge with its loading readout, the fuel-intake slot, and a
- * pad-readiness light. A trajectory row of planet nodes selects the destination, an overlaid dock cycler
- * appears for the Orbital Station, and a wide Launch button (which pulses when ready) boards the player
- * and lifts off.
+ * The in-rocket flight console (004 §6, "list + card"): a vertical list of compact planet cards down the left
+ * (three visible, scrolled by the mouse wheel or the two chevrons), the instrument well (fuel, oxygen, power,
+ * status, trip cost) top-right, the selected destination's standard planet card under it, and the dock/pad
+ * cycler and Launch button bottom-left. Hull 212 × 244 and every slot coordinate are unchanged.
  *
- * <p>Built entirely from {@code fill}s on the {@link TexturedContainerScreen} hull helpers + custom
- * widgets, so it animates every frame without a PNG. The player is NOT aboard while the console is open;
- * pressing Launch is what boards them (see {@code RocketMenu.boardAndLaunch}).</p>
+ * <p>Procedural (no PNG): Stage 6 redraws the card art; the layout, fields and states here are final. The
+ * player is NOT aboard while the console is open; pressing Launch is what boards them.</p>
  */
 public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
@@ -39,37 +48,46 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private static final int O2 = 0xFF3CC8E6;     // oxygen cyan
     private static final int POWER = 0xFFF5C542;  // power amber
     private static final int GOOD = 0xFF54D46A;   // ready green
+    private static final int HULL = 0xFF0D1119;
+    private static final int WELL = 0xFF0A1018;
 
     private static final int W = 212;
     /** Base hull height with the vanilla 3 main-inventory rows; grows 18px per extra modded row. */
     private static final int BASE_H = 244;
 
-    // Viewport (panel-relative).
-    private static final int VX = 8;
-    private static final int VY = 20;
-    private static final int VW = 92;
-    private static final int VH = 86;
-
-    // Stacked control rows below the viewport / instruments (panel-relative Y).
-    private static final int DEST_ROW_Y = 110;   // destination node row
-    private static final int DOCK_ROW_Y = 128;   // dock cycler (only for the Orbital Station)
-    private static final int LAUNCH_ROW_Y = 144; // launch button
-    // Right instrument column (panel-relative).
-    private static final int RX = 108;
-    private static final int GW = 72;
-    // Destination trajectory nodes.
-    private static final int NODE_W = 36;
-    private static final int NODE_GAP = 2;
-
-    /** The full global destination order; the synced mask decides which nodes are visible. */
-    private static final List<ResourceKey<Level>> ALL_DESTINATIONS = Destinations.all();
+    // Destination list column (panel-relative): three compact cards at y 20 / 52 / 84.
+    private static final int LIST_X = 8;
+    private static final int LIST_Y = 20;
+    private static final int VISIBLE = 3;
+    private static final int CHEVRON_Y = 118;
+    // Instrument well.
+    private static final int RX = 76;
+    private static final int GW = 92;
+    // Selected destination's standard card.
+    private static final int CARD_X = 108;
+    private static final int CARD_Y = 106;
+    // Stacked control rows (values kept from 1.x).
+    private static final int DOCK_ROW_Y = 128;
+    private static final int LAUNCH_ROW_Y = 144;
+    private static final int ROW_W = 96;
 
     private SpaceButton launchButton;
     private SpaceButton stationButton;
     private SpaceButton padButton;
-    private final List<SpaceButton> destinationButtons = new ArrayList<>();
-    /** Whether the current-dimension node currently carries the "you are here" tooltip hint. */
-    private boolean hereHintApplied;
+    private SpaceButton upButton;
+    private SpaceButton downButton;
+
+    /** Index of the first visible list entry. */
+    private int scroll;
+    private boolean scrolledToSelection;
+    private int mouseX;
+    private int mouseY;
+    /** Destination indices shown in the list this frame, in {@link Destinations} order. */
+    private final List<Integer> entries = new ArrayList<>();
+    /** Locked destinations a station Observatory reveals this frame (shown as LOCKED_TIER cards, 005 §6.6). */
+    private final List<Integer> revealed = new ArrayList<>();
+    /** A revealed locked destination the player clicked to preview in the standard card, or −1. */
+    private int previewIndex = -1;
 
     public RocketScreen(RocketMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, W,
@@ -81,41 +99,29 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     @Override
     protected void init() {
         super.init();
-        this.destinationButtons.clear();
+        this.upButton = new SpaceButton(this.leftPos + LIST_X, this.topPos + CHEVRON_Y, 28, 8,
+                Component.literal("▲"), ACCENT, b -> scrollBy(-1));
+        this.addRenderableWidget(this.upButton);
+        this.downButton = new SpaceButton(this.leftPos + LIST_X + 32, this.topPos + CHEVRON_Y, 28, 8,
+                Component.literal("▼"), ACCENT, b -> scrollBy(1));
+        this.addRenderableWidget(this.downButton);
 
-        // Trajectory node row: one node per destination in the global order. Initial positions assume
-        // all visible; extractForeground re-flows the VISIBLE nodes every frame (the mask hides the
-        // current dimension, so a fixed slot per destination would leave a hole in the row).
-        int count = ALL_DESTINATIONS.size();
-        int rowW = count * NODE_W + (count - 1) * NODE_GAP;
-        int x = this.leftPos + Math.max(8, (W - rowW) / 2);
-        this.hereHintApplied = false; // extractForeground swaps in the "you are here" hint when needed
-        for (int i = 0; i < count; i++) {
-            final int index = i;
-            ResourceKey<Level> destKey = ALL_DESTINATIONS.get(i);
-            SpaceButton node = new SpaceButton(x, this.topPos + DEST_ROW_Y, NODE_W, 15,
-                    Destinations.shortDisplayName(destKey), ACCENT,
-                    b -> onSelectDestination(index));
-            node.setTooltip(Tooltip.create(Destinations.displayName(destKey)));
-            this.addRenderableWidget(node);
-            this.destinationButtons.add(node);
-            x += NODE_W + NODE_GAP;
+        // Dock cycler (Orbital Station) and pad cycler (every other destination) share one row, 96 wide.
+        this.stationButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, ROW_W, 12,
+                Component.empty(), ACCENT, b -> sendButton(RocketMenu.BUTTON_CYCLE_STATION));
+        this.addRenderableWidget(this.stationButton);
+        this.padButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, ROW_W, 12,
+                Component.empty(), O2, b -> sendButton(RocketMenu.BUTTON_CYCLE_PAD));
+        this.addRenderableWidget(this.padButton);
+        if (this.minecraft != null && this.minecraft.player != null && !RocketEntity.hasCharter(this.minecraft.player)) {
+            // Client hint only (005 §8): "New Station" is skipped without a charter; the server re-checks.
+            this.stationButton.setTooltip(Tooltip.create(Component.translatable("item.nerospace.station_charter.needed")));
         }
 
-        // Dock cycler: its own full-width row (only shown for the Orbital Station destination), so the
-        // long "Dock: <name>" label has room and never spills over the instrument column.
-        this.stationButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 12,
-                Component.empty(), ACCENT, b -> onCycleStation());
-        this.addRenderableWidget(this.stationButton);
-
-        // Pad cycler — shares the dock row; shown for normal-dimension destinations instead of the dock cycler.
-        this.padButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, W - 16, 12,
-                Component.empty(), O2, b -> onCyclePad());
-        this.addRenderableWidget(this.padButton);
-
-        this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + LAUNCH_ROW_Y, W - 16, 16,
-                Component.translatable("gui.nerospace.rocket.launch"), ACCENT, b -> onLaunch());
+        this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + LAUNCH_ROW_Y, ROW_W, 16,
+                Component.translatable("gui.nerospace.rocket.launch"), ACCENT, b -> sendButton(RocketMenu.BUTTON_LAUNCH));
         this.addRenderableWidget(this.launchButton);
+        this.scrolledToSelection = false;
     }
 
     // --- Procedural hull -----------------------------------------------------
@@ -126,14 +132,11 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         int t = this.topPos;
         int h = this.imageHeight; // grows with extra modded inventory rows
         g.fill(l - 2, t - 2, l + W + 2, t + h + 2, INK);     // outer rim
-        g.fill(l, t, l + W, t + h, 0xFF0E1724);              // hull body
-        g.fill(l, t, l + W, t + 18, 0xFF14283C);             // header band
-        g.fill(l, t + 18, l + W, t + 19, ACCENT);            // accent rule under the header
-        well(g, l + VX, t + VY, VW, VH);                     // viewport recess
-        well(g, l + RX - 2, t + 22, W - RX - 6, 86);         // instrument cluster backing
-        // Slot grid: a recess under EVERY menu slot (fuel intake + the full player-inventory block,
-        // including any extra rows) — adjacent cells share borders, reading as an inventory grid. The
-        // fuel intake (slot 0) gets a high-vis fuel-orange frame instead of a plain cell.
+        g.fill(l, t, l + W, t + h, HULL);                    // hull body
+        g.fill(l, t, l + W, t + 16, 0xFF14283C);             // header band
+        g.fill(l, t + 16, l + W, t + 17, ACCENT);            // accent rule under the header
+        well(g, l + LIST_X, t + LIST_Y, 64, 96);             // destination list column
+        well(g, l + RX, t + 20, 96, 84);                     // instrument well
         for (int i = 0; i < this.menu.slots.size(); i++) {
             Slot slot = this.menu.slots.get(i);
             if (i == 0) {
@@ -150,7 +153,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
     private void well(GuiGraphicsExtractor g, int x, int y, int w, int h) {
         g.fill(x - 1, y - 1, x + w + 1, y + h + 1, INK);
-        g.fill(x, y, x + w, y + h, 0xFF0A1018);
+        g.fill(x, y, x + w, y + h, WELL);
     }
 
     private void rivet(GuiGraphicsExtractor g, int x, int y) {
@@ -160,28 +163,28 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     // --- Live readouts -------------------------------------------------------
 
     @Override
+    public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
+        super.extractContents(extractor, mouseX, mouseY, partialTick);
+    }
+
+    @Override
     protected void extractForeground(GuiGraphicsExtractor g) {
         long now = System.currentTimeMillis();
+        label(g, Component.translatable("gui.nerospace.rocket.title", this.menu.getTier().level()), 10, 4, TITLE);
 
-        label(g, Component.translatable("gui.nerospace.rocket.title", this.menu.getTier().level()),
-                10, 6, TITLE);
-
-        drawViewport(g, now);
-
-        // Three compact tank gauges: fuel, oxygen (life support), and power.
+        // Instrument well: three compact gauges, status and trip cost.
         int fpct = this.menu.getFuelPercent();
-        label(g, Component.translatable("gui.nerospace.rocket.fuel_line", fpct), RX, 22, 0xFFFFC9B0);
-        fluidGauge(g, RX, 31, GW, 6, fpct / 100f, FUEL);
-
+        label(g, Component.translatable("gui.nerospace.rocket.fuel_line", fpct), RX + 2, 22, 0xFFFFC9B0);
+        fluidGauge(g, RX + 2, 31, GW, 6, fpct / 100f, FUEL);
         int opct = this.menu.getOxygenPercent();
-        label(g, Component.translatable("gui.nerospace.rocket.oxygen_line", opct), RX, 44, 0xFFBFEFFF);
-        fluidGauge(g, RX, 53, GW, 6, opct / 100f, O2);
-
+        label(g, Component.translatable("gui.nerospace.rocket.oxygen_line", opct), RX + 2, 44, 0xFFBFEFFF);
+        fluidGauge(g, RX + 2, 53, GW, 6, opct / 100f, O2);
         int ppct = this.menu.getPowerPercent();
-        label(g, Component.translatable("gui.nerospace.rocket.power_line", ppct), RX, 66, 0xFFF6DC8A);
-        segGauge(g, RX, 75, GW, 6, ppct / 100f, POWER);
+        label(g, Component.translatable("gui.nerospace.rocket.power_line", ppct), RX + 2, 66, 0xFFF6DC8A);
+        segGauge(g, RX + 2, 75, GW, 6, ppct / 100f, POWER);
 
-        // Status light — report the ACTUAL blocker: an insufficient pad, an empty tank, or all-clear.
         boolean padValid = this.menu.isPadValid();
         boolean ready = this.menu.isLaunchable();
         String statusKey;
@@ -191,49 +194,59 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             statusColor = ACCENT;
         } else if (!ready) {
             statusKey = "gui.nerospace.rocket.needs_fuel";
-            statusColor = 0xFFF0A83C; // amber: pad's fine, just needs fuelling
+            statusColor = 0xFFF0A83C;
         } else {
             statusKey = "gui.nerospace.rocket.pad_ready";
             statusColor = GOOD;
         }
-        label(g, Component.translatable(statusKey), RX, 88, statusColor);
+        label(g, Component.translatable(statusKey), RX + 2, 86, statusColor);
+        label(g, Component.translatable("gui.nerospace.rocket.cost", this.menu.getFuelCost()), RX + 2, 95, 0xFFCFE7FF);
 
-        // Destination node states from the live tier mask. The mask includes the CURRENT dimension
-        // only when it has registered landing pads (Name-Tagged travel nodes) for a same-dimension
-        // hop; without one there is nowhere distinct to land, but a silently missing planet reads as
-        // a bug — so the current dimension is then SHOWN as a dimmed, unclickable "you are here"
-        // node. The row re-flows into a compact, centred line each frame (fixed per-destination
-        // slots would leave holes).
-        int mask = this.menu.getDestinationMask();
-        int reachable = Integer.bitCount(mask);
+        // Destination list: reachable destinations in Destinations order, plus the "you are here" node.
+        rebuildEntries();
         int selected = this.menu.getDestinationIndex();
-        int hereIndex = this.minecraft != null && this.minecraft.level != null
-                ? Destinations.indexOf(this.minecraft.level.dimension()) : -1;
-        boolean hereExtra = hereIndex >= 0 && (mask & (1 << hereIndex)) == 0; // shown but not selectable
-        if (hereIndex >= 0 && hereExtra != this.hereHintApplied) {
-            Component fullName = Destinations.displayName(ALL_DESTINATIONS.get(hereIndex));
-            this.destinationButtons.get(hereIndex).setTooltip(Tooltip.create(hereExtra
-                    ? Component.translatable("gui.nerospace.rocket.here", fullName)
-                    : fullName));
-            this.hereHintApplied = hereExtra;
+        if (!this.scrolledToSelection) {
+            int at = this.entries.indexOf(selected);
+            if (at >= 0) {
+                this.scroll = Math.max(0, Math.min(at, this.entries.size() - VISIBLE));
+            }
+            this.scrolledToSelection = true;
         }
-        int shown = reachable + (hereExtra ? 1 : 0);
-        int rowW = shown * NODE_W + Math.max(0, shown - 1) * NODE_GAP;
-        int nodeX = this.leftPos + Math.max(8, (W - rowW) / 2);
-        for (int i = 0; i < this.destinationButtons.size(); i++) {
-            SpaceButton node = this.destinationButtons.get(i);
-            boolean reachableNode = (mask & (1 << i)) != 0;
-            node.visible = reachableNode || i == hereIndex;
-            node.active = reachableNode && reachable > 1;
-            node.setSelected(i == selected);
-            if (node.visible) {
-                node.setX(nodeX);
-                nodeX += NODE_W + NODE_GAP;
+        this.scroll = Math.max(0, Math.min(this.scroll, Math.max(0, this.entries.size() - VISIBLE)));
+        PlanetCardData hovered = null;
+        for (int row = 0; row < VISIBLE; row++) {
+            int i = this.scroll + row;
+            if (i >= this.entries.size()) {
+                break;
+            }
+            int x = this.leftPos + LIST_X;
+            int y = this.topPos + LIST_Y + row * PlanetCard.COMPACT_H;
+            PlanetCardData data = cardData(this.entries.get(i));
+            boolean hover = PlanetCard.hit(x, y, true, this.mouseX, this.mouseY);
+            PlanetCard.draw(g, this.font, x, y, data, true, hover, now);
+            if (hover) {
+                hovered = data;
             }
         }
+        boolean scrollable = this.entries.size() > VISIBLE;
+        if (this.upButton != null && this.downButton != null) {
+            this.upButton.visible = scrollable;
+            this.downButton.visible = scrollable;
+            this.upButton.active = scrollable && this.scroll > 0;
+            this.downButton.active = scrollable && this.scroll + VISIBLE < this.entries.size();
+        }
 
-        // Dock / pad cycler (share the same row): the dock cycler for the Orbital Station, the pad cycler
-        // for every other destination.
+        // The selected destination's standard card (or a clicked Observatory preview).
+        ResourceKey<Level> selectedKey = Destinations.byIndex(selected);
+        if (this.previewIndex >= 0 && this.revealed.contains(this.previewIndex)) {
+            PlanetCard.draw(g, this.font, this.leftPos + CARD_X, this.topPos + CARD_Y, cardData(this.previewIndex),
+                    false, false, now);
+        } else if (selectedKey != null && (this.menu.getDestinationMask() & (1 << selected)) != 0) {
+            PlanetCard.draw(g, this.font, this.leftPos + CARD_X, this.topPos + CARD_Y, cardData(selected), false,
+                    false, now);
+        }
+
+        // Dock / pad cycler.
         boolean stationDest = this.menu.isStationDestination();
         boolean padDest = this.menu.isPadDestination();
         if (this.stationButton != null) {
@@ -248,127 +261,189 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             this.padButton.visible = padDest;
             this.padButton.active = padDest;
             if (padDest) {
-                this.padButton.setMessage(Component.translatable("gui.nerospace.rocket.pad",
-                        this.menu.getPadName()));
+                this.padButton.setMessage(Component.translatable("gui.nerospace.rocket.pad", padLabel(selectedKey)));
             }
         }
 
-        // Calculated fuel cost for the current trip (inside the instrument well, under the status light).
-        label(g, Component.translatable("gui.nerospace.rocket.cost", this.menu.getFuelCost()), RX, 98, 0xFFCFE7FF);
-
-        // Launch button: enabled when ready, with a soft ready-pulse on its border.
         if (this.launchButton != null) {
             this.launchButton.active = ready;
             this.launchButton.setSelected(ready && ((now / 500L) & 1L) == 0L);
         }
+        if (hovered != null) {
+            g.setComponentTooltipForNextFrame(this.font, PlanetCard.tooltip(hovered), this.mouseX, this.mouseY);
+        }
     }
 
-    /** The animated viewport: scrolling starfield, the destination planet, and the rocket's trajectory. */
-    private void drawViewport(GuiGraphicsExtractor g, long now) {
-        int x0 = this.leftPos + VX;
-        int y0 = this.topPos + VY;
-
-        // Scrolling starfield.
-        for (int i = 0; i < 30; i++) {
-            int sx = x0 + 3 + Math.floorMod(hash(i, 0x9E3779B1), VW - 6);
-            int scroll = (int) (now / 40L) + i * 7;
-            int sy = y0 + 3 + Math.floorMod(hash(i, 0x85EBCA77) + scroll, VH - 6);
-            int twinkle = (int) ((now / 200L) + i) & 3;
-            int c = twinkle == 0 ? 0xFFFFFFFF : (twinkle == 1 ? 0xFFBFD4EC : 0xFF6E84A0);
-            g.fill(sx, sy, sx + 1, sy + 1, c);
-        }
-
-        // Destination planet.
-        int selected = this.menu.getDestinationIndex();
-        int pc = planetColor(selected);
-        int cx = x0 + VW / 2;
-        int cy = y0 + 30;
-        disc(g, cx, cy, 15, dim(pc, 0.35F)); // halo
-        disc(g, cx, cy, 12, pc);
-        g.fill(cx - 6, cy - 7, cx - 1, cy - 2, light(pc)); // specular highlight
-
-        // Rocket flying a dotted trajectory up toward the planet, bobbing gently.
-        int bob = Math.round(Mth.sin(now / 300.0F) * 2.0F);
-        int rx = cx;
-        int ry = y0 + VH - 16 + bob;
-        int segments = 12;
-        for (int i = 1; i < segments; i++) {
-            float s = i / (float) segments;
-            int ax = Math.round(rx + (cx - rx) * s);
-            int ay = Math.round(ry + (cy - ry) * s);
-            if (((i + (now / 150L)) & 1L) == 0L) {
-                g.fill(ax, ay, ax + 1, ay + 1, ACCENT);
+    private void rebuildEntries() {
+        this.entries.clear();
+        int mask = this.menu.getDestinationMask();
+        int here = hereIndex();
+        List<ResourceKey<Level>> all = Destinations.all();
+        for (int i = 0; i < all.size(); i++) {
+            if ((mask & (1 << i)) != 0 || i == here) {
+                this.entries.add(i);
             }
         }
-        drawRocketIcon(g, rx, ry, now);
+        this.revealed.clear();
+        this.revealed.addAll(revealedLocked(mask, here, this.menu.getTier().level(), this.menu.getRevealCount()));
+        this.entries.addAll(this.revealed);
+    }
 
-        // Destination name along the viewport floor.
-        if (selected >= 0 && selected < ALL_DESTINATIONS.size()) {
-            labelCentered(g, Destinations.displayName(ALL_DESTINATIONS.get(selected)),
-                    VX, VW, VY + VH - 10, TITLE);
+    /**
+     * The next {@code count} locked destinations in tier order (unlock tier, then destination index): planets this
+     * rocket's tier cannot reach yet, never the current world. A gate-locked world (Nyxara) is included and stays
+     * unselectable. Planet data only.
+     */
+    static List<Integer> revealedLocked(int mask, int here, int rocketTier, int count) {
+        List<Integer> out = new ArrayList<>();
+        if (count <= 0) {
+            return out;
         }
-    }
-
-    private void drawRocketIcon(GuiGraphicsExtractor g, int cx, int by, long now) {
-        g.fill(cx - 2, by - 8, cx + 2, by, 0xFFD9DEE6);     // body
-        g.fill(cx - 1, by - 11, cx + 1, by - 8, ACCENT);    // nose
-        g.fill(cx - 4, by - 3, cx - 2, by, ACCENT);         // left fin
-        g.fill(cx + 2, by - 3, cx + 4, by, ACCENT);         // right fin
-        int flame = (int) ((now / 100L) % 3L);              // flickering exhaust
-        g.fill(cx - 1, by, cx + 1, by + 2 + flame, FUEL);
-    }
-
-    /** Filled circle (scanline fills); centre absolute. */
-    private void disc(GuiGraphicsExtractor g, int cx, int cy, int r, int color) {
-        for (int dy = -r; dy <= r; dy++) {
-            int dx = (int) Math.sqrt((double) r * r - (double) dy * dy);
-            g.fill(cx - dx, cy + dy, cx + dx + 1, cy + dy + 1, color);
+        List<int[]> locked = new ArrayList<>(); // {unlockTier, index}
+        List<ResourceKey<Level>> all = Destinations.all();
+        for (int i = 0; i < all.size(); i++) {
+            PlanetDefinition planet = Planets.get(all.get(i));
+            if ((mask & (1 << i)) == 0 && i != here && planet != null && planet.unlockTier() > rocketTier) {
+                locked.add(new int[] { planet.unlockTier(), i });
+            }
         }
+        locked.sort((a, b) -> a[0] != b[0] ? Integer.compare(a[0], b[0]) : Integer.compare(a[1], b[1]));
+        for (int k = 0; k < Math.min(count, locked.size()); k++) {
+            out.add(locked.get(k)[1]);
+        }
+        return out;
     }
+
+    private int hereIndex() {
+        return this.minecraft != null && this.minecraft.level != null
+                ? Destinations.indexOf(this.minecraft.level.dimension()) : -1;
+    }
+
+    /** Fills a card from client state only (004 §5): planet traits, the synced clock/weather, the pad name. */
+    private PlanetCardData cardData(int index) {
+        ResourceKey<Level> key = Destinations.byIndex(index);
+        if (key == null) {
+            key = Level.OVERWORLD;
+        }
+        PlanetDefinition planet = Planets.get(key);
+        PlanetTraits traits = planet != null ? planet.traits() : null;
+        Level level = this.minecraft != null ? this.minecraft.level : null;
+        boolean current = level != null && level.dimension().equals(key);
+        int mask = this.menu.getDestinationMask();
+        boolean reachable = (mask & (1 << index)) != 0;
+        boolean here = current && !reachable;
+        boolean gate = (this.menu.getGateMask() & (1 << index)) != 0;
+        boolean tierLocked = this.revealed.contains(index); // an Observatory preview: full LOCKED_TIER card
+        PlanetCardData.State state = PlanetCardData.stateFor(here, gate && !tierLocked, tierLocked,
+                index == this.menu.getDestinationIndex());
+        double gravity = traits != null ? traits.defaultGravity() : 1.0D;
+        Hazard hazard = traits != null ? traits.hazard() : Hazard.NONE;
+        boolean rad = traits != null && traits.radiation() > 0;
+        boolean fixed = traits != null && traits.fixedClock();
+        boolean hasDay = traits == null || !fixed;
+        float phase = current ? (float) ClientPlanetClock.phase(level)
+                : (planet != null && fixed ? (float) planet.pinnedPhase() : 0.5F);
+        WeatherEvent weather = current ? ClientPlanetWeather.event(level) : WeatherEvent.NONE;
+        float intensity = current ? ClientPlanetWeather.intensity(level) : 0.0F;
+        OxygenManager.SuitTier suit = traits != null && traits.airless() ? OxygenManager.SuitTier.TIER_1
+                : OxygenManager.SuitTier.NONE;
+        return new PlanetCardData(key, Destinations.displayName(key), gravity, hazard, suit, rad, weather, intensity,
+                phase, fixed, hasDay, chosenPad(key), state, planet != null ? planet.unlockTier() : 1);
+    }
+
+    private Optional<Component> chosenPad(ResourceKey<Level> key) {
+        if (key.equals(za.co.neroland.nerospace.registry.ModDimensions.STATION_LEVEL)) {
+            return Optional.of(Component.translatable("gui.nerospace.card.dock",
+                    ClientStations.name(this.menu.getStationSlot())));
+        }
+        String dimId = key.identifier().toString();
+        if (ClientPads.count(dimId) == 0) {
+            return Optional.empty(); // no pad there: a Landing Pod will be placed
+        }
+        return Optional.of(Component.translatable("gui.nerospace.card.pad", padLabel(key)));
+    }
+
+    private String padLabel(@Nullable ResourceKey<Level> key) {
+        int idx = this.menu.getPadIndex();
+        if (idx < 0 || key == null) {
+            return Component.translatable("gui.nerospace.card.pad_auto").getString();
+        }
+        String name = ClientPads.name(key.identifier().toString(), idx);
+        return name != null ? name : this.menu.getPadName();
+    }
+
+    // --- Input ---------------------------------------------------------------
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0) {
+            int mask = this.menu.getDestinationMask();
+            for (int row = 0; row < VISIBLE; row++) {
+                int i = this.scroll + row;
+                if (i >= this.entries.size()) {
+                    break;
+                }
+                int x = this.leftPos + LIST_X;
+                int y = this.topPos + LIST_Y + row * PlanetCard.COMPACT_H;
+                if (PlanetCard.hit(x, y, true, event.x(), event.y())) {
+                    int index = this.entries.get(i);
+                    if (this.revealed.contains(index)) {
+                        this.previewIndex = this.previewIndex == index ? -1 : index; // preview only, never selectable
+                        return true;
+                    }
+                    this.previewIndex = -1;
+                    boolean gate = (this.menu.getGateMask() & (1 << index)) != 0;
+                    if ((mask & (1 << index)) != 0 && !gate && Integer.bitCount(mask) > 1) {
+                        sendButton(RocketMenu.SELECT_DEST_BASE + index);
+                    }
+                    return true;
+                }
+            }
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        int x = this.leftPos + LIST_X;
+        int y = this.topPos + LIST_Y;
+        if (mouseX >= x && mouseX < x + PlanetCard.COMPACT_W && mouseY >= y
+                && mouseY < y + VISIBLE * PlanetCard.COMPACT_H && scrollY != 0.0D) {
+            scrollBy(scrollY > 0.0D ? -1 : 1);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    private void scrollBy(int delta) {
+        this.scroll = Math.max(0, Math.min(this.scroll + delta, Math.max(0, this.entries.size() - VISIBLE)));
+    }
+
+    // --- Slot wells ----------------------------------------------------------
 
     private void slotWell(GuiGraphicsExtractor g, int dx, int dy) {
         int x = this.leftPos + dx;
         int y = this.topPos + dy;
         g.fill(x - 1, y - 1, x + 17, y + 17, INK);
-        g.fill(x, y, x + 16, y + 16, 0xFF0A1018);
+        g.fill(x, y, x + 16, y + 16, WELL);
     }
 
-    /**
-     * The fuel-intake recess: framed in fuel orange (vs the plain grid cells) so the "drop fuel here"
-     * slot reads at a glance. While empty the frame pulses and a small arrow points into the slot.
-     */
+    /** The fuel-intake recess: framed in fuel orange; pulses with a small arrow while empty. */
     private void fuelSlotWell(GuiGraphicsExtractor g, int dx, int dy) {
         int x = this.leftPos + dx;
         int y = this.topPos + dy;
         boolean empty = !this.menu.slots.get(0).hasItem();
         boolean lit = !empty || ((System.currentTimeMillis() / 500L) & 1L) == 0L;
         int rim = lit ? FUEL : dim(FUEL, 0.45F);
-        g.fill(x - 2, y - 2, x + 18, y + 18, rim);           // orange frame
-        g.fill(x - 1, y - 1, x + 17, y + 17, INK);           // inner rule
-        g.fill(x, y, x + 16, y + 16, 0xFF1A1208);            // warm dark interior
+        g.fill(x - 2, y - 2, x + 18, y + 18, rim);
+        g.fill(x - 1, y - 1, x + 17, y + 17, INK);
+        g.fill(x, y, x + 16, y + 16, 0xFF1A1208);
         if (empty) {
-            int ax = x + 8; // arrow pointing down into the slot
+            int ax = x + 8;
             g.fill(ax - 3, y - 7, ax + 3, y - 5, rim);
             g.fill(ax - 2, y - 5, ax + 2, y - 3, rim);
             g.fill(ax - 1, y - 3, ax + 1, y - 2, rim);
         }
-    }
-
-    private static int hash(int i, int salt) {
-        int h = i * 374761393 + salt;
-        h = (h ^ (h >>> 13)) * 1274126177;
-        return (h ^ (h >>> 16)) & 0x7FFFFFFF;
-    }
-
-    private static int planetColor(int index) {
-        return switch (index) {
-            case 0 -> 0xFF4A90D9; // Home
-            case 1 -> 0xFF9FB4C8; // Orbital Station
-            case 2 -> 0xFF54D46A; // Greenxertz
-            case 3 -> 0xFFE0662C; // Cindara
-            case 4 -> 0xFF9FE8FF; // Glacira
-            default -> 0xFF9FB4C8;
-        };
     }
 
     private static int dim(int argb, float f) {
@@ -379,27 +454,9 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         return (a << 24) | (r << 16) | (gg << 8) | b;
     }
 
-    private static int light(int argb) {
-        int r = Math.min(255, ((argb >> 16) & 0xFF) + 90);
-        int gg = Math.min(255, ((argb >> 8) & 0xFF) + 90);
-        int b = Math.min(255, (argb & 0xFF) + 90);
-        return 0xFF000000 | (r << 16) | (gg << 8) | b;
-    }
-
-    private void onSelectDestination(int index) {
-        sendButton(RocketMenu.SELECT_DEST_BASE + index);
-    }
-
-    private void onCycleStation() {
-        sendButton(RocketMenu.BUTTON_CYCLE_STATION);
-    }
-
-    private void onCyclePad() {
-        sendButton(RocketMenu.BUTTON_CYCLE_PAD);
-    }
-
-    private void onLaunch() {
-        sendButton(RocketMenu.BUTTON_LAUNCH);
+    /** Accent of the selected destination (kept for callers that tint by planet). */
+    public static int accentFor(@Nullable ResourceKey<Level> key) {
+        return PlanetAccents.of(key);
     }
 
     private void sendButton(int id) {

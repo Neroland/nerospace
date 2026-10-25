@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": "nerospace:rocket_launch_pad",
+    "T": "#c:ingots/titanium",
+    "L": "minecraft:sea_lantern"
+  },
+  "pattern": [
+    "TPT",
+    "PLP",
+    "TPT"
+  ],
+  "result": {
+    "id": "nerospace:docking_ring"
+  }
+}

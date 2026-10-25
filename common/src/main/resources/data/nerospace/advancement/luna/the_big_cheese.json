@@ -1,0 +1,36 @@
+{
+  "parent": "nerospace:luna",
+  "criteria": {
+    "has_cheese": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:moon_cheese"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.nerospace.luna.the_big_cheese.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "id": "nerospace:moon_cheese"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.nerospace.luna.the_big_cheese.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_cheese"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

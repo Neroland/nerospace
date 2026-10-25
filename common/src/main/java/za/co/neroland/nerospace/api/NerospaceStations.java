@@ -28,10 +28,9 @@ import za.co.neroland.nerospace.rocket.StationRegistry.StationEntry;
 public final class NerospaceStations {
 
     /**
-     * Baseline number of logistics routes a station can anchor, exposed on every {@link StationInfo}. The
-     * internal registry currently models no per-station capacity, so this is a stable uniform value;
-     * should per-station capacity be modelled later, the {@link StationInfo#routeCapacity()} field stays —
-     * only the value varies — so consumers need not change.
+     * Baseline number of logistics routes a station can anchor (the 1.x uniform value). Since 2.0.0 the value on
+     * each {@link StationInfo} follows the station's class: WAYSTATION 9 (every migrated station), RESEARCH and
+     * INDUSTRIAL 8, TRADE 10. The field and this constant stay, so consumers need not change.
      */
     public static final int DEFAULT_ROUTE_CAPACITY = 8;
 
@@ -87,6 +86,6 @@ public final class NerospaceStations {
 
     private static StationInfo toInfo(StationEntry entry) {
         return new StationInfo(entry.slot(), entry.name(), NerospacePlanets.STATION,
-                entry.center(), DEFAULT_ROUTE_CAPACITY);
+                entry.center(), entry.stationClass().traits().routeCapacity(), entry.stationClass().name());
     }
 }

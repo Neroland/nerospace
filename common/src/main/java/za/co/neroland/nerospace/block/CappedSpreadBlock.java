@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -30,8 +31,8 @@ import za.co.neroland.nerospace.world.planet.WeatherEvent;
 /**
  * Carpet that spreads over a rootable substrate with a per-chunk cap (Spore Moss, 002 §1.5): 1-in-8 per random tick
  * onto an adjacent empty {@code nerospace:xertz_rootable} top, ×3 during a spore bloom, cap 48 per chunk (config may
- * lower). Stepping on it without a sealed helmet gives the stepping entity Nausea I 5 s (point effect).
- * Stage 3 registers it with {@code randomTicks()}, {@code noCollision()} and its light level.
+ * lower). Touching it (entity box in the moss cell) without a sealed helmet gives that entity Nausea I 5 s (point
+ * effect). Stage 3 registers it with {@code randomTicks()} and its light level.
  */
 public class CappedSpreadBlock extends Block {
 
@@ -75,13 +76,18 @@ public class CappedSpreadBlock extends Block {
         }
     }
 
+    /**
+     * Point nausea on contact: {@code stepOn} would hit the soil under a 1/16 carpet, so the gate runs when an entity's
+     * box overlaps the moss cell. Throttled by the effect itself (not re-applied while it runs).
+     */
     @Override
-    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+            InsideBlockEffectApplier effects, boolean isPrecise) {
         if (!level.isClientSide() && entity instanceof LivingEntity living
                 && SporeContactRules.nausea(BlockSuits.sealedHelmet(entity))
                 && !living.hasEffect(MobEffects.NAUSEA)) {
             living.addEffect(new MobEffectInstance(MobEffects.NAUSEA, SporeContactRules.MOSS_NAUSEA_TICKS, 0));
         }
-        super.stepOn(level, pos, state, entity);
+        super.entityInside(state, level, pos, entity, effects, isPrecise);
     }
 }

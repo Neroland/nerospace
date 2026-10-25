@@ -1,0 +1,16 @@
+{
+  "type": "nerospace:nyxara",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "nerospace:fixed_x",
+      "west": "nerospace:nyxara_dayside",
+      "band": "nerospace:nyxara_twilight_band",
+      "east": "nerospace:nyxara_nightside",
+      "band_width": 2048,
+      "origin_x": 0,
+      "edge_noise": 96
+    },
+    "settings": "nerospace:nyxara"
+  }
+}

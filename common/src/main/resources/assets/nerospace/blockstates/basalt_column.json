@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "segment=0": {
+      "model": "nerospace:block/basalt_column"
+    },
+    "segment=1": {
+      "model": "nerospace:block/basalt_column"
+    },
+    "segment=2": {
+      "model": "nerospace:block/basalt_column"
+    },
+    "segment=3": {
+      "model": "nerospace:block/basalt_column_capped"
+    }
+  }
+}

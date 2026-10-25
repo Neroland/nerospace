@@ -26,7 +26,7 @@ class CheeseIsolationTest {
 
     private static final List<Pattern> ALLOWED = List.of(
             Pattern.compile("resources/assets/nerospace/lang/[a-z_]+\\.json"),
-            Pattern.compile("resources/data/nerospace/loot_table/blocks/cheese_(ore|wheel)\\.json"),
+            Pattern.compile("resources(-[0-9.]+)?/data/nerospace/loot_table/blocks/cheese_(ore|wheel)\\.json"),
             Pattern.compile("resources/data/nerospace/recipe/cheese_wheel\\.json"),
             Pattern.compile("resources/data/nerospace/advancement/luna/the_big_cheese\\.json"),
             Pattern.compile("resources/data/neroland/tags/item/highlight/materials\\.json"),

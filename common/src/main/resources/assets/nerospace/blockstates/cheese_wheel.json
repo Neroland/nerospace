@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "bites=0": {
+      "model": "nerospace:block/cheese_wheel"
+    },
+    "bites=1": {
+      "model": "nerospace:block/cheese_wheel_slice1"
+    },
+    "bites=2": {
+      "model": "nerospace:block/cheese_wheel_slice2"
+    },
+    "bites=3": {
+      "model": "nerospace:block/cheese_wheel_slice3"
+    },
+    "bites=4": {
+      "model": "nerospace:block/cheese_wheel_slice4"
+    },
+    "bites=5": {
+      "model": "nerospace:block/cheese_wheel_slice5"
+    },
+    "bites=6": {
+      "model": "nerospace:block/cheese_wheel_slice6"
+    },
+    "bites=7": {
+      "model": "nerospace:block/cheese_wheel_slice7"
+    },
+    "bites=8": {
+      "model": "nerospace:block/cheese_wheel_slice8"
+    }
+  }
+}

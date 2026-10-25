@@ -1,4 +1,7 @@
 {
   "replace": false,
-  "values": []
+  "values": [
+    "nerospace:mars_polar",
+    "nerospace:nyxara_nightside"
+  ]
 }

@@ -55,6 +55,9 @@ public final class ClientEntityRenderers {
         sink.register(ModEntities.ROCKET.get(), RocketRenderer::new);
         sink.register(ModEntities.CARGO_ROCKET.get(), RocketRenderer::new);
         sink.register(ModEntities.FALLING_METEOR.get(), FallingMeteorRenderer::new);
+
+        // Planet entities.
+        za.co.neroland.nerospace.world.planet.mars.client.MarsEntityRenderers.registerAll(sink);
     }
 
     private static Identifier tex(String name) {

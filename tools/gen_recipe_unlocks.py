@@ -14,6 +14,10 @@ tags load before recipes and advancements, so if the tag were missing the recipe
 Machine recipe types (``<modid>:<machine>``) are skipped: the recipe book never shows them, and recipe
 viewers list them through the mod's own plugin.
 
+Recipes in ``SKIP`` are skipped on purpose: the Luna easter-egg recipe must not gain an unlock advancement (that
+would spread its name into ``advancement/recipes/`` and spoil the hidden one). It still loads and still shows in the
+recipe book once the player holds the ingredient through vanilla's own unlock-on-pickup.
+
 The advancements carry only the ``inventory_changed`` criterion: an advancement that is already granted never
 checks again, so a ``recipe_unlocked`` criterion adds nothing (and its field name differs across the Minecraft
 lines this mod builds for).
@@ -36,6 +40,9 @@ BOOK_TYPES = {
     "minecraft:smelting", "minecraft:blasting", "minecraft:smoking", "minecraft:campfire_cooking",
     "minecraft:stonecutting", "minecraft:smithing_transform", "minecraft:smithing_trim",
 }
+
+# Recipe ids ("<namespace>:<path>") that never get an unlock advancement (see the module docstring).
+SKIP = {"nerospace:cheese_wheel"}
 
 
 def flatten(value):
@@ -123,7 +130,7 @@ def expected():
         for path in sorted(recipes.rglob("*.json")):
             recipe = json.loads(path.read_text(encoding="utf-8"))
             rel = path.relative_to(recipes).with_suffix("").as_posix()
-            if recipe.get("type") not in BOOK_TYPES:
+            if recipe.get("type") not in BOOK_TYPES or f"{ns}:{rel}" in SKIP:
                 skipped.append(f"{ns}:{rel}")
                 continue
             category = recipe.get("category", "misc")

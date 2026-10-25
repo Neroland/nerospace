@@ -6,6 +6,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.Vec3;
 
+import za.co.neroland.nerospace.block.rules.BlockGravityRules;
 import za.co.neroland.nerospace.block.world.BlockGravityOverrides;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.platform.Services;
@@ -77,6 +80,12 @@ public final class GravityManager {
         // Block overrides (decision 002 §10.4) come first: Gravity Plate beats Gravity Shard, then lowest factor.
         // A Shard's negative factor is intentional (slow levitation), so the floor below does not apply to it.
         double block = BlockGravityOverrides.factorAt(level, pos);
+        // A switched-off station module (Gravity Deck power toggle) skips the overrides inside its box.
+        if (!Double.isNaN(block) && za.co.neroland.nerospace.registry.ModDimensions.STATION_LEVEL.equals(level.dimension())
+                && !za.co.neroland.nerospace.rocket.StationRegistry.get(level.getServer())
+                        .moduleEnabledAt(level.dimension(), pos)) {
+            block = Double.NaN;
+        }
         if (!Double.isNaN(block)) {
             return block < 0.0 ? block : block * NerospaceConfig.gravityMultiplier();
         }
@@ -166,6 +175,14 @@ public final class GravityManager {
      * so it never re-syncs needlessly.
      */
     private static void applyToLiving(LivingEntity entity, double factor) {
+        if (factor < 0.0) {
+            // Gravity Shard: weightless + a slow upward drift capped at levitation I, re-asserted every check
+            // (a negative factor is a marker, never a negative acceleration).
+            applyToLiving(entity, 0.0);
+            entity.addEffect(new MobEffectInstance(MobEffects.LEVITATION,
+                    BlockGravityRules.SHARD_LEVITATION_TICKS, 0, true, false));
+            return;
+        }
         AttributeInstance instance = entity.getAttribute(Attributes.GRAVITY);
         if (instance == null) {
             return;
@@ -208,6 +225,11 @@ public final class GravityManager {
             return;
         }
         Vec3 dm = entity.getDeltaMovement();
+        if (factor < 0.0) {
+            // Gravity Shard: cancel this tick's gravity and drift up no faster than levitation I.
+            entity.setDeltaMovement(dm.x, BlockGravityRules.shardDrift(dm.y + gravity), dm.z);
+            return;
+        }
         entity.setDeltaMovement(dm.x, dm.y + gravity * (1.0 - factor), dm.z);
     }
 }

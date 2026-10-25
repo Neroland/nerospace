@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "facing=north,footprint=false": {
+      "model": "nerospace:block/regolith"
+    },
+    "facing=north,footprint=true": {
+      "model": "nerospace:block/regolith_footprint"
+    },
+    "facing=east,footprint=false": {
+      "model": "nerospace:block/regolith"
+    },
+    "facing=east,footprint=true": {
+      "model": "nerospace:block/regolith_footprint",
+      "y": 90
+    },
+    "facing=south,footprint=false": {
+      "model": "nerospace:block/regolith"
+    },
+    "facing=south,footprint=true": {
+      "model": "nerospace:block/regolith_footprint",
+      "y": 180
+    },
+    "facing=west,footprint=false": {
+      "model": "nerospace:block/regolith"
+    },
+    "facing=west,footprint=true": {
+      "model": "nerospace:block/regolith_footprint",
+      "y": 270
+    }
+  }
+}

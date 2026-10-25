@@ -1,6 +1,8 @@
 {
   "values": [
     "nerospace:raw_nerosium",
-    "nerospace:raw_nerosteel"
+    "nerospace:raw_nerosteel",
+    "nerospace:raw_ilmenite",
+    "nerospace:raw_hematite"
   ]
 }

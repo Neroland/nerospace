@@ -58,6 +58,23 @@ public class FuelRefineryScreen extends TexturedContainerScreen<FuelRefineryMenu
     }
 
     @Override
+    protected void drawPanel(GuiGraphicsExtractor g) {
+        super.drawPanel(g);
+        // 2.0 slots (raw ilmenite, titanium out, oxidiser): frames drawn under the items (the panel texture predates them).
+        slotFrame(g, FuelRefineryMenu.ILMENITE_X, FuelRefineryMenu.EXTRA_SLOT_Y);
+        slotFrame(g, FuelRefineryMenu.TITANIUM_X, FuelRefineryMenu.EXTRA_SLOT_Y);
+        slotFrame(g, FuelRefineryMenu.OXIDISER_X, FuelRefineryMenu.EXTRA_SLOT_Y);
+    }
+
+    /** An 18x18 slot frame around the 16x16 slot whose top-left is (x, y). */
+    private void slotFrame(GuiGraphicsExtractor g, int x, int y) {
+        int sx = this.leftPos + x - 1;
+        int sy = this.topPos + y - 1;
+        g.fill(sx, sy, sx + 18, sy + 18, INK);
+        g.fill(sx + 1, sy + 1, sx + 17, sy + 17, TROUGH);
+    }
+
+    @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (this.sideConfig != null
                 && this.sideConfig.mouseClicked(event.x(), event.y(), event.button(), this.leftPos, this.topPos)) {

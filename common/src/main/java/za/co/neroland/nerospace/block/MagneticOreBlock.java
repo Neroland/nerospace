@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.block;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -32,8 +33,12 @@ public class MagneticOreBlock extends Block {
 
     /** Item entity → breaker, for the item's first {@link ItemMagnetRules#TICKS} ticks. */
     private static final Map<ItemEntity, Player> PULLS = Collections.synchronizedMap(new WeakHashMap<>());
-    /** Breaker per position between playerWillDestroy and spawnAfterBreak (same tick). */
-    private static final Map<Level, Map<BlockPos, Player>> BREAKING = Collections.synchronizedMap(new WeakHashMap<>());
+    /**
+     * Breaker per position between playerWillDestroy and spawnAfterBreak (same tick), held weakly so a break that never
+     * reaches spawnAfterBreak (creative, cancelled) cannot pin a player object; cleared on use and every tick.
+     */
+    private static final Map<Level, Map<BlockPos, WeakReference<Player>>> BREAKING =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     public MagneticOreBlock(Properties properties) {
         super(properties);
@@ -49,7 +54,8 @@ public class MagneticOreBlock extends Block {
             ItemStack tool = player.getMainHandItem();
             // Iron tier or better = can harvest diamond ore.
             if (tool.isCorrectToolForDrops(Blocks.DIAMOND_ORE.defaultBlockState())) {
-                BREAKING.computeIfAbsent(level, l -> new java.util.HashMap<>()).put(pos.immutable(), player);
+                BREAKING.computeIfAbsent(level, l -> new java.util.HashMap<>())
+                        .put(pos.immutable(), new WeakReference<>(player));
             }
         }
         return super.playerWillDestroy(level, pos, state, player);
@@ -58,8 +64,9 @@ public class MagneticOreBlock extends Block {
     @Override
     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropXp) {
         super.spawnAfterBreak(state, level, pos, tool, dropXp);
-        Map<BlockPos, Player> pending = BREAKING.get(level);
-        Player breaker = pending == null ? null : pending.remove(pos);
+        Map<BlockPos, WeakReference<Player>> pending = BREAKING.get(level);
+        WeakReference<Player> ref = pending == null ? null : pending.remove(pos);
+        Player breaker = ref == null ? null : ref.get();
         if (breaker == null) {
             return;
         }
@@ -71,6 +78,9 @@ public class MagneticOreBlock extends Block {
 
     /** Per server tick: nudge each tracked drop toward its breaker; forget it after 20 ticks or when out of range. */
     public static void tickMagnets() {
+        if (!BREAKING.isEmpty()) {
+            BREAKING.clear();
+        }
         if (PULLS.isEmpty()) {
             return;
         }
@@ -90,6 +100,5 @@ public class MagneticOreBlock extends Block {
                 return false;
             });
         }
-        BREAKING.clear();
     }
 }

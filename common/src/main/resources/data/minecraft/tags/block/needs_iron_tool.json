@@ -1,4 +1,5 @@
 {
+  "replace": false,
   "values": [
     "nerospace:nerosium_ore",
     "nerospace:deepslate_nerosium_ore",
@@ -32,6 +33,20 @@
     "nerospace:cargo_pad",
     "nerospace:launch_gantry",
     "nerospace:landing_pod",
-    "nerospace:docking_port"
+    "nerospace:docking_port",
+    "nerospace:ilmenite_ore",
+    "nerospace:helium3_pocket",
+    "nerospace:hematite_ore",
+    "nerospace:basalt_spire",
+    "nerospace:methane_ice",
+    "nerospace:void_crystal",
+    "nerospace:voidglass_ore",
+    "nerospace:gravity_shard_block",
+    "nerospace:docking_ring",
+    "nerospace:hull_plating",
+    "nerospace:hull_window",
+    "nerospace:solar_wing",
+    "nerospace:gravity_plate",
+    "nerospace:telescope"
   ]
 }

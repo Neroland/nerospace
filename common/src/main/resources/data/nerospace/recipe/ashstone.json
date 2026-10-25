@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nerospace:ash_dust",
+    "nerospace:ash_dust"
+  ],
+  "result": {
+    "id": "nerospace:ashstone"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": "nerospace:gravity_shard",
+    "P": "nerospace:hull_plating"
+  },
+  "pattern": [
+    "PSP",
+    "SPS",
+    "PSP"
+  ],
+  "result": {
+    "id": "nerospace:gravity_plate"
+  }
+}

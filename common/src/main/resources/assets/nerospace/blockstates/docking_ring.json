@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "part=center": {"model": "nerospace:block/docking_ring"},
+    "part=north": {"model": "nerospace:block/docking_ring_edge"},
+    "part=east": {"model": "nerospace:block/docking_ring_edge", "y": 90},
+    "part=south": {"model": "nerospace:block/docking_ring_edge", "y": 180},
+    "part=west": {"model": "nerospace:block/docking_ring_edge", "y": 270},
+    "part=north_west": {"model": "nerospace:block/docking_ring_corner"},
+    "part=north_east": {"model": "nerospace:block/docking_ring_corner", "y": 90},
+    "part=south_east": {"model": "nerospace:block/docking_ring_corner", "y": 180},
+    "part=south_west": {"model": "nerospace:block/docking_ring_corner", "y": 270}
+  }
+}

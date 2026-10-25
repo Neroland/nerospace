@@ -22,8 +22,18 @@
       "nerospace:xertz_quartz_ore_placed",
       "nerospace:hamlet_placed",
       "nerospace:ruin_placed",
-      "nerospace:mega_city_placed"
-    ]
+      "nerospace:mega_city_placed",
+      "nerospace:greenxertz_amber_sap_ore_placed"
+    ],
+    [],
+    [],
+    [
+      "nerospace:greenxertz_giant_glowcap_sparse_placed",
+      "nerospace:greenxertz_glowcap_sparse_placed",
+      "nerospace:greenxertz_spore_pod_sparse_placed",
+      "nerospace:greenxertz_spore_moss_placed"
+    ],
+    []
   ],
   "has_precipitation": false,
   "spawn_costs": {},

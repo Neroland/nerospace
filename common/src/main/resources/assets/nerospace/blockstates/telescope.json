@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "dormant=false": {
+      "model": "nerospace:block/telescope"
+    },
+    "dormant=true": {
+      "model": "nerospace:block/telescope"
+    }
+  }
+}

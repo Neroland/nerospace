@@ -108,9 +108,10 @@ public final class NerospaceLinkActions implements LinkActionHandler {
             return LinkActionResult.error(LinkActionResult.Error.NOT_OWNER,
                     "You do not own a station with that slot. Pass 'station' as one of your own slot numbers.");
         }
-        // Re-check through the mod's own rule even though the slot came from the owned set — the bridge
-        // authenticated a token, not a permission.
-        if (!StationRegistry.canManage(entry, player)) {
+        // Owner only: members can see the station here but not rename it, and operator status is not
+        // honoured over the bridge. Then re-check through the mod's own rule — the bridge authenticated a token,
+        // not a permission.
+        if (!playerId.toString().equals(entry.owner()) || !StationRegistry.canManage(entry, player)) {
             return LinkActionResult.error(LinkActionResult.Error.NOT_OWNER, "You cannot manage that station.");
         }
 

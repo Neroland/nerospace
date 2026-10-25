@@ -1,0 +1,119 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "nerospace:moon_cheese",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": 9,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "0"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": 8,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "1"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": 7,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "2"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": 6,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "3"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": 5,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "4"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": 4,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "5"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": 3,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "6"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": 2,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "7"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": 1,
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:cheese_wheel",
+                "state": {
+                  "bites": "8"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nerospace:blocks/cheese_wheel"
+}

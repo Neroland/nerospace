@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "nerospace:spore_pod",
+    "nerospace:spore_pod",
+    "nerospace:spore_pod",
+    "nerospace:spore_pod",
+    "minecraft:gunpowder"
+  ],
+  "result": {
+    "count": 2,
+    "id": "nerospace:spore_bomb"
+  }
+}

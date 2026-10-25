@@ -97,6 +97,11 @@ public final class ModMenuTypes {
             MENUS.register("station_charter",
                     key -> new MenuType<>(StationCharterMenu::new, FeatureFlags.VANILLA_SET));
 
+    /** The Station Console (decision 004 §7), opened from a bound Station Core. */
+    public static final RegistryEntry<MenuType<za.co.neroland.nerospace.menu.StationConsoleMenu>> STATION_CONSOLE =
+            MENUS.register("station_console",
+                    key -> new MenuType<>(za.co.neroland.nerospace.menu.StationConsoleMenu::new, FeatureFlags.VANILLA_SET));
+
     private ModMenuTypes() {
     }
 

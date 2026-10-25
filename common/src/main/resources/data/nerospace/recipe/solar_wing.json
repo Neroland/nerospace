@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "T": "#c:ingots/titanium",
+    "P": "nerospace:solar_panel_t2"
+  },
+  "pattern": [
+    "TTT",
+    "TPT"
+  ],
+  "result": {
+    "count": 2,
+    "id": "nerospace:solar_wing"
+  }
+}

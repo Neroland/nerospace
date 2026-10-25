@@ -14,9 +14,12 @@ public final class PlanetTicks {
     }
 
     public static void serverTick(MinecraftServer server) {
+        // First: binds Nyxara's stored band width before any chunk generation reads it.
+        za.co.neroland.nerospace.world.planet.nyxara.worldgen.NyxaraBand.bind(server);
         PlanetClock.tick(server);
         PlanetWeather.tick(server);
         PlanetSync.tick(server);
         za.co.neroland.nerospace.block.BlockTicks.serverTick(server);
+        za.co.neroland.nerospace.world.planet.greenxertz.BioBarkHeal.tick(server);
     }
 }

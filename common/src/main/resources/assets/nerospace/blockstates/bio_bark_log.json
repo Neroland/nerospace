@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "nerospace:block/bio_bark_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "nerospace:block/bio_bark_log"
+    },
+    "axis=z": {
+      "model": "nerospace:block/bio_bark_log_horizontal",
+      "x": 90
+    }
+  }
+}

@@ -14,8 +14,8 @@ import za.co.neroland.nerospace.world.planet.WeatherParams;
 
 /**
  * Mars ({@code nerospace:mars}): rust under a butterscotch sky. A 24.6 h sol (24 600 ticks), a thin-atmosphere
- * daylight peak of 0.85 and dust storms. The dimension ships in a later stage, so the planet stays hidden
- * until it exists on the server.
+ * daylight peak of 0.85 and dust storms. Content and worldgen live beside this class ({@link MarsContent}); the
+ * planet appears once its dimension is present on the server.
  */
 public final class MarsPlanet extends PlanetDefinition {
 

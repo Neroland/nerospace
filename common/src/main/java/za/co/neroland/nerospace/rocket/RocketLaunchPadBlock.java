@@ -66,8 +66,18 @@ public class RocketLaunchPadBlock extends Block {
         if (stack.is(Items.NAME_TAG)) {
             if (level instanceof ServerLevel serverLevel) {
                 Component custom = stack.get(DataComponents.CUSTOM_NAME);
+                Set<BlockPos> cluster = LaunchPadMultiblock.connectedPads(level, pos);
+                // 005 G2: no renaming a pad out from under someone else's crewed rocket.
+                RocketEntity parked = LaunchPadMultiblock.rocketAbove(level, cluster);
+                if (parked != null && parked.getFirstPassenger() instanceof Player rider && rider != player) {
+                    player.sendSystemMessage(Component.translatable("block.nerospace.rocket_launch_pad.in_use"));
+                    return InteractionResult.SUCCESS;
+                }
+                // 005 §1.6: a 2.0 commission records the pad's centre and front, so landings are centred.
+                BlockPos centre = LandingPadGeometry.centreOf(cluster, pos);
                 PadRegistry.PadNode node = PadRegistry.get(serverLevel.getServer())
-                        .register(custom == null ? null : custom.getString(), level.dimension(), pos);
+                        .register(custom == null ? null : custom.getString(), level.dimension(), pos,
+                                PadKind.LAUNCH_PAD, centre, LandingResolverLevelAdapter.apronFacing(level, cluster, centre));
                 if (node == null) {
                     player.sendSystemMessage(Component.translatable("block.nerospace.rocket_launch_pad.pads_full"));
                 } else {

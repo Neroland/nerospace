@@ -129,6 +129,9 @@ public final class NerospaceConfig {
             1.0D, MULT_MIN, MULT_MAX, true, "scales how long planet weather lasts");
     private static final ConfigValue<Integer> WEATHER_PARTICLE_BUDGET = SCHEMA.intRange("weather.particleBudget",
             1000, 0, 4000, true, "weather particles a client may spawn per second (0..4000)");
+    private static final ConfigValue<Integer> WEATHER_EMBER_STRIKE_INTERVAL = SCHEMA.intRange(
+            "weather.emberStrikeIntervalTicks", 100, 40, 12000, true,
+            "ticks between Cindara ember strikes near each player during strong ash fall (40..12000)");
     // Per-planet weather switches, read by key through planetWeatherEnabled (each planet definition names its
     // key, weather.<planet>.enabled). Declared here, in this order, so they appear in the file.
     static {
@@ -243,6 +246,11 @@ public final class NerospaceConfig {
 
     public static int methaneChainCap() {
         return CAP_METHANE_CHAIN.get();
+    }
+
+    /** Ticks between Cindara ember-strike steps per level (default 100, min 40). */
+    public static int emberStrikeIntervalTicks() {
+        return WEATHER_EMBER_STRIKE_INTERVAL.get();
     }
 
     /** Master weather switch (default true). */

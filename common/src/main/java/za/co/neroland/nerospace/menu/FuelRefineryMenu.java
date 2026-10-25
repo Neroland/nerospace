@@ -14,13 +14,25 @@ import net.minecraft.world.item.Items;
 import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
 import za.co.neroland.nerospace.registry.ModMenuTypes;
 
-/** Menu for the Fuel Refinery: a carbon slot + a catalyst slot, plus energy/fuel/progress data. */
+/**
+ * Menu for the Fuel Refinery: a carbon slot + a catalyst slot, plus energy/fuel/progress data. The 2.0 slots
+ * (oxidiser, raw ilmenite, titanium output) are added AFTER the player inventory, so the 1.x menu slot indices
+ * (machine 0-1, player 2-37) never move.
+ */
 public class FuelRefineryMenu extends AbstractContainerMenu {
 
     private static final int CARBON_SLOT = 0;
     private static final int CATALYST_SLOT = 1;
     private static final int PLAYER_INV_START = 2;
     private static final int PLAYER_INV_END = PLAYER_INV_START + 36;
+    private static final int OXIDISER_SLOT = PLAYER_INV_END;
+    private static final int ILMENITE_SLOT = PLAYER_INV_END + 1;
+
+    /** Screen positions of the 2.0 slots (the screen draws their frames). */
+    public static final int ILMENITE_X = 8;
+    public static final int TITANIUM_X = 30;
+    public static final int OXIDISER_X = 128;
+    public static final int EXTRA_SLOT_Y = 35;
 
     private final Container container;
     private final ContainerData data;
@@ -40,6 +52,9 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
         this.addSlot(new FilterSlot(container, FuelRefineryBlockEntity.CARBON_SLOT, 56, 35));
         this.addSlot(new FilterSlot(container, FuelRefineryBlockEntity.CATALYST_SLOT, 104, 35));
         this.addStandardInventorySlots(playerInventory, 8, 84);
+        this.addSlot(new FilterSlot(container, FuelRefineryBlockEntity.OXIDISER_SLOT, OXIDISER_X, EXTRA_SLOT_Y));
+        this.addSlot(new FilterSlot(container, FuelRefineryBlockEntity.ILMENITE_SLOT, ILMENITE_X, EXTRA_SLOT_Y));
+        this.addSlot(new OutputSlot(container, FuelRefineryBlockEntity.TITANIUM_SLOT, TITANIUM_X, EXTRA_SLOT_Y));
         this.addDataSlots(data);
     }
 
@@ -55,8 +70,16 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack raw = slot.getItem();
             moved = raw.copy();
-            if (index == CARBON_SLOT || index == CATALYST_SLOT) {
+            if (index == CARBON_SLOT || index == CATALYST_SLOT || index >= OXIDISER_SLOT) {
                 if (!this.moveItemStackTo(raw, PLAYER_INV_START, PLAYER_INV_END, true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (this.container.canPlaceItem(FuelRefineryBlockEntity.OXIDISER_SLOT, raw)) {
+                if (!this.moveItemStackTo(raw, OXIDISER_SLOT, OXIDISER_SLOT + 1, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (this.container.canPlaceItem(FuelRefineryBlockEntity.ILMENITE_SLOT, raw)) {
+                if (!this.moveItemStackTo(raw, ILMENITE_SLOT, ILMENITE_SLOT + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (raw.is(Items.BLAZE_POWDER)) {
@@ -103,6 +126,18 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
         int max = this.data.get(5);
         int cur = this.data.get(4);
         return (max != 0 && cur != 0) ? cur * pixels / max : 0;
+    }
+
+    /** Take-only slot (refined titanium). */
+    private static class OutputSlot extends Slot {
+        OutputSlot(Container container, int slot, int x, int y) {
+            super(container, slot, x, y);
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return false;
+        }
     }
 
     private static class FilterSlot extends Slot {

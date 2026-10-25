@@ -40,8 +40,12 @@ import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.fluid.FluidTank;
 import za.co.neroland.nerospace.fluid.ModFluids;
 import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
+import za.co.neroland.nerospace.gas.GasResource;
+import za.co.neroland.nerospace.gas.GasTank;
+import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.menu.FuelRefineryMenu;
 import za.co.neroland.nerospace.platform.FluidLookup;
+import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.storage.CoreTankBridge;
 
@@ -54,13 +58,24 @@ import za.co.neroland.nerospace.storage.CoreTankBridge;
  * <p>Cross-loader port note: rebuilt on the shared {@link EnergyBuffer} + {@link FluidTank} and a vanilla
  * {@link WorldlyContainer} for the two input slots (the root used the NeoForge transfer API). Tuning
  * values are inlined (identity multiplier).</p>
+ *
+ * <p>2.0 additions (all appended after the 1.x slots, all saved under optional keys so a 1.x refinery loads
+ * unchanged): a Perchlorate Oxidiser slot (Mars, +15 % fuel per batch while covered, see {@link RefineryRules})
+ * and a Raw Ilmenite line (Luna): raw ilmenite in, a Titanium Ingot out, and oxygen pushed into any adjacent gas
+ * store (it vents when there is nowhere to put it, so titanium never stalls on oxygen).</p>
  */
 public class FuelRefineryBlockEntity extends BlockEntity
         implements WorldlyContainer, MenuProvider, SideConfigured {
 
     public static final int CARBON_SLOT = 0;
     public static final int CATALYST_SLOT = 1;
-    public static final int SIZE = 2;
+    /** Mars: Perchlorate Oxidiser (optional boost). */
+    public static final int OXIDISER_SLOT = 2;
+    /** Luna: Raw Ilmenite input. */
+    public static final int ILMENITE_SLOT = 3;
+    /** Luna: Titanium Ingot output. */
+    public static final int TITANIUM_SLOT = 4;
+    public static final int SIZE = 5;
     public static final int DATA_COUNT = 6;
 
     /** Inlined Tuning base values. */
@@ -72,11 +87,17 @@ public class FuelRefineryBlockEntity extends BlockEntity
     public static final int FE_PER_TICK = 40;
     public static final int MB_PER_BATCH = 2_000;
     public static final int WORK_TICKS = 100;
+    /** Internal oxygen buffer from refined ilmenite (pushed out each tick; the surplus vents). */
+    public static final int OXYGEN_CAPACITY = 1_000;
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private final EnergyBuffer energy = new EnergyBuffer(ENERGY_BUFFER, ENERGY_MAX_INSERT, 0, this::setChanged);
     private final FluidTank tank = new FluidTank(TANK_CAPACITY, this::setChanged);
     private int progress;
+    /** Base mB of output still covered by the oxidiser in use. */
+    private int oxidisedMb;
+    private int ilmeniteProgress;
+    private final GasTank oxygen = new GasTank(OXYGEN_CAPACITY, this::setChanged);
 
     /**
      * Universal side configuration (Neroland Core): ITEM (two inputs in one input group, no output) +
@@ -96,7 +117,8 @@ public class FuelRefineryBlockEntity extends BlockEntity
     private static SideConfig buildSideConfig() {
         SideConfig config = SideConfig.builder()
                 // Both inputs (carbon + catalyst) live in one input group; there is no item output.
-                .channel(Channel.ITEM, SlotGroup.of("input", CARBON_SLOT, CATALYST_SLOT), null)
+                .channel(Channel.ITEM, SlotGroup.of("input", CARBON_SLOT, CATALYST_SLOT, OXIDISER_SLOT, ILMENITE_SLOT),
+                        SlotGroup.of("output", TITANIUM_SLOT))
                 .channel(Channel.FLUID)
                 .channel(Channel.ENERGY)
                 // Refined fuel leaves only — never accepted.
@@ -161,6 +183,8 @@ public class FuelRefineryBlockEntity extends BlockEntity
         return switch (index) {
             case CARBON_SLOT -> stack.is(Items.COAL) || stack.is(Items.CHARCOAL);
             case CATALYST_SLOT -> stack.is(Items.BLAZE_POWDER);
+            case OXIDISER_SLOT -> stack.is(za.co.neroland.nerospace.world.planet.mars.MarsContent.PERCHLORATE_OXIDISER.get());
+            case ILMENITE_SLOT -> stack.is(za.co.neroland.nerospace.world.planet.luna.LunaContent.RAW_ILMENITE.get());
             default -> false;
         };
     }
@@ -193,7 +217,23 @@ public class FuelRefineryBlockEntity extends BlockEntity
         return !this.items.get(CARBON_SLOT).isEmpty()
                 && !this.items.get(CATALYST_SLOT).isEmpty()
                 && this.energy.getAmount() >= energyPerTick()
-                && this.tank.getCapacity() - this.tank.getAmount() >= MB_PER_BATCH;
+                && this.tank.getCapacity() - this.tank.getAmount() >= nextBatchMb();
+    }
+
+    /** The next batch's output: boosted while the oxidiser covers it, so the tank never overfills. */
+    private int nextBatchMb() {
+        return RefineryRules.batchMb(MB_PER_BATCH,
+                RefineryRules.boosted(this.oxidisedMb, !this.items.get(OXIDISER_SLOT).isEmpty()));
+    }
+
+    /** Whether the ilmenite line can work this tick (input, room for the ingot, power). */
+    public boolean canRefineIlmenite() {
+        ItemStack out = this.items.get(TITANIUM_SLOT);
+        return !this.items.get(ILMENITE_SLOT).isEmpty()
+                && this.energy.getAmount() >= energyPerTick()
+                && RefineryRules.titaniumFits(out.isEmpty(),
+                        out.is(za.co.neroland.nerospace.world.planet.luna.LunaContent.TITANIUM_INGOT.get()),
+                        out.getCount(), out.getMaxStackSize());
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {
@@ -208,6 +248,8 @@ public class FuelRefineryBlockEntity extends BlockEntity
         // Active auto-eject: push the refined fuel into any adjacent fluid store (tank/pipe) even with no
         // pipe pulling — so a full output tank keeps draining and the refinery never idles on "tank full".
         pushFluid(level, pos);
+        pushOxygen(level, pos);
+        tickIlmenite();
 
         if (!canRun()) {
             if (this.progress != 0) {
@@ -223,9 +265,65 @@ public class FuelRefineryBlockEntity extends BlockEntity
             this.progress = 0;
             this.items.get(CARBON_SLOT).shrink(1);
             this.items.get(CATALYST_SLOT).shrink(1);
-            this.tank.fill(rocketFuel(), MB_PER_BATCH, false);
+            if (RefineryRules.consumesOxidiser(this.oxidisedMb, !this.items.get(OXIDISER_SLOT).isEmpty())) {
+                this.items.get(OXIDISER_SLOT).shrink(1);
+                this.oxidisedMb = RefineryRules.OXIDISER_COVERAGE_MB;
+            }
+            boolean boosted = this.oxidisedMb > 0;
+            this.tank.fill(rocketFuel(), RefineryRules.batchMb(MB_PER_BATCH, boosted), false);
+            if (boosted) {
+                this.oxidisedMb = RefineryRules.coverageAfterBatch(this.oxidisedMb, MB_PER_BATCH);
+            }
         }
         setChanged();
+    }
+
+    /** Luna line: raw ilmenite to a titanium ingot plus oxygen, on its own progress and the shared power. */
+    private void tickIlmenite() {
+        if (!canRefineIlmenite()) {
+            if (this.ilmeniteProgress != 0) {
+                this.ilmeniteProgress = 0;
+                setChanged();
+            }
+            return;
+        }
+        this.energy.consume(energyPerTick());
+        this.ilmeniteProgress++;
+        if (this.ilmeniteProgress >= NerospaceConfig.scaleInterval(WORK_TICKS, NerospaceConfig.machineSpeedMultiplier())) {
+            this.ilmeniteProgress = 0;
+            this.items.get(ILMENITE_SLOT).shrink(1);
+            ItemStack out = this.items.get(TITANIUM_SLOT);
+            if (out.isEmpty()) {
+                this.items.set(TITANIUM_SLOT, new ItemStack(
+                        za.co.neroland.nerospace.world.planet.luna.LunaContent.TITANIUM_INGOT.get(),
+                        RefineryRules.TITANIUM_PER_ILMENITE));
+            } else {
+                out.grow(RefineryRules.TITANIUM_PER_ILMENITE);
+            }
+            // Surplus oxygen vents: the buffer is a convenience, never a reason to stall titanium.
+            this.oxygen.fill(GasResource.OXYGEN, RefineryRules.ILMENITE_OXYGEN_MB, false);
+        }
+        setChanged();
+    }
+
+    /** Pushes buffered oxygen into any adjacent {@link NerospaceGasStorage} (Gas Tank, gas pipe, ...). */
+    private void pushOxygen(Level level, BlockPos pos) {
+        if (this.oxygen.getAmount() <= 0) {
+            return;
+        }
+        for (Direction dir : Direction.values()) {
+            if (this.oxygen.getAmount() <= 0) {
+                break;
+            }
+            NerospaceGasStorage dest = GasLookup.INSTANCE.find(level, pos.relative(dir), dir.getOpposite());
+            if (dest == null) {
+                continue;
+            }
+            long accepted = dest.fill(GasResource.OXYGEN, Math.min(EJECT_RATE, this.oxygen.getAmount()), false);
+            if (accepted > 0) {
+                this.oxygen.drain(accepted, false);
+            }
+        }
     }
 
     /** Pushes up to {@link #EJECT_RATE} mB of the stored fuel into each adjacent {@link NerospaceFluidStorage}. */
@@ -262,6 +360,13 @@ public class FuelRefineryBlockEntity extends BlockEntity
         output.putInt("Progress", this.progress);
         output.store("Carbon", ItemStack.OPTIONAL_CODEC, this.items.get(CARBON_SLOT));
         output.store("Catalyst", ItemStack.OPTIONAL_CODEC, this.items.get(CATALYST_SLOT));
+        // 2.0 keys: all optional on load (a 1.x refinery has none of them).
+        output.store("Oxidiser", ItemStack.OPTIONAL_CODEC, this.items.get(OXIDISER_SLOT));
+        output.putInt("OxidisedMb", this.oxidisedMb);
+        output.store("Ilmenite", ItemStack.OPTIONAL_CODEC, this.items.get(ILMENITE_SLOT));
+        output.store("Titanium", ItemStack.OPTIONAL_CODEC, this.items.get(TITANIUM_SLOT));
+        output.putInt("IlmeniteProgress", this.ilmeniteProgress);
+        output.putInt("Oxygen", this.oxygen.getRawAmount());
         this.sideConfig.save(output);
     }
 
@@ -274,6 +379,13 @@ public class FuelRefineryBlockEntity extends BlockEntity
         this.progress = input.getIntOr("Progress", 0);
         this.items.set(CARBON_SLOT, input.read("Carbon", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
         this.items.set(CATALYST_SLOT, input.read("Catalyst", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(OXIDISER_SLOT, input.read("Oxidiser", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.oxidisedMb = Math.max(0, input.getIntOr("OxidisedMb", 0));
+        this.items.set(ILMENITE_SLOT, input.read("Ilmenite", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.items.set(TITANIUM_SLOT, input.read("Titanium", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+        this.ilmeniteProgress = Math.max(0, input.getIntOr("IlmeniteProgress", 0));
+        int o2 = Math.max(0, Math.min(OXYGEN_CAPACITY, input.getIntOr("Oxygen", 0)));
+        this.oxygen.setRaw(o2 > 0 ? GasResource.OXYGEN : GasResource.EMPTY, o2);
         this.sideConfig.load(input);
     }
 
@@ -292,8 +404,8 @@ public class FuelRefineryBlockEntity extends BlockEntity
 
     // --- WorldlyContainer: per-face routing via the side config -------------
     // Exposed slots and insert/extract permissions follow the side config; the slot/recipe guard is kept
-    // as an extra gate so a face can never push the wrong item into a slot. There is no item output, so
-    // canExtractItem is false on every face for both slots.
+    // as an extra gate so a face can never push the wrong item into a slot. The only item output is the
+    // titanium slot; inputs are never extracted through a face.
 
     @Override
     public int[] getSlotsForFace(Direction side) {
@@ -307,7 +419,7 @@ public class FuelRefineryBlockEntity extends BlockEntity
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return this.sideConfig.canExtractItem(slot, side);
+        return slot == TITANIUM_SLOT && this.sideConfig.canExtractItem(slot, side);
     }
 
     @Override
@@ -322,7 +434,12 @@ public class FuelRefineryBlockEntity extends BlockEntity
 
     @Override
     public boolean isEmpty() {
-        return this.items.get(CARBON_SLOT).isEmpty() && this.items.get(CATALYST_SLOT).isEmpty();
+        for (ItemStack stack : this.items) {
+            if (!stack.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

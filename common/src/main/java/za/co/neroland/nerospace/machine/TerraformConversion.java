@@ -166,6 +166,15 @@ public final class TerraformConversion {
                 }
             }
 
+            if (floorY != Integer.MIN_VALUE) {
+                cursor.setY(floorY);
+                if (za.co.neroland.nerospace.block.rules.ThawRules.hydrationSkipsFill(
+                        level.getBlockState(cursor).is(ModTags.Blocks.HYDRATION_IMMUNE))) {
+                    // Permafrost floor: the stage advances, but no meltwater until stage 3 thaws it.
+                    bumpStage(chunk, 2);
+                    return true;
+                }
+            }
             if (floorY != Integer.MIN_VALUE && floorY < table) {
                 // Fill bottom-up so a stall never leaves water floating above a gap.
                 for (int y = floorY + 1; y <= table; y++) {
@@ -205,9 +214,29 @@ public final class TerraformConversion {
             biomeChanged.add(chunk);
         }
         int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+        thawPermafrost(level, x, surfaceY, z);
         placeTree(level, x, surfaceY, z);
         TerraformFauna.seedHerd(level, x, surfaceY, z);
         bumpStage(chunk, 3);
+    }
+
+    /**
+     * Stage 3 thaws Permafrost under the surface (002 §1.4): grass on top, dirt below, {@code ThawRules.THAW_DEPTH}
+     * deep. Columns without Permafrost (every 1.x chunk) are left exactly as they were.
+     */
+    private static void thawPermafrost(ServerLevel level, int x, int surfaceY, int z) {
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+        for (int d = 1; d <= za.co.neroland.nerospace.block.rules.ThawRules.THAW_DEPTH; d++) {
+            p.set(x, surfaceY - d, z);
+            switch (za.co.neroland.nerospace.block.rules.ThawRules.thawAt(
+                    level.getBlockState(p).is(ModTags.Blocks.HYDRATION_IMMUNE), d,
+                    za.co.neroland.nerospace.block.rules.ThawRules.MIN_TERRAFORM_STAGE)) {
+                case GRASS -> level.setBlock(p, Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
+                case DIRT -> level.setBlock(p, Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
+                case NONE -> {
+                }
+            }
+        }
     }
 
     /**

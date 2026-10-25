@@ -139,6 +139,9 @@ public class CombustionGeneratorBlockEntity extends BlockEntity
         if (stack.is(ModItems.ROCKET_FUEL_CANISTER.get())) {
             return 4_000;
         }
+        if (stack.is(za.co.neroland.nerospace.world.planet.glacira.GlaciraContent.METHANE_CRYSTAL.get())) {
+            return 2_400; // 1.5x coal: methane is Glacira's fuel
+        }
         return 0;
     }
 
@@ -149,7 +152,8 @@ public class CombustionGeneratorBlockEntity extends BlockEntity
                 new ItemStack(Items.CHARCOAL),
                 new ItemStack(Items.COAL_BLOCK),
                 new ItemStack(Items.BLAZE_ROD),
-                new ItemStack(ModItems.ROCKET_FUEL_CANISTER.get()));
+                new ItemStack(ModItems.ROCKET_FUEL_CANISTER.get()),
+                new ItemStack(za.co.neroland.nerospace.world.planet.glacira.GlaciraContent.METHANE_CRYSTAL.get()));
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {

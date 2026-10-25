@@ -147,11 +147,24 @@ public final class PlanetWeather {
     }
 
     /**
-     * Whether the weather irradiates {@code pos}: a Mars dust storm, outdoors (open to the sky) and outside an
-     * oxygen field. Reads only loaded chunks.
+     * Whether the weather irradiates {@code pos}: a Mars dust storm or a Nyxara flare (dayside and band only),
+     * outdoors (open to the sky) and outside an oxygen field. Reads only loaded chunks.
      */
     public static boolean raisesRadiation(ServerLevel level, BlockPos pos) {
-        if (event(level) != WeatherEvent.DUST_STORM || !level.hasChunkAt(pos)) {
+        WeatherEvent event = event(level);
+        if (event != WeatherEvent.DUST_STORM && event != WeatherEvent.FLARE) {
+            return false;
+        }
+        if (!exposedUnsealed(level, pos)) {
+            return false;
+        }
+        return event == WeatherEvent.DUST_STORM
+                || RadiationRules.flareApplies(event, PlanetHazards.biomeId(level, pos), true);
+    }
+
+    /** Open to the sky (at or above the motion-blocking surface) and outside a sealed oxygen field. Loaded only. */
+    public static boolean exposedUnsealed(ServerLevel level, BlockPos pos) {
+        if (!level.hasChunkAt(pos)) {
             return false;
         }
         int surface = level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ());

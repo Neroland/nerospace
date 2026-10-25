@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "stage=0": {
+      "model": "nerospace:block/frost_crystal_cluster_stage0"
+    },
+    "stage=1": {
+      "model": "nerospace:block/frost_crystal_cluster_stage1"
+    },
+    "stage=2": {
+      "model": "nerospace:block/frost_crystal_cluster_stage2"
+    },
+    "stage=3": {
+      "model": "nerospace:block/frost_crystal_cluster_stage3"
+    }
+  }
+}

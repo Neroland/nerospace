@@ -18,7 +18,8 @@ import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
 import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
 import za.co.neroland.nerolandcore.sideconfig.SideMode;
 import za.co.neroland.nerolandcore.sideconfig.SidePreset;
-
+
+import za.co.neroland.nerospace.block.rules.SolarReflectRules;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -175,7 +176,36 @@ public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured
 
     /** FE this unit adds this tick = its tier's peak output × the daylight/weather/dimension factor. */
     public int generationThisTick(ServerLevel level) {
-        return Math.round(this.tier.fePerTick() * solarFactor(level, this.worldPosition));
+        return Math.round(this.tier.fePerTick() * solarFactor(level, this.worldPosition) * reflectFactor(level));
+    }
+
+    /** Cached Anorthosite reflector multiplier (002 §1.1); derived from the world, never saved. */
+    private float reflect = 1.0F;
+    private long nextReflectCheck = Long.MIN_VALUE;
+
+    /**
+     * The Anorthosite reflector multiplier for this panel: x1.25 when all nine blocks of the 3x3 directly under it
+     * are Anorthosite, else x1. Re-counted every {@link SolarReflectRules#CHECK_INTERVAL_TICKS} ticks and cached, so
+     * the array tick reads a field; it reads nine block states and nothing else (no saved-data lookups). It is the
+     * only multiplier a ground panel takes on top of the solar factor (a Solar Wing never gets it).
+     */
+    float reflectFactor(ServerLevel level) {
+        long now = level.getGameTime();
+        if (now >= this.nextReflectCheck) {
+            this.nextReflectCheck = now + SolarReflectRules.CHECK_INTERVAL_TICKS;
+            BlockPos below = this.worldPosition.below();
+            int count = 0;
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    if (level.getBlockState(below.offset(dx, 0, dz))
+                            .is(za.co.neroland.nerospace.world.planet.luna.LunaContent.ANORTHOSITE.get())) {
+                        count++;
+                    }
+                }
+            }
+            this.reflect = (float) SolarReflectRules.reflectMultiplier(count);
+        }
+        return this.reflect;
     }
 
     /**
@@ -184,7 +214,7 @@ public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured
      */
     public int generationThisTick(ServerLevel level, float planetFactor) {
         float factor = planetFactor >= 0.0F ? planetFactor : solarFactor(level, this.worldPosition);
-        return Math.round(this.tier.fePerTick() * factor);
+        return Math.round(this.tier.fePerTick() * factor * reflectFactor(level));
     }
 
     /**

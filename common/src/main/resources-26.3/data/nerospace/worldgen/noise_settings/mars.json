@@ -1,0 +1,2893 @@
+{
+  "default_block": "minecraft:stone",
+  "default_fluid": "minecraft:air",
+  "disable_mob_generation": false,
+  "legacy_random_source": false,
+  "material_rule": {
+    "type": "minecraft:sequence",
+    "sequence": [
+      "minecraft:bedrock_floor",
+      {
+        "type": "minecraft:condition",
+        "if_true": {
+          "type": "minecraft:above_preliminary_surface"
+        },
+        "then_run": {
+          "type": "minecraft:sequence",
+          "sequence": [
+            {
+              "type": "minecraft:condition",
+              "if_true": {
+                "type": "minecraft:biome",
+                "biome_is": "nerospace:mars_polar"
+              },
+              "then_run": {
+                "type": "minecraft:sequence",
+                "sequence": [
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:dry_ice"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:dry_ice"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 6,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:martian_sandstone"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "minecraft:condition",
+              "if_true": {
+                "type": "minecraft:biome",
+                "biome_is": "nerospace:mars_canyons"
+              },
+              "then_run": {
+                "type": "minecraft:sequence",
+                "sequence": [
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:sequence",
+                      "sequence": [
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:steep"
+                          },
+                          "then_run": {
+                            "type": "minecraft:sequence",
+                            "sequence": [
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 250
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 247
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 244
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 241
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 238
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 235
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 232
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 229
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 226
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 223
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 220
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 217
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 214
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 211
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 208
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 205
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 202
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 199
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 196
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 193
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 190
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 187
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 184
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 181
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 178
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 175
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 172
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 169
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 166
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 163
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 160
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 157
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 154
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 151
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 148
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 145
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 142
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 139
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 136
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 133
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 130
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 127
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 124
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 121
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 118
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 115
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 112
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 109
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 106
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 103
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 100
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 97
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 94
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 91
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 88
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 85
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 82
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 79
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 76
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 73
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 70
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 67
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 64
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 61
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 58
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 55
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 52
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 49
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 46
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 43
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 40
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 37
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 34
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 31
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 28
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 25
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 22
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 19
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 16
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 13
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 10
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 7
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 4
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": 1
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": -2
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_4"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": -5
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_3"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": -8
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_2"
+                                }
+                              },
+                              {
+                                "type": "minecraft:condition",
+                                "if_true": {
+                                  "type": "minecraft:y_above",
+                                  "add_stone_depth": false,
+                                  "anchor": {
+                                    "absolute": -11
+                                  },
+                                  "surface_depth_multiplier": 0
+                                },
+                                "then_run": {
+                                  "type": "minecraft:block",
+                                  "result_state": "nerospace:martian_sandstone_strata_1"
+                                }
+                              },
+                              {
+                                "type": "minecraft:block",
+                                "result_state": "nerospace:martian_sandstone_strata_1"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "minecraft:block",
+                          "result_state": "nerospace:red_regolith"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 30,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:sequence",
+                      "sequence": [
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 250
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 247
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 244
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 241
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 238
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 235
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 232
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 229
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 226
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 223
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 220
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 217
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 214
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 211
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 208
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 205
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 202
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 199
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 196
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 193
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 190
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 187
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 184
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 181
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 178
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 175
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 172
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 169
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 166
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 163
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 160
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 157
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 154
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 151
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 148
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 145
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 142
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 139
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 136
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 133
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 130
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 127
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 124
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 121
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 118
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 115
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 112
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 109
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 106
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 103
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 100
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 97
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 94
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 91
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 88
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 85
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 82
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 79
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 76
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 73
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 70
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 67
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 64
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 61
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 58
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 55
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 52
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 49
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 46
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 43
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 40
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 37
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 34
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 31
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 28
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 25
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 22
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 19
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 16
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 13
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 10
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 7
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 4
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": 1
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": -2
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_4"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": -5
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_3"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": -8
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_2"
+                          }
+                        },
+                        {
+                          "type": "minecraft:condition",
+                          "if_true": {
+                            "type": "minecraft:y_above",
+                            "add_stone_depth": false,
+                            "anchor": {
+                              "absolute": -11
+                            },
+                            "surface_depth_multiplier": 0
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": "nerospace:martian_sandstone_strata_1"
+                          }
+                        },
+                        {
+                          "type": "minecraft:block",
+                          "result_state": "nerospace:martian_sandstone_strata_1"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "minecraft:sequence",
+              "sequence": [
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:stone_depth",
+                    "add_surface_depth": true,
+                    "offset": 0,
+                    "secondary_depth_range": 0,
+                    "surface_type": "floor"
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "nerospace:red_regolith"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:stone_depth",
+                    "add_surface_depth": true,
+                    "offset": 0,
+                    "secondary_depth_range": 6,
+                    "surface_type": "floor"
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "nerospace:martian_sandstone"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "minecraft:condition",
+        "if_true": {
+          "type": "minecraft:vertical_gradient",
+          "false_at_and_above": {
+            "absolute": 8
+          },
+          "random_name": "minecraft:deepslate",
+          "true_at_and_below": {
+            "absolute": 0
+          }
+        },
+        "then_run": {
+          "type": "minecraft:block",
+          "result_state": "minecraft:deepslate"
+        }
+      }
+    ]
+  },
+  "noise": {
+    "height": 384,
+    "min_y": -64
+  },
+  "noise_router": {
+    "chunk_surface_level": "minecraft:overworld/chunk_surface_level",
+    "continents": "minecraft:overworld/continents",
+    "depth": "minecraft:overworld/depth",
+    "erosion": "minecraft:overworld/erosion",
+    "final_density": "minecraft:overworld/final_density",
+    "ridges": "minecraft:overworld/ridges",
+    "temperature": "minecraft:overworld/temperature",
+    "vegetation": "minecraft:overworld/vegetation"
+  },
+  "sea_level": 63,
+  "spawn_target": [
+    {
+      "minecraft:overworld/continents": [
+        -0.11,
+        1.0
+      ],
+      "minecraft:overworld/erosion": [
+        -1.0,
+        1.0
+      ],
+      "minecraft:overworld/ridges": [
+        -1.0,
+        -0.16
+      ],
+      "minecraft:overworld/temperature": [
+        -1.0,
+        1.0
+      ],
+      "minecraft:overworld/vegetation": [
+        -1.0,
+        1.0
+      ]
+    },
+    {
+      "minecraft:overworld/continents": [
+        -0.11,
+        1.0
+      ],
+      "minecraft:overworld/erosion": [
+        -1.0,
+        1.0
+      ],
+      "minecraft:overworld/ridges": [
+        0.16,
+        1.0
+      ],
+      "minecraft:overworld/temperature": [
+        -1.0,
+        1.0
+      ],
+      "minecraft:overworld/vegetation": [
+        -1.0,
+        1.0
+      ]
+    }
+  ]
+}

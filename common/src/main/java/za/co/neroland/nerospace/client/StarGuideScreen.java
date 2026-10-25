@@ -35,6 +35,9 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     private final List<SpaceButton> stepButtons = new ArrayList<>();
     private int selectedChapter;
     private int selectedStep;
+    /** Real step indices of the nodes shown for the selected chapter (hidden incomplete steps left out). */
+    private final List<Integer> shownSteps = new ArrayList<>();
+    private int shownMask = -1;
 
     public StarGuideScreen(StarGuideMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 240, 200);
@@ -46,9 +49,12 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     protected void init() {
         super.init();
         this.chapterButtons.clear();
+        // The rail compresses as chapters are appended so every button stays inside the 200 px panel.
+        int pitch = Math.min(17, 172 / Math.max(1, StarGuide.CHAPTER_COUNT));
+        int buttonHeight = Math.min(14, pitch - 1);
         for (int i = 0; i < StarGuide.CHAPTER_COUNT; i++) {
             final int chapter = i;
-            SpaceButton button = new SpaceButton(this.leftPos + 8, this.topPos + 22 + i * 17, 66, 14,
+            SpaceButton button = new SpaceButton(this.leftPos + 8, this.topPos + 22 + i * pitch, 66, buttonHeight,
                     Component.translatable(StarGuide.CHAPTERS.get(i).titleKey()), ACCENT,
                     b -> selectChapter(chapter));
             this.addRenderableWidget(button);
@@ -60,17 +66,30 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     private void selectChapter(int chapter) {
         this.selectedChapter = chapter;
         this.selectedStep = 0;
+        this.shownMask = -1;
         rebuildStepButtons();
     }
 
+    /**
+     * Builds one node per SHOWN step (a hidden step appears only once complete). {@link #shownSteps} maps a node
+     * slot back to the real step index, which is what the click id and the completion bits use.
+     */
     private void rebuildStepButtons() {
         this.stepButtons.forEach(this::removeWidget);
         this.stepButtons.clear();
-        List<StarGuide.Step> steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps();
-        for (int i = 0; i < steps.size(); i++) {
-            final int step = i;
-            SpaceButton node = new SpaceButton(stepX(i), stepY(i), 42, 14,
-                    Component.literal(String.valueOf(i + 1)), ACCENT, b -> selectStep(step));
+        this.shownSteps.clear();
+        StarGuide.Chapter chapter = StarGuide.CHAPTERS.get(this.selectedChapter);
+        int mask = this.menu.completionMask(this.selectedChapter);
+        this.shownMask = mask;
+        for (int i = 0; i < chapter.steps().size(); i++) {
+            if (chapter.isShown(i, mask)) {
+                this.shownSteps.add(i);
+            }
+        }
+        for (int slot = 0; slot < this.shownSteps.size(); slot++) {
+            final int step = this.shownSteps.get(slot);
+            SpaceButton node = new SpaceButton(stepX(slot), stepY(slot), 42, 14,
+                    Component.literal(String.valueOf(slot + 1)), ACCENT, b -> selectStep(step));
             this.addRenderableWidget(node);
             this.stepButtons.add(node);
         }
@@ -94,7 +113,7 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
      * step canvas.
      */
     private int rowSpacing() {
-        int steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps().size();
+        int steps = Math.max(1, this.shownSteps.size());
         int rows = Math.max(1, (steps + 2) / 3);
         return rows <= 1 ? 32 : Math.min(32, 54 / (rows - 1));
     }
@@ -111,17 +130,19 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     @Override
     protected void extractForeground(GuiGraphicsExtractor g) {
         List<StarGuide.Step> steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps();
+        if (this.menu.completionMask(this.selectedChapter) != this.shownMask) {
+            rebuildStepButtons(); // completion synced (or a hidden step just completed): re-layout the nodes
+        }
 
         // Chapter rail: light fully-completed chapters.
         for (int i = 0; i < this.chapterButtons.size(); i++) {
-            int total = StarGuide.CHAPTERS.get(i).steps().size();
-            boolean allDone = Integer.bitCount(this.menu.completionMask(i)) >= total;
+            boolean allDone = StarGuide.CHAPTERS.get(i).isComplete(this.menu.completionMask(i));
             this.chapterButtons.get(i).setSelected(i == this.selectedChapter || allDone);
         }
 
         // Dotted trajectory line linking the chapter's nodes in order (the progression path).
-        for (int i = 0; i < steps.size() - 1; i++) {
-            boolean done = this.menu.isStepComplete(this.selectedChapter, i);
+        for (int i = 0; i < this.shownSteps.size() - 1; i++) {
+            boolean done = this.menu.isStepComplete(this.selectedChapter, this.shownSteps.get(i));
             int color = done ? DONE : 0xFF31506B;
             if (i / 3 == (i + 1) / 3) {
                 int xa = Math.min(stepX(i), stepX(i + 1)) + 44;
@@ -137,8 +158,9 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
         long now = System.currentTimeMillis();
         boolean pulseOn = (now / 400L) % 2L == 0L;
         for (int i = 0; i < this.stepButtons.size(); i++) {
-            boolean done = this.menu.isStepComplete(this.selectedChapter, i);
-            boolean seen = this.menu.isStepSeen(this.selectedChapter, i);
+            int real = this.shownSteps.get(i);
+            boolean done = this.menu.isStepComplete(this.selectedChapter, real);
+            boolean seen = this.menu.isStepSeen(this.selectedChapter, real);
             SpaceButton node = this.stepButtons.get(i);
             node.setSelected(done && (seen || pulseOn));
             if (done) {

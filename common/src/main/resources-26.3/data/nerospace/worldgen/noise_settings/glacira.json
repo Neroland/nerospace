@@ -1,0 +1,373 @@
+{
+  "aquifers": {
+    "barrier": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_barrier",
+      "xz_scale": 1.0,
+      "y_scale": 0.5
+    },
+    "exclusion": {
+      "type": "minecraft:min",
+      "left": {
+        "type": "minecraft:sub",
+        "left": -0.225,
+        "right": "minecraft:overworld/erosion"
+      },
+      "right": {
+        "type": "minecraft:max",
+        "left": {
+          "type": "minecraft:sub",
+          "left": "minecraft:overworld/depth",
+          "right": 0.9
+        },
+        "right": 0.0
+      }
+    },
+    "fluid_level_floodedness": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_fluid_level_floodedness",
+      "xz_scale": 1.0,
+      "y_scale": 0.67
+    },
+    "fluid_level_spread": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_fluid_level_spread",
+      "xz_scale": 1.0,
+      "y_scale": 0.7142857142857143
+    },
+    "lava": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_lava",
+      "xz_scale": 1.0,
+      "y_scale": 1.0
+    },
+    "surface_level": "minecraft:overworld/preliminary_surface_level"
+  },
+  "debug_functions": [
+    {
+      "function": "minecraft:overworld/final_density",
+      "label": "N"
+    },
+    {
+      "function": "minecraft:overworld/temperature",
+      "label": "T"
+    },
+    {
+      "function": "minecraft:overworld/vegetation",
+      "label": "V"
+    },
+    {
+      "function": "minecraft:overworld/continents",
+      "label": "C"
+    },
+    {
+      "function": "minecraft:overworld/erosion",
+      "label": "E"
+    },
+    {
+      "function": "minecraft:overworld/depth",
+      "label": "D"
+    },
+    {
+      "function": "minecraft:overworld/ridges",
+      "label": "W"
+    },
+    {
+      "function": {
+        "type": "minecraft:mul",
+        "left": {
+          "type": "minecraft:add",
+          "left": {
+            "type": "minecraft:abs",
+            "input": {
+              "type": "minecraft:add",
+              "left": {
+                "type": "minecraft:abs",
+                "input": "minecraft:overworld/ridges"
+              },
+              "right": -0.6666667
+            }
+          },
+          "right": -0.33333334
+        },
+        "right": -3.0
+      },
+      "label": "PV"
+    },
+    {
+      "function": "minecraft:overworld/preliminary_surface_level",
+      "label": "PS"
+    }
+  ],
+  "default_block": "minecraft:stone",
+  "default_fluid": "minecraft:water",
+  "disable_mob_generation": false,
+  "legacy_random_source": false,
+  "material_rule": {
+    "type": "minecraft:sequence",
+    "sequence": [
+      "minecraft:bedrock_floor",
+      "minecraft:overworld/copper_ore_vein",
+      "minecraft:overworld/iron_ore_vein",
+      {
+        "type": "minecraft:condition",
+        "if_true": {
+          "type": "minecraft:above_preliminary_surface"
+        },
+        "then_run": {
+          "type": "minecraft:sequence",
+          "sequence": [
+            {
+              "type": "minecraft:condition",
+              "if_true": {
+                "type": "minecraft:biome",
+                "biome_is": "nerospace:glacira_spires"
+              },
+              "then_run": {
+                "type": "minecraft:sequence",
+                "sequence": [
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:packed_cryo_ice"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:packed_cryo_ice"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 8,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "minecraft:packed_ice"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "minecraft:condition",
+              "if_true": {
+                "type": "minecraft:biome",
+                "biome_is": "nerospace:glacira_methane_shore"
+              },
+              "then_run": {
+                "type": "minecraft:sequence",
+                "sequence": [
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:permafrost"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:permafrost"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 4,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "minecraft:packed_ice"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "minecraft:sequence",
+              "sequence": [
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:stone_depth",
+                    "add_surface_depth": false,
+                    "offset": 0,
+                    "secondary_depth_range": 0,
+                    "surface_type": "floor"
+                  },
+                  "then_run": {
+                    "type": "minecraft:sequence",
+                    "sequence": [
+                      {
+                        "type": "minecraft:condition",
+                        "if_true": {
+                          "type": "minecraft:steep"
+                        },
+                        "then_run": {
+                          "type": "minecraft:block",
+                          "result_state": "nerospace:packed_cryo_ice"
+                        }
+                      },
+                      {
+                        "type": "minecraft:block",
+                        "result_state": "nerospace:permafrost"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:stone_depth",
+                    "add_surface_depth": true,
+                    "offset": 0,
+                    "secondary_depth_range": 0,
+                    "surface_type": "floor"
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "nerospace:permafrost"
+                  }
+                },
+                {
+                  "type": "minecraft:condition",
+                  "if_true": {
+                    "type": "minecraft:stone_depth",
+                    "add_surface_depth": true,
+                    "offset": 0,
+                    "secondary_depth_range": 6,
+                    "surface_type": "floor"
+                  },
+                  "then_run": {
+                    "type": "minecraft:block",
+                    "result_state": "minecraft:packed_ice"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "minecraft:condition",
+        "if_true": {
+          "type": "minecraft:vertical_gradient",
+          "false_at_and_above": {
+            "absolute": 8
+          },
+          "random_name": "minecraft:deepslate",
+          "true_at_and_below": {
+            "absolute": 0
+          }
+        },
+        "then_run": {
+          "type": "minecraft:block",
+          "result_state": "minecraft:deepslate"
+        }
+      }
+    ]
+  },
+  "noise": {
+    "height": 384,
+    "min_y": -64
+  },
+  "noise_router": {
+    "chunk_surface_level": "minecraft:overworld/chunk_surface_level",
+    "continents": "minecraft:overworld/continents",
+    "depth": "minecraft:overworld/depth",
+    "erosion": "minecraft:overworld/erosion",
+    "final_density": "minecraft:overworld/final_density",
+    "ridges": "minecraft:overworld/ridges",
+    "temperature": "minecraft:overworld/temperature",
+    "vegetation": "minecraft:overworld/vegetation"
+  },
+  "sea_level": 63,
+  "spawn_target": [
+    {
+      "minecraft:overworld/continents": [
+        -0.11,
+        1.0
+      ],
+      "minecraft:overworld/erosion": [
+        -1.0,
+        1.0
+      ],
+      "minecraft:overworld/ridges": [
+        -1.0,
+        -0.16
+      ],
+      "minecraft:overworld/temperature": [
+        -1.0,
+        1.0
+      ],
+      "minecraft:overworld/vegetation": [
+        -1.0,
+        1.0
+      ]
+    },
+    {
+      "minecraft:overworld/continents": [
+        -0.11,
+        1.0
+      ],
+      "minecraft:overworld/erosion": [
+        -1.0,
+        1.0
+      ],
+      "minecraft:overworld/ridges": [
+        0.16,
+        1.0
+      ],
+      "minecraft:overworld/temperature": [
+        -1.0,
+        1.0
+      ],
+      "minecraft:overworld/vegetation": [
+        -1.0,
+        1.0
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "nerospace:block/aurora_stone"
+    },
+    "lit=true": {
+      "model": "nerospace:block/aurora_stone"
+    }
+  }
+}

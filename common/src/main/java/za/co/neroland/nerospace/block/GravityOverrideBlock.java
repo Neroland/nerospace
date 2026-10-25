@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,12 +15,17 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.BlockGravityRules.Kind;
+import za.co.neroland.nerospace.block.rules.TickBootstrapRules;
 import za.co.neroland.nerospace.block.world.BlockGravityOverrides;
 
 /**
  * A block that registers a gravity override above itself (Gravity Shard Block = {@link Kind#SHARD}, Gravity Plate =
  * {@link Kind#PLATE}; 002 §10.4). Registration happens on placement and is removed when the block is removed. Beyond
  * 64 per chunk (config may lower) the placement is refused: the block pops back as an item with a message.
+ *
+ * <p>Worldgen never calls {@code onPlace}, so a generated block registers its override on its first random tick
+ * when none is stored ({@link TickBootstrapRules#shouldRegisterOverride}). Subclass registrations must therefore set
+ * {@code randomTicks()}. A full chunk leaves a generated block inert (no item to pop back).
  */
 public class GravityOverrideBlock extends Block {
 
@@ -45,6 +51,14 @@ public class GravityOverrideBlock extends Block {
         super.onPlace(state, level, pos, oldState, movedByPiston);
         if (level instanceof ServerLevel server && !oldState.is(this)) {
             BlockGravityOverrides.get(server).register(pos, this.kind);
+        }
+    }
+
+    @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        BlockGravityOverrides overrides = BlockGravityOverrides.get(level);
+        if (TickBootstrapRules.shouldRegisterOverride(overrides.contains(pos))) {
+            overrides.register(pos, this.kind);
         }
     }
 

@@ -60,6 +60,7 @@ class ConfigSchemaCompatTest {
         m.put("blocks.dawnbandCap", "256");
         m.put("blocks.gravityOverrideCap", "64");
         m.put("blocks.methaneChainCap", "4");
+        m.put("weather.emberStrikeIntervalTicks", "100");
         m.put("weather.enabled", "true");
         m.put("weather.frequencyMultiplier", "1.0");
         m.put("weather.durationMultiplier", "1.0");

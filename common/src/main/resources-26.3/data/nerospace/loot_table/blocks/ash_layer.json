@@ -1,0 +1,139 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:ash_layer",
+                "state": {
+                  "layers": "1"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 1
+              },
+              "name": "nerospace:ash_dust"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:ash_layer",
+                "state": {
+                  "layers": "2"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 2
+              },
+              "name": "nerospace:ash_dust"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:ash_layer",
+                "state": {
+                  "layers": "3"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 3
+              },
+              "name": "nerospace:ash_dust"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:ash_layer",
+                "state": {
+                  "layers": "4"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 4
+              },
+              "name": "nerospace:ash_dust"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:ash_layer",
+                "state": {
+                  "layers": "5"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 5
+              },
+              "name": "nerospace:ash_dust"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:ash_layer",
+                "state": {
+                  "layers": "6"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 6
+              },
+              "name": "nerospace:ash_dust"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:ash_layer",
+                "state": {
+                  "layers": "7"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 7
+              },
+              "name": "nerospace:ash_dust"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:ash_layer",
+                "state": {
+                  "layers": "8"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 8
+              },
+              "name": "nerospace:ash_dust"
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nerospace:blocks/ash_layer"
+}

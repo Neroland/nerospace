@@ -1,10 +1,17 @@
 {
+  "replace": false,
   "values": [
     "nerospace:nerosium_ore",
     "nerospace:deepslate_nerosium_ore",
     "nerospace:nerosteel_ore",
     "nerospace:xertz_quartz_ore",
     "nerospace:cindrite_ore",
-    "nerospace:glacite_ore"
+    "nerospace:glacite_ore",
+    "nerospace:ilmenite_ore",
+    "nerospace:helium3_pocket",
+    "nerospace:hematite_ore",
+    "nerospace:methane_ice",
+    "nerospace:amber_sap_ore",
+    "nerospace:voidglass_ore"
   ]
 }

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": "minecraft:glass",
+    "M": "minecraft:magma_block"
+  },
+  "pattern": [
+    "GGG",
+    "GMG",
+    "GGG"
+  ],
+  "result": {
+    "count": 8,
+    "id": "nerospace:magma_glass"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:ore",
+  "discard_chance_on_air_exposure": 0.0,
+  "size": 8,
+  "targets": [
+    {
+      "state": "nerospace:ilmenite_ore",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:lunar_basalt"
+      }
+    },
+    {
+      "state": "nerospace:ilmenite_ore",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:anorthosite"
+      }
+    },
+    {
+      "state": "nerospace:ilmenite_ore",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:regolith"
+      }
+    }
+  ]
+}

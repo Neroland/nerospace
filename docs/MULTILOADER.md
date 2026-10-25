@@ -83,6 +83,65 @@ a loader or move a hook, update all three.
 Sky colours are carried by the dimension types themselves, so a cell without a sky hook still shows the
 planet's colours; the renderer only adds bodies, auroras and the like on top.
 
+### Chunk render layers (glass, ice, crystals, windows)
+
+There is no per-block render-layer registration in this mod, on any loader, and none is needed. On every
+26.x line (26.1.2, 26.2, 26.3) vanilla picks each quad's chunk section layer from its texture's transparency
+(`ChunkSectionLayer.byTransparency`); the old `ItemBlockRenderTypes` table no longer exists. NeoForge, Forge and
+Fabric all follow it, so one texture rule covers all nine cells:
+
+| Texture alpha | Layer | Use for |
+| --- | --- | --- |
+| every pixel 255 | SOLID | ordinary blocks |
+| some pixels 0, none in 1–254 | CUTOUT | holes: panes, plants, the Cheese Wheel's cut faces |
+| any pixel in 1–254 | TRANSLUCENT | tinted glass and ice: Crater Glass, Dry Ice (later Hull Window, Magma Glass, Void Crystal, Frost Crystal) |
+
+A see-through block also needs the right block properties, or neighbours' faces are culled and you see the void:
+
+- call `noOcclusion()` in its properties;
+- extend `TransparentBlock` (glass-like) or `HalfTransparentBlock` (ice-like) so faces between two of the same
+  block are skipped, as `LightLensBlock` (Crater Glass) and `DryIceBlock` do;
+- no `render_type` in the model JSON (it is not read on Fabric and is redundant elsewhere).
+
+`ChunkLayerTexturesTest` pins the intended layer of each see-through block by reading its model's textures. Add a
+row there for every new glass, ice, crystal or window block, so a repainted texture cannot change the layer
+unnoticed.
+
+### MC-version branches in common code
+
+Common code avoids Stonecutter `//? if` wherever a version-neutral API exists. Most existing branches are
+renderer, worldgen and item API changes at 26.3 (`grep -rn "//? if" common/src/main/java`). Branches in the
+planet-block framework (`block/`) and planet packages:
+
+| File | Branch | Why |
+| --- | --- | --- |
+| `block/GeyserBlock` | `>=26.3` | `Entity.hurtMarked` was renamed `needsSync` (pushes the launch velocity to the client) |
+| `world/planet/cindara/EmberStrike` | `>=26.2` | `EntityType.LIGHTNING_BOLT` moved to `EntityTypes` |
+| `world/planet/greenxertz/block/BioBarkLogBlock` | `>=26.3` | `SoundEvents.AXE_STRIP` is a `Holder.Reference` (`.value()`) |
+| `world/planet/greenxertz/block/GlowcapFungusBlock` | `>=26.3` | the `BonemealableBlock` methods take a trailing `BonemealSource` |
+| `world/planet/greenxertz/world/GiantGlowcapFeature`, `GreenxertzContent.GIANT_GLOWCAP_FEATURE` | `<26.3` / `>=26.3` | the feature API split, as `RuinFeature` (`FEATURE_TYPES` codec vs `FEATURES` instance) |
+
+Version-neutral by design: the Nyx Stone light mixins (`mixin/LightEngineNyxMixin`, `mixin/BlockLightEngineNyxMixin`)
+target methods and the `newToLevel` local that are identical on 26.1.2, 26.2 and 26.3, and block classes do not
+override `codec()` with `@Override` (26.3 removed it from `Block`).
+
+### 26.3 heightmap tag rule
+
+From 26.3 the `MOTION_BLOCKING`, `MOTION_BLOCKING_NO_LEAVES`, `OCEAN_FLOOR` and `OCEAN_FLOOR_WG` heightmaps no
+longer ask `BlockState.blocksMotion()`; they count only blocks in `#minecraft:blocks_motion_in_heightmap(_no_leaves)`,
+which resolve to the fixed vanilla list `#minecraft:blocks_motion_no_leaves`. A modded block missing from that tag is
+see-through to those heightmaps on 26.3: rain and snow fall through it, mob spawn heights are wrong, and features
+placed relative to `OCEAN_FLOOR_WG` (ores) silently never generate. 26.1.2 and 26.2 have no such tag.
+
+Rule: **every new Nerospace block that has collision goes into
+`common/src/main/resources-26.3/data/minecraft/tags/block/blocks_motion_no_leaves.json`** (`replace: false`; the
+overlay is 26.3-only). Follow vanilla 26.3's own list: solid cubes, glass, panes, fences, chains, lanterns, pressure
+plates, slabs and crystal clusters are in; fluids, plants, snow layers and carpets are out.
+`HeightmapTagCoverageTest` enforces it: it discovers block ids from `assets/nerospace/blockstates/*.json` plus the
+string ids passed to `BLOCKS.register(...)`/`block(...)` and fails on any id that is neither tagged nor in its
+commented `EXCLUDED` map (currently `rocket_fuel`, a fluid, and `ash_layer`, a snow-like layer). It also fails on
+stale or duplicate tag entries and if the tag file ever appears in the shared `resources/`.
+
 ## Build
 
 Run from the repo root:

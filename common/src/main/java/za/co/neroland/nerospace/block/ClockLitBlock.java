@@ -14,12 +14,14 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.AuroraRules;
+import za.co.neroland.nerospace.block.rules.TickBootstrapRules;
 import za.co.neroland.nerospace.world.planet.PlanetClock;
 
 /**
  * Clock-gated emitter (Aurora Stone, 002 §1.4, §10.3): a self-rescheduling tick every 200 ticks sets {@code LIT} from
  * the planet daylight — a block-state flip, not a light-engine hook. Register with
- * {@code lightLevel(s -> s.getValue(LIT) ? AuroraRules.LIGHT : 0)}.
+ * {@code lightLevel(s -> s.getValue(LIT) ? AuroraRules.LIGHT : 0)} and {@code randomTicks()}: worldgen never calls
+ * {@code onPlace}, so a generated block starts its schedule on its first random tick ({@link TickBootstrapRules}).
  */
 public class ClockLitBlock extends Block {
 
@@ -47,6 +49,13 @@ public class ClockLitBlock extends Block {
         super.onPlace(state, level, pos, oldState, movedByPiston);
         if (!level.isClientSide() && !oldState.is(this)) {
             level.scheduleTick(pos, this, 1 + level.getRandom().nextInt(AuroraRules.INTERVAL_TICKS));
+        }
+    }
+
+    @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (TickBootstrapRules.shouldBootstrap(level.getBlockTicks().hasScheduledTick(pos, this))) {
+            level.scheduleTick(pos, this, TickBootstrapRules.clockLitDelay());
         }
     }
 

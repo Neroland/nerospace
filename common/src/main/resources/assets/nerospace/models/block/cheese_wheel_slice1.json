@@ -1,0 +1,80 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "nerospace:block/cheese_wheel_side",
+    "top": "nerospace:block/cheese_wheel_top",
+    "side": "nerospace:block/cheese_wheel_side",
+    "inner": "nerospace:block/cheese_wheel_top"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        8,
+        14
+      ],
+      "faces": {
+        "down": {
+          "texture": "#top",
+          "uv": [
+            3,
+            2,
+            14,
+            14
+          ],
+          "cullface": "down"
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            3,
+            2,
+            14,
+            14
+          ]
+        },
+        "north": {
+          "texture": "#side",
+          "uv": [
+            2,
+            8,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#side",
+          "uv": [
+            3,
+            8,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#inner",
+          "uv": [
+            2,
+            8,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#side",
+          "uv": [
+            2,
+            8,
+            14,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

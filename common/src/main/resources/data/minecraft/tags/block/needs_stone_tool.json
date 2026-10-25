@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:lunar_basalt",
+    "nerospace:polished_lunar_basalt",
+    "nerospace:anorthosite",
+    "nerospace:cheese_ore",
+    "nerospace:martian_sandstone",
+    "nerospace:martian_sandstone_strata_1",
+    "nerospace:martian_sandstone_strata_2",
+    "nerospace:martian_sandstone_strata_3",
+    "nerospace:martian_sandstone_strata_4",
+    "nerospace:basalt_column",
+    "nerospace:ember_cracked_ashstone",
+    "nerospace:permafrost",
+    "nerospace:aurora_stone",
+    "nerospace:frozen_geyser",
+    "nerospace:amber_sap_ore",
+    "nerospace:nyx_stone",
+    "nerospace:dawnband_stone"
+  ]
+}

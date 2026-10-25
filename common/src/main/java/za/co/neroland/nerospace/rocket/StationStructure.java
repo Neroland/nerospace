@@ -2,131 +2,142 @@ package za.co.neroland.nerospace.rocket;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.world.OxygenFieldManager;
+import za.co.neroland.nerospace.world.station.ModuleEntry;
+import za.co.neroland.nerospace.world.station.ModuleKind;
+import za.co.neroland.nerospace.world.station.ModuleTemplates;
+import za.co.neroland.nerospace.world.station.StationModules;
 
 /**
- * Builds the enclosed station in the void: a 7×7 station-floor observation room (station-wall corner
- * pillars, two-high glass window bands, a station-floor roof, a lit ceiling), plus an <b>airlock corridor
- * on the east side</b> that runs out to an exposed <b>3×3 Tier-2 launch pad</b>. The pad is registered as
- * a travel node so a rocket flown to the station lands on it (no docking port). Shared by founding (the
- * charter) and rocket arrival, and idempotent — re-running never clobbers the Station Core or block
- * entities, and re-registers the same pad rather than duplicating it.
+ * Builds a station in the void, module-aware. The core is the 1.x 7×7
+ * station-floor room (station-wall pillars, glass bands, lit roof) with an airlock corridor east. A <b>new</b>
+ * station gets a Docking Ring at the old pad location instead of the 3×3 Tier-2 pad and records the {@code CORE} and
+ * {@code DOCKING_RING} modules. An <b>existing</b> station is never rebuilt: a 1.x station (Station Core standing, no
+ * core module recorded) gets its {@code CORE_LEGACY} entry and room oxygen on its first 2.0 visit, and its pad or
+ * dock node is kept registered. The shared origin platform (no registry entry) counts as built when its pad node is
+ * registered or its centre floor is station floor, so an arrival never rewrites it. Idempotent throughout.
  */
 public final class StationStructure {
 
     /** 7×7 room footprint (radius 3). */
-    public static final int RADIUS = 3;
+    public static final int RADIUS = ModuleTemplates.ROOM_R;
     /** Room wall height: walls at +1..+WALL_H, roof at +WALL_H+1. */
-    public static final int WALL_H = 4;
+    public static final int WALL_H = ModuleTemplates.WALL_H;
     /** Length of the airlock corridor (blocks east of the room wall). */
-    private static final int AIRLOCK_LEN = 4;
+    private static final int AIRLOCK_LEN = ModuleTemplates.AIRLOCK_LEN;
 
     private StationStructure() {
     }
 
-    /** The Tier-2 landing-pad centre for a station at {@code centre} (deterministic from the layout). */
+    /** The landing-pad / Docking Ring centre for a station at {@code centre} (deterministic from the layout). */
     public static BlockPos padCenter(BlockPos centre) {
         return new BlockPos(centre.getX() + RADIUS + AIRLOCK_LEN + 2, centre.getY(), centre.getZ());
     }
 
     /**
-     * Generates the station around {@code centre} <b>once</b>, returning the centre of its Tier-2 landing
-     * pad. If a Station Core already stands at {@code centre} the station is left completely untouched —
-     * player-placed/-removed blocks are preserved — and only the travel-pad node is kept registered.
+     * The origin-platform guard, pure: a station counts as already built when a Station Core stands at
+     * its centre, or a pad node is registered at its pad centre, or its centre floor is station floor.
+     */
+    public static boolean alreadyBuilt(boolean hasCoreAtCentre, boolean hasPadNodeAtPad,
+            boolean floorIsStationFloor) {
+        return hasCoreAtCentre || hasPadNodeAtPad || floorIsStationFloor;
+    }
+
+    /**
+     * Generates the station around {@code centre} <b>once</b>, returning the centre of its landing pad / Docking
+     * Ring. An already-built station is left untouched — player-placed/-removed blocks are preserved — and only its
+     * node is kept registered (plus the one-time {@code CORE_LEGACY} record for a 1.x station).
      */
     public static BlockPos build(ServerLevel level, BlockPos centre) {
-        BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
-        BlockState wall = ModBlocks.STATION_WALL.get().defaultBlockState();
-        BlockState glass = Blocks.GLASS.defaultBlockState();
-        BlockState lamp = Blocks.SEA_LANTERN.defaultBlockState();
-        int cx = centre.getX();
-        int cy = centre.getY();
-        int cz = centre.getZ();
-        int r = RADIUS;
+        StationModules.loadChunks(level, centre);
+        BlockPos padCentre = padCenter(centre);
+        StationRegistry registry = StationRegistry.get(level.getServer());
+        StationRegistry.StationEntry entry = entryAt(level, centre);
 
-        // The structure straddles up to four chunks — load the whole footprint (room + airlock) first.
-        for (int xx = cx - r; xx <= cx + r + AIRLOCK_LEN + 3; xx += r) {
-            for (int zz = cz - r; zz <= cz + r; zz += r) {
-                level.getChunk(xx >> 4, zz >> 4);
-            }
-        }
-
-        // Already generated — never rebuild (preserve the player's changes); just keep the pad node live.
-        if (level.getBlockState(centre).is(ModBlocks.STATION_CORE.get())) {
-            BlockPos existing = padCenter(centre);
-            registerPad(level, centre, existing);
-            return existing;
-        }
-
-        // --- Room: floor, lit ceiling, walls + window bands -----------------------------------
-        for (int dx = -r; dx <= r; dx++) {
-            for (int dz = -r; dz <= r; dz++) {
-                BlockPos fp = new BlockPos(cx + dx, cy, cz + dz);
-                if (!level.getBlockState(fp).is(ModBlocks.STATION_CORE.get()) && level.getBlockEntity(fp) == null) {
-                    level.setBlockAndUpdate(fp, floor);
-                }
-                boolean ceilingLight = (dx == 0 && dz == 0) || (Math.abs(dx) == 2 && Math.abs(dz) == 2);
-                level.setBlockAndUpdate(new BlockPos(cx + dx, cy + WALL_H + 1, cz + dz),
-                        ceilingLight ? lamp : floor);
-
-                boolean edge = Math.abs(dx) == r || Math.abs(dz) == r;
-                if (!edge) {
-                    continue;
-                }
-                boolean corner = Math.abs(dx) == r && Math.abs(dz) == r;
-                for (int h = 1; h <= WALL_H; h++) {
-                    BlockState block = (corner || h == 1 || h == WALL_H) ? wall : glass;
-                    level.setBlockAndUpdate(new BlockPos(cx + dx, cy + h, cz + dz), block);
+        boolean hasCore = level.getBlockState(centre).is(ModBlocks.STATION_CORE.get());
+        if (hasCore) {
+            if (entry != null) {
+                StationModules.ensureLegacyCore(level, registry, entry);
+                StationRegistry.StationEntry now = registry.get(entry.slot());
+                if (now != null && now.hasModule(ModuleKind.DOCKING_RING)) {
+                    StationModules.placeDock(level, padCentre, now.name() + " Dock");
+                    return padCentre;
                 }
             }
+            registerPad(level, centre, padCentre);
+            return padCentre;
+        }
+        boolean floor = level.getBlockState(centre).is(ModBlocks.STATION_FLOOR.get());
+        if (entry == null && alreadyBuilt(false, hasPadNode(level, padCentre), floor)) {
+            registerPad(level, centre, padCentre); // origin platform: re-register only, write nothing
+            return padCentre;
         }
 
-        // --- Doorway in the east wall (x = cx+r), two high at the centre row -------------------
-        level.setBlockAndUpdate(new BlockPos(cx + r, cy + 1, cz), Blocks.AIR.defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(cx + r, cy + 2, cz), Blocks.AIR.defaultBlockState());
-
-        // --- Airlock corridor: floor + roof, glazed side walls, open far end ------------------
-        int startX = cx + r + 1;            // first corridor column, just outside the room wall
-        int endX = startX + AIRLOCK_LEN - 1;
-        for (int x = startX; x <= endX; x++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                level.setBlockAndUpdate(new BlockPos(x, cy, cz + dz), floor);          // floor
-                level.setBlockAndUpdate(new BlockPos(x, cy + 3, cz + dz), floor);      // roof
+        // --- Fresh void: the core room + airlock from the CORE template --------------------------------------
+        for (ModuleTemplates.Placement p : ModuleTemplates.template(ModuleKind.CORE, 0, centre)) {
+            if (p.cell() == ModuleTemplates.Cell.CORE) {
+                continue;
             }
-            // Side walls (kneewall + glass window).
-            level.setBlockAndUpdate(new BlockPos(x, cy + 1, cz - 1), wall);
-            level.setBlockAndUpdate(new BlockPos(x, cy + 1, cz + 1), wall);
-            level.setBlockAndUpdate(new BlockPos(x, cy + 2, cz - 1), glass);
-            level.setBlockAndUpdate(new BlockPos(x, cy + 2, cz + 1), glass);
-        }
-
-        // --- 3×3 Tier-2 launch pad beyond the airlock (open sky above for the rocket) ----------
-        BlockState pad = ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState();
-        int padCx = endX + 2; // pad centre column
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                level.setBlockAndUpdate(new BlockPos(padCx + dx, cy, cz + dz), pad);
+            BlockState state = StationModules.stateFor(p.cell());
+            if (state == null) {
+                continue;
             }
+            if (p.cell() == ModuleTemplates.Cell.FLOOR && level.getBlockEntity(p.pos()) != null) {
+                continue; // never clobber a block entity
+            }
+            level.setBlock(p.pos(), state, Block.UPDATE_ALL);
         }
 
-        BlockPos padCentre = new BlockPos(padCx, cy, cz);
+        if (entry == null) {
+            placeLegacyPad(level, padCentre); // origin platform keeps its 3×3 pad
+            registerPad(level, centre, padCentre);
+            return padCentre;
+        }
 
         // Anchor the founded station: place + bind the (unbreakable) Station Core.
-        StationRegistry.StationEntry entry = entryAt(level, centre);
-        if (entry != null) {
-            level.setBlockAndUpdate(centre, ModBlocks.STATION_CORE.get().defaultBlockState());
-            if (level.getBlockEntity(centre) instanceof StationCoreBlockEntity core) {
-                core.bindStation(entry.slot(), entry.name());
-            }
+        level.setBlockAndUpdate(centre, ModBlocks.STATION_CORE.get().defaultBlockState());
+        if (level.getBlockEntity(centre) instanceof StationCoreBlockEntity core) {
+            core.bindStation(entry.slot(), entry.name());
         }
-        registerPad(level, centre, padCentre);
+        registry.addModule(entry.slot(), new ModuleEntry(ModuleKind.CORE, 0, centre));
+        OxygenFieldManager.get(level).addSource(ModuleTemplates.oxygenCell(ModuleKind.CORE, 0, centre));
+
+        if (StationModules.placeDock(level, padCentre, entry.name() + " Dock")) {
+            registry.addModule(entry.slot(), new ModuleEntry(ModuleKind.DOCKING_RING, 0,
+                    ModuleTemplates.anchor(ModuleKind.DOCKING_RING, 0, centre)));
+        } else {
+            // No Docking Ring available: fall back to the 1.x pad so the station is still reachable.
+            placeLegacyPad(level, padCentre);
+            registerPad(level, centre, padCentre);
+        }
         return padCentre;
     }
 
-    @org.jetbrains.annotations.Nullable
+    private static void placeLegacyPad(ServerLevel level, BlockPos padCentre) {
+        BlockState pad = ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                level.setBlockAndUpdate(padCentre.offset(dx, 0, dz), pad);
+            }
+        }
+    }
+
+    private static boolean hasPadNode(ServerLevel level, BlockPos padCentre) {
+        for (PadRegistry.PadNode node : PadRegistry.get(level.getServer()).inDimension(level.dimension())) {
+            if (node.pos().equals(padCentre)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Nullable
     private static StationRegistry.StationEntry entryAt(ServerLevel level, BlockPos centre) {
         for (StationRegistry.StationEntry e : StationRegistry.get(level.getServer()).all()) {
             if (e.center().equals(centre)) {
@@ -136,7 +147,7 @@ public final class StationStructure {
         return null;
     }
 
-    /** Keeps the station's landing pad registered as a travel node, named after the station. */
+    /** Keeps the station's legacy landing pad registered as a travel node, named after the station. */
     private static void registerPad(ServerLevel level, BlockPos centre, BlockPos padCentre) {
         StationRegistry.StationEntry entry = entryAt(level, centre);
         String label = entry != null ? entry.name() : "Station";

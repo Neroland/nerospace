@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "nerospace:voidglass_lens",
+    "S": "minecraft:spyglass",
+    "T": "#c:ingots/titanium"
+  },
+  "pattern": [
+    " L ",
+    "TST",
+    "T T"
+  ],
+  "result": {
+    "id": "nerospace:telescope"
+  }
+}

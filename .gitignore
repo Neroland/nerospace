@@ -68,3 +68,5 @@ neoforge/versions/26.2/runs/client/screenshots/*
 /.github/scripts/__pycache__
 /tools/gradle-mcp/node_modules
 /neoforge/versions
+# local generator scratch output (never shipped)
+/temp/

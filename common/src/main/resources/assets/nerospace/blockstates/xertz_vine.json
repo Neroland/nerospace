@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "tip=false": {
+      "model": "nerospace:block/xertz_vine"
+    },
+    "tip=true": {
+      "model": "nerospace:block/xertz_vine_tip"
+    }
+  }
+}

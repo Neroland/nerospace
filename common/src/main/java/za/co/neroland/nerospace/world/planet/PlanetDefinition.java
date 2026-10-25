@@ -183,6 +183,14 @@ public abstract class PlanetDefinition {
         return server != null && server.getLevel(dimension()) != null;
     }
 
+    /**
+     * Where a rocket with no pad to land on searches for its Landing Pod site (005 §1.4): X/Z only, Y ignored.
+     * {@code (0, 0)} for every planet unless a planet package overrides it. Not config, not saved.
+     */
+    public net.minecraft.core.BlockPos arrivalAnchor() {
+        return net.minecraft.core.BlockPos.ZERO;
+    }
+
     @Override
     public String toString() {
         return id().asString();

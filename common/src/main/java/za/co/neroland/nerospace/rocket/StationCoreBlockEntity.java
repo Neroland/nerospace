@@ -52,6 +52,24 @@ public class StationCoreBlockEntity extends BlockEntity {
         return this.slot >= 0;
     }
 
+    /** Server tick: every {@link za.co.neroland.nerospace.world.station.ObservatoryRules#RECHECK_TICKS} ticks
+     * records a 1.x station's {@code CORE_LEGACY} module on its first 2.0 load and keeps the Observatory's
+     * telescope in step with the station class. Cheap: one registry lookup per interval. */
+    public void serverTick(net.minecraft.world.level.Level level) {
+        if (!(level instanceof ServerLevel server) || !isBound()
+                || server.getGameTime() % za.co.neroland.nerospace.world.station.ObservatoryRules.RECHECK_TICKS
+                        != (this.worldPosition.asLong() & 0x7F)) {
+            return;
+        }
+        StationRegistry registry = StationRegistry.get(server.getServer());
+        StationRegistry.StationEntry entry = registry.get(this.slot);
+        if (entry == null || !entry.center().equals(this.worldPosition)) {
+            return;
+        }
+        za.co.neroland.nerospace.world.station.StationModules.ensureLegacyCore(server, registry, entry);
+        za.co.neroland.nerospace.world.station.StationObservatory.syncTelescope(server, entry);
+    }
+
     public int comparatorSignal() {
         return isBound() ? 15 : 0;
     }
@@ -68,6 +86,10 @@ public class StationCoreBlockEntity extends BlockEntity {
         }
         StationRegistry.StationEntry removed =
                 StationRegistry.get(serverLevel.getServer()).unregister(this.slot);
+        if (removed != null) {
+            // Abandonment removes every module's oxygen source; the hull stays as scrap.
+            za.co.neroland.nerospace.menu.StationConsoleMenu.clearOxygen(serverLevel, removed);
+        }
         ItemStack charter = new ItemStack(ModItems.STATION_CHARTER.get());
         String name = removed != null ? removed.name() : this.stationName;
         if (name != null && !name.isBlank()) {

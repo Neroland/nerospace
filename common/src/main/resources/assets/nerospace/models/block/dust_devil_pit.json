@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nerospace:block/dust_devil_pit",
+    "side": "nerospace:block/red_regolith",
+    "bottom": "nerospace:block/red_regolith"
+  }
+}

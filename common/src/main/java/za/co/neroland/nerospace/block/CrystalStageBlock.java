@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
+import za.co.neroland.nerospace.block.rules.Caps;
 import za.co.neroland.nerospace.block.rules.CrystalStageRules;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.world.planet.WeatherEffects;
@@ -43,9 +44,10 @@ public class CrystalStageBlock extends Block {
         builder.add(STAGE);
     }
 
+    /** Queues the event-end growth (drained over ticks); returns the number of chunks queued. */
     public int growAll(ServerLevel level) {
         return WeatherScan.forEachLoadedBlock(level, s -> s.is(this) && s.getValue(STAGE) < CrystalStageRules.MAX_STAGE,
-                NerospaceConfig.frostCrystalCap(), (pos, s) -> {
+                Caps.lower(CrystalStageRules.PER_CHUNK_CAP, NerospaceConfig.frostCrystalCap()), (pos, s) -> {
                     int next = CrystalStageRules.nextStage(s.getValue(STAGE), level.canSeeSky(pos.above()), true);
                     return next != s.getValue(STAGE)
                             && level.setBlock(pos.immutable(), s.setValue(STAGE, next), Block.UPDATE_CLIENTS);

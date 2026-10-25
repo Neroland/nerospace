@@ -23,15 +23,17 @@ station is permanent, so your builds inside it are safe.
 - **Anchor & persistence:** the Core binds the station to its registry slot and survives restarts and
   chunk unloads. The station **never regenerates** once built — any blocks you place or remove inside
   it are preserved on later visits.
-- **Rename:** right-click the Core to open a rename console. The new name updates everywhere — the
-  rocket dock selector and the station's landing-pad travel node.
-- **Founder-locked:** only the player who founded the station can rename it (the founder's ID is stored
-  locally for that check only). Anyone can still **fly to** any station.
+- **Station Console:** right-click the Core to open the [Station Console](Orbital-Stations) — rename the
+  station, pick its class, manage members, set docking and build modules. Anyone can open it; visitors get a
+  read-only view.
+- **Owner-locked:** only the owner (or a server operator) manages the station; members can use it. The
+  owner's and members' IDs are stored locally for those checks only. Anyone can still **fly to** a station
+  whose docking is open.
 - **Landing:** flying to this station lands your rocket on the **nearest registered pad to the Core**
   (the airlock's Tier-2 pad by default, or any pad you build closer to the Core).
 - **Removing a station:** since the Core is permanent, decommission with the command
   `/nerospace station remove` — stand on the Core, or give a slot from `/nerospace station list`. Only
-  the founder (or a creative admin) may remove it.
+  the owner, a server operator or a creative admin may remove it.
 
 ## Details
 

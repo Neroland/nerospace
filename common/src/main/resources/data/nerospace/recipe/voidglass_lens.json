@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "nerospace:voidglass",
+    "G": "minecraft:glass_pane"
+  },
+  "pattern": [
+    " V ",
+    "VGV",
+    " V "
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:voidglass_lens"
+  }
+}

@@ -70,6 +70,34 @@ public final class ReturnSitePlacement {
         return arrival(site);
     }
 
+    /**
+     * Places (or keeps) a Landing Pod at {@code site} for a crewed arrival resolved by {@link LandingResolver}
+     * (005 §1.7): clears its headroom, builds the 3×3 station-floor foundation (5×5 for a climbed pod) into
+     * replaceable cells only, and leaves the pod empty: the arriving rocket and its fuel stand on it (the 1.6.0
+     * return kit WAS the arriving rocket, so filling it now would duplicate the rocket and its fuel).
+     */
+    public static void placePod(ServerLevel level, BlockPos site, boolean climbed) {
+        level.getChunk(site.getX() >> 4, site.getZ() >> 4);
+        placeSite(level, site, ModBlocks.LANDING_POD.get(), false);
+        if (climbed) {
+            BlockState floor = ModBlocks.STATION_FLOOR.get().defaultBlockState();
+            int y = site.getY() - 1;
+            for (int dx = -2; dx <= 2; dx++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    BlockPos pos = new BlockPos(site.getX() + dx, y, site.getZ() + dz);
+                    if (replaceable(level, pos)) {
+                        level.setBlockAndUpdate(pos, floor);
+                    }
+                }
+            }
+        }
+    }
+
+    /** Whether {@code pos} is air/replaceable with no block entity (the pod never overwrites a player block). */
+    public static boolean isReplaceable(ServerLevel level, BlockPos pos) {
+        return replaceable(level, pos);
+    }
+
     private static BlockPos existingOrPlaceable(ServerLevel level, BlockPos pos, Block block) {
         BlockState state = level.getBlockState(pos);
         if (state.is(block) && level.getBlockEntity(pos) instanceof ReturnSiteBlockEntity site && site.isEmpty()) {

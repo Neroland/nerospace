@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "nerospace:martian_sandstone",
+  "result": {
+    "id": "nerospace:martian_sandstone_strata_1"
+  }
+}

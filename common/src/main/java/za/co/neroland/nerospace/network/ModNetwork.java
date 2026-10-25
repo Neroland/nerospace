@@ -87,6 +87,9 @@ public final class ModNetwork {
         // Founded-station names: server → a player opening a rocket, so the "Dock:" cycler shows real names.
         clientbound(StationSyncPayload.TYPE, StationSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientStations::accept);
+        // Landing-node labels: server → a player opening a rocket, so the planet card names the chosen pad.
+        clientbound(PadSyncPayload.TYPE, PadSyncPayload.STREAM_CODEC,
+                za.co.neroland.nerospace.client.ClientPads::accept);
         // Cargo Pad: server → the viewer of one open pad menu, the destination labels they may pick from.
         clientbound(CargoPadSyncPayload.TYPE, CargoPadSyncPayload.STREAM_CODEC,
                 za.co.neroland.nerospace.client.ClientCargoPads::accept);
@@ -102,5 +105,12 @@ public final class ModNetwork {
         serverbound(RenameStationPayload.TYPE, RenameStationPayload.STREAM_CODEC,
                 (payload, player) -> za.co.neroland.nerospace.item.StationCharterItem.renameStation(
                         player, payload.slot(), payload.name()));
+        // Station Console: server -> the console viewer (UUIDs only to canUse viewers; names resolved client-side).
+        clientbound(StationConsoleSyncPayload.TYPE, StationConsoleSyncPayload.STREAM_CODEC,
+                za.co.neroland.nerospace.client.ClientStationConsole::accept);
+        // Station Console: client -> server, add an online player (picked from the tab list) as a member.
+        serverbound(StationMemberPayload.TYPE, StationMemberPayload.STREAM_CODEC,
+                (payload, player) -> za.co.neroland.nerospace.menu.StationConsoleMenu.addMember(
+                        player, payload.slot(), payload.uuid()));
     }
 }

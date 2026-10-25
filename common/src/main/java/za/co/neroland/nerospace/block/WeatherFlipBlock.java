@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
+import za.co.neroland.nerospace.block.rules.Caps;
 import za.co.neroland.nerospace.block.rules.WarmthRules;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.world.planet.WeatherEffects;
@@ -45,10 +46,10 @@ public class WeatherFlipBlock extends Block {
         builder.add(FLARING);
     }
 
-    /** Flip every loaded block of this kind to {@code on}; returns the number changed. */
+    /** Queues a flip of every loaded block of this kind to {@code on} (drained over ticks); returns chunks queued. */
     public int flipAll(ServerLevel level, boolean on) {
         return WeatherScan.forEachLoadedBlock(level, s -> s.is(this) && s.getValue(FLARING) != on,
-                NerospaceConfig.dawnbandCap(),
+                Caps.lower(WarmthRules.PER_CHUNK_CAP, NerospaceConfig.dawnbandCap()),
                 (pos, s) -> level.setBlock(pos.immutable(), s.setValue(FLARING, on), Block.UPDATE_CLIENTS));
     }
 

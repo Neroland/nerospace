@@ -1,0 +1,31 @@
+{
+  "attributes": {
+    "minecraft:visual/sky_color": "#000000",
+    "minecraft:visual/fog_color": "#0b0b10"
+  },
+  "carvers": [],
+  "downfall": 0.0,
+  "effects": {
+    "foliage_color": "#7d7d78",
+    "grass_color": "#7d7d78",
+    "water_color": "#9a9a94"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nerospace:luna_nerosium_ore",
+      "nerospace:luna_nerosteel_ore",
+      "nerospace:luna_ilmenite_ore",
+      "nerospace:luna_anorthosite"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {},
+  "temperature": 0.0
+}

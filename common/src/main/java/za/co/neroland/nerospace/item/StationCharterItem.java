@@ -107,21 +107,29 @@ public class StationCharterItem extends Item {
             player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.not_owner"));
             return;
         }
-        StationRegistry.StationEntry entry = registry.rename(slot, trimmed);
+        StationRegistry.StationEntry before = registry.get(slot);
+        StationRegistry.StationEntry entry = registry.rename(slot, trimmed.length() > 32 ? trimmed.substring(0, 32)
+                : trimmed);
         if (entry == null) {
             return;
+        }
+        if (za.co.neroland.nerospace.world.station.StationAccess.manageViaOp(before == null ? "" : before.owner(),
+                player.getUUID().toString(), StationRegistry.isOp(player))) {
+            za.co.neroland.nerospace.world.station.StationAudit.op(
+                    za.co.neroland.nerospace.world.station.StationAudit.Action.RENAME, slot);
         }
         ServerLevel station = server.getLevel(ModDimensions.STATION_LEVEL);
         if (station != null) {
             if (station.getBlockEntity(entry.center()) instanceof StationCoreBlockEntity core) {
-                core.bindStation(slot, trimmed);
+                core.bindStation(slot, entry.name());
             }
-            PadRegistry.get(server).register(trimmed + " Landing", ModDimensions.STATION_LEVEL,
-                    StationStructure.padCenter(entry.center()));
+            boolean dock = entry.hasModule(za.co.neroland.nerospace.world.station.ModuleKind.DOCKING_RING);
+            PadRegistry.get(server).register(entry.name() + (dock ? " Dock" : " Landing"),
+                    ModDimensions.STATION_LEVEL, StationStructure.padCenter(entry.center()));
         }
         // NeroLink: same thin broadcast as founding, fired here rather than at the call sites so the
         // in-game naming console and the companion app's rename action cannot drift apart.
         za.co.neroland.nerospace.link.NerospaceLinkEvents.stationStateChanged(server, slot, "RENAMED");
-        player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.renamed", trimmed));
+        player.sendSystemMessage(Component.translatable("item.nerospace.station_charter.renamed", entry.name()));
     }
 }

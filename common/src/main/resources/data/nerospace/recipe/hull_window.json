@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": "#c:glass_blocks",
+    "T": "#c:ingots/titanium"
+  },
+  "pattern": [
+    "GGG",
+    "GTG",
+    "GGG"
+  ],
+  "result": {
+    "count": 8,
+    "id": "nerospace:hull_window"
+  }
+}

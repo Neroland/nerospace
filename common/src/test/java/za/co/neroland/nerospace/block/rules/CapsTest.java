@@ -22,4 +22,13 @@ class CapsTest {
         assertEquals(10, Caps.lower(48, 10));
         assertEquals(0, Caps.lower(48, -5));
     }
+
+    @Test
+    @DisplayName("frost crystal 64 and dawnband 256 transition caps never raised")
+    void transitionCaps() {
+        assertEquals(64, Caps.lower(CrystalStageRules.PER_CHUNK_CAP, 1000));
+        assertEquals(10, Caps.lower(CrystalStageRules.PER_CHUNK_CAP, 10));
+        assertEquals(256, Caps.lower(WarmthRules.PER_CHUNK_CAP, 4096));
+        assertEquals(0, Caps.lower(WarmthRules.PER_CHUNK_CAP, 0));
+    }
 }

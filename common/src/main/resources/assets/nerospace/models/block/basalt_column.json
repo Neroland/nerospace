@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "nerospace:block/basalt_column_top",
+    "side": "nerospace:block/basalt_column_side"
+  }
+}

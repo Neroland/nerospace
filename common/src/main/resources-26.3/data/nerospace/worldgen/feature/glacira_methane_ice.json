@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:ore",
+  "discard_chance_on_air_exposure": 0.0,
+  "size": 10,
+  "targets": [
+    {
+      "state": "nerospace:methane_ice",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:permafrost"
+      }
+    },
+    {
+      "state": "nerospace:methane_ice",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:packed_cryo_ice"
+      }
+    },
+    {
+      "state": "nerospace:methane_ice",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "minecraft:packed_ice"
+      }
+    },
+    {
+      "state": "nerospace:methane_ice",
+      "target": {
+        "predicate_type": "minecraft:tag_match",
+        "tag": "minecraft:stone_ore_replaceables"
+      }
+    }
+  ]
+}

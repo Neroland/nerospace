@@ -90,9 +90,12 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 | --- | --- | --- | --- | --- |
 | Overworld | — | normal | `1.0×` | Source of Nerosium. |
 | **Orbital Station** | Tier 1+ rocket | space starfield | `~0.1×` | A platform in orbit — plus any [station you found](Station-Charter) yourself. Airless/void. |
-| **Greenxertz** | Tier 2+ rocket | day/night + sun | `~0.6×` | Green planet; Nerosteel + Xertz Quartz. Airless. |
-| **Cindara** | Tier 3+ rocket | space starfield | `~0.8×` | Volcanic moon; Cindrite. Airless + **heat hazard** (×4 O₂ drain without a [Thermal Suit](Oxygen-Suit)). |
-| **Glacira** | Tier 4 rocket | space starfield | `~0.4×` | Frozen moon; Glacite. Airless + **cold hazard** (×4 O₂ drain without a [Cryo Suit](Oxygen-Suit)). |
+| **[Greenxertz](Greenxertz)** | Tier 2+ rocket | day/night + sun | `~0.6×` | Green planet; Nerosteel + Xertz Quartz. Airless. |
+| **[Cindara](Cindara)** | Tier 3+ rocket | space starfield | `~0.8×` | Volcanic moon; Cindrite. Airless + **heat hazard** (×4 O₂ drain without a [Thermal Suit](Oxygen-Suit)). |
+| **[Glacira](Glacira)** | Tier 4 rocket | space starfield | `~0.4×` | Frozen moon; Glacite. Airless + **cold hazard** (×4 O₂ drain without a [Cryo Suit](Oxygen-Suit)). |
+| **[Luna](Luna)** | Tier 1+ rocket | space starfield | `~0.17×` | Grey airless moon; Ilmenite (titanium), Helium-3, Crater Glass. |
+| **[Mars](Mars)** | Tier 2+ rocket | butterscotch sky, dust storms | `~0.38×` | Rust-red dunes and canyons; Hematite, Perchlorate, Dry Ice. Airless + **cold hazard**. |
+| **[Nyxara](Nyxara)** | Tier 4 rocket (Deep Space progress) | fixed sun in the west, galaxy in the east, flares | `~0.9×` | Tidally locked; Dayside, Twilight Band and Nightside by longitude; Voidglass, Void Crystal, Gravity Shards. Airless + **radiation** (Rad Lining). |
 
 All Nerospace dimensions are **airless** — without a breathable zone (an Oxygen Generator, a Launch
 Pad, terraformed ground, or a full Oxygen Suit) you will run out of oxygen and suffocate. They also

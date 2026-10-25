@@ -35,6 +35,12 @@ public final class NerospaceCommon {
         // NeoForge this builds DeferredRegisters (the loader entry point then
         // attaches them to the mod bus); on Fabric it registers eagerly.
         ModRegistries.init();
+        // Planet weather effects: idempotent, the registered hooks resolve blocks lazily.
+        za.co.neroland.nerospace.world.planet.mars.MarsWeather.register();
+        za.co.neroland.nerospace.world.planet.cindara.CindaraWeather.register();
+        za.co.neroland.nerospace.world.planet.glacira.GlaciraWeather.register();
+        za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzWeather.register();
+        za.co.neroland.nerospace.world.planet.nyxara.NyxaraWeather.register();
 
         // Resolve the remaining platform seams while the mod jar is still guaranteed readable, rather
         // than mid-tick on first use (Sentry MC-NEROSPACE-F).

@@ -73,10 +73,12 @@ public final class DriftWeather implements WeatherEffects {
                 return;
             }
             BlockPos dst = src.relative(wind);
+            if (!level.isLoaded(dst)) {
+                return; // never force-load a neighbour chunk
+            }
             boolean downwindAir = level.getBlockState(dst).isAir();
             boolean supported = level.getBlockState(dst.below()).isFaceSturdy(level, dst.below(), Direction.UP);
-            if (DriftRules.canDrift(true, false, level.getBlockState(air).isAir(), downwindAir, supported, moves, cap)
-                    && level.isLoaded(dst)) {
+            if (DriftRules.canDrift(true, false, level.getBlockState(air).isAir(), downwindAir, supported, moves, cap)) {
                 level.setBlock(dst, state, Block.UPDATE_ALL);
                 level.removeBlock(src, false);
                 this.movesThisStorm.put(key, moves + 1);

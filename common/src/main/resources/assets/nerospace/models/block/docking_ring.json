@@ -1,0 +1,7 @@
+{
+  "parent": "nerospace:block/docking_ring_plate",
+  "textures": {
+    "top": "nerospace:block/docking_ring",
+    "side": "nerospace:block/docking_ring_part"
+  }
+}

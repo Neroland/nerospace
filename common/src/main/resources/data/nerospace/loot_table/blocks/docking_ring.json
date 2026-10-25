@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "nerospace:docking_ring",
+          "properties": {
+            "part": "center"
+          }
+        },
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "nerospace:docking_ring"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "nerospace:blocks/docking_ring"
+}

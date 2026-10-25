@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nerospace:block/frozen_geyser_top",
+    "side": "nerospace:block/frozen_geyser_side",
+    "bottom": "nerospace:block/frozen_geyser_side"
+  }
+}

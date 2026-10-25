@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "nerospace:block/frost_crystal_cluster_stage3"
+  }
+}

@@ -47,6 +47,7 @@ String name       = info.name();
 PlanetId planet   = info.planet();         // always NerospacePlanets.STATION
 BlockPos pos      = info.position();
 int routeCapacity = info.routeCapacity();  // for NeroLogistics route provisioning
+String stationClass = info.stationClass(); // "WAYSTATION" | "RESEARCH" | "INDUSTRIAL" | "TRADE" (since 2.0.0)
 ```
 
 ### Privacy (POPIA/GDPR)

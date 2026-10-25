@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:bio_bark_log",
+    "nerospace:stripped_bio_bark_log",
+    "nerospace:glowcap_block"
+  ]
+}

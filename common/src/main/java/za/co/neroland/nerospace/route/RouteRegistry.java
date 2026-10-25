@@ -463,6 +463,17 @@ public final class RouteRegistry extends SavedData {
         return n;
     }
 
+    /** How many routes end at {@code padId} (a station's id: its anchored routes, read by the Station Console). */
+    public int routesTo(int padId) {
+        int n = 0;
+        for (RouteRecord route : this.routes.values()) {
+            if (route.destinationPadId() == padId) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     /** Whether any live flight is bound for {@code padId} — the pad GUI shows it as "inbound". */
     public int inboundCount(int padId) {
         int n = 0;

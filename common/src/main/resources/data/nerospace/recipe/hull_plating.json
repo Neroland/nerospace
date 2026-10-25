@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "T": "#c:ingots/titanium",
+    "W": "nerospace:station_wall"
+  },
+  "pattern": [
+    "TTT",
+    "TWT",
+    "TTT"
+  ],
+  "result": {
+    "count": 8,
+    "id": "nerospace:hull_plating"
+  }
+}

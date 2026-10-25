@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "nerospace:lunar_basalt",
+  "result": {
+    "count": 1,
+    "id": "nerospace:polished_lunar_basalt"
+  }
+}

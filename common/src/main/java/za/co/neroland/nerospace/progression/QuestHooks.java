@@ -114,8 +114,8 @@ public final class QuestHooks {
     private static void revealNextStep(ServerPlayer player) {
         for (Chapter chapter : StarGuide.CHAPTERS) {
             for (Step step : chapter.steps()) {
-                if (StarGuideProgress.isComplete(player, step)) {
-                    continue;
+                if (step.hidden() || StarGuideProgress.isComplete(player, step)) {
+                    continue; // a hidden step is never hinted
                 }
                 player.sendSystemMessage(Component.empty()
                         .append(Component.literal("[Nerospace] ").withStyle(ChatFormatting.LIGHT_PURPLE))

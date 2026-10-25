@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "frosted=false": {
+      "model": "nerospace:block/hull_window"
+    },
+    "frosted=true": {
+      "model": "nerospace:block/hull_window_frosted"
+    }
+  }
+}

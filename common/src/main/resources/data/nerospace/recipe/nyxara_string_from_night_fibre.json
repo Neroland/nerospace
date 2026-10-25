@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nerospace:night_fibre",
+    "nerospace:night_fibre",
+    "nerospace:night_fibre"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:string"
+  }
+}

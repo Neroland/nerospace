@@ -21,6 +21,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.block.GravityOverrideBlock;
 import za.co.neroland.nerospace.block.rules.BlockGravityRules;
 import za.co.neroland.nerospace.block.rules.BlockGravityRules.Kind;
 import za.co.neroland.nerospace.config.NerospaceConfig;
@@ -36,9 +37,12 @@ public final class BlockGravityOverrides extends SavedData {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block_gravity");
     public static final String RECOVERY_NAME = "nerospace:block_gravity";
 
+    /** Sentinel for a malformed entry with no position; skipped on load instead of failing the whole list. */
+    private static final long NO_POS = Long.MIN_VALUE;
+
     private record Entry(long pos, String kind) {
         static final Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
-                Codec.LONG.fieldOf("pos").forGetter(Entry::pos),
+                Codec.LONG.optionalFieldOf("pos", NO_POS).forGetter(Entry::pos),
                 Codec.STRING.optionalFieldOf("kind", Kind.SHARD.name()).forGetter(Entry::kind)
         ).apply(i, Entry::new));
     }
@@ -63,7 +67,7 @@ public final class BlockGravityOverrides extends SavedData {
         BlockGravityOverrides s = new BlockGravityOverrides();
         for (Entry e : entries) {
             Kind kind = Kind.byName(e.kind());
-            if (kind != null) {
+            if (kind != null && e.pos() != NO_POS) {
                 s.put(e.pos(), kind);
             }
         }
@@ -141,11 +145,20 @@ public final class BlockGravityOverrides extends SavedData {
     }
 
     /** Every override whose column covers {@code cell} (searches the cell's chunk and the edge neighbours). */
-    public List<BlockGravityRules.Override> coveringOverrides(BlockPos cell) {
+    public List<BlockGravityRules.GravityOverride> coveringOverrides(BlockPos cell) {
+        return coveringOverrides(cell, null);
+    }
+
+    /**
+     * As {@link #coveringOverrides(BlockPos)}; with a level, a hit whose source block (in a loaded chunk) is no longer
+     * a gravity block — removed by a world edit or structure overwrite that skipped the removal hook — is pruned.
+     */
+    public List<BlockGravityRules.GravityOverride> coveringOverrides(BlockPos cell, ServerLevel level) {
         if (this.size == 0) {
             return List.of();
         }
-        List<BlockGravityRules.Override> out = null;
+        List<BlockGravityRules.GravityOverride> out = null;
+        List<Long> stale = null;
         int cx = cell.getX() >> 4;
         int cz = cell.getZ() >> 4;
         int lx = cell.getX() & 15;
@@ -161,15 +174,32 @@ public final class BlockGravityOverrides extends SavedData {
                     Kind kind = e.getValue();
                     if (BlockGravityRules.inColumn(cell.getX() - BlockPos.getX(p), cell.getY() - BlockPos.getY(p),
                             cell.getZ() - BlockPos.getZ(p), kind)) {
+                        if (level != null && isPhantom(level, p)) {
+                            if (stale == null) {
+                                stale = new ArrayList<>(1);
+                            }
+                            stale.add(p);
+                            continue;
+                        }
                         if (out == null) {
                             out = new ArrayList<>(2);
                         }
-                        out.add(new BlockGravityRules.Override(kind, kind.factor()));
+                        out.add(new BlockGravityRules.GravityOverride(kind, kind.factor()));
                     }
                 }
             }
         }
+        if (stale != null) {
+            for (long p : stale) {
+                unregister(BlockPos.of(p));
+            }
+        }
         return out == null ? List.of() : out;
+    }
+
+    private static boolean isPhantom(ServerLevel level, long packed) {
+        BlockPos pos = BlockPos.of(packed);
+        return level.isLoaded(pos) && !(level.getBlockState(pos).getBlock() instanceof GravityOverrideBlock);
     }
 
     /** The override factor at a cell, or {@code NaN} when no override covers it. */
@@ -178,7 +208,7 @@ public final class BlockGravityOverrides extends SavedData {
         if (store.isEmpty()) {
             return Double.NaN;
         }
-        List<BlockGravityRules.Override> covering = store.coveringOverrides(cell);
+        List<BlockGravityRules.GravityOverride> covering = store.coveringOverrides(cell, level);
         return covering.isEmpty() ? Double.NaN : BlockGravityRules.factor(Double.NaN, covering);
     }
 }

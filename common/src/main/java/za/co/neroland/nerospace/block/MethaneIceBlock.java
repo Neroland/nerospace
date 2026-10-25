@@ -24,10 +24,11 @@ import za.co.neroland.nerospace.block.rules.MethaneRules;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 
 /**
- * Methane Ice (002 §1.4, §11.5): on a neighbour change it scans its 5×5×5 for fire/lava/campfire/torch; while one is
- * there it re-checks on a 40-tick schedule. A flame within 2 blocks (and chain budget left: 4 per chunk per 100
- * ticks, config may lower) explodes it at power 2. Blocks are broken only when {@code blocks.methaneIceBreaksBlocks}
- * (default false); entities are hurt and fire is lit either way.
+ * Methane Ice (002 §1.4, §11.5): when it is placed, or a flame block appears next to it, it scans its 5×5×5 for
+ * fire/lava/campfire/torch; while one is there it re-checks on a 40-tick schedule. A flame within 2 blocks (and chain
+ * budget left: 4 per chunk per 100 ticks, config may lower) explodes it at power 2. Blocks are broken only when
+ * {@code blocks.methaneIceBreaksBlocks} (default false); entities are hurt. With the default no fire is placed either
+ * (vanilla only places explosion fire when the explosion interacts with blocks) — it "ignites nothing".
  */
 public class MethaneIceBlock extends Block {
 
@@ -48,7 +49,16 @@ public class MethaneIceBlock extends Block {
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbor, Orientation orientation,
             boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighbor, orientation, movedByPiston);
-        if (level instanceof ServerLevel server) {
+        // Only a flame-type neighbour can arm it: flowing water or redstone next to it never triggers the scan.
+        if (level instanceof ServerLevel server && isFlame(neighbor.defaultBlockState())) {
+            check(server, pos);
+        }
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        if (level instanceof ServerLevel server && !oldState.is(this)) {
             check(server, pos);
         }
     }
@@ -71,7 +81,8 @@ public class MethaneIceBlock extends Block {
         for (int dx = -r; dx <= r; dx++) {
             for (int dy = -r; dy <= r; dy++) {
                 for (int dz = -r; dz <= r; dz++) {
-                    if (isFlame(level.getBlockState(p.set(pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz)))) {
+                    p.set(pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz);
+                    if (level.isLoaded(p) && isFlame(level.getBlockState(p))) {
                         int d = Math.max(Math.abs(dx), Math.max(Math.abs(dy), Math.abs(dz)));
                         if (best < 0 || d < best) {
                             best = d;
@@ -95,6 +106,7 @@ public class MethaneIceBlock extends Block {
         long windowStart = packed >>> 8;
         int count = (int) (packed & 0xFF);
         if (now - windowStart >= MethaneRules.CHAIN_WINDOW_TICKS || now < windowStart) {
+            byChunk.remove(chunk); // window closed: prune, re-added only if this one explodes
             windowStart = now;
             count = 0;
         }

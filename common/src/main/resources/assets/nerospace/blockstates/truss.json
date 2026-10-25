@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "nerospace:block/truss",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "nerospace:block/truss"
+    },
+    "axis=z": {
+      "model": "nerospace:block/truss",
+      "x": 90
+    }
+  }
+}

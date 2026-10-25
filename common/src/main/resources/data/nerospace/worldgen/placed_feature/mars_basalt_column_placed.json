@@ -1,0 +1,38 @@
+{
+  "feature": "nerospace:mars_basalt_column",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": 2
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "WORLD_SURFACE_WG"
+    },
+    {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:matching_blocks",
+        "offset": [
+          0,
+          -1,
+          0
+        ],
+        "blocks": [
+          "nerospace:red_regolith",
+          "nerospace:martian_sandstone",
+          "nerospace:martian_sandstone_strata_1",
+          "nerospace:martian_sandstone_strata_2",
+          "nerospace:martian_sandstone_strata_3",
+          "nerospace:martian_sandstone_strata_4"
+        ]
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

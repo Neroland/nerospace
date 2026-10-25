@@ -17,8 +17,15 @@
     [],
     [],
     [
-      "nerospace:cindrite_ore_placed"
-    ]
+      "nerospace:cindrite_ore_placed",
+      "nerospace:cindara_sulfur_crust_sparse_placed"
+    ],
+    [],
+    [],
+    [
+      "nerospace:cindara_basalt_spire_sparse_placed"
+    ],
+    []
   ],
   "has_precipitation": false,
   "spawn_costs": {},

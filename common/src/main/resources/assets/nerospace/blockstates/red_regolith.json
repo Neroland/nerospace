@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "placed=false": {
+      "model": "nerospace:block/red_regolith"
+    },
+    "placed=true": {
+      "model": "nerospace:block/red_regolith"
+    }
+  }
+}

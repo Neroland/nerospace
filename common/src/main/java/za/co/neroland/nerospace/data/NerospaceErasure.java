@@ -100,7 +100,8 @@ public final class NerospaceErasure {
         }
         ERASED_THIS_SESSION.add(uuid);
 
-        // 1. Station ownership — anonymise, then push the anonymisation into the backup file at once.
+        // 1. Stations — anonymise the owner and strip the UUID from every member list, then push the
+        // result into the backup file at once.
         StationRegistry stations = StationRegistry.get(server);
         stations.forgetPlayer(uuid);
         SavedDataRecovery.backupNow(server.overworld(), StationRegistry.TYPE, stations, "nerospace:stations");

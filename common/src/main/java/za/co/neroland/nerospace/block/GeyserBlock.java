@@ -11,6 +11,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,11 +22,14 @@ import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.GeyserRules;
+import za.co.neroland.nerospace.block.rules.TickBootstrapRules;
 
 /**
  * Frozen Geyser (002 §1.4): {@code CHARGED} toggles every half interval and the geyser vents each time it becomes
  * charged — once per 160 ticks. On the vent, entities standing in the 1×1 above get +1.2 dy and 60 ticks of fall
- * grace (fall distance held at 0, {@link #tickGrace}), with 12 cloud particles. Not weather-driven.
+ * grace (fall distance held at 0, {@link #tickGrace}), with 12 cloud particles. Not weather-driven. Register with
+ * {@code randomTicks()}: worldgen never calls {@code onPlace}, so a generated geyser starts its cycle on its first
+ * random tick ({@link TickBootstrapRules}).
  */
 public class GeyserBlock extends Block {
 
@@ -60,11 +64,18 @@ public class GeyserBlock extends Block {
     }
 
     @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (TickBootstrapRules.shouldBootstrap(level.getBlockTicks().hasScheduledTick(pos, this))) {
+            level.scheduleTick(pos, this, TickBootstrapRules.geyserDelay(random.nextInt(GeyserRules.INTERVAL_TICKS / 2)));
+        }
+    }
+
+    @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         boolean charged = !state.getValue(CHARGED);
         level.setBlock(pos, state.setValue(CHARGED, charged), Block.UPDATE_CLIENTS);
         if (charged) {
-            for (Entity e : level.getEntitiesOfClass(Entity.class, new AABB(pos.above()))) {
+            for (Entity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(pos.above()))) {
                 Vec3 v = e.getDeltaMovement();
                 e.setDeltaMovement(v.x, GeyserRules.launchVelocity(true, Math.max(0.0, v.y)), v.z);
                 e.resetFallDistance();

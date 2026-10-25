@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "placed=false": {
+      "model": "nerospace:block/lunar_basalt"
+    },
+    "placed=true": {
+      "model": "nerospace:block/lunar_basalt"
+    }
+  }
+}

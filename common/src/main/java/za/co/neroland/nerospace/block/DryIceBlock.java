@@ -10,6 +10,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.redstone.Orientation;
@@ -20,9 +21,12 @@ import za.co.neroland.nerospace.block.rules.DryIceRules;
 /**
  * Dry Ice (002 §1.2, §2.1.2): on placement and neighbour change, each adjacent <b>source</b> water becomes ice (≤ 6,
  * one-shot, never spreads, never touches flowing water). Random tick: in block light above 11 it fumes and vanishes
- * 1-in-12, dropping nothing. Register with {@code randomTicks()}.
+ * 1-in-12, dropping nothing. Register with {@code randomTicks()} and {@code noOcclusion()}.
+ *
+ * <p>Like vanilla ice it is half-transparent: its texture has translucent pixels, so 26.x puts it in the translucent
+ * chunk layer, and faces between two Dry Ice blocks are skipped.</p>
  */
-public class DryIceBlock extends Block {
+public class DryIceBlock extends HalfTransparentBlock {
 
     public static final MapCodec<DryIceBlock> CODEC = BlockCodecs.simple(DryIceBlock::new);
 

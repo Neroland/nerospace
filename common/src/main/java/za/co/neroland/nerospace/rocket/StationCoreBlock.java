@@ -22,7 +22,7 @@ import za.co.neroland.nerospace.menu.MenuOpener;
 /**
  * The Station Core block: placed only by the founding flow (no recipe, no loot table — breaking it
  * pops a named charter via the block entity's remove hook and unregisters the station). Right-click
- * reads the station's name; comparator reads 15 while bound.
+ * opens the Station Console through {@link MenuOpener}; comparator reads 15 while bound.
  *
  * <p>Cross-loader port: vanilla {@code BaseEntityBlock} interactions; identical to the standalone mod.</p>
  */
@@ -54,25 +54,33 @@ public class StationCoreBlock extends BaseEntityBlock {
             Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StationCoreBlockEntity core
                 && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-            if (core.isBound()) {
-                final int slot = core.stationSlot();
-                StationRegistry.StationEntry entry =
-                        StationRegistry.get(serverPlayer.level().getServer()).get(slot);
-                if (!StationRegistry.canManage(entry, serverPlayer)) {
-                    // Only the founder (or a server op) may rename a station.
-                    serverPlayer.sendSystemMessage(
-                            Component.translatable("item.nerospace.station_charter.not_owner"));
-                } else {
-                    return MenuOpener.openOrConsume(serverPlayer, new net.minecraft.world.SimpleMenuProvider(
-                            (id, inv, p) -> new za.co.neroland.nerospace.menu.StationCharterMenu(
-                                    id, inv, za.co.neroland.nerospace.menu.StationCharterMenu.MODE_RENAME, slot),
-                            Component.translatable("gui.nerospace.station_charter.rename")));
-                }
-            } else {
+            StationRegistry.StationEntry entry = core.isBound()
+                    ? StationRegistry.get(serverPlayer.level().getServer()).get(core.stationSlot()) : null;
+            if (entry == null) {
+                // Unbound, or its slot is no longer registered: never a blank console.
                 player.sendSystemMessage(Component.translatable("block.nerospace.station_core.unbound"));
+                return InteractionResult.SUCCESS;
             }
+            final int slot = entry.slot();
+            final BlockPos corePos = pos.immutable();
+            // Everyone may open the console; a player who fails canUse gets the read-only visitor view.
+            return MenuOpener.openOrConsume(serverPlayer, new net.minecraft.world.SimpleMenuProvider(
+                    (id, inv, p) -> new za.co.neroland.nerospace.menu.StationConsoleMenu(id, inv, serverPlayer, slot,
+                            corePos),
+                    Component.translatable("gui.nerospace.station_console.title")));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(Level level,
+            BlockState state, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
+        if (level.isClientSide()) {
+            return null;
+        }
+        return createTickerHelper(type, za.co.neroland.nerospace.registry.ModBlockEntities.STATION_CORE.get(),
+                (lvl, p, st, be) -> be.serverTick(lvl));
     }
 
     @Override

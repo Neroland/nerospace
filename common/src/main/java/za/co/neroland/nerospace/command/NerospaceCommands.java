@@ -207,8 +207,15 @@ public final class NerospaceCommands {
             source.sendFailure(Component.translatable("item.nerospace.station_charter.not_owner"));
             return 0;
         }
+        if (za.co.neroland.nerospace.world.station.StationAccess.manageViaOp(entry.owner(),
+                player.getUUID().toString(), StationRegistry.isOp(player))) {
+            // Operator override: action + slot only — never who, never the station's name.
+            za.co.neroland.nerospace.world.station.StationAudit.op(
+                    za.co.neroland.nerospace.world.station.StationAudit.Action.REMOVE, entry.slot());
+        }
         ServerLevel station = source.getServer().getLevel(ModDimensions.STATION_LEVEL);
         if (station != null) {
+            za.co.neroland.nerospace.menu.StationConsoleMenu.clearOxygen(station, entry);
             BlockPos centre = entry.center();
             station.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
             station.removeBlock(centre, false); // bypasses the unbreakable Core

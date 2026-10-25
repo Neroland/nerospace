@@ -64,7 +64,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
         state.scale = rocket.visualScale();
         state.tier = Math.min(TEXTURES.length - 1, rocket.getTier().ordinal());
         state.texture = TEXTURES[state.tier];
-        state.launching = rocket.isLaunching();
+        state.launching = rocket.isLaunching() || rocket.isDescending(); // 005 §3: the descent replays the ascent reversed
         state.launch = rocket.launchProgress(partialTick);
         state.ignition = rocket.ignition(partialTick);
         state.hatch = rocket.hatchOpen(partialTick);

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "F": "nerospace:station_floor",
+    "W": "minecraft:water_bucket",
+    "D": "minecraft:dirt"
+  },
+  "pattern": [
+    "FWF",
+    "FDF"
+  ],
+  "result": {
+    "count": 2,
+    "id": "nerospace:hydroponics_tray"
+  }
+}

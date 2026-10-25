@@ -1,0 +1,47 @@
+{
+  "type": "minecraft:block_column",
+  "allowed_placement": {
+    "type": "minecraft:matching_block_tag",
+    "tag": "minecraft:air"
+  },
+  "direction": "up",
+  "layers": [
+    {
+      "height": 1,
+      "provider": {
+        "id": "nerospace:basalt_column",
+        "properties": {
+          "segment": "0"
+        }
+      }
+    },
+    {
+      "height": 1,
+      "provider": {
+        "id": "nerospace:basalt_column",
+        "properties": {
+          "segment": "1"
+        }
+      }
+    },
+    {
+      "height": 1,
+      "provider": {
+        "id": "nerospace:basalt_column",
+        "properties": {
+          "segment": "2"
+        }
+      }
+    },
+    {
+      "height": 1,
+      "provider": {
+        "id": "nerospace:basalt_column",
+        "properties": {
+          "segment": "3"
+        }
+      }
+    }
+  ],
+  "prioritize_tip": false
+}

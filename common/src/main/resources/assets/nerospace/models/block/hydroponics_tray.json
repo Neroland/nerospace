@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nerospace:block/hydroponics_tray_top",
+    "side": "nerospace:block/hydroponics_tray_side",
+    "bottom": "nerospace:block/hydroponics_tray_side"
+  }
+}

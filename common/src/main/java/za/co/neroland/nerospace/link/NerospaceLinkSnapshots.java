@@ -192,9 +192,9 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
     // --- stations -----------------------------------------------------------
 
     /**
-     * Only the requester's own orbital stations. Every other station on the server — including unowned
-     * legacy entries and entries anonymised by an erasure request — is invisible here, and an unowned
-     * slot is indistinguishable from a slot that does not exist.
+     * Only the orbital stations the requester owns or is a member of. Every other station on the server —
+     * including unowned legacy entries and entries anonymised by an erasure request — is invisible here, and an
+     * unowned slot is indistinguishable from a slot that does not exist.
      */
     private static JsonObject stations(MinecraftServer server, UUID playerId, Map<String, String> params) {
         JsonObject root = envelope(server, playerId);
@@ -206,8 +206,36 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
             row.addProperty("name", entry.name());
             row.addProperty("dimension", ModDimensions.STATION_LEVEL.identifier().toString());
             row.add("center", position(entry.center()));
-            // A boolean about the REQUESTER, which is the only ownership question this module answers.
-            row.addProperty("is_owner", true);
+            // Booleans about the REQUESTER, the only ownership question this module answers.
+            boolean owner = playerId.toString().equals(entry.owner());
+            row.addProperty("is_owner", owner);
+            row.addProperty("role", owner ? "owner" : "member");
+            row.addProperty("class", entry.stationClass().name());
+            row.addProperty("founded_at", entry.foundedAt());
+            row.addProperty("docking", entry.docking().name());
+            JsonArray modules = new JsonArray();
+            for (za.co.neroland.nerospace.world.station.ModuleEntry m : entry.modules()) {
+                JsonObject mod = new JsonObject();
+                mod.addProperty("kind", m.kind().name());
+                mod.addProperty("index", m.index());
+                mod.addProperty("enabled", m.enabled());
+                modules.add(mod);
+            }
+            row.add("modules", modules);
+            ServerLevel stationLevel = server.getLevel(ModDimensions.STATION_LEVEL);
+            if (stationLevel != null) {
+                int[] sealed = za.co.neroland.nerospace.world.station.StationModules.pressurised(stationLevel, entry);
+                row.addProperty("pressurised", sealed[0] + "/" + sealed[1]);
+                row.addProperty("power", za.co.neroland.nerospace.world.station.StationModules.power(stationLevel,
+                        entry));
+            }
+            // Members: every visible station is one the requester owns or belongs to, so they are a party to
+            // this list. UUID strings only — never names; never shown to anyone else.
+            JsonArray members = new JsonArray();
+            for (String m : entry.members()) {
+                members.add(m);
+            }
+            row.add("members", members);
             rows.add(row);
         }
         root.add("stations", rows);
@@ -324,7 +352,13 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
         for (int index = 0; index < StarGuide.CHAPTER_COUNT; index++) {
             StarGuide.Chapter chapter = StarGuide.CHAPTERS.get(index);
             int mask = StarGuideProgress.chapterMask(player, index);
-            int total = chapter.steps().size();
+            // Hidden steps are left out of the counts until done, so the companion never spoils them.
+            int total = 0;
+            for (int step = 0; step < chapter.steps().size(); step++) {
+                if (chapter.isShown(step, mask)) {
+                    total++;
+                }
+            }
             int complete = Integer.bitCount(mask);
             done += complete;
 
@@ -333,12 +367,12 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
             row.addProperty("id", chapter.id());
             row.addProperty("steps_total", total);
             row.addProperty("steps_complete", complete);
-            row.addProperty("complete", complete >= total);
+            row.addProperty("complete", chapter.isComplete(mask));
             rows.add(row);
 
             if (nextStep == null) {
-                for (int step = 0; step < total; step++) {
-                    if ((mask & (1 << step)) == 0) {
+                for (int step = 0; step < chapter.steps().size(); step++) {
+                    if ((mask & (1 << step)) == 0 && !chapter.steps().get(step).hidden()) {
                         nextStep = chapter.steps().get(step).id();
                         nextChapter = chapter.id();
                         break;

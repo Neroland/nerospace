@@ -54,7 +54,7 @@ public final class NerospaceLinkModule {
     public static final String MODULE_ID = NerospaceCommon.MOD_ID;
 
     /** The snapshot schema revision. Bump on any change to a section's shape. */
-    public static final int SCHEMA_VERSION = 1;
+    public static final int SCHEMA_VERSION = 2;
 
     /** Rockets the player can see from where they stand, with tier/fuel/state + pad readiness. */
     public static final String SECTION_ROCKETS = "rockets";

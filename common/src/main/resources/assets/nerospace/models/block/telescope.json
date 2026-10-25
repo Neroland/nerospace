@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "nerospace:block/telescope_top",
+    "side": "nerospace:block/telescope"
+  }
+}

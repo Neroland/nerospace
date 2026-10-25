@@ -76,6 +76,19 @@ class BlockMatrixUniquenessTest {
             new Row("telescope", "reveal", "sightline", "reveals 1 + min(2, crystals)", "TelescopeSightline"),
             new Row("cheese_wheel", "decor", "slice", "9 in, 9 out", "CheeseRules"));
 
+    /** Helpers whose cases live in a shared test class (see each class's display names). */
+    static final Map<String, String> TESTS = Map.ofEntries(
+            Map.entry("HeatContactRules", "ContactHazardRulesTest"),
+            Map.entry("SporeContactRules", "ContactHazardRulesTest"),
+            Map.entry("SporeSpreadRules", "SpreadRulesTest"),
+            Map.entry("VineRules", "SpreadRulesTest"),
+            Map.entry("LichenRules", "SpreadRulesTest"),
+            Map.entry("FrostRules", "StationRulesTest"),
+            Map.entry("RunPlacementRules", "StationRulesTest"),
+            Map.entry("SolarWingRules", "StationRulesTest"),
+            Map.entry("DockRules", "StationRulesTest"),
+            Map.entry("HydroRules", "StationRulesTest"));
+
     @Test
     @DisplayName("no two rows share (kind, trigger, effect)")
     void unique() {
@@ -94,6 +107,9 @@ class BlockMatrixUniquenessTest {
         for (Row r : ROWS) {
             String cls = "za.co.neroland.nerospace.block.rules." + r.helper();
             assertDoesNotThrow(() -> Class.forName(cls), r.id() + " helper " + cls);
+            String test = TESTS.getOrDefault(r.helper(), r.helper() + "Test");
+            assertDoesNotThrow(() -> Class.forName("za.co.neroland.nerospace.block.rules." + test),
+                    r.id() + " test " + test);
         }
     }
 }

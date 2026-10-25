@@ -46,7 +46,7 @@ public final class StarGuideProgress {
     public static ItemStack nextStepIcon(ServerPlayer player) {
         for (Chapter chapter : StarGuide.CHAPTERS) {
             for (Step step : chapter.steps()) {
-                if (!isComplete(player, step)) {
+                if (!step.hidden() && !isComplete(player, step)) {
                     return step.iconStack();
                 }
             }

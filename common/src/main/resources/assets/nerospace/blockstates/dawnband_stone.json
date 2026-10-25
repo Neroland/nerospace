@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "flaring=false": {
+      "model": "nerospace:block/dawnband_stone"
+    },
+    "flaring=true": {
+      "model": "nerospace:block/dawnband_stone"
+    }
+  }
+}

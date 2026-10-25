@@ -17,8 +17,16 @@
     [],
     [],
     [
-      "nerospace:glacite_ore_placed"
-    ]
+      "nerospace:glacite_ore_placed",
+      "nerospace:glacira_aurora_stone_placed"
+    ],
+    [],
+    [],
+    [
+      "nerospace:glacira_frozen_geyser_placed",
+      "nerospace:glacira_frost_crystal_cluster_sparse_placed"
+    ],
+    []
   ],
   "has_precipitation": false,
   "spawn_costs": {},

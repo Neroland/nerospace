@@ -1,27 +1,28 @@
 package za.co.neroland.nerospace.mixin;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.lighting.BlockLightEngine;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import za.co.neroland.nerospace.block.light.NyxIndexHolder;
 import za.co.neroland.nerospace.block.light.NyxLightIndex;
 import za.co.neroland.nerospace.block.rules.LightAbsorbRules;
 
 /**
- * Nyx Stone light absorption, part 2 of 2 (decision 002 §11.1): when block light spreads into a cell within 1 block of
- * a Nyx Stone it loses {@link LightAbsorbRules#ABSORB} extra levels. In {@code propagateIncrease} the engine has just
- * pointed {@code mutablePos} at the destination cell when it asks for that cell's opacity, so the redirect reads the
- * destination from there. Cost: one field read when no Nyx Stone is indexed, else one hash lookup + one array read
- * per propagation step. Decreases need no hook (they zero what the increase wrote and re-pull from sources).
+ * Nyx Stone light absorption, part 2 of 2: when block light spreads into a cell within 1 block of a Nyx Stone it loses
+ * {@link LightAbsorbRules#ABSORB} extra levels. In {@code propagateIncrease} vanilla computes
+ * {@code newToLevel = fromLevel - getOpacity(toState)} with {@code mutablePos} pointing at the destination cell; this
+ * adjusts the stored {@code newToLevel} <b>after</b> the original computation (so any other mod's opacity change or
+ * redirect still applies and several such modifiers compose). Cost: one field read when no Nyx Stone is indexed, else
+ * one hash lookup + one array read per step. Decreases need no hook. {@code require = 0}: if the local cannot be found
+ * the block falls back to a plain light blocker. Identical on 26.1.2 / 26.2 / 26.3.
  */
-@SuppressWarnings("cast") // the (Object) casts are required by javac for mixin self-checks
+@SuppressWarnings("cast") // the (Object) cast is required to reach the mixed-in interface
 @Mixin(BlockLightEngine.class)
 public abstract class BlockLightEngineNyxMixin {
 
@@ -29,21 +30,16 @@ public abstract class BlockLightEngineNyxMixin {
     @Final
     private BlockPos.MutableBlockPos mutablePos;
 
-    @Redirect(method = "propagateIncrease(JJI)V",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/lighting/BlockLightEngine;getOpacity(Lnet/minecraft/world/level/block/state/BlockState;)I"),
-            require = 0)
-    private int nerospace$absorb(BlockLightEngine engine, BlockState state) {
-        int opacity = Math.max(1, state.getLightDampening());
+    @ModifyVariable(method = "propagateIncrease(JJI)V", at = @At("STORE"), name = "newToLevel", require = 0)
+    private int nerospace$absorb(int newToLevel) {
         NyxLightIndex index = ((NyxIndexHolder) (Object) this).nerospace$nyxIndex();
         if (index.isEmpty()) {
-            return opacity;
+            return newToLevel;
         }
         BlockPos to = this.mutablePos;
         if (!index.near(to.getX(), to.getY(), to.getZ())) {
-            return opacity;
+            return newToLevel;
         }
-        // absorbedLevel(incoming) = incoming − 2, expressed as 2 extra opacity on top of the vanilla step.
-        return opacity + LightAbsorbRules.ABSORB;
+        return LightAbsorbRules.absorbedLevel(newToLevel, true);
     }
 }

@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "nerospace:block/martian_sandstone_strata_2"
+    },
+    "axis=z": {
+      "model": "nerospace:block/martian_sandstone_strata_2",
+      "y": 90
+    }
+  }
+}

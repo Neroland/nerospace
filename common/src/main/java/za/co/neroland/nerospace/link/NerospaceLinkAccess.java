@@ -26,10 +26,10 @@ import za.co.neroland.nerospace.rocket.StationRegistry;
  * (and on a client that has left its integrated server) {@link #server()} answers {@code null}, and every
  * caller must then answer "nothing" rather than guess.</p>
  *
- * <p><b>POPIA/GDPR.</b> {@link #stationsOf(MinecraftServer, UUID)} is the ownership rule for the whole
- * module and it never widens — not for an operator, not for a station with a blank owner. A station that
- * is not the requester's reads exactly like a station that does not exist, so the bridge cannot be used to
- * probe for other players' slots.</p>
+ * <p><b>POPIA/GDPR.</b> {@link #stationsOf(MinecraftServer, UUID)} is the visibility rule for the whole
+ * module — the stations the requester owns or is a member of — and it never widens: not for an operator, not
+ * for a station with a blank owner. A station the requester is not party to reads exactly like a station that
+ * does not exist, so the bridge cannot be used to probe for other players' slots.</p>
  */
 final class NerospaceLinkAccess {
 
@@ -87,7 +87,8 @@ final class NerospaceLinkAccess {
     }
 
     /**
-     * THE visibility rule: the stations whose stored owner UUID is exactly the requester's.
+     * THE visibility rule: the stations whose stored owner UUID is exactly the requester's, or whose
+     * member list contains it.
      *
      * <p>Legacy/unowned entries (owner {@code ""} — including entries anonymised by an erasure request)
      * belong to nobody and are therefore returned to nobody. Operator status is deliberately not honoured:
@@ -100,10 +101,10 @@ final class NerospaceLinkAccess {
         if (runningServer == null || playerId == null) {
             return List.of();
         }
-        String owner = playerId.toString();
+        String me = playerId.toString();
         List<StationRegistry.StationEntry> out = new ArrayList<>();
         for (StationRegistry.StationEntry entry : StationRegistry.get(runningServer).all()) {
-            if (owner.equals(entry.owner())) {
+            if (entry.isOwned() && (me.equals(entry.owner()) || entry.members().contains(me))) {
                 out.add(entry);
             }
         }

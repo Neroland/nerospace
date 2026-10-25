@@ -11,6 +11,14 @@ public final class BlockGravityRules {
 
     public static final double SHARD_FACTOR = -0.15;
     public static final double PLATE_FACTOR = 1.0;
+    /**
+     * Upward drift of an entity in a Shard column, b/t: vanilla levitation I's terminal speed. The shard's negative
+     * factor is a marker; the effect is weightlessness plus this capped drift, never an acceleration.
+     */
+    public static final double LEVITATION_I_SPEED = 0.05;
+    /** Levitation effect length re-applied each 10-tick gravity check (outlives one check, expires soon after). */
+    public static final int SHARD_LEVITATION_TICKS = 15;
+
     /** Overrides per chunk (config may lower). */
     public static final int PER_CHUNK_CAP = 64;
 
@@ -57,7 +65,7 @@ public final class BlockGravityRules {
     }
 
     /** One override that covers the queried cell. */
-    public record Override(Kind kind, double factor) {
+    public record GravityOverride(Kind kind, double factor) {
     }
 
     /** Whether the offset (cell − source block) lies in the kind's column above the block. */
@@ -71,18 +79,26 @@ public final class BlockGravityRules {
         return inColumn(dx, dy, dz, Kind.SHARD);
     }
 
-    public static double factor(double dimensionFactor, List<Override> overridesInRange) {
+    public static double factor(double dimensionFactor, List<GravityOverride> overridesInRange) {
         if (overridesInRange == null || overridesInRange.isEmpty()) {
             return dimensionFactor;
         }
-        Override best = overridesInRange.get(0);
-        for (Override o : overridesInRange) {
+        GravityOverride best = overridesInRange.get(0);
+        for (GravityOverride o : overridesInRange) {
             if (o.kind().ordinal() > best.kind().ordinal()
                     || (o.kind() == best.kind() && o.factor() < best.factor())) {
                 best = o;
             }
         }
         return best.factor();
+    }
+
+    /** Vertical speed for a non-living entity in a Shard column (gravity already cancelled): capped at levitation I. */
+    public static double shardDrift(double currentDy) {
+        if (Double.isNaN(currentDy)) {
+            return LEVITATION_I_SPEED;
+        }
+        return Math.min(currentDy + LEVITATION_I_SPEED, LEVITATION_I_SPEED);
     }
 
     /** Whether another override may be registered in a chunk already holding {@code count}. */
