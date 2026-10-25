@@ -1,7 +1,5 @@
 # Razzo cargo
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Cargo-Rocket.md).
-
 Un razzo **senza equipaggio** che trasporta la stiva di una [Piattaforma cargo](Cargo-Pad.md) fino a un'altra piattaforma. Nessuno vi sale, non ha console di volo e non decide mai da solo di partire: lo decide la piattaforma su cui si trova, a mano o secondo una programmazione. Riprende lo scafo e la livrea del livello 2 (vedi [Razzi](Rockets.md)), con il portello sigillato e senza scala d'imbarco, e trasporta 12.000 mB di carburante per razzi.
 
 ## Scafo cargo
