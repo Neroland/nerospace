@@ -1,14 +1,12 @@
 # Villici alieni
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Alien-Villagers.md).
-
 Gli alieni sociali dei pianeti di Nerospace: viandanti diffidenti da conquistare per sbloccare scambi e far crescere un villaggio.
 
 ## Panoramica
 
 Il **Villico alieno** (`nerospace:alien_villager`) è un PNG pacifico e **diffidente ma neutrale**: passeggia nel suo bioma d'origine, ti osserva e si allontana se gli stai troppo addosso, ma non attacca mai. Guadagnati la sua fiducia e diventerà un mercante e la chiave dell'intero sistema dei villaggi: scambi, il **[Nucleo del villaggio](Village-Core.md)** e le **[strutture](Alien-Structures.md)** aliene.
 
-Il ciclo: *scopri un insediamento → guadagna fiducia → sblocca scambi → insegna al villaggio a costruire → diventa un motore → si aprono strutture più profonde (e un boss).*
+Il ciclo: _scopri un insediamento → guadagna fiducia → sblocca scambi → insegna al villaggio a costruire → diventa un motore → si aprono strutture più profonde (e un boss)._
 
 ## Dove vivono
 
@@ -38,14 +36,14 @@ Ogni villico è visivamente unico senza bisogno di un'entità nuova per ogni asp
 
 Ogni villico tiene traccia di un **punteggio di reputazione per giocatore (0–100)** suddiviso in **6 livelli**:
 
-| Livello | Nome | Sblocca |
-| --- | --- | --- |
-| T0 | Estraneo | niente: rifiuta di commerciare (scuote la testa diffidente) |
-| T1 | Conoscente | scambi di base |
-| T2 | Fidato | scambi intermedi · può insegnare **edifici di livello 1** |
-| T3 | Alleato | scambi rari · **edifici di livello 2** |
-| T4 | Onorato | scambi di equipaggiamento esclusivo |
-| T5 | Famiglia | scambi migliori |
+| Tier | Nome       | Sblocca                                                                                        |
+| ---- | ---------- | ---------------------------------------------------------------------------------------------- |
+| T0   | Estraneo   | niente: rifiuta di commerciare (scuote la testa diffidente) |
+| T1   | Conoscente | scambi di base                                                                                 |
+| T2   | Alleato    | scambi intermedi · può insegnare **edifici di livello 1**                                      |
+| T3   | Allied     | scambi rari · **edifici di livello 2**                                                         |
+| T4   | Honored    | scambi di equipaggiamento esclusivo                                                            |
+| T5   | Kin        | scambi migliori                                                                                |
 
 La reputazione cresce tramite:
 
@@ -54,23 +52,24 @@ La reputazione cresce tramite:
   **Frammento alieno** o **smeraldi**). Ne prende uno, con le particelle del villico felice.
 
 - **Volume di scambi**: ogni scambio completato fa salire un po' la fiducia.
+
 - **Missioni**: consegnare un compito del villaggio a un **[Nucleo del villaggio](Village-Core.md)** aumenta la fiducia di tutti i
 
   villici vicini.
 
 La reputazione è indicizzata solo dall'UUID del giocatore Minecraft: nessun nome o registro delle interazioni viene inviato da nessuna parte (sicuro per POPIA/GDPR).
 
-## Scambi
+## Fidato
 
 Fai clic destro su un villico di **livello 1+** per aprire la **schermata di scambio del gioco base**. Le offerte dipendono dal livello e sono **cumulative** (un villico con più fiducia offre anche quelle dei livelli inferiori). La valuta sono gli smeraldi, quindi i beni sono utili in qualsiasi modpack.
 
-| Livello | Offerte di esempio |
-| --- | --- |
-| T1 | vendi 12 quarzo Xertz → 1 smeraldo · 1 smeraldo → 3 ferro · 2 smeraldi → 6 pane |
-| T2 | 4 smeraldi → lingotto di Nerosium · 1 smeraldo + 8 Nerosteel grezzo → 4 lingotti di Nerosteel · vendi Frammenti alieni |
-| T3 | 8 smeraldi → diamante · 5 smeraldi → Tanica di carburante per razzi |
-| T4 | 12 smeraldi + 2 Rottami di tecnologia aliena → Nucleo alieno · 16 smeraldi → **[Risonatore Xertz](Alien-Gear.md)** |
-| T5 | 18 smeraldi → 3 diamanti · Nucleo alieno + 24 smeraldi → **[Grav Striders](Alien-Gear.md)** |
+| Tier | Offerte di esempio                                                                                                     |
+| ---- | ---------------------------------------------------------------------------------------------------------------------- |
+| T1   | vendi 12 quarzo Xertz → 1 smeraldo · 1 smeraldo → 3 ferro · 2 smeraldi → 6 pane                                        |
+| T2   | 4 smeraldi → lingotto di Nerosium · 1 smeraldo + 8 Nerosteel grezzo → 4 lingotti di Nerosteel · vendi Frammenti alieni |
+| T3   | 8 smeraldi → diamante · 5 smeraldi → Tanica di carburante per razzi                                                    |
+| T4   | 12 smeraldi + 2 Rottami di tecnologia aliena → Nucleo alieno · 16 smeraldi → **[Risonatore Xertz](Alien-Gear.md)**     |
+| T5   | 18 smeraldi → 3 diamanti · Nucleo alieno + 24 smeraldi → **[Grav Striders](Alien-Gear.md)**                            |
 
 I livelli più alti sono l'unica fonte di scambio dell'esclusivo **[equipaggiamento dell'Artefice](Alien-Gear.md)**.
 
@@ -78,6 +77,6 @@ I livelli più alti sono l'unica fonte di scambio dell'esclusivo **[equipaggiame
 
 - ID: `nerospace:alien_villager` · categoria CREATURE · dimensioni 0.6 × 1.95
 - La variante (pianeta / bioma d'origine / seme di colore) è sincronizzata e salvata; la reputazione è salvata per ogni villico.
-- Per ora la voce riutilizza i suoni del villico del gioco base.
+- Voice currently aliases the vanilla villager sounds.
 
 Vedi anche: **[Nucleo del villaggio](Village-Core.md)** · **[Strutture aliene](Alien-Structures.md)** · **[Equipaggiamento alieno](Alien-Gear.md)** · **[Creature](Creatures.md)**.
