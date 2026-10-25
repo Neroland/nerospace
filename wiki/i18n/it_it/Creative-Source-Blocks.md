@@ -1,8 +1,6 @@
 # Blocchi sorgente creativi
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Creative-Source-Blocks.md).
-
-> **Spostati in Neroland Core.** I blocchi di stoccaggio creativi ora sono inclusi nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:creative_battery`**, **`nerolandcore:creative_fluid_tank`** e **`nerolandcore:creative_gas_tank`** (insieme ai normali [Batteria](Battery.md), [Serbatoio di fluidi](Fluid-Tank.md), [Serbatoio di gas](Gas-Tank.md) e [Deposito di oggetti](Item-Store.md)). Vedi la **wiki di Neroland Core** (pagina *Creative Source Blocks*) per tutti i dettagli.
+> **Spostati in Neroland Core.** I blocchi di stoccaggio creativi ora sono inclusi nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:creative_battery`**, **`nerolandcore:creative_fluid_tank`** e **`nerolandcore:creative_gas_tank`** (insieme ai normali [Batteria](Battery.md), [Serbatoio di fluidi](Fluid-Tank.md), [Serbatoio di gas](Gas-Tank.md) e [Deposito di oggetti](Item-Store.md)). Vedi la **wiki di Neroland Core** (pagina _Creative Source Blocks_) per tutti i dettagli.
 
 Sorgenti infinite (e vuoti) per testare le reti di tubi: solo nella scheda creativa, indistruttibili in sopravvivenza, senza ricette. Poiché Neroland Core non include fluidi o gas specifici, due di essi ora configurano la propria risorsa nel mondo:
 
