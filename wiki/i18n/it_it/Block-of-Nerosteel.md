@@ -1,9 +1,8 @@
 # Blocco di Nerosteel
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Block-of-Nerosteel.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/nerosteel_block.png" alt="Block of Nerosteel" width="150" align="right"></p>
+
+<p align="right"><img src="images/nerosteel_block.png" alt="Block of Nerosteel" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Stoccaggio compatto per nove lingotti di Nerosteel.
@@ -12,7 +11,7 @@ Stoccaggio compatto per nove lingotti di Nerosteel.
 
 Un blocco di stoccaggio e costruzione di Nerosteel raffinato. Compare anche come componente principale nelle ricette dei razzi.
 
-## Come ottenerlo
+## Obtaining
 
 - **Fabbricazione:** riempi una griglia 3×3 con **lingotti di Nerosteel**.
 - **Scomposizione:** fabbrica il blocco da solo per riavere **9 lingotti di Nerosteel**.
