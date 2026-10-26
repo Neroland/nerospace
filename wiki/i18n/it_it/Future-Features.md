@@ -1,7 +1,5 @@
 # Funzionalità future
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Future-Features.md).
-
 Una lista dei desideri a lungo termine: idee prese in considerazione dopo la 1.0, non impegni. I commenti sono benvenuti (apri una issue su GitHub o scrivi su [Discord](https://discord.gg/ArPXvYUzJG)). Raggruppate per tema.
 
 ## Spazio e viaggi
@@ -43,8 +41,8 @@ Una lista dei desideri a lungo termine: idee prese in considerazione dopo la 1.0
 
 - **Audio su misura**: veri suoni `.ogg` per lancio dei razzi, macchine, ambiente e creature (gli eventi sonori della 1.0
 
-  usano come segnaposto audio del gioco base adatto; sostituirli con file veri è solo una
-  modifica alle risorse).
+  sound events alias fitting vanilla audio as placeholders; swapping in real files is a pure
+  resource change).
 
 - **EMI ufficiale**: le pagine EMI native sono già incluse per il port non ufficiale della community EMI Unofficial Port
   (NeoForge e Fabric). Quando uscirà l'EMI ufficiale per 26.x, si passeranno a essa i riferimenti `emi_file_*`,
