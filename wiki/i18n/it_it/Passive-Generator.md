@@ -1,14 +1,13 @@
 # Generatore passivo
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Passive-Generator.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/passive_generator.gif" alt="Passive Generator" width="150" align="right"></p>
+
+<p align="right"><img src="images/passive_generator.gif" alt="Passive Generator" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Un flusso di energia lento e senza pensieri, ricavato da un nucleo di Nerosium.
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma): un telaio di Nerosteel attorno a un Blocco di Nerosium, collegato con la redstone:
 
