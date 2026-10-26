@@ -1,9 +1,8 @@
 # Tubo universale
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Universal-Pipe.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/universal_pipe.png" alt="Universal Pipe" width="150" align="right"></p>
+
+<p align="right"><img src="images/universal_pipe.png" alt="Universal Pipe" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Un solo tubo per tutto: energia, fluidi, gas e oggetti scorrono nello stesso tubo traslucido, nello stesso momento.
@@ -12,14 +11,14 @@ Un solo tubo per tutto: energia, fluidi, gas e oggetti scorrono nello stesso tub
 
 Il Tubo universale è la spina dorsale della logistica di Nerospace. I tubi piazzati si collegano automaticamente tra loro e a qualsiasi macchina, serbatoio o inventario, formando una **rete** che si comporta come un unico sistema condiviso. Tutti e quattro i livelli di risorse viaggiano contemporaneamente sullo stesso grafo di collegamenti:
 
-| Livello | Colore | Regola |
-| --- | --- | --- |
-| Energia (FE) | rosso | riserva condivisa, bilanciata tra tutti i segmenti |
-| Fluidi | blu | **un fluido per rete**: il primo fluido che entra la occupa finché non viene svuotata |
-| Gas | ciano (ossigeno), azzurro pallido (idrogeno), grigio (altri gas) | un gas per rete; **rompere un tubo ne libera il gas** (sbuffo visibile) |
-| Oggetti | — | viaggiano come **pacchetti visibili** (~2,5 blocchi/s), a rotazione tra le destinazioni |
+| Livello                         | Colore                                                                                                                    | Regola                                                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Energia (FE) | rosso                                                                                                                     | riserva condivisa, bilanciata tra tutti i segmenti                                                                         |
+| Fluidi                          | blu                                                                                                                       | **un fluido per rete**: il primo fluido che entra la occupa finché non viene svuotata                      |
+| Gas                             | ciano (ossigeno), azzurro pallido (idrogeno), grigio (altri gas) | un gas per rete; **rompere un tubo ne libera il gas** (sbuffo visibile)                                 |
+| Oggetti                         | —                                                                                                                         | viaggiano come **pacchetti visibili** (~2,5 blocchi/s), a rotazione tra le destinazioni |
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma, ne produce 8): una guaina di Nerosteel attorno a un nucleo di vetro:
 
@@ -55,6 +54,7 @@ N N N
   Rompere un tubo fa cadere gli oggetti al suo interno.
 
 - **Filtri e potenziamenti:** vedi [Filtri per tubi e potenziamenti](Pipe-Filters-and-Upgrades.md).
+
 - **Lettura:** fai clic destro su un tubo a mani vuote per vederne il contenuto attuale; un clic destro da accovacciato
 
   a mani vuote fa uscire i potenziamenti installati.
@@ -71,7 +71,9 @@ Il tubo non si limita ai blocchi di Nerospace. Su ogni loader ora offre e legge 
   lungo la linea.
 
 - **Oggetti:** lo stesso, in entrambe le direzioni, per macchine, casse e tubi per oggetti di un'altra mod.
+
 - L'**energia** attraversava già il confine tra mod tramite la rete condivisa di [Neroland Core](Neroland-Core.md).
+
 - Il **gas** passa tra le mod Neroland tramite la capability per gas condivisa di Neroland Core
 
   (`nerolandcore:gas`). Il livello gas trasporta qualsiasi gas Neroland, non solo l'ossigeno: preleva idrogeno e
