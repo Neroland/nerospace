@@ -1,9 +1,8 @@
 # Minerale di Nerosteel
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Nerosteel-Ore.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/nerosteel_ore.png" alt="Nerosteel Ore" width="150" align="right"></p>
+
+<p align="right"><img src="images/nerosteel_ore.png" alt="Nerosteel Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Il metallo principale del pianeta **Greenxertz**.
@@ -12,7 +11,7 @@ Il metallo principale del pianeta **Greenxertz**.
 
 Il Nerosteel è un metallo di classe ferro e la spina dorsale della fabbricazione a metà partita: razzi, Tuta a ossigeno, macchine e blocchi della stazione sono tutti costruiti con **lingotti di Nerosteel**. **Greenxertz** è la sua patria e la sua fonte abbondante, ma una piccola vena profonda si trova anche nell'**Overworld**, così il metallo che sblocca il tuo primo razzo è raggiungibile prima ancora di lasciare casa.
 
-## Come ottenerlo
+## Obtaining
 
 - **Estrazione:** richiede un **piccone di livello ferro** o migliore. Lascia cadere **Nerosteel grezzo** (influenzato da Fortuna).
 - **Generazione:**

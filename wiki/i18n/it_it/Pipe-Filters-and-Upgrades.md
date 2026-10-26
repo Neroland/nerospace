@@ -1,19 +1,19 @@
 # Filtri per tubi e potenziamenti
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Pipe-Filters-and-Upgrades.md).
-
-Regola con precisione cosa scorre dove, e a che velocità.
+Fine-tune what flows where, and how fast.
 
 ## Filtro per tubi
 
 Limita il **livello oggetti** di una faccia del tubo a un solo oggetto.
 
 - **Fabbricazione** (con forma, ne produce 4): angoli di Nerosteel attorno a sbarre di ferro.
+
 - **Impostare il filtro:** tieni il filtro in una mano e l'oggetto da far corrispondere nell'altra, poi
 
   fai clic destro nel vuoto. (Altra mano vuota = azzera l'oggetto del filtro.)
 
 - **Installare:** fai clic destro sulla **faccia** di un Tubo universale con il filtro configurato: l'oggetto viene **consumato nello slot del filtro di quella faccia** (come i potenziamenti dei tubi), e solo l'oggetto corrispondente viene prelevato o spinto attraverso la faccia. Un filtro già presente sulla faccia ti viene restituito.
+
 - **Rimuovere / ispezionare:** apri il pannello del [Configuratore](Configurator.md) del tubo: il filtro di ogni faccia si trova in un vero slot; passaci sopra il mouse per vedere cosa corrisponde, toglilo per azzerare la faccia. Rompere il tubo fa cadere i filtri installati.
 
 I filtri influenzano l'estrazione (le facce di prelievo prendono solo l'oggetto corrispondente), l'instradamento (i pacchetti non si dirigono verso una faccia filtrata che li rifiuta) e la consegna.
@@ -36,7 +36,8 @@ Il filtro di livello superiore: una sola linea di tubi, **molti tipi di oggetti*
   - **Clic destro su una voce** (cursore vuoto) per scorrerne la modalità di corrispondenza: l'oggetto esatto → ciascuno dei **tag** dell'oggetto (per esempio `#c:ores` copre ogni minerale con una sola voce, segnata da un `#` dorato) → di nuovo l'oggetto esatto.
   - Interruttore **Lista consentiti / Lista bloccati**: solo questi oggetti, oppure tutto **tranne** questi oggetti.
   - Interruttore **Corrispondenza esatta / Ignora dati**: se devono corrispondere anche i componenti dati dell'oggetto (NBT).
-- **Installare:** fai clic destro sulla **faccia** di un Tubo universale: l'oggetto (con tutta la sua configurazione) viene consumato nello slot del filtro di quella faccia; un filtro installato in precedenza ti viene restituito. Rimuovilo o ispezionalo tramite gli slot delle facce del pannello del [Configuratore](Configurator.md).
+- **Installare:** fai clic destro sulla **faccia** di un Tubo universale: l'oggetto (con tutta la sua configurazione) viene consumato nello slot del filtro di quella faccia; un filtro installato in precedenza ti viene restituito.
+  Rimuovilo o ispezionalo tramite gli slot delle facce del pannello del [Configuratore](Configurator.md).
 - **Copiare:** **clic destro da accovacciato** sulla faccia di un tubo per rileggerne il filtro attuale nell'oggetto che hai in mano: replica una parete di smistamento senza ricostruire la configurazione.
 - **Ispezionare:** il **tooltip dell'oggetto elenca la configurazione completa** (riga della modalità + ogni voce; le voci di tag in oro), sia nell'inventario sia negli slot delle facce del pannello del Configuratore.
 
@@ -52,11 +53,15 @@ I Filtri per tubi base continuano a funzionare esattamente come prima: un filtro
 - **Installare:** fai clic destro su un segmento di tubo (viene consumato, fino a **3** per tubo).
 - Ognuno moltiplica la **portata** di energia/fluidi/gas del segmento e fa **viaggiare più velocemente** gli oggetti al suo interno.
 
+  through it.
+
 ## Potenziamento di capacità
 
 - **Fabbricazione** (con forma): quarzo Xertz + nucleo di baule in un telaio di Nerosteel.
 - **Installare:** fai clic destro su un segmento di tubo (fino a **3**).
 - Ognuno moltiplica le **riserve** di fluidi/gas del segmento e quante pile di oggetti possono essere **in transito** contemporaneamente.
+
+  transit\*\* at once.
 
 ## Rimuovere i potenziamenti
 

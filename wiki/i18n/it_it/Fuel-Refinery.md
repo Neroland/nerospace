@@ -1,9 +1,8 @@
 # Raffineria di carburante
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Fuel-Refinery.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/fuel_refinery.gif" alt="Fuel Refinery" width="150" align="right"></p>
+
+<p align="right"><img src="images/fuel_refinery.gif" alt="Fuel Refinery" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Raffina carbone + polvere di blaze + energia di rete in carburante liquido per razzi trasportabile con i tubi.
@@ -12,7 +11,7 @@ Raffina carbone + polvere di blaze + energia di rete in carburante liquido per r
 
 La Raffineria di carburante è il modo **da logistica** per produrre carburante per razzi. Invece di fabbricare a mano le taniche, le dai **carbone** grezzo (o carbonella), **polvere di blaze** ed **energia di rete**, e lei produce **Carburante per razzi** liquido in un serbatoio interno da cui i [Tubi universali](Universal-Pipe.md) possono prelevarlo direttamente verso un [Serbatoio di carburante](Fuel-Tank.md) o un razzo sulla rampa. Si può fabbricare prima del tuo primo lancio.
 
-## Come ottenerla
+## Obtaining
 
 **Fabbricazione** (con forma):
 
@@ -42,10 +41,13 @@ N R N
   tutti quei clic.
 
 - **Uscita:** il serbatoio interno da **8.000 mB** espone la capability per i fluidi, così i tubi portano via il carburante.
+
 - **Spinta automatica:** spinge da sola fino a **200 mB/t** di carburante in qualsiasi serbatoio o tubo a contatto.
+
 - **Comparatore:** emette un segnale di redstone proporzionale al livello di carburante.
 
-`fuelCostMultiplier` scala il consumo di energia (FE/t) e `machineSpeedMultiplier` scala la durata del ciclo. `energyRateMultiplier` non si applica. Vedi [Configurazione](Configuration.md).
+`fuelCostMultiplier` scala il consumo di energia (FE/t) e `machineSpeedMultiplier` scala la durata del ciclo.
+`energyRateMultiplier` non si applica. Vedi [Configurazione](Configuration.md).
 
 ## Dettagli
 

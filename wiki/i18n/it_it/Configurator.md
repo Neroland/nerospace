@@ -1,10 +1,8 @@
 # Configuratore
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Configurator.md).
-
 Lo strumento di rete: imposta cosa fa ogni faccia di un tubo, per ogni livello di risorsa.
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma): due lingotti di Nerosteel sopra la redstone, a forma di bacchetta.
 
@@ -22,6 +20,7 @@ Con il Configuratore:
 - **Clic destro da accovacciato su un tubo** → apre il **pannello di configurazione**: una riga per faccia con il suo colore, la modalità per il livello selezionato (fai clic su ▸ per scorrere) e il suo **slot del filtro**, cioè il [Filtro per tubi o Filtro per tubi avanzato](Pipe-Filters-and-Upgrades.md) fisico installato su quella faccia. Inserisci un filtro per filtrare la faccia, toglilo per azzerarla e **passa il mouse sullo slot** per vedere esattamente cosa corrisponde al filtro.
 
 - **Clic destro sulla faccia di un tubo** → scorre rapidamente la modalità di quella faccia per il livello attualmente selezionato.
+
 - **Clic destro da accovacciato nel vuoto** (o su blocchi che non sono tubi) → scorre il livello modificato dalla modalità rapida
 
   (energia → fluidi → gas → oggetti).

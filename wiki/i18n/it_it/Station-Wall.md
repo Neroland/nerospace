@@ -1,9 +1,8 @@
 # Parete della stazione
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Station-Wall.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/station_wall.png" alt="Station Wall" width="150" align="right"></p>
+
+<p align="right"><img src="images/station_wall.png" alt="Station Wall" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Pannelli di scafo per la Stazione orbitale, e un requisito di progressione per il livello 3.
@@ -12,7 +11,7 @@ Pannelli di scafo per la Stazione orbitale, e un requisito di progressione per i
 
 La Parete della stazione è il blocco per pareti e scafo della stazione. Poiché si fabbrica con materiali da stazione, **sblocca anche il razzo di livello 3**: devi raggiungere la Stazione orbitale (livello 1) e costruire lo scafo della stazione prima di poter fabbricare un razzo di livello 3.
 
-## Come ottenerla
+## Obtaining
 
 - **Fabbricazione:** un anello di **8 lingotti di Nerosteel** attorno a un **lingotto di ferro** → **8 Parete della stazione**.
 
@@ -23,6 +22,7 @@ La Parete della stazione è il blocco per pareti e scafo della stazione. Poiché
   sigillo per l'ossigeno (vedi [Generatore di ossigeno](Oxygen-Generator.md)).
 
 - Richiesta nella ricetta del **razzo di livello 3**.
+
 - **Circondare una [rampa di lancio](Rocket-Launch-Pad.md) 3×3** (il bordo di 16 blocchi all'altezza della rampa) è uno dei
 
   due modi per schierare un razzo di livello 3; l'altro è il [Complesso di lancio pesante](Launch-Gantry.md).

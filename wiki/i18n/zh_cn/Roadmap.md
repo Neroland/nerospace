@@ -1,36 +1,39 @@
 # 路线图
 
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Roadmap.md)。
-
-公开的、高层次的 Nerospace 现状与未来方向概览。**1.0.0 是第一个完整版本**——从第一块 Nerosium 矿石到一颗经过地形改造的行星，完整的进度都包含在其中。（发布说明位于仓库的 `CHANGELOG.md` 中。）
+A public, high-level view of where Nerospace is and where it's going. **1.0.0 is the first full
+release** — the complete progression from the first nerosium ore to a terraformed planet ships in it.
+(Release notes live in the repo's `CHANGELOG.md`.)
 
 ## ✅ 1.0.0 已发布内容
 
 **材料与机器**
 
 - Nerosium 材料链（矿石 → 粗矿 → 锭 → 粉）以及 **Nerosium研磨机**（矿石产出翻倍）。
+
 - 行星材料：**Nerosteel** + **Xertz石英**（Greenxertz）、**Cindrite**（Cindara）、
 
   **Glacite**（Glacira）。
 
 - **燃料精炼厂**（煤炭 + 烈焰粉 + 电力 → 可通过管道输送的火箭燃料）、存储方块、
 
-  空间站方块、带动画仪表和比较器输出的主题机器界面。
+  station blocks, themed machine GUIs with animated gauges + comparator output.
 
 - 全面使用通用 `c:` 标签和基于标签的配方，每个机器面都支持能力自动化。
 
 **太空旅行**
 
 - **1–4 级火箭**，每个等级都有专属模型，并配有交互式火箭内界面。
+
 - **3×3 发射台**和**重型发射综合设施**（5×5 + 发射塔架），附带结构
 
-  报告；3 级火箭可使用空间站墙壁围圈**或**重型综合设施，4 级火箭需要重型
-  综合设施。
+  reports; Tier 3 takes the Station Wall ring **or** the Heavy complex, Tier 4 needs the Heavy
+  complex.
 
 - 自动加注的**燃料储罐**（最高 480 mB/t），以及通过发射台方块无需动手的燃料供给。
+
 - 目的地：**轨道空间站**、**Greenxertz**、**Cindara**、**Glacira**——以及
 
-  通过空间站章程建立的**玩家空间站**（每个世界最多 64 座）。
+  **player-founded stations** via the Station Charter (up to 64 per world).
 
 **生存与大气**
 
@@ -59,26 +62,26 @@
 **JEI 与 EMI 集成**
 
 - 安装 JEI 后，研磨机、燃料精炼厂和燃烧发电机会显示各自的配方类别（标准配方／标签原本就开箱即用）。
-- EMI 通过原生 EMI 插件获得相同的三个页面。官方 EMI 没有 Minecraft 26.x 版本，因此它面向 NeoForge 和 Fabric 上的社区 **EMI Unofficial Port (Unstable)**（26.1.2、26.2、26.3）；该移植版没有 Forge 版本。同时安装 JEI 和 EMI 时，页面只会出现一次。
+- EMI gets the same three pages from a native EMI plugin. EMI 通过原生 EMI 插件获得相同的三个页面。官方 EMI 没有 Minecraft 26.x 版本，因此它面向 NeoForge 和 Fabric 上的社区 **EMI Unofficial Port (Unstable)**（26.1.2、26.2、26.3）；该移植版没有 Forge 版本。同时安装 JEI 和 EMI 时，页面只会出现一次。 With JEI and EMI both installed, the pages appear once.
 
 **太阳能板**
 
 - **[太阳能板](Solar-Panel.md)**——追踪太阳、阵列共享的发电设备，共**三个等级**
 
-  （1 级 1×1、2 级 2×2、3 级 3×3 多方块结构），每一级的配方都包含上一级太阳能板。
+  (Tier 1 1×1, Tier 2 2×2, Tier 3 3×3 multiblocks), each folding the previous panel into its recipe.
 
 ## 🛠️ 下一步（1.0 之后的首批更新）
 
 - **根据玩家反馈调整平衡**——配置倍率让这件事很容易。
-- **专属音效**，以取代沿用原版音频的占位音效。
+- **Bespoke audio** to replace the vanilla-alias placeholders.
 
 ## 🔭 计划中／探索中
 
-参见**[未来功能](Future-Features.md)**。
+参见\*\*[未来功能](Future-Features.md)\*\*。
 
 ## ⏳ 已推迟
 
-- **针对特定模组的专属集成**将等到这些模组移植到 Minecraft 26.1 之后。Nerospace 在
+- **针对特定模组的专属集成**将等到这些模组移植到 Minecraft 26.1 之后。Nerospace 在 Nerospace is
 
   设计上是独立的，通用部分已经完成：能量、流体和物品都使用三个加载器上的
   平台标准能力和查找，因此任何其他使用它们的模组现在就能连接——参见[模组兼容性](Mod-Compatibility.md)。

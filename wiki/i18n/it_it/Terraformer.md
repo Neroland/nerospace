@@ -1,9 +1,8 @@
 # Terraformatore
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Terraformer.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/terraformer.gif" alt="Terraformer" width="150" align="right"></p>
+
+<p align="right"><img src="images/terraformer.gif" alt="Terraformer" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 La macchina di fine gioco: trasforma lentamente un pianeta morto in terra abitabile, respirabile e **viva**, in tre fasi visibili.
@@ -12,13 +11,13 @@ La macchina di fine gioco: trasforma lentamente un pianeta morto in terra abitab
 
 Piazza un Terraformatore su un mondo spoglio, alimentalo, e farà avanzare una **frontiera circolare in continua espansione** a partire da sé. Con la terraformazione avanzata la macchina gestisce **tre frontiere**, ognuna dietro la precedente, così un mondo che funziona da tempo è sempre un gradiente: chimica grezza al bordo, un ecosistema vivo al centro:
 
-| Fase | Nome | Cosa fa |
-| --- | --- | --- |
-| 1 | **Radicato** | erba + terra, respirabile in modo permanente, un vivace **bioma terraformato** al neon, piante sparse |
-| 2 | **Idratato** | i bacini sotto la falda della macchina si riempiono di vera acqua: costa **Glacite** tramite un [Modulo di idratazione](Hydration-Module.md) |
-| 3 | **Vivo** | il bioma si assesta in una **tavolozza naturale per pianeta** (prato / savana / tundra) con alberi cresciuti, **pioggia o neve** e mandrie iniziali del [bestiame](Creatures.md) del pianeta |
+| Fase | Nome         | Cosa fa                                                                                                                                                                                                         |
+| ---- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | **Radicato** | erba + terra, respirabile in modo permanente, un vivace **bioma terraformato** al neon, piante sparse                                                                                                           |
+| 2    | **Idratato** | i bacini sotto la falda della macchina si riempiono di vera acqua: costa **Glacite** tramite un [Modulo di idratazione](Hydration-Module.md)                                                    |
+| 3    | **Vivo**     | il bioma si assesta in una **tavolozza naturale per pianeta** (prato / savana / tundra) con alberi cresciuti, **pioggia o neve** e mandrie iniziali del [bestiame](Creatures.md) del pianeta |
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma):
 
@@ -63,9 +62,9 @@ N B N
 
   con un piccolo budget fisso.
 
-- **Livelli:** metti un potenziamento nello slot di potenziamento: un **lingotto di Nerosteel → livello 2**, una **Cindrite →
+- **Livelli:** metti un potenziamento nello slot di potenziamento: un **lingotto di Nerosteel → livello 2**, una \*\*Cindrite →
 
-  livello 3**. I livelli più alti convertono più colonne per ciclo; il **livello 3** semina anche, con bassa frequenza, minerali nel
+  livello 3\*\*. I livelli più alti convertono più colonne per ciclo; il **livello 3** semina anche, con bassa frequenza, minerali nel
   sottosuolo convertito (minerali di Nerospace).
 
 - **Pigro / recupero:** le colonne nei chunk non caricati vengono saltate e convertite più tardi quando esplori
@@ -81,6 +80,7 @@ N B N
 ## Dettagli
 
 - ID: `nerospace:terraformer` · Attrezzo: piccone, livello ferro · Drop: se stesso
+
 - Complementi: [Modulo di idratazione](Hydration-Module.md) (ingresso di Glacite, deve toccarlo),
 
   [Monitor di terraformazione](Terraform-Monitor.md) (lettura della fase + comparatore)

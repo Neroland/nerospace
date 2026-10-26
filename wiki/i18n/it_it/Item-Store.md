@@ -1,8 +1,6 @@
 # Deposito di oggetti
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Item-Store.md).
-
-> **Spostato in Neroland Core.** Il Deposito di oggetti ora è incluso nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:item_store`**, così ogni mod Neroland usa un unico insieme di blocchi di stoccaggio. Si fabbrica e si usa esattamente come prima: vedi la **wiki di Neroland Core** (pagina *Item Store*) per tutti i dettagli.
+> **Spostato in Neroland Core.** Il Deposito di oggetti ora è incluso nella libreria condivisa [Neroland Core](Neroland-Core.md) come **`nerolandcore:item_store`**, così ogni mod Neroland usa un unico insieme di blocchi di stoccaggio. Si fabbrica e si usa esattamente come prima: vedi la **wiki di Neroland Core** (pagina _Item Store_) per tutti i dettagli.
 
 Un contenitore da 27 slot con un'interfaccia simile al baule, pensato per l'automazione con i tubi: tramogge e tubi possono inserire ed estrarre su ogni lato, compresa la faccia superiore. La variante **Deposito di oggetti creativo** fornisce un flusso infinito di un oggetto configurato.
 

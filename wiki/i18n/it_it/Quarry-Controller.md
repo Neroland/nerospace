@@ -1,9 +1,8 @@
 # Controllore della cava
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Quarry-Controller.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/quarry_controller.gif" alt="Quarry Controller" width="150" align="right"></p>
+
+<p align="right"><img src="images/quarry_controller.gif" alt="Quarry Controller" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Un minatore automatico in stile BuildCraft: delimita un'area con i segnaposto e il controllore costruisce un telaio luminoso e scava l'interno, strato dopo strato, fino al substrato roccioso.
@@ -13,9 +12,10 @@ Un minatore automatico in stile BuildCraft: delimita un'area con i segnaposto e 
 Il Controllore della cava è il cervello del minatore. Delimiti un'area rettangolare con i **[Segnaposto della cava](Quarry-Landmark.md)**, piazzi il controllore accanto, gli dai **materiale per il telaio** ed **energia**, e lui:
 
 1. **Costruisce un telaio**: un anello strutturale luminoso e trasparente attorno al rettangolo acquisito.
-2. **Scava** l'**interno** del rettangolo (le colonne sotto l'anello del telaio restano intatte) **strato
 
-   dopo strato**, dall'alto fino al substrato roccioso, come una stampante 3D al contrario: una testa di perforazione percorre il ponte fino a ogni
+2. **Scava** l'**interno** del rettangolo (le colonne sotto l'anello del telaio restano intatte) \*\*strato
+
+   dopo strato\*\*, dall'alto fino al substrato roccioso, come una stampante 3D al contrario: una testa di perforazione percorre il ponte fino a ogni
    blocco, un blocco alla volta.
 
 3. **Accumula ed espelle automaticamente** ciò che scava: gli oggetti estratti in un inventario interno, e i liquidi
@@ -26,7 +26,7 @@ Il Controllore della cava è il cervello del minatore. Delimiti un'area rettango
 
 Non distrugge mai un **oggetto** che non può conservare: se la riserva di uscita si riempie o l'energia finisce, si **mette in pausa** (l'interfaccia ti dice perché) e riprende da solo una volta risolto il problema. I liquidi sono l'eccezione voluta: vedi sotto.
 
-## Come ottenerlo
+## Allestimento
 
 **Fabbricazione** (con forma):
 
@@ -40,7 +40,7 @@ I I I
 
 > Oggi la versione fabbricabile è il livello 1. Controllori di livello 2 / 3 (aree più grandi, più slot modulo, accesso ai pianeti ostili) sono in programma: vedi [Livelli e pianeti](#tiers--planets).
 
-## Allestimento
+## Setting it up
 
 > È la prima volta? La **[Guida all'allestimento della cava](Quarry-Setup-Guide.md)** ti accompagna passo passo, con le quantità di materiali e la risoluzione dei problemi.
 
@@ -65,10 +65,9 @@ I I I
 
 - **Energia:** una riserva interna da **200.000 FE**, riempita tramite la capability energetica su qualsiasi lato:
 
-  collega un [Tubo universale](Universal-Pipe.md) da un [Generatore a combustione](Combustion-Generator.md)/[Generatore
-  passivo](Passive-Generator.md) o da una [Batteria](Battery.md). **La velocità di scavo è fissa**: la velocità base
-  del livello × il bonus di velocità dei moduli × il fattore di velocità del pianeta (× la configurazione `machineSpeedMultiplier`).
-  Più energia **non** lo fa scavare più in fretta; tiene solo piena la riserva, e se
+  collega un [Tubo universale](Universal-Pipe.md) da un [Generatore a combustione](Combustion-Generator.md)/Generatore
+  passivo o da una [Batteria](Battery.md). **La velocità di scavo è fissa**: la velocità base
+  del livello × il bonus di velocità dei moduli × il fattore di velocità del pianeta (× la configurazione `machineSpeedMultiplier`). Più energia **non** lo fa scavare più in fretta; tiene solo piena la riserva, e se
   la riserva si esaurisce lo scavo si **mette in pausa** («energia esaurita») finché l'energia non torna. Il costo base è
   di **40 FE per blocco** (ridotto dai moduli di efficienza): una cava di livello 1 senza moduli scava circa
   4 blocchi al secondo, circa 8 FE/t.
@@ -122,32 +121,30 @@ I I I
 - **Recupero:** quando lo scavo **finisce**, il telaio viene smontato e gli involucri ancora in piedi vengono
 
   restituiti agli slot del telaio del controllore. **Rompere il controllore durante lo scavo** invece rende il telaio
-  *orfano*: i blocchi del telaio si sgretolano lentamente uno alla volta nei minuti successivi (ogni blocco
+  _orfano_: i blocchi del telaio si sgretolano lentamente uno alla volta nei minuti successivi (ogni blocco
   in un suo momento casuale, circa 30 s – 4 min per impostazione predefinita, regolabile con `quarryFrameDecayTicks`),
   e **ognuno lascia cadere il suo Involucro del telaio**, lo stesso drop che otterresti estraendolo tu. Piazzare un
   nuovo controllore accanto a un anello ancora in piedi lo riadotta e ferma il deterioramento.
 
 ### Righe di stato dell'interfaccia
 
-| Riga | Significato |
-| --- | --- |
-| **Inattivo: imposta i segnaposto o il telaio** | Nessuna regione valida trovata: piazza i segnaposto o un contorno di telaio costruito a mano. |
-| **Costruzione del telaio** | Sta piazzando l'anello del telaio (consumando involucri). |
-| **Scavo in corso** | Sta scavando: `Depth` (sul bordo destro della riga, mostrato durante costruzione/scavo) conta gli strati sotto il piano del telaio. |
-| **In pausa: …** | Fermo: la riga indica il motivo: telaio incompleto, Involucri del telaio esauriti, energia esaurita, riserva di uscita piena o pianeta sbagliato (livello troppo basso). I liquidi non mettono mai in pausa lo scavo. La testa di perforazione in pausa resta dove lo scavo si è fermato. |
-| **Completato: telaio recuperato** | Ha raggiunto il substrato roccioso; il telaio è stato smontato e i suoi involucri restituiti agli slot del telaio. |
-
-<a id="tiers--planets"></a>
+| Line                                                           | Significato                                                                                                                                                                                                                                                                                                                                                                                  |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Inattivo: imposta i segnaposto o il telaio** | Nessuna regione valida trovata: piazza i segnaposto o un contorno di telaio costruito a mano.                                                                                                                                                                                                                                                                |
+| **Costruzione del telaio**                                     | Sta piazzando l'anello del telaio (consumando involucri).                                                                                                                                                                                                                                                                                                 |
+| **Scavo in corso**                                             | Sta scavando: `Depth` (sul bordo destro della riga, mostrato durante costruzione/scavo) conta gli strati sotto il piano del telaio.                                                                                                                                                                                                       |
+| **In pausa: …**                                | Fermo: la riga indica il motivo: telaio incompleto, Involucri del telaio esauriti, energia esaurita, riserva di uscita piena o pianeta sbagliato (livello troppo basso). I liquidi non mettono mai in pausa lo scavo. La testa di perforazione in pausa resta dove lo scavo si è fermato. |
+| **Completato: telaio recuperato**              | Ha raggiunto il substrato roccioso; il telaio è stato smontato e i suoi involucri restituiti agli slot del telaio.                                                                                                                                                                                                                                                           |
 
 ## Livelli e pianeti
 
 Il minatore funziona **ovunque abbia energia**, ma le lune esterne ostili sono vincolate al livello:
 
-| Livello | Area massima | Slot modulo | Velocità base | Pianeti in cui può scavare |
-| --- | --- | --- | --- | --- |
-| **Livello 1** | 64 × 64 | 1 | 2 blocchi/ciclo | Overworld, Greenxertz, Stazione orbitale |
-| Livello 2 *(in programma)* | 64 × 64 | 2 | 4 blocchi/ciclo | + **Cindara** |
-| Livello 3 *(in programma)* | 64 × 64 | 4 | 8 blocchi/ciclo | + **Glacira** |
+| Tier                                          | Area massima | Slot modulo | Velocità base   | Pianeti in cui può scavare               |
+| --------------------------------------------- | ------------ | ----------- | --------------- | ---------------------------------------- |
+| **Livello 1**                                 | 64 × 64      | 1           | 2 blocchi/ciclo | Overworld, Greenxertz, Stazione orbitale |
+| Tier 2 _(planned)_         | 64 × 64      | 2           | 4 blocchi/ciclo | + **Cindara**                            |
+| Livello 3 _(in programma)_ | 64 × 64      | 4           | 8 blocchi/ciclo | + **Glacira**                            |
 
 L'area massima è il valore di configurazione `quarryMaxSide` (predefinito e massimo 64; vedi [Configurazione](Configuration.md)).
 
@@ -162,11 +159,12 @@ Anche **velocità/resa dello scavo variano per pianeta** (le dense lune esterne 
 
 - I **filtri** (tieni ciò che è in lista, distruggi il resto, per esempio per eliminare il pietrisco) sono un seguito in programma; la
 
-  catena di uscita è già pronta per accoglierli.
+  output pipeline is already built to drop them in.
 
 ## Dettagli
 
 - ID: `nerospace:quarry_controller` · Attrezzo: piccone, livello ferro · Drop: se stesso (più gli oggetti in riserva, gli involucri e i moduli)
+
 - Blocchi complementari: [Segnaposto della cava](Quarry-Landmark.md), Telaio della cava (piazzato dalla macchina o
 
   a mano da un Involucro del telaio; lascia sempre cadere un Involucro del telaio, sia che lo rompa un giocatore sia che si sgretoli

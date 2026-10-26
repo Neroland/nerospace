@@ -1,9 +1,8 @@
 # Rampa di lancio per razzi
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Rocket-Launch-Pad.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/rocket_launch_pad.png" alt="Rocket Launch Pad" width="150" align="right"></p>
+
+<p align="right"><img src="images/rocket_launch_pad.png" alt="Rocket Launch Pad" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 La base su cui si schiera un razzo prima del lancio, e una zona di atterraggio sicura.
@@ -12,7 +11,7 @@ La base su cui si schiera un razzo prima del lancio, e una zona di atterraggio s
 
 Schiera un **razzo** (fai clic destro su una rampa di lancio con un oggetto razzo) e comparirà sulla rampa, pronto per il rifornimento e il volo. La rampa fa anche da piccola **zona sicura respirabile**, così chi arriva non viene subito punito dall'atmosfera priva d'aria.
 
-## Come ottenerla
+## Obtaining
 
 **Fabbricazione** (con forma):
 
@@ -33,7 +32,9 @@ N N N
 
 - **Dimensione della rampa per livello** (una rampa più grande funziona sempre per un razzo più piccolo):
   - **Livello 1**: un blocco di rampa.
+
   - **Livello 2**: una rampa 3×3 completa e allineata.
+
   - **Livello 3**: una rampa 3×3 **circondata dalla [Parete della stazione](Station-Wall.md)** (il bordo di 16 blocchi del
 
     5×5 circostante, all'altezza della rampa), oppure un [Complesso di lancio pesante](Launch-Gantry.md).
@@ -42,12 +43,12 @@ N N N
 
 - **Dati dei razzi per livello:**
 
-  | Livello | Serbatoio di carburante | Ossigeno a bordo | Energia a bordo |
-  | --- | --- | --- | --- |
-  | 1 | 3.000 mB | 2.000 mB | 4.000 FE |
-  | 2 | 6.000 mB | 4.000 mB | 8.000 FE |
-  | 3 | 12.000 mB | 8.000 mB | 16.000 FE |
-  | 4 | 24.000 mB | 16.000 mB | 30.000 FE |
+  | Tier | Serbatoio di carburante   | Ossigeno a bordo          | Energia a bordo           |
+  | ---- | ------------------------- | ------------------------- | ------------------------- |
+  | 1    | 3.000 mB  | 2.000 mB  | 4.000 FE  |
+  | 2    | 6.000 mB  | 4.000 mB  | 8.000 FE  |
+  | 3    | 12.000 mB | 8.000 mB  | 16.000 FE |
+  | 4    | 24.000 mB | 16.000 mB | 30.000 FE |
 
 - Il **carburante per lancio** è lo stesso per ogni livello. Dipende dal viaggio:
 
@@ -83,12 +84,12 @@ N N N
 > **Vuoi costruirne una?** La [Guida alla costruzione della rampa di lancio](Launch-Pad-Build-Guide.md) contiene uno schema e
 > un elenco dei materiali per ogni livello.
 
-## Viaggi da rampa a rampa
+## Pad-to-pad travel
 
-Le rampe di lancio fanno anche da punti di passaggio dei viaggi in razzo.
+Launch pads double as the waypoints of rocket travel.
 
 - **Registrare una rampa:** fai clic destro su una rampa con un'**etichetta** per renderla un nodo di viaggio con nome (il nome dell'etichetta la identifica, oppure «Pad N»). Le rampe registrate diventano destinazioni di atterraggio.
-- **Scegliere dove atterrare:** nell'interfaccia del razzo scegli una destinazione (Casa / un pianeta / la Stazione orbitale), poi scorri il **selettore di rampa** per atterrare su una specifica rampa registrata lì, oppure *Più vicina* per la scelta automatica. Puoi anche saltare **da rampa a rampa nella stessa dimensione**.
+- **Scegliere dove atterrare:** nell'interfaccia del razzo scegli una destinazione (Casa / un pianeta / la Stazione orbitale), poi scorri il **selettore di rampa** per atterrare su una specifica rampa registrata lì, oppure _Più vicina_ per la scelta automatica. Puoi anche saltare **da rampa a rampa nella stessa dimensione**.
 - **Carburante calcolato:** un lancio consuma un costo base più la **distanza** (per un salto nello stesso mondo) o un **sovrapprezzo fisso tra dimensioni**. Il costo è mostrato in tempo reale nella console; il lancio è bloccato finché il serbatoio non lo copre.
 - **Ritorno a casa:** un razzo ricorda la rampa da cui è partito, quindi tornando atterri **esattamente su quella rampa**. Una **Capsula di atterraggio** viene costruita automaticamente solo quando la destinazione non ha davvero alcuna rampa di lancio.
 

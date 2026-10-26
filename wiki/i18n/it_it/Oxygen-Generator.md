@@ -1,9 +1,8 @@
 # Generatore di ossigeno
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Oxygen-Generator.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/oxygen_generator.gif" alt="Oxygen Generator" width="150" align="right"></p>
+
+<p align="right"><img src="images/oxygen_generator.gif" alt="Oxygen Generator" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Ti tiene in vita fuori dalla Terra trasformando l'energia di rete in ossigeno e pressurizzando l'aria intorno a sé.
@@ -12,7 +11,7 @@ Ti tiene in vita fuori dalla Terra trasformando l'energia di rete in ossigeno e 
 
 Ogni dimensione di Nerospace è **priva d'aria**: i giocatori esposti perdono ossigeno e soffocano. Il Generatore di ossigeno è una **macchina per l'elettrolisi**: consuma energia dalla rete di tubi e produce **ossigeno** in un serbatoio interno. Quel serbatoio alimenta l'area respirabile attorno alla macchina e può anche essere **convogliato** tramite i Tubi universali (livello gas) in Serbatoi di gas o in altre stanze.
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma):
 
@@ -48,15 +47,17 @@ N N N
     apertura), quindi sigilla la tua base per una copertura completa. Una porta o un varco contano come perdita.
 
   - La copertura arriva fino a 16 blocchi d'aria collegata dal generatore. In spazio aperto la bolla ha un raggio di circa 14 blocchi. Questi valori sono fissi.
-- **Perdita:** se il serbatoio si esaurisce o la macchina viene rotta, l'ossigeno **evapora in circa 10
 
-  secondi**.
+- **Perdita:** se il serbatoio si esaurisce o la macchina viene rotta, l'ossigeno \*\*evapora in circa 10
+
+  secondi\*\*.
 
 - **Spegnimento con redstone:** un segnale di redstone vicino al generatore lo spegne, e la sua bolla d'aria
 
   collassa.
 
 - **HUD:** nelle dimensioni prive d'aria compare una **barra O₂** ciano sopra la barra degli oggetti (diventa rossa quando è bassa).
+
 - **Camera stagna:** un giocatore che indossa una [Tuta a ossigeno](Oxygen-Suit.md) completa entro **4 blocchi**
 
   ricarica l'aria della tuta direttamente dal serbatoio della macchina, consumandone il gas: comodo alla porta di una base

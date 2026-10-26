@@ -1,24 +1,24 @@
 # Nerosium矿石
 
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Nerosium-Ore.md)。
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/nerosium_ore.png" alt="Nerosium Ore" width="150" align="right"></p>
+
+<p align="right"><img src="images/nerosium_ore.png" alt="Nerosium Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 本模组的起步材料——嵌在石头中的红紫色宇宙水晶。
 
 ## 概述
 
-Nerosium 是 Nerospace 的第一种材料，也是通往其科技树的入口。**Nerosium矿石**是石头高度的变体；[深层Nerosium矿石](Deepslate-Nerosium-Ore.md)变体出现在更深处。
+Nerosium is the first Nerospace material and the gateway to its tech tree. Nerosium 是 Nerospace 的第一种材料，也是通往其科技树的入口。**Nerosium矿石**是石头高度的变体；[深层Nerosium矿石](Deepslate-Nerosium-Ore.md)变体出现在更深处。
 
-## 获取方式
+## Obtaining
 
-- **挖掘：**需要**铁级镐**或更好的镐。掉落**粗Nerosium**（受时运影响）。
-- **挖到的是矿石方块而不是粗Nerosium？**你的镐带有**精准采集**。没关系：可以将矿石方块直接冶炼成锭（需要 Nerospace **1.5.1** 或更新版本），或研磨成 2 份 Nerosium粉。如果你想要粗Nerosium，请使用*不带*精准采集的镐。
+- **挖掘：**需要**铁级镐**或更好的镐。掉落**粗Nerosium**（受时运影响）。 Drops **Raw Nerosium** (affected by Fortune).
+- **Got the ore block instead of Raw Nerosium?** Your pickaxe has **Silk Touch**. **挖到的是矿石方块而不是粗Nerosium？**你的镐带有**精准采集**。没关系：可以将矿石方块直接冶炼成锭（需要 Nerospace **1.5.1** 或更新版本），或研磨成 2 份 Nerosium粉。如果你想要粗Nerosium，请使&#x7528;_&#x4E0D;&#x5E26;_&#x7CBE;准采集的镐。
+  Use a pickaxe _without_ Silk Touch if you want Raw Nerosium.
 - **生成：**在地下矿石阶段于**所有主世界生物群系**中生成，分布在大约 **y −24 到 y 56** 的三角形
 
-  高度区间内（在 y 16 附近最多），生成率与铁相近。
+  height band roughly **y −24 to y 56** (peaking around y 16), at a similar rate to iron.
 
 ## 用途
 

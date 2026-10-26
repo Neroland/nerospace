@@ -1,14 +1,13 @@
 # Guida all'allestimento della cava
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Quarry-Setup-Guide.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/quarry_controller.png" alt="Quarry Controller" width="150" align="right"></p>
+
+<p align="right"><img src="images/quarry_controller.png" alt="Quarry Controller" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 Una guida passo passo per far scavare il tuo primo [Controllore della cava](Quarry-Controller.md), dalla fabbricazione delle parti alla raccolta del minerale. Per il riferimento completo (ogni riga di stato, danni al telaio, caricamento dei chunk, livelli) vedi la pagina [Controllore della cava](Quarry-Controller.md).
 
-## In sintesi
+## At a glance
 
 ![Guida animata: segnaposto piazzati a L, il controllore piazzato accanto, l'Involucro del telaio caricato, il telaio costruito blocco per blocco, energia e baule collegati, l'interno scavato strato per strato fino al substrato roccioso e il telaio recuperato](../../images/quarry_setup.gif)
 
@@ -22,31 +21,31 @@ Una guida passo passo per far scavare il tuo primo [Controllore della cava](Quar
 
 Tutto si costruisce con **[lingotti di Nerosteel](Items.md)** (dal Minerale di Nerosteel su Greenxertz), più qualche oggetto del gioco base.
 
-| Parte | Ricetta | Ti serve |
-| --- | --- | --- |
-| [Controllore della cava](Quarry-Controller.md) | 5 lingotti di Nerosteel, 1 diamante, 2 Involucri del telaio, 1 blocco di redstone | 1 |
-| [Segnaposto della cava](Quarry-Landmark.md) | Redstone sopra vetro sopra lingotto di Nerosteel: ne produce **3** | 3 (una fabbricazione) |
-| [Involucro del telaio](Upgrade-Modules.md) | 8 lingotti di Nerosteel ad anello: ne produce **4** | vedi la tabella sotto |
-| Fonte di energia | per esempio un [Generatore a combustione](Combustion-Generator.md) o un [Generatore passivo](Passive-Generator.md), più il [Tubo universale](Universal-Pipe.md) | 1 |
-| Deposito di uscita | un baule (o un tubo verso il tuo deposito) | 1 |
+| Parte                                          | Ricetta                                                                                                                                                         | Ti serve                                 |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| [Controllore della cava](Quarry-Controller.md) | 5 lingotti di Nerosteel, 1 diamante, 2 Involucri del telaio, 1 blocco di redstone                                                                               | 1                                        |
+| [Segnaposto della cava](Quarry-Landmark.md)    | Redstone sopra vetro sopra lingotto di Nerosteel: ne produce **3**                                                                              | 3 (una fabbricazione) |
+| [Involucro del telaio](Upgrade-Modules.md)     | 8 lingotti di Nerosteel ad anello: ne produce **4**                                                                                             | vedi la tabella sotto                    |
+| Fonte di energia                               | per esempio un [Generatore a combustione](Combustion-Generator.md) o un [Generatore passivo](Passive-Generator.md), più il [Tubo universale](Universal-Pipe.md) | 1                                        |
+| Deposito di uscita                             | un baule (o un tubo verso il tuo deposito)                                                                                                   | 1                                        |
 
 **Quanti Involucri del telaio?** Il telaio è un anello attorno al rettangolo: un involucro per ogni blocco del perimetro, cioè `2 × width + 2 × length − 4` (uno in meno se il controllore si trova sull'anello stesso).
 
-| Area (da segnaposto a segnaposto) | Blocchi scavati per strato | Involucri | Nerosteel per gli involucri |
-| --- | --- | --- | --- |
-| 8 × 8 | 6 × 6 | 28 | 56 |
-| 16 × 16 | 14 × 14 | 60 | 120 |
-| 32 × 32 | 30 × 30 | 124 | 248 |
-| 64 × 64 (massima) | 62 × 62 | 252 | 504 |
+| Area (da segnaposto a segnaposto) | Blocchi scavati per strato | Casings | Nerosteel per gli involucri |
+| ---------------------------------------------------- | -------------------------- | ------- | --------------------------- |
+| 8 × 8                                                | 6 × 6                      | 28      | 56                          |
+| 16 × 16                                              | 14 × 14                    | 60      | 120                         |
+| 32 × 32                                              | 30 × 30                    | 124     | 248                         |
+| 64 × 64 (massima)                 | 62 × 62                    | 252     | 504                         |
 
 > **Consiglio:** il controllore ha 4 slot per gli involucri (256 involucri), abbastanza per il telaio più grande, e riottieni ogni involucro quando lo scavo finisce, quindi il tuo primo set è riutilizzabile.
 
 ## 2. Scegli il posto
 
-- **Pianeta:** il controllore di oggi è di **livello 1**. Funziona nell'**Overworld**, su **Greenxertz** e sulla **Stazione orbitale**. Su **Cindara** e **Glacira** mostra *In pausa: pianeta sbagliato* (sono in programma controllori di livello superiore per quelle lune).
+- **Pianeta:** il controllore di oggi è di **livello 1**. Funziona nell'**Overworld**, su **Greenxertz** e sulla **Stazione orbitale**. Su **Cindara** e **Glacira** mostra _In pausa: pianeta sbagliato_ (sono in programma controllori di livello superiore per quelle lune).
 - **Altezza:** l'altezza a cui piazzi i segnaposto è il **livello del telaio**. La cava scava quel livello e **tutto ciò che sta sotto** fino al substrato roccioso. Tutto ciò che sta **sopra** (alberi, colline, la tua casa) resta intatto: quindi piazza i segnaposto al livello del suolo, o prima scava una piazzola piana.
 - **Dimensione:** ogni lato può essere lungo **da 3 a 64 blocchi**, misurati da segnaposto a segnaposto (i server possono abbassare il limite con `quarryMaxSide`: vedi [Configurazione](Configuration.md)). L'anello esterno diventa il telaio, quindi viene scavato solo l'**interno**.
-- **Libera l'anello:** i blocchi sull'anello del telaio vengono **sostituiti** dal telaio (senza drop), quindi non metterci niente che vuoi conservare. Bauli e macchine sull'anello restano al loro posto, e qualsiasi cosa con un block entity *dentro* l'area lascia la sua intera colonna non scavata.
+- **Libera l'anello:** i blocchi sull'anello del telaio vengono **sostituiti** dal telaio (senza drop), quindi non metterci niente che vuoi conservare. Bauli e macchine sull'anello restano al loro posto, e qualsiasi cosa con un block entity _dentro_ l'area lascia la sua intera colonna non scavata.
 
 ## 3. Piazza i segnaposto
 
@@ -73,13 +72,14 @@ I segnaposto proiettano laser di segnalazione lungo il terreno sui loro assi, co
 
 Piazza il **Controllore della cava** allo **stesso livello Y** dei segnaposto, **direttamente accanto a un lato** del rettangolo (a contatto con il bordo, non in diagonale rispetto a un angolo). Puoi anche piazzarlo **sull'anello stesso**: in quel caso prende il posto di quel blocco del telaio.
 
-In un attimo il controllore trova i segnaposto e **acquisisce l'area**. I segnaposto vengono **consumati** (scompaiono) e lo stato passa da *Inattivo* a *In pausa: Involucri del telaio esauriti* o *Costruzione del telaio*.
+In un attimo il controllore trova i segnaposto e **acquisisce l'area**. I segnaposto vengono **consumati** (scompaiono) e lo stato passa da _Inattivo_ a _In pausa: Involucri del telaio esauriti_ o _Costruzione del telaio_.
 
 > **Dice ancora «Inattivo: imposta i segnaposto o il telaio»?** Controlla che il controllore e tutti e tre i segnaposto siano allo stesso livello Y, che il controllore tocchi un lato (non un angolo) e che nessun lato superi i 64 blocchi (o il `quarryMaxSide` del tuo server).
 
 ### Alternativa: senza segnaposto
 
-L'Involucro del telaio si può piazzare. Invece dei segnaposto, costruisci un **rettangolo completo e chiuso di blocchi del telaio** su un unico livello (senza buchi e senza blocchi che sporgono) e piazza il controllore accanto. Il controllore adotta il tuo anello e inizia subito a scavare, saltando la fase di costruzione del telaio.
+L'Involucro del telaio si può piazzare. Invece dei segnaposto, costruisci un **rettangolo completo e chiuso di blocchi del telaio** su un unico livello (senza buchi e senza blocchi che sporgono) e piazza il controllore accanto.
+Il controllore adotta il tuo anello e inizia subito a scavare, saltando la fase di costruzione del telaio.
 
 ## 5. Carica l'Involucro del telaio
 
@@ -89,11 +89,11 @@ Fai clic destro sul controllore e metti l'**Involucro del telaio** nei **quattro
 
 Scavare costa **40 FE per blocco** (il telaio in sé è gratis). Il controllore contiene 200.000 FE e accetta energia da **qualsiasi lato**: porta un [Tubo universale](Universal-Pipe.md) da un generatore o da una [Batteria](Battery.md), oppure metti il generatore a contatto. Funziona anche l'energia da tubi e generatori di altre mod.
 
-Una cava di livello 1 senza moduli scava circa **4 blocchi al secondo**, consumando circa **8 FE/t**: basta un solo [Generatore a combustione](Combustion-Generator.md) (20 FE/t) o perfino un [Generatore passivo](Passive-Generator.md) (8 FE/t) per tenerla in funzione. Se l'energia finisce mostra *In pausa: energia esaurita* e riprende da sola quando l'energia arriva.
+Una cava di livello 1 senza moduli scava circa **4 blocchi al secondo**, consumando circa **8 FE/t**: basta un solo [Generatore a combustione](Combustion-Generator.md) (20 FE/t) o perfino un [Generatore passivo](Passive-Generator.md) (8 FE/t) per tenerla in funzione. Se l'energia finisce mostra _In pausa: energia esaurita_ e riprende da sola quando l'energia arriva.
 
 ## 7. Raccogli la produzione
 
-Gli oggetti estratti vanno nella **riserva di uscita da 12 slot** del controllore e vengono **spinti automaticamente in qualsiasi baule o inventario a contatto con il controllore** (o prelevati da un tubo). Se è tutto pieno mostra *In pausa: riserva di uscita piena*: **niente viene mai buttato via**; svuota il baule e riprende.
+Gli oggetti estratti vanno nella **riserva di uscita da 12 slot** del controllore e vengono **spinti automaticamente in qualsiasi baule o inventario a contatto con il controllore** (o prelevati da un tubo). Se è tutto pieno mostra _In pausa: riserva di uscita piena_: **niente viene mai buttato via**; svuota il baule e riprende.
 
 **Liquidi:** i blocchi sorgente di acqua e lava nell'area vengono aspirati in un serbatoio da 16.000 mB, che viene spinto in un [Serbatoio di fluidi](Fluid-Tank.md) o in un tubo a contatto. Il liquido che non ci sta viene distrutto così lo scavo non si blocca mai. Non ne vuoi affatto? Monta un **Modulo evaporatore** (sotto).
 
@@ -103,13 +103,13 @@ Una buona disposizione iniziale è: controllore, baule su una faccia, tubo dell'
 
 Il controllore di livello 1 ha **uno slot modulo** (a destra degli slot degli involucri). Scegline uno:
 
-| Modulo | Effetto |
-| --- | --- |
-| **Velocità** | +50% velocità di scavo |
-| **Efficienza** | −15% di energia per blocco |
-| **Fortuna** | Fortuna su ogni blocco estratto (più drop di minerale) |
-| **Tocco di velluto** | Minerali e blocchi lasciano cadere se stessi |
-| **Evaporatore** | Distrugge i liquidi invece di conservarli |
+| Modulo               | Effetto                                                                   |
+| -------------------- | ------------------------------------------------------------------------- |
+| **Velocità**         | +50% velocità di scavo                                                    |
+| **Efficienza**       | −15% di energia per blocco                                                |
+| **Fortuna**          | Fortuna su ogni blocco estratto (più drop di minerale) |
+| **Tocco di velluto** | Minerali e blocchi lasciano cadere se stessi                              |
+| **Evaporatore**      | Distrugge i liquidi invece di conservarli                                 |
 
 Le ricette sono nella pagina [Moduli di potenziamento](Upgrade-Modules.md).
 
@@ -121,14 +121,14 @@ La cava continua a scavare strato per strato finché non raggiunge il substrato 
 
 ## Risoluzione dei problemi
 
-| Stato | Soluzione |
-| --- | --- |
+| Stato                                                          | Soluzione                                                                                                                                                                    |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Inattivo: imposta i segnaposto o il telaio** | Segnaposto o controllore ad altezze diverse, controllore che non tocca un lato, un lato oltre il limite di dimensione, oppure una L con solo due segnaposto. |
-| **In pausa: Involucri del telaio esauriti** | Aggiungi altri Involucri del telaio negli slot in alto a sinistra. |
-| **In pausa: telaio incompleto** | Un blocco del telaio è stato rotto. Aggiungi involucri (ricostruisce il buco) o piazza tu stesso un involucro nel buco. |
-| **In pausa: energia esaurita** | Collega o aggiungi un generatore / una batteria. |
-| **In pausa: riserva di uscita piena** | Metti un baule contro il controllore, o svuota quello che c'è. |
-| **In pausa: pianeta sbagliato** | Il livello 1 non può scavare su Cindara o Glacira. |
+| **In pausa: Involucri del telaio esauriti**    | Aggiungi altri Involucri del telaio negli slot in alto a sinistra.                                                                                           |
+| **In pausa: telaio incompleto**                | Un blocco del telaio è stato rotto. Aggiungi involucri (ricostruisce il buco) o piazza tu stesso un involucro nel buco.   |
+| **In pausa: energia esaurita**                 | Collega o aggiungi un generatore / una batteria.                                                                                                             |
+| **In pausa: riserva di uscita piena**          | Put a chest against the controller, or empty the one that's there.                                                                                           |
+| **In pausa: pianeta sbagliato**                | Il livello 1 non può scavare su Cindara o Glacira.                                                                                                           |
 
 ## Vedi anche
 

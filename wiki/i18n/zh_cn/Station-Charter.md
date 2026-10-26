@@ -1,16 +1,17 @@
-# 空间站章程
+# Station Charter
 
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Station-Charter.md)。
-
-建立属于你自己的轨道空间站——还能自己命名。
+Found your own orbital station — name included.
 
 ## 概述
 
-空间站章程可在共享的[轨道空间站](Home.md)之外创建**额外的空间站**。右键点击它打开命名控制台，输入名称并确认——一座全新的空间站就会在轨道上建成，并由一个 **[空间站核心](Station-Core.md)** 锚定。此后，它会作为目的地出现在每枚火箭的界面中，对所有玩家和所有火箭等级可见。
+The Station Charter creates **additional stations** beyond the shared [Orbital Station](Home).
+Right-click it to open a naming console, type a name, and confirm — a brand-new station is built in
+orbit and anchored by a **[Station Core](Station-Core)**. From then on it appears as a destination in
+every rocket's UI, for every player and every rocket tier.
 
 章程**不会**传送你——要前往参观，请驾驶火箭飞往轨道空间站，火箭依然是你的出行方式。
 
-## 获取方式
+## Obtaining
 
 **合成**（有序）：
 
@@ -22,14 +23,18 @@ W W W
 
 `W` = [空间站墙壁](Station-Wall.md) · `F` = [空间站地板](Station-Floor.md)
 
-## 工作原理
+## How it works
 
-- **建立：**右键点击章程打开**命名界面**，输入名称并按下*建立空间站*。消耗一份章程，空间站会在远处建成。名称留空时会自动命名为“Station N”。
+- **Found:** right-click the charter to open the **naming screen**, type a name, and press _Found
+  Station_. One charter is consumed and the station is built remotely. A blank name auto-names
+  "Station N".
 - **建成的内容：**一个封闭的观景室（空间站墙壁柱、玻璃窗带、照明天花板），通过**气闸**通向一个 **2 级着陆台**——你飞往该处时火箭降落的位置。
 - **也可从火箭中操作：**火箭内的对接选择器包含一个**新空间站**选项——选择它并发射，即可一趟行程完成建站和抵达。
 - **参观：**驾驶火箭，选择**轨道空间站**，然后在对接选择器中切换到你想去的空间站。
-- **容量：**每个世界最多 **64** 座空间站。建站会授予*建立空间站*进度，并勾选星际指南中的相应项目。
-- **所有权：**只有你（建立者）可以**重命名**或**移除**你的空间站；任何人都可以**飞往**它。你的 ID 仅为此项检查而保存在本地——从不记录或共享。
+- **Capacity:** up to **64** stations per world. Founding grants the _founded station_ advancement and
+  ticks the Star Guide.
+- **Ownership:** only you (the founder) can **rename** or **remove** your station; anyone may **fly**
+  to it. Your ID is stored locally for that check only — never logged or shared.
 
 ## 详细信息
 

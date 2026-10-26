@@ -1,18 +1,18 @@
 # 采石场控制器
 
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Quarry-Controller.md)。
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/quarry_controller.gif" alt="Quarry Controller" width="150" align="right"></p>
+
+<p align="right"><img src="images/quarry_controller.gif" alt="Quarry Controller" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 一种 BuildCraft 风格的自动采矿机：用标记划出一片区域，控制器就会建造一个发光的框架，并逐层挖掘内部，一直挖到基岩。
 
 ## 概述
 
-采石场控制器是采矿机的大脑。你用**[采石场标记](Quarry-Landmark.md)**标出一片矩形区域，将控制器放在旁边，为它提供**框架材料**和**电力**，然后它会：
+The Quarry Controller is the brain of the miner. 采石场控制器是采矿机的大脑。你用\*\*[采石场标记](Quarry-Landmark.md)**标出一片矩形区域，将控制器放在旁边，为它提供**框架材料**和**电力\*\*，然后它会：
 
 1. **建造框架**——在认领的矩形周围建起一圈发光、透明的结构环。
+
 2. **逐层**挖掘矩形的**内部**（框架环下方的列保持不动），从顶部一直到基岩，
 
    就像反向的 3D 打印机——钻头沿着龙门架移动到每个方块，一次挖一个方块。
@@ -21,11 +21,13 @@
 
    进入内部流体储罐——两者都会推送到相邻的存储／管道（包括其他
    模组的——参见[通用管道](Universal-Pipe.md)）。无处存放的液体会被销毁，
-   而不会让挖掘停滞。
+   而不会让挖掘停滞。 Liquid it has nowhere to put is destroyed rather
+   than allowed to hold the dig up.
 
-它从不销毁无法储存的**物品**：如果输出缓存已满或电力耗尽，它会**暂停**（界面会告诉你原因），并在你解决问题后自行恢复。液体是有意设计的例外——见下文。
+它从不销毁无法储存的**物品**：如果输出缓存已满或电力耗尽，它会**暂停**（界面会告诉你原因），并在你解决问题后自行恢复。液体是有意设计的例外——见下文。 Liquids are the deliberate
+exception — see below.
 
-## 获取方式
+## Obtaining
 
 **合成**（有序）：
 
@@ -37,48 +39,50 @@ I I I
 
 `I` = [Nerosteel锭](Items.md) · `D` = 钻石 · `F` = [框架外壳](Upgrade-Modules.md) · `R` = 红石块
 
-> 目前可合成的是 1 级版本。2 级／3 级控制器（更大区域、更多模块槽位、可进入恶劣行星）正在计划中——参见[等级与行星](#tiers--planets)。
+> Tier 1 is the craftable version today. 目前可合成的是 1 级版本。2 级／3 级控制器（更大区域、更多模块槽位、可进入恶劣行星）正在计划中——参见[等级与行星](#tiers--planets)。
 
 ## 设置
 
-> 第一次用？**[采石场设置指南](Quarry-Setup-Guide.md)**会一步步带你完成，并附有材料数量和故障排除。
+> First time? The **[Quarry Setup Guide](Quarry-Setup-Guide)** walks through it step by step,
+> with material counts and troubleshooting.
 
 1. **以 L 形在同一 Y 高度放置 3 个[采石场标记](Quarry-Landmark.md)**，以界定
 
-   矩形的角。每条边最长可达 **64 格**（`quarryMaxSide` 配置上限）。
+   corners of the rectangle. Each side may be up to **64 blocks** (the `quarryMaxSide` config cap).
 
 2. **将控制器放在**某个标记**旁边／与其对齐**——它会沿着轴线扫描以找到
 
    这组标记，然后**消耗这些标记**并开始工作。
 
-> **没有标记？自己勾勒。**框架外壳可以放置：建造一个**闭合的矩形框架方块环**（同一 Y 高度、完整的周边、相同的尺寸限制），并将控制器放在**框架环旁边**——它会将该轮廓作为采矿区域并立即开始采矿，跳过建造框架的步骤。
+> **No landmarks? **没有标记？自己勾勒。**框架外壳可以放置：建造一个**闭合的矩形框架方块环**（同一 Y 高度、完整的周边、相同的尺寸限制），并将控制器放在**框架环旁边\*\*——它会将该轮廓作为采矿区域并立即开始采矿，跳过建造框架的步骤。
 
-3. **将[框架外壳](Upgrade-Modules.md)放入框架槽位**（界面左上方）。框架
+3. **将[框架外壳](Upgrade-Modules.md)放入框架槽位**（界面左上方）。框架 The frame costs
 
-   **每个周边格子消耗一个外壳**（控制器自身所在的格子以及周边上的任何方块实体都会被
-   跳过，留下空缺而不是覆盖它们）。
+   **one casing per perimeter cell** (the controller's own cell and any block entities on the
+   perimeter are skipped, leaving a gap rather than overwriting them).
 
-4. **通过管道接入电力**（见下文）。建造框架是免费的，但**采矿需要能量**。
+4. **Pipe power in** (see below). **通过管道接入电力**（见下文）。建造框架是免费的，但**采矿需要能量**。
 
-## 工作原理
+## How it works
 
-- **电力：**内部 **200,000 FE** 缓存，可通过任意一面的能量能力充入——
+- \*\*电力：\*\*内部 **200,000 FE** 缓存，可通过任意一面的能量能力充入——
 
-  从[燃烧](Combustion-Generator.md)／[被动发电机](Passive-Generator.md)或[电池](Battery.md)
-  接一条[通用管道](Universal-Pipe.md)过来。**挖掘速度是固定的**——等级基础
-  速率 × 模块的速度加成 × 行星的速度系数（× `machineSpeedMultiplier`
-  配置）。额外的电力**不会**让它挖得更快；只会让缓存保持充满，而如果
-  缓存耗尽，挖掘会**暂停**（“电力不足”），直到能量再次到来。基础消耗为
-  **每个方块 40 FE**（效率模块可降低）——没有模块的 1 级采石场每秒约挖掘
-  4 个方块，约 8 FE/t。
+  connect a [Universal Pipe](Universal-Pipe) from a [Combustion](Combustion-Generator)/Passive
+  Generator or a [Battery](Battery). **Dig speed is fixed** — the tier's base
+  rate × your modules' speed bonus × the planet's speed factor (× the `machineSpeedMultiplier`
+  config). Extra power does **not** make it dig faster; it just keeps the buffer topped up, and if
+  the buffer runs dry the dig **pauses** ("out of power") until energy arrives again. Base cost is
+  **40 FE per block** (lowered by Efficiency modules) — a Tier 1 quarry with no modules mines about
+  4 blocks a second, roughly 8 FE/t.
 
 - **输出缓存：**12 个内部槽位存放挖到的物品；会**自动排出**到相邻的物品栏／
 
-  管道。当放不下掉落物时，采矿会**暂停**（“缓存已满”）——绝不会销毁任何东西。
+  pipe. Mining **pauses** ("buffer full") when it can't fit a drop — nothing is ever voided.
 
 - **流体缓存：**挖掘区域中的液体源（水、熔岩）会被**吸入**一个
 
-  **16,000 mB** 的内部储罐，并自动排出到相邻的[流体储罐](Fluid-Tank.md)／管道——
+  **16,000 mB** internal tank that auto-ejects to an adjacent [Fluid Tank](Fluid-Tank) / pipe —
+  another mod's tank or pipe counts too (see [Universal Pipe](Universal-Pipe)). **16,000 mB** 的内部储罐，并自动排出到相邻的[流体储罐](Fluid-Tank.md)／管道——
   其他模组的储罐或管道也算（参见[通用管道](Universal-Pipe.md)）。该储罐一次只能容纳一种
   流体，可容纳 16 个液体源方块的量，而**采石场从不等待它**：任何
   放不下的东西——溢出部分，以及任何与已储存流体不同的流体——都会在挖掘时
@@ -86,18 +90,22 @@ I I I
   个液体源方块**，因此一大片水域会在几秒内稳定地被抽干，而不是一下子
   消失。不想保留任何液体？放入一个
   **[蒸发模块](Upgrade-Modules.md)**——安装后，采石场会在看到液体时将其全部销毁，
-  缓存始终为空。
+  缓存始终为空。 It clears at most **64
+  source blocks per mining tick**, so a big body of water drains steadily over a few seconds instead
+  of vanishing all at once. Want none of it kept? Slot an
+  **[Evaporator Module](Upgrade-Modules)** — with one installed the quarry destroys every liquid on
+  sight and the buffer stays empty.
 
 - **障碍物：**它会**跳过**基岩和其他无法破坏的方块，并**跳过方块实体**
 
-  （箱子、刷怪笼、机器）**下方的整列**，使它们保持完好。它也会跳过其他
-  采石场的框架。
+  under a tile-entity (chests, spawners, machines) so they're left intact. It also skips other
+  quarries' frames.
 
 - **仅限内部：**它只挖掘矩形的**内部**，从不挖掘框架环下方的列，
 
   因此框架始终有立足之处，矿坑的坑壁也保持整齐。
 
-- **钻头 + 龙门架：**运行时，一个实心的 3D **龙门架**沿着框架移动——一根带有
+- \*\*钻头 + 龙门架：\*\*运行时，一个实心的 3D **龙门架**沿着框架移动——一根带有
 
   端部滑车的横梁、一个跟随挖掘列的滑架，以及一根支撑轴——一个旋转的 3D
   **钻头**（夹头、螺旋槽和发光的锥形钻尖）会尖端朝下降到正在
@@ -105,7 +113,7 @@ I I I
 
 - **框架**是一个真正的 3D 结构——发光的角柱和边轨，中心开放
 
-  透明（因此你可以透过它观看挖掘）。
+  see-through centre (so you can watch the dig through it).
 
 - **远端边缘：**大面积区域在主动采矿时会**一次强制加载一个区块**，因此
 
@@ -113,59 +121,60 @@ I I I
   完成或被移除时也会释放剩余的区块），因此采石场从不锁定整个区域——
   保持较低的内存占用和世界保存时间。
 
-- **框架损坏：**如果在挖掘过程中某个框架方块被破坏（它会掉落一个框架外壳），采石场会
+- \*\*框架损坏：\*\*如果在挖掘过程中某个框架方块被破坏（它会掉落一个框架外壳），采石场会
 
   用其外壳库存**重建缺口**——或者**暂停**（“框架不完整”），直到你手动修补
   框架环或将外壳放入框架槽位。
 
 - **回收：**挖掘**完成**时，框架会被拆除，仍立着的外壳会
 
-  返还到控制器的框架槽位中。而**在挖掘过程中破坏控制器**会使框架
-  *成为孤立框架*：框架方块会在接下来的几分钟内逐个慢慢崩解（每个方块
+  returned to the controller's frame slots. 返还到控制器的框架槽位中。而**在挖掘过程中破坏控制器**会使框架
+  _成为孤立框架_：框架方块会在接下来的几分钟内逐个慢慢崩解（每个方块
   在各自随机的时刻，默认约 30 秒至 4 分钟——可用 `quarryFrameDecayTicks` 调整），
   **每个方块都会掉落其框架外壳**，与你亲手挖掘时的掉落物相同。在仍立着的框架环旁边
-  放置一个新的控制器会重新接管它并停止崩解。
+  放置一个新的控制器会重新接管它并停止崩解。 Placing a
+  new controller beside a still-standing ring re-adopts it and stops the decay.
 
 ### 界面状态栏
 
-| 状态 | 含义 |
-| --- | --- |
-| **空闲——请设置标记或框架** | 尚未找到有效区域——请放置标记或手动建造的框架轮廓。 |
-| **正在建造框架** | 正在放置框架环（消耗外壳）。 |
-| **采矿中** | 正在挖掘——`Depth`（显示在该行右侧，建造／采矿时显示）统计框架平面以下的层数。 |
-| **已暂停——……** | 已停止——该行会说明原因：框架不完整、框架外壳耗尽、电力不足、输出缓存已满，或行星错误（等级太低）。液体永远不会使挖掘暂停。暂停的钻头会停留在挖掘停止的位置。 |
-| **已完成——框架已回收** | 已到达基岩；框架已被拆除，其外壳已返还到框架槽位。 |
-
-<a id="tiers--planets"></a>
+| Line             | 含义                                                                                                                                                                                                                                                                                                                      |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **空闲——请设置标记或框架** | 尚未找到有效区域——请放置标记或手动建造的框架轮廓。                                                                                                                                                                                                                                                                                              |
+| **正在建造框架**       | 正在放置框架环（消耗外壳）。                                                                                                                                                                                                                                                                                                          |
+| **采矿中**          | Digging — `Depth` (right edge of the line, shown while building/mining) counts layers below the frame plane.                                                                                                                                                                         |
+| **已暂停——……**      | Stopped — the line names the reason: frame incomplete, out of Frame Casing, out of power, output buffer full, or wrong planet (tier too low for it). Liquid never pauses the dig. The paused drill head stays where the dig stopped. |
+| **已完成——框架已回收**   | 已到达基岩；框架已被拆除，其外壳已返还到框架槽位。                                                                                                                                                                                                                                                                                               |
 
 ## 等级与行星
 
 采矿机**只要有电力，在任何地方都能运行**，但恶劣的外层卫星受等级限制：
 
-| 等级 | 最大区域 | 模块槽位 | 基础速度 | 可开采的行星 |
-| --- | --- | --- | --- | --- |
-| **1 级** | 64 × 64 | 1 | 每周期 2 个方块 | 主世界、Greenxertz、轨道空间站 |
-| 2 级*（计划中）* | 64 × 64 | 2 | 每周期 4 个方块 | + **Cindara** |
-| 3 级*（计划中）* | 64 × 64 | 4 | 每周期 8 个方块 | + **Glacira** |
+| Tier         | 最大区域    | 模块槽位 | 基础速度      | 可开采的行星               |
+| ------------ | ------- | ---- | --------- | -------------------- |
+| **1 级**      | 64 × 64 | 1    | 每周期 2 个方块 | 主世界、Greenxertz、轨道空间站 |
+| 2 级\*（计划中）\* | 64 × 64 | 2    | 每周期 4 个方块 | + **Cindara**        |
+| 3 级\*（计划中）\* | 64 × 64 | 4    | 每周期 8 个方块 | + **Glacira**        |
 
 最大区域即 `quarryMaxSide` 配置值（默认值和最大值均为 64；参见[配置](Configuration.md)）。
 
-采矿的**速度／产出也因行星而异**（致密的外层卫星挖掘速度稍慢）。在受限制的行星上等级过低时，会以“行星错误”暂停。
+采矿的**速度／产出也因行星而异**（致密的外层卫星挖掘速度稍慢）。在受限制的行星上等级过低时，会以“行星错误”暂停。 A
+too-low tier on a gated planet pauses with "wrong planet".
 
 ## 升级与未来
 
 - **[升级模块](Upgrade-Modules.md)**（速度／效率／时运／精准采集／蒸发）可放入
 
-  控制器并调整其行为。它们是一个**跨机器**系统——同样的卡也将适用于
+  controller and tune its behaviour. 控制器并调整其行为。它们是一个**跨机器**系统——同样的卡也将适用于
   其他机器。
 
 - **过滤器**（白名单保留，其余销毁——例如丢弃圆石）是计划中的后续功能；
 
-  输出流程已经为加入它们做好了准备。
+  output pipeline is already built to drop them in.
 
 ## 详细信息
 
 - ID：`nerospace:quarry_controller` · 工具：镐，铁级 · 掉落：自身（以及其缓存的物品、外壳和模块）
+
 - 配套方块：[采石场标记](Quarry-Landmark.md)、采石场框架（由机器放置，或用框架外壳
 
   手动放置；总是掉落一个框架外壳——无论是被玩家破坏，还是在其控制器被破坏后
@@ -173,7 +182,8 @@ I I I
 
 - 能力：能量**输入**（任意面）；框架外壳和升级模块**输入**（任意面——
 
-  漏斗或管道可以保持框架槽位的库存）；挖到的**物品输出**（任意面）；**流体输出**
+  hopper or pipe can keep the frame slots stocked); mined **items out** (any side); **fluid out**
+  (any side). 漏斗或管道可以保持框架槽位的库存）；挖到的**物品输出**（任意面）；**流体输出**
   （任意面）。只有输出槽位可以被提取，因此自动化永远无法把你的模块或
   外壳抽出来
 

@@ -1,9 +1,8 @@
 # Modulo di idratazione
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Hydration-Module.md).
-
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/hydration_module.gif" alt="Hydration Module" width="150" align="right"></p>
+
+<p align="right"><img src="images/hydration_module.gif" alt="Hydration Module" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 L'ingresso di Glacite della terraformazione avanzata: scioglie la Glacite in **unità di idratazione** che alimentano la fase **Idratato** (acqua) del [Terraformatore](Terraformer.md).
@@ -12,7 +11,7 @@ L'ingresso di Glacite della terraformazione avanzata: scioglie la Glacite in **u
 
 La terraformazione avanzata procede per fasi: Radicato → Idratato → Vivo. La fase Idratato riempie di vera acqua i bacini sotto la falda del Terraformatore, e ogni sorgente d'acqua piazzata costa **1 unità di idratazione**. Il Modulo di idratazione è da dove arrivano queste unità: scioglie la Glacite (ghiaccio d'acqua cristallizzato estratto su [Glacira](Home.md)) nella riserva di idratazione del Terraformatore.
 
-## Come ottenerlo
+## Obtaining
 
 **Fabbricazione** (con forma):
 
