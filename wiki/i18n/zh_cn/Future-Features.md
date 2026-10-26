@@ -1,12 +1,11 @@
 # 未来功能
 
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Future-Features.md)。
-
-一份较长期的愿望清单——1.0 之后正在考虑的想法，并非承诺。欢迎反馈（提交 GitHub issue 或在 [Discord](https://discord.gg/ArPXvYUzJG) 中发帖）。按主题分组。
+A longer-term wish list — ideas under consideration after 1.0, not commitments. Feedback is welcome
+(open a GitHub issue or post in the [Discord](https://discord.gg/ArPXvYUzJG)). Grouped by theme.
 
 ## 太空与旅行
 
-- 更多**目的地**——小行星带、气态巨行星的卫星……每个都有自己的材料、危险
+- 更多**目的地**——小行星带、气态巨行星的卫星……每个都有自己的材料、危险 each with its own materials, hazards
 
   和生物群系。
 
@@ -30,14 +29,14 @@
 
 - **主动（玩家不在场时的）地形改造**——可选的有限区块加载，使地形改造
 
-  在你身处别处时继续进行（默认关闭——容易造成性能问题）。
+  continues while you're elsewhere (off by default — a performance footgun).
 
 ## 机器与科技
 
 - **更多加工方式**——矿石洗涤／冶炼等级、合金、扩展的材料树。
 - **数据驱动的研磨机配方**——将研磨迁移到数据包 `RecipeType`，使整合包可以添加
 
-  自己的配方。
+  own.
 
 ## 内容与打磨
 
@@ -46,7 +45,8 @@
   音效事件以合适的原版音频作为占位；替换为真实文件只是纯粹的
   资源变更）。
 
-- **官方 EMI**——原生 EMI 页面已基于社区的 EMI Unofficial Port 提供
+- **Official EMI** — native EMI pages already ship against the community EMI Unofficial Port
+  (NeoForge and Fabric). **官方 EMI**——原生 EMI 页面已基于社区的 EMI Unofficial Port 提供
   （NeoForge 和 Fabric）。一旦官方 EMI 发布 26.x 版本，就将 `emi_file_*` 固定版本切换到官方版，
   如果它提供 Forge 版本，也将为 Forge 带来 EMI。
 
@@ -54,4 +54,5 @@
 
 ---
 
-> 希望优先处理清单上的某项，或者有清单上没有的想法？请提交 GitHub issue 或在 Discord 中告诉我们。
+> Want something on this list prioritised, or have an idea that isn't here? Open a GitHub issue or
+> say so in the Discord.
