@@ -1,9 +1,8 @@
-# 发射塔架
-
-> 本页为机器翻译草稿，仅供参考，以英文版本为准：[English](../../Launch-Gantry.md)。
+# Launch Gantry
 
 <!-- nerospace:render -->
-<p align="right"><img src="../../images/launch_gantry.png" alt="Launch Gantry" width="150" align="right"></p>
+
+<p align="right"><img src="images/launch_gantry.png" alt="Launch Gantry" width="150" align="right"></p>
 <!-- /nerospace:render -->
 
 将 5×5 发射台变为**重型发射综合设施**的登舱塔。
@@ -12,7 +11,7 @@
 
 发射塔架是重型发射模块：在一个完整、对齐的 **5×5 [火箭发射台](Rocket-Launch-Pad.md)** 旁边（在发射台高度上）放置至少一个，这组方块就会构成**重型发射综合设施**——最大型火箭的出发点，也是所有火箭的舒适登舱坡道。
 
-## 获取方式
+## Obtaining
 
 **合成**（有序）：
 
@@ -24,29 +23,29 @@ N S N
 
 `N` = Nerosteel锭 · `I` = 铁栏杆 · `S` = [空间站墙壁](Station-Wall.md)
 
-## 工作原理
+## How it works
 
-- **构成综合设施：**一个完整、对齐的 **5×5 发射台**加上在发射台高度相邻的 **≥1 个发射塔架**
+- \*\*构成综合设施：\*\*一个完整、对齐的 **5×5 发射台**加上在发射台高度相邻的 **≥1 个发射塔架**
 
-  = 重型发射综合设施。空手右键点击任意发射台方块可获得**结构报告**
+  level = Heavy Launch Complex. = 重型发射综合设施。空手右键点击任意发射台方块可获得**结构报告**
   （方块组大小、最大正方形、塔架／燃料模块，以及下一个缺失的部件）。
 
-- **登舱：**右键点击塔架即可直接登上已部署的火箭——无需费力瞄准
+- \*\*登舱：\*\*右键点击塔架即可直接登上已部署的火箭——无需费力瞄准
 
   实体。
 
-- **等级限制：**
+- **Tier gating:**
   - **4 级**火箭**只能**在重型发射综合设施上部署和发射。
   - **3 级**火箭接受重型综合设施，**或**经典的 3×3 + [空间站墙壁](Station-Wall.md)围圈。
-  - **2 级**火箭需要完整的 3×3 发射台（或重型综合设施）。
-  - **1 级**火箭只需要**一个**发射台方块（或任何更大的结构）。
+  - **Tier 2** needs a full 3×3 pad (or the Heavy complex).
+  - **Tier 1** needs only **one** pad block (or anything bigger).
   - 发射时会重新检查——在已部署的火箭下方破坏塔架（或发射台方块）会
 
-    使其无法起飞。
+    grounds it.
 
-- **加注燃料：**连接到重型综合设施的[燃料储罐](Fuel-Tank.md)以 **480 mB/t** 的速率泵送（基础速率的 12
+- \*\*加注燃料：\*\*连接到重型综合设施的[燃料储罐](Fuel-Tank.md)以 **480 mB/t** 的速率泵送（基础速率的 12
 
-  倍）——4 级火箭的 24,000 mB 燃料箱不到一分钟即可加满。
+  base rate) — a Tier 4's 24,000 mB tank fills in under a minute.
 
 完整的 4 级布局参见[发射台建造指南](Launch-Pad-Build-Guide.md)。
 
