@@ -1,14 +1,14 @@
 # Roadmap
 
-> Questa pagina è una bozza tradotta automaticamente; fa fede la versione inglese: [English](../../Roadmap.md).
-
-Una panoramica pubblica e di alto livello su dove si trova Nerospace e dove sta andando. **La 1.0.0 è la prima versione completa**: contiene l'intera progressione dal primo minerale di Nerosium a un pianeta terraformato. (Le note di rilascio si trovano nel `CHANGELOG.md` del repository.)
+Una panoramica pubblica e di alto livello su dove si trova Nerospace e dove sta andando. **La 1.0.0 è la prima versione completa**: contiene l'intera progressione dal primo minerale di Nerosium a un pianeta terraformato.
+(Le note di rilascio si trovano nel `CHANGELOG.md` del repository.)
 
 ## ✅ Incluso nella 1.0.0
 
 **Materiali e macchine**
 
 - La catena del materiale Nerosium (minerale → grezzo → lingotto → polvere) e il **Macinatore di Nerosium** (resa dei minerali doppia).
+
 - Materiali planetari: **Nerosteel** + **quarzo Xertz** (Greenxertz), **Cindrite** (Cindara),
 
   **Glacite** (Glacira).
@@ -22,12 +22,14 @@ Una panoramica pubblica e di alto livello su dove si trova Nerospace e dove sta 
 **Viaggi spaziali**
 
 - **Razzi di livello 1–4** con modelli su misura per ogni livello e un'interfaccia interattiva nel razzo.
+
 - La **rampa di lancio 3×3** e il **Complesso di lancio pesante** (5×5 + Torre di lancio) con rapporti
 
   sulla struttura; il livello 3 accetta l'anello di Parete della stazione **oppure** il complesso pesante, il livello 4 richiede il
   complesso pesante.
 
 - **Serbatoi di carburante** con rifornimento automatico (fino a 480 mB/t) e alimentazione di carburante automatica attraverso i blocchi della rampa.
+
 - Destinazioni: **Stazione orbitale**, **Greenxertz**, **Cindara**, **Glacira**, più le
 
   **stazioni fondate dai giocatori** tramite la Carta della stazione (fino a 64 per mondo).
