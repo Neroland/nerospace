@@ -14,7 +14,7 @@ import za.co.neroland.nerospace.world.planet.WeatherMachine;
 
 /**
  * The weather hook for a {@link WeatherLayerBlock}: while the event runs, each loaded chunk with a player nearby gets
- * one random sky-exposed column per {@link LayerRules#INTERVAL_TICKS} (002 §3). Stage 3:
+ * one random sky-exposed column per {@link LayerRules#INTERVAL_TICKS}. Hook it up with
  * {@code LayerWeather.register(WeatherEvent.ASH_FALL, ModBlocks.ASH_LAYER::get)}.
  */
 public final class LayerWeather implements WeatherEffects {

@@ -1,8 +1,13 @@
 {
   "ambient_light": 0.0,
   "attributes": {
-    "minecraft:visual/fog_color": "#2b2440",
-    "minecraft:visual/sky_color": "#0d0a14"
+    "minecraft:visual/cloud_color": "#ff5b2d8e",
+    "minecraft:visual/fog_color": "#2B2440",
+    "minecraft:visual/moon_angle": 180.0,
+    "minecraft:visual/sky_color": "#0D0A14",
+    "minecraft:visual/star_brightness": 0.8,
+    "minecraft:visual/sun_angle": 88.0,
+    "minecraft:visual/sunrise_sunset_color": "#90FFB86B"
   },
   "coordinate_scale": 1.0,
   "has_ceiling": false,
@@ -19,5 +24,5 @@
     "max_inclusive": 7,
     "min_inclusive": 0
   },
-  "skybox": "end"
+  "skybox": "overworld"
 }

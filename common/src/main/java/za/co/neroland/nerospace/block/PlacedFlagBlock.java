@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 
 /**
- * A block with a {@code PLACED} flag set only through {@link #getStateForPlacement} (002 §10.9): worldgen states are
+ * A block with a {@code PLACED} flag set only through {@link #getStateForPlacement}: worldgen states are
  * {@code PLACED=false}. Base for Red Regolith (placed never drifts) and Lunar Basalt (only placed sinters).
  */
 public class PlacedFlagBlock extends Block {

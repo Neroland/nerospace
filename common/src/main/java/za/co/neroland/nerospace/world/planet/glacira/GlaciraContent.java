@@ -78,7 +78,7 @@ public final class GlaciraContent {
 
     // --- Items ---------------------------------------------------------------------------------------------
     public static final RegistryEntry<Item> FROST_SHARD = item("frost_shard");
-    /** Methane, the combustion fuel (D3). */
+    /** Methane, the combustion fuel. */
     public static final RegistryEntry<Item> METHANE_CRYSTAL = item("methane_crystal");
 
     private GlaciraContent() {
@@ -89,7 +89,7 @@ public final class GlaciraContent {
     }
 
     /**
-     * The Glacira run of the planets tab, in 002 §6 order: Permafrost, Packed Cryo-Ice, Aurora Stone, Frozen Geyser,
+     * The Glacira run of the planets tab, in order: Permafrost, Packed Cryo-Ice, Aurora Stone, Frozen Geyser,
      * Frost Crystal Cluster, Methane Ice, the existing Glacite Ore and Glacite Block, then Frost Shard, Methane
      * Crystal and the existing Glacite.
      */

@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Anorthosite reflector (002 §1.1, §10.10): +25 % for a full 3×3 under a ground panel; never stacks with a wing. */
+/** Anorthosite reflector: +25 % for a full 3×3 under a ground panel; never stacks with a wing. */
 public final class SolarReflectRules {
 
     public static final int FOOTPRINT = 9;

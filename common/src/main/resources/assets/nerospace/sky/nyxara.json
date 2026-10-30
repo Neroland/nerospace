@@ -1,3 +1,90 @@
 {
-  "vanillaSkybox": true
+  "background": {
+    "zenith": "#0D0A14",
+    "horizon": "#FFB86B",
+    "nightZenith": "#0D0A14",
+    "nightHorizon": "#0D0A14",
+    "blend": "constant"
+  },
+  "fog": {
+    "color": "#2B2440",
+    "nightColor": "#2B2440",
+    "start": 0.5,
+    "end": 1.0
+  },
+  "stars": {
+    "count": 3500,
+    "brightness": 1.0,
+    "alwaysVisible": true,
+    "tint": "#F4ECFF"
+  },
+  "sun": [
+    {
+      "id": "sun",
+      "texture": "nerospace:textures/sky/sun_white.png",
+      "size": 4.0,
+      "color": "#FFB86B",
+      "glow": 10.0,
+      "orbitPeriodDays": 0.0,
+      "phaseOffset": 0.0,
+      "inclination": 0.0,
+      "fixedAngle": {
+        "yaw": 90.0,
+        "pitch": 2.0
+      }
+    }
+  ],
+  "moons": [],
+  "bodies": [],
+  "galaxy": {
+    "texture": "nerospace:textures/sky/galaxy_nyx.png",
+    "opacity": 0.9,
+    "yaw": 270.0,
+    "pitch": 25.0
+  },
+  "clouds": "none",
+  "horizonHaze": {
+    "color": "#5B2D8E",
+    "strength": 0.6
+  },
+  "weatherTints": {
+    "FLARE": {
+      "sky": "#FFB86B",
+      "fog": "#FFB86B",
+      "strengthAtPeak": 0.5
+    }
+  },
+  "gradient": [
+    {
+      "phase": 0.0,
+      "zenith": "#0D0A14",
+      "horizon": "#FFB86B",
+      "fog": "#2B2440"
+    },
+    {
+      "phase": 1.0,
+      "zenith": "#0D0A14",
+      "horizon": "#FFB86B",
+      "fog": "#2B2440"
+    }
+  ],
+  "positionBlend": {
+    "axis": "x",
+    "bandWidthConfig": "nyxara.twilightBandWidth",
+    "west": {
+      "zenith": "#1A1020",
+      "horizon": "#FFB86B",
+      "fog": "#3A2A40"
+    },
+    "band": {
+      "zenith": "#0D0A14",
+      "horizon": "#9B5DE5",
+      "fog": "#2B2440"
+    },
+    "east": {
+      "zenith": "#0D0A14",
+      "horizon": "#5B2D8E",
+      "fog": "#1A1428"
+    }
+  }
 }

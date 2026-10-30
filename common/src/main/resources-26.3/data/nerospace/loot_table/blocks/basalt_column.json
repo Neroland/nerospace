@@ -8,7 +8,20 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "nerospace:basalt_column"
+          "name": "nerospace:basalt_column",
+          "condition": {
+            "type": "minecraft:any_of",
+            "terms": [
+              {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:basalt_column",
+                "state": {
+                  "segment": "0"
+                }
+              },
+              "minecraft:tool/can_silk_touch"
+            ]
+          }
         }
       ],
       "rolls": 1

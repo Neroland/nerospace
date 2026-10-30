@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Telescope (002 §12, §11.2): reveal radius = 1 + min(2, Void Crystals in the line of sight). */
+/** Telescope: reveal radius = 1 + min(2, Void Crystals in the line of sight). */
 public final class TelescopeSightline {
 
     public static final int BASE = 1;

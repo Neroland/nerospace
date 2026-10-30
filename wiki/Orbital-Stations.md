@@ -17,8 +17,8 @@ Right-click the [Station Core](Station-Core) to open the console. It has four ta
 |---|---|
 | Overview | name, class, modules, Solar Wing power, how many sealed modules have air, members, routes |
 | Members | the owner and up to 16 members (only the owner, members and operators see the list) |
-| Docking | where rockets arrive, pads on other worlds named after the station, routes and inbound cargo |
-| Build | the seven module tiles, their cost and state |
+| Docking | who may dock, where rockets arrive, cards for the pads on other worlds named after the station, routes and inbound cargo |
+| Build | one row per module: its cost (missing materials in red), Build or Repair, and an On/Off switch for Solar Wings and the Gravity Deck |
 
 Anyone may open the console; a player who is not the owner or a member sees a read-only *Visitor* view with
 the member count only.
@@ -27,7 +27,16 @@ the member count only.
 
 - **Owner** (or anyone, on an unowned station): rename, change class, set docking, add and remove members,
   build modules, abandon the station.
-- **Members**: use the station — dock when docking is limited to members, switch module power, leave.
+- **Members**: use the station — dock when docking is limited to members, switch module power, send a
+  visitor's rocket home, leave. A station whose docking is limited to members is not listed in other players'
+  Rocket screens.
+- **Visitor rockets**: a rocket that arrived with a rider who was neither the owner nor a member is a visitor.
+  Once it has stood riderless on the dock for ten minutes, the owner or a member can send it back to its home
+  pad from the Docking tab. Rockets the owner or a member flew in are never sent away. Nothing is sent while a
+  player who is not the owner, a member or an operator is anywhere on the station (within 48 blocks of its
+  core), so a visitor is never left without a ride; everyone on the station is told when rockets are sent.
+- **Unowned stations** (stations from before owners were recorded) can be managed, and removed with
+  `/nerospace station remove`, by anyone. Ask an operator to claim one to protect it.
 - **Operators**: may manage any station. Each operator action is written to the server log with the station's
   slot number and the action only.
 - Members are added only from the players currently online. Nobody's name is stored by the mod.
@@ -75,7 +84,7 @@ Docking Ring on an older station replaces its 3×3 launch pad.
   Switching the deck off returns it to station gravity.
 - **Hydroponics:** a crop on a Hydroponics Tray grows when a Hull Window is within three blocks above the tray and
   the crop is in breathable air. No water is needed. Trays grow Earth crops; Xertz plants only root in
-  Xertz Soil.
+  Xertz Soil. Crops on a tray grow at the speed of unwatered farmland.
 
 ## The Observatory
 
@@ -83,6 +92,32 @@ A glazed cupola on the core room's roof with a **Telescope** at its top, reached
 room. On a Research station, players who may use the station see the next locked world in the rocket's
 destination list as a full planet card while they are aboard. Each Void Crystal placed in the column above the
 telescope shows one more world, up to three.
+
+## Station blocks
+
+| Block | What it does |
+|---|---|
+| Hull Plating | Airtight hull, made with titanium from [Luna](Luna) |
+| Hull Window | Airtight glazing |
+| Truss | Climbable frame; sneak-place to lay a run of up to eight |
+| Solar Wing | Twice a Tier 2 solar panel; works only on the station |
+| Gravity Plate | Normal gravity in the six blocks above it |
+| Hydroponics Tray | Grows crops under a Hull Window inside breathable air, no water needed |
+| Telescope | The Observatory's eyepiece (see above) |
+| Docking Ring | 3×3 landing plate; see [Landing Pads](Landing-Pads) |
+
+## Sky, clock and weather
+
+The station's clock is fixed in permanent daylight and it has no weather. The homeworld turns slowly below the
+station under a black, star-filled sky (the full sky is drawn on NeoForge for Minecraft 26.3). Station gravity is about
+a tenth of the Overworld's, except above Gravity Plates. See [Planet Clock and Weather](Planet-Clock-and-Weather).
+
+## Server settings
+
+| Key | Default | Range | Effect |
+|---|---|---|---|
+| `stations.maxMembers` | `16` | 0–16 | members an owner may add |
+| `stations.maxModules` | `8` | 0–8 | modules a station may have |
 
 ## Privacy
 

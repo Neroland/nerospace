@@ -12,9 +12,11 @@ import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.registry.ModDimensions;
 
 /**
- * Binds Nyxara's stored band width onto its {@link FixedXBiomeSource}. {@link #bind(MinecraftServer)} is idempotent
- * and O(1) after the first call per server, so it can run from the common server tick: the first tick after start
- * reads (or initialises) {@link NyxaraBandState} and binds it before any Nyxara chunk is generated for a player.
+ * Binds Nyxara's stored band width and the world seed onto its {@link FixedXBiomeSource}.
+ * {@link #bind(MinecraftServer)} is idempotent and O(1) after the first call per server. It runs when the server
+ * prepares its levels (before any chunk, force-loaded ones included, is generated) and again from the common server
+ * tick as a fallback. The width is kept in two copies (the Nyxara level's store and an overworld backup) and
+ * reconciled on bind, so losing one store never shifts an existing world's band.
  */
 public final class NyxaraBand {
 
@@ -39,9 +41,19 @@ public final class NyxaraBand {
         if (!(source(level) instanceof FixedXBiomeSource fixedX)) {
             return -1;
         }
-        int width = NyxaraBandState.get(level).widthOrInit(NerospaceConfig.nyxaraTwilightBandWidth());
-        fixedX.bindWidth(width);
-        return width;
+        NyxaraBandState primary = NyxaraBandState.get(level);
+        ServerLevel overworld = level.getServer().overworld();
+        NyxaraBandState backup = overworld == null || overworld == level ? null : NyxaraBandState.get(overworld);
+        BandWidthRules.Bound bound = BandWidthRules.reconcile(primary.storedWidth(), primary.boundAt(),
+                backup == null ? -1 : backup.storedWidth(), backup == null ? -1L : backup.boundAt(),
+                NerospaceConfig.nyxaraTwilightBandWidth(), level.getGameTime());
+        primary.store(bound.width(), bound.boundAt());
+        if (backup != null) {
+            backup.store(bound.width(), bound.boundAt());
+        }
+        fixedX.bindWidth(bound.width());
+        fixedX.bindSeed(level.getSeed());
+        return bound.width();
     }
 
     /** The band width in effect on {@code level} (the sky blend and band checks read this), or the default. */

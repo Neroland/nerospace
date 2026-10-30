@@ -8,7 +8,7 @@ import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Pure pad-geometry helpers (005 §1.6): the centre of the 5×5 or 3×3 square containing a node's position,
+ * Pure pad-geometry helpers: the centre of the 5×5 or 3×3 square containing a node's position,
  * and the pad's front from which sides of the square open onto air.
  */
 public final class LandingPadGeometry {

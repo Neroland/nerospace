@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Sulfur Crust (002 §1.3): fire next to it ignites up to 5 flammable neighbours, no chaining in a tick. */
+/** Sulfur Crust: fire next to it ignites up to 5 flammable neighbours, no chaining in a tick. */
 public final class IgniteRules {
 
     public static final int MAX_TARGETS = 5;

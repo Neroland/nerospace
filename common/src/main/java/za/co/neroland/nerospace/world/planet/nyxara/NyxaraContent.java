@@ -53,7 +53,7 @@ public final class NyxaraContent {
     public static final RegistryEntry<MapCodec<FixedXBiomeSource>> FIXED_X = BIOME_SOURCES.register("fixed_x",
             key -> FixedXBiomeSource.CODEC);
 
-    // --- Blocks (creative-tab order, 002 §6) -------------------------------------------------------------
+    // --- Blocks (creative-tab order) -------------------------------------------------------------
     public static final RegistryEntry<LightAbsorbingBlock> NYX_STONE = ModBlocks.BLOCKS.register("nyx_stone",
             key -> new LightAbsorbingBlock(props(key).mapColor(MapColor.COLOR_PURPLE).strength(2.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE)));
@@ -92,7 +92,7 @@ public final class NyxaraContent {
             GRAVITY_SHARD_BLOCK);
 
     // --- Items ---------------------------------------------------------------------------------------------
-    /** Voidglass, the D3 ore drop; ground into the Voidglass Lens. */
+    /** Voidglass, the Nyxara ore drop; ground into the Voidglass Lens. */
     public static final RegistryEntry<Item> VOIDGLASS = item("voidglass");
     /** Optics part (telescope / beam work). */
     public static final RegistryEntry<Item> VOIDGLASS_LENS = item("voidglass_lens");
@@ -103,7 +103,7 @@ public final class NyxaraContent {
     /** Void Crystal mined without Silk Touch. */
     public static final RegistryEntry<Item> VOID_SHARD = item("void_shard");
 
-    // --- Entities (003 §8.1 terraform fauna) ---------------------------------------------------------------
+    // --- Entities (terraform fauna) ---------------------------------------------------------------
     /** Ambient flier of the twilight grove (light <= 7 only); spawned by terraformed_nyxara_living. */
     public static final RegistryEntry<EntityType<DuskMoth>> DUSK_MOTH = ModEntities.ENTITY_TYPES.register(
             "dusk_moth", key -> EntityType.Builder.<DuskMoth>of(DuskMoth::new, MobCategory.AMBIENT)
@@ -119,7 +119,7 @@ public final class NyxaraContent {
     }
 
     /**
-     * The Nyxara run of the planets tab, in 002 §6 order: Nyx Stone, Dawnband Stone, Shadow Lichen, Void Crystal,
+     * The Nyxara run of the planets tab, in order: Nyx Stone, Dawnband Stone, Shadow Lichen, Void Crystal,
      * Voidglass Ore, Gravity Shard Block, then Voidglass, Voidglass Lens, Gravity Shard, Night Fibre, Void Shard.
      */
     public static List<Supplier<? extends ItemLike>> creativeContents() {

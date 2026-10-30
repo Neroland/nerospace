@@ -24,7 +24,7 @@ import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.FootprintRules;
 
 /**
- * Ground that keeps a {@code FOOTPRINT} (Regolith, 002 §1.1). Set by a living, non-spectator walker; cleared by a
+ * Ground that keeps a {@code FOOTPRINT} (Regolith). Set by a living, non-spectator walker; cleared by a
  * neighbour update from above, a piston move (pushed blocks are re-placed with the default state), or a re-step
  * from the opposite facing. No ticks. The landing puff is a server particle burst only when the fall was ≥ 1.
  */

@@ -15,7 +15,7 @@ import za.co.neroland.nerospace.platform.Services;
 
 /**
  * {@code /nerospace dev relightbench <count>} — development-environment, operator-only timing of a 16-chunk block
- * relight with 0 vs {@code count} Nyx Stone (002 §11.1 measurement). Results go to the command source only.
+ * relight with 0 vs {@code count} Nyx Stone (measurement). Results go to the command source only.
  */
 public final class DevCommands {
 

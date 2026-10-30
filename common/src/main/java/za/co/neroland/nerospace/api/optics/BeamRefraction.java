@@ -8,7 +8,7 @@ import za.co.neroland.nerospace.block.rules.RefractRules;
 import za.co.neroland.nerospace.registry.ModTags;
 
 /**
- * Additive public API (decision 002 §11.2): how a beam leaves a {@code nerospace:beam_refractors} block. Nerospace
+ * Additive public API: how a beam leaves a {@code nerospace:beam_refractors} block. Nerospace
  * never calls a sibling mod; a beam mod may call this. A refractor with a {@code facing} property turns a beam 90°
  * toward that facing (a beam along the facing axis passes straight through); any other block returns {@code in}.
  */

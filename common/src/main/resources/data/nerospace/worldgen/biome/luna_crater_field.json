@@ -1,7 +1,8 @@
 {
   "attributes": {
-    "minecraft:visual/sky_color": "#000000",
-    "minecraft:visual/fog_color": "#0b0b10"
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.luna.loop"
+    }
   },
   "carvers": [],
   "downfall": 0.0,

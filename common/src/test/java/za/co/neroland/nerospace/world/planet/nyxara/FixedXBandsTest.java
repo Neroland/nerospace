@@ -9,7 +9,7 @@ import za.co.neroland.nerospace.world.planet.nyxara.worldgen.BandWidthRules;
 import za.co.neroland.nerospace.world.planet.nyxara.worldgen.FixedXBands;
 import za.co.neroland.nerospace.world.planet.nyxara.worldgen.FixedXBands.Side;
 
-/** X → side mapping of the {@code nerospace:fixed_x} biome source (003 §7.3) and the stored-width rule. */
+/** X → side mapping of the {@code nerospace:fixed_x} biome source, its seeded edges and the stored-width rules. */
 class FixedXBandsTest {
 
     private static final int[] WIDTHS = {FixedXBands.MIN_WIDTH, FixedXBands.DEFAULT_WIDTH, FixedXBands.MAX_WIDTH};
@@ -104,5 +104,45 @@ class FixedXBandsTest {
         assertEquals(Side.BAND, FixedXBands.sideAt(0, 0, w, 0, n));
         assertEquals(Side.EAST, FixedXBands.sideAt(4096, 0, w, 0, n));
         assertEquals(Side.EAST, FixedXBands.sideAt(1536, -2048, w, 0, n));
+    }
+
+    @Test
+    void seededEdgesDifferPerWorldButNeverMoveTheFarSides() {
+        int w = 2048;
+        int n = FixedXBands.DEFAULT_EDGE_NOISE;
+        int differ = 0;
+        for (int z = -4096; z <= 4096; z += 16) {
+            for (int x = -w / 2 - 4 * n; x <= -w / 2 + 4 * n; x += 8) {
+                assertEquals(FixedXBands.sideAt(x, z, w, 0, n), FixedXBands.sideAt(x, z, w, 0, n, 0L), "seed 0 = unseeded");
+                assertEquals(FixedXBands.sideAt(x, z, w, 0, n, 20261025L), FixedXBands.sideAt(x, z, w, 0, n, 20261025L));
+                if (FixedXBands.sideAt(x, z, w, 0, n, 20261025L) != FixedXBands.sideAt(x, z, w, 0, n, -77L)) {
+                    differ++;
+                }
+            }
+        }
+        assertTrue(differ > 0, "two worlds must not share the terminator's raggedness");
+        for (long seed : new long[] {1L, -1L, 20261025L, Long.MIN_VALUE}) {
+            assertEquals(Side.WEST, FixedXBands.sideAt(-w / 2 - 4 * n - 1, 7, w, 0, n, seed));
+            assertEquals(Side.EAST, FixedXBands.sideAt(w / 2 + 4 * n + 1, 7, w, 0, n, seed));
+            assertEquals(Side.BAND, FixedXBands.sideAt(0, 7, w, 0, n, seed));
+        }
+    }
+
+    @Test
+    void twoStoredCopiesReconcileOlderWins() {
+        // neither stored: the config, bound now
+        assertEquals(new BandWidthRules.Bound(2048, 500L), BandWidthRules.reconcile(-1, -1L, -1, -1L, 2048, 500L));
+        // one copy lost to a recovery reset: the survivor restores it, never the (changed) config
+        assertEquals(new BandWidthRules.Bound(4096, 10L), BandWidthRules.reconcile(-1, -1L, 4096, 10L, 1024, 900L));
+        assertEquals(new BandWidthRules.Bound(4096, 10L), BandWidthRules.reconcile(4096, 10L, -1, -1L, 1024, 900L));
+        // disagreement: the older copy wins; unknown (-1) predates both; a tie keeps the primary
+        assertEquals(new BandWidthRules.Bound(1024, 5L), BandWidthRules.reconcile(4096, 80L, 1024, 5L, 2048, 900L));
+        assertEquals(new BandWidthRules.Bound(4096, 5L), BandWidthRules.reconcile(4096, 5L, 1024, 80L, 2048, 900L));
+        assertEquals(new BandWidthRules.Bound(1024, -1L), BandWidthRules.reconcile(4096, 80L, 1024, -1L, 2048, 900L));
+        assertEquals(new BandWidthRules.Bound(4096, 7L), BandWidthRules.reconcile(4096, 7L, 1024, 7L, 2048, 900L));
+        // agreement keeps the earliest time
+        assertEquals(new BandWidthRules.Bound(2048, 3L), BandWidthRules.reconcile(2048, 9L, 2048, 3L, 512, 900L));
+        // clamped
+        assertEquals(16384, BandWidthRules.reconcile(99_999, 1L, -1, -1L, 2048, 0L).width());
     }
 }

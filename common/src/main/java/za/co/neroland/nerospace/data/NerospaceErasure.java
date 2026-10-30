@@ -1,15 +1,21 @@
 package za.co.neroland.nerospace.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
+
+import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerolandcore.data.PlayerDataErasure;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
@@ -25,6 +31,7 @@ import za.co.neroland.nerospace.route.RouteRegistry;
 import za.co.neroland.nerospace.village.VillageCoreBlockEntity;
 import za.co.neroland.nerospace.village.VillageCoreLedger;
 import za.co.neroland.nerospace.world.OxygenManager;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
  * Registers Nerospace's player-keyed stores with Neroland Core's shared {@link PlayerDataErasure} hook, so
@@ -41,7 +48,8 @@ import za.co.neroland.nerospace.world.OxygenManager;
  *       like stations the change is pushed into the backup file at once. This store holds only planet ids,
  *       never timestamps or coordinates, so there is nothing left to anonymise once the row is gone.</li>
  *   <li><b>Alien Villager reputation</b> — each {@link AlienVillager} keeps a {@code UUID -> score} map in
- *       its own entity NBT. This is a genuine player-data store and it is swept below.</li>
+ *       its own entity NBT. This is a genuine player-data store: loaded villagers are swept below, and a villager
+ *       that loads later drops the entry itself ({@link #villagerReputationFilter}).</li>
  *   <li><b>The oxygen attachment</b> — reset to a full tank.</li>
  *   <li><b>The Star Guide "seen" attachment</b> — reset to empty.</li>
  *   <li><b>Cargo routes</b> ({@link RouteRegistry}) — the player's routes are removed, their Cargo Pads
@@ -68,19 +76,22 @@ import za.co.neroland.nerospace.world.OxygenManager;
  * pretending otherwise would be worse than saying so:</p>
  * <ul>
  *   <li><b>Alien Villagers in unloaded chunks.</b> The sweep walks every <em>loaded</em> level. A villager
- *       whose chunk is not loaded keeps the UUID in its NBT until it loads again. {@link #erasedThisSession}
- *       closes most of that window: a villager that loads later <em>in the same server session</em> has the
- *       entry stripped by {@link AlienVillager}'s load-time filter. Across a server restart the filter is
- *       gone, so a villager in a chunk that is never visited again retains the entry. Deliberately no
- *       persistent suppression list: storing the very UUID we were asked to erase, forever, in order to
- *       erase it, is a worse outcome than this bounded residue — and the residue is inert (it maps to a
- *       trade score for an account that no longer has any Nerospace record anywhere else). Re-running
- *       erasure after visiting the region closes it completely.</li>
+ *       whose chunk is not loaded keeps the UUID in its NBT until it loads again; when it does, its load-time
+ *       filter drops the entry if the player was erased this session ({@link #erasedThisSession}) or if the
+ *       player's salted key is still in the {@link VillageCoreLedger}'s bounded erasure-key list (the same
+ *       pseudonymised key the core ledger keeps, at most {@value VillageCoreLedger#MAX_LEGACY} entries,
+ *       {@value VillageCoreLedger#LEGACY_TTL_DAYS} days, only for a player who had visited a planet with
+ *       villages). There is <em>no raw-UUID suppression list</em>, and no store was added for villagers: they
+ *       reuse that one bounded, salted, time-limited key, which exists only to finish an erasure a loaded-only
+ *       sweep cannot reach. A villager first loaded after the key expired keeps the entry; re-running erasure
+ *       after visiting the region clears it.</li>
  *   <li><b>Village Cores in unloaded chunks.</b> Reached through the saved {@link VillageCoreLedger}: a core
  *       that was claimed or loaded on 2.x is indexed, and its owner is cleared when its chunk next loads, even
  *       after a restart. A 1.x core that has never loaded on 2.x is in no index; for those the ledger keeps a
- *       salted hash of the erased owner (at most {@value VillageCoreLedger#MAX_LEGACY} entries, dropped after
- *       {@value VillageCoreLedger#LEGACY_TTL_DAYS} days) and clears a matching core when it loads.</li>
+ *       salted hash of the erased owner (pseudonymised, not anonymous; at most
+ *       {@value VillageCoreLedger#MAX_LEGACY} entries, dropped after {@value VillageCoreLedger#LEGACY_TTL_DAYS}
+ *       days, only for a player who had visited a planet with villages) and clears a matching core when it
+ *       loads.</li>
  *   <li><b>An offline player's attachment data.</b> Both attachments are declared {@code .serialize(...)}
  *       with {@code copyOnDeath()}, so they persist in the player's own save file and do <em>not</em>
  *       "reset on their own" — the previous comment here was wrong. There is no cross-loader seam that
@@ -115,6 +126,9 @@ public final class NerospaceErasure {
             return;
         }
         ERASED_THIS_SESSION.add(uuid);
+        // Read from the visit store BEFORE step 2 erases it: only a player who reached a planet with villages can
+        // own a Village Core or hold villager reputation, so only then may the ledger keep a salted erasure key.
+        boolean visitedVillagePlanet = anyVillagePlanet(PlanetVisitState.get(server).export(uuid));
 
         // 1. Stations — anonymise the owner and strip the UUID from every member list, then push the
         // result into the backup file at once.
@@ -156,7 +170,7 @@ public final class NerospaceErasure {
         int cores = VillageCoreBlockEntity.forgetOwnerEverywhere(uuid);
         VillageCoreLedger ledger = VillageCoreLedger.get(server);
         java.util.Set<VillageCoreLedger.CoreLoc> loaded = VillageCoreBlockEntity.loadedLocations();
-        int pending = ledger.forgetOwner(uuid, loaded::contains, today());
+        int pending = ledger.forgetOwner(uuid, loaded::contains, today(), visitedVillagePlanet);
         VillageCoreLedger.backupNow(server, ledger);
         if (cores > 0 || pending > 0) {
             // Counts only (POPIA/GDPR).
@@ -215,6 +229,36 @@ public final class NerospaceErasure {
      */
     public static boolean erasedThisSession(UUID uuid) {
         return uuid != null && ERASED_THIS_SESSION.contains(uuid);
+    }
+
+    /** Whether any of these visited planet ids is a planet with a native villager culture. */
+    static boolean anyVillagePlanet(Collection<String> planetIds) {
+        for (String raw : planetIds) {
+            Identifier id = Identifier.tryParse(raw);
+            if (id != null && Planets.byId(id).map(p -> p.traits().villagerCulture().isPresent()).orElse(false)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * The load-time reputation filter for an {@link AlienVillager} in {@code level}: true for a player erased this
+     * session, or whose salted key is in the core ledger's bounded erasure-key list. Reads only; stores nothing.
+     * The ledger is consulted only on the server thread (a villager deserialised off-thread, e.g. by worldgen,
+     * falls back to the session latch).
+     */
+    public static Predicate<UUID> villagerReputationFilter(@Nullable Level level) {
+        VillageCoreLedger ledger = null;
+        if (level instanceof ServerLevel serverLevel) {
+            MinecraftServer server = serverLevel.getServer();
+            if (server != null && server.isSameThread() && server.overworld() != null) {
+                ledger = VillageCoreLedger.get(server);
+            }
+        }
+        VillageCoreLedger found = ledger;
+        long day = today();
+        return id -> erasedThisSession(id) || (found != null && found.isErased(id, day));
     }
 
     /** UTC epoch day, the ledger's clock for its bounded retention. */

@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Truss run placement (002 §1.7): sneak-placing lays up to 8 in a line, 1 item each, stopping at the first non-air. */
+/** Truss run placement: sneak-placing lays up to 8 in a line, 1 item each, stopping at the first non-air. */
 public final class RunPlacementRules {
 
     public static final int MAX_RUN = 8;

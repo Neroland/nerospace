@@ -18,9 +18,10 @@ import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.PillarRules;
 
 /**
- * Self-extending pillar (Basalt Column, 002 §1.2): a player placement schedules a tick every 20 ticks that adds the
- * next {@code SEGMENT} above while the cell is air and unobstructed, to height 4 (≤ 3 scheduled ticks per
- * placement). Worldgen places full columns directly. Free growth — each segment drops itself.
+ * Self-extending pillar (Basalt Column): a player placement schedules a tick every 20 ticks that adds the next
+ * {@code SEGMENT} above while the cell is air and unobstructed, to height 4 (≤ 3 scheduled ticks per placement).
+ * Worldgen places full columns directly. Growth is free but not harvestable: only {@code SEGMENT=0} drops the item
+ * (the loot table), grown segments 1–3 drop nothing unless mined with Silk Touch, so one item never becomes four.
  */
 public class PillarGrowthBlock extends Block {
 

@@ -14,7 +14,7 @@ import za.co.neroland.nerospace.rocket.PadRegistry;
 /**
  * Server → client snapshot of the selectable landing nodes' labels (dimension id + name, in the
  * {@link PadRegistry#inDimension} order the Rocket screen's pad index addresses), pushed when a player opens a
- * rocket so the planet card can say "Pad: Mare Base" (004 §5).
+ * rocket so the planet card can say "Pad: Mare Base".
  *
  * <p><b>Privacy (POPIA/GDPR):</b> pads carry no player identity; only the dimension id and the label travel.</p>
  */

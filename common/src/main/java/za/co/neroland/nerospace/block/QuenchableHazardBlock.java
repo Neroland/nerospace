@@ -17,7 +17,7 @@ import net.minecraft.world.level.redstone.Orientation;
 import za.co.neroland.nerospace.block.rules.QuenchRules;
 
 /**
- * Heat hazard that water quenches (Ember-Cracked Ashstone, 002 §1.3): on placement or a neighbour change, water in any
+ * Heat hazard that water quenches (Ember-Cracked Ashstone): on placement or a neighbour change, water in any
  * of the 6 neighbours turns it into {@code quenched} with smoke and the extinguish sound.
  */
 public class QuenchableHazardBlock extends ContactHazardBlock {

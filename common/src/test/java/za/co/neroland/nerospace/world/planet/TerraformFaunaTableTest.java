@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import net.minecraft.resources.Identifier;
 
 /**
- * Every fauna id in every terraform table (003 §8.1) is a registered Nerospace entity, so TerraformFauna never
+ * Every fauna id in every terraform table is a registered Nerospace entity, so TerraformFauna never
  * stocks nothing; and every Living biome lists its planet's species as a natural spawn (26.3 overlay included).
  */
 class TerraformFaunaTableTest {

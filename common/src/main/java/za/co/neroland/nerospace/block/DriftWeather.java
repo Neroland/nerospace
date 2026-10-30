@@ -20,11 +20,11 @@ import za.co.neroland.nerospace.world.planet.WeatherEvent;
 import za.co.neroland.nerospace.world.planet.WeatherMachine;
 
 /**
- * Dune drift hook (002 §1.2, §3): during the event, every {@link DriftRules#INTERVAL_TICKS} each loaded chunk near a
+ * Dune drift hook: during the event, every {@link DriftRules#INTERVAL_TICKS} each loaded chunk near a
  * player picks one random surface column; if it is a drifting block it moves one block downwind (the storm direction
  * is fixed per event from the event seed). Count-conserving: the source becomes air in the same step the
  * destination is set. Moves per chunk per storm are capped (16, config may lower) and reset when the event ends.
- * Stage 3: {@code DriftWeather.register(WeatherEvent.DUST_STORM, ModBlocks.RED_REGOLITH::get)}.
+ * Hook it up with {@code DriftWeather.register(WeatherEvent.DUST_STORM, ModBlocks.RED_REGOLITH::get)}.
  */
 public final class DriftWeather implements WeatherEffects {
 

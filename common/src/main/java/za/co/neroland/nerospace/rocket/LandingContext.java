@@ -7,7 +7,7 @@ import java.util.Set;
 import net.minecraft.core.BlockPos;
 
 /**
- * Everything {@link LandingResolver} needs, captured before any world mutation (005 §1.2). Immutable.
+ * Everything {@link LandingResolver} needs, captured before any world mutation. Immutable.
  *
  * @param destinationDim       dimension id string, as {@link PadRegistry} stores it
  * @param explicitPadIndex     the rocket's {@code DATA_PAD}; −1 = auto
@@ -18,7 +18,7 @@ import net.minecraft.core.BlockPos;
  * @param arrivalAnchor        the planet's arrival anchor (X/Z; Y ignored), the last-resort search origin
  * @param station              the station branch, present only for station arrivals
  * @param sampler              Landing Pod site sampler over the destination
- * @param excludedNodeIds      nodes to ignore (a pad broken mid-descent, 005 §3.3)
+ * @param excludedNodeIds      nodes to ignore (a pad broken mid-descent)
  */
 public record LandingContext(String destinationDim, int explicitPadIndex, List<PadCandidate> padsInDestination,
         Optional<ReturnSite> returnSite, Optional<String> originPadName, boolean originRegistered,

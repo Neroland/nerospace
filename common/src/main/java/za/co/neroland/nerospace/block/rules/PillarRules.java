@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Basalt Column self-extension (002 §1.2): grows upward one segment per 20 ticks, to height 4. */
+/** Basalt Column self-extension: grows upward one segment per 20 ticks, to height 4. */
 public final class PillarRules {
 
     public static final int MAX_HEIGHT = 4;

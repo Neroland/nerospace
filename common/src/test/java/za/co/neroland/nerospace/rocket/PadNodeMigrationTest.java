@@ -17,7 +17,7 @@ import net.minecraft.nbt.Tag;
 
 import org.junit.jupiter.api.Test;
 
-/** 001 §6.2: a 1.6.0 {@code nerospace:pads} store loads with the 2.0 defaults and round-trips. */
+/** A 1.6.0 {@code nerospace:pads} store loads with the 2.0 defaults and round-trips. */
 class PadNodeMigrationTest {
 
     /** The 1.6.0 shape: {pads:[{id,name,dim,pos:[I;x,y,z]}], next_id}. */

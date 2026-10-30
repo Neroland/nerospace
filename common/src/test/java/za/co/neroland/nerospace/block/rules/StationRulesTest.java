@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.7 Hull Window frost, Truss runs, Solar Wing, Docking Ring, Hydroponics; 005 §7.2/§7.4. */
+/** Hull Window frost, Truss runs, Solar Wing, Docking Ring, Hydroponics. */
 @SuppressWarnings("unused")
 class StationRulesTest {
 

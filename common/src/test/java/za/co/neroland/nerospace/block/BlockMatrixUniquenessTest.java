@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Decision 002 §2: no two behaviour rows share a (kind, trigger, effect) triple, and every behaviour row has its pure
+ * No two behaviour rows share a (kind, trigger, effect) triple, and every behaviour row has its pure
  * helper under {@code block.rules}. Hand-maintained mirror of the matrix — a new row that duplicates a triple, or a
  * row whose helper is missing, fails here.
  */

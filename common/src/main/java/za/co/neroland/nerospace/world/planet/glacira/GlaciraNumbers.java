@@ -4,7 +4,7 @@ import za.co.neroland.nerospace.block.rules.CrystalStageRules;
 
 /**
  * Glacira's tunable numbers in one place (pure, tested): the frost-crystal outline per stage and the diamond-dust
- * freeze budget (003 §4: exposed water to ice, one cell per chunk per 100 ticks, at most 32 per chunk per event).
+ * freeze budget (exposed water to ice, one cell per chunk per 100 ticks, at most 32 per chunk per event).
  */
 public final class GlaciraNumbers {
 

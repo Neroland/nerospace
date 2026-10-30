@@ -335,6 +335,14 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
      * The requester's own Star Guide progress. Completion lives in vanilla advancements (the guide keeps
      * no store of its own), which are loaded with the player — so this is online-only too.
      */
+    /**
+     * Completed steps that count toward finishing {@code chapter}: hidden bonus steps never do, so the companion's
+     * chapter and overall counts agree with {@link StarGuide#totalSteps()} and {@link StarGuide.Chapter#isComplete}.
+     */
+    static int requiredStepsComplete(StarGuide.Chapter chapter, int mask) {
+        return Integer.bitCount(mask & chapter.requiredMask());
+    }
+
     private static JsonObject starGuide(MinecraftServer server, UUID playerId) {
         JsonObject root = envelope(server, playerId);
         root.addProperty("chapters_total", StarGuide.CHAPTER_COUNT);
@@ -359,7 +367,7 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
                     total++;
                 }
             }
-            int complete = Integer.bitCount(mask);
+            int complete = requiredStepsComplete(chapter, mask);
             done += complete;
 
             JsonObject row = new JsonObject();

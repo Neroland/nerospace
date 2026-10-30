@@ -24,6 +24,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.client.ui.ConsoleLayout;
+import za.co.neroland.nerospace.client.ui.Glyphs;
 import za.co.neroland.nerospace.menu.StationConsoleMenu;
 import za.co.neroland.nerospace.network.ModNetwork;
 import za.co.neroland.nerospace.network.RenameStationPayload;
@@ -37,19 +39,19 @@ import za.co.neroland.nerospace.world.station.StationAccess;
 import za.co.neroland.nerospace.world.station.StationClass;
 
 /**
- * The Station Console screen: a 240×200 procedural panel in station teal with four client-side
- * tabs — Overview, Members, Docking, Build. Everything it shows comes from the menu's synced ints and the
+ * The Station Console screen: a 240×200 panel ({@code station_console.png}) in station teal with four client-side
+ * tabs — Overview, Members, Docking, Build. Rows sit on the 9 / 12 / 18 px grid of {@link ConsoleLayout}; every
+ * label that a translation could overflow is cut with an ellipsis and carries its full text in a tooltip. Everything it shows comes from the menu's synced ints and the
  * {@link StationConsoleSyncPayload}; every button only asks the server, which re-checks permissions. Member names
  * are resolved from the client's own tab list and never stored; an unresolved member reads "Member #n".
  */
 public class StationConsoleScreen extends TexturedContainerScreen<StationConsoleMenu> {
 
     private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/rocket.png");
+            Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/station_console.png");
     /** Station teal. */
     private static final int ACCENT = 0xFF2EC4B6;
     private static final int HULL = 0xFF0D1119;
-    private static final int HEADER = 0xFF14283C;
     private static final int WELL = 0xFF0A1018;
     private static final int VALUE = 0xFFB9C6D4;
     private static final int WARN = 0xFFF5C542;
@@ -75,6 +77,8 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
     private EditBox renameBox;
     private String signature = "";
     private final List<UUID> candidates = new ArrayList<>();
+    /** Hover tooltips for drawn (non-widget) rows this frame: {x, y, w, h} panel-relative → text. */
+    private final List<Object[]> hoverTips = new ArrayList<>();
 
     public StationConsoleScreen(StationConsoleMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, W, H);
@@ -119,7 +123,7 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
         this.renameBox = null;
         int l = this.leftPos;
         int t = this.topPos;
-        String[] tabs = { "tab.overview", "tab.members", "tab.docking", "tab.build" };
+        String[] tabs = { "tab.overview.short", "tab.members", "tab.docking", "tab.build" };
         for (int i = 0; i < tabs.length; i++) {
             final int idx = i;
             SpaceButton b = new SpaceButton(l + 6 + i * 58, t + 19, 56, 14, tr(tabs[i]), ACCENT, x -> {
@@ -129,6 +133,9 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
                 rebuild();
             });
             b.setSelected(i == this.tab);
+            if (i == TAB_OVERVIEW) {
+                b.setTooltip(Tooltip.create(tr("tab.overview")));
+            }
             addRenderableWidget(b);
         }
         StationConsoleSyncPayload s = sync();
@@ -162,26 +169,29 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
         Component trait = tr("class." + cls.id() + ".trait");
         button(114, 40, 104, 12, tr("class." + cls.id()), manage(), () -> click(StationConsoleMenu.BUTTON_CYCLE_CLASS),
                 manage() ? trait : null);
-        button(220, 40, 12, 12, Component.literal("<"), manage(),
-                () -> click(StationConsoleMenu.BUTTON_CYCLE_CLASS_BACK), manage() ? trait : null);
+        IconButton back = new IconButton(l + 220, t + 40, 12, 12, Glyphs.Glyph.ARROW_L,
+                Component.literal("<"), ACCENT, x0 -> click(StationConsoleMenu.BUTTON_CYCLE_CLASS_BACK));
+        back.active = manage();
+        back.setTooltip(Tooltip.create(manage() ? trait : tr("members_only")));
+        addRenderableWidget(back);
         if (this.renaming && manage()) {
-            EditBox box = new EditBox(this.font, l + 114, t + 154, 116, 12, tr("rename"));
+            EditBox box = new EditBox(this.font, l + 10, t + ConsoleLayout.BUTTON_ROW_Y, 140, 12, tr("rename"));
             box.setMaxLength(32);
             box.setValue(renameText != null ? renameText : s.name());
             this.renameBox = box;
             addRenderableWidget(box);
             setFocused(box);
             box.setFocused(true);
-            button(10, 170, 72, 12, tr("rename_confirm"), true, this::confirmRename, null);
-        } else {
-            button(10, 170, 72, 12, tr("rename"), manage(), () -> {
-                this.renaming = true;
-                rebuild();
-            }, null);
+            button(154, ConsoleLayout.BUTTON_ROW_Y, 76, 12, tr("rename_confirm"), true, this::confirmRename, null);
+            return; // Abandon / Claim hidden while renaming (the box takes the row)
         }
+        button(10, ConsoleLayout.BUTTON_ROW_Y, 72, 12, tr("rename"), manage(), () -> {
+            this.renaming = true;
+            rebuild();
+        }, null);
         if (s.hasOwner()) {
             boolean armed = System.currentTimeMillis() - this.abandonArmedAt < 3000L;
-            button(118, 170, 112, 12, armed ? tr("abandon_confirm") : tr("abandon"), manage(), () -> {
+            button(118, ConsoleLayout.BUTTON_ROW_Y, 112, 12, armed ? tr("abandon_confirm") : tr("abandon"), manage(), () -> {
                 if (System.currentTimeMillis() - this.abandonArmedAt < 3000L) {
                     click(StationConsoleMenu.BUTTON_ABANDON);
                     this.abandonArmedAt = 0L;
@@ -191,7 +201,7 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
                 rebuild();
             }, null);
         } else if (s.viewerRole() == StationConsoleSyncPayload.ROLE_UNOWNED && isOperator()) {
-            button(118, 170, 112, 12, tr("claim"), true, () -> click(StationConsoleMenu.BUTTON_CLAIM),
+            button(118, ConsoleLayout.BUTTON_ROW_Y, 112, 12, tr("claim"), true, () -> click(StationConsoleMenu.BUTTON_CLAIM),
                     tr("claim.tooltip"));
         }
     }
@@ -226,6 +236,7 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
                     rebuild();
                 }, null);
             }
+            memberChevrons(this.candidates.size());
             button(10, 180, 96, 12, tr("add_cancel"), true, () -> {
                 this.addMode = false;
                 rebuild();
@@ -244,12 +255,39 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
                         () -> click(StationConsoleMenu.REMOVE_MEMBER_BASE + index), null);
             }
         }
+        memberChevrons(members.size());
         boolean full = members.size() >= StationAccess.MAX_MEMBERS;
         button(10, 180, 96, 12, tr("add_member"), manage() && !full, () -> {
             this.addMode = true;
             this.scroll = 0;
             rebuild();
         }, full ? tr("member_limit") : null);
+    }
+
+    /** Scroll chevrons under the member list, only when it is longer than a page. */
+    private void memberChevrons(int size) {
+        if (size <= ROWS) {
+            return;
+        }
+        int max = size - ROWS;
+        IconButton up = new IconButton(this.leftPos + 10, this.topPos + 168, 28, 8,
+                Glyphs.Glyph.CHEV_UP, tr("tab.members"), ACCENT, x -> scrollMembers(-1));
+        up.active = this.scroll > 0;
+        addRenderableWidget(up);
+        IconButton down = new IconButton(this.leftPos + 42, this.topPos + 168, 28, 8,
+                Glyphs.Glyph.CHEV_DOWN, tr("tab.members"), ACCENT, x -> scrollMembers(1));
+        down.active = this.scroll < max;
+        addRenderableWidget(down);
+    }
+
+    private void scrollMembers(int delta) {
+        StationConsoleSyncPayload s = sync();
+        int size = s == null ? 0 : (this.addMode ? this.candidates.size() : s.members().size());
+        int next = Math.max(0, Math.min(Math.max(0, size - ROWS), this.scroll + delta));
+        if (next != this.scroll) {
+            this.scroll = next;
+            rebuild();
+        }
     }
 
     /** Online players from the client's tab list, minus the owner and current members. Names stay client-side. */
@@ -289,7 +327,7 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
             if (kind == null) {
                 continue;
             }
-            int[] xy = tileXY(tile);
+            int[] row = ConsoleLayout.buildRow(tile);
             boolean built = (builtMask & (1 << tile)) != 0;
             boolean full = kind == ModuleKind.SOLAR_WING ? s.solarWings() >= 2 : built;
             final int id = StationConsoleMenu.BUILD_BASE + tile;
@@ -298,24 +336,20 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
             boolean requiresOk = kind.requires() == null || (builtMask & (1 << kind.requires().tile())) != 0;
             boolean capOk = count < 8;
             boolean active = manage() && (full || (affordable && classOk && requiresOk && capOk));
-            button(xy[0] + 62, xy[1] + 16, 40, 10, full ? tr("repair") : tr("build"), active,
+            button(row[0] + ConsoleLayout.BUILD_BUTTON_DX, row[1] + 2, ConsoleLayout.BUILD_BUTTON_W, 12, full ? tr("repair") : tr("build"), active,
                     () -> {
                         this.buildClickAt = System.currentTimeMillis();
                         click(id);
                     }, costTooltip(kind, have));
             if (built && (kind == ModuleKind.SOLAR_WING || kind == ModuleKind.GRAVITY_DECK)) {
                 boolean on = (poweredMask & (1 << tile)) != 0;
-                button(xy[0] + 28, xy[1] + 16, 32, 10, on ? tr("on") : tr("off"), use(),
+                SpaceButton toggle = button(row[0] + ConsoleLayout.TOGGLE_BUTTON_DX, row[1] + 2, ConsoleLayout.TOGGLE_BUTTON_W, 12,
+                        on ? tr("on") : tr("off"), use(),
                         () -> click(StationConsoleMenu.TOGGLE_MODULE_BASE + id - StationConsoleMenu.BUILD_BASE),
                         null);
+                toggle.setSelected(on);
             }
         }
-    }
-
-    private static int[] tileXY(int tile) {
-        // Core is tile 0 (drawn at the top-left), the six buildable tiles follow: two columns of 104×28.
-        int i = tile;
-        return new int[] { 10 + (i % 2) * 112, 50 + (i / 2) * 30 };
     }
 
     private boolean creative() {
@@ -349,6 +383,10 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
             out.append(Component.literal("\n" + e.getValue() + "x ")).append(name)
                     .append(Component.literal(held < e.getValue() ? "  (" + held + ")" : ""));
         }
+        int missing = ModuleCosts.shortfall(kind, have).values().stream().mapToInt(Integer::intValue).sum();
+        if (missing > 0) {
+            out.append(Component.literal("\n")).append(tr("cost.short", missing).copy().withColor(BAD));
+        }
         return out;
     }
 
@@ -356,12 +394,12 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (event.key() == 256) {
+        if (event.isEscape()) {
             this.onClose();
             return true;
         }
         if (this.renameBox != null && this.renameBox.isFocused()) {
-            if (event.key() == 257 || event.key() == 335) {
+            if (event.isConfirmation()) {
                 confirmRename();
                 return true;
             }
@@ -369,8 +407,8 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
                 return true;
             }
         }
-        if (event.key() == 262 || event.key() == 263) { // → / ←
-            this.tab = (this.tab + (event.key() == 262 ? 1 : 3)) % 4;
+        if (event.isRight() || event.isLeft()) {
+            this.tab = (this.tab + (event.isRight() ? 1 : 3)) % 4;
             this.scroll = 0;
             rebuild();
             return true;
@@ -421,24 +459,81 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
 
     @Override
     protected void drawPanel(GuiGraphicsExtractor g) {
-        int l = this.leftPos;
-        int t = this.topPos;
-        g.fill(l - 2, t - 2, l + W + 2, t + H + 2, INK);
-        g.fill(l, t, l + W, t + H, HULL);
-        g.fill(l, t, l + W, t + 16, HEADER);
-        g.fill(l, t + 16, l + W, t + 17, ACCENT);
-        g.fill(l + 6, t + 36, l + 234, t + 194, WELL);
+        super.drawPanel(g); // station_console.png: header band, rule, tab rail well and page well
+        // Station sky strip in the header: black, a few fixed stars, the homeworld's teal limb, a teal rule.
+        int x = this.leftPos + 6;
+        int y = this.topPos + 2;
+        g.fill(x, y, x + 48, y + 12, 0xFF02040A);
+        for (int i = 0; i < 6; i++) {
+            int sx = x + 3 + (i * 37 + 11) % 42;
+            int sy = y + 1 + (i * 5 + 2) % 8;
+            g.fill(sx, sy, sx + 1, sy + 1, (i & 1) == 0 ? 0xFFFFFFFF : 0xFF6E84A0);
+        }
+        for (int i = 0; i < 48; i++) {
+            int dy = (int) Math.round(Math.sqrt(Math.max(0, 900 - (i - 24) * (i - 24))) / 6.0);
+            g.fill(x + i, y + 11 - Math.min(4, dy), x + i + 1, y + 11, 0xFF17625B);
+        }
+        g.fill(x, y + 11, x + 48, y + 12, ACCENT);
+    }
+
+    /** A hover tooltip for a drawn (non-widget) rect, shown after the frame if the mouse is over it. */
+    private void hoverTip(int x, int y, int w, int h, Component text) {
+        this.hoverTips.add(new Object[] { new int[] { x, y, w, h }, text });
+    }
+
+    @Override
+    public void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        this.hoverTips.clear();
+        super.extractContents(g, mouseX, mouseY, partialTick);
+        int mx = mouseX - this.leftPos;
+        int my = mouseY - this.topPos;
+        for (Object[] tip : this.hoverTips) {
+            int[] r = (int[]) tip[0];
+            if (mx >= r[0] && mx < r[0] + r[2] && my >= r[1] && my < r[1] + r[3]) {
+                g.setTooltipForNextFrame(this.font.split((Component) tip[1], 200), mouseX, mouseY);
+                break;
+            }
+        }
+    }
+
+    /** Draws {@code text} at a panel position cut to {@code maxWidth}; the full text becomes a hover tooltip. */
+    private void fitLabel(GuiGraphicsExtractor g, Component text, int dx, int dy, int maxWidth, int colour) {
+        Component shown = SpaceButton.fit(this.font, text, maxWidth);
+        label(g, shown, dx, dy, colour);
+        if (shown != text) {
+            hoverTip(dx, dy, maxWidth, 9, text);
+        }
+    }
+
+    private void glyph(GuiGraphicsExtractor g, Glyphs.Glyph glyph, int dx, int dy, int colour) {
+        Glyphs.draw(g, glyph, this.leftPos + dx, this.topPos + dy, colour);
     }
 
     @Override
     protected void extractForeground(GuiGraphicsExtractor g) {
         StationConsoleSyncPayload s = sync();
         StationClass cls = StationClass.byOrdinal(this.menu.get(StationConsoleMenu.D_CLASS));
-        label(g, s == null ? tr("syncing") : Component.literal(s.name()), 8, 4, TITLE);
-        Component badge = s != null && s.viewerRole() == StationConsoleSyncPayload.ROLE_VISITOR
-                ? tr("visitor") : tr("class." + cls.id());
+        // Header badge: Visitor (with a lock), Unclaimed (warning) or the station class.
+        boolean visitor = s != null && s.viewerRole() == StationConsoleSyncPayload.ROLE_VISITOR;
+        boolean unowned = s != null && s.viewerRole() == StationConsoleSyncPayload.ROLE_UNOWNED;
+        Component badgeFull = visitor ? tr("visitor") : (unowned ? tr("unclaimed") : tr("class." + cls.id()));
+        Component badge = SpaceButton.fit(this.font, badgeFull, ConsoleLayout.BADGE_MAX);
         int bw = this.font.width(badge);
-        label(g, badge, W - 8 - bw, 4, ACCENT);
+        int bx = ConsoleLayout.BADGE_RIGHT - bw;
+        label(g, badge, bx, 4, visitor ? SUBTLE : (unowned ? WARN : ACCENT));
+        if (badge != badgeFull) {
+            hoverTip(bx, 4, bw, 9, badgeFull);
+        }
+        if (visitor) {
+            glyph(g, Glyphs.Glyph.LOCK, bx - 10, 4, SUBTLE);
+            bx -= 10;
+        }
+        int nameMax = Math.min(ConsoleLayout.NAME_MAX, bx - 6 - ConsoleLayout.NAME_X);
+        fitLabel(g, s == null ? tr("syncing") : Component.literal(s.name()), ConsoleLayout.NAME_X, 4, nameMax, TITLE);
+
+        // The selected tab joins the page well (drawn after the buttons).
+        int tx = this.leftPos + 6 + this.tab * 58;
+        g.fill(tx + 1, this.topPos + 19 + 13, tx + 55, this.topPos + 19 + 16, WELL);
         if (s == null) {
             label(g, tr("syncing"), 12, 42, SUBTLE);
             return;
@@ -468,29 +563,33 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
                 za.co.neroland.nerospace.client.ui.PlanetCardData.State.AVAILABLE, 1);
         za.co.neroland.nerospace.client.ui.PlanetCard.draw(g, this.font, l + 10, t + 40, data, false, false,
                 System.currentTimeMillis());
-        if (s.revealCount() > 0) {
-            label(g, tr("card.observatory", s.revealCount()), 114, 154, ACCENT);
-        }
 
         int day = this.menu.get(StationConsoleMenu.D_FOUNDED_DAY);
-        label(g, day < 0 ? tr("founded_unknown", s.slot() + 1) : tr("founded", day, s.slot() + 1), 114, 56, SUBTLE);
+        fitLabel(g, day < 0 ? tr("founded_unknown", s.slot() + 1) : tr("founded", day, s.slot() + 1), 114, 56, 116,
+                SUBTLE);
         label(g, tr("power"), 114, 64, POWER);
         segGauge(g, 114, 73, 116, 6, this.menu.get(StationConsoleMenu.D_POWER_PCT) / 100.0F, POWER);
-        label(g, tr("power_value", s.powerFe()), 114, 82, POWER);
+        fitLabel(g, tr("power_value", s.powerFe()), 114, 82, 116, POWER);
         label(g, tr("oxygen"), 114, 94, O2);
         hGauge(g, 114, 103, 116, 6, this.menu.get(StationConsoleMenu.D_OXYGEN_PCT) / 100.0F, O2);
-        label(g, tr("pressurised", s.sealed(), s.airtight()), 114, 112, O2);
-        label(g, tr("members_count", this.menu.get(StationConsoleMenu.D_MEMBER_COUNT), StationAccess.MAX_MEMBERS),
-                114, 124, VALUE);
-        label(g, tr("routes", this.menu.get(StationConsoleMenu.D_ROUTE_USED),
-                this.menu.get(StationConsoleMenu.D_ROUTE_CAP)), 114, 134, VALUE);
+        fitLabel(g, tr("pressurised", s.sealed(), s.airtight()), 114, 112, 116, O2);
+        glyph(g, Glyphs.Glyph.MEMBER, 114, 124, VALUE);
+        fitLabel(g, tr("members_count", this.menu.get(StationConsoleMenu.D_MEMBER_COUNT), StationAccess.MAX_MEMBERS),
+                124, 124, 106, VALUE);
+        glyph(g, Glyphs.Glyph.ROCKET, 114, 134, VALUE);
+        fitLabel(g, tr("routes", this.menu.get(StationConsoleMenu.D_ROUTE_USED),
+                this.menu.get(StationConsoleMenu.D_ROUTE_CAP)), 124, 134, 106, VALUE);
         if (s.classCooldownTicks() > 0) {
             int minutes = s.classCooldownTicks() / 1200;
-            label(g, tr("class_cooldown_in", minutes / 60, minutes % 60), 114, 144, SUBTLE);
+            fitLabel(g, tr("class_cooldown_in", minutes / 60, minutes % 60), 114, 144, 116, SUBTLE);
+        }
+        if (s.revealCount() > 0 && this.renameBox == null) {
+            glyph(g, Glyphs.Glyph.MOD_OBSERVATORY, 114, 154, ACCENT);
+            fitLabel(g, tr("card.observatory", s.revealCount()), 124, 154, 106, ACCENT);
         }
 
-        label(g, tr("modules", this.menu.get(StationConsoleMenu.D_MODULE_COUNT)), 10, 98, TITLE);
-        int y = 108;
+        label(g, tr("modules", this.menu.get(StationConsoleMenu.D_MODULE_COUNT)), 10, ConsoleLayout.MODULE_HEADER_Y,
+                TITLE);
         for (int tile = 0; tile < ModuleKind.TILE_COUNT; tile++) {
             boolean has = (built & (1 << tile)) != 0;
             boolean on = (powered & (1 << tile)) != 0;
@@ -498,17 +597,12 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
             if (kind == null) {
                 continue;
             }
-            int dot = has ? ACCENT : SUBTLE;
-            g.fill(l + 10, t + y + 2, l + 14, t + y + 6, dot);
-            if (!has) {
-                g.fill(l + 11, t + y + 3, l + 13, t + y + 5, WELL);
-            }
+            int y = ConsoleLayout.moduleRowY(tile);
+            glyph(g, Glyphs.module(tile), 10, y, has ? ACCENT : SUBTLE);
+            glyph(g, has ? Glyphs.Glyph.DOT_FILLED : Glyphs.Glyph.DOT_HOLLOW, 19, y, has ? ACCENT : SUBTLE);
             Component name = tr("module." + kind.id());
-            label(g, has && !on ? name.copy().append(" ").append(tr("off")) : name, 17, y, has ? TITLE : SUBTLE);
-            y += 8;
-        }
-        if (s.viewerRole() == StationConsoleSyncPayload.ROLE_UNOWNED) {
-            label(g, tr("unclaimed"), 10, 162, WARN);
+            fitLabel(g, has && !on ? name.copy().append(" ").append(tr("off")) : name, 28, y, 78,
+                    has ? TITLE : SUBTLE);
         }
     }
 
@@ -523,50 +617,103 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
 
     private void drawMembers(GuiGraphicsExtractor g, StationConsoleSyncPayload s) {
         if (!use()) {
-            label(g, tr(s.hasOwner() ? "owner_yes" : "owner_none"), 10, 40, VALUE);
-            label(g, tr("visitor_members", this.menu.get(StationConsoleMenu.D_MEMBER_COUNT)), 10, 52, SUBTLE);
+            fitLabel(g, tr(s.hasOwner() ? "owner_yes" : "owner_none"), 10, 40, 220, VALUE);
+            fitLabel(g, tr("visitor_members", this.menu.get(StationConsoleMenu.D_MEMBER_COUNT)), 10, 52, 220, SUBTLE);
             return;
         }
         Component owner = s.owner().map(id -> displayName(id, -1)).orElse(tr("owner_none"));
-        label(g, tr("owner").copy().append(" ").append(owner), 10, 40, TITLE);
+        glyph(g, Glyphs.Glyph.MEMBER, 10, 40, TITLE);
+        fitLabel(g, tr("owner").copy().append(" ").append(owner), 20, 40, 210, TITLE);
         label(g, tr("members_count", s.members().size(), StationAccess.MAX_MEMBERS), 10, 52, VALUE);
         if (this.addMode) {
-            label(g, tr("add_pick"), 120, 52, SUBTLE);
+            fitLabel(g, tr("add_pick"), 120, 52, 110, SUBTLE);
             if (this.candidates.isEmpty()) {
-                label(g, tr("add_none"), 10, 64, SUBTLE);
+                fitLabel(g, tr("add_none"), 10, 64, 220, SUBTLE);
             }
             for (int i = 0; i < ROWS && i + this.scroll < this.candidates.size(); i++) {
-                label(g, displayName(this.candidates.get(i + this.scroll), -1), 12, 63 + i * 12, TITLE);
+                glyph(g, Glyphs.Glyph.MEMBER, 12, 63 + i * 12, SUBTLE);
+                fitLabel(g, displayName(this.candidates.get(i + this.scroll), -1), 22, 63 + i * 12, 156, TITLE);
             }
             return;
         }
         if (s.members().isEmpty()) {
-            label(g, tr("no_members"), 10, 64, SUBTLE);
+            fitLabel(g, tr("no_members"), 10, 64, 220, SUBTLE);
         }
         for (int i = 0; i < ROWS && i + this.scroll < s.members().size(); i++) {
             int index = i + this.scroll;
-            label(g, displayName(s.members().get(index), index), 12, 63 + i * 12, TITLE);
+            glyph(g, Glyphs.Glyph.MEMBER, 12, 63 + i * 12, SUBTLE);
+            fitLabel(g, displayName(s.members().get(index), index), 22, 63 + i * 12, 156, TITLE);
         }
     }
 
     private void drawDocking(GuiGraphicsExtractor g, StationConsoleSyncPayload s) {
-        label(g, tr("arrival").copy().append(" ").append(
-                tr(this.menu.get(StationConsoleMenu.D_ARRIVAL_KIND) == 1 ? "arrival.ring" : "arrival.pad")), 10, 40,
+        boolean ring = this.menu.get(StationConsoleMenu.D_ARRIVAL_KIND) == 1;
+        glyph(g, ring ? Glyphs.Glyph.DOCK : Glyphs.Glyph.PAD, 10, 40, TITLE);
+        fitLabel(g, tr("arrival").copy().append(" ").append(tr(ring ? "arrival.ring" : "arrival.pad")), 20, 40, 210,
                 TITLE);
-        label(g, tr("paired_count", this.menu.get(StationConsoleMenu.D_PAIRED_PADS)), 10, 68, VALUE);
+        fitLabel(g, tr("paired_count", this.menu.get(StationConsoleMenu.D_PAIRED_PADS)), 10, 66, 220, VALUE);
         if (s.pairedPads().isEmpty()) {
-            label(g, tr("paired_none"), 10, 80, SUBTLE);
+            fitLabel(g, tr("paired_none"), 10, 80, 220, SUBTLE);
         }
-        int y = 80;
-        for (StationConsoleSyncPayload.PairedPad pad : s.pairedPads()) {
-            String dim = pad.dimension();
-            String shortDim = dim.contains(":") ? dim.substring(dim.indexOf(':') + 1) : dim;
-            label(g, Component.literal(shortDim + " · " + pad.padName()), 12, y, pad.standing() ? VALUE : BAD);
-            y += 10;
+        // Compact pad cards, two rows of three; a pad that no longer stands has a dotted border and says so.
+        List<StationConsoleSyncPayload.PairedPad> pads = s.pairedPads();
+        for (int i = 0; i < pads.size() && i < ConsoleLayout.DOCK_CARDS; i++) {
+            StationConsoleSyncPayload.PairedPad pad = pads.get(i);
+            int[] r = ConsoleLayout.dockCard(i);
+            drawPadCard(g, r, pad);
         }
-        label(g, tr("routes", this.menu.get(StationConsoleMenu.D_ROUTE_USED),
-                this.menu.get(StationConsoleMenu.D_ROUTE_CAP)), 10, 150, SUBTLE);
-        label(g, tr("inbound", s.inbound()), 10, 162, SUBTLE);
+        if (pads.size() > ConsoleLayout.DOCK_CARDS) {
+            label(g, Component.literal("+" + (pads.size() - ConsoleLayout.DOCK_CARDS)), 216, 146, SUBTLE);
+        }
+        glyph(g, Glyphs.Glyph.ROCKET, 10, 154, SUBTLE);
+        fitLabel(g, tr("routes", this.menu.get(StationConsoleMenu.D_ROUTE_USED),
+                this.menu.get(StationConsoleMenu.D_ROUTE_CAP)), 20, 154, 210, SUBTLE);
+        glyph(g, Glyphs.Glyph.ROCKET, 10, 166, WARN);
+        fitLabel(g, tr("inbound", s.inbound()), 20, 166, 210, SUBTLE);
+    }
+
+    private void drawPadCard(GuiGraphicsExtractor g, int[] r, StationConsoleSyncPayload.PairedPad pad) {
+        int x = this.leftPos + r[0];
+        int y = this.topPos + r[1];
+        int w = r[2];
+        int h = r[3];
+        String dim = pad.dimension();
+        String shortDim = dim.contains(":") ? dim.substring(dim.indexOf(':') + 1) : dim;
+        net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> key = net.minecraft.resources.ResourceKey
+                .create(net.minecraft.core.registries.Registries.DIMENSION, Identifier.parse(dim));
+        int accent = za.co.neroland.nerospace.client.ui.PlanetAccents.of(key);
+        // The planet's own (translated) name; the raw path only for a dimension Nerospace does not know.
+        boolean known = key.equals(za.co.neroland.nerospace.registry.ModDimensions.OVERWORLD)
+                || za.co.neroland.nerospace.world.planet.Planets.get(key) != null;
+        int border = pad.standing() ? 0xFF2E4A5A : 0xFF262B33;
+        if (pad.standing()) {
+            g.fill(x - 1, y - 1, x + w + 1, y + h + 1, border);
+        } else {
+            for (int i = -1; i < w + 1; i += 2) {
+                g.fill(x + i, y - 1, x + i + 1, y, border);
+                g.fill(x + i, y + h, x + i + 1, y + h + 1, border);
+            }
+            for (int j = -1; j < h + 1; j += 2) {
+                g.fill(x - 1, y + j, x, y + j + 1, border);
+                g.fill(x + w, y + j, x + w + 1, y + j + 1, border);
+            }
+        }
+        g.fill(x, y, x + w, y + h, HULL);
+        g.fill(x, y, x + w, y + 2, accent);
+        Glyphs.draw(g, pad.standing() ? Glyphs.Glyph.PAD : Glyphs.Glyph.LOCK, x + 2, y + 5,
+                pad.standing() ? accent : SUBTLE);
+        Component planet = known ? za.co.neroland.nerospace.rocket.Destinations.displayName(key)
+                : Component.literal(shortDim);
+        Component name = Component.literal(pad.padName());
+        g.text(this.font, SpaceButton.fit(this.font, planet, w - 14), x + 12, y + 5, pad.standing() ? TITLE : SUBTLE,
+                false);
+        if (pad.standing()) {
+            g.text(this.font, SpaceButton.fit(this.font, name, w - 4), x + 2, y + 18, VALUE, false);
+        } else {
+            g.text(this.font, SpaceButton.fit(this.font, tr("pad_missing"), w - 4), x + 2, y + 18, BAD, false);
+        }
+        hoverTip(r[0], r[1], w, h, planet.copy().append(" · " + pad.padName())
+                .append(pad.standing() ? Component.empty() : Component.literal("\n").append(tr("pad_missing"))));
     }
 
     private void drawBuild(GuiGraphicsExtractor g, StationConsoleSyncPayload s) {
@@ -582,40 +729,45 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
             if (kind == null) {
                 continue;
             }
-            int[] xy = tileXY(tile);
+            int[] row = ConsoleLayout.buildRow(tile);
             boolean built = (builtMask & (1 << tile)) != 0;
-            int x0 = l + xy[0];
-            int y0 = t + xy[1];
-            g.fill(x0, y0, x0 + 104, y0 + 28, built ? ACCENT : 0xFF2E4A5A);
-            g.fill(x0 + 1, y0 + 1, x0 + 103, y0 + 27, 0xFF0C1E2B);
-            label(g, tr("module." + kind.id()), xy[0] + 4, xy[1] + 3, TITLE);
-            Component state;
-            int colour = SUBTLE;
+            boolean missing = !ModuleCosts.satisfiable(kind, have) && !creative();
+            int x0 = l + row[0];
+            int y0 = t + row[1];
+            int border = built ? ACCENT : (missing ? 0xFF262B33 : 0xFF2E4A5A);
+            g.fill(x0, y0, x0 + row[2], y0 + row[3], border);
+            g.fill(x0 + 1, y0 + 1, x0 + row[2] - 1, y0 + row[3] - 1, 0xFF0C1E2B);
+            glyph(g, Glyphs.module(tile), row[0] + 4, row[1] + 4, built ? ACCENT : SUBTLE);
+            Component name = tr("module." + kind.id());
+            Component shown = SpaceButton.fit(this.font, name, ConsoleLayout.BUILD_NAME_W);
+            label(g, shown, row[0] + 16, row[1] + 4, TITLE);
+            hoverTip(row[0] + 16, row[1] + 4, ConsoleLayout.BUILD_NAME_W, 9, costTooltip(kind, have));
+
+            // State / cost column.
+            int cx = row[0] + ConsoleLayout.BUILD_STATE_DX;
+            boolean toggle = built && (kind == ModuleKind.SOLAR_WING || kind == ModuleKind.GRAVITY_DECK);
+            int colW = toggle ? ConsoleLayout.BUILD_STATE_W_TOGGLE : ConsoleLayout.BUILD_STATE_W;
+            boolean wingsLeft = kind == ModuleKind.SOLAR_WING && s.solarWings() < 2;
             if (tile == 0) {
-                state = tr("tile.core");
-            } else if (kind == ModuleKind.SOLAR_WING) {
-                state = tr("tile.wings", s.solarWings());
-                colour = s.solarWings() > 0 ? ACCENT : SUBTLE;
-            } else if (built) {
-                state = tr("tile.built");
-                colour = ACCENT;
+                fitLabel(g, tr("tile.core"), cx, row[1] + 4, colW + 44, SUBTLE);
+            } else if (built && !wingsLeft) {
+                glyph(g, Glyphs.Glyph.DOT_FILLED, cx, row[1] + 4, ACCENT);
+                Component state = kind == ModuleKind.SOLAR_WING ? tr("tile.wings", s.solarWings()) : tr("tile.built");
+                if (toggle) {
+                    hoverTip(cx, row[1] + 4, 8, 8, state); // the On/Off switch takes the column
+                } else {
+                    fitLabel(g, state, cx + 10, row[1] + 4, colW - 10, SUBTLE);
+                }
             } else if (kind == ModuleKind.OBSERVATORY && !cls.traits().observatoryAllowed()) {
-                state = tr("tile.research_only");
-                colour = WARN;
+                fitLabel(g, tr("tile.research_only"), cx, row[1] + 4, colW, WARN);
             } else if (kind.requires() != null && (builtMask & (1 << kind.requires().tile())) == 0) {
-                state = tr("tile.requires_habitat");
-                colour = WARN;
+                fitLabel(g, tr("tile.requires_habitat"), cx, row[1] + 4, colW, WARN);
             } else if (count >= 8) {
-                state = tr("tile.max");
-                colour = WARN;
-            } else if (!ModuleCosts.satisfiable(kind, have) && !creative()) {
-                state = tr("tile.missing");
-                colour = BAD;
+                fitLabel(g, tr("tile.max"), cx, row[1] + 4, colW, WARN);
             } else {
-                state = tr("tile.buildable");
-                colour = ACCENT;
+                drawCost(g, kind, have, wingsLeft ? s.solarWings() + " / 2 · " : "", cx, row[1] + 4, colW);
+                hoverTip(cx, row[1] + 4, colW, 9, costTooltip(kind, have));
             }
-            label(g, state, xy[0] + 4, xy[1] + 16, colour);
         }
         int result = this.menu.get(StationConsoleMenu.D_LAST_BUILD);
         if (System.currentTimeMillis() - this.buildClickAt < 3000L && result != ModuleBuildRules.RESULT_NONE) {
@@ -624,9 +776,49 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
                 var p = s.blockedAt().get();
                 msg = tr("result.blocked_at", p.getX(), p.getY(), p.getZ());
             }
-            label(g, msg, 10, 184, result == ModuleBuildRules.RESULT_OK ? ACCENT : BAD);
+            fitLabel(g, msg, 10, 184, 220, result == ModuleBuildRules.RESULT_OK ? ACCENT : BAD);
         } else {
-            label(g, tr("build_hint"), 10, 184, SUBTLE);
+            fitLabel(g, tr("build_hint"), 10, 184, 220, SUBTLE);
+        }
+    }
+
+    /** The cost list "8x hull · 2x titanium": items the player lacks in BAD, cut with an ellipsis at {@code maxW}. */
+    private void drawCost(GuiGraphicsExtractor g, ModuleKind kind, Map<String, Integer> have, String prefix, int dx,
+            int dy, int maxW) {
+        List<Component> parts = new ArrayList<>();
+        List<Integer> colours = new ArrayList<>();
+        if (!prefix.isEmpty()) {
+            parts.add(Component.literal(prefix));
+            colours.add(VALUE);
+        }
+        boolean first = true;
+        for (Map.Entry<String, Integer> e : ModuleCosts.of(kind).entrySet()) {
+            Item item = BuiltInRegistries.ITEM.getOptional(Identifier.parse(e.getKey())).orElse(null);
+            Component name = item == null ? Component.literal(e.getKey()) : item.getName(new ItemStack(item));
+            if (!first) {
+                parts.add(Component.literal(" · "));
+                colours.add(VALUE);
+            }
+            first = false;
+            parts.add(tr("cost", e.getValue(), name));
+            colours.add(creative() || have.getOrDefault(e.getKey(), 0) >= e.getValue() ? VALUE : BAD);
+        }
+        int total = 0;
+        for (Component part : parts) {
+            total += this.font.width(part);
+        }
+        int limit = total <= maxW ? maxW : maxW - this.font.width("…");
+        int x = dx;
+        for (int i = 0; i < parts.size(); i++) {
+            Component part = parts.get(i);
+            int w = this.font.width(part);
+            if (x - dx + w > limit) {
+                label(g, Component.literal(this.font.plainSubstrByWidth(part.getString(), Math.max(0, limit - (x - dx)))
+                        + "…"), x, dy, colours.get(i));
+                return;
+            }
+            label(g, part, x, dy, colours.get(i));
+            x += w;
         }
     }
 }

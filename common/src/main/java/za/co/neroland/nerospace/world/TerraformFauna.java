@@ -19,7 +19,7 @@ import za.co.neroland.nerospace.world.planet.TerraformTables;
  * spawns a pair of the planet's livestock — capped by a nearby-population count so herds never balloon.
  * Biome spawn settings on the mature biomes remain the long-term backstop.
  *
- * <p>2.0 (D7): the species comes from the planet's terraform table (its fauna set). A species that is not
+ * <p>2.0: the species comes from the planet's terraform table (its fauna set). A species that is not
  * registered yet seeds nothing — never a stand-in from another world. Off-planet dimensions keep the 1.x Meadow
  * Loper.</p>
  *

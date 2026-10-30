@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-/** 001 §9: a 1.6.0 Village Core keeps its owner UUID, loses {@code OwnerName}, and erasure clears the owner. */
+/** A 1.6.0 Village Core keeps its owner UUID, loses {@code OwnerName}, and erasure clears the owner. */
 class VillageCoreOwnerCompatTest {
 
     private static final UUID OWNER = UUID.fromString("0f3c2a8e-5a8d-4d3b-9a43-6c1e2f7b9d10");

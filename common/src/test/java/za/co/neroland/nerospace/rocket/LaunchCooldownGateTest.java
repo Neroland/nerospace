@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
-/** 005 G5: the launch cooldown is checked before any NeroEconomy fee, so a refused launch is never charged. */
+/** The launch cooldown is checked before any NeroEconomy fee, so a refused launch is never charged. */
 class LaunchCooldownGateTest {
 
     @Test

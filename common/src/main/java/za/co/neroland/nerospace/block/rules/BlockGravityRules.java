@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.block.rules;
 import java.util.List;
 
 /**
- * Block-level gravity overrides (002 §1.6/§1.7, §10.4). A Gravity Shard sets −0.15 over the 3×5×3 above it; a
+ * Block-level gravity overrides. A Gravity Shard sets −0.15 over the 3×5×3 above it; a
  * Gravity Plate sets 1.0 over the 1×6×1 above it. Where several cover a cell: the highest-priority kind wins
  * (PLATE beats SHARD), then the lowest factor. No override in range → the dimension factor.
  */

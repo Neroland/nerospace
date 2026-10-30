@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Ember-Cracked Ashstone (002 §1.3): 1.0 fire-type damage every 20 ticks without heat boots. */
+/** Ember-Cracked Ashstone: 1.0 fire-type damage every 20 ticks without heat boots. */
 public final class HeatContactRules {
 
     public static final float DAMAGE = 1.0F;

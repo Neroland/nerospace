@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.2 Perchlorate poison, §1.3 Ember heat, §1.5 moss nausea — three gates, three effects (§2.1.7). */
+/** Perchlorate poison, Ember heat, moss nausea — three gates, three effects. */
 @SuppressWarnings("unused")
 class ContactHazardRulesTest {
 

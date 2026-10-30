@@ -1,3 +1,118 @@
 {
-  "vanillaSkybox": true
+  "background": {
+    "zenith": "#8F6A4F",
+    "horizon": "#D9A066",
+    "nightZenith": "#0B0A12",
+    "nightHorizon": "#2A1A14",
+    "blend": "daylight"
+  },
+  "fog": {
+    "color": "#C8683D",
+    "nightColor": "#1A0F0C",
+    "start": 0.5,
+    "end": 1.0
+  },
+  "stars": {
+    "count": 1800,
+    "brightness": 0.7,
+    "alwaysVisible": false,
+    "tint": "#FFF4E8"
+  },
+  "sun": [
+    {
+      "id": "sol",
+      "texture": "nerospace:textures/sky/sun_small.png",
+      "size": 3.5,
+      "color": "#9FB4CC",
+      "glow": 2.0,
+      "orbitPeriodDays": 1.0,
+      "phaseOffset": 0.0,
+      "inclination": 0.0
+    }
+  ],
+  "moons": [
+    {
+      "id": "phobos",
+      "texture": "nerospace:textures/sky/phobos.png",
+      "size": 1.2,
+      "color": "#C9B8A8",
+      "glow": 0.0,
+      "orbitPeriodDays": 0.32,
+      "phaseOffset": 0.1,
+      "inclination": 1.0
+    },
+    {
+      "id": "deimos",
+      "texture": "nerospace:textures/sky/deimos.png",
+      "size": 0.6,
+      "color": "#D8CCBF",
+      "glow": 0.0,
+      "orbitPeriodDays": 1.26,
+      "phaseOffset": 0.6,
+      "inclination": 2.0
+    }
+  ],
+  "bodies": [],
+  "clouds": "none",
+  "horizonHaze": {
+    "color": "#D9A066",
+    "strength": 0.35
+  },
+  "weatherTints": {
+    "DUST_STORM": {
+      "sky": "#7A4A2E",
+      "fog": "#7A4A2E",
+      "strengthAtPeak": 0.9
+    }
+  },
+  "gradient": [
+    {
+      "phase": 0.0,
+      "zenith": "#4A3B3E",
+      "horizon": "#6F7E9C",
+      "fog": "#6A5A58"
+    },
+    {
+      "phase": 0.04,
+      "zenith": "#7E5F49",
+      "horizon": "#D9A066",
+      "fog": "#C8683D"
+    },
+    {
+      "phase": 0.25,
+      "zenith": "#8F6A4F",
+      "horizon": "#E2B07A",
+      "fog": "#C8683D"
+    },
+    {
+      "phase": 0.46,
+      "zenith": "#7E5F49",
+      "horizon": "#D9A066",
+      "fog": "#C8683D"
+    },
+    {
+      "phase": 0.5,
+      "zenith": "#3E3A4A",
+      "horizon": "#4F6D8F",
+      "fog": "#5C5C6E"
+    },
+    {
+      "phase": 0.54,
+      "zenith": "#141220",
+      "horizon": "#2A1A14",
+      "fog": "#1A0F0C"
+    },
+    {
+      "phase": 0.75,
+      "zenith": "#0B0A12",
+      "horizon": "#2A1A14",
+      "fog": "#1A0F0C"
+    },
+    {
+      "phase": 0.96,
+      "zenith": "#141220",
+      "horizon": "#2A1A14",
+      "fog": "#1A0F0C"
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Decision 002 §10.2: config may lower a locked cap, never raise it. */
+/** Config may lower a locked cap, never raise it. */
 public final class Caps {
 
     private Caps() {

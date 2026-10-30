@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.4 Frost Crystal Cluster. */
+/** Frost Crystal Cluster. */
 @SuppressWarnings("unused")
 class CrystalStageRulesTest {
 

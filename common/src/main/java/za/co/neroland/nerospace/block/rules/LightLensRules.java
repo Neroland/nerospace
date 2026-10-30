@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.block.rules;
 
 /**
- * Crater Glass light lens (002 §1.1): {@code LENS = clamp(max non-lens neighbour block light + 1, 0, 15)}. Vanilla
+ * Crater Glass light lens: {@code LENS = clamp(max non-lens neighbour block light + 1, 0, 15)}. Vanilla
  * glass passes light at −1, so the lens is +2 relative. Other lenses never count (no chains).
  */
 public final class LightLensRules {

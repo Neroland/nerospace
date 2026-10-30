@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.JsonObject;
@@ -21,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
 
-/** Per-planet terraform tables (D7, 003 §8.1): trio ids, planet rules, data files and lang. */
+/** Per-planet terraform tables: trio ids, planet rules, data files and lang. */
 class TerraformTablesTest {
 
     private static Path commonMain() {
@@ -157,6 +158,105 @@ class TerraformTablesTest {
         assertEquals("minecraft:oak_sapling", TerraformTable.pick(flora, 0).orElseThrow().toString());
         assertEquals("minecraft:short_grass", TerraformTable.pick(flora, 99).orElseThrow().toString());
         assertTrue(TerraformTable.pick(flora, 100).isEmpty());
+    }
+
+    /** Vanilla {@code #minecraft:dirt}, which {@code #nerospace:terraform_to_grass} includes by reference. */
+    private static final Set<String> VANILLA_DIRT = Set.of("minecraft:dirt", "minecraft:grass_block",
+            "minecraft:podzol", "minecraft:coarse_dirt", "minecraft:mycelium", "minecraft:rooted_dirt",
+            "minecraft:moss_block", "minecraft:mud", "minecraft:muddy_mangrove_roots", "minecraft:pale_moss_block");
+
+    /**
+     * Natural surface blocks that deliberately stay through stages 1-2 (and are therefore neither tagged nor listed).
+     * Every entry needs a reason; anything else on a planet's surface must convert.
+     */
+    private static final Map<String, Set<String>> HOLDS = Map.of(
+            // Permafrost thaws at Living only (hydration_immune); Packed Cryo-Ice is glacier ice and stays ice.
+            "glacira", Set.of("nerospace:permafrost", "nerospace:packed_cryo_ice", "minecraft:packed_ice"),
+            // The polar caps stay dry ice.
+            "mars", Set.of("nerospace:dry_ice"));
+
+    /** Blocks a surface rule (26.3: material rule) writes on the top floor block (a {@code stone_depth} floor condition at offset 0). */
+    private static void surfaceBlocks(com.google.gson.JsonElement node, boolean floor, Set<String> out) {
+        if (node == null || !node.isJsonObject()) {
+            return;
+        }
+        JsonObject o = node.getAsJsonObject();
+        String type = o.has("type") ? o.get("type").getAsString() : "";
+        switch (type) {
+            case "minecraft:block" -> {
+                if (floor) {
+                    // 26.1.2 / 26.2: {"Name": id, ...}; 26.3: a plain state string.
+                    com.google.gson.JsonElement state = o.get("result_state");
+                    out.add(state.isJsonObject() ? state.getAsJsonObject().get("Name").getAsString()
+                            : state.getAsString().replaceFirst("\\[.*$", ""));
+                }
+            }
+            case "minecraft:condition" -> {
+                JsonObject cond = o.getAsJsonObject("if_true");
+                boolean top = "minecraft:stone_depth".equals(cond.get("type").getAsString())
+                        && "floor".equals(cond.get("surface_type").getAsString())
+                        && (!cond.has("offset") || cond.get("offset").getAsInt() == 0);
+                surfaceBlocks(o.get("then_run"), floor || top, out);
+            }
+            case "minecraft:sequence" -> {
+                for (com.google.gson.JsonElement e : o.getAsJsonArray("sequence")) {
+                    surfaceBlocks(e, floor, out);
+                }
+            }
+            default -> {
+            }
+        }
+    }
+
+    private static Set<String> tagValues(String tag) throws IOException {
+        Set<String> out = new HashSet<>();
+        JsonObject json = JsonParser.parseString(Files.readString(
+                commonMain().resolve("resources/data/nerospace/tags/block/" + tag + ".json"), StandardCharsets.UTF_8))
+                .getAsJsonObject();
+        for (com.google.gson.JsonElement e : json.getAsJsonArray("values")) {
+            String id = e.isJsonObject() ? e.getAsJsonObject().get("id").getAsString() : e.getAsString();
+            if ("#minecraft:dirt".equals(id)) {
+                out.addAll(VANILLA_DIRT);
+            } else {
+                out.add(id);
+            }
+        }
+        return out;
+    }
+
+    @Test
+    @DisplayName("every block a planet's noise settings put on the surface converts at stage 1 (tagged or listed)")
+    void surfaceBlocksAreTerraformable() throws IOException {
+        Set<String> tagged = tagValues("terraform_to_grass");
+        for (TerraformTable t : TerraformTables.ORDER) {
+            if (t == TerraformTables.LEGACY) {
+                continue;
+            }
+            Set<String> listed = new HashSet<>(tagged);
+            t.extraSurface().forEach(id -> listed.add(id.toString()));
+            listed.addAll(HOLDS.getOrDefault(t.langId(), Set.of()));
+            int checked = 0;
+            for (String tree : List.of("resources", "resources-26.3")) {
+                Path file = commonMain().resolve(tree + "/data/nerospace/worldgen/noise_settings/" + t.langId() + ".json");
+                if (!Files.isRegularFile(file)) {
+                    continue;
+                }
+                Set<String> surface = new HashSet<>();
+                JsonObject settings = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8))
+                        .getAsJsonObject();
+                surfaceBlocks(settings.has("surface_rule") ? settings.get("surface_rule")
+                        : settings.get("material_rule"), false, surface);
+                assertFalse(surface.isEmpty(), tree + " " + t.langId() + ": no surface blocks found");
+                for (String block : surface) {
+                    assertTrue(listed.contains(block), tree + " " + t.langId() + ": surface block " + block
+                            + " is neither in #nerospace:terraform_to_grass nor in the table's extraSurface");
+                }
+                checked++;
+            }
+            assertTrue(checked > 0, t.langId() + ": no noise settings");
+        }
+        assertTrue(table("greenxertz").extraSurface().stream().anyMatch(id -> id.toString().equals("nerospace:xertz_soil")),
+                "the xertz garden must take on 2.0 Greenxertz ground");
     }
 
     private static TerraformTable table(String langId) {

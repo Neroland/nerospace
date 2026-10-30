@@ -23,7 +23,7 @@ import za.co.neroland.nerospace.world.planet.PlanetWeather;
 import za.co.neroland.nerospace.world.planet.WeatherEvent;
 
 /**
- * Shadow Lichen (Nyxara, 002 §1.6): a glow-lichen-style multiface that spreads only in the dark and dies in flares.
+ * Shadow Lichen (Nyxara): a glow-lichen-style multiface that spreads only in the dark and dies in flares.
  * On a random tick it spreads 1-in-10 to an adjacent face while the light at its cell is 3 or less and its chunk holds
  * fewer than 32 lichen blocks (config may lower, {@code blocks.shadowLichenCap}); during a Nyxara flare each random
  * tick withers one face 1-in-2 (the last face removes the block) and drops nothing. A torch stops it. Shears harvest
@@ -69,7 +69,7 @@ public class ShadowLichenBlock extends MultifaceSpreadeableBlock {
         }
     }
 
-    /** Removes one random face; the last face removes the block. Drops nothing (002 §4). */
+    /** Removes one random face; the last face removes the block. Drops nothing. */
     private void wither(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         List<Direction> faces = new ArrayList<>();
         for (Direction d : Direction.values()) {

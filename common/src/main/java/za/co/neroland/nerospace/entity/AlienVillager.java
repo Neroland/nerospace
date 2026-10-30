@@ -319,7 +319,7 @@ public class AlienVillager extends PathfinderMob implements Merchant {
 
     private void rebuildOffers(Player player) {
         int tier = player != null ? getTier(player) : 1;
-        // One table per culture (D8); the culture follows from the ordinal-persisted species.
+        // One table per culture; the culture follows from the ordinal-persisted species.
         this.offers = AlienTrades.forCulture(getPlanet().culture(), Math.max(1, tier));
     }
 
@@ -446,22 +446,29 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         this.villagerXp = input.getIntOr("VillagerXp", 0);
         this.reputation.clear();
         Optional<Map<String, Integer>> stored = input.read("Reputation", REP_CODEC);
-        stored.ifPresent(map -> map.forEach((key, score) -> {
-            UUID id;
-            try {
-                id = UUID.fromString(key);
-            } catch (IllegalArgumentException ignored) {
-                return; // skip malformed UUID keys
-            }
-            // POPIA/GDPR load-time filter: an erasure request can arrive while this villager's chunk is
-            // unloaded, so the loaded-entity sweep in data.NerospaceErasure never sees it. Drop the entry
-            // here instead, and it is simply not written back on the next chunk save. The latch is
-            // session-scoped by design (see NerospaceErasure's javadoc for the residual gap this leaves).
-            if (za.co.neroland.nerospace.data.NerospaceErasure.erasedThisSession(id)) {
+        stored.ifPresent(map -> {
+            if (map.isEmpty()) {
                 return;
             }
-            this.reputation.put(id, score);
-        }));
+            // POPIA/GDPR load-time filter: an erasure request can arrive while this villager's chunk is unloaded,
+            // so the loaded-entity sweep in data.NerospaceErasure never sees it. Drop the entry here instead (it is
+            // simply not written back on the next chunk save): erased this session, or still in the Village Core
+            // ledger's bounded, salted erasure-key list (no new data is stored for this).
+            java.util.function.Predicate<UUID> erased =
+                    za.co.neroland.nerospace.data.NerospaceErasure.villagerReputationFilter(this.level());
+            map.forEach((key, score) -> {
+                UUID id;
+                try {
+                    id = UUID.fromString(key);
+                } catch (IllegalArgumentException ignored) {
+                    return; // skip malformed UUID keys
+                }
+                if (erased.test(id)) {
+                    return;
+                }
+                this.reputation.put(id, score);
+            });
+        });
         refreshDisplayTier();
     }
 

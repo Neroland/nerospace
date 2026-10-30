@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.rocket;
 import java.util.Locale;
 
 /**
- * Pure descent state machine numbers and transitions (005 §3). The server drives {@link RocketEntity}'s
+ * Pure descent state machine numbers and transitions. The server drives {@link RocketEntity}'s
  * {@code Phase}; the client only renders it.
  */
 public final class DescentMath {
@@ -22,7 +22,7 @@ public final class DescentMath {
     public static final double SLIDE_SPEED = 2.0D;
     /** An aborted landing whose spawn is blocked is pushed up at most this far. */
     public static final int ABORT_MAX_PUSH = 8;
-    /** A rider may not launch again within this many ticks of their previous launch (005 G5). */
+    /** A rider may not launch again within this many ticks of their previous launch. */
     public static final int LAUNCH_COOLDOWN = 100;
 
     public enum Phase {

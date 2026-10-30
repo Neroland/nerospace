@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import za.co.neroland.nerospace.registry.ModDimensions;
 
-/** 004 §2.3: every planet and HOME has an accent and a dark pair; accents stay ≥ 3:1 against the hull. */
+/** Every planet and HOME has an accent and a dark pair; accents stay ≥ 3:1 against the hull. */
 class PlanetAccentsTest {
 
     private static final int HULL = 0xFF0D1119;

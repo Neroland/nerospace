@@ -18,7 +18,7 @@ import za.co.neroland.nerospace.world.planet.PlanetDefinition;
 import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
- * The four villager cultures (003 §8.2). Luna, Mars and the station have none: silence on the Moon, wrecks and a
+ * The four villager cultures. Luna, Mars and the station have none: silence on the Moon, wrecks and a
  * salvage drone on Mars. A planet names its culture through {@code PlanetTraits.villagerCulture()}.
  */
 public final class VillagerCultures {

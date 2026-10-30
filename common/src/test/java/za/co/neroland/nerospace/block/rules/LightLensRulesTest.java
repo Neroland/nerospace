@@ -12,7 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.1 Crater Glass lens. */
+/** Crater Glass lens. */
 @SuppressWarnings("unused")
 class LightLensRulesTest {
 

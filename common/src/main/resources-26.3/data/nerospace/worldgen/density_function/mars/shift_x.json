@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:cache",
+  "input": {
+    "type": "minecraft:shift_a",
+    "noise": "nerospace:mars/offset"
+  }
+}

@@ -255,6 +255,8 @@ public final class ModItems {
     public static final RegistryEntry<Item> OXYGEN_SUIT_COLD_CHESTPLATE = armor("oxygen_suit_cold_chestplate", OXYGEN_SUIT_COLD_MATERIAL, ArmorType.CHESTPLATE);
     public static final RegistryEntry<Item> OXYGEN_SUIT_COLD_LEGGINGS = armor("oxygen_suit_cold_leggings", OXYGEN_SUIT_COLD_MATERIAL, ArmorType.LEGGINGS);
     public static final RegistryEntry<Item> OXYGEN_SUIT_COLD_BOOTS = armor("oxygen_suit_cold_boots", OXYGEN_SUIT_COLD_MATERIAL, ArmorType.BOOTS);
+    /** Smithing upgrade: lines a T2 / heat / cryo suit piece against radiation (adds {@code nerospace:rad_lining}). */
+    public static final RegistryEntry<Item> RAD_LINING = item("rad_lining");
 
     // --- helpers ------------------------------------------------------------
     private static RegistryEntry<Item> item(String name) {
@@ -336,7 +338,8 @@ public final class ModItems {
                         OXYGEN_SUIT_HELMET.get(), OXYGEN_SUIT_CHESTPLATE.get(), OXYGEN_SUIT_LEGGINGS.get(), OXYGEN_SUIT_BOOTS.get(),
                         OXYGEN_SUIT_T2_HELMET.get(), OXYGEN_SUIT_T2_CHESTPLATE.get(), OXYGEN_SUIT_T2_LEGGINGS.get(), OXYGEN_SUIT_T2_BOOTS.get(),
                         OXYGEN_SUIT_HEAT_HELMET.get(), OXYGEN_SUIT_HEAT_CHESTPLATE.get(), OXYGEN_SUIT_HEAT_LEGGINGS.get(), OXYGEN_SUIT_HEAT_BOOTS.get(),
-                        OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get()),
+                        OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get(),
+                        RAD_LINING.get()),
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
                 List.<ItemLike>of(COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), SOLAR_PANEL_T2_ITEM.get(), SOLAR_PANEL_T3_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), CARGO_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), LAUNCH_CONTROLLER_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(), HYDRATION_MODULE_ITEM.get(), TERRAFORM_MONITOR_ITEM.get(),
                         LANDING_POD_ITEM.get(), DOCKING_PORT_ITEM.get(),

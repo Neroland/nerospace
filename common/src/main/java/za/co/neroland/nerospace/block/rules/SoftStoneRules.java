@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Ashstone (002 §1.3): instant-mine with any pickaxe. */
+/** Ashstone: instant-mine with any pickaxe. */
 public final class SoftStoneRules {
 
     private SoftStoneRules() {

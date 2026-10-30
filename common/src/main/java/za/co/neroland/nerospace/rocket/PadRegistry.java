@@ -34,7 +34,7 @@ import za.co.neroland.nerospace.NerospaceCommon;
  * dimension id, the block position and (2.0) the node kind, centre and facing. Pads are server-global like
  * stations.</p>
  *
- * <p><b>Compatibility (001 §6.2):</b> {@code kind}, {@code center} and {@code facing} are optional on load
+ * <p><b>Compatibility:</b> {@code kind}, {@code center} and {@code facing} are optional on load
  * ({@code LAUNCH_PAD}, empty, empty). {@code pos} stays the node identity and is never rewritten;
  * {@link #fill} back-fills a missing centre/facing exactly once.</p>
  */
@@ -44,7 +44,7 @@ public final class PadRegistry extends SavedData {
 
     /** Hard cap on launch-pad + dock nodes so a grief-spammed registry can't bloat the save. */
     public static final int MAX_PADS = 256;
-    /** Separate cap on Landing Pod nodes (005 G4); the oldest pod node is evicted when full. */
+    /** Separate cap on Landing Pod nodes; the oldest pod node is evicted when full. */
     public static final int MAX_POD_NODES = 128;
 
     public static final SavedDataType<PadRegistry> TYPE = new SavedDataType<>(
@@ -207,7 +207,7 @@ public final class PadRegistry extends SavedData {
     }
 
     /**
-     * Back-fills a node's missing centre/facing (005 §1.6 step 4). Sets only empty fields; never touches
+     * Back-fills a node's missing centre/facing. Sets only empty fields; never touches
      * {@code pos}, the name or the kind. @return whether anything changed.
      */
     public boolean fill(int id, @Nullable BlockPos center, @Nullable Direction facing) {

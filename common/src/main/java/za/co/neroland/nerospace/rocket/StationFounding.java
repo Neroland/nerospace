@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.rocket;
 
 /**
- * Pure "New Station from the rocket" rule (001 §13.2 / §18.2, 005 §8): a charter is consumed on arrival; a
+ * Pure "New Station from the rocket" rule: a charter is consumed on arrival; a
  * rocket saved by 1.6.0 already in flight with {@code StationSlot:-2} is honoured once for free; no charter →
  * the origin platform with a message; registry full → nothing founded, nothing consumed.
  */
@@ -20,7 +20,7 @@ public final class StationFounding {
     /**
      * Whether a loaded rocket follows the 2.0 charter rule. A 2.0 save carries {@code CharterRule}; a 1.6.0 save
      * has none, and only a rocket that was already in flight ({@code Launching}) is honoured once — a parked 1.6.0
-     * rocket with "New Station" still selected follows the 2.0 rule (D6: one charter per station).
+     * rocket with "New Station" still selected follows the 2.0 rule (one charter per station).
      *
      * @param savedRule the saved {@code CharterRule}, or {@code null} when the field is absent
      * @param launching the saved {@code Launching} flag

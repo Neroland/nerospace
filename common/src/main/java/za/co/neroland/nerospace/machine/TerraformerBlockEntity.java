@@ -260,7 +260,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
 
         // Luna: once the meadow is Living, the edge of the breathable ground shimmers (visual only, sparse).
         if (this.lifeRadius > 0 && serverLevel.getGameTime() % SHIMMER_INTERVAL_TICKS == 0) {
-            TerraformConversion.shimmerDome(serverLevel, pos, this.radius);
+            TerraformConversion.shimmerDome(serverLevel, pos, this.lifeRadius);
         }
     }
 
@@ -352,7 +352,8 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
             switch (stage) {
                 case 2 -> {
                     boolean done = TerraformConversion.hydrateColumn(level, x, z, waterTableY(),
-                            this::drawHydration, biomeChanged);
+                            this::drawHydration, biomeChanged,
+                            TerraformConversion.SpringArea.of(center, stageRadius));
                     if (!done) {
                         // Out of glacite mid-column: stall without advancing — the GUI says why.
                         this.hydrationStalled = true;

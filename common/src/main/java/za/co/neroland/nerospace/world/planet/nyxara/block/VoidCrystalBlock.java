@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 
 /**
- * Void Crystal (Nyxara, 002 §1.6 / §11.2): a purple crystal that emits light 10 and refracts beams. The refraction is
+ * Void Crystal (Nyxara): a purple crystal that emits light 10 and refracts beams. The refraction is
  * data, not code here: the block is in {@code #nerospace:beam_refractors}, which {@code api.optics.BeamRefraction}
  * reads (any beam mod may call it) and which the Observatory telescope counts along its sightline
  * ({@code TelescopeSightline}). Client-side it sheds about one portal particle per 60 ticks.
@@ -21,7 +21,7 @@ public class VoidCrystalBlock extends Block {
 
     public static final MapCodec<VoidCrystalBlock> CODEC = BlockCodecs.simple(VoidCrystalBlock::new);
 
-    /** Light emitted (002 §1.6). */
+    /** Light emitted. */
     public static final int LIGHT = 10;
 
     /** One portal particle per this many animate ticks on average (≈ 1 per 60 ticks). */

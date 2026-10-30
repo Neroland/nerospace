@@ -23,7 +23,7 @@ import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.ItemMagnetRules;
 
 /**
- * Magnetic ore (Hematite, 002 §1.2): broken with an iron-or-better tool, its drops are pulled toward the breaker
+ * Magnetic ore (Hematite): broken with an iron-or-better tool, its drops are pulled toward the breaker
  * (≤ 3 blocks, 0.2 b/t) for 20 ticks. The breaker is held only as a live object in a weak map for those ticks —
  * never persisted, never logged. {@link #tickMagnets} runs from the server tick ({@code PlanetTicks}).
  */

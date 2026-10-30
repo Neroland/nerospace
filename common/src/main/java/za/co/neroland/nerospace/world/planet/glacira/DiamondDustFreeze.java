@@ -18,7 +18,7 @@ import za.co.neroland.nerospace.world.planet.WeatherEvent;
 import za.co.neroland.nerospace.world.planet.WeatherMachine;
 
 /**
- * Diamond dust's weather behaviour (002 §2.1.2, 003 §4): while the event runs, every 100 ticks each loaded chunk near a
+ * Diamond dust's weather behaviour: while the event runs, every 100 ticks each loaded chunk near a
  * player samples one random surface column and freezes it if it is an exposed water source. At most 32 cells per
  * chunk per event; the counters reset on start and end. Never loads a chunk; no block owns this behaviour.
  */

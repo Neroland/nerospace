@@ -28,7 +28,7 @@ import za.co.neroland.nerospace.world.planet.mars.MarsContent;
 import za.co.neroland.nerospace.world.station.StationContent;
 
 /**
- * Rover Wreck (Mars, D8) — a half-buried six-wheeled rover: iron chassis with a weathered deck, a snapped antenna
+ * Rover Wreck (Mars) — a half-buried six-wheeled rover: iron chassis with a weathered deck, a snapped antenna
  * mast, a solar wing, red regolith drifted over its tail, a salvage chest, and a Salvage Drone hovering over it that
  * trades rover parts for raw hematite. Spaced by {@link StructureSpacing} with the Mars salt; every write stays in
  * the feature's 3×3-chunk region. Mars has no villagers and no village core.

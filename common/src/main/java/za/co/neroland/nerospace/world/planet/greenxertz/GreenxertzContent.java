@@ -93,7 +93,7 @@ public final class GreenxertzContent {
     public static final RegistryEntry<BlockItem> AMBER_SAP_ORE_ITEM = blockItem("amber_sap_ore", AMBER_SAP_ORE);
 
     // --- Items ---------------------------------------------------------------------------------------------
-    /** Amber, the biotech/seed ingredient (D3). */
+    /** Amber, the biotech/seed ingredient. */
     public static final RegistryEntry<Item> AMBER_SAP = item("amber_sap");
     public static final RegistryEntry<Item> XERTZ_FIBRE = item("xertz_fibre");
     public static final RegistryEntry<SporeBombItem> SPORE_BOMB = ModItems.ITEMS.register("spore_bomb",

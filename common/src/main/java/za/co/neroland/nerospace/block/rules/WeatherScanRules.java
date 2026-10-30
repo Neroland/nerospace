@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.block.rules;
 
 /**
- * Weather transition scan budget (002 §3): a transition touches at most {@code perChunkCap} blocks per chunk and is
+ * Weather transition scan budget: a transition touches at most {@code perChunkCap} blocks per chunk and is
  * spread over ticks, {@link #CHUNKS_PER_TICK} chunks per tick.
  */
 public final class WeatherScanRules {

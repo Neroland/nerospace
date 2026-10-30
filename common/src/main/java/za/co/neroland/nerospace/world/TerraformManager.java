@@ -213,7 +213,8 @@ public final class TerraformManager extends SavedData {
                         any = true;
                     }
                     if (chunkStage < 2 && hydR > 0 && dSq <= hydSq) {
-                        TerraformConversion.hydrateColumn(level, x, z, tableY, null, biomeChanged);
+                        TerraformConversion.hydrateColumn(level, x, z, tableY, null, biomeChanged,
+                                new TerraformConversion.SpringArea(cx, cz, hydSq));
                         any = true;
                     }
                     if (chunkStage < 3 && lifeR > 0 && dSq <= lifeSq) {

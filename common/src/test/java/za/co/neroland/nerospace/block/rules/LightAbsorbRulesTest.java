@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.6 Nyx Stone, §11.1. */
+/** Nyx Stone. */
 @SuppressWarnings("unused")
 class LightAbsorbRulesTest {
 

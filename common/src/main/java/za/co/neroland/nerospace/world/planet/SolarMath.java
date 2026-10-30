@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.world.planet;
 
 /**
- * Pure solar-output arithmetic (decision 001 §18.1 / 003 §3.5), unit-tested by {@code SolarAverageTest}:
+ * Pure solar-output arithmetic, unit-tested by {@code SolarAverageTest}:
  * {@code factor = daylight(phase) × planetSolar × weatherFactor}. The constants are chosen so the time-average
  * over a planet day is at least the 1.x flat 2.0 on every planet; the station stays a constant 2.0. With
  * {@code solar.clockDriven=false} every Nerospace world returns the 1.x flat {@link #LEGACY_FLAT}.

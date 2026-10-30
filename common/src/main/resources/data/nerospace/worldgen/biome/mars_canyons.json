@@ -1,4 +1,13 @@
 {
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.mars.loop",
+      "additions": {
+        "sound": "nerospace:ambient.mars.additions",
+        "tick_chance": 0.004
+      }
+    }
+  },
   "carvers": [
     "minecraft:cave",
     "minecraft:cave_extra_underground",

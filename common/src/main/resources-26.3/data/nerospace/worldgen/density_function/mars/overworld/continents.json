@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:cache",
+  "input": {
+    "type": "minecraft:noise",
+    "noise": "nerospace:mars/continentalness",
+    "shift_x": "nerospace:mars/shift_x",
+    "shift_z": "nerospace:mars/shift_z",
+    "xz_scale": 0.25,
+    "y_scale": 0.0
+  }
+}

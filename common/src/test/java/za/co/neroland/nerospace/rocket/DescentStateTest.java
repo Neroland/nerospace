@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import za.co.neroland.nerospace.rocket.DescentMath.Phase;
 
-/** 005 §3: the descent state machine numbers and transitions. */
+/** The descent state machine numbers and transitions. */
 class DescentStateTest {
 
     @Test

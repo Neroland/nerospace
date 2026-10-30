@@ -20,7 +20,7 @@ import za.co.neroland.nerospace.block.world.BlockGravityOverrides;
 
 /**
  * A block that registers a gravity override above itself (Gravity Shard Block = {@link Kind#SHARD}, Gravity Plate =
- * {@link Kind#PLATE}; 002 §10.4). Registration happens on placement and is removed when the block is removed. Beyond
+ * {@link Kind#PLATE}). Registration happens on placement and is removed when the block is removed. Beyond
  * 64 per chunk (config may lower) the placement is refused: the block pops back as an item with a message.
  *
  * <p>Worldgen never calls {@code onPlace}, so a generated block registers its override on its first random tick

@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Dawnband Stone (002 §1.6): during a Flare it glows 11 and shields COLD within 4 blocks; idle light 2. */
+/** Dawnband Stone: during a Flare it glows 11 and shields COLD within 4 blocks; idle light 2. */
 public final class WarmthRules {
 
     public static final double RADIUS = 4.0;

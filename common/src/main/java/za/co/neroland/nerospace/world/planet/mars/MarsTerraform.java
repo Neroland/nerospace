@@ -12,7 +12,7 @@ import za.co.neroland.nerospace.world.planet.TerraformTable;
 import za.co.neroland.nerospace.world.planet.TerraformTable.Rule;
 
 /**
- * Mars terraform table (003 §8.1): rust sand turns to red loam under hardy grass (Rooted), the <b>first open water
+ * Mars terraform table: rust sand turns to red loam under hardy grass (Rooted), the <b>first open water
  * on Mars</b> appears — one spring per chunk at its lowest surface cell (Hydrated), and a treeless red steppe
  * settles (Living). Storms still fire over terraformed land.
  */

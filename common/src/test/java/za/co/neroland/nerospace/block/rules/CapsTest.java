@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §10.2: config may lower a cap, never raise it. */
+/** Config may lower a cap, never raise it. */
 @SuppressWarnings("unused")
 class CapsTest {
 

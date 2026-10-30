@@ -13,7 +13,7 @@ import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 
 /**
- * The Docking Ring's block and item (002 §1.7 row: pickaxe/iron, 3.0 / 12.0, light 6, METAL). Registered from
+ * The Docking Ring's block and item (pickaxe/iron, 3.0 / 12.0, light 6, METAL). Registered from
  * the shared registry init after {@code ModBlocks}/{@code ModItems}.
  */
 public final class DockingContent {

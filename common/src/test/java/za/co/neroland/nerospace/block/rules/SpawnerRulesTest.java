@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.2 Dust Devil Pit. */
+/** Dust Devil Pit. */
 @SuppressWarnings("unused")
 class SpawnerRulesTest {
 

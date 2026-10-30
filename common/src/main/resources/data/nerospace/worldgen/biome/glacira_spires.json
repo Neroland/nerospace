@@ -1,4 +1,13 @@
 {
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.glacira.loop",
+      "additions": {
+        "sound": "nerospace:ambient.glacira.additions",
+        "tick_chance": 0.006
+      }
+    }
+  },
   "carvers": [
     "minecraft:cave",
     "minecraft:cave_extra_underground"

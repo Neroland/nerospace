@@ -25,7 +25,7 @@ import za.co.neroland.nerospace.block.rules.GeyserRules;
 import za.co.neroland.nerospace.block.rules.TickBootstrapRules;
 
 /**
- * Frozen Geyser (002 §1.4): {@code CHARGED} toggles every half interval and the geyser vents each time it becomes
+ * Frozen Geyser: {@code CHARGED} toggles every half interval and the geyser vents each time it becomes
  * charged — once per 160 ticks. On the vent, entities standing in the 1×1 above get +1.2 dy and 60 ticks of fall
  * grace (fall distance held at 0, {@link #tickGrace}), with 12 cloud particles. Not weather-driven. Register with
  * {@code randomTicks()}: worldgen never calls {@code onPlace}, so a generated geyser starts its cycle on its first

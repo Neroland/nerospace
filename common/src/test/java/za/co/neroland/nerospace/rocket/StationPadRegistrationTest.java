@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 import org.junit.jupiter.api.Test;
 
-/** Review #2: an arrival at a legacy station never renames the player's pad node (D5 pairing). */
+/** An arrival at a legacy station never renames the player's pad node (name pairing). */
 class StationPadRegistrationTest {
 
     private static final ResourceKey<Level> STATION = ResourceKey.create(Registries.DIMENSION,

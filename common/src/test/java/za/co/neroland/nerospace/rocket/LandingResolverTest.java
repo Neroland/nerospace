@@ -20,7 +20,7 @@ import za.co.neroland.nerospace.rocket.LandingDecision.PadLanding;
 import za.co.neroland.nerospace.rocket.LandingDecision.PodLanding;
 import za.co.neroland.nerospace.rocket.LandingDecision.StationDock;
 
-/** 005 §1 / §11: the pure landing resolver, with hand-built contexts (no server). */
+/** The pure landing resolver, with hand-built contexts (no server). */
 class LandingResolverTest {
 
     /** Every column is a perfect pod site at y 64. */
@@ -148,7 +148,7 @@ class LandingResolverTest {
     }
 
     @Test
-    @DisplayName("G1: an occupied pad is skipped; all occupied → pod")
+    @DisplayName("an occupied pad is skipped; all occupied → pod")
     void occupiedPadSkipped() {
         PadCandidate busy = new PadCandidate(1, "A", PadKind.LAUNCH_PAD, new BlockPos(1, 64, 1), new BlockPos(1, 64, 1),
                 null, true, true);

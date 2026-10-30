@@ -12,13 +12,13 @@ import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 
 /**
- * {@code nerospace:fixed_x} — Nyxara's biome source (003 §7.3): the biome depends on block X only (plus a ragged edge),
+ * {@code nerospace:fixed_x} — Nyxara's biome source: the biome depends on block X only (plus a ragged edge),
  * never on climate noise, so the dayside, twilight band and nightside are fixed regions of the map:
  * <pre>
  * { "type": "nerospace:fixed_x", "west": "nerospace:nyxara_dayside", "band": "nerospace:nyxara_twilight_band",
  *   "east": "nerospace:nyxara_nightside", "band_width": 2048, "origin_x": 0, "edge_noise": 96 }
  * </pre>
- * {@code band_width} is the full width (stage1-review ruling; replaces 003's {@code band_half_width}). The datapack
+ * {@code band_width} is the full width (it replaced an earlier {@code band_half_width} draft). The datapack
  * value is only the fallback: once the Nyxara level loads, {@link NyxaraBand} binds the width stored in the level's
  * {@code nerospace:nyxara_band} saved data (initialised once from {@code nyxara.twilightBandWidth} on the first load),
  * so editing the config later never moves an existing world's band. Terrain shape comes from the noise router, not the
@@ -45,6 +45,8 @@ public final class FixedXBiomeSource extends BiomeSource {
     private final int edgeNoise;
     /** Width bound from the level's saved data; {@code -1} until bound (the datapack width applies). */
     private volatile int boundWidth = -1;
+    /** World seed bound with the width (seeds the terminator's raggedness); {@code 0} until bound. */
+    private volatile long boundSeed;
 
     public FixedXBiomeSource(Holder<Biome> west, Holder<Biome> band, Holder<Biome> east, int width, int originX,
             int edgeNoise) {
@@ -70,6 +72,15 @@ public final class FixedXBiomeSource extends BiomeSource {
         this.boundWidth = FixedXBands.clampWidth(width);
     }
 
+    /** Binds the world seed that shapes the terminator's ragged edges. Called by {@link NyxaraBand}. */
+    public void bindSeed(long seed) {
+        this.boundSeed = seed;
+    }
+
+    public long seed() {
+        return this.boundSeed;
+    }
+
     /** The band width in effect: the bound world value, else the datapack value. */
     public int width() {
         int bound = this.boundWidth;
@@ -90,7 +101,7 @@ public final class FixedXBiomeSource extends BiomeSource {
 
     /** The biome at block ({@code x}, {@code z}). */
     public Holder<Biome> biomeAtBlock(int x, int z) {
-        return switch (FixedXBands.sideAt(x, z, width(), this.originX, this.edgeNoise)) {
+        return switch (FixedXBands.sideAt(x, z, width(), this.originX, this.edgeNoise, this.boundSeed)) {
             case WEST -> this.west;
             case BAND -> this.band;
             case EAST -> this.east;

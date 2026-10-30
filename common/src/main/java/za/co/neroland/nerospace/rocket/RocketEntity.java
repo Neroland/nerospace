@@ -89,7 +89,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Onboard power buffer, in FE — loaded by a Launch Controller, synced for the UI. */
     private static final EntityDataAccessor<Integer> DATA_POWER =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
-    /** Descent state machine phase ({@link DescentMath.Phase} ordinal, 005 §3) — server-driven, client renders. */
+    /** Descent state machine phase ({@link DescentMath.Phase} ordinal) — server-driven, client renders. */
     private static final EntityDataAccessor<Integer> DATA_PHASE =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
     /** Ticks spent in the current phase. */
@@ -139,13 +139,13 @@ public class RocketEntity extends Entity implements MenuProvider {
     private BlockPos returnPos;
 
     /**
-     * Whether this rocket follows the 2.0 charter rule (005 §8). A new rocket does; a rocket loaded from a 1.6.0
+     * Whether this rocket follows the 2.0 charter rule. A new rocket does; a rocket loaded from a 1.6.0
      * save has no {@code CharterRule} flag, so its in-flight "New Station" is honoured once for free.
      */
     private boolean charterRuleAware = true;
 
     /**
-     * Whether this rocket arrived at a station whose rider could not {@code canUse} it (005 G7 as ruled). Saved as
+     * Whether this rocket arrived at a station whose rider could not {@code canUse} it. Saved as
      * the optional {@code Visitor} boolean (default false, so 1.6.0 rockets are never sent home); never an identity.
      */
     private boolean visitor;
@@ -154,7 +154,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Transient per-viewer cache for the Rocket screen's gate mask / Observatory reveal (refreshed every 20 t). */
     public static final int VIEWER_DATA_REFRESH_TICKS = 20;
 
-    // --- Descent (005 §3) — the target pose is saved; the rest is transient -----------------------
+    // --- Descent — the target pose is saved; the rest is transient -----------------------
 
     @Nullable
     private Vec3 descentTarget;
@@ -323,7 +323,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     private void tickPresentation() {
         this.launchAnimPrev = this.launchAnim;
         if (isDescending()) {
-            // 005 §3.1: the ascent animation played in reverse over the 48-block drop.
+            // The ascent animation played in reverse over the 48-block drop.
             double height = Math.max(0.0D, DescentMath.DESCENT_HEIGHT - getPhaseTick() * DescentMath.DESCENT_SPEED);
             this.launchAnim = DescentMath.reversedLaunchAnim(LAUNCH_DURATION, height);
         } else {
@@ -383,7 +383,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         return this.entityData.get(DATA_PHASE_TICK);
     }
 
-    /** Whether the rocket is coming down onto its landing site (005 §3); it cannot be used meanwhile. */
+    /** Whether the rocket is coming down onto its landing site; it cannot be used meanwhile. */
     public boolean isDescending() {
         DescentMath.Phase p = getPhase();
         return p == DescentMath.Phase.DESCENDING || p == DescentMath.Phase.ABORTED;
@@ -527,8 +527,8 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /**
      * {@link #cycleStation()} for a viewer: "New Station" (−2) is skipped when {@code viewer} carries no Station
-     * Charter (005 §8 client hint, re-checked at arrival), and a station whose docking policy is MEMBERS is
-     * skipped for a viewer who cannot use it (005 §4).
+     * Charter (client hint, re-checked at arrival), and a station whose docking policy is MEMBERS is
+     * skipped for a viewer who cannot use it.
      */
     public void cycleStation(@Nullable Player viewer) {
         if (!(level() instanceof ServerLevel server) || isLaunching()) {
@@ -564,7 +564,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.entityData.set(DATA_STATION, next);
     }
 
-    /** Whether {@code viewer} may pick {@code entry} as a destination (MEMBERS docking policy, 005 §4). */
+    /** Whether {@code viewer} may pick {@code entry} as a destination (MEMBERS docking policy). */
     private static boolean canDockAt(StationRegistry.StationEntry entry, Player viewer) {
         boolean canUse = viewer instanceof ServerPlayer sp
                 ? StationRegistry.canUse(entry, sp)
@@ -788,7 +788,12 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (level().isClientSide() || isLaunching()) {
             return false;
         }
-        if (this.getFirstPassenger() == null) {
+        net.minecraft.world.entity.Entity seated = this.getFirstPassenger();
+        if (!LaunchSeat.mayLaunch(seated == null, seated == player)) {
+            player.sendSystemMessage(Component.translatable("entity.nerospace.rocket.seat_taken"));
+            return false;
+        }
+        if (seated == null) {
             player.startRiding(this);
         }
         startLaunch();
@@ -862,7 +867,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         BlockPos feet = this.blockPosition();
         return ReturnSiteBlock.isReturnSite(level().getBlockState(feet))
                 || ReturnSiteBlock.isReturnSite(level().getBlockState(feet.below()))
-                // A Docking Ring is a return site too (002 §1.7): any tier may lift off from a dock.
+                // A Docking Ring is a return site too: any tier may lift off from a dock.
                 || level().getBlockState(feet).getBlock() instanceof DockingRingBlock
                 || level().getBlockState(feet.below()).getBlock() instanceof DockingRingBlock;
     }
@@ -885,7 +890,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             }
             return;
         }
-        // 005 §4: a MEMBERS-only station is re-checked at launch (the cycler is only a client-facing filter).
+        // A MEMBERS-only station is re-checked at launch (the cycler is only a client-facing filter).
         if (this.getFirstPassenger() instanceof ServerPlayer docking && level() instanceof ServerLevel dockLevel
                 && LandingResolverLevelAdapter.isStation(selectedDestination()) && getStationSlot() >= 0) {
             StationRegistry.StationEntry target = StationRegistry.get(dockLevel.getServer()).get(getStationSlot());
@@ -904,7 +909,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 return;
             }
         }
-        // 005 G5: one launch per rider per 100 ticks (stops macro-spam; in-memory only), checked BEFORE the optional
+        // One launch per rider per 100 ticks (stops macro-spam; in-memory only), checked BEFORE the optional
         // NeroEconomy launch/docking fee so a launch refused for the cooldown is never charged. The fee is charged
         // only now that every crewed check has passed; no request key (a crewed launch has no flight id).
         if (this.getFirstPassenger() instanceof ServerPlayer pilot && level() instanceof ServerLevel serverLevel) {
@@ -1106,7 +1111,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                         ? LandingResolverLevelAdapter.origin(current, originPad, originPad)
                         : LandingResolverLevelAdapter.Origin.NONE;
 
-                // Station branch: resolve the slot (charter on arrival, 005 §8) before the transfer.
+                // Station branch: resolve the slot (charter on arrival) before the transfer.
                 boolean station = LandingResolverLevelAdapter.isStation(targetKey);
                 StationRegistry.StationEntry entry = null;
                 BlockPos stationCentre = null;
@@ -1140,7 +1145,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                         Set.of(), decision.yaw(), player.getXRot(), true);
                 player.startRiding(arriving);
                 player.sendOverlayMessage(Component.translatable("entity.nerospace.rocket.descending"));
-                // Life support: the rider is in vacuum during the descent, so the reserve is granted now (005 §3.1).
+                // Life support: the rider is in vacuum during the descent, so the reserve is granted now.
                 za.co.neroland.nerospace.world.OxygenManager.grantArrivalReserve(player, getOxygen());
             }
         }
@@ -1159,8 +1164,8 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     /**
-     * The station this arrival docks at. "New Station" (−2) founds one on arrival and takes a charter (001 §18.2,
-     * 005 §8); a 1.6.0 in-flight rocket is honoured once for free; no charter or a full registry → the origin
+     * The station this arrival docks at. "New Station" (−2) founds one on arrival and takes a charter; a 1.6.0
+     * in-flight rocket is honoured once for free; no charter or a full registry → the origin
      * platform with a message. Runs before the dimension transfer so an aborted descent still ends on it.
      */
     @Nullable
@@ -1203,7 +1208,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         return entry;
     }
 
-    /** 005 §1.9: the arrival line for a decision (pad name, station name, or the plain arrival text). */
+    /** The arrival line for a decision (pad name, station name, or the plain arrival text). */
     private static Component arrivalMessage(LandingDecision decision, net.minecraft.resources.ResourceKey<Level> dest,
             @Nullable StationRegistry.StationEntry entry) {
         if (decision instanceof LandingDecision.StationDock || LandingResolverLevelAdapter.isStation(dest)) {
@@ -1219,7 +1224,7 @@ public class RocketEntity extends Entity implements MenuProvider {
                 : Component.translatable("entity.nerospace.rocket.arrived");
     }
 
-    // --- Descent state machine (005 §3) ---------------------------------------------------------
+    // --- Descent state machine ---------------------------------------------------------
 
     /** Arms this freshly spawned arrival rocket: it will descend 48 blocks onto {@code decision}'s pose. */
     private void beginDescent(LandingDecision decision, LandingResolverLevelAdapter.Flight flight,
@@ -1248,6 +1253,8 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     private boolean descentRetargeted;
+    /** Set once a touchdown has moved this rocket to a pod because its target was taken (never loops). */
+    private boolean descentPodFallback;
 
     /** One server tick of the state machine. */
     private void tickDescent(ServerLevel level) {
@@ -1263,13 +1270,19 @@ public class RocketEntity extends Entity implements MenuProvider {
                 }
                 reseatRider(level);
                 BlockPos block = this.descentBlock;
-                if (DescentMath.checkPadThisTick(t) && block != null
-                        && !LandingResolverLevelAdapter.targetPresent(level, this.descentKind, block)) {
-                    retarget(level);
-                    target = this.descentTarget;
-                    if (target == null) {
-                        return;
+                if (DescentMath.checkPadThisTick(t) && block != null) {
+                    // Re-checked on every pad check: a parked rocket in a cold chunk only appears once the chunk's
+                    // entities have loaded, which happens some ticks after the blocks the resolver read.
+                    boolean present = LandingResolverLevelAdapter.targetPresent(level, this.descentKind, block);
+                    boolean taken = present
+                            && LandingResolverLevelAdapter.targetOccupied(level, this.descentKind, block, this);
+                    if (LandingResolverLevelAdapter.mustLeaveTarget(present, taken)) {
+                        retarget(level, taken);
                     }
+                }
+                target = this.descentTarget;
+                if (target == null) {
+                    return;
                 }
                 double nx = approach(getX(), target.x, DescentMath.SLIDE_SPEED);
                 double nz = approach(getZ(), target.z, DescentMath.SLIDE_SPEED);
@@ -1282,13 +1295,18 @@ public class RocketEntity extends Entity implements MenuProvider {
                 }
                 DescentMath.Phase next = over ? DescentMath.step(t, ny - target.y)
                         : (t >= DescentMath.DESCENT_TIMEOUT ? DescentMath.Phase.ABORTED : DescentMath.Phase.DESCENDING);
+                BlockPos at = this.descentBlock;
+                if (next == DescentMath.Phase.TOUCHDOWN && at != null
+                        && !LandingResolverLevelAdapter.entitiesReady(level, at)) {
+                    next = DescentMath.Phase.DESCENDING; // hover until the target's entities are known
+                }
                 if (next == DescentMath.Phase.TOUCHDOWN) {
                     touchdown(level, false);
                 } else if (next == DescentMath.Phase.ABORTED) {
                     touchdown(level, true);
                 }
             }
-            case ABORTED -> touchdown(level, true); // a mid-descent rocket loaded from disk (005 §3.5)
+            case ABORTED -> touchdown(level, true); // a mid-descent rocket loaded from disk
             case TOUCHDOWN -> {
                 if (t >= DescentMath.SETTLE_TICKS) {
                     setPhase(DescentMath.Phase.LANDED);
@@ -1335,8 +1353,8 @@ public class RocketEntity extends Entity implements MenuProvider {
         }
     }
 
-    /** The landing target broke mid-descent: re-resolve once without it and slide over (005 §3.3). */
-    private void retarget(ServerLevel level) {
+    /** The landing target broke mid-descent: re-resolve once without it and slide over. */
+    private void retarget(ServerLevel level, boolean occupied) {
         LandingResolverLevelAdapter.Flight flight = this.descentFlight;
         if (this.descentRetargeted || flight == null) {
             return;
@@ -1349,13 +1367,33 @@ public class RocketEntity extends Entity implements MenuProvider {
         LandingDecision decision = LandingResolverLevelAdapter.resolve(level, auto, excluded);
         LandingResolverLevelAdapter.prepare(level, decision);
         setTarget(decision);
-        this.arrivalPadMissing = true;
+        if (occupied) {
+            this.arrivalPadOccupied = true;
+        } else {
+            this.arrivalPadMissing = true;
+        }
         this.setYRot(decision.yaw());
     }
 
     /** {@code TOUCHDOWN} (or the {@code ABORTED} failsafe): settle, effects, release the rider, arrival side-effects. */
     private void touchdown(ServerLevel level, boolean aborted) {
         Vec3 saved = this.descentTarget;
+        BlockPos at = this.descentBlock;
+        if (!this.descentPodFallback && saved != null && at != null
+                && LandingResolverLevelAdapter.targetOccupied(level, this.descentKind, at, this)) {
+            // Another rocket holds the target: never stack, fall back to a Landing Pod and keep descending.
+            this.descentPodFallback = true;
+            this.descentRetargeted = true;
+            LandingDecision pod = LandingResolverLevelAdapter.podFallback(level, this.descentFlight, at);
+            LandingResolverLevelAdapter.prepare(level, pod);
+            setTarget(pod);
+            this.arrivalPadOccupied = true;
+            this.setYRot(pod.yaw());
+            this.setPos(getX(), Math.max(getY(), pod.spawn().y), getZ());
+            this.noPhysics = true;
+            setPhase(DescentMath.Phase.DESCENDING);
+            return;
+        }
         Vec3 target = saved != null ? saved : position();
         this.noPhysics = false;
         this.setPos(target.x, target.y, target.z);
@@ -1407,7 +1445,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         level.playSound(null, getX(), getY(), getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL, 0.5F, 0.5F);
     }
 
-    /** Arrival message, link event and Star Guide drives — at touchdown, not before the descent (005 §3.1). */
+    /** Arrival message, link event and Star Guide drives — at touchdown, not before the descent. */
     private void arrivalSideEffects(ServerLevel level, ServerPlayer player) {
         if (this.arrivalPadMissing) {
             player.sendSystemMessage(Component.translatable("entity.nerospace.rocket.pad_missing"));
@@ -1428,7 +1466,7 @@ public class RocketEntity extends Entity implements MenuProvider {
     }
 
     /**
-     * Station console "Send visitor rocket home" (005 G7 as ruled): a riderless <em>visitor</em> rocket at rest flies
+     * Station console "Send visitor rocket home": a riderless <em>visitor</em> rocket at rest flies
      * uncrewed back to its own return pad (or a Landing Pod by the normal resolver in its origin dimension). A rocket
      * with a rider, or one that is not flagged {@code Visitor} (the owner's or a member's own), is never moved.
      * @return whether it left.
@@ -1593,7 +1631,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         setLaunching(input.getBooleanOr("Launching", false));
         this.launchTicks = input.getIntOr("LaunchTicks", 0);
         // 2.0 fields — all optional, so a 1.6.0 rocket loads as before ([COMPAT] 4).
-        // A parked 1.6.0 rocket follows the 2.0 charter rule; only one already in flight is honoured once (D6).
+        // A parked 1.6.0 rocket follows the 2.0 charter rule; only one already in flight is honoured once.
         // The field is absent exactly when the two defaults disagree.
         boolean ruleIfAbsentFalse = input.getBooleanOr("CharterRule", false);
         boolean absent = !ruleIfAbsentFalse && input.getBooleanOr("CharterRule", true);
@@ -1619,7 +1657,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             this.descentBlock = this.descentKind == PadKind.POD ? at.below() : at;
             this.descentNode = input.getIntOr("DescentNode", -1);
         }
-        // A rocket saved mid-descent finishes at once (005 §3.5): it is never found hovering.
+        // A rocket saved mid-descent finishes at once: it is never found hovering.
         DescentMath.Phase resumed = this.descentTarget == null && saved != DescentMath.Phase.IDLE
                 ? DescentMath.Phase.IDLE : DescentMath.onLoad(saved);
         this.entityData.set(DATA_PHASE, resumed.ordinal());
@@ -1689,7 +1727,7 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /**
      * The menu's synced data for one viewer: the rocket's shared values plus [14] {@code destinationGateMask}
-     * (004 §6 — a bit per {@link Destinations} index whose Core gate is still closed for this player).
+     * (a bit per {@link Destinations} index whose Core gate is still closed for this player).
      */
     private ContainerData viewerData(Player player) {
         ContainerData shared = this.dataAccess;

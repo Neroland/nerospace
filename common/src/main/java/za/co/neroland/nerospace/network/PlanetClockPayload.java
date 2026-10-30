@@ -13,10 +13,11 @@ import za.co.neroland.nerospace.NerospaceCommon;
  * from its own synced game time, so this is sent on join, dimension change and ops changes — never per tick.
  * {@code dayLength == 0} means a fixed clock at {@code pinnedPhase}; {@code mirrorVanilla} means the level's own
  * day time is the clock (Greenxertz). {@code planet == false} (see {@link #none}) clears the client clock.
- * Carries no player data.
+ * {@code bandWidth} is Nyxara's twilight band width as bound for this world ({@code 0} elsewhere), so the sky and the
+ * ambience line up with the terrain even after the config changed. Carries no player data.
  */
 public record PlanetClockPayload(Identifier dimension, long dayLength, long epochTicks, long offsetTicks,
-        float pinnedPhase, boolean mirrorVanilla, boolean frozen, long frozenAt, long dayNumber)
+        float pinnedPhase, boolean mirrorVanilla, boolean frozen, long frozenAt, long dayNumber, int bandWidth)
         implements CustomPacketPayload {
 
     public static final Type<PlanetClockPayload> TYPE =
@@ -27,7 +28,7 @@ public record PlanetClockPayload(Identifier dimension, long dayLength, long epoc
 
     /** "Not on a planet": the client drops its clock. */
     public static PlanetClockPayload none(Identifier dimension) {
-        return new PlanetClockPayload(dimension, -1L, 0L, 0L, 0.25F, false, false, 0L, 0L);
+        return new PlanetClockPayload(dimension, -1L, 0L, 0L, 0.25F, false, false, 0L, 0L, 0);
     }
 
     public boolean isPlanet() {
@@ -44,6 +45,7 @@ public record PlanetClockPayload(Identifier dimension, long dayLength, long epoc
         buf.writeBoolean(p.frozen);
         buf.writeLong(p.frozenAt);
         ByteBufCodecs.VAR_LONG.encode(buf, p.dayNumber);
+        ByteBufCodecs.VAR_INT.encode(buf, Math.max(0, p.bandWidth));
     }
 
     private static PlanetClockPayload read(RegistryFriendlyByteBuf buf) {
@@ -56,7 +58,8 @@ public record PlanetClockPayload(Identifier dimension, long dayLength, long epoc
         boolean frozen = buf.readBoolean();
         long frozenAt = buf.readLong();
         long day = ByteBufCodecs.VAR_LONG.decode(buf);
-        return new PlanetClockPayload(dim, dayLength, epoch, offset, pinned, mirror, frozen, frozenAt, day);
+        int band = ByteBufCodecs.VAR_INT.decode(buf);
+        return new PlanetClockPayload(dim, dayLength, epoch, offset, pinned, mirror, frozen, frozenAt, day, band);
     }
 
     @Override

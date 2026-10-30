@@ -109,6 +109,25 @@ A shaggy snowdrift of a grazer: one big rounded fleece ridged with wind-packed t
 legs. Cold-proof (no freeze build-up). **Breeds with wheat; drops Drift Fleece** (crafts into 4
 string).
 
+### Moon Hopper (Luna)
+
+A small, quick grazer that bounds along on big hind legs. It lives on the Lunar Meadow, Luna's terraformed Living
+ground; the Terraformer stocks a starter group. **Breeds with carrots; drops up to one Regolith.** 6 HP.
+
+### Dust Strider (Mars)
+
+A long-legged herd grazer of the Red Steppe, Mars' terraformed Living ground. Sturdier and a little slower than the
+others. **Breeds with wheat; drops up to two Rust Pigment.** 14 HP.
+
+### Dusk Moth (Nyxara)
+
+A fragile ambient flier with glowing eye-spot wings, found in the Twilight Grove (Nyxara's terraformed Living ground)
+wherever no lamp lights the ground (block light 7 or lower). It flutters away when hurt and does not breed. **Drops up
+to one Night Fibre.** 4 HP.
+
+The Moon Hopper, Dust Strider and Dusk Moth are native to their worlds: nothing on their home planet (vacuum, cold,
+radiation, weather) harms them. Each has a spawn egg in the creative tab.
+
 ---
 
 ## Sound notes

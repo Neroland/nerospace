@@ -25,6 +25,11 @@ public final class GlaciraPlanet extends PlanetDefinition {
 
     public static final double PEAK = 0.75;
     public static final double NIGHT_FLOOR = 0.12;
+    /** The long twilights (phase): dawn ramps up across 0.95 to 0.05, dusk down across 0.45 to 0.55. */
+    public static final double DAWN_START = 0.95;
+    public static final double DAWN_END = 0.05;
+    public static final double DUSK_START = 0.45;
+    public static final double DUSK_END = 0.55;
 
     private GlaciraPlanet() {
         super(new Spec(new PlanetTraits(planet("glacira"), 0.4, true, Hazard.COLD,
@@ -32,6 +37,8 @@ public final class GlaciraPlanet extends PlanetDefinition {
                 Optional.of(biome("terraformed_tundra")), Optional.of(id("frostbound")), id("cryo_station")),
                 "glacira", "Glacira")
                 .unlockTier(4)
+                // Glacira had no structures before 2.0, so it gets its own placement salt (only Greenxertz keeps 0).
+                .salt(0x474C4143L)
                 .daylight(GlaciraPlanet::daylightAt, 4.8)
                 .weather(new WeatherParams(WeatherEvent.DIAMOND_DUST, 48_000L, 4_000, 12_000))
                 .mining(0.7, 3)

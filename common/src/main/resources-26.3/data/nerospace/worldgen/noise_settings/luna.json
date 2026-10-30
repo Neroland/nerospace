@@ -1,31 +1,31 @@
 {
   "debug_functions": [
     {
-      "function": "minecraft:overworld/final_density",
+      "function": "nerospace:luna/overworld/final_density",
       "label": "N"
     },
     {
-      "function": "minecraft:overworld/temperature",
+      "function": "nerospace:luna/overworld/temperature",
       "label": "T"
     },
     {
-      "function": "minecraft:overworld/vegetation",
+      "function": "nerospace:luna/overworld/vegetation",
       "label": "V"
     },
     {
-      "function": "minecraft:overworld/continents",
+      "function": "nerospace:luna/overworld/continents",
       "label": "C"
     },
     {
-      "function": "minecraft:overworld/erosion",
+      "function": "nerospace:luna/overworld/erosion",
       "label": "E"
     },
     {
-      "function": "minecraft:overworld/depth",
+      "function": "nerospace:luna/overworld/depth",
       "label": "D"
     },
     {
-      "function": "minecraft:overworld/ridges",
+      "function": "nerospace:luna/overworld/ridges",
       "label": "W"
     },
     {
@@ -39,7 +39,7 @@
               "type": "minecraft:add",
               "left": {
                 "type": "minecraft:abs",
-                "input": "minecraft:overworld/ridges"
+                "input": "nerospace:luna/overworld/ridges"
               },
               "right": -0.6666667
             }
@@ -51,7 +51,7 @@
       "label": "PV"
     },
     {
-      "function": "minecraft:overworld/preliminary_surface_level",
+      "function": "nerospace:luna/overworld/preliminary_surface_level",
       "label": "PS"
     }
   ],
@@ -171,14 +171,14 @@
     "min_y": -64
   },
   "noise_router": {
-    "chunk_surface_level": "minecraft:overworld/chunk_surface_level",
-    "continents": "minecraft:overworld/continents",
-    "depth": "minecraft:overworld/depth",
-    "erosion": "minecraft:overworld/erosion",
-    "final_density": "minecraft:overworld/final_density",
-    "ridges": "minecraft:overworld/ridges",
-    "temperature": "minecraft:overworld/temperature",
-    "vegetation": "minecraft:overworld/vegetation"
+    "chunk_surface_level": "nerospace:luna/overworld/chunk_surface_level",
+    "continents": "nerospace:luna/overworld/continents",
+    "depth": "nerospace:luna/overworld/depth",
+    "erosion": "nerospace:luna/overworld/erosion",
+    "final_density": "nerospace:luna/overworld/final_density",
+    "ridges": "nerospace:luna/overworld/ridges",
+    "temperature": "nerospace:luna/overworld/temperature",
+    "vegetation": "nerospace:luna/overworld/vegetation"
   },
   "sea_level": -64,
   "spawn_target": [

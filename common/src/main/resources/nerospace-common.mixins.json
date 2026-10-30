@@ -7,6 +7,7 @@
     "BlockLightEngineNyxMixin",
     "CropHydroponicsMixin",
     "LightEngineNyxMixin",
+    "MinecraftServerNyxaraBandMixin",
     "MappedRegistryStorageAliasMixin"
   ],
   "client": [],

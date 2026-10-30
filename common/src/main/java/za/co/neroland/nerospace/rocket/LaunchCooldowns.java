@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * The per-rider launch cooldown (005 G5): rider UUID → game time the next launch is allowed. In memory only, never
+ * The per-rider launch cooldown: rider UUID → game time the next launch is allowed. In memory only, never
  * saved; expired entries are dropped on every launch, so the map holds at most the riders who launched in the last
  * {@link DescentMath#LAUNCH_COOLDOWN} ticks. POPIA/GDPR erasure drops a player's entry ({@link #forget}).
  */
@@ -42,7 +42,7 @@ public final class LaunchCooldowns {
     public enum Verdict { COOLDOWN, REFUSED, OK }
 
     /**
-     * The launch order around a fee (005 G5): the cooldown is checked first, so a launch inside the window is
+     * The launch order around a fee: the cooldown is checked first, so a launch inside the window is
      * refused before {@code charge} runs and nothing is paid; then the fee is charged ({@code charge} returns a
      * refusal key or {@code null}); the launch is recorded only when the fee passed.
      */

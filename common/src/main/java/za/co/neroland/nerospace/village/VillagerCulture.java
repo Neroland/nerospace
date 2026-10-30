@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.village;
 import za.co.neroland.nerospace.entity.AlienVillager;
 
 /**
- * One villager culture (D8): which species it is on disk, which trade table it uses, whether it builds Mega Cities,
+ * One villager culture: which species it is on disk, which trade table it uses, whether it builds Mega Cities,
  * and whether it only settles the Nyxara twilight band. Plain data; the build palette is looked up by {@link #id()}
  * in {@code world.AlienBuild} and the trade table in {@link AlienTrades}.
  *

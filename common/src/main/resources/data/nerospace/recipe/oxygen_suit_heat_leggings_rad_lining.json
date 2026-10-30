@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "nerospace:titanium_ingot",
+  "base": "nerospace:oxygen_suit_heat_leggings",
+  "result": {
+    "components": {
+      "minecraft:lore": [
+        {
+          "color": "gold",
+          "italic": false,
+          "translate": "item.nerospace.rad_lining.applied"
+        }
+      ],
+      "nerospace:rad_lining": {}
+    },
+    "id": "nerospace:oxygen_suit_heat_leggings"
+  },
+  "template": "nerospace:rad_lining"
+}

@@ -1,5 +1,5 @@
 {
-  "parent": "nerospace:worlds/mars/arrive",
+  "parent": "nerospace:mars",
   "criteria": {
     "granted": {
       "trigger": "minecraft:impossible"

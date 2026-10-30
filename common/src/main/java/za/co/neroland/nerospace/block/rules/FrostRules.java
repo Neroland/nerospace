@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Hull Window frost (002 §1.7): frosted in the station when any horizontal neighbour is air (faces the void). */
+/** Hull Window frost: frosted in the station when any horizontal neighbour is air (faces the void). */
 public final class FrostRules {
 
     private FrostRules() {

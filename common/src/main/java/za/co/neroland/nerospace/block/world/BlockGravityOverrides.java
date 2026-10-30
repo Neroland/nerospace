@@ -27,7 +27,7 @@ import za.co.neroland.nerospace.block.rules.BlockGravityRules.Kind;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 
 /**
- * Per-level block gravity overrides ({@code nerospace:block_gravity}, decision 002 §10.4): block position → kind,
+ * Per-level block gravity overrides ({@code nerospace:block_gravity}): block position → kind,
  * maintained on place/break by {@code GravityOverrideBlock}. {@code GravityManager.factorAt} consults it before the
  * biome tags. Lookups are chunk-local (≤ 64 entries per chunk, plus the neighbouring chunk when the queried cell is
  * on a chunk edge). Holds block positions only — no player data.

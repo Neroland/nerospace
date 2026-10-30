@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.rocket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
-/** The outcome of {@link LandingResolver#resolve} (005 §1.2): where the rocket stands, and why. */
+/** The outcome of {@link LandingResolver#resolve}: where the rocket stands, and why. */
 public sealed interface LandingDecision permits LandingDecision.PadLanding, LandingDecision.PodLanding,
         LandingDecision.StationDock {
 

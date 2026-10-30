@@ -12,7 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.1 Anorthosite, §10.10 no stacking with Solar Wing. */
+/** Anorthosite, no stacking with Solar Wing. */
 @SuppressWarnings("unused")
 class SolarReflectRulesTest {
 

@@ -180,7 +180,7 @@ public final class PlanetClock {
         }
         if (planet.clockSource() == ClockSource.LEVEL_TIME) {
             return new PlanetClockPayload(planet.dimension().identifier(), ClockMath.VANILLA_DAY, 0L, 0L,
-                    (float) planet.pinnedPhase(), true, false, 0L, 1L);
+                    (float) planet.pinnedPhase(), true, false, 0L, 1L, bandWidth(level));
         }
         PlanetClockState s = PlanetClockState.get(level);
         s.initialise(level.getGameTime());
@@ -188,7 +188,14 @@ public final class PlanetClock {
         long dayLength = on ? planet.traits().dayLengthTicks() : 0L;
         double pinned = s.pinnedOverride >= 0.0 ? s.pinnedOverride : planet.pinnedPhase();
         return new PlanetClockPayload(planet.dimension().identifier(), dayLength, s.epochTicks, s.offsetTicks,
-                on ? (float) pinned : (float) ClockMath.NOON, false, s.frozen, s.frozenAt, dayNumber(level));
+                on ? (float) pinned : (float) ClockMath.NOON, false, s.frozen, s.frozenAt, dayNumber(level),
+                bandWidth(level));
+    }
+
+    /** Nyxara's bound band width for the client sky (0 on every other planet). */
+    private static int bandWidth(ServerLevel level) {
+        return level.dimension().equals(za.co.neroland.nerospace.registry.ModDimensions.NYXARA_LEVEL)
+                ? za.co.neroland.nerospace.world.planet.nyxara.worldgen.NyxaraBand.width(level) : 0;
     }
 
     /** Sends the current level's clock to one player (join / dimension change). */

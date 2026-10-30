@@ -23,6 +23,7 @@ import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.progression.PlanetVisitState;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.rocket.StationRegistry;
+import za.co.neroland.nerospace.route.FlightRecord;
 import za.co.neroland.nerospace.route.PadRecord;
 import za.co.neroland.nerospace.route.RouteRecord;
 import za.co.neroland.nerospace.route.RouteRegistry;
@@ -69,14 +70,14 @@ public final class NerospacePrivacyExport {
         }
         return build(me, PlanetVisitState.get(server).export(me), StationRegistry.get(server).all(),
                 ModDimensions.STATION_LEVEL.identifier().toString(), cores, routes.allPads(),
-                routes.routesOwnedBy(me), Services.PLATFORM.getOxygen(player),
+                routes.routesOwnedBy(me), routes.flightsOwnedBy(me), Services.PLATFORM.getOxygen(player),
                 Services.PLATFORM.getStarGuideSeen(player), reputation);
     }
 
     /** Pure: builds the export document. Unit-tested for "nothing about other players". */
     public static JsonObject build(UUID me, Collection<String> planets, Collection<StationRegistry.StationEntry> stations,
             String stationDimension, Collection<VillageCoreLedger.CoreLoc> cores, Collection<PadRecord> pads,
-            Collection<RouteRecord> routes, @Nullable Integer oxygen, @Nullable List<Integer> starGuideSeen,
+            Collection<RouteRecord> routes, Collection<FlightRecord> flights, @Nullable Integer oxygen, @Nullable List<Integer> starGuideSeen,
             Collection<Reputation> reputation) {
         String id = me.toString();
         JsonObject root = new JsonObject();
@@ -154,6 +155,22 @@ public final class NerospacePrivacyExport {
             routeRows.add(row);
         }
         root.add("cargo_routes_owned", routeRows);
+
+        // Flights the requester owns (kept until pruned after cargoFlightRetentionDays). Ids and state only: pad
+        // owners, cargo and the other endpoint's owner are not the requester's data.
+        JsonArray flightRows = new JsonArray();
+        for (FlightRecord f : flights) {
+            if (!id.equals(f.owner())) {
+                continue;
+            }
+            JsonObject row = new JsonObject();
+            row.addProperty("id", f.id());
+            row.addProperty("route", f.routeId());
+            row.addProperty("state", f.state().name());
+            row.addProperty("return_leg", f.returnLeg());
+            flightRows.add(row);
+        }
+        root.add("cargo_flights_owned", flightRows);
 
         if (oxygen != null) {
             root.addProperty("oxygen", oxygen);

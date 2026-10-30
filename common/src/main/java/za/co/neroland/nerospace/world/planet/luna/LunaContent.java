@@ -100,7 +100,7 @@ public final class LunaContent {
     public static final RegistryEntry<MoonCheeseItem> MOON_CHEESE = ModItems.ITEMS.register("moon_cheese",
             key -> new MoonCheeseItem(new Item.Properties().setId(key).food(cheeseFood(), cheeseConsumable())));
 
-    // --- entities (003 §8.1 terraform fauna) -----------------------------------------------------
+    // --- entities (terraform fauna) -----------------------------------------------------
     /** The Living-meadow grazer; seeded by TerraformFauna and spawned by terraformed_luna_living. */
     public static final RegistryEntry<EntityType<MoonHopper>> MOON_HOPPER = ModEntities.ENTITY_TYPES.register(
             "moon_hopper", key -> EntityType.Builder.<MoonHopper>of(MoonHopper::new, MobCategory.CREATURE)

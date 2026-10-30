@@ -9,10 +9,10 @@
 </p>
 
 <p align="center">
-  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-26.1.2%20%7C%2026.2-62B47A">
+  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-26.1.2%20%7C%2026.2%20%7C%2026.3-62B47A">
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge%20%7C%20Forge%20%7C%20Fabric-F16436">
   <img alt="Java" src="https://img.shields.io/badge/Java-25-007396">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0.1-blue">
+  <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue">
 </p>
 
 <p align="center">
@@ -27,34 +27,56 @@
 
 ## About
 
-Nerospace is a complete, standalone space-progression mod for Minecraft (Java Edition). One ore in the overworld starts a chain that ends with you breeding alien livestock on a moon you personally made breathable: machines, an all-in-one pipe network, four rocket tiers, four destinations, player-founded space stations, oxygen survival with hazard suits, and a staged terraforming endgame — all guided in-game by the **Star Guide**.
+Nerospace is a complete, standalone space-progression mod for Minecraft (Java Edition). One ore in the overworld starts a chain that ends with you breeding alien livestock on a moon you personally made breathable: machines, an all-in-one pipe network, four rocket tiers, six planets and an orbital station to fly to, player-founded space stations you grow module by module, oxygen survival with hazard suits, and a staged terraforming endgame — all guided in-game by the **Star Guide**.
 
 The mod is built **standalone** — its only dependency is **Neroland Core**, and it needs no third-party mods — but it uses conventional `c:` tags and loader-native capability/lookup hooks, so it slots cleanly alongside the wider tech-mod ecosystem on NeoForge, Forge, and Fabric.
 
-Two sibling Neroland mods are optional extras: **NeroEconomy** adds configurable launch fees and first-visit rewards, and **NeroQuests** shows the bundled **Starfarer's Log** quest chapter (19 quests following the progression above) in its quest book. Neither is required — without them the fees stay off and the quest pack is simply inert data.
+Two sibling Neroland mods are optional extras: **NeroEconomy** adds configurable launch fees and first-visit rewards, and **NeroQuests** shows the bundled **Starfarer's Log** quest chapter (19 quests following the progression above) in its quest book, plus the **Worlds Apart** chapter (24 quests, four per planet). Neither is required — without them the fees stay off and the quest pack is simply inert data.
+
+## What's new in 2.0
+
+Nerospace 2.0 is the planets and stations update. Existing 1.x worlds keep working: see
+[Upgrading to 2.0](https://github.com/Neroland/nerospace/wiki/Upgrading-to-2.0).
+
+| World | Rocket | What makes it different |
+| --- | --- | --- |
+| [Luna](https://github.com/Neroland/nerospace/wiki/Luna) | Tier 1 | grey airless moon; titanium, Helium-3, Crater Glass; a 28-day lunar day |
+| [Mars](https://github.com/Neroland/nerospace/wiki/Mars) | Tier 2 | rust dunes, canyons and a Dry Ice cap; Hematite; dust storms; rover wrecks and salvage drones |
+| [Cindara](https://github.com/Neroland/nerospace/wiki/Cindara) | Tier 3+ | ash wastes under a red giant; Sulfur; ash fall and an eclipse; the Ember-kin |
+| [Glacira](https://github.com/Neroland/nerospace/wiki/Glacira) | Tier 4 | ice plains, methane shores and spires; diamond dust and auroras; the Frostbound |
+| [Greenxertz](https://github.com/Neroland/nerospace/wiki/Greenxertz) | Tier 2+ | bioluminescent jungle under twin suns; spore blooms; the Xertz |
+| [Nyxara](https://github.com/Neroland/nerospace/wiki/Nyxara) | Tier 4 | tidally locked: Dayside, Twilight Band and Nightside; solar flares; the Duskborn |
+
+- Every world has its own blocks, biomes, sky, clock, weather and terraforming result, and its own fauna once
+  terraformed.
+- Orbital stations gain a Station Console, classes, members and buildable modules.
+- Rockets always land centred on a pad, or on an automatically placed Landing Pod.
+- The Rad Lining suit upgrade, a refreshed HUD with a planet clock dial, and `/nerospace privacy export`.
+
+Full details in the [changelog](CHANGELOG.md).
 
 ## The gameplay loop
 
 1. **Nerosium** — mine the new overworld ore; smelt it, or double your yield with the powered **Nerosium Grinder**.
 2. **Power & pipes** — build generators and the **Universal Pipe**, which carries energy, fluids, gas, *and* items in one tube with per-face modes, filters, and upgrades. Energy, fluids, and items cross the mod boundary: the pipe connects to other mods' tanks, machines, and pipes on all three loaders, and theirs can pull straight out of Nerospace blocks.
 3. **First launch** — craft a Tier 1 rocket, lay a single launch pad block (Tier 2 needs a full 3×3), and fly to the **Orbital Station**.
-4. **New worlds** — tiered rockets reach **Greenxertz** (green planet), **Cindara** (volcanic moon), and **Glacira** (frozen moon), each with its own ores, creatures, and hazards.
-5. **Survive** — every world out there is airless: seal rooms, pipe oxygen, refill your **Oxygen Suit** (and its tougher **Mk II**) at airlocks, and wear the **Thermal**/**Cryo Suit** where heat or cold quadruples O₂ drain — four full suit sets in all.
-6. **Found stations** — right-click a **Station Charter** to open its naming console, name your own orbital station, and found it as a selectable rocket destination.
+4. **New worlds** — tiered rockets reach **Luna**, **Mars**, **Cindara**, **Glacira**, **Greenxertz** and **Nyxara**, each with its own blocks, ores, biomes, sky, day length, weather and hazards.
+5. **Survive** — every world out there is airless: seal rooms, pipe oxygen, refill your **Oxygen Suit** (and its tougher **Mk II**) at airlocks, and wear the **Thermal**/**Cryo Suit** where heat or cold quadruples O₂ drain — four full suit sets in all, plus the **Rad Lining** upgrade against radiation on Mars and Nyxara.
+6. **Found stations** — right-click a **Station Charter** to name and found your own orbital station, then run it from the **Station Console**: pick a class, add members, and build habitat, docking, solar, hydroponics, gravity and observatory modules.
 7. **Go heavy** — build the 5×5 **Heavy Launch Complex** + gantry, refine rocket fuel in the **Fuel Refinery**, and launch the Tier 4 heavy rocket.
 8. **Automate supply** — place **Cargo Pads** at both ends, deploy an uncrewed **Cargo Rocket**, pipe cargo and fuel in, pick a destination (or a schedule) and let freight fly between planets and stations with nobody at either pad — flights survive restarts, and undeliverable cargo is crated, never lost.
 9. **Terraform** — mature dead ground through **Rooted → Hydrated → Living** stages, complete with a glacite-fed water cycle, weather, vibrant biomes, and three breedable livestock species.
 
-In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree — 10 chapters, 45 steps, synced to a full advancement tree. In a creative world, `/nerospace gallery` builds a live showcase of everything in the mod.
+In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree — 16 chapters (one per world among them), 75 steps, synced to a full advancement tree. In a creative world, `/nerospace gallery` builds a live showcase of everything in the mod.
 
 ## Requirements
 
 | | |
 | --- | --- |
-| Minecraft | 26.1.2 or 26.2 |
+| Minecraft | 26.1.2, 26.2 or 26.3 |
 | Mod loader | NeoForge, MinecraftForge/Forge, or Fabric |
 | Java | JDK 25 (64-bit) |
-| Required mod | Neroland Core (the only dependency; no third-party mods needed) |
+| Required mod | Neroland Core 1.16.0 or newer (the only dependency; no third-party mods needed) |
 
 ## Installing
 
@@ -64,7 +86,7 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 
 ## Building from source
 
-This repo is the flattened multiloader build. `common/` is shared into six Stonecutter nodes:
+This repo is the flattened multiloader build. `common/` is shared into nine Stonecutter nodes:
 NeoForge, Forge, and Fabric for Minecraft 26.1.2, 26.2 and 26.3. No separate Gradle install is needed.
 
 ```bash

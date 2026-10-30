@@ -33,7 +33,7 @@ public class TerraformMonitorScreen extends TexturedContainerScreen<TerraformMon
         label(g, Component.translatable("gui.nerospace.terraform_monitor.stage." + stage), 8, 18,
                 stage >= 3 ? 0xFF9CF0C0 : (stage > 0 ? ACCENT : 0xFF7E8EA0));
 
-        // Planet-specific readout (D7): why the terraformer refuses here, else what the next stage will plant.
+        // Planet-specific readout: why the terraformer refuses here, else what the next stage will plant.
         TerraformRefusal refusal = this.menu.getRefusal();
         if (refusal != TerraformRefusal.NONE) {
             label(g, Component.translatable(refusal.langKey()), 8, 29, 0xFFFF6A5E);

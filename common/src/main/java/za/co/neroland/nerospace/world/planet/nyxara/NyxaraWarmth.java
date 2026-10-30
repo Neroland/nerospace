@@ -10,7 +10,7 @@ import za.co.neroland.nerospace.world.planet.PlanetWeather;
 import za.co.neroland.nerospace.world.planet.WeatherEvent;
 
 /**
- * Dawnband COLD shield lookup for the hazard system (002 §1.6, 003 §4.3): during a flare, a position within 4 blocks of
+ * Dawnband COLD shield lookup for the hazard system: during a flare, a position within 4 blocks of
  * a {@code FLARING} Dawnband Stone is shielded from COLD. Outside a flare it returns false after one field read; during
  * one it scans the 9×9×9 cube (loaded chunks only) and stops at the first hit.
  */

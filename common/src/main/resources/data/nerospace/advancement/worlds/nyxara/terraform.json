@@ -1,5 +1,5 @@
 {
-  "parent": "nerospace:worlds/nyxara/arrive",
+  "parent": "nerospace:nyxara",
   "criteria": {
     "granted": {
       "trigger": "minecraft:impossible"

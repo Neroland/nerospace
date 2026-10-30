@@ -207,14 +207,14 @@
     "min_y": -64
   },
   "noise_router": {
-    "chunk_surface_level": "minecraft:overworld/chunk_surface_level",
-    "continents": "minecraft:overworld/continents",
-    "depth": "minecraft:overworld/depth",
-    "erosion": "minecraft:overworld/erosion",
-    "final_density": "minecraft:overworld/final_density",
-    "ridges": "minecraft:overworld/ridges",
-    "temperature": "minecraft:overworld/temperature",
-    "vegetation": "minecraft:overworld/vegetation"
+    "chunk_surface_level": "nerospace:nyxara/overworld/chunk_surface_level",
+    "continents": "nerospace:nyxara/overworld/continents",
+    "depth": "nerospace:nyxara/overworld/depth",
+    "erosion": "nerospace:nyxara/overworld/erosion",
+    "final_density": "nerospace:nyxara/overworld/final_density",
+    "ridges": "nerospace:nyxara/overworld/ridges",
+    "temperature": "nerospace:nyxara/overworld/temperature",
+    "vegetation": "nerospace:nyxara/overworld/vegetation"
   },
   "sea_level": 63,
   "spawn_target": [

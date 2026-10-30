@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Decision 001 §18.1: on every planet a solar panel's output, averaged over a full planet day (and, on Mars,
+ * On every planet a solar panel's output, averaged over a full planet day (and, on Mars,
  * over the default dust-storm duty cycle), is at least the 1.x flat 2.0. The station stays a constant 2.0;
  * {@code solar.clockDriven=false} restores the flat 2.0 everywhere.
  */
@@ -37,7 +37,7 @@ class SolarAverageTest {
     }
 
     @Test
-    @DisplayName("final solar constants (owner-ruled)")
+    @DisplayName("final solar constants")
     void constants() {
         assertEquals(2.0, Planets.STATION.planetSolar());
         assertEquals(4.0, Planets.LUNA.planetSolar());

@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.block.rules;
 
 /**
- * Red Regolith dune drift (002 §1.2, §3, §4): during a dust storm one surface block per chunk per
+ * Red Regolith dune drift: during a dust storm one surface block per chunk per
  * {@link #INTERVAL_TICKS} moves one block downwind, at most {@link #MAX_PER_STORM} per chunk per storm. A drift is
  * a move — the block count is conserved. Player-placed blocks never move.
  */

@@ -8,11 +8,10 @@ import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.sky.SkyProfiles;
 
 /**
- * NeoForge client sky wiring: the sky-profile reload listener (all versions) and, on 26.3, a
- * {@code CustomSkyboxRenderer} registered as {@code nerospace:planet} that delegates to
- * {@code PlanetSkyRenderer}. The renderer is only used by a dimension type whose {@code neoforge:custom_skybox}
- * environment attribute names it; Stage 1 changes no dimension type, so it is registered but inert, and even
- * when attached it returns false (vanilla sky) until the Stage-6 profiles ship.
+ * NeoForge client sky wiring: the sky-profile reload listener (all versions) and, on 26.3, the planet
+ * {@code CustomSkyboxRenderer} ({@code NeoForgePlanetSky}) registered as {@code nerospace:planet}. Every Nerospace
+ * dimension type selects it through the {@code neoforge:custom_skybox} attribute in the NeoForge-only 26.3 resource
+ * overlay ({@code tools/gen_sky_overlays.py}); it falls back to the vanilla sky for a level without a planet profile.
  */
 public final class NeoForgeSky {
 
@@ -27,16 +26,7 @@ public final class NeoForgeSky {
                 event.addListener(SkyProfiles.ID, SkyProfiles.INSTANCE));
         //? if >=26.3 {
         /*modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent event) ->
-                event.registerSkyboxRenderer(SKY_ID, new net.neoforged.neoforge.client.CustomSkyboxRenderer() {
-                    @Override
-                    public boolean renderSky(net.minecraft.client.renderer.state.level.LevelRenderState levelRenderState,
-                            net.minecraft.client.renderer.state.level.SkyRenderState skyRenderState,
-                            org.joml.Matrix4fc modelViewMatrix,
-                            com.mojang.renderpearl.api.buffers.GpuBufferSlice skyFog) {
-                        return za.co.neroland.nerospace.client.sky.PlanetSkyRenderer.renderCurrent(
-                                net.minecraft.client.Minecraft.getInstance().level);
-                    }
-                }));
+                event.registerSkyboxRenderer(SKY_ID, new NeoForgePlanetSky()));
         *///?}
     }
 }

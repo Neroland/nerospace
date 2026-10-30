@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import za.co.neroland.nerospace.world.station.DockingPolicy;
 import za.co.neroland.nerospace.world.station.StationAccess;
 
-/** 005 §4 docking policy (cycler + launch re-check) and the 005 G7 visitor send-home eligibility. */
+/** Docking policy (cycler + launch re-check) and the visitor send-home eligibility. */
 class StationDockingRuleTest {
 
     private static final String OWNER = "00000000-0000-0000-0000-00000000000a";
@@ -36,10 +36,11 @@ class StationDockingRuleTest {
 
     @Test
     void visitorSendHomeEligibility() {
-        assertTrue(StationVisitorSender.eligible(true, false, 12_000L, true));
-        assertFalse(StationVisitorSender.eligible(true, false, 11_999L, true));
-        assertFalse(StationVisitorSender.eligible(true, true, 50_000L, true)); // never move a crewed rocket
-        assertFalse(StationVisitorSender.eligible(true, false, 50_000L, false)); // not blocking a dock
-        assertFalse(StationVisitorSender.eligible(true, false, -1L, true)); // unknown parking time
+        assertTrue(StationVisitorSender.eligible(true, false, 12_000L, true, false));
+        assertFalse(StationVisitorSender.eligible(true, false, 11_999L, true, false));
+        assertFalse(StationVisitorSender.eligible(true, true, 50_000L, true, false)); // never move a crewed rocket
+        assertFalse(StationVisitorSender.eligible(true, false, 50_000L, false, false)); // not blocking a dock
+        assertFalse(StationVisitorSender.eligible(true, false, -1L, true, false)); // unknown parking time
+        assertFalse(StationVisitorSender.eligible(true, false, 50_000L, true, true)); // a visitor is still aboard
     }
 }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import za.co.neroland.nerospace.rocket.StationFounding.Outcome;
 
-/** 001 §13.2 / §18.2, 005 §8: charter on arrival; 1.6.0 in-flight honoured once; full → nothing consumed. */
+/** Charter on arrival; 1.6.0 in-flight honoured once; full → nothing consumed. */
 class RocketFoundingTest {
 
     @Test

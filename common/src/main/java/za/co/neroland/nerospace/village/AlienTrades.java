@@ -68,12 +68,12 @@ public final class AlienTrades {
             .buy("nerospace:alien_fragment", 4, EMERALD, 1, 12, 2)
             .tier(3)
             .buy(EMERALD, 10, "nerospace:oxygen_suit_heat_helmet", 1, 4, 10)
-            .buy(EMERALD, 9, "nerospace:oxygen_suit_heat_boots", 1, 4, 10)
             .tier(4)
+            .buy(EMERALD, 18, DIAMOND, 3, 4, 20)
+            .tier(5)
+            .buy(EMERALD, 9, "nerospace:oxygen_suit_heat_boots", 1, 4, 10)
             .buy(EMERALD, 16, "nerospace:oxygen_suit_heat_chestplate", 1, 2, 15)
             .buy(EMERALD, 14, "nerospace:oxygen_suit_heat_leggings", 1, 2, 15)
-            .tier(5)
-            .buy(EMERALD, 18, DIAMOND, 3, 4, 20)
             .buy2("nerospace:alien_core", 1, EMERALD, 20, "nerospace:alien_tech_scrap", 4, 2, 20)
             .build();
 
@@ -89,12 +89,12 @@ public final class AlienTrades {
             .buy("nerospace:alien_fragment", 4, EMERALD, 1, 12, 2)
             .tier(3)
             .buy(EMERALD, 10, "nerospace:oxygen_suit_cold_helmet", 1, 4, 10)
-            .buy(EMERALD, 9, "nerospace:oxygen_suit_cold_boots", 1, 4, 10)
             .tier(4)
+            .buy(EMERALD, 18, DIAMOND, 3, 4, 20)
+            .tier(5)
+            .buy(EMERALD, 9, "nerospace:oxygen_suit_cold_boots", 1, 4, 10)
             .buy(EMERALD, 16, "nerospace:oxygen_suit_cold_chestplate", 1, 2, 15)
             .buy(EMERALD, 14, "nerospace:oxygen_suit_cold_leggings", 1, 2, 15)
-            .tier(5)
-            .buy(EMERALD, 18, DIAMOND, 3, 4, 20)
             .buy2("nerospace:alien_core", 1, EMERALD, 20, "nerospace:helium3_canister", 4, 2, 20)
             .build();
 
@@ -110,12 +110,12 @@ public final class AlienTrades {
             .buy("nerospace:alien_fragment", 4, EMERALD, 1, 12, 2)
             .tier(3)
             .buy(EMERALD, 12, "nerospace:oxygen_suit_t2_helmet", 1, 4, 10)
-            .buy(EMERALD, 11, "nerospace:oxygen_suit_t2_boots", 1, 4, 10)
             .tier(4)
+            .buy(EMERALD, 20, "nerospace:gravity_shard", 4, 4, 20)
+            .tier(5)
+            .buy(EMERALD, 11, "nerospace:oxygen_suit_t2_boots", 1, 4, 10)
             .buy(EMERALD, 18, "nerospace:oxygen_suit_t2_chestplate", 1, 2, 15)
             .buy(EMERALD, 16, "nerospace:oxygen_suit_t2_leggings", 1, 2, 15)
-            .tier(5)
-            .buy(EMERALD, 20, "nerospace:gravity_shard", 4, 4, 20)
             .buy2("nerospace:alien_core", 1, EMERALD, 24, "nerospace:void_shard", 2, 2, 20)
             .build();
 
@@ -124,10 +124,11 @@ public final class AlienTrades {
             .tier(1)
             .buy("nerospace:raw_hematite", 6, "nerospace:hull_plating", 2, 12, 2)
             .buy("nerospace:raw_hematite", 8, "nerospace:truss", 4, 12, 2)
-            .buy("nerospace:raw_hematite", 10, "nerospace:titanium_ingot", 1, 8, 4)
+            // Titanium is the ilmenite-refinery product: the drone sells only a little of it, at a steep price.
+            .buy("nerospace:raw_hematite", 24, "nerospace:titanium_ingot", 1, 2, 4)
             .buy("nerospace:raw_hematite", 12, "nerospace:solar_wing", 1, 6, 6)
             .buy("nerospace:raw_hematite", 16, "nerospace:frame_casing", 1, 4, 8)
-            .buy("nerospace:raw_hematite", 20, "nerospace:alien_tech_scrap", 1, 4, 10)
+            .buy("nerospace:raw_hematite", 20, "nerospace:alien_tech_scrap", 1, 1, 10)
             .build();
 
     /** Every table by id (four cultures + the salvage drone). */

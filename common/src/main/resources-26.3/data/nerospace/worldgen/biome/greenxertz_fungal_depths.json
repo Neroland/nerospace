@@ -1,5 +1,18 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "additions": {
+        "sound": "nerospace:ambient.greenxertz.additions",
+        "tick_chance": 0.0111
+      },
+      "loop": "nerospace:ambient.greenxertz.loop",
+      "mood": {
+        "block_search_extent": 8,
+        "offset": 2.0,
+        "sound": "nerospace:ambient.greenxertz.mood",
+        "tick_delay": 6000
+      }
+    },
     "minecraft:gameplay/natural_mob_spawns": {
       "argument": {
         "spawn_costs": {},
@@ -54,7 +67,8 @@
         }
       },
       "modifier": "overlay"
-    }
+    },
+    "minecraft:visual/fog_color": "#1d4d2b"
   },
   "carvers": [
     "minecraft:cave",
@@ -63,7 +77,6 @@
   ],
   "downfall": 0.0,
   "effects": {
-    "fog_color": "#1d4d2b",
     "foliage_color": "#3fbf6f",
     "grass_color": "#3fbf6f",
     "water_color": "#2f6e5a"

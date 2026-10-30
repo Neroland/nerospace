@@ -1,5 +1,12 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "additions": {
+        "sound": "nerospace:ambient.nyxara.additions",
+        "tick_chance": 0.003
+      },
+      "loop": "nerospace:ambient.nyxara.loop"
+    },
     "minecraft:gameplay/natural_mob_spawns": {
       "argument": {
         "spawn_costs": {},

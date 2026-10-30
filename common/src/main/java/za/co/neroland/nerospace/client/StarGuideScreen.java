@@ -3,25 +3,36 @@ package za.co.neroland.nerospace.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 
+import org.jetbrains.annotations.Nullable;
+
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.client.ui.Glyphs;
+import za.co.neroland.nerospace.client.ui.PlanetAccents;
+import za.co.neroland.nerospace.client.ui.StarGuideLayout;
 import za.co.neroland.nerospace.progression.StarGuide;
 import za.co.neroland.nerospace.progression.StarGuideMenu;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
- * The Star Guide screen: a chapter rail on the left, the selected chapter's step nodes connected by a
- * dotted trajectory line on the right (rocket-UI styling), and a guide-text panel underneath.
- * Completed steps light up.
+ * The Star Guide screen: a scrolling chapter rail on the left (ten 14 px entries, Worlds chapters by planet name
+ * with a planet-accent stripe), the selected chapter's step nodes joined by a dotted trajectory on the right with a
+ * progress counter, and a scrolling guide-text well underneath. Completed steps light up; a hidden bonus step shows
+ * once done, with a dotted border and a star. Geometry lives in {@link StarGuideLayout}.
  *
- * <p>Cross-loader port: built on the multiloader {@link TexturedContainerScreen} + {@link SpaceButton}
- * (same 26.x submission-model rendering as the standalone mod). Slice 1 shows completion only — the
- * "seen pulse" rode the deferred {@code STAR_GUIDE_SEEN} attachment.</p>
+ * <p>The click id ({@code chapter * 16 + step}) reports a step as seen so its completion pulse stops.</p>
  */
 public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
 
@@ -30,44 +41,90 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     /** Star Guide accent: nerosium purple (the mod's signpost block). */
     private static final int ACCENT = 0xFFB05AE0;
     private static final int DONE = 0xFF58D08A;
+    private static final int VALUE = 0xFFB9C6D4;
+    private static final int STEP_TITLE = 0xFFE6D2FF;
+    private static final int BODY_TEXT = 0xFFB6C6D8;
+    private static final int PATH_IDLE = 0xFF31506B;
 
-    private final List<SpaceButton> chapterButtons = new ArrayList<>();
-    private final List<SpaceButton> stepButtons = new ArrayList<>();
+    private final List<RailEntry> railButtons = new ArrayList<>();
+    private final List<NodeButton> stepButtons = new ArrayList<>();
     private int selectedChapter;
     private int selectedStep;
+    private int railScroll;
+    private int textScroll;
     /** Real step indices of the nodes shown for the selected chapter (hidden incomplete steps left out). */
     private final List<Integer> shownSteps = new ArrayList<>();
     private int shownMask = -1;
 
     public StarGuideScreen(StarGuideMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, TEXTURE, ACCENT, 240, 200);
+        super(menu, playerInventory, title, TEXTURE, ACCENT, StarGuideLayout.PANEL_W, StarGuideLayout.PANEL_H);
         this.titleLabelX = 10;
         this.inventoryLabelY = 10_000; // no player inventory on this panel
     }
 
     @Override
     protected void init() {
+        this.cachedLines = null;
         super.init();
-        this.chapterButtons.clear();
-        // The rail compresses as chapters are appended so every button stays inside the 200 px panel.
-        int pitch = Math.min(17, 172 / Math.max(1, StarGuide.CHAPTER_COUNT));
-        int buttonHeight = Math.min(14, pitch - 1);
-        for (int i = 0; i < StarGuide.CHAPTER_COUNT; i++) {
-            final int chapter = i;
-            SpaceButton button = new SpaceButton(this.leftPos + 8, this.topPos + 22 + i * pitch, 66, buttonHeight,
-                    Component.translatable(StarGuide.CHAPTERS.get(i).titleKey()), ACCENT,
-                    b -> selectChapter(chapter));
-            this.addRenderableWidget(button);
-            this.chapterButtons.add(button);
-        }
-        rebuildStepButtons();
+        this.railScroll = StarGuideLayout.scrollToShow(this.selectedChapter, this.railScroll, StarGuide.CHAPTER_COUNT);
+        rebuildWidgets(null);
     }
 
-    private void selectChapter(int chapter) {
-        this.selectedChapter = chapter;
-        this.selectedStep = 0;
-        this.shownMask = -1;
+    /**
+     * Rebuilds every widget in reading (Tab) order: rail entries, chevrons, step nodes. {@code focusChapter} gets
+     * keyboard focus afterwards when it is on the rail.
+     */
+    private void rebuildWidgets(@Nullable Integer focusChapter) {
+        clearWidgets();
+        this.railButtons.clear();
+        int last = Math.min(StarGuide.CHAPTER_COUNT, this.railScroll + StarGuideLayout.RAIL_VISIBLE);
+        RailEntry focus = null;
+        for (int chapter = this.railScroll; chapter < last; chapter++) {
+            int[] r = StarGuideLayout.railEntry(chapter - this.railScroll);
+            final int c = chapter;
+            RailEntry entry = new RailEntry(this.leftPos + r[0], this.topPos + r[1], r[2], r[3], chapter,
+                    b -> selectChapter(c, false));
+            addRenderableWidget(entry);
+            this.railButtons.add(entry);
+            if (focusChapter != null && focusChapter == chapter) {
+                focus = entry;
+            }
+        }
+        if (StarGuide.CHAPTER_COUNT > StarGuideLayout.RAIL_VISIBLE) {
+            int max = StarGuideLayout.maxRailScroll(StarGuide.CHAPTER_COUNT);
+            Component narration = Component.translatable("gui.nerospace.star_guide.scroll_chapters");
+            IconButton up = new IconButton(this.leftPos + StarGuideLayout.CHEV_UP[0],
+                    this.topPos + StarGuideLayout.CHEV_UP[1], StarGuideLayout.CHEV_UP[2], StarGuideLayout.CHEV_UP[3],
+                    Glyphs.Glyph.CHEV_UP, narration, ACCENT, b -> scrollRail(-1));
+            up.active = this.railScroll > 0;
+            addRenderableWidget(up);
+            IconButton down = new IconButton(this.leftPos + StarGuideLayout.CHEV_DOWN[0],
+                    this.topPos + StarGuideLayout.CHEV_DOWN[1], StarGuideLayout.CHEV_DOWN[2],
+                    StarGuideLayout.CHEV_DOWN[3], Glyphs.Glyph.CHEV_DOWN, narration, ACCENT, b -> scrollRail(1));
+            down.active = this.railScroll < max;
+            addRenderableWidget(down);
+        }
         rebuildStepButtons();
+        if (focus != null) {
+            setFocused(focus);
+        }
+    }
+
+    private void scrollRail(int delta) {
+        int next = Math.max(0, Math.min(StarGuideLayout.maxRailScroll(StarGuide.CHAPTER_COUNT), this.railScroll + delta));
+        if (next != this.railScroll) {
+            this.railScroll = next;
+            rebuildWidgets(null);
+        }
+    }
+
+    private void selectChapter(int chapter, boolean keyboard) {
+        this.selectedChapter = Math.max(0, Math.min(StarGuide.CHAPTER_COUNT - 1, chapter));
+        this.selectedStep = 0;
+        this.textScroll = 0;
+        this.shownMask = -1;
+        this.railScroll = StarGuideLayout.scrollToShow(this.selectedChapter, this.railScroll, StarGuide.CHAPTER_COUNT);
+        rebuildWidgets(keyboard ? this.selectedChapter : null);
     }
 
     /**
@@ -86,40 +143,27 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
                 this.shownSteps.add(i);
             }
         }
-        for (int slot = 0; slot < this.shownSteps.size(); slot++) {
+        int nodes = this.shownSteps.size();
+        int number = 0;
+        for (int slot = 0; slot < nodes; slot++) {
             final int step = this.shownSteps.get(slot);
-            SpaceButton node = new SpaceButton(stepX(slot), stepY(slot), 42, 14,
-                    Component.literal(String.valueOf(slot + 1)), ACCENT, b -> selectStep(step));
-            this.addRenderableWidget(node);
+            boolean bonus = chapter.steps().get(step).hidden();
+            int[] r = StarGuideLayout.node(slot, nodes);
+            NodeButton node = new NodeButton(this.leftPos + r[0], this.topPos + r[1], r[2], r[3],
+                    bonus ? Component.translatable("gui.nerospace.star_guide.bonus")
+                            : Component.literal(String.valueOf(++number)),
+                    bonus, b -> selectStep(step));
+            if (bonus) {
+                node.setTooltip(Tooltip.create(Component.translatable("gui.nerospace.star_guide.bonus.tooltip")));
+            }
+            addRenderableWidget(node);
             this.stepButtons.add(node);
         }
     }
 
-    /** Serpentine layout: odd rows run right-to-left so the path snakes without crossing nodes. */
-    private int stepX(int index) {
-        int col = index % 3;
-        if ((index / 3) % 2 == 1) {
-            col = 2 - col;
-        }
-        return this.leftPos + 82 + col * 52;
-    }
-
-    private int stepY(int index) {
-        return this.topPos + 26 + (index / 3) * rowSpacing();
-    }
-
-    /**
-     * Vertical pitch between node rows, compressed for long chapters so every row stays inside the
-     * step canvas.
-     */
-    private int rowSpacing() {
-        int steps = Math.max(1, this.shownSteps.size());
-        int rows = Math.max(1, (steps + 2) / 3);
-        return rows <= 1 ? 32 : Math.min(32, 54 / (rows - 1));
-    }
-
     private void selectStep(int step) {
         this.selectedStep = step;
+        this.textScroll = 0;
         // Report "seen" so the completed-pulse stops (server writes the STAR_GUIDE_SEEN attachment).
         if (this.minecraft != null && this.minecraft.gameMode != null) {
             this.minecraft.gameMode.handleInventoryButtonClick(
@@ -127,30 +171,116 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
         }
     }
 
+    /** The planet a Worlds chapter is about, or null for the other chapters. */
+    @Nullable
+    private static PlanetDefinition worldsPlanet(StarGuide.Chapter chapter) {
+        if (!chapter.id().startsWith(StarGuide.WORLDS_PREFIX)) {
+            return null;
+        }
+        String name = chapter.id().substring(StarGuide.WORLDS_PREFIX.length());
+        for (PlanetDefinition p : Planets.ALL) {
+            if (p.dimension().identifier().getPath().equals(name)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    /** The rail label: the planet name for a Worlds chapter, the chapter title otherwise. */
+    static String railKey(StarGuide.Chapter chapter) {
+        return chapter.id().startsWith(StarGuide.WORLDS_PREFIX)
+                ? "gui.nerospace.star_guide.rail." + chapter.id() : chapter.titleKey();
+    }
+
+    private static Component ellipsis(Font font, Component text, int maxWidth) {
+        String s = text.getString();
+        if (font.width(s) <= maxWidth) {
+            return text;
+        }
+        return Component.literal(font.plainSubstrByWidth(s, Math.max(0, maxWidth - font.width("…"))) + "…");
+    }
+
+    private List<FormattedCharSequence> descriptionLines() {
+        List<StarGuide.Step> steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps();
+        int index = Math.min(this.selectedStep, steps.size() - 1);
+        // Wrapped once per selected step, not every frame and wheel notch (the screen is rebuilt on a language change).
+        int key = this.selectedChapter * 16 + index;
+        List<FormattedCharSequence> lines = this.cachedLines;
+        if (lines == null || this.cachedLinesKey != key) {
+            lines = this.font.split(Component.translatable(steps.get(index).textKey()), StarGuideLayout.TEXT_W);
+            this.cachedLines = lines;
+            this.cachedLinesKey = key;
+        }
+        return lines;
+    }
+
+    @Nullable
+    private List<FormattedCharSequence> cachedLines;
+    private int cachedLinesKey = -1;
+
+    @Override
+    public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        super.extractContents(extractor, mouseX, mouseY, partialTick);
+        double mx = mouseX - this.leftPos;
+        double my = mouseY - this.topPos;
+        StarGuide.Chapter chapter = StarGuide.CHAPTERS.get(this.selectedChapter);
+        // Progress counter tooltip.
+        int required = Integer.bitCount(chapter.requiredMask());
+        int done = Integer.bitCount(this.menu.completionMask(this.selectedChapter) & chapter.requiredMask());
+        Component progress = Component.translatable("gui.nerospace.star_guide.progress", done, required);
+        int pw = this.font.width(progress);
+        if (StarGuideLayout.inside(new int[] { StarGuideLayout.PROGRESS_RIGHT - pw, StarGuideLayout.PROGRESS_Y, pw, 9 },
+                mx, my)) {
+            extractor.setTooltipForNextFrame(
+                    Component.translatable("gui.nerospace.star_guide.progress.tooltip", done, required), mouseX, mouseY);
+        }
+        // Full step title over the title row (it may be ellipsised).
+        if (StarGuideLayout.inside(new int[] { StarGuideLayout.TITLE_X, StarGuideLayout.TITLE_Y, StarGuideLayout.TITLE_W, 9 },
+                mx, my)) {
+            StarGuide.Step step = chapter.steps().get(Math.min(this.selectedStep, chapter.steps().size() - 1));
+            extractor.setTooltipForNextFrame(Component.translatable(step.titleKey()), mouseX, mouseY);
+        }
+    }
+
     @Override
     protected void extractForeground(GuiGraphicsExtractor g) {
-        List<StarGuide.Step> steps = StarGuide.CHAPTERS.get(this.selectedChapter).steps();
+        StarGuide.Chapter chapter = StarGuide.CHAPTERS.get(this.selectedChapter);
+        List<StarGuide.Step> steps = chapter.steps();
         if (this.menu.completionMask(this.selectedChapter) != this.shownMask) {
             rebuildStepButtons(); // completion synced (or a hidden step just completed): re-layout the nodes
         }
 
-        // Chapter rail: light fully-completed chapters.
-        for (int i = 0; i < this.chapterButtons.size(); i++) {
-            boolean allDone = StarGuide.CHAPTERS.get(i).isComplete(this.menu.completionMask(i));
-            this.chapterButtons.get(i).setSelected(i == this.selectedChapter || allDone);
+        // Rail: selected or fully-completed chapters lit.
+        for (RailEntry entry : this.railButtons) {
+            boolean allDone = StarGuide.CHAPTERS.get(entry.chapter).isComplete(this.menu.completionMask(entry.chapter));
+            entry.complete = allDone;
+            entry.setSelected(entry.chapter == this.selectedChapter || allDone);
+        }
+        int[] thumb = StarGuideLayout.railThumb(this.railScroll, StarGuide.CHAPTER_COUNT);
+        if (thumb != null) {
+            int[] bar = StarGuideLayout.RAIL_BAR;
+            g.fill(this.leftPos + bar[0], this.topPos + bar[1], this.leftPos + bar[0] + bar[2],
+                    this.topPos + bar[1] + bar[3], TROUGH);
+            g.fill(this.leftPos + bar[0], this.topPos + thumb[0], this.leftPos + bar[0] + bar[2],
+                    this.topPos + thumb[0] + thumb[1], SUBTLE);
         }
 
         // Dotted trajectory line linking the chapter's nodes in order (the progression path).
-        for (int i = 0; i < this.shownSteps.size() - 1; i++) {
+        int nodes = this.shownSteps.size();
+        for (int i = 0; i < nodes - 1; i++) {
             boolean done = this.menu.isStepComplete(this.selectedChapter, this.shownSteps.get(i));
-            int color = done ? DONE : 0xFF31506B;
+            int color = done ? DONE : PATH_IDLE;
+            int[] a = StarGuideLayout.node(i, nodes);
+            int[] b = StarGuideLayout.node(i + 1, nodes);
             if (i / 3 == (i + 1) / 3) {
-                int xa = Math.min(stepX(i), stepX(i + 1)) + 44;
-                int xb = Math.max(stepX(i), stepX(i + 1)) - 2;
-                dottedLine(g, xa, stepY(i) + 7, xb, stepY(i) + 7, color);
+                int xa = Math.min(a[0], b[0]) + 42;
+                int xb = Math.max(a[0], b[0]) - 2;
+                dottedLine(g, this.leftPos + xa, this.topPos + a[1] + 6, this.leftPos + xb, this.topPos + a[1] + 6,
+                        color);
             } else {
-                int cx = stepX(i) + 21; // same column as the next node (serpentine turn)
-                dottedLine(g, cx, stepY(i) + 15, cx, stepY(i + 1) - 1, color);
+                int cx = a[0] + 19; // same column as the next node (serpentine turn)
+                dottedLine(g, this.leftPos + cx, this.topPos + a[1] + 15, this.leftPos + cx, this.topPos + b[1] - 2,
+                        color);
             }
         }
 
@@ -161,38 +291,74 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
             int real = this.shownSteps.get(i);
             boolean done = this.menu.isStepComplete(this.selectedChapter, real);
             boolean seen = this.menu.isStepSeen(this.selectedChapter, real);
-            SpaceButton node = this.stepButtons.get(i);
+            NodeButton node = this.stepButtons.get(i);
+            node.done = done;
             node.setSelected(done && (seen || pulseOn));
-            if (done) {
-                g.fill(node.getX() + node.getWidth() - 5, node.getY() + 2, // completion pip
-                        node.getX() + node.getWidth() - 2, node.getY() + 5, DONE);
-            }
         }
 
-        // Guide-text panel for the selected step.
+        // Progress: required steps done / required steps (a bonus step never counts).
+        int required = Integer.bitCount(chapter.requiredMask());
+        int doneCount = Integer.bitCount(this.menu.completionMask(this.selectedChapter) & chapter.requiredMask());
+        Component progress = Component.translatable("gui.nerospace.star_guide.progress", doneCount, required);
+        label(g, progress, StarGuideLayout.PROGRESS_RIGHT - this.font.width(progress), StarGuideLayout.PROGRESS_Y,
+                chapter.isComplete(this.menu.completionMask(this.selectedChapter)) ? DONE : VALUE);
+
+        // Guide text for the selected step.
         StarGuide.Step step = steps.get(Math.min(this.selectedStep, steps.size() - 1));
         boolean stepDone = this.menu.isStepComplete(this.selectedChapter, this.selectedStep);
-        Component title = Component.translatable(step.titleKey());
-        label(g, title, 82, 100, stepDone ? DONE : 0xFFE6D2FF);
+        Component title = ellipsis(this.font, Component.translatable(step.titleKey()),
+                stepDone ? StarGuideLayout.TITLE_W_DONE : StarGuideLayout.TITLE_W);
+        label(g, title, StarGuideLayout.TITLE_X, StarGuideLayout.TITLE_Y, stepDone ? DONE : STEP_TITLE);
         if (stepDone) {
-            Component complete = Component.translatable("gui.nerospace.star_guide.complete");
-            int tagX = 230 - this.font.width(complete);
-            if (tagX >= 82 + this.font.width(title) + 6) {
-                label(g, complete, tagX, 100, DONE);
-            }
+            Glyphs.draw(g, Glyphs.Glyph.CHECK, this.leftPos + StarGuideLayout.DONE_MARK_X,
+                    this.topPos + StarGuideLayout.TITLE_Y, DONE);
         }
-        // Description: wrapped to the text panel.
-        List<FormattedCharSequence> lines = this.font.split(
-                Component.translatable(step.textKey()), 146);
-        int lineHeight = lines.size() > 8 ? 9 : 10;
-        int y = 112;
-        for (FormattedCharSequence line : lines) {
-            if (y + this.font.lineHeight > 193) {
-                break;
-            }
-            g.text(this.font, line, this.leftPos + 82, this.topPos + y, 0xFFB6C6D8, false);
-            y += lineHeight;
+        List<FormattedCharSequence> lines = descriptionLines();
+        this.textScroll = Math.max(0, Math.min(StarGuideLayout.maxTextScroll(lines.size()), this.textScroll));
+        for (int k = 0; k < StarGuideLayout.TEXT_LINES && this.textScroll + k < lines.size(); k++) {
+            g.text(this.font, lines.get(this.textScroll + k), this.leftPos + StarGuideLayout.TEXT_X,
+                    this.topPos + StarGuideLayout.TEXT_Y + k * StarGuideLayout.LINE_H, BODY_TEXT, false);
         }
+        int[] textThumb = StarGuideLayout.textThumb(this.textScroll, lines.size());
+        if (textThumb != null) {
+            int[] bar = StarGuideLayout.TEXT_BAR;
+            g.fill(this.leftPos + bar[0], this.topPos + bar[1], this.leftPos + bar[0] + bar[2],
+                    this.topPos + bar[1] + bar[3], TROUGH);
+            g.fill(this.leftPos + bar[0], this.topPos + textThumb[0], this.leftPos + bar[0] + bar[2],
+                    this.topPos + textThumb[0] + textThumb[1], SUBTLE);
+        }
+    }
+
+    /** The wheel scrolls the chapter rail over the rail, the guide text over the text well. */
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        double mx = mouseX - this.leftPos;
+        double my = mouseY - this.topPos;
+        int dir = scrollY > 0.0D ? -1 : (scrollY < 0.0D ? 1 : 0);
+        if (dir != 0 && StarGuideLayout.inside(StarGuideLayout.RAIL_WELL, mx, my)) {
+            scrollRail(dir);
+            return true;
+        }
+        if (dir != 0 && StarGuideLayout.inside(StarGuideLayout.TEXT_WELL, mx, my)) {
+            int max = StarGuideLayout.maxTextScroll(descriptionLines().size());
+            this.textScroll = Math.max(0, Math.min(max, this.textScroll + dir));
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    /** Up / Down with keyboard focus on the rail move the chapter selection. */
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        GuiEventListener focused = getFocused();
+        if (focused instanceof RailEntry && (event.isUp() || event.isDown())) {
+            int next = this.selectedChapter + (event.isUp() ? -1 : 1);
+            if (next >= 0 && next < StarGuide.CHAPTER_COUNT) {
+                selectChapter(next, true);
+            }
+            return true;
+        }
+        return super.keyPressed(event);
     }
 
     /** A dotted 2px line between two points (axis-aligned or otherwise), ~5px pitch. */
@@ -210,5 +376,68 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     protected void extractLabels(GuiGraphicsExtractor extractor, int mouseX, int mouseY) {
         extractor.text(this.font, this.title, this.titleLabelX, this.titleLabelY, TITLE, false);
         // No inventory label: the panel has no player slots.
+    }
+
+    /** A rail entry: left-aligned, ellipsised title (full title in the tooltip), planet stripe and a done tick. */
+    private static final class RailEntry extends SpaceButton {
+
+        private final int chapter;
+        private final int stripe;
+        private boolean complete;
+
+        RailEntry(int x, int y, int w, int h, int chapter, OnPress onPress) {
+            super(x, y, w, h, Component.translatable(railKey(StarGuide.CHAPTERS.get(chapter))), ACCENT, onPress);
+            this.chapter = chapter;
+            PlanetDefinition planet = worldsPlanet(StarGuide.CHAPTERS.get(chapter));
+            this.stripe = planet == null ? 0 : PlanetAccents.of(planet.dimension());
+            setTooltip(Tooltip.create(Component.translatable(StarGuide.CHAPTERS.get(chapter).titleKey())));
+        }
+
+        @Override
+        protected void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+            int colour = drawFrame(g);
+            int x = getX();
+            int y = getY();
+            int textX = x + 2;
+            if (this.stripe != 0) {
+                g.fill(x + 1, y + 1, x + 4, y + 13, this.stripe);
+                textX = x + 7;
+            }
+            int right = this.complete ? x + 68 : x + getWidth() - 2;
+            if (this.complete) {
+                Glyphs.draw(g, Glyphs.Glyph.CHECK, x + 70, y + 3, DONE);
+            }
+            Font font = Minecraft.getInstance().font;
+            g.text(font, ellipsis(font, getMessage(), right - textX), textX, y + (getHeight() - 8) / 2, colour, false);
+        }
+    }
+
+    /** A step node: number (or a star on a bonus step, with a dotted border) and a check once done. */
+    private static final class NodeButton extends SpaceButton {
+
+        private final boolean bonus;
+        private boolean done;
+
+        NodeButton(int x, int y, int w, int h, Component message, boolean bonus, OnPress onPress) {
+            super(x, y, w, h, message, ACCENT, onPress);
+            this.bonus = bonus;
+            setDotted(bonus);
+        }
+
+        @Override
+        protected void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+            int colour = drawFrame(g);
+            int x = getX();
+            int y = getY();
+            if (this.bonus) {
+                Glyphs.draw(g, Glyphs.Glyph.STAR, x + 16, y + 3, DONE);
+            } else {
+                Font font = Minecraft.getInstance().font;
+                g.centeredText(font, getMessage(), x + getWidth() / 2, y + (getHeight() - 8) / 2, colour);
+            }
+            if (this.done) {
+                Glyphs.draw(g, Glyphs.Glyph.CHECK, x + 30, y + 3, DONE);
+            }
+        }
     }
 }

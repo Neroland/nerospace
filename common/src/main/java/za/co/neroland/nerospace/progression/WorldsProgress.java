@@ -27,7 +27,7 @@ import za.co.neroland.nerospace.world.planet.PlanetWeather;
 import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
- * The Worlds progression (D9 + the quest pack contract): grants the code-driven Worlds steps of the Star Guide, opens
+ * The Worlds progression (and the quest pack contract): grants the code-driven Worlds steps of the Star Guide, opens
  * the matching player-scope <em>record</em> gates a quest pack reads through Core, and publishes Nerospace's three
  * {@link ThresholdEvents} channels.
  *
@@ -54,8 +54,8 @@ public final class WorldsProgress {
     /** Mod hook: a quest reward that briefs the player on the next Worlds step (a hint; awards nothing). */
     public static final Identifier WORLDS_BRIEFING = ns("hook/worlds_briefing");
 
-    /** The planets with a Worlds chapter, in Star Guide order. */
-    public static final List<String> WORLDS = List.of("luna", "greenxertz", "mars", "cindara", "glacira", "nyxara");
+    /** The planets with a Worlds chapter, in Star Guide order (the roster: luna, mars, cindara, glacira, greenxertz, nyxara). */
+    public static final List<String> WORLDS = List.of("luna", "mars", "cindara", "glacira", "greenxertz", "nyxara");
 
     private record Exposure(ResourceKey<Level> dimension, long since) {
     }

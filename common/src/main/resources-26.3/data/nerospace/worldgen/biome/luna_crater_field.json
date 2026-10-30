@@ -1,5 +1,8 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.luna.loop"
+    },
     "minecraft:gameplay/natural_mob_spawns": {
       "argument": {
         "spawn_costs": {},
@@ -15,9 +18,7 @@
         }
       },
       "modifier": "overlay"
-    },
-    "minecraft:visual/fog_color": "#0b0b10",
-    "minecraft:visual/sky_color": "#000000"
+    }
   },
   "carvers": [],
   "downfall": 0.0,

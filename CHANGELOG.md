@@ -5,267 +5,323 @@ All notable changes to **Nerospace** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2026-10-30
+
+The planets and stations update: three new worlds (Luna, Mars and Nyxara), every world rebuilt with its own blocks,
+ores, biomes, sky, clock, weather and terraforming, and orbital stations that grow into habitats. See the wiki page
+*Upgrading to 2.0* before updating a 1.x world.
 
 ### Compatibility
 
 - **2.0.0 is a content release, not a breaking one: existing worlds keep working.** Every block, item,
   dimension and saved-data id from 1.6.0 keeps its id; saved stations, pads, rockets, terraformers,
-  oxygen fields, routes, Star Guide progress and config files load unchanged. Chunks already generated
-  on Greenxertz, Cindara and Glacira keep their terrain; only newly generated chunks use the new
-  worldgen, so a visible seam between old and new terrain is expected. Back up your world before
+  oxygen fields, routes, Star Guide progress and config files load unchanged. Back up your world before
   upgrading, as always.
-- Planet API stays compatible: `PlanetTraits` keeps its 1.x constructor and every 1.x accessor
-  (`planet`, `defaultGravity`, `airless`, `hazard`) and only gains new components; `Hazard` gains
-  `RADIATION` at the end; `NerospacePlanets.all()` keeps the 1.x order and appends the new worlds. Mods that
-  switch on a hazard name should treat unknown names as "no hazard".
-- Rocket destination numbers are append-only (the Moon, Mars and Nyxara take 5, 6 and 7), every rocket tier
-  keeps its 1.x destinations and its 1.x default selection, and a rocket saved mid-flight still lands where
-  it was going.
-- Terraformers already running on Glacira carry on from their current stage exactly as before. Ground
-  terraformed before 2.0 keeps its old biome; only ground the Terraformer reaches from now on takes the new
-  per-world biomes. The new
-  Permafrost only exists in newly generated land, where a Terraformer thaws it at its final stage.
-- All 24 existing config keys keep their names and defaults; new keys are added with safe defaults.
-- New saved data (`nerospace:planet_clock`, `nerospace:planet_weather`) is per planet, holds no player
-  data, and starts fresh on an upgraded world.
-- **Greenxertz keeps its real day/night cycle.** Its new dimension type is an exact copy of the Overworld's:
-  days still last 20 minutes, beds still skip the night, raids still come after dark and mobs still spawn by
-  real darkness. Chunks you have already explored are left exactly as they were (expect a surface seam where
-  old and new terrain meet); nerosteel and xertz quartz generate at the same rate as before, and existing
-  villages, Village Cores, oxygen fields and pads carry on unchanged.
-- Nyxara stores its Twilight Band width with the world (`nerospace:nyxara_band`, one number, no player data),
-  so a later config edit never moves the band in an existing world.
-- Landing data stays compatible: pads registered in 1.6.0 load as launch pads and learn their centre and
-  front the first time a rocket lands on them (their position never changes); a rocket saved in the middle of
-  a flight still lands, and one saved in 1.6.0 on its way to found a new station is honoured once without a
-  charter. Rocket and pad saves only gain optional fields.
-- Stations stay compatible: every 1.6.0 station loads as a **Waystation** with no members, no modules and its
-  owner unchanged; the original room is recorded as the module "Core (original)" the first time it loads in 2.0
-  and is never rebuilt or touched, and it gets breathable air if nothing already supplies it. Station saves only
-  gain optional fields.
-- Station API stays compatible: `StationInfo` keeps its 1.x constructor and accessors and gains
-  `stationClass()` (the class by name). `routeCapacity()` now follows the class — Waystation 9 (so every
-  migrated station reports one route more than before), Trade 10, Research and Industrial 8.
-- Villagers keep their species: a villager from 1.6.0 stays Xertz, Ember-kin or Frostbound, and the Xertz
-  trade table and the reputation tiers are unchanged. Hamlets, Ruins and Mega-Cities on Greenxertz keep
-  generating where they always did (Greenxertz, Cindara and Glacira keep the original structure grid).
-- **Village Cores no longer store the owner's name.** A claimed core keeps its owner; the display name that
-  1.x saved beside it is dropped the next time the core's chunk saves, and chat now shows the owner's name
-  only while they are online ("another player" otherwise).
-- **Erasure covers old and new data alike.** `/neroland data eraseme` (and an operator's
-  `/neroland data erase`) still clears everything Nerospace kept in 1.x, and now also removes you from
-  every station's member list and drops your launch cooldown. A world saved by 1.6.0 needs nothing done
-  to it: erasure works on it as loaded.
-
-### Privacy
-
-- **Village Cores in unloaded areas are now reached by erasure, even after a restart.** Nerospace keeps
-  a small index of where claimed Village Cores are (a new world file, `nerospace:village_cores`), holding
-  each owner only as a salted one-way hash. When a player is erased, a core whose chunk is not loaded
-  becomes a position-only "clear on next load" entry; the core is unclaimed the moment it loads and the
-  entry is deleted. The list is bounded, and the hash kept for 1.x cores that have not loaded since the
-  update is deleted after 90 days.
-- **`/nerospace privacy export`**: any player can see everything Nerospace stores about them — planets
-  reached, stations owned and station memberships, Village Cores, Cargo Pads and routes, oxygen, Star
-  Guide markers and reputation with loaded Alien Villagers — as JSON shown only to them. Nothing about
-  another player is included.
-- Removing a station with `/nerospace station remove` no longer broadcasts the result to operators, so
-  the server log no longer records the player's name next to the station's name.
-- `PRIVACY.md` lists every store, including the ones that hold no personal data.
+- **Requires Neroland Core 1.16.0 or newer.** Client and server must run the same Nerospace version: 2.0 adds
+  network messages and Rocket screen data that a 1.x client does not understand.
+- **Old terrain is never rewritten.** Chunks already generated on Greenxertz, Cindara and Glacira keep their terrain;
+  only newly generated chunks use the new worldgen, so a visible seam between old and new terrain is expected.
+  Greenxertz and Glacira keep their 1.x terrain shape so the land lines up across the seam; new Cindara land has its
+  own shape.
+- **Greenxertz keeps its real day/night cycle.** Its new dimension type is an exact copy of the Overworld's: days
+  still last 20 minutes, beds still skip the night, raids still come after dark and mobs still spawn by real
+  darkness. Nerosteel and Xertz Quartz generate at the same rate as before, and existing villages, Village Cores,
+  oxygen fields and pads carry on unchanged. Hamlets, Ruins and Mega-Cities keep generating where they always did.
+- **Rockets:** destination numbers are append-only (Luna, Mars and Nyxara take 5, 6 and 7), every rocket tier keeps
+  its 1.x destinations and its 1.x default selection, and a rocket saved mid-flight still lands where it was going.
+  Tiers only gain destinations: each tier now also reaches every destination of the tiers below it.
+  A rocket saved in 1.6.0 on its way to found a new station is honoured once without a charter.
+- **Landing pads** registered in 1.6.0 load as launch pads and learn their centre and front the first time a rocket
+  lands on them (their position never changes). Rocket and pad saves only gain optional fields.
+- **Stations:** every 1.6.0 station loads as a **Waystation** with no members, no modules and its owner unchanged.
+  The original room is recorded as the module "Core (original)" the first time it loads in 2.0, is never rebuilt or
+  touched, and gets breathable air if nothing already supplies it. A Waystation has one more route than before
+  (9), so every migrated station can hold one extra cargo route. Station saves only gain optional fields.
+- **Terraformers** already running on Glacira carry on from their current stage exactly as before. Ground terraformed
+  before 2.0 keeps its old biome; only ground a Terraformer reaches from now on takes the new per-world biomes.
+  Permafrost only exists in newly generated land.
+- **Villagers keep their species:** a villager from 1.6.0 stays Xertz, Ember-kin or Frostbound, and the Xertz trade
+  table and reputation tiers are unchanged. **Village Cores no longer store the owner's name:** a claimed core keeps
+  its owner, and the display name 1.x saved beside it is dropped the next time the core's chunk saves.
+- **Config:** all 24 existing keys keep their names and defaults; new keys are added with safe defaults.
+- **New saved data** (`nerospace:planet_clock`, `nerospace:planet_weather`, `nerospace:nyxara_band`) is per planet,
+  holds no player data and starts fresh on an upgraded world. Nyxara stores its Twilight Band width with the world, so
+  a later config edit never moves the band in an existing world.
+- **Erasure covers old and new data alike.** `/neroland data eraseme` (and an operator's `/neroland data erase`)
+  still clears everything Nerospace kept in 1.x, and now also removes you from every station's member list and drops
+  your launch cooldown. A world saved by 1.6.0 needs nothing done to it.
+- **For mod authors:** the public API only grows. `PlanetTraits` keeps its 1.x constructor and accessors and gains
+  archetype, temperature band, radiation, day length, sky profile, terraform target, villager culture and colony
+  profile; `Hazard` gains `RADIATION` at the end (treat unknown hazard names as "no hazard");
+  `NerospacePlanets.all()` keeps the 1.x order and appends the new worlds; `NerospacePlanets.hazardAt(level, pos)`
+  gives the hazard at an exact spot. `StationInfo` keeps its 1.x constructor and gains `stationClass()`;
+  `routeCapacity()` now follows the class (Waystation 9, Trade 10, Research and Industrial 8).
 
 ### Added
 
-- **New life on terraformed Luna, Mars and Nyxara.** Fully terraformed (Living) ground now grows its own
-  creatures: the Moon Hopper bounds across Luna's lunar meadow, herds of Dust Striders graze Mars' red steppe, and
-  Dusk Moths flit through the shade of Nyxara's twilight grove. Each has a spawn egg and a small drop (regolith, rust
-  pigment, night fibre), and none of them is harmed by its home planet. Their looks are placeholders for now.
-- **Station Console.** Right-clicking a Station Core now opens a four-tab console — Overview (class, modules,
-  power, oxygen, members, routes), Members, Docking and Build. Anyone can look; only the owner, members and
-  operators see the member list.
-- **Station classes.** Waystation (+1 route), Research (timed progress 25 % faster aboard, unlocks the
-  Observatory), Industrial (Solar Wings +50 %, hydroponics at half speed) and Trade (+2 routes, a market node
-  for economy mods). The owner may change class once per in-game day.
-- **Station members.** The owner adds up to 16 members from the players online; members can use the station
-  (docking, module power switches) but not rebuild or rename it. A member can leave at any time. Docking can
-  be limited to members.
-- **Station modules**, built from the console with materials from your inventory: Habitat Ring, Docking Ring,
-  Solar Wing (two), Hydroponics Bay, Gravity Deck and Observatory, up to eight. Building is idempotent — a
-  second build only repairs missing blocks, for free — and never replaces a block you placed: anything in the
-  way stops the build and the console shows where. Airtight modules come with their own oxygen.
-- **Station blocks:** Hull Plating and Hull Window (airtight, from Moon titanium), Truss (climbable,
-  sneak-place to lay a run of up to eight), Solar Wing (twice a tier-2 panel, station only), Gravity Plate
-  (1 g in the room above), Hydroponics Tray (crops grow under a Hull Window inside oxygen, no water needed)
-  and the Observatory's Telescope (previews locked worlds; Void Crystals above it extend the view).
-- New stations are built with a Docking Ring instead of the 3×3 launch pad; existing stations keep their pad.
-- Operators can manage any station; each operator action is logged with the station's slot and the action
-  only.
-- NeroLink: the stations section now includes stations you are a member of, with class, modules, docking,
-  pressurised modules, power and the member list (owner and members only). Only the owner can rename a
-  station from the companion app.
+#### New worlds
 
-- **Seven worlds in one planet registry.** The Moon, Mars and Nyxara join Greenxertz, Cindara, Glacira and
-  the orbital station as planet definitions (their worlds arrive in a later 2.0 build; until a world exists
-  on the server it is hidden from rockets, the Launch Controller and commands). Gravity, hazards, terraform
-  results, villagers, quarry speed and meteor showers now read from each planet's definition instead of
-  hard-coded lists — the three existing planets and the station behave exactly as before.
-- **Planet traits.** `PlanetTraits` adds archetype, temperature band, radiation, day length, sky profile,
-  terraform target, villager culture and colony profile; `NerospacePlanets.hazardAt(level, pos)` gives the
-  hazard at an exact spot (biomes and weather can differ from the planet's main hazard).
-- **Planet clocks.** Every planet has its own day: the Moon about 28 days, Mars a 24.6-hour sol, Cindara
-  two days with an eclipse, Glacira three days with long twilights, the station and Nyxara fixed.
-  Greenxertz keeps its real day (beds, raids and `/time` work as before). Clocks are visual and mechanical
-  only — they never change block or sky light. Operators: `/nerospace clock <planet> [get|set <phase>|freeze|thaw]`.
-- **Planet weather.** Spore blooms on Greenxertz (nausea outside a sealed suit or oxygen field), dust storms
-  on Mars (radiation outdoors, dimmer sun), ash fall on Cindara, diamond dust on Glacira and flares on Nyxara;
-  the Moon and the station stay clear. Server-decided and synced to clients for display. Operators:
-  `/nerospace weather <planet> [get|start [intensity]|clear]`. Config: `weather.enabled`,
-  `weather.frequencyMultiplier`, `weather.durationMultiplier`, `weather.particleBudget` and
-  `weather.<planet>.enabled`. Clocks and weather keep running on loaded planets with nobody there, so
-  unattended machines see the same sky as visitors.
-- **Sky profiles.** Planet skies are now described by `assets/nerospace/sky/<planet>.json` and drawn by one
-  data-driven renderer. This build ships placeholder profiles, so every sky looks exactly as before.
-- **Server caps for the new planet blocks.** `blocks.sporeMossCap`, `blocks.shadowLichenCap`,
-  `blocks.regolithDriftCap`, `blocks.ashLayerCap`, `blocks.frostCrystalCap`, `blocks.dawnbandCap`,
-  `blocks.gravityOverrideCap` and `blocks.methaneChainCap` let a server lower (never raise) the per-chunk limits
-  on spreading, drifting, growing and exploding blocks. The blocks themselves arrive with their planets.
-- **New block tags for datapacks:** `nerospace:airtight` (a sealing hull the oxygen field always respects),
-  `nerospace:lightning_safe`, `nerospace:hydration_immune`, `nerospace:xertz_rootable`,
-  `nerospace:beam_refractors` and `nerospace:lava_immune`. Mods that build beams can use the new
-  `api.optics.BeamRefraction` helper.
-- New world: **Luna**, a grey, airless moon with three regions — Lunar Highlands, Lunar Maria and Crater Fields — reached on a Tier 1 rocket.
-- **Regolith**: fine lunar dust that keeps your footprints until something disturbs them, and puffs when you land on it.
-- **Lunar Basalt**: the most blast-resistant stone in the mod; placed in Luna sunlight it slowly sinters into **Polished Lunar Basalt** (also stonecuttable).
-- **Anorthosite**: bright highland rock — a 3×3 bed directly under a solar panel adds 25 % output.
-- **Crater Glass**: sparkling translucent glass; a light source touching it shines one level brighter through it.
-- **Ilmenite Ore** → Raw Ilmenite → **Titanium Ingot**; **Helium-3 Pocket** → Helium-3 Canister (mine with Silk Touch or next to a Gas Tank, or half of it leaks).
-- Something else, somewhere in the craters.
-- New planet **Mars** (`nerospace:mars`, Tier 2). It has its own dimension type (same heights as every Nero world), a 24.6-hour sol and three biomes: Martian Dunes, Martian Canyons and the Martian Polar Cap.
-- Terrain is built from Mars blocks. Dunes are Red Regolith over Martian Sandstone. Canyon walls show banded Sandstone Strata. The polar cap is Dry Ice. Mars has no open water.
-- **Red Regolith**: during a dust storm, natural regolith slowly drifts one block downwind. This is capped per chunk, and blocks you placed never move.
-- **Martian Sandstone**: shimmering bands. The stonecutter cuts it into four Strata variants (thin, banded, wide, cross-bedded) that follow the direction you place them.
-- **Hematite Ore** drops Raw Hematite. Mine it with an iron or better tool and the drops fly to you. Smelt Raw Hematite into iron, or craft it into Rust Pigment (which also crafts into red dye).
-- **Perchlorate Crust** poisons anyone standing on it without sealed boots. It drops Perchlorate Oxidiser.
-- **Dry Ice** freezes adjacent water sources once and fumes away next to bright light sources.
-- **Basalt Column**: place one and it grows into a pillar up to four blocks high. It also generates on Mars.
-- **Dust Devil Pit** and the **Dust Devil**: during dust storms, pits in the dunes release dust devils. They wander downwind tossing loose items into the air, never break blocks or hurt players, and vanish when the storm ends.
-- **Planets creative tab.** A second Nerospace tab lists every planet's blocks and drops, planet by planet
-  (Luna, Mars, Cindara, Glacira, Greenxertz, then Nyxara); machines stay in the main tab.
-- **Fuel Refinery: two new inputs.** A Perchlorate Oxidiser slot adds 15 % to every batch it covers (one
-  oxidiser covers four buckets), and a Raw Ilmenite line refines each Raw Ilmenite into a Titanium Ingot plus
-  oxygen, which the refinery pushes into an adjacent Gas Tank or gas pipe. Existing refineries keep their
-  contents and settings.
-- **Star Guide: Worlds chapters begin.** A new *Worlds: Luna* chapter follows the existing chapters; your
-  progress in the earlier chapters is untouched.
-- **Cindara** now has its own dimension type (same heights as before), its own terrain and three biomes: the Cindara Ash Wastes (the original biome), the Ember Plains and the Sulfur Vents. New terrain only appears in chunks you have not visited yet. Existing chunks are never changed, so you will see a visible seam where old terrain meets new.
-- Terrain is Ashstone over stone. Cindrite Ore still generates at its old rate everywhere, and about 50 % more often in the Ember Plains.
-- **Ashstone**: any pickaxe mines it instantly. It drops Ash Dust, and two Ash Dust craft back into Ashstone.
-- **Ember-Cracked Ashstone**: glowing cracks that burn anyone standing on them without heat-rated boots. Water next to it quenches it to Ashstone.
-- **Sulfur Crust**: the new Cindara ore, found in the Sulfur Vents. It drops 2 to 4 Sulfur (Fortune applies). When fire touches it, it sets its flammable neighbours alight and burns down to Ashstone. Two Sulfur and a piece of coal or charcoal craft into two Gunpowder.
-- **Magma Glass**: glowing orange glass (light 7) and the only see-through block lava can never destroy. Crafted from eight Glass around a Magma Block.
-- **Ash Layer**: piles up like snow during Ash Fall (up to four layers from the weather), slows you down when it is deep, and only melts next to fire or lava. Shovel it for Ash Dust.
-- **Basalt Spire**: dark stone columns in the Sulfur Vents. During strong ash storms, ember strikes hit open ground near players (at most one near each player every five seconds; config `weather.emberStrikeIntervalTicks`), but never a Basalt Spire. Ember strikes hurt and ignite creatures but never set blocks on fire.
-- Lava pools appear on the Ember Plains.
-- New Cindara land has the usual deep copper and iron ore veins, like Glacira and the Overworld.
-- **Glacira** now has its own dimension type, with the same heights as before. Newly generated land uses Glacira's own terrain and three biomes: the Glacira Ice Plains (the existing biome), the **Methane Shore** (frozen lakes with Methane Ice beds) and the **Glacira Spires** (slick ice peaks with Frost Crystal fields and richer glacite). Low gravity covers all three.
-- **Permafrost**: the planet's frozen ground. A Hydration Module can't thaw it. Only a Terraformer that reaches its final stage turns it into soil.
-- **Packed Cryo-Ice**: as fast as blue ice, and it never melts, whatever the light level. You can also craft it from blue ice and a Frost Shard.
-- **Aurora Stone**: shimmers through aurora colours and gives off light only during Glacira's night.
-- **Frozen Geyser**: vents steam on a steady rhythm and launches whoever stands on it about seven blocks up. You take no fall damage on the way down.
-- **Frost Crystal Cluster**: glows and grows one stage each time a diamond-dust storm ends. Silk Touch keeps its stage. Otherwise it drops Frost Shards (more the bigger it is), which also craft into light blue dye.
-- **Methane Ice**: a purple-veined ore that drops Methane Crystals. Keep flames away: it explodes if fire, lava, a campfire or a torch is within two blocks. The blast does not break blocks by default (config `blocks.methaneIceBreaksBlocks`). Methane Crystals burn in the Combustion Generator (2 400 ticks, one and a half times coal) and make torches.
-- **Diamond dust** storms now freeze exposed water while they last.
-- **Greenxertz** now has its own dimension type. It is an exact copy of the Overworld's, so the day cycle is unchanged: days still last 20 minutes, beds still skip the night, village raids still come after dark, and mobs still spawn by real darkness. Newly generated land uses Greenxertz's own surface and three biomes: the **Greenxertz Canopy** (the existing biome), the **Fungal Depths** (giant glowcaps over rooted ground) and the **Spore Marsh** (muddy flats thick with Spore Moss and Spore Pods). Alien hamlets, ruins and the mega city keep generating in all three.
-- **Xertz Soil**: the planet's living ground. Spore Moss roots only in it. Ordinary plants grow on it too.
-- **Spore Moss**: a glowing carpet that slowly spreads over Xertz Soil (capped per chunk) and spreads three times as fast during a spore bloom. Brushing through it without a sealed helmet makes you queasy for a few seconds. Shears collect it.
-- **Glowcap Fungus**: a bright fungus. Bone meal on Xertz Soil can grow it into a **Giant Glowcap**, a Bio-Bark stem under a glowing cap, with vines hanging from the rim.
-- **Bio-Bark Log**: strip it with an axe. Wake up from a full night's sleep within four blocks of a **Stripped Bio-Bark Log** and you heal 4 health and get a short Regeneration. Both logs make jungle planks and burn as fuel.
-- **Xertz Vine**: a climbable vine that grows slowly downward. Shear it for **Xertz Fibre**; three fibre make a string.
-- **Spore Pod**: bursts into a spore cloud when you walk into it or punch it, and anyone in the cloud without a sealed helmet gets Nausea. Shears or Silk Touch pick it whole. Four pods and a gunpowder make two **Spore Bombs**, which you throw to burst a spore cloud up to 16 blocks away.
-- **Amber Sap Ore**: a dripping ore that yields **Amber Sap** (Fortune applies; it also smelts). Amber Sap is a biotech ingredient.
-- **Spore blooms** now fill the air with drifting spores.
-- **Nyxara**, a new late-game world for Tier 4 rockets. It needs Deep Space progress before launch, and you'll want a Rad-Lined suit. Nyxara is tidally locked: the sun sits fixed on the western horizon and a galaxy fills the eastern sky. The land is split by longitude into a scorched **Dayside** (west), a habitable **Twilight Band** around the landing point and a frozen **Nightside** (east). The band is 2 048 blocks wide by default (`nyxara.twilightBandWidth`, 512–16 384). A world keeps the width it was created with, so later config edits don't move it.
-- **Nyx Stone**: the planet's dark ground. Block light that spreads near it fades two levels faster, which makes it good for stealthy builds (config `blocks.nyxStoneLightAbsorb`).
-- **Dawnband Stone**: warm-veined stone of the band. During a solar **flare** it glows brightly and keeps the cold away within four blocks.
-- **Shadow Lichen**: creeps over Nightside caves, spreading only in light 3 or lower and withering when a flare hits. Shear it for Night Fibre (three make string).
-- **Void Crystal**: purple crystal outcrops in the Twilight Band that glow at light 10 and bend beams (`#nerospace:beam_refractors`). Silk Touch keeps the crystal. Otherwise it drops a Void Shard, and four shards craft a new crystal.
-- **Voidglass Ore** (Nightside): drops Voidglass, which crafts into a **Voidglass Lens**.
-- **Gravity Shard Block**: rare deep Nightside deposits that break down into nine Gravity Shards. It lifts anything in the column above it into a slow upward drift, whether you placed it or found it in the wild.
-- **Flares** on Nyxara: every few days the sun flares. Dawnband Stone lights up, Shadow Lichen dies back for a while, and radiation on the Dayside and in the Twilight Band rises one level outdoors (a sealed oxygen field keeps it out; a Rad-Lined suit still protects you).
-- **Rockets land centred, every time.** A new landing order picks the pad you chose, else the pad you launched
-  from, else a pad with the same name as your launch pad, else the nearest pad (within 2048 blocks), else a
-  Landing Pod — and the rocket stands in the middle of the pad facing its front. A pad with a rocket already on
-  it is skipped. See the new wiki page *Landing Pads*.
-- **Descent animation.** Arriving rockets appear 48 blocks up and come down with their engines firing (the
-  launch played in reverse), raising dust on touchdown; you stay seated until the rocket has landed. If the pad
-  is broken during the descent, the rocket steers to the next spot.
-- **Docking Ring** (`nerospace:docking_ring`): a 3×3 landing plate that registers itself as a landing spot when
-  placed. Orbital stations prefer it for arrivals; any rocket tier can take off from it.
-- **Landing Pods check their site**: a flat solid 5×5, no water, lava, leaves, ice or magma, no structure, room
-  above, and a distance from other players' stations, private cargo pads, terraformed ground and other pads.
-  The search widens to 24 blocks before building a platform in the air; pods stay at least 32 blocks apart and
-  an empty one nearby is reused.
-- **Rocket screen**: destinations are now a scrollable list of planet cards (gravity, hazard and suit, weather,
-  clock, and the pad you will land on), with a larger card for the selected destination. Worlds still behind
-  deep-space clearance show why they are locked.
-- **Villager cultures.** Each villager world has its own culture, trade table and building style: the
-  Xertz of Greenxertz (unchanged), the stocky **Ember-kin** of Cindara (cindrite, sulfur, heat-suit parts;
-  they buy ash), the fur-wrapped **Frostbound** of Glacira (glacite, methane ice, cold-suit parts; they buy
-  frost shards) and the tall **Duskborn** of Nyxara's Twilight Band (voidglass, void crystal, Tier 2 suit
-  parts; they buy shadow lichen). Each culture also accepts its favourite good as a gift. The culture models
-  and skins are placeholders until the art pass.
-- **Settlements on every villager world.** Hamlets and Ruins now generate on Cindara, Glacira and in the
-  Nyxara Twilight Band, each built in its culture's materials. Mega-Cities generate on Greenxertz and in the
-  Twilight Band only. New chunks only.
-- **Mars: Rover Wrecks, the Salvage Drone and Derelict Habitats.** Half-buried rovers with a salvage chest,
-  each watched over by a Salvage Drone that trades rover parts for raw hematite (one price list for everyone,
-  no reputation, no record of who traded), and the ruins of early surface habitats. Mars and the Moon have no
-  villagers.
-- **Every world terraforms its own way.** The Terraformer now reads a per-planet table: each world gets
-  its own Rooted, Hydrated and Living biomes, its own soil, ground cover, ore seeds and livestock. The Moon
-  grows a lunar meadow whose edge shimmers (it has no air to hold it); Mars gets red steppe and its first
-  open water, one spring per chunk; Cindara keeps its savanna; Glacira keeps its tundra (permafrost thaws at
-  the last stage); Greenxertz becomes a xertz garden with Xertz Soil, giant glowcaps and Spore Moss that stays
-  where it was planted; Nyxara grows a twilight grove that only roots in the Twilight Band. The station has no
-  ground, so the Terraformer refuses there.
-- **The Terraformer and Terraform Monitor say why.** A refusing Terraformer shows the reason (no ground; outside
-  the Twilight Band) and spends no energy. The Monitor shows what the next stage will plant on this world.
-- **Worlds chapters in the Star Guide.** One per world (Moon, Greenxertz, Mars, Cindara, Glacira, Nyxara):
-  land, mine the local ore, build with a block only that world gives you, weather its storm (the Moon: its
-  night) for two minutes under open sky, and root your first terraformed ground.
-- **Quest pack: Worlds Apart.** With NeroQuests installed, a new chapter gives every world its own four-quest
-  line. Without NeroQuests the files do nothing.
-- **For mod authors:** three anonymous threshold channels on Neroland Core, `nerospace:planet_first_visit`,
-  `nerospace:weather_survived` and `nerospace:station_module_built` (the scope is a planet or a module kind,
-  never a player), a `nerospace:hook/worlds_briefing` quest hook, and player record gates
+- **Luna** (Tier 1): a grey, airless moon with three regions (Lunar Highlands, Lunar Maria and Crater Field) and a
+  day of about 28 Overworld days.
+  - **Regolith** keeps your footprints until something disturbs them and puffs when you land on it.
+  - **Lunar Basalt**, the most blast-resistant stone in the mod; placed in Luna sunlight it slowly sinters into
+    **Polished Lunar Basalt** (also stonecuttable).
+  - **Anorthosite**: a 3×3 bed directly under a solar panel adds 25 % output.
+  - **Crater Glass**: sparkling translucent glass; a light source touching it shines one level brighter through it.
+  - **Ilmenite Ore** → Raw Ilmenite → **Titanium Ingot**; **Helium-3 Pocket** → Helium-3 Canister (mine it with Silk
+    Touch or next to a Gas Tank, or half of it leaks).
+  - Something else, somewhere in the craters.
+- **Mars** (Tier 2): a cold desert world with a 24.6-hour sol and three biomes: Martian Dunes, Martian Canyons and the
+  Martian Polar Cap. No open water until you terraform it.
+  - **Red Regolith** drifts one block downwind during dust storms (capped per chunk; placed blocks never move).
+  - **Martian Sandstone** with four stonecutter **Strata** variants that follow the direction you place them.
+  - **Hematite Ore** (drops fly to you with an iron or better tool); Raw Hematite smelts into iron or crafts into
+    **Rust Pigment** (and red dye).
+  - **Perchlorate Crust** poisons anyone on it without sealed boots and drops Perchlorate Oxidiser.
+  - **Dry Ice** freezes adjacent water once and fumes away next to bright light; **Basalt Column** grows into a
+    pillar up to four blocks high.
+  - **Dust Devil Pits** release **Dust Devils** in dust storms: spinning vortices that toss loose items, never break
+    blocks or hurt players, and vanish when the storm ends.
+  - **Rover Wrecks** with salvage chests, each watched by a **Salvage Drone** that trades rover parts for Raw
+    Hematite (one price list for everyone, limited stock that restocks once a day, no record of who traded), and
+    **Derelict Habitats**. Mars has no villagers.
+- **Nyxara** (Tier 4, needs Deep Space progress before launch): a tidally locked world with the sun fixed on the
+  western horizon and a galaxy in the east. The land is split by longitude into a scorched **Dayside** (west), a
+  habitable **Twilight Band** around the landing point and a frozen **Nightside** (east). The band is 2 048 blocks wide
+  by default (`nyxara.twilightBandWidth`, 512–16 384).
+  - **Nyx Stone**: block light near it fades two levels faster (config `blocks.nyxStoneLightAbsorb`).
+  - **Dawnband Stone** glows during a flare and keeps the cold away within four blocks.
+  - **Shadow Lichen** creeps over dark Nightside caves and withers in a flare; shear it for Night Fibre.
+  - **Void Crystal** glows and bends beams (`#nerospace:beam_refractors`); **Voidglass Ore** → Voidglass →
+    **Voidglass Lens**.
+  - **Gravity Shard Block**: lifts anything in the column above it into a slow upward drift; breaks into nine Gravity
+    Shards.
+- **Cindara** gets its own terrain and three biomes: the Cindara Ash Wastes (the original biome), the **Ember Plains**
+  (lava pools, about 50 % more Cindrite) and the **Sulfur Vents**.
+  - **Ashstone** (mines instantly, drops Ash Dust), **Ember-Cracked Ashstone** (burns without heat-rated boots;
+    water quenches it), **Basalt Spire**, **Magma Glass** (glowing glass lava cannot destroy), **Ash Layer**.
+  - **Sulfur Crust**, the new ore: 2 to 4 Sulfur; two Sulfur and a coal or charcoal make two Gunpowder.
+  - Cindrite keeps its old rate everywhere, and new Cindara land has the usual deep copper and iron ore veins.
+- **Glacira** gets its own terrain and three biomes: the Glacira Ice Plains (the original biome), the **Methane
+  Shore** and the **Glacira Spires**. Low gravity covers all three.
+  - **Permafrost** (only a Terraformer's final stage thaws it), **Packed Cryo-Ice** (never melts), **Aurora Stone**
+    (lights up only during Glacira's night), **Frozen Geyser** (launches you about seven blocks up, no fall damage).
+  - **Frost Crystal Cluster** grows one stage each time diamond dust ends; drops Frost Shards.
+  - **Methane Ice** explodes if a flame comes within two blocks (no block damage by default,
+    `blocks.methaneIceBreaksBlocks`); its Methane Crystals burn in the Combustion Generator (2 400 ticks) and make
+    torches.
+- **Greenxertz** gets its own surface and three biomes: the **Greenxertz Canopy** (the original biome), the
+  **Fungal Depths** and the **Spore Marsh**.
+  - **Xertz Soil**, **Spore Moss** (spreads over Xertz Soil; makes you queasy without a sealed helmet), **Glowcap
+    Fungus** (bone meal grows a **Giant Glowcap**), **Bio-Bark Log** (sleep near a stripped log to heal),
+    **Xertz Vine** (Xertz Fibre → string), **Spore Pod** and throwable **Spore Bombs**, **Amber Sap Ore**.
+- Luna, Mars, Nyxara and Cindara each have their own terrain shape: their hills no longer line up with the
+  Overworld's (or each other's).
+- **Planets creative tab:** every planet's blocks and drops, planet by planet (Luna, Mars, Cindara, Glacira,
+  Greenxertz, then Nyxara); machines stay in the main tab.
+
+#### Clocks, weather and skies
+
+- **Planet clocks.** Every planet has its own day: Luna about 28 Overworld days, Mars a 24.6-hour sol, Cindara two
+  days with an eclipse, Glacira three days with long twilights; Nyxara and the station are fixed. Greenxertz keeps its
+  real day. Clocks drive the sky, the HUD and solar panels; they never change block or sky light. Operators:
+  `/nerospace clock <planet> [get|set <phase>|freeze|thaw]`; config `clock.enabled`.
+- **Planet weather.** Dust storms on Mars (radiation outdoors, dimmer sun, drifting regolith, dust devils), ash fall
+  on Cindara (ash layers and ember strikes, at most one near each player every five seconds,
+  `weather.emberStrikeIntervalTicks`), diamond dust on Glacira (freezes exposed water, grows frost crystals), spore
+  blooms on Greenxertz (nausea outside a full suit or oxygen field) and flares on Nyxara (radiation, glowing Dawnband
+  Stone, withering lichen). Luna and the station stay clear. Weather is decided by the server and keeps running on
+  loaded planets with nobody there. Operators: `/nerospace weather <planet> [get|start [intensity]|clear]`. Config:
+  `weather.enabled`, `weather.frequencyMultiplier`, `weather.durationMultiplier`, `weather.particleBudget` and
+  `weather.<planet>.enabled`.
+- **Planet skies.** Earth rising over Luna, the butterscotch Martian day with a blue sunset and Phobos racing across
+  it, Cindara's red giant and its eclipse, Glacira's pale sun, two moons and auroras, Greenxertz's twin suns, Nyxara's
+  pinned sunset on one side and a galaxy on the other, and the homeworld turning below your station. Full skies are
+  drawn on NeoForge for Minecraft 26.3; every other version shows each world's sky colours.
+- **Particles and ambience.** Dust, ash, spores, diamond dust, embers and nebula motes drift around you under open
+  sky and thicken in storms (client settings `particles.*`). Each planet and the station has its own ambient sound,
+  with weather loops and a flare chime.
+
+#### Hazards and the Rad Lining
+
+- **Radiation** joins heat and cold. Mars dust storms and all of Nyxara are irradiated. Unprotected, radiation drains
+  your suit four times as fast and, from level 2 upwards, hurts you outside a breathable zone (harder on the Nightside
+  or under a flare).
+- **Rad Lining**: craft it from Regolith, Raw Hematite and a Titanium Ingot, then add it to a Tier 2, Thermal or
+  Cryo suit piece at a smithing table with one more Titanium Ingot. The piece keeps its id, tier and heat or cold
+  shield; a full set of four lined pieces keeps radiation out. Luna and the station never need it.
+- Where several hazards meet you need every matching protection: Nyxara's Nightside is irradiated and freezing (a
+  Rad-Lined Cryo Suit, or Rad Lining beside a flaring Dawnband Stone), the Dayside irradiated and hot. Mars is cold
+  throughout, but any full Tier 2, Thermal or Cryo suit keeps that cold out; the Martian Polar Cap, Glacira and the
+  Nightside are frigid and need the Cryo Suit, as Glacira always has. The HUD warns about the hazard that would hurt
+  you next, and each planet card names the suit that world asks for (Luna and the station never ask for the Rad
+  Lining).
+
+#### Terraforming, life and villages
+
+- **Every world terraforms its own way**, with its own Rooted, Hydrated and Living biomes, soil, ground cover, ore
+  seeds and livestock. Luna grows a **Lunar Meadow** whose edge shimmers; Mars gets a **Red Steppe** and its first
+  open water, one spring per chunk; Cindara keeps its savanna; Glacira keeps its tundra (Permafrost thaws at the last
+  stage); Greenxertz becomes a **Xertz Garden**; Nyxara grows a **Twilight Grove** that only roots in the Twilight
+  Band. The station has no ground, so the Terraformer refuses there.
+- **The Terraformer and Terraform Monitor say why** a Terraformer refuses (no ground; outside the Twilight Band), and it
+  spends no energy. The Monitor shows what the next stage will plant on this world.
+- **New life on terraformed worlds:** the **Moon Hopper** on Luna's meadow, herds of **Dust Striders** on the Red
+  Steppe and **Dusk Moths** in Nyxara's grove wherever no lamp lights the ground. Each has a spawn egg and a small
+  drop (Regolith, Rust Pigment, Night Fibre), and none is harmed by its home planet.
+- **Villager cultures:** the Xertz of Greenxertz (unchanged), the stocky **Ember-kin** of Cindara, the fur-wrapped
+  **Frostbound** of Glacira and the tall **Duskborn** of Nyxara's Twilight Band, each with its own trade table,
+  favourite gift, building style and glowing markings. A culture sells only the helmet of its world's protective suit
+  until you reach its highest trust tier.
+- **Settlements on every villager world:** Hamlets and Ruins on Cindara, Glacira and in the Nyxara Twilight Band, built
+  in each culture's materials; Mega-Cities on Greenxertz and in the Twilight Band. New chunks only.
+
+#### Stations
+
+- **Station Console.** Right-clicking a Station Core opens a four-tab console: Overview (class, modules, power,
+  oxygen, members, routes), Members, Docking and Build. Anyone can look; only the owner, members and operators see the
+  member list.
+- **Station classes:** Waystation (+1 route), Research (timed progress 25 % faster aboard, unlocks the Observatory),
+  Industrial (Solar Wings +50 %, hydroponics at half speed) and Trade (+2 routes, a market node for economy mods). The
+  owner may change class once per in-game day.
+- **Station members:** the owner adds up to 16 members from the players online; members can use the station (docking,
+  module power switches) but not rebuild or rename it, and can leave at any time. Docking can be limited to members; a
+  members-only station is not listed to anyone else. Members can send a visitor's rocket home once it has stood
+  riderless on the dock for ten minutes; the owner's and members' own rockets are never sent, nothing is sent while a
+  visitor is still on the station, and everyone on the station is told when rockets leave.
+- **Station modules**, built from the console with materials from your inventory: Habitat Ring, Docking Ring, Solar
+  Wing, Hydroponics Bay, Gravity Deck and Observatory, up to eight. A second build only repairs missing blocks, for
+  free, and a build never replaces a block you placed. Airtight modules come with their own oxygen.
+- **Station blocks:** Hull Plating and Hull Window (airtight, from Luna's titanium), Truss (climbable; sneak-place to
+  lay a run of up to eight), Solar Wing (twice a Tier 2 panel, station only), Gravity Plate (normal gravity above it),
+  Hydroponics Tray (crops grow under a Hull Window inside oxygen, no water needed) and the Observatory's Telescope
+  (previews locked worlds; Void Crystals above it extend the view).
+- Server settings `stations.maxMembers` (16) and `stations.maxModules` (8) can lower the limits.
+- Operators can manage any station; each operator action is logged with the station's slot and the action only.
+- NeroLink: the stations section includes stations you are a member of, with class, modules, docking, pressurised
+  modules, power and the member list (owner and members only).
+
+#### Rockets and landing
+
+- **Rockets land centred, every time.** A rocket picks the pad you chose, else the pad it launched from, else a pad
+  with the same name as your launch pad, else the nearest pad (within 2 048 blocks), else a **Landing Pod**, and stands
+  in the middle of the pad facing its front. A pad with a rocket already on it is skipped. Landings only read the pads
+  they could use and the area around the landing spot.
+- **Descent animation:** arriving rockets appear 48 blocks up and come down with their engines firing, raising dust
+  on touchdown; you stay seated until the rocket has landed. If the pad is broken during the descent, the rocket
+  steers to the next spot.
+- **Docking Ring:** a 3×3 landing plate that registers itself as a landing spot when placed. Stations prefer it for
+  arrivals; any rocket tier can take off from it. New stations are built with one; existing stations keep their pad.
+- **Landing Pods check their site:** a flat solid 5×5 with room above, no fluids, leaves, ice or magma, no
+  structure, and a distance from other players' stations, private cargo pads, terraform regions other mods register
+  and other pads. The
+  search widens to 24 blocks (`landing.podSearchRadius`) before building a platform in the air; pods stay at least
+  32 blocks apart and an empty one nearby is reused.
+- **Launch cooldown:** a rider can launch once every five seconds; a launch inside that window is refused before any
+  NeroEconomy launch fee is charged.
+- **Rocket screen:** destinations are a scrollable list of planet cards (gravity, hazard and suit, weather, clock and
+  the pad you will land on), with a larger card for the selected destination. Worlds still behind Deep Space
+  clearance show why they are locked. Select with a click, the mouse wheel or Up/Down/Enter.
+
+#### Progression, quests and integration
+
+- **Fuel Refinery: two new inputs.** A Perchlorate Oxidiser slot adds 15 % to every batch it covers (one oxidiser
+  covers four buckets), and a Raw Ilmenite line refines each Raw Ilmenite into a Titanium Ingot plus oxygen, pushed
+  into an adjacent Gas Tank or gas pipe. Existing refineries keep their contents and settings.
+- **Worlds chapters in the Star Guide**, one per world (Luna, Mars, Cindara, Glacira, Greenxertz, Nyxara): land,
+  mine the local ore, build with a block only that world gives you, weather its storm (on Luna, its night) for two
+  minutes under open sky, and root your first terraformed ground. Your progress in the earlier chapters is untouched.
+- **Quest pack: Worlds Apart.** With NeroQuests installed, a new chapter gives every world its own four-quest line.
+- **Server caps** for the new spreading, drifting, growing and exploding blocks: `blocks.sporeMossCap`,
+  `blocks.shadowLichenCap`, `blocks.regolithDriftCap`, `blocks.ashLayerCap`, `blocks.frostCrystalCap`,
+  `blocks.dawnbandCap`, `blocks.gravityOverrideCap` and `blocks.methaneChainCap` lower (never raise) the per-chunk
+  limits.
+- **New block tags for datapacks:** `nerospace:airtight`, `nerospace:lightning_safe`, `nerospace:hydration_immune`,
+  `nerospace:xertz_rootable`, `nerospace:beam_refractors` and `nerospace:lava_immune`; mods that build beams can use
+  the `api.optics.BeamRefraction` helper.
+- **For mod authors:** three anonymous threshold channels on Neroland Core (`nerospace:planet_first_visit`,
+  `nerospace:weather_survived`, `nerospace:station_module_built`; the scope is a planet or a module kind, never a
+  player), a `nerospace:hook/worlds_briefing` quest hook, and player record gates
   `nerospace:worlds/<planet>/weather` and `nerospace:worlds/<planet>/terraform`.
 
 ### Changed
 
-- **Solar panels on planets follow the planet's day.** A panel peaks at that planet's noon, dips at night and
-  in a Mars dust storm, and over a full day gives at least the old constant double rate on every planet
-  (peaks are higher to make up for the nights). The station stays a constant double rate. Set
-  `solar.clockDriven=false` to restore the old constant output.
-- The gallery backdrop dimension and the orbital station no longer count as planet surfaces for meteor
-  material weighting.
-- **Founding a station from a rocket now uses a Station Charter**, taken when you arrive (never at launch).
-  Without one you dock at the origin platform and get a message; "New Station" is hidden in the dock list while
-  you carry no charter.
-- Rockets no longer land at the coordinates you launched from on another world; with no pad to use they look
-  for a pod site near the planet's arrival area or near your old home pad.
-- **Landing Pods now hold the arriving rocket instead of a kit.** The rocket you flew (with its leftover fuel)
-  stands on the pod, ready to fly again, rather than being packed into the pod as an item and fuel canisters.
+- **Rocket reach is cumulative.** A rocket reaches every destination of its own tier and the tiers below it, so Tier 2
+  to 4 rockets fly to Luna and Tier 3 and 4 rockets to Mars. Nyxara still needs Deep Space progress. Each tier's
+  pre-selected destination is unchanged.
+- **Solar panels on planets follow the planet's day.** A panel peaks at that planet's noon, dips at night and in a
+  Mars dust storm, and over a full day gives at least the old constant double rate on every planet (peaks are higher
+  to make up for the nights). The station stays a constant double rate. Set `solar.clockDriven=false` to restore the
+  old constant output.
+- **Founding a station from a rocket now uses a Station Charter**, taken when you arrive (never at launch). Without
+  one you dock at the origin platform and get a message; "New Station" is hidden in the dock list while you carry no
+  charter.
+- Rockets no longer land at the coordinates you launched from on another world; with no pad to use they look for a pod
+  site near the planet's arrival area or near your old home pad.
+- **Landing Pods now hold the arriving rocket instead of a kit.** The rocket you flew (with its leftover fuel) stands
+  on the pod, ready to fly again, rather than being packed into the pod as an item and fuel canisters.
+- **Screens and HUD refresh.** The Star Guide has a scrolling chapter list with the Worlds chapters by planet name,
+  bonus steps marked with a star, a progress counter and scrollable guide text. The Station Console lines up its rows,
+  shows one Build row per module with its cost (missing materials in red) and pad cards on the Docking tab. The Launch
+  Controller uses icons for its pads, wall, gantry and hub gauges and `◀ name ▶` destination arrows. Long labels are
+  shortened with "…" and shown in full in a tooltip. The HUD adds icons to its status lines, a weather line with an
+  intensity bar, a Geiger icon and a planet clock dial that shows sunrise on the right and noon at the top, and names
+  the phase for two seconds when it changes, including Cindara's *Eclipse*, Luna's *Earthrise* and Glacira's
+  *Twilight* (client options `hud.clockDial`, `hud.clockDialScale`, `hud.weatherLine`).
+- **Planet art pass:** new skins for the Ember-kin, Frostbound, Duskborn and the Dust Strider, models for the Moon
+  Hopper, Dusk Moth and Salvage Drone, a violet Gravity Shard block, readable Luna footprints, a deeper Dust Devil pit,
+  spawn eggs for the new creatures and a Rad Lining icon.
+- Gravity, hazards, terraform results, villagers, quarry speed and meteor showers now come from each planet's
+  definition; the three original planets and the station behave as before.
+- The gallery backdrop dimension and the orbital station no longer count as planet surfaces for meteor material
+  weighting.
+- A pad you name-tag on a station keeps its name.
 
 ### Fixed
 
-- On Minecraft 26.3, Nerospace blocks are now recognised by terrain height checks: rain and snow stop on modded ground, mobs spawn at the right height, and ores placed by height (such as Luna's) generate again.
-- On Minecraft 26.3, creatures and alien villagers spawn on Nerospace planets again. Every planet and terraformed biome now also ships in the 26.3 biome format (generated by `tools/gen_biome_overlays.py`); 26.3 had been ignoring their spawn lists, so no Nerospace biome spawned any mobs.
-- Crafting recipes now unlock in the recipe book the first time a player picks up one of their ingredients (92 recipe-unlock advancements, generated by `tools/gen_recipe_unlocks.py`; run it again after adding a recipe, `--check` verifies).
-- The shared origin platform at the orbital station is no longer rebuilt on every arrival, so changes players
-  make to it are kept.
-- Mega-Cities are now always built whole. A city whose centre fell near a chunk edge lost part of its wall
-  and plaza (the game discarded those blocks and logged a "far chunk" error for each one); cities are now
-  centred on their chunk. Only newly generated cities change.
+- A rocket no longer lands on top of a rocket parked on a pad whose area had not finished loading: it steers to the
+  next spot during the descent, or sets down on a Landing Pod nearby.
+- "Send visitor rockets home" no longer strands a visitor: it does nothing while a player who is not the owner, a
+  member or an operator is on the station, and tells everyone on the station when rockets are sent.
+- Pressing Launch (rocket screen or Launch Controller) while someone else is seated in the rocket no longer launches
+  them; only the seated player can launch an occupied rocket.
+- On Forge, the jar now embeds Sentry 8.60.0, like the NeoForge and Fabric jars (it embedded 8.45.0).
+- On Minecraft 26.3, clicking a destination in the Rocket screen or the Launch Controller works again (left clicks were
+  ignored, so the destination never changed).
+- On Minecraft 26.3, Nerospace blocks are now recognised by terrain height checks: rain and snow stop on modded ground,
+  mobs spawn at the right height, and ores placed by height generate again.
+- On Minecraft 26.3, creatures and alien villagers spawn on Nerospace planets again (26.3 had been ignoring every
+  Nerospace biome's spawn list).
+- Crafting recipes now unlock in the recipe book the first time a player picks up one of their ingredients.
+- The shared origin platform at the orbital station is no longer rebuilt on every arrival, so changes players make to
+  it are kept.
+- Mega-Cities are now always built whole. A city whose centre fell near a chunk edge lost part of its wall and plaza
+  (and logged a "far chunk" error for each lost block); cities are now centred on their chunk. Only newly generated
+  cities change.
+
+### Privacy
+
+- **`/nerospace privacy export`**: any player can see everything Nerospace stores about them (planets reached,
+  stations owned and station memberships, Village Cores, Cargo Pads, routes and cargo flights, oxygen, Star Guide
+  markers and reputation with loaded Alien Villagers) as JSON shown only to them. Nothing about another player is
+  included.
+- **Village Cores no longer store the owner's name**; chat shows the owner's name only while they are online
+  ("another player" otherwise).
+- **Village Cores in unloaded areas are now reached by erasure, even after a restart.** Nerospace keeps a small index
+  of where claimed Village Cores are (a new world file, `nerospace:village_cores`), holding each owner only as a salted
+  one-way hash (pseudonymised, not anonymous: the server can recognise a known player's hash). When a player is erased,
+  a core whose chunk is not loaded becomes a position-only "clear on next load" entry; the core is unclaimed the moment
+  it loads and the entry is deleted. Only for an erased player who had visited a planet with villages, the hash is
+  kept as an erasure key for 30 days (at most 256 keys), to clear a 1.x core that has not loaded since the update. If
+  any of these bounded lists fills up, the server log shows a count-only warning.
+- **Alien Villager reputation in unloaded areas is now erased after a restart too.** A villager that loads after its
+  chunk sat unloaded through an erasure drops the erased player's reputation as it loads, using that same 30-day
+  erasure key; no new data is stored for it.
+- Erasure now also removes you from every station's member list and drops your launch cooldown. Station members are
+  stored by account id only, never by name, and members of a station can see each other.
+- Removing a station with `/nerospace station remove` no longer broadcasts the result to operators, so the server log
+  no longer records the player's name next to the station's name.
+- `PRIVACY.md` lists every store, including the ones that hold no personal data.
 
 ## [1.6.0] - 2026-10-23
 

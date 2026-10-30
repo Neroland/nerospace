@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.5 Xertz Soil. */
+/** Xertz Soil. */
 @SuppressWarnings("unused")
 class RootRulesTest {
 

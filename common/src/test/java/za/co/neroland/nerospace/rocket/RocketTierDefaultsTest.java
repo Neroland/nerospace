@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import za.co.neroland.nerospace.registry.ModDimensions;
 
 /**
- * Decision 001 §7: destination indices are append-only, every tier keeps its 1.x destinations as a prefix,
+ * Destination indices are append-only, every tier keeps its 1.x destinations as a prefix,
  * and the default (signature) destination is pinned to the 1.x value even though new ones were appended.
  */
 class RocketTierDefaultsTest {
@@ -84,6 +84,55 @@ class RocketTierDefaultsTest {
         assertTrue(RocketTier.TIER_2.destinations().contains(ModDimensions.MARS_LEVEL));
         assertTrue(RocketTier.TIER_4.destinations().contains(ModDimensions.NYXARA_LEVEL));
         assertFalse(RocketTier.TIER_3.destinations().contains(ModDimensions.NYXARA_LEVEL));
+    }
+
+    @Test
+    @DisplayName("reach is cumulative: each tier reaches every destination of the tiers below it")
+    void cumulative() {
+        RocketTier[] tiers = RocketTier.values();
+        for (int t = 1; t < tiers.length; t++) {
+            assertTrue(tiers[t].destinations().containsAll(tiers[t - 1].destinations()), tiers[t] + " ⊇ " + tiers[t - 1]);
+            assertEquals(tiers[t].destinations().size(), new java.util.HashSet<>(tiers[t].destinations()).size(),
+                    tiers[t] + " has no duplicates");
+        }
+        assertEquals(List.of(ModDimensions.STATION_LEVEL, ModDimensions.LUNA_LEVEL),
+                RocketTier.TIER_1.destinations());
+        assertTrue(RocketTier.TIER_3.destinations().contains(ModDimensions.LUNA_LEVEL));
+        assertTrue(RocketTier.TIER_3.destinations().contains(ModDimensions.MARS_LEVEL));
+        assertFalse(RocketTier.TIER_3.destinations().contains(ModDimensions.GLACIRA_LEVEL));
+        assertEquals(7, RocketTier.TIER_4.destinations().size()); // every off-world destination
+    }
+
+    @Test
+    @DisplayName("the server accepts the cumulative set and nothing beyond it")
+    void serverSelectionAllowsCumulativeOnly() {
+        int t3 = Destinations.availableMask(RocketTier.TIER_3, ModDimensions.OVERWORLD);
+        for (int i : new int[] {Destinations.STATION, Destinations.GREENXERTZ, Destinations.CINDARA,
+                Destinations.LUNA, Destinations.MARS}) {
+            assertTrue(DestinationSelection.evaluate(i, t3, 0, -1, false).accepted(), "T3 index " + i);
+        }
+        for (int i : new int[] {Destinations.HOME, Destinations.GLACIRA, Destinations.NYXARA, 8, 30, -1, 31}) {
+            assertEquals(DestinationSelection.Outcome.OUT_OF_RANGE, DestinationSelection.evaluate(i, t3, 0, -1, false),
+                    "T3 index " + i);
+        }
+        int t4 = Destinations.availableMask(RocketTier.TIER_4, ModDimensions.OVERWORLD);
+        int deepSpaceClosed = 1 << Destinations.NYXARA;
+        assertEquals(DestinationSelection.Outcome.GATE_LOCKED,
+                DestinationSelection.evaluate(Destinations.NYXARA, t4, deepSpaceClosed, -1, false));
+        assertTrue(DestinationSelection.evaluate(Destinations.LUNA, t4, deepSpaceClosed, -1, false).accepted());
+    }
+
+    @Test
+    @DisplayName("a saved destination index stays valid and the default selection is unchanged")
+    void savedDestinationsStayValid() {
+        for (RocketTier tier : RocketTier.values()) {
+            for (int i = 0; i < Destinations.all().size(); i++) {
+                if (Destinations.isAvailable(tier, ModDimensions.OVERWORLD, i)) {
+                    assertEquals(i, Destinations.sanitizeIndex(tier, ModDimensions.OVERWORLD, i), tier + " " + i);
+                }
+            }
+        }
+        assertEquals(Destinations.CINDARA, Destinations.defaultIndex(RocketTier.TIER_3, ModDimensions.OVERWORLD));
     }
 
     @Test

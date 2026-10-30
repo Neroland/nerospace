@@ -1,4 +1,19 @@
 {
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.greenxertz.loop",
+      "additions": {
+        "sound": "nerospace:ambient.greenxertz.additions",
+        "tick_chance": 0.0055
+      },
+      "mood": {
+        "sound": "nerospace:ambient.greenxertz.mood",
+        "tick_delay": 6000,
+        "block_search_extent": 8,
+        "offset": 2.0
+      }
+    }
+  },
   "carvers": [
     "minecraft:cave",
     "minecraft:cave_extra_underground",

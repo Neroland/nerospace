@@ -11,13 +11,15 @@ import net.minecraft.network.chat.Component;
 
 import za.co.neroland.nerospace.api.Hazard;
 import za.co.neroland.nerospace.registry.ModDimensions;
+import za.co.neroland.nerospace.world.planet.DaylightCurve;
+import za.co.neroland.nerospace.world.planet.PlanetDefinition;
+import za.co.neroland.nerospace.world.planet.Planets;
 import za.co.neroland.nerospace.world.planet.WeatherEvent;
 
 /**
- * The planet card (004 §5): a pure drawing + hit-test helper, not a widget — the host screen owns focus and
- * clicks. Standard 96×56 (selected destination) and compact 64×32 (list rows). Functional art: Stage 6 swaps
- * the procedural strip and glyph squares for the sky-profile strip and the glyph sheet; sizes, fields and states
- * are final.
+ * The planet card: a pure drawing + hit-test helper, not a widget — the host screen owns focus and
+ * clicks. Standard 96×56 (selected destination) and compact 64×32 (list rows). Hazards, locks and gates are drawn
+ * from the glyph sheet ({@link Glyphs}); the clock is a {@link ClockDial} lit by the planet's daylight curve.
  */
 public final class PlanetCard {
 
@@ -62,10 +64,10 @@ public final class PlanetCard {
         boolean locked = d.state() == PlanetCardData.State.LOCKED_TIER || d.state() == PlanetCardData.State.LOCKED_GATE;
         int nameColour = d.state() == PlanetCardData.State.SELECTED ? 0xFFFFFFFF : TITLE;
         if (compact) {
-            glyph(g, x + 2, y + 10, 6, d, locked);
+            glyph(g, x + 1, y + 9, d, locked);
             text(g, font, ellipsis(font, nameLine(d), 44), x + 10, y + 9, locked ? SUBTLE : nameColour);
             if (d.hasDayLength()) {
-                dial(g, x + 55, y + 10, 7, d.clockPhase(), accent);
+                dial(g, x + 54, y + 9, 3, d, accent);
             }
             text(g, font, Component.literal(String.format(Locale.ROOT, "%.2fg", d.gravity())), x + 3, y + 21, VALUE);
             if (d.weatherNow() != WeatherEvent.NONE) {
@@ -75,13 +77,14 @@ public final class PlanetCard {
                 selectedMarks(g, x, y, h, accent);
             }
         } else {
-            glyph(g, x + 3, y + 15, 9, d, locked);
+            glyph(g, x + 4, y + 15, d, locked);
             text(g, font, ellipsis(font, nameLine(d), 60), x + 16, y + 15, locked ? SUBTLE : nameColour);
             if (d.hasDayLength()) {
-                dial(g, x + 82, y + 14, 11, d.clockPhase(), accent);
+                dial(g, x + 82, y + 14, 5, d, accent);
             }
             text(g, font, Component.literal(String.format(Locale.ROOT, "%.2f g", d.gravity())), x + 3, y + 27, VALUE);
-            text(g, font, Component.translatable(PlanetCardData.suitKey(true, d.hazard(), d.needsRadLining())),
+            text(g, font, Component.translatable(PlanetCardData.suitKey(true, d.hazard(), d.needsRadLining(),
+                    d.requiredSuit())),
                     x + 46, y + 27, d.hazard() == Hazard.NONE && !d.needsRadLining() ? TIER1 : TIER2);
             if (d.weatherNow() == WeatherEvent.NONE) {
                 text(g, font, Component.translatable("weather.nerospace.none"), x + 3, y + 37, SUBTLE);
@@ -113,7 +116,7 @@ public final class PlanetCard {
     }
 
     /**
-     * A selected compact card is marked by shape, not colour alone (004 §5.3): a pointer notch left of the card
+     * A selected compact card is marked by shape, not colour alone: a pointer notch left of the card
      * and a check mark bottom-right, both in the planet accent.
      */
     private static void selectedMarks(GuiGraphicsExtractor g, int x, int y, int h, int accent) {
@@ -131,14 +134,14 @@ public final class PlanetCard {
         g.fill(cx + 5, by - 5, cx + 6, by - 4, accent);
     }
 
-    /** The four lines the compact card's tooltip shows, so compact never hides information (004 §5.2). */
+    /** The four lines the compact card's tooltip shows, so compact never hides information. */
     public static List<Component> tooltip(PlanetCardData d) {
         return tooltip(d, false);
     }
 
     /**
      * The compact card's tooltip; with {@code selectionHints} (a destination list) the second line says whether a
-     * click selects the card, or why it cannot (004 §6: an unselectable card always explains itself).
+     * click selects the card, or why it cannot (an unselectable card always explains itself).
      */
     public static List<Component> tooltip(PlanetCardData d, boolean selectionHints) {
         List<Component> lines = new ArrayList<>();
@@ -159,7 +162,8 @@ public final class PlanetCard {
                     : Component.translatable("gui.nerospace.card.click_select").withStyle(ChatFormatting.AQUA));
         }
         lines.add(Component.literal(String.format(Locale.ROOT, "%.2f g  ", d.gravity()))
-                .append(Component.translatable(PlanetCardData.suitKey(true, d.hazard(), d.needsRadLining()))));
+                .append(Component.translatable(PlanetCardData.suitKey(true, d.hazard(), d.needsRadLining(),
+                        d.requiredSuit()))));
         lines.add(d.weatherNow() == WeatherEvent.NONE ? Component.translatable("weather.nerospace.none")
                 : weatherName(d.weatherNow()));
         lines.add(d.chosenPad().orElse(Component.translatable("gui.nerospace.card.no_pad")));
@@ -225,41 +229,35 @@ public final class PlanetCard {
         g.fill(x, y + h - 1, x + w, y + h, accent);
     }
 
-    /** Hazard glyph square (Stage 6 replaces it with the glyph sheet): NONE shows the green safe dot. */
-    private static void glyph(GuiGraphicsExtractor g, int x, int y, int size, PlanetCardData d, boolean locked) {
-        int c;
+    /** The hazard glyph from the glyph sheet (LOCK / GATE when locked, the green NONE dot when safe). */
+    private static void glyph(GuiGraphicsExtractor g, int x, int y, PlanetCardData d, boolean locked) {
         if (locked) {
-            c = SUBTLE;
-        } else {
-            c = switch (d.hazard()) {
-                case HEAT -> 0xFFF0703C;
-                case COLD -> 0xFF78D2F0;
-                case RADIATION -> 0xFFF5C542;
-                default -> SAFE;
-            };
-        }
-        if (!locked && d.hazard() == Hazard.NONE) {
-            int m = size / 2;
-            g.fill(x + m - 2, y + m - 2, x + m + 2, y + m + 2, c);
+            Glyphs.draw(g, d.state() == PlanetCardData.State.LOCKED_GATE ? Glyphs.Glyph.GATE : Glyphs.Glyph.LOCK,
+                    x, y, SUBTLE);
             return;
         }
-        g.fill(x, y, x + size, y + size, c);
-        g.fill(x + 1, y + 1, x + size - 1, y + size - 1, 0xFF0D1119);
-        g.fill(x + size / 2 - 1, y + 2, x + size / 2 + 1, y + size - 2, c);
+        int c = switch (d.hazard()) {
+            case HEAT -> 0xFFF0703C;
+            case COLD -> 0xFF78D2F0;
+            case RADIATION -> 0xFFF5C542;
+            default -> SAFE;
+        };
+        Glyphs.draw(g, Glyphs.hazard(d.hazard()), x, y, c);
     }
 
-    /** A small clock dial: ring plus a hand at the phase (0 = midnight at the bottom, 0.5 = noon at the top). */
-    private static void dial(GuiGraphicsExtractor g, int x, int y, int size, float phase, int accent) {
-        g.fill(x, y, x + size, y + size, TROUGH);
-        g.fill(x, y, x + size, y + 1, accent);
-        g.fill(x, y + size - 1, x + size, y + size, accent);
-        double a = phase * Math.PI * 2.0D;
-        int cx = x + size / 2;
-        int cy = y + size / 2;
-        int hx = cx + (int) Math.round(Math.sin(a) * (size / 2 - 1));
-        int hy = cy + (int) Math.round(Math.cos(a) * (size / 2 - 1));
-        g.fill(hx, hy, hx + 1, hy + 1, 0xFFFFE9A8);
-        g.fill(cx, cy, cx + 1, cy + 1, TITLE);
+    /**
+     * The card's clock dial ({@link ClockDial}): phase 0 is sunrise (hand to the right), 0.25 noon (up), the face
+     * lit by the planet's daylight curve; a fixed-clock planet shows only the sun dot.
+     */
+    private static void dial(GuiGraphicsExtractor g, int x, int y, int r, PlanetCardData d, int accent) {
+        java.util.Optional<PlanetDefinition> planet = Planets.byDimension(d.dimension());
+        DaylightCurve curve = planet.map(PlanetDefinition::daylight).orElse(null);
+        boolean fixed = planet.map(p -> p.traits().fixedClock()).orElse(Boolean.FALSE);
+        za.co.neroland.nerospace.client.sky.SkyProfile profile = planet.map(
+                p -> za.co.neroland.nerospace.client.sky.SkyProfiles.get(p.traits().skyProfile())).orElse(null);
+        int sun = profile != null ? ClockDial.sunArgb(profile) : 0xFFFFE9A8;
+        ClockDial.draw(g, x, y, r, d.clockPhase(), accent, sun, fixed,
+                ClockDial.windowsFor(planet.orElse(null), profile), curve);
     }
 
     private static int weatherTint(WeatherEvent e) {

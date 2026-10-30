@@ -10,7 +10,7 @@ import za.co.neroland.nerospace.rocket.StationRegistry.StationEntry;
 /**
  * The RESEARCH tempo source: timed progression counters a player owns advance by
  * {@code ceil(factor × Δticks)} where the factor is the station class's {@code starGuideSpeed} for a {@code canUse}
- * player inside that station's claim box, else 1.0. Timed counters (Stage 5 quests, visit dwell) read this.
+ * player inside that station's claim box, else 1.0. Timed counters (quests, visit dwell) read this.
  */
 public final class StationTempo {
 

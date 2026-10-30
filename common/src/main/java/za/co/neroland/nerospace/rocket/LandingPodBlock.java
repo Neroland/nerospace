@@ -2,9 +2,16 @@ package za.co.neroland.nerospace.rocket;
 
 import com.mojang.serialization.MapCodec;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
+
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 
-/** Planet/Home return-site crate with an inflated arrival shell. */
+/**
+ * Planet/Home return-site crate with an inflated arrival shell. Like the launch pad and the Docking Ring, breaking it
+ * unregisters its {@code POD} node, so stale nodes never burn the pod cap or the pod-spacing probe.
+ */
 public class LandingPodBlock extends ReturnSiteBlock {
 
     public static final MapCodec<LandingPodBlock> CODEC = BlockCodecs.simple(LandingPodBlock::new);
@@ -15,5 +22,17 @@ public class LandingPodBlock extends ReturnSiteBlock {
 
     protected MapCodec<LandingPodBlock> codec() {
         return CODEC;
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        if (!(level.getBlockState(pos).getBlock() instanceof LandingPodBlock)) {
+            PadRegistry registry = PadRegistry.get(level.getServer());
+            PadRegistry.PadNode node = registry.at(level.dimension(), pos);
+            if (node != null && node.kind() == PadKind.POD) {
+                registry.unregisterAt(level.dimension(), pos);
+            }
+        }
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
     }
 }

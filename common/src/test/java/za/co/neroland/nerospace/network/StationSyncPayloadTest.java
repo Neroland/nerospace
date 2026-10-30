@@ -13,7 +13,7 @@ import za.co.neroland.nerospace.rocket.StationRegistry.StationEntry;
 import za.co.neroland.nerospace.world.station.DockingPolicy;
 import za.co.neroland.nerospace.world.station.StationAccess;
 
-/** 005 §4: a MEMBERS-only station's name is not sent to a viewer who cannot use it. */
+/** A MEMBERS-only station's name is not sent to a viewer who cannot use it. */
 class StationSyncPayloadTest {
 
     private static final String OWNER = "00000000-0000-0000-0000-000000000001";

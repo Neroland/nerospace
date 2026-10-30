@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Regolith footprints (002 §1.1): a persistent {@code FOOTPRINT} state set by living walkers. */
+/** Regolith footprints: a persistent {@code FOOTPRINT} state set by living walkers. */
 public final class FootprintRules {
 
     /** Minimum fall this tick that counts as a step down onto the block. */

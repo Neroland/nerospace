@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Perchlorate Crust (002 §1.2): Poison I 4 s on step without sealed boots. */
+/** Perchlorate Crust: Poison I 4 s on step without sealed boots. */
 public final class ContactHazardRules {
 
     public static final int POISON_TICKS = 80;

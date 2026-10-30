@@ -1,4 +1,13 @@
 {
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.nyxara.loop",
+      "additions": {
+        "sound": "nerospace:ambient.nyxara.additions",
+        "tick_chance": 0.003
+      }
+    }
+  },
   "carvers": [
     "minecraft:cave",
     "minecraft:cave_extra_underground"

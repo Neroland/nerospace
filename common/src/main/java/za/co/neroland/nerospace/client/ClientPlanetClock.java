@@ -44,6 +44,34 @@ public final class ClientPlanetClock {
                 c.pinnedPhase(), c.frozen(), c.frozenAt());
     }
 
+    /**
+     * Continuous planet days (whole days plus {@link #phase}) for things that move across days, such as the sky's
+     * orbiting bodies; its fractional part is {@link #phase}. Noon of day 0 when unknown.
+     */
+    public static double days(@Nullable Level level) {
+        PlanetClockPayload c = current;
+        if (c == null || level == null || !c.dimension().equals(level.dimension().identifier())) {
+            return ClockMath.NOON;
+        }
+        if (c.mirrorVanilla()) {
+            return ClockMath.mirrorDays(level.getDefaultClockTime());
+        }
+        return ClockMath.days(level.getGameTime(), c.epochTicks(), c.offsetTicks(), c.dayLength(), c.pinnedPhase(),
+                c.frozen(), c.frozenAt());
+    }
+
+    /**
+     * Nyxara's twilight band width as the server bound it for this world (an existing world keeps the width it was
+     * created with), or {@code fallback} when unknown.
+     */
+    public static int bandWidth(@Nullable Level level, int fallback) {
+        PlanetClockPayload c = current;
+        if (c == null || level == null || c.bandWidth() <= 0 || !c.dimension().equals(level.dimension().identifier())) {
+            return fallback;
+        }
+        return c.bandWidth();
+    }
+
     /** The planet day ("Sol N" on Mars) as last synced, or 0 when unknown. */
     public static long dayNumber() {
         PlanetClockPayload c = current;

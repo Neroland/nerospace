@@ -127,6 +127,78 @@ class BiomeOverlay26_3Test {
         }
     }
 
+    /** The vanilla 26.3 mob categories, in the order the generator writes them. */
+    private static final List<String> CATEGORIES = List.of("ambient", "axolotls", "creature", "misc", "monster",
+            "underground_water_creature", "water_ambient", "water_creature");
+
+    private static JsonObject objectOrEmpty(JsonElement e) {
+        return e != null && e.isJsonObject() ? e.getAsJsonObject() : new JsonObject();
+    }
+
+    /**
+     * Java twin of {@code tools/gen_biome_overlays.py}'s {@code convert}: the shared biome with the spawn fields moved
+     * into the 26.3 attribute and nothing else changed.
+     */
+    static JsonObject expectedOverlay(JsonObject biome) {
+        JsonObject out = biome.deepCopy();
+        JsonObject spawners = objectOrEmpty(out.remove("spawners"));
+        JsonObject costs = objectOrEmpty(out.remove("spawn_costs"));
+        JsonObject byCategory = new JsonObject();
+        for (String category : CATEGORIES) {
+            JsonArray list = new JsonArray();
+            JsonElement entries = spawners.get(category);
+            if (entries != null && entries.isJsonArray()) {
+                for (JsonElement el : entries.getAsJsonArray()) {
+                    JsonObject s = el.getAsJsonObject();
+                    int min = s.get("minCount").getAsInt();
+                    int max = s.get("maxCount").getAsInt();
+                    JsonObject entry = new JsonObject();
+                    entry.add("type", s.get("type"));
+                    if (min == max) {
+                        entry.addProperty("count", min);
+                    } else {
+                        JsonObject provider = new JsonObject();
+                        provider.addProperty("type", "minecraft:uniform");
+                        provider.addProperty("min_inclusive", min);
+                        provider.addProperty("max_inclusive", max);
+                        entry.add("count", provider);
+                    }
+                    entry.add("weight", s.get("weight"));
+                    list.add(entry);
+                }
+            }
+            byCategory.add(category, list);
+        }
+        JsonObject argument = new JsonObject();
+        argument.add("spawn_costs", costs);
+        argument.add("spawns_by_category", byCategory);
+        JsonObject attribute = new JsonObject();
+        attribute.add("argument", argument);
+        attribute.addProperty("modifier", "overlay");
+        JsonObject attributes = objectOrEmpty(out.get("attributes"));
+        attributes.add(ATTRIBUTE, attribute);
+        out.add("attributes", attributes);
+        return out;
+    }
+
+    @Test
+    @DisplayName("every 26.3 overlay is exactly the generator's transform of its shared biome (features, effects, ...)")
+    void overlayMatchesTheGenerator() throws IOException {
+        Path root = commonMain();
+        Assumptions.assumeTrue(root != null, "common/src/main not found");
+        Map<String, JsonObject> base = biomes(root.resolve("resources").resolve(BIOMES));
+        Map<String, JsonObject> overlay = biomes(root.resolve("resources-26.3").resolve(BIOMES));
+        List<String> stale = new ArrayList<>();
+        for (Map.Entry<String, JsonObject> e : base.entrySet()) {
+            JsonObject o = overlay.get(e.getKey());
+            if (o != null && !expectedOverlay(e.getValue()).equals(o)) {
+                stale.add(e.getKey());
+            }
+        }
+        assertTrue(stale.isEmpty(), "26.3 overlay differs from the shared biome (run tools/gen_biome_overlays.py): "
+                + stale);
+    }
+
     @Test
     @DisplayName("the alien villager spawns in Greenxertz on 26.3")
     void greenxertzKeepsItsVillagers() throws IOException {

@@ -1,5 +1,5 @@
 {
-  "parent": "nerospace:worlds/nyxara/arrive",
+  "parent": "nerospace:nyxara",
   "criteria": {
     "has_item": {
       "conditions": {

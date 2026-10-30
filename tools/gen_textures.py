@@ -3130,7 +3130,7 @@ if __name__ == "__main__":
     gen_meteor_caller()
     gen_falling_meteor_entity()
     # Planets & stations rework (2.0.0): the per-planet texture families + id table live in
-    # tools/gen_planet_textures.py. Gated (ENABLED / --planets) until Stage 3 registers the ids;
+    # tools/gen_planet_textures.py. Gated (ENABLED / --planets) until the ids are registered;
     # until then this call writes nothing. Additive-only like everything above.
     try:
         import gen_planet_textures

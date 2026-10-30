@@ -21,11 +21,11 @@ import za.co.neroland.nerospace.network.PlanetWeatherPayload;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
- * Server-authoritative planet weather (decision 003 §4): one {@link WeatherMachine} per planet level, stepped
+ * Server-authoritative planet weather: one {@link WeatherMachine} per planet level, stepped
  * once per second, persisted in {@link PlanetWeatherState}. The client only receives a tiny enum + intensity
  * payload to render. Vanilla rain is untouched (Greenxertz keeps it alongside spore blooms).
  *
- * <p>Stage 1 applies the effects that need no new blocks: Mars storm radiation outdoors (via
+ * <p>This applies the effects that need no new blocks: Mars storm radiation outdoors (via
  * {@link #raisesRadiation}, read by the hazard resolver) and solar dimming ({@link #solarFactor}), and spore-bloom
  * nausea for players outside a sealed suit or oxygen field. Block effects hang off {@link WeatherEffects}.</p>
  */

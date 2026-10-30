@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.SoftStoneRules;
 
-/** Soft stone (Ashstone, 002 §1.3): instant-mine with any pickaxe; normal hardness otherwise. */
+/** Soft stone (Ashstone): instant-mine with any pickaxe; normal hardness otherwise. */
 public class SoftStoneBlock extends Block {
 
     public static final MapCodec<SoftStoneBlock> CODEC = BlockCodecs.simple(SoftStoneBlock::new);

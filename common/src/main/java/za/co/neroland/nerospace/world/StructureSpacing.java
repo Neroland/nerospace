@@ -9,8 +9,8 @@ import net.minecraft.core.BlockPos;
  * sits at a deterministic "anchor" chunk inside the cell.
  *
  * <p>Per planet, the hash is salted with {@code PlanetDefinition.structureSalt()} so worlds that share structure
- * types do not share cell assignments. Salt 0 (Greenxertz, Cindara, Glacira) reproduces the 1.6.0 hash exactly,
- * so existing worlds' structure positions never move. Village kinds (hamlet / ruin / mega-city) and the Mars kinds
+ * types do not share cell assignments. Salt 0 (Greenxertz, the only world with structures before 2.0) reproduces
+ * the 1.6.0 hash exactly, so existing worlds' structure positions never move. Village kinds (hamlet / ruin / mega-city) and the Mars kinds
  * (rover wreck / derelict habitat) use disjoint roll bands; only the kinds a planet's biomes list can appear.</p>
  */
 public final class StructureSpacing {

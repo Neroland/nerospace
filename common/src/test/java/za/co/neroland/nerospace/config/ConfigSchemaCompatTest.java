@@ -14,7 +14,7 @@ import za.co.neroland.nerolandcore.config.ConfigSchema;
 import za.co.neroland.nerolandcore.config.ConfigValue;
 
 /**
- * Decision 001 §11 + §18.1: the 24 1.x keys keep their names and defaults (an old nerospace.properties loads
+ * The 24 1.x keys keep their names and defaults (an old nerospace.properties loads
  * unchanged), and every 2.0 key exists with its stated default and is server-authoritative.
  */
 class ConfigSchemaCompatTest {
@@ -103,6 +103,28 @@ class ConfigSchemaCompatTest {
             assertNotNull(v, "missing 2.0 key " + e.getKey());
             assertEquals(e.getValue(), v.defaultAsString(), "default for " + e.getKey());
             assertTrue(v.serverAuthoritative(), e.getKey() + " must be server-authoritative");
+        }
+    }
+
+    @Test
+    @DisplayName("the ambient particle and HUD keys are client-side (never forced by a server)")
+    void particleKeysAreClientSide() {
+        Map<String, String> m = new LinkedHashMap<>();
+        m.put("particles.enabled", "true");
+        m.put("particles.dust.perPlayerPerTick", "0.6");
+        m.put("particles.ash.perPlayerPerTick", "0.5");
+        m.put("particles.spore.perPlayerPerTick", "0.4");
+        m.put("particles.diamond_dust.perPlayerPerTick", "0.8");
+        m.put("particles.ember.perPlayerPerTick", "0.2");
+        m.put("particles.nebula_mote.perPlayerPerTick", "0.3");
+        m.put("hud.clockDial", "true");
+        m.put("hud.clockDialScale", "1");
+        m.put("hud.weatherLine", "true");
+        for (Map.Entry<String, String> e : m.entrySet()) {
+            ConfigValue<?> v = NerospaceConfig.schema().value(e.getKey());
+            assertNotNull(v, "missing key " + e.getKey());
+            assertEquals(e.getValue(), v.defaultAsString(), "default for " + e.getKey());
+            assertTrue(!v.serverAuthoritative(), e.getKey() + " must stay client-side");
         }
     }
 

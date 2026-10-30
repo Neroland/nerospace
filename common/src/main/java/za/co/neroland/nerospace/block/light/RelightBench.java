@@ -14,7 +14,7 @@ import net.minecraft.world.level.chunk.LightChunkGetter;
 import net.minecraft.world.level.lighting.BlockLightEngine;
 
 /**
- * Dev-only relight benchmark for the Nyx Stone absorption (002 §11.1). Builds a <b>private</b> block-light engine over
+ * Dev-only relight benchmark for the Nyx Stone absorption. Builds a <b>private</b> block-light engine over
  * the already-loaded 4×4 chunks around a centre chunk and times a full block-light relight, once with no absorbers
  * indexed and once with {@code count} synthetic absorbers spread through the area (the same index the real Nyx Stone
  * feeds, so the measured cost is the mixin hot path). The live light engine and the world are never modified.

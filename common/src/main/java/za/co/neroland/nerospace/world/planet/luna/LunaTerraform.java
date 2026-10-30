@@ -12,7 +12,7 @@ import za.co.neroland.nerospace.world.planet.TerraformTable;
 import za.co.neroland.nerospace.world.planet.TerraformTable.Rule;
 
 /**
- * Luna terraform table (003 §8.1): regolith turns to grey soil with lichen (Rooted), frost pools gather in the
+ * Luna terraform table: regolith turns to grey soil with lichen (Rooted), frost pools gather in the
  * craters (Hydrated), and a pressurised <b>lunar meadow</b> settles (Living). Luna is the only world with no
  * atmosphere to hold the change, so the Living edge shimmers — a particle ring at the terraformer radius, no block.
  */

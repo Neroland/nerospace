@@ -58,7 +58,10 @@ public final class NeoForgeClientSetup {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterFluidModels);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterEntityRenderers);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterGuiLayers);
-        // Planet sky: profile reload listener + (26.3) the custom skybox hook. Inert in Stage 1.
+        modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent event) ->
+                za.co.neroland.nerospace.client.particle.ClientParticles.registerAll((type, factory) ->
+                        event.registerSpriteSet(type, factory::apply)));
+        // Planet sky: profile reload listener + (26.3) the custom skybox hook.
         NeoForgeSky.init(modEventBus);
         // Suppress the vanilla air-bubble row on airless dimensions (the bespoke gauge is the readout there).
         NeoForge.EVENT_BUS.addListener(NeoForgeClientSetup::onRenderGuiLayer);
@@ -68,6 +71,7 @@ public final class NeoForgeClientSetup {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
             GalleryCaptureHarness.tick();
+            za.co.neroland.nerospace.client.WeatherAmbience.tick();
         });
         // Client-side /nsgallery capture command tree (drives the local camera; separate dispatcher
         // from the server-side /nerospace gallery builder — a shared "nerospace" root would shadow it).

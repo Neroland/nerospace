@@ -13,6 +13,7 @@ public final class ModRegistries {
 
     public static void init() {
         ModSounds.init();
+        ModParticles.init();
         ModDataComponents.init();
         za.co.neroland.nerospace.fluid.ModFluids.init();
         ModBlocks.init();
@@ -29,9 +30,9 @@ public final class ModRegistries {
         za.co.neroland.nerospace.world.planet.glacira.GlaciraContent.init();
         za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzContent.init();
         za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.init();
-        // Orbital station blocks (hull, truss, wings, plates, trays, telescope) - Stage 4 stations.
+        // Orbital station blocks (hull, truss, wings, plates, trays, telescope).
         za.co.neroland.nerospace.world.station.StationContent.init();
-        // Stage 4A: the Docking Ring (a DOCK landing node) — block + item.
+        // The Docking Ring (a DOCK landing node) — block + item.
         za.co.neroland.nerospace.rocket.DockingContent.init();
         ModCreativeTab.init();
         za.co.neroland.nerospace.network.ModNetwork.init();

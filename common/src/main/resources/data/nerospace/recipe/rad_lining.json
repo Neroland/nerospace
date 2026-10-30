@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": "nerospace:regolith",
+    "H": "nerospace:raw_hematite",
+    "T": "nerospace:titanium_ingot"
+  },
+  "pattern": [
+    "RHR",
+    "HTH",
+    "RHR"
+  ],
+  "result": {
+    "id": "nerospace:rad_lining"
+  }
+}

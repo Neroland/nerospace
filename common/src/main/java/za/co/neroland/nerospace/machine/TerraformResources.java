@@ -17,7 +17,7 @@ import za.co.neroland.nerospace.world.planet.TerraformTable;
 import za.co.neroland.nerospace.world.planet.TerraformTables;
 
 /**
- * Resolves a planet's Tier-3 terraform ore seed set (terraform design §2.2, D7) into {@link Block}s. The 1.x
+ * Resolves a planet's Tier-3 terraform ore seed set (terraform design) into {@link Block}s. The 1.x
  * planets and off-planet dimensions keep the 1.x list (Nerospace ores, so seeding doesn't trivialise vanilla
  * mining); the 2.0 worlds seed their own ores. Resolved lazily and cached per table; ids that are not registered
  * are skipped.

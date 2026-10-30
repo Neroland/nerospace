@@ -36,7 +36,7 @@ public final class ModTags {
         }
 
         /**
-         * Creatures native to a Nerospace planet (003 §8.1 terraform fauna). Planet hazards that touch living
+         * Creatures native to a Nerospace planet (terraform fauna). Planet hazards that touch living
          * entities (contact hazards such as Perchlorate Crust, and any future per-entity oxygen or radiation rule)
          * skip these: they evolved there.
          */
@@ -96,7 +96,7 @@ public final class ModTags {
         /** Non-full / leaky blocks: allow PARTIAL flow (fences, slabs, torches, open trapdoors). */
         public static final TagKey<Block> OXYGEN_LEAKS = blockTag("nerospace", "oxygen_leaks");
         /**
-         * Airtight hull (decision 002 §10.5): a subset of {@link #OXYGEN_SEALING} — Hull Plating and Hull Window
+         * Airtight hull: a subset of {@link #OXYGEN_SEALING} — Hull Plating and Hull Window
          * only. The oxygen field treats it as a seal; the Station Console counts it for "pressurised".
          */
         public static final TagKey<Block> AIRTIGHT = blockTag("nerospace", "airtight");

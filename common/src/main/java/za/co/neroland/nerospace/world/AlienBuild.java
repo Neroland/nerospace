@@ -22,7 +22,7 @@ import za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent;
  * mega-city read as futuristic alien architecture: tile podiums, brick walls with glowing crystal
  * window bands, taller lit corner pillars, tapered roofs and crystal spires.
  *
- * <p>Each villager culture builds the same shapes in its own {@link Palette} (D8): Xertz in the alien block set
+ * <p>Each villager culture builds the same shapes in its own {@link Palette}: Xertz in the alien block set
  * (the 1.6.0 look), Ember-kin in cindrite / basalt / magma glass, Frostbound in glacite / packed ice / blue ice,
  * Duskborn in nyx stone / void crystal / tinted glass. Writes go through a {@link Site}, which drops anything
  * outside the feature's writable {@link StructureRegion}.</p>
@@ -54,7 +54,9 @@ public final class AlienBuild {
             () -> ModBlocks.GLACITE_BLOCK.get().defaultBlockState(),
             () -> GlaciraContent.PACKED_CRYO_ICE.get().defaultBlockState(),
             () -> Blocks.PACKED_ICE.defaultBlockState(),
-            () -> GlaciraContent.PERMAFROST.get().defaultBlockState(),
+            // Packed-ice pillars, not Permafrost: a Living terraformer thaws permafrost under the surface heightmap,
+            // which would turn a pillar top into grass.
+            () -> Blocks.PACKED_ICE.defaultBlockState(),
             () -> Blocks.SEA_LANTERN.defaultBlockState(),
             // Blue ice, not plain ice: window bands sit next to lamps and plain ice would melt.
             () -> Blocks.BLUE_ICE.defaultBlockState());

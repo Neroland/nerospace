@@ -19,7 +19,7 @@ import za.co.neroland.nerospace.entity.TerraformLivestock;
 import za.co.neroland.nerospace.world.planet.luna.LunaContent;
 
 /**
- * Moon Hopper (003 §8.1): the small grazer of Luna's terraformed lunar meadow. It moves in hops rather than steps;
+ * Moon Hopper: the small grazer of Luna's terraformed lunar meadow. It moves in hops rather than steps;
  * Luna's low gravity (applied by the shared gravity pass) turns each hop into a long, floaty arc. Native to Luna, so
  * it is in {@code #nerospace:native_fauna} and the planet's hazards leave it alone. Breeds with carrots.
  * Sounds reuse the vanilla rabbit.

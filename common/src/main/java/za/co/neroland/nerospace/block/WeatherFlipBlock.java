@@ -19,7 +19,7 @@ import za.co.neroland.nerospace.world.planet.WeatherEvent;
 import za.co.neroland.nerospace.world.planet.WeatherMachine;
 
 /**
- * Weather-gated state (Dawnband Stone, 002 §1.6): {@code FLARING} is set on every loaded block when the event starts
+ * Weather-gated state (Dawnband Stone): {@code FLARING} is set on every loaded block when the event starts
  * and cleared when it ends (one {@link WeatherScan} per transition, cap 256 per chunk, config may lower). Register
  * with {@code lightLevel(s -> WarmthRules.light(s.getValue(FLARING)))} and hook it with
  * {@code WeatherFlipBlock.register(WeatherEvent.FLARE, ModBlocks.DAWNBAND_STONE::get)}. The hazard system asks

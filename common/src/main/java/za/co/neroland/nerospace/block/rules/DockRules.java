@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Docking Ring (002 §1.7): the rocket sits at {@code centre + (0.5, surfaceHeight, 0.5)}; 3×3 footprint. */
+/** Docking Ring: the rocket sits at {@code centre + (0.5, surfaceHeight, 0.5)}; 3×3 footprint. */
 public final class DockRules {
 
     public static final int HALF = 1;

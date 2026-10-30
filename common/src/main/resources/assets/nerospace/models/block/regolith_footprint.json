@@ -1,6 +1,8 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "all": "nerospace:block/regolith_footprint"
+    "bottom": "nerospace:block/regolith",
+    "side": "nerospace:block/regolith",
+    "top": "nerospace:block/regolith_footprint"
   }
 }

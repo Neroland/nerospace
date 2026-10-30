@@ -63,7 +63,7 @@ class PlanetClockTest {
     }
 
     @Test
-    @DisplayName("day lengths match decision 003 (Mars sol = 24 600 ticks; station and Nyxara fixed)")
+    @DisplayName("day lengths match the design (Mars sol = 24 600 ticks; station and Nyxara fixed)")
     void dayLengths() {
         assertEquals(0L, Planets.STATION.traits().dayLengthTicks());
         assertEquals(672_000L, Planets.LUNA.traits().dayLengthTicks());
@@ -125,5 +125,22 @@ class PlanetClockTest {
         assertEquals(0.0, first, EPS, "the clock starts at sunrise");
         assertEquals(0.25, state.readPhase(10_000L + 12_000L, day, 0.25), EPS, "it advances without any tick");
         assertEquals(2L, state.readDay(10_000L + day, day));
+    }
+
+    @Test
+    @DisplayName("continuous days: fraction is the phase, no wrap at sunrise, frozen and fixed clocks hold")
+    void continuousDays() {
+        long day = 48_000L;
+        for (long t = 1_000L; t < 1_000L + 5 * day; t += 997L) {
+            double d = ClockMath.days(t, 1_000L, 0L, day, 0.25, false, 0L);
+            assertEquals(ClockMath.phase(t, 1_000L, 0L, day, 0.25, false, 0L), d - Math.floor(d), 1e-9);
+        }
+        double before = ClockMath.days(1_000L + day - 1L, 1_000L, 0L, day, 0.25, false, 0L);
+        double after = ClockMath.days(1_000L + day + 1L, 1_000L, 0L, day, 0.25, false, 0L);
+        assertTrue(after > before && after - before < 1e-3, "no jump across sunrise");
+        assertEquals(ClockMath.days(10_000L, 0L, 0L, day, 0.0, false, 0L),
+                ClockMath.days(90_000L, 0L, 0L, day, 0.0, true, 10_000L), EPS);
+        assertEquals(0.30, ClockMath.days(123_456L, 0L, 0L, 0L, 0.30, false, 0L), EPS);
+        assertEquals(2.25, ClockMath.mirrorDays(54_000L), EPS);
     }
 }

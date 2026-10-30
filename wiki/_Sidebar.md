@@ -2,15 +2,19 @@
 
 - [Home](Home)
 - [Getting Started](Getting-Started)
+- [Upgrading to 2.0](Upgrading-to-2.0)
 - [Powering Machines](Powering-Machines)
 - [Star Guide](Star-Guide)
 - [Planet Gravity](Planet-Gravity)
+- [Planet Clock and Weather](Planet-Clock-and-Weather)
 - [Luna](Luna)
 - [Mars](Mars)
 - [Cindara](Cindara)
 - [Glacira](Glacira)
 - [Greenxertz](Greenxertz)
 - [Nyxara](Nyxara)
+- [Orbital Stations](Orbital-Stations)
+- [Landing Pads](Landing-Pads)
 - [Neroland Core](Neroland-Core)
 
 **Blocks — Ores**
@@ -70,14 +74,12 @@
 - [Launch Pad Build Guide](Launch-Pad-Build-Guide)
 - [Rockets](Rockets)
 - [Rocket Launch Pad](Rocket-Launch-Pad)
-- [Landing Pads](Landing-Pads)
 - [Cargo Pad](Cargo-Pad)
 - [Cargo Rocket](Cargo-Rocket)
 - [Launch Controller](Launch-Controller)
 - [Launch Gantry](Launch-Gantry)
 - [Station Floor](Station-Floor)
 - [Station Wall](Station-Wall)
-- [Orbital Stations](Orbital-Stations)
 - [Station Core](Station-Core)
 
 **Alien Villages**

@@ -72,7 +72,7 @@ class LunaWorldgenTest {
     }
 
     @Test
-    @DisplayName("cheese: only luna_crater_field lists it; 1-in-4 chunks, size 4, y 40-80")
+    @DisplayName("cheese: only luna_crater_field lists it; 1-in-4 chunks, size 4, just under the surface")
     void cheese() throws IOException {
         for (String b : BIOMES) {
             String features = LunaFiles.json(LunaFiles.data("resources", "worldgen/biome/" + b + ".json"))
@@ -89,8 +89,14 @@ class LunaWorldgenTest {
         }
         String placed = LunaFiles.json(LunaFiles.data("resources", "worldgen/placed_feature/luna_cheese_ore.json")).toString();
         assertTrue(placed.contains("\"type\":\"minecraft:rarity_filter\",\"chance\":4"), placed);
-        assertTrue(placed.contains("\"min_inclusive\":{\"absolute\":40}"), placed);
-        assertTrue(placed.contains("\"max_inclusive\":{\"absolute\":80}"), placed);
+        // Surface-relative, so the blobs land in the regolith / anorthosite skin rather than the basalt below it.
+        for (String tree : new String[] {"resources", "resources-26.3"}) {
+            String p = LunaFiles.json(LunaFiles.data(tree, "worldgen/placed_feature/luna_cheese_ore.json")).toString();
+            assertTrue(p.contains("\"type\":\"minecraft:rarity_filter\",\"chance\":4"), tree + " " + p);
+            assertTrue(p.contains("WORLD_SURFACE_WG"), tree + " " + p);
+            assertTrue(p.contains("resources".equals(tree) ? "\"y_spread\":-3" : "\"type\":\"minecraft:offset\""), p);
+            assertFalse(p.contains("height_range") || p.contains("resources".equals(tree) ? "minecraft:offset" : "random_offset"), p);
+        }
         assertEquals(4, LunaFiles.json(LunaFiles.data("resources", "worldgen/configured_feature/luna_cheese_ore.json"))
                 .getAsJsonObject("config").get("size").getAsInt());
         assertEquals(4, LunaFiles.json(LunaFiles.data("resources-26.3", "worldgen/feature/luna_cheese_ore.json"))
@@ -127,6 +133,25 @@ class LunaWorldgenTest {
                 assertTrue(Files.isRegularFile(LunaFiles.data("resources", "worldgen/configured_feature/" + id)), id);
                 assertTrue(Files.isRegularFile(LunaFiles.data("resources-26.3", "worldgen/feature/" + id)), id);
             }
+        }
+    }
+
+    @Test
+    @DisplayName("cheese keeps its camouflage (regolith / anorthosite only); crater glass sits in the crater surface")
+    void cheeseTargetsAndCraterGlass() throws IOException {
+        for (String tree : new String[] {"resources", "resources-26.3"}) {
+            String dir = "resources".equals(tree) ? "worldgen/configured_feature/" : "worldgen/feature/";
+            String cheese = LunaFiles.json(LunaFiles.data(tree, dir + "luna_cheese_ore.json")).toString();
+            assertTrue(cheese.contains("nerospace:regolith") && cheese.contains("nerospace:anorthosite"), tree);
+            assertFalse(cheese.contains("nerospace:lunar_basalt"), tree + ": no cheese in basalt");
+            String glass = LunaFiles.json(LunaFiles.data(tree, dir + "luna_crater_glass.json")).toString();
+            assertTrue(glass.contains("nerospace:lunar_basalt") && glass.contains("nerospace:regolith")
+                    && glass.contains("nerospace:anorthosite"), tree);
+            String placed = LunaFiles.json(LunaFiles.data(tree, "worldgen/placed_feature/luna_crater_glass.json")).toString();
+            assertTrue(placed.contains("\"type\":\"minecraft:count\",\"count\":2"), placed);
+            assertTrue(placed.contains("WORLD_SURFACE_WG"), placed);
+            assertTrue(placed.contains("resources".equals(tree) ? "\"y_spread\":-3" : "\"y\":-3"), placed);
+            assertFalse(placed.contains("rarity_filter") || placed.contains("height_range"), placed);
         }
     }
 }

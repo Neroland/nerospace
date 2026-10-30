@@ -12,7 +12,7 @@ import za.co.neroland.nerospace.world.planet.TerraformTable;
 import za.co.neroland.nerospace.world.planet.TerraformTable.Rule;
 
 /**
- * Nyxara terraform table (003 §8.1): the <b>twilight grove</b>. It only roots in the twilight band — the
+ * Nyxara terraform table: the <b>twilight grove</b>. It only roots in the twilight band — the
  * terraformer refuses on the dayside and nightside, and the Monitor says why — and columns outside the band are
  * skipped as the frontier grows past it.
  */

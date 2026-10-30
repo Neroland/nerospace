@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 
 import org.junit.jupiter.api.Test;
 
-/** 005 §1.7 search: spiral 6 → 24 → climb. */
+/** Pod search: spiral 6 → 24 → climb. */
 class PodSearchTest {
 
     static SiteSample bad(BlockPos at) {
@@ -83,6 +83,56 @@ class PodSearchTest {
             return r == 10 ? reuse(at) : r == 12 ? SiteSample.clear(at) : bad(at);
         }), BlockPos.ZERO);
         assertEquals(12, f.ringReached());
+    }
+
+    static PodSearch.Sampler climbSampler(java.util.function.Function<BlockPos, SiteSample> at) {
+        return new PodSearch.Sampler() {
+            @Override
+            public SiteSample column(int x, int z) {
+                return bad(new BlockPos(x, 64, z));
+            }
+
+            @Override
+            public SiteSample at(BlockPos site) {
+                return at.apply(site);
+            }
+        };
+    }
+
+    static SiteSample air(BlockPos site, int claimDist, boolean overlapsPad, boolean clear) {
+        return new SiteSample(site, SiteSample.fill(25, false), SiteSample.fill(25, false), SiteSample.fill(75, clear),
+                false, claimDist, overlapsPad, false, false);
+    }
+
+    @Test
+    void climbRespectsClaimDistance() {
+        // Clear air everywhere, but the first 4 climb heights sit within 6 of another player's claim box.
+        int start = 64 + PodSearch.CLIMB_START;
+        PodSearch.Found f = PodSearch.search(climbSampler(s -> air(s, s.getY() < start + 4 ? 2 : Integer.MAX_VALUE,
+                false, true)), BlockPos.ZERO);
+        assertEquals(start + 4, f.site().getY());
+        assertEquals(PodSearch.CLIMB_START + 4, f.climbUsed());
+    }
+
+    @Test
+    void climbRespectsPadOverlap() {
+        int start = 64 + PodSearch.CLIMB_START;
+        PodSearch.Found f = PodSearch.search(climbSampler(s -> air(s, Integer.MAX_VALUE, s.getY() < start + 2, true)),
+                BlockPos.ZERO);
+        assertEquals(start + 2, f.site().getY());
+    }
+
+    @Test
+    void exhaustedClimbNeverReturnsAnUnclearSite() {
+        // Only two heights are box-clear and both are inside a claim: the fallback is the highest clear one.
+        int start = 64 + PodSearch.CLIMB_START;
+        PodSearch.Found f = PodSearch.search(climbSampler(s -> {
+            int y = s.getY();
+            boolean clear = y == start + 3 || y == start + 9;
+            return air(s, 0, false, clear);
+        }), BlockPos.ZERO);
+        assertEquals(start + 9, f.site().getY());
+        assertTrue(f.climbUsed() > 0);
     }
 
     @Test

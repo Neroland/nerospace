@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.block.rules;
 
 /**
- * Void Crystal refraction (002 §1.6, §11.2): a beam turns 90° toward the crystal's facing. A beam arriving along
+ * Void Crystal refraction: a beam turns 90° toward the crystal's facing. A beam arriving along
  * the facing axis is not turned. Directions are the vanilla 3D-data indices (0 down, 1 up, 2 north, 3 south,
  * 4 west, 5 east) so this stays free of game classes.
  */

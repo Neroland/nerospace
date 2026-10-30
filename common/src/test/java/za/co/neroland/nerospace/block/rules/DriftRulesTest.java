@@ -12,7 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.2 Red Regolith dune drift, §3/§4 caps. */
+/** Red Regolith dune drift and its caps. */
 @SuppressWarnings("unused")
 class DriftRulesTest {
 

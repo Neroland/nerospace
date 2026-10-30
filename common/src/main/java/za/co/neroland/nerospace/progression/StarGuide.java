@@ -95,9 +95,10 @@ public final class StarGuide {
     }
 
     /**
-     * One 2.0 Worlds chapter (D9): arrive, first ore, first unique block used, survive the weather, terraform stage 1.
+     * One 2.0 Worlds chapter: arrive, first ore, first unique block used, survive the weather, terraform stage 1.
      * Step ids {@code worlds_<planet>_<step>}; advancements {@code worlds/<planet>/<step>} except the arrival, which
-     * reuses the 1.x planet advancement where one exists.
+     * is the top-level planet advancement ({@code luna}, {@code mars}, {@code nyxara} are new; {@code greenxertz},
+     * {@code cindara}, {@code glacira} are the 1.x ones, so a 1.6.0 visitor sees the step already done).
      */
     private static Chapter worlds(String planet, String arriveAdvancement, String oreIcon, String blockIcon,
             String weatherIcon) {
@@ -179,7 +180,7 @@ public final class StarGuide {
             // worlds_luna starts with the arrival step. The remaining Worlds steps go in BEFORE the hidden cheese
             // step while 2.0.0 is unreleased (the layout freezes at release); the cheese step stays last.
             new Chapter("worlds_luna", List.of(
-                    step("luna", () -> za.co.neroland.nerospace.world.planet.luna.LunaContent.REGOLITH_ITEM.get(), "luna"),
+                    step("worlds_luna_arrive", () -> za.co.neroland.nerospace.world.planet.luna.LunaContent.REGOLITH_ITEM.get(), "luna"),
                     step("worlds_luna_ore", item("raw_ilmenite"), "worlds/luna/ore"),
                     step("worlds_luna_block", item("polished_lunar_basalt"), "worlds/luna/block"),
                     step("worlds_luna_weather", item("lunar_basalt"), "worlds/luna/weather"),
@@ -188,11 +189,11 @@ public final class StarGuide {
                     hiddenStep("big_cheese", () -> za.co.neroland.nerospace.world.planet.luna.LunaContent.MOON_CHEESE.get(),
                             "luna/the_big_cheese"))),
             // ---- 2.0 Worlds chapters 11..15 (roster order). Append only: index = bitmask slot.
-            worlds("greenxertz", "greenxertz", "amber_sap", "bio_bark_log", "spore_moss"),
-            worlds("mars", "worlds/mars/arrive", "raw_hematite", "martian_sandstone", "red_regolith"),
+            worlds("mars", "mars", "raw_hematite", "martian_sandstone", "red_regolith"),
             worlds("cindara", "cindara", "cindrite", "magma_glass", "ash_layer"),
             worlds("glacira", "glacira", "glacite", "aurora_stone", "frost_crystal_cluster"),
-            worlds("nyxara", "worlds/nyxara/arrive", "voidglass", "dawnband_stone", "void_crystal"));
+            worlds("greenxertz", "greenxertz", "amber_sap", "bio_bark_log", "spore_moss"),
+            worlds("nyxara", "nyxara", "voidglass", "dawnband_stone", "void_crystal"));
 
     public static final int CHAPTER_COUNT = CHAPTERS.size();
 

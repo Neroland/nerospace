@@ -104,7 +104,7 @@ public final class NerospaceConfig {
             true, true, "Nyx Stone dims light around it (false = it only blocks light)");
     private static final ConfigValue<Boolean> BLOCKS_METHANE_ICE_BREAKS_BLOCKS = SCHEMA.bool("blocks.methaneIceBreaksBlocks",
             false, true, "Methane Ice explosions break blocks (false by default: they hurt entities only, no craters)");
-    // Per-chunk caps from decision 002 §10.2 ("config may lower, never raise"): default = max = the locked number.
+    // Per-chunk caps ("config may lower, never raise"): default = max = the locked number.
     private static final ConfigValue<Integer> CAP_SPORE_MOSS = SCHEMA.intRange("blocks.sporeMossCap",
             48, 0, 48, true, "max Spore Moss per chunk (0..48)");
     private static final ConfigValue<Integer> CAP_SHADOW_LICHEN = SCHEMA.intRange("blocks.shadowLichenCap",
@@ -155,6 +155,34 @@ public final class NerospaceConfig {
     private static final ConfigValue<Integer> NYXARA_TWILIGHT_BAND_WIDTH = SCHEMA.intRange("nyxara.twilightBandWidth",
             2048, 512, 16384, true, "full width (blocks) of Nyxara's habitable twilight band (512..16384); applies "
             + "to new worlds only - an existing world keeps the width it was created with");
+
+    // --- Ambient planet particles (client-side, per player; never server-authoritative) ---------------------
+    private static final ConfigValue<Boolean> PARTICLES_ENABLED = SCHEMA.bool("particles.enabled", true, false,
+            "drifting planet particles around you (Mars dust, Cindara ash and embers, Greenxertz spores, Glacira "
+            + "diamond dust, Nyxara nebula motes). Client-side only; false = none");
+    private static final ConfigValue<Double> PARTICLES_DUST = particleRate("dust", 0.6D, "Mars dust");
+    private static final ConfigValue<Double> PARTICLES_ASH = particleRate("ash", 0.5D, "Cindara ash");
+    private static final ConfigValue<Double> PARTICLES_SPORE = particleRate("spore", 0.4D, "Greenxertz spores");
+    private static final ConfigValue<Double> PARTICLES_DIAMOND_DUST = particleRate("diamond_dust", 0.8D,
+            "Glacira diamond dust");
+    private static final ConfigValue<Double> PARTICLES_EMBER = particleRate("ember", 0.2D,
+            "Cindara embers near lava and magma");
+    private static final ConfigValue<Double> PARTICLES_NEBULA_MOTE = particleRate("nebula_mote", 0.3D,
+            "Nyxara nebula motes");
+
+    // --- HUD (client-side, per player; never server-authoritative) ----------------------------------------
+    private static final ConfigValue<Boolean> HUD_CLOCK_DIAL = SCHEMA.bool("hud.clockDial", true, false,
+            "show the planet clock dial above the oxygen gauge on planets with a day cycle. Client-side only");
+    private static final ConfigValue<Integer> HUD_CLOCK_DIAL_SCALE = SCHEMA.intRange("hud.clockDialScale", 1, 1, 2,
+            false, "clock dial size: 1 = 16 px, 2 = 32 px. Client-side only");
+    private static final ConfigValue<Boolean> HUD_WEATHER_LINE = SCHEMA.bool("hud.weatherLine", true, false,
+            "show the current planet weather and its intensity above the oxygen gauge. Client-side only");
+
+    private static ConfigValue<Double> particleRate(String type, double def, String what) {
+        return SCHEMA.doubleRange("particles." + type + ".perPlayerPerTick", def, 0.0D, 8.0D, false,
+                what + ": particles spawned around you per tick at full weather (0..8; also capped by "
+                + "weather.particleBudget per second). Client-side only");
+    }
 
     private static volatile boolean loaded;
 
@@ -311,6 +339,39 @@ public final class NerospaceConfig {
 
     public static int nyxaraTwilightBandWidth() {
         return NYXARA_TWILIGHT_BAND_WIDTH.get();
+    }
+
+    /** Client-side: whether the HUD clock dial shows. */
+    public static boolean hudClockDial() {
+        return HUD_CLOCK_DIAL.get();
+    }
+
+    /** Client-side: the HUD clock dial scale, 1 or 2. */
+    public static int hudClockDialScale() {
+        return HUD_CLOCK_DIAL_SCALE.get();
+    }
+
+    /** Client-side: whether the HUD weather line shows. */
+    public static boolean hudWeatherLine() {
+        return HUD_WEATHER_LINE.get();
+    }
+
+    /** Client-side: whether ambient planet particles spawn at all. */
+    public static boolean particlesEnabled() {
+        return PARTICLES_ENABLED.get();
+    }
+
+    /** Client-side spawn rate (particles per player per tick at full weather) for a particle type id. */
+    public static double particleRate(String type) {
+        return switch (type) {
+            case "dust" -> PARTICLES_DUST.get();
+            case "ash" -> PARTICLES_ASH.get();
+            case "spore" -> PARTICLES_SPORE.get();
+            case "diamond_dust" -> PARTICLES_DIAMOND_DUST.get();
+            case "ember" -> PARTICLES_EMBER.get();
+            case "nebula_mote" -> PARTICLES_NEBULA_MOTE.get();
+            default -> 0.0D;
+        };
     }
 
     /** The schema (read-only use: tests and diagnostics). */

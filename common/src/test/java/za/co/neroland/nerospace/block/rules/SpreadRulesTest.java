@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §3 capped spreading + §1.5 Spore Moss + §1.6 Shadow Lichen wrappers. */
+/** Capped spreading + Spore Moss + Shadow Lichen wrappers. */
 @SuppressWarnings("unused")
 class SpreadRulesTest {
 

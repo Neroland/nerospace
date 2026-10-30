@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Spore Moss spread (002 §1.5): 1-in-8 per random tick onto adjacent Xertz Soil, ×3 in a bloom, cap 48 per chunk. */
+/** Spore Moss spread: 1-in-8 per random tick onto adjacent Xertz Soil, ×3 in a bloom, cap 48 per chunk. */
 public final class SporeSpreadRules {
 
     public static final int ONE_IN = 8;

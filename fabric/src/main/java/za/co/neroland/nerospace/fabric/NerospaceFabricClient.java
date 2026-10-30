@@ -87,6 +87,9 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         });
 
         registerFluidRendering();
+        za.co.neroland.nerospace.client.particle.ClientParticles.registerAll((type, factory) ->
+                net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry.getInstance()
+                        .register(type, sprites -> factory.apply(sprites)));
         registerOxygenHud();
         // Planet sky profiles (client resources, reload with F3+T). Fabric API has no sky hook on 26.x: data-only.
         net.fabricmc.fabric.api.resource.v1.ResourceLoader.get(net.minecraft.server.packs.PackType.CLIENT_RESOURCES)
@@ -99,6 +102,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
             GalleryCaptureHarness.tick();
+            za.co.neroland.nerospace.client.WeatherAmbience.tick();
         });
         // Client-side /nsgallery capture command tree (drives the local camera; separate dispatcher
         // from the server-side /nerospace gallery builder — a shared "nerospace" root would shadow it).

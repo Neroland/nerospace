@@ -33,7 +33,7 @@ public record StationConsoleSyncPayload(int containerId, int slot, String name, 
     public static final int ROLE_OPERATOR = 3;
     public static final int ROLE_UNOWNED = 4;
 
-    /** One pad on another world named after this station ("paired pad", D5 rule 3). */
+    /** One pad on another world named after this station ("paired pad"). */
     public record PairedPad(String dimension, String padName, boolean standing) {
     }
 

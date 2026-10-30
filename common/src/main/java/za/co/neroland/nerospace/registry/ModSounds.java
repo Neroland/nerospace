@@ -49,6 +49,31 @@ public final class ModSounds {
     public static final RegistryEntry<SoundEvent> WOOLLY_DRIFT_HURT = register("entity.woolly_drift.hurt");
     public static final RegistryEntry<SoundEvent> WOOLLY_DRIFT_DEATH = register("entity.woolly_drift.death");
 
+    // Planet ambience (2.0.0): biome / dimension loops, one-shots and moods, plus the client weather loops. Every
+    // event aliases vanilla sounds in sounds.json with its own volume and pitch.
+    public static final RegistryEntry<SoundEvent> AMBIENT_LUNA_LOOP = register("ambient.luna.loop");
+    public static final RegistryEntry<SoundEvent> AMBIENT_MARS_LOOP = register("ambient.mars.loop");
+    public static final RegistryEntry<SoundEvent> AMBIENT_MARS_ADDITIONS = register("ambient.mars.additions");
+    public static final RegistryEntry<SoundEvent> AMBIENT_MARS_STORM = register("ambient.mars.storm");
+    public static final RegistryEntry<SoundEvent> AMBIENT_CINDARA_LOOP = register("ambient.cindara.loop");
+    public static final RegistryEntry<SoundEvent> AMBIENT_CINDARA_ADDITIONS = register("ambient.cindara.additions");
+    public static final RegistryEntry<SoundEvent> AMBIENT_CINDARA_MOOD = register("ambient.cindara.mood");
+    public static final RegistryEntry<SoundEvent> AMBIENT_CINDARA_ASHFALL = register("ambient.cindara.ashfall");
+    public static final RegistryEntry<SoundEvent> AMBIENT_GLACIRA_LOOP = register("ambient.glacira.loop");
+    public static final RegistryEntry<SoundEvent> AMBIENT_GLACIRA_ADDITIONS = register("ambient.glacira.additions");
+    public static final RegistryEntry<SoundEvent> AMBIENT_GLACIRA_DIAMOND_DUST = register("ambient.glacira.diamond_dust");
+    public static final RegistryEntry<SoundEvent> AMBIENT_GREENXERTZ_LOOP = register("ambient.greenxertz.loop");
+    public static final RegistryEntry<SoundEvent> AMBIENT_GREENXERTZ_ADDITIONS = register("ambient.greenxertz.additions");
+    public static final RegistryEntry<SoundEvent> AMBIENT_GREENXERTZ_MOOD = register("ambient.greenxertz.mood");
+    public static final RegistryEntry<SoundEvent> AMBIENT_GREENXERTZ_BLOOM = register("ambient.greenxertz.bloom");
+    public static final RegistryEntry<SoundEvent> AMBIENT_NYXARA_LOOP = register("ambient.nyxara.loop");
+    public static final RegistryEntry<SoundEvent> AMBIENT_NYXARA_ADDITIONS = register("ambient.nyxara.additions");
+    public static final RegistryEntry<SoundEvent> AMBIENT_NYXARA_MOOD = register("ambient.nyxara.mood");
+    public static final RegistryEntry<SoundEvent> AMBIENT_NYXARA_FLARE = register("ambient.nyxara.flare");
+    public static final RegistryEntry<SoundEvent> AMBIENT_NYXARA_FLARE_ONSET = register("ambient.nyxara.flare_onset");
+    public static final RegistryEntry<SoundEvent> AMBIENT_STATION_LOOP = register("ambient.station.loop");
+    public static final RegistryEntry<SoundEvent> AMBIENT_STATION_ADDITIONS = register("ambient.station.additions");
+
     private static RegistryEntry<SoundEvent> register(String path) {
         Identifier id = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path);
         return SOUND_EVENTS.register(path, key -> SoundEvent.createVariableRangeEvent(id));

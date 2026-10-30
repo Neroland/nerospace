@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.progression;
 import za.co.neroland.nerospace.world.planet.WeatherEvent;
 
 /**
- * Pure rules for the Worlds chapters' "survive the weather" step (D9). A player survives a planet's weather by
+ * Pure rules for the Worlds chapters' "survive the weather" step. A player survives a planet's weather by
  * staying out under the open sky, alive and on that planet, for {@link #SURVIVE_TICKS} while the planet's weather
  * event is running. Luna has no weather, so its trial is the lunar night (daylight at or below
  * {@link #LUNA_NIGHT_DAYLIGHT}).

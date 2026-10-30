@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 
 /**
- * The Docking Ring (002 §1.7, 005 §4): a 3×3 landing plate whose centre registers itself as a
+ * The Docking Ring: a 3×3 landing plate whose centre registers itself as a
  * {@link PadKind#DOCK} node in {@link PadRegistry}. Station arrivals prefer a dock within the station's claim
  * box; on a planet a ring is just a fancy pad. The centre registers in {@code onPlace} and — because structure
  * placement never calls {@code onPlace} — again on a random tick when its node is missing. Breaking any cell
@@ -44,7 +44,7 @@ public class DockingRingBlock extends Block {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
-    /** Touchdown flash length (005 §3.6). */
+    /** Touchdown flash length. */
     public static final int FLASH_TICKS = 40;
 
     /** The same 3-px plate as the launch pad, so a docked rocket stands at {@link LandingResolver#SURFACE_HEIGHT}. */

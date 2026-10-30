@@ -1,5 +1,12 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "additions": {
+        "sound": "nerospace:ambient.glacira.additions",
+        "tick_chance": 0.006
+      },
+      "loop": "nerospace:ambient.glacira.loop"
+    },
     "minecraft:gameplay/natural_mob_spawns": {
       "argument": {
         "spawn_costs": {},

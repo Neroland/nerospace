@@ -24,7 +24,7 @@ import za.co.neroland.nerospace.block.rules.MethaneRules;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 
 /**
- * Methane Ice (002 §1.4, §11.5): when it is placed, or a flame block appears next to it, it scans its 5×5×5 for
+ * Methane Ice: when it is placed, or a flame block appears next to it, it scans its 5×5×5 for
  * fire/lava/campfire/torch; while one is there it re-checks on a 40-tick schedule. A flame within 2 blocks (and chain
  * budget left: 4 per chunk per 100 ticks, config may lower) explodes it at power 2. Blocks are broken only when
  * {@code blocks.methaneIceBreaksBlocks} (default false); entities are hurt. With the default no fire is placed either

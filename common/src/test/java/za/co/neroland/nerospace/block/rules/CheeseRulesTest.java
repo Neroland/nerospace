@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §5 Cheese — 9 in, 9 out. */
+/** Cheese — 9 in, 9 out. */
 @SuppressWarnings("unused")
 class CheeseRulesTest {
 

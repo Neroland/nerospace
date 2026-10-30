@@ -63,15 +63,15 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 - **Rocket Fuel Bucket** — a bucket of the `rocket_fuel` fluid; pour it into a rocket or [Fuel Tank](Fuel-Tank).
 - **Rockets (Tier 1 / 2 / 3 / 4)** — deploy onto a [Rocket Launch Pad](Rocket-Launch-Pad), fuel up,
 
-  board, pick a destination, and launch (destinations are cumulative):
+  board, pick a destination, and launch (every rocket can also fly home):
 
-  - **Tier 1** → the Orbital Station (and any [founded station](Station-Charter)).
-  - **Tier 2** → + Greenxertz.
-  - **Tier 3** → + Cindara. (Needs a 3×3 pad ringed with [Station Wall](Station-Wall) **or** a
+  - **Tier 1** → the Orbital Station (and any [founded station](Station-Charter)) and [Luna](Luna).
+  - **Tier 2** → the Orbital Station, Luna, Greenxertz and [Mars](Mars).
+  - **Tier 3** → the Orbital Station, Luna, Greenxertz, Mars and Cindara. (Needs a 3×3 pad ringed with [Station Wall](Station-Wall) **or** a
 
     [Heavy Launch Complex](Launch-Gantry).)
 
-  - **Tier 4** → + Glacira. (Deploys **only** on the [Heavy Launch Complex](Launch-Gantry);
+  - **Tier 4** → the Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira and [Nyxara](Nyxara) (Nyxara after Deep Space progress). (Deploys **only** on the [Heavy Launch Complex](Launch-Gantry);
 
     24,000 mB tank.)
   The in-rocket screen shows a live fuel gauge, a selectable destination trajectory, a station

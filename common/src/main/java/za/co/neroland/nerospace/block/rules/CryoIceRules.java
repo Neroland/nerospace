@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Packed Cryo-Ice (002 §1.4): the fastest surface in the mod; never melts. */
+/** Packed Cryo-Ice: the fastest surface in the mod; never melts. */
 public final class CryoIceRules {
 
     /** Vanilla blue ice friction, for reference. */

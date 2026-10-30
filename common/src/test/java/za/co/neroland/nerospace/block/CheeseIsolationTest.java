@@ -16,7 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Decision 002 §5: the cheese stays small. The string {@code moon_cheese} may appear only in the cheese's own files
+ * The cheese stays small. The string {@code moon_cheese} may appear only in the cheese's own files
  * (ore + wheel loot, the wheel recipe, the hidden advancement and guide step, lang, the materials highlight tag, its
  * item model/definition, the registries and Luna's own package). Scans {@code common/src/main} text files.
  */

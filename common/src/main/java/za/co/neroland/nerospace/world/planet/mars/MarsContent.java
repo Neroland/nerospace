@@ -100,7 +100,7 @@ public final class MarsContent {
             "salvage_drone", key -> EntityType.Builder.<SalvageDrone>of(SalvageDrone::new, MobCategory.CREATURE)
                     .sized(0.7F, 0.7F).clientTrackingRange(8).build(key));
 
-    /** The red-steppe herd grazer (003 §8.1); seeded by TerraformFauna and spawned by terraformed_mars_living. */
+    /** The red-steppe herd grazer; seeded by TerraformFauna and spawned by terraformed_mars_living. */
     public static final RegistryEntry<EntityType<DustStrider>> DUST_STRIDER = ModEntities.ENTITY_TYPES.register(
             "dust_strider", key -> EntityType.Builder.<DustStrider>of(DustStrider::new, MobCategory.CREATURE)
                     .sized(0.9F, 1.6F).eyeHeight(1.4F).clientTrackingRange(8).build(key));

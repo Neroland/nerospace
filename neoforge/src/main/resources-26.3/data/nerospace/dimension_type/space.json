@@ -1,0 +1,36 @@
+{
+  "ambient_light": 0.0,
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.station.loop",
+      "additions": {
+        "sound": "nerospace:ambient.station.additions",
+        "tick_chance": 0.002
+      }
+    },
+    "minecraft:visual/cloud_color": "#ff000000",
+    "minecraft:visual/fog_color": "#000000",
+    "minecraft:visual/moon_angle": 160.0,
+    "minecraft:visual/sky_color": "#000000",
+    "minecraft:visual/star_brightness": 0.9,
+    "minecraft:visual/sun_angle": 340.0,
+    "minecraft:visual/sunrise_sunset_color": "#00000000",
+    "neoforge:custom_skybox": "nerospace:planet"
+  },
+  "coordinate_scale": 1.0,
+  "has_ceiling": false,
+  "has_ender_dragon_fight": false,
+  "has_fixed_time": true,
+  "has_skylight": true,
+  "height": 384,
+  "infiniburn": "#minecraft:infiniburn_overworld",
+  "logical_height": 384,
+  "min_y": -64,
+  "monster_spawn_block_light_limit": 0,
+  "monster_spawn_light_level": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 7,
+    "min_inclusive": 0
+  },
+  "skybox": "overworld"
+}

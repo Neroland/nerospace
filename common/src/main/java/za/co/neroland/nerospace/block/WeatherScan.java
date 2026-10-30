@@ -19,7 +19,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import za.co.neroland.nerospace.block.rules.WeatherScanRules;
 
 /**
- * Weather transition scan (002 §3): on an event start/end the loaded chunks near players are queued (in a shuffled
+ * Weather transition scan: on an event start/end the loaded chunks near players are queued (in a shuffled
  * order) and {@link #tick} drains at most {@link WeatherScanRules#CHUNKS_PER_TICK} of them per server tick, so a
  * transition over N chunks takes {@link WeatherScanRules#ticksFor ticksFor(N)} ticks. Inside a chunk at most
  * {@code perChunkCap} matches are visited, starting from a random section and a random cell so a capped chunk does not

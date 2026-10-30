@@ -150,7 +150,7 @@ public final class StationStructure {
     /**
      * Keeps the station's legacy landing pad registered as a travel node, named after the station — but only when no
      * node exists there yet. An existing node is never renamed (a player may have name-tagged it to pair it with a
-     * pad of the same name, D5 rule 3) and nothing is written on an ordinary arrival.
+     * pad of the same name) and nothing is written on an ordinary arrival.
      */
     private static void registerPad(ServerLevel level, BlockPos centre, BlockPos padCentre) {
         PadRegistry pads = PadRegistry.get(level.getServer());

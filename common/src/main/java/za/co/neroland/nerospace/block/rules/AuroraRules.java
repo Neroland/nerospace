@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Aurora Stone (002 §1.4, §10.3): lit (light 8) only while the planet daylight is below 0.25; re-read every 200 ticks. */
+/** Aurora Stone: lit (light 8) only while the planet daylight is below 0.25; re-read every 200 ticks. */
 public final class AuroraRules {
 
     public static final double NIGHT_BELOW = 0.25;

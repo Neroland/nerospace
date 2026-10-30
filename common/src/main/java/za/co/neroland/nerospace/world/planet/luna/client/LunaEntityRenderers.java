@@ -4,13 +4,12 @@ import net.minecraft.resources.Identifier;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
-import za.co.neroland.nerospace.client.GreenlingModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureRenderer;
 import za.co.neroland.nerospace.world.planet.luna.LunaContent;
 
 /**
- * Client renderers for Luna entities, called from the single {@link ClientEntityRenderers} call site on every loader.
- * The Moon Hopper is a placeholder (the Greenling body, scaled, with a grey-tinted texture) until the Stage 6 art pass.
+ * Client renderers for Luna entities, called from the single {@link ClientEntityRenderers} call site on every loader:
+ * the Moon Hopper on its own hopping body ({@link MoonHopperModel}).
  */
 public final class LunaEntityRenderers {
 
@@ -23,7 +22,7 @@ public final class LunaEntityRenderers {
 
     public static void registerAll(ClientEntityRenderers.Sink sink) {
         sink.register(LunaContent.MOON_HOPPER.get(), context -> new GreenxertzCreatureRenderer(context,
-                new GreenlingModel(GreenlingModel.createBodyLayer().bakeRoot()),
+                new MoonHopperModel(MoonHopperModel.createBodyLayer().bakeRoot()),
                 tex("moon_hopper"), 0.9F, 0.9F, 0.9F, 0.3F));
     }
 }

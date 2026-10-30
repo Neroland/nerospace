@@ -23,7 +23,7 @@ import za.co.neroland.nerospace.block.light.NyxIndexHolder;
 import za.co.neroland.nerospace.block.light.NyxLightIndex;
 
 /**
- * Nyx Stone light absorption, part 1 of 2 (decision 002 §11.1): keeps each <b>block</b>-light engine's
+ * Nyx Stone light absorption, part 1 of 2: keeps each <b>block</b>-light engine's
  * {@link NyxLightIndex} in step with the world. Common to every loader and to 26.1.2/26.2/26.3 (the targeted
  * signatures are identical in all three). Sky light is never touched.
  *

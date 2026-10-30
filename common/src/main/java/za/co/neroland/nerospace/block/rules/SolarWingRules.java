@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.block.rules;
 
 /**
- * Solar Wing (002 §1.7; 005 §7.2): {@code enabled && exposed ? round(basePeak × 2 × classMultiplier) : 0}, no
+ * Solar Wing: {@code enabled && exposed ? round(basePeak × 2 × classMultiplier) : 0}, no
  * weather term, never stacks with Anorthosite.
  */
 public final class SolarWingRules {

@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.block.rules;
 
 /**
- * Cheese (002 §5): the wheel is 9 cheese in, 9 out. Each slice raises {@code BITES} (0–8); the ninth slice removes
+ * Cheese: the wheel is 9 cheese in, 9 out. Each slice raises {@code BITES} (0–8); the ninth slice removes
  * the block; breaking drops {@code 9 − BITES}.
  */
 public final class CheeseRules {

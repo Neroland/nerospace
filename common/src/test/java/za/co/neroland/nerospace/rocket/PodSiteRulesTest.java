@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import za.co.neroland.nerospace.rocket.PodSiteRules.SiteVerdict;
 
-/** 005 §1.7: each verdict once. */
+/** Each verdict once. */
 class PodSiteRulesTest {
 
     static final BlockPos AT = new BlockPos(0, 64, 0);
@@ -70,7 +70,7 @@ class PodSiteRulesTest {
         clear[40] = false; // a block entity in the headroom
         assertEquals(SiteVerdict.OBSTRUCTED, PodSiteRules.validate(with(t(25), f(25), clear, false, 99, false, false, false)));
         assertEquals(SiteVerdict.OBSTRUCTED, PodSiteRules.validate(with(t(25), f(25), t(75), false, 99, true, false, false)));
-        // G8: one pod per 32 blocks.
+        // One pod per 32 blocks.
         assertEquals(SiteVerdict.OBSTRUCTED, PodSiteRules.validate(with(t(25), f(25), t(75), false, 99, false, true, false)));
     }
 }

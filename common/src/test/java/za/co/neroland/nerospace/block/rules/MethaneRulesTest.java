@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.4 Methane Ice, §11.5. */
+/** Methane Ice. */
 @SuppressWarnings("unused")
 class MethaneRulesTest {
 

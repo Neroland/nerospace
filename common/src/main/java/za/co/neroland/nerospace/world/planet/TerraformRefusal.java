@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.world.planet;
 
 /**
- * Why a terraformer will not run where it stands (003 §8.1). Synced to the Terraformer and Terraform Monitor
+ * Why a terraformer will not run where it stands. Synced to the Terraformer and Terraform Monitor
  * screens by ordinal; append only. Lang key: {@code gui.nerospace.terraform.refused.<lowercase name>}.
  */
 public enum TerraformRefusal {

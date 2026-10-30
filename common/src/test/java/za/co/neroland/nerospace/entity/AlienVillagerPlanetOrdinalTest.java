@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import za.co.neroland.nerospace.village.VillagerCulture;
 import za.co.neroland.nerospace.village.VillagerCultures;
 
-/** 001 §8: {@code AlienVillager.Planet} is persisted by ordinal — append only; culture is derived from it. */
+/** {@code AlienVillager.Planet} is persisted by ordinal — append only; culture is derived from it. */
 class AlienVillagerPlanetOrdinalTest {
 
     @Test

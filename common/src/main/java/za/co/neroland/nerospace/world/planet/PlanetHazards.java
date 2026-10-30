@@ -1,19 +1,28 @@
 package za.co.neroland.nerospace.world.planet;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
 import za.co.neroland.nerospace.api.Hazard;
 import za.co.neroland.nerospace.registry.ModTags;
+import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
- * Resolves the hazard at an exact position, in priority order: weather radiation (a Mars dust storm or a Nyxara
- * flare irradiates the open surface), then a biome hazard tag (radiation, then heat, then cold), then the planet's primary trait
- * hazard. Non-planet dimensions are always {@link Hazard#NONE}.
+ * Resolves the hazard at an exact position. The player-less {@link #at(ServerLevel, BlockPos)} returns one primary
+ * hazard in priority order: weather radiation (a Mars dust storm or a Nyxara flare irradiates the open surface), then a
+ * biome hazard tag (radiation, then heat, then cold), then the planet's primary trait hazard. The per-player
+ * {@link #at(ServerLevel, BlockPos, Player)} collects every hazard present ({@link #present}) and returns the first one
+ * in [RADIATION, HEAT, COLD] the player is not shielded from ({@link HazardOrderRules}). Non-planet dimensions are
+ * always {@link Hazard#NONE}.
  */
 public final class PlanetHazards {
 
@@ -56,6 +65,79 @@ public final class PlanetHazards {
         return trait == Hazard.COLD
                 && za.co.neroland.nerospace.world.planet.nyxara.NyxaraWarmth.shieldedFromCold(level, pos)
                 ? Hazard.NONE : trait;
+    }
+
+    /**
+     * Every hazard present at a position: weather radiation, each matching biome hazard tag and the planet's trait
+     * hazard. Empty off a planet. Works on either side: on a client level the weather term is left out (the client
+     * HUD passes its synced weather through {@link #present(Level, BlockPos, boolean)}).
+     */
+    public static Set<Hazard> present(ServerLevel level, BlockPos pos) {
+        return present(level, pos, PlanetWeather.raisesRadiation(level, pos));
+    }
+
+    /** {@link #present(ServerLevel, BlockPos)} with the weather-radiation term supplied by the caller. */
+    public static Set<Hazard> present(Level level, BlockPos pos, boolean weatherRadiation) {
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet == null) {
+            return EnumSet.noneOf(Hazard.class);
+        }
+        boolean rad = false;
+        boolean heat = false;
+        boolean cold = false;
+        if (level.hasChunkAt(pos)) {
+            Holder<Biome> biome = level.getBiome(pos);
+            rad = biome.is(ModTags.Biomes.HAZARD_RADIATION);
+            heat = biome.is(ModTags.Biomes.HAZARD_HEAT);
+            cold = biome.is(ModTags.Biomes.HAZARD_COLD);
+        }
+        return HazardOrderRules.present(planet.traits().hazard(), rad, heat, cold, weatherRadiation);
+    }
+
+    /**
+     * Whether any cold at this position is frigid: Glacira everywhere, and the biomes tagged colder than their planet
+     * (the Nyxara Nightside, the Martian Polar Cap). Frigid cold needs the Cryo Suit; the cold of a cold world (Mars)
+     * is kept out by any Tier 2 class suit. Works on either side; false off a planet.
+     */
+    public static boolean frigidCold(Level level, BlockPos pos) {
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet == null) {
+            return false;
+        }
+        boolean coldBiome = level.hasChunkAt(pos) && level.getBiome(pos).is(ModTags.Biomes.HAZARD_COLD);
+        return HazardOrderRules.frigidCold(planet.traits().temperatureBand(), coldBiome);
+    }
+
+    /**
+     * The hazards this player's worn suit keeps out at this position ({@link HazardOrderRules#shields}): Thermal heat,
+     * Cryo cold, any Tier 2 class suit against a cold world's milder cold, and a full Rad Lining. Client-safe.
+     */
+    public static Set<Hazard> suitShields(Level level, BlockPos pos, Player player) {
+        return HazardOrderRules.shields(OxygenManager.suitClass(player), OxygenManager.radLined(player),
+                frigidCold(level, pos));
+    }
+
+    /**
+     * The hazard that bites this player here: the first of [RADIATION, HEAT, COLD] present at {@code pos} that the
+     * player is not shielded from. Shields: the Thermal suit (HEAT), the Cryo suit (COLD), any Tier 2 class suit
+     * against cold that is not frigid ({@link #frigidCold}), a full Rad-Lined suit (RADIATION), and a flaring
+     * Dawnband Stone within 4 blocks (COLD, read only when COLD would otherwise bite). The player-less overload and
+     * {@code traits().hazard()} are unchanged.
+     */
+    public static Hazard at(ServerLevel level, BlockPos pos, Player player) {
+        Set<Hazard> present = present(level, pos);
+        if (present.isEmpty()) {
+            return Hazard.NONE;
+        }
+        HazardOrderRules.SuitClass suit = OxygenManager.suitClass(player);
+        boolean lined = OxygenManager.radLined(player);
+        boolean frigid = frigidCold(level, pos);
+        Hazard first = HazardOrderRules.resolve(present, suit, lined, frigid, false);
+        if (first == Hazard.COLD
+                && za.co.neroland.nerospace.world.planet.nyxara.NyxaraWarmth.shieldedFromCold(level, pos)) {
+            first = HazardOrderRules.resolve(present, suit, lined, frigid, true);
+        }
+        return first;
     }
 
     /**

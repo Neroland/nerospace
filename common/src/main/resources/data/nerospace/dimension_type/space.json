@@ -1,5 +1,21 @@
 {
   "ambient_light": 0.0,
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.station.loop",
+      "additions": {
+        "sound": "nerospace:ambient.station.additions",
+        "tick_chance": 0.002
+      }
+    },
+    "minecraft:visual/cloud_color": "#ff000000",
+    "minecraft:visual/fog_color": "#000000",
+    "minecraft:visual/moon_angle": 160.0,
+    "minecraft:visual/sky_color": "#000000",
+    "minecraft:visual/star_brightness": 0.9,
+    "minecraft:visual/sun_angle": 340.0,
+    "minecraft:visual/sunrise_sunset_color": "#00000000"
+  },
   "coordinate_scale": 1.0,
   "has_ceiling": false,
   "has_ender_dragon_fight": false,
@@ -15,5 +31,5 @@
     "max_inclusive": 7,
     "min_inclusive": 0
   },
-  "skybox": "end"
+  "skybox": "overworld"
 }

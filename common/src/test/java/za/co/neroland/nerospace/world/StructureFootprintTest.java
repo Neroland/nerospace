@@ -10,8 +10,8 @@ import za.co.neroland.nerospace.world.planet.mars.worldgen.DerelictHabitatFeatur
 import za.co.neroland.nerospace.world.planet.mars.worldgen.RoverWreckFeature;
 
 /**
- * Every alien/Mars structure writes only inside its feature's 3×3-chunk region (the 1.6.0 mega city did not: the
- * Stage 3C probe logged 888 "setBlock in a far chunk" lines), and {@link StructureSpacing} with salt 0 is the 1.6.0
+ * Every alien/Mars structure writes only inside its feature's 3×3-chunk region (the 1.6.0 mega city did not: a
+ * probe logged 888 "setBlock in a far chunk" lines), and {@link StructureSpacing} with salt 0 is the 1.6.0
  * hash so existing worlds' structure positions never move.
  */
 class StructureFootprintTest {

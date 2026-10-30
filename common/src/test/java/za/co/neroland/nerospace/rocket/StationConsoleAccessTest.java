@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.rocket;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -21,6 +22,14 @@ class StationConsoleAccessTest {
         StationConsoleMenu.Identities ids = StationConsoleMenu.identities(false, OWNER, List.of(MEMBER));
         assertTrue(ids.owner().isEmpty());
         assertTrue(ids.members().isEmpty());
+    }
+
+    @Test
+    void addMemberIsBoundToTheOpenConsole() {
+        assertTrue(StationConsoleMenu.boundToOpenConsole(true, 3, true, 3));
+        assertFalse(StationConsoleMenu.boundToOpenConsole(false, -1, false, 3), "no console open (crafted packet)");
+        assertFalse(StationConsoleMenu.boundToOpenConsole(true, 2, true, 3), "another station's console");
+        assertFalse(StationConsoleMenu.boundToOpenConsole(true, 3, false, 3), "walked out of reach");
     }
 
     @Test

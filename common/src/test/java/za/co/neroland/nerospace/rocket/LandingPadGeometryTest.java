@@ -10,7 +10,7 @@ import net.minecraft.core.Direction;
 
 import org.junit.jupiter.api.Test;
 
-/** 005 §1.6: legacy pad centres and fronts. */
+/** Legacy pad centres and fronts. */
 class LandingPadGeometryTest {
 
     static Set<BlockPos> square(int x0, int z0, int size) {

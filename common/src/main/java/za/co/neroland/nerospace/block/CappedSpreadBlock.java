@@ -29,10 +29,10 @@ import za.co.neroland.nerospace.world.planet.PlanetWeather;
 import za.co.neroland.nerospace.world.planet.WeatherEvent;
 
 /**
- * Carpet that spreads over a rootable substrate with a per-chunk cap (Spore Moss, 002 §1.5): 1-in-8 per random tick
+ * Carpet that spreads over a rootable substrate with a per-chunk cap (Spore Moss): 1-in-8 per random tick
  * onto an adjacent empty {@code nerospace:xertz_rootable} top, ×3 during a spore bloom, cap 48 per chunk (config may
  * lower). Touching it (entity box in the moss cell) without a sealed helmet gives that entity Nausea I 5 s (point
- * effect). Stage 3 registers it with {@code randomTicks()} and its light level.
+ * effect). Register it with {@code randomTicks()} and its light level.
  */
 public class CappedSpreadBlock extends Block {
 
@@ -60,7 +60,7 @@ public class CappedSpreadBlock extends Block {
 
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        // Tame inside the terraformed xertz garden (D7): moss seeded by stage 3 stays where it was planted.
+        // Tame inside the terraformed xertz garden: moss seeded by stage 3 stays where it was planted.
         if (level.getBiome(pos).is(za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzTerraform.TABLE.living())) {
             return;
         }

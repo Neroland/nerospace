@@ -1,4 +1,20 @@
 {
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.greenxertz.loop",
+      "additions": {
+        "sound": "nerospace:ambient.greenxertz.additions",
+        "tick_chance": 0.0085
+      },
+      "mood": {
+        "sound": "nerospace:ambient.greenxertz.mood",
+        "tick_delay": 6000,
+        "block_search_extent": 8,
+        "offset": 2.0
+      }
+    },
+    "minecraft:visual/fog_color": "#c98bb5"
+  },
   "carvers": [
     "minecraft:cave",
     "minecraft:cave_extra_underground",
@@ -8,8 +24,7 @@
   "effects": {
     "foliage_color": "#6fbf5a",
     "grass_color": "#7ac85f",
-    "water_color": "#5a7a5a",
-    "fog_color": "#ff7ac8"
+    "water_color": "#5a7a5a"
   },
   "features": [
     [],

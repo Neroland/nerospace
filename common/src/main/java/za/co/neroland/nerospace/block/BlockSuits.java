@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 import za.co.neroland.nerospace.registry.ModItems;
 
-/** Suit-piece gates for contact hazards (002 §2.1.7): sealed = any oxygen suit; heat = the heat variant only. */
+/** Suit-piece gates for contact hazards: sealed = any oxygen suit; heat = the heat variant only. */
 public final class BlockSuits {
 
     private BlockSuits() {

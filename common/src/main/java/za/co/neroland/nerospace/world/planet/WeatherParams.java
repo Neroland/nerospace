@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.world.planet;
 
 /**
- * Tuning for a planet's weather event (decision 003 §4.2): the mean interval between events and the duration
+ * Tuning for a planet's weather event: the mean interval between events and the duration
  * range of the PEAK phase, all in ticks. {@link #NONE} is a planet with no weather.
  */
 public record WeatherParams(WeatherEvent event, long meanIntervalTicks, int minDurationTicks, int maxDurationTicks) {

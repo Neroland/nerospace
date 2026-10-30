@@ -1,15 +1,18 @@
 # Glacira
 
-Glacira is a **Tier 4** destination: blue ice plains, frozen methane lakes and slick ice spires under a pale sun, with aurora on the long nights.
+Glacira is a **Tier 4** destination: blue ice plains, frozen methane lakes and slick ice spires under a pale sun, with
+aurora on the long nights.
 
 | | |
 |---|---|
 | Dimension | `nerospace:glacira` |
+| Rocket | Tier 4 |
 | Gravity | 0.4 × Overworld |
 | Day | 72 000 ticks (three Overworld days), with long dawn and dusk twilights |
-| Hazard | Cold (Tier 2 cryo suit, all four pieces) |
-| Weather | Diamond dust, about every two days, only at night or twilight, lasting 3 to 10 minutes |
+| Weather | Diamond dust, on average every two Overworld days, only at night or twilight, lasting about 3 to 10 minutes |
+| Hazard | Cold (Cryo Suit, all four pieces) |
 | Villagers | Frostbound |
+| Native life | Frost Strider; Woolly Drifts on terraformed ground |
 
 ## Biomes
 
@@ -17,7 +20,7 @@ Glacira is a **Tier 4** destination: blue ice plains, frozen methane lakes and s
 - **Methane Shore**: low ground and frozen lakes. Methane Ice lines the lake beds and runs through the rock beneath.
 - **Glacira Spires**: high, steep peaks of Packed Cryo-Ice. Frost Crystal fields grow here, and there is more glacite below.
 
-Glacite ore generates in the stone under every Glacira biome.
+Glacite ore generates in the stone under every Glacira biome. Low gravity covers all three biomes.
 
 ## Blocks and items
 
@@ -31,28 +34,52 @@ Glacite ore generates in the stone under every Glacira biome.
 | Methane Ice | Needs an iron pickaxe and drops 2 to 4 Methane Crystals (Fortune applies). Fire, lava, a campfire or a torch within two blocks sets it off. The explosion hurts but does not break blocks unless the server enables `blocks.methaneIceBreaksBlocks`. |
 | Frost Shard | Crafts into light blue dye and into Packed Cryo-Ice. |
 | Methane Crystal | Fuel: it burns in the Combustion Generator (2 400 ticks, one and a half times coal) and makes torches. |
-| Glacite | Unchanged: the cryo-suit and terraforming material. |
+| Glacite | Unchanged: the Cryo Suit and terraforming material. |
+
+## Hazards and protection
+
+Glacira is airless and **frigid**. Without a full four-piece **Cryo Suit** your suit's oxygen drains four times as
+fast, with a creeping frost vignette as a warning. A plain Tier 2 suit, which is enough for Mars, is not enough
+here. Glacira has no harmful radiation, so you do not need Rad Lining
+here. Mind the Methane Ice around torches and campfires. See [Oxygen Suit](Oxygen-Suit).
+
+## Clock and weather
+
+A Glacira day lasts 72 000 ticks (three Overworld days), with long twilights at dawn and dusk; the HUD clock dial
+marks both and names them *Twilight*. Aurora Stone only glows at night.
+
+**Diamond dust** only forms at night or in twilight. While it lasts, sparkling ice crystals hang in the air and open
+water under the sky slowly freezes over (a few blocks per chunk per storm). When the storm ends, every Frost Crystal
+Cluster that can see the sky grows one stage. See [Planet Clock and Weather](Planet-Clock-and-Weather).
+
+## Sky
+
+A pale, cold sky with a small white sun and two little moons, Rime and Hoar, that wax and wane as they cross it. On
+clear nights green, pink and blue auroras ripple overhead, brighter still during diamond dust. The full sky is drawn
+on NeoForge for Minecraft 26.3; on every other version Glacira shows its colours with the vanilla sky shapes.
 
 ## The Frostbound
 
 Glacira's **[villagers](Alien-Villagers)** are the fur-wrapped **Frostbound**. They build hamlets and ruins
-from glacite and ice, and they trade glacite, methane ice and cold-protection suit parts. They also buy frost
-shards. Their settlements appear only in newly generated land.
+from glacite and ice, and they trade glacite, methane ice and cold-protection suit parts (only the helmet until you
+reach their highest trust tier). They also buy frost shards. Their settlements appear only in newly generated land.
+See [Alien Structures](Alien-Structures).
 
-## Diamond dust
+## Terraforming and fauna
 
-During a diamond-dust storm, sparkling ice crystals hang in the air, and open water under the sky slowly freezes over (a few blocks per chunk per storm). When the storm ends, every Frost Crystal Cluster that can see the sky grows one stage.
+On Glacira the [Terraformer](Terraformer) roots the ground (**Rooted**) and brings meltwater (**Hydrated**), but the
+frozen surface holds: **Permafrost never melts until the final stage**. Hydration skips it, and only **Living**
+ground thaws it. The land settles into the **tundra** you know from 1.x, with spruces and **Woolly Drifts**. The
+wild **Frost Strider** still stalks the ice. See [Creatures](Creatures).
+
+## Star Guide
+
+**Worlds: Glacira**: land, mine Glacite, build with Aurora Stone, last two minutes under the open sky in diamond
+dust, and root your first terraformed ground.
 
 ## Upgrading from 1.x
 
-Glacira keeps its dimension id, its biome and its glacite. Chunks you explored in 1.x stay exactly as they were. Only land that has never been generated gets the new terrain, so where old and new ground meet you may see a seam in the surface blocks. The shape of the land generally lines up across it. Terraformers you already built carry on from their current stage.
-
-## Terraforming
-
-On Glacira the Terraformer lays moss over the ice (Rooted) and brings meltwater (Hydrated), but **Permafrost
-never melts until the final stage**: hydration skips it, and only Living ground thaws it. The land settles into
-the **tundra** you know from 1.x, with spruces and Woolly Drifts. A Terraformer that was already running on
-Glacira before 2.0 carries on exactly where it was.
-
-**Worlds: Glacira** in the Star Guide: land, mine Glacite, build with Aurora Stone, last two minutes under the
-open sky in diamond dust, and root your first terraformed ground.
+Glacira keeps its dimension id, its biome and its glacite. Chunks you explored in 1.x stay exactly as they were. Only
+land that has never been generated gets the new terrain, so where old and new ground meet you may see a seam in the
+surface blocks. The shape of the land lines up across it: Glacira keeps its 1.x terrain shape. Terraformers you
+already built carry on from their current stage. See [Upgrading to 2.0](Upgrading-to-2.0).

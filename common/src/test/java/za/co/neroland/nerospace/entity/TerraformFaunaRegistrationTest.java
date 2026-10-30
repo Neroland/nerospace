@@ -18,7 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Stage 5 terraform fauna (003 §8.1): each of the Moon Hopper, Dust Strider and Dusk Moth is registered as an entity
+ * Terraform fauna: each of the Moon Hopper, Dust Strider and Dusk Moth is registered as an entity
  * with a spawn egg, has attributes and a spawn placement rule, a loot table on both resource trees, lang in the three
  * shipped languages, a placeholder renderer and membership of {@code #nerospace:native_fauna}. Source and data checks
  * only (no registry bootstrap), plus sanity bounds on the attribute numbers.

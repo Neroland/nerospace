@@ -19,7 +19,7 @@ import za.co.neroland.nerospace.entity.TerraformLivestock;
 import za.co.neroland.nerospace.world.planet.mars.MarsContent;
 
 /**
- * Dust Strider (003 §8.1): the long-legged herd grazer of Mars' terraformed red steppe. It keeps the shared livestock
+ * Dust Strider: the long-legged herd grazer of Mars' terraformed red steppe. It keeps the shared livestock
  * goals (the herd follows a player holding wheat, calves follow their parents) and spawns in herds of three to six;
  * it never eats the grass, so a herd cannot strip terraformed ground back to dirt. Native
  * to Mars ({@code #nerospace:native_fauna}): perchlorate crust and dust storms do not hurt it. Breeds with wheat.

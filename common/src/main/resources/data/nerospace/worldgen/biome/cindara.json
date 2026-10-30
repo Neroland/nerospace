@@ -1,4 +1,19 @@
 {
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.cindara.loop",
+      "additions": {
+        "sound": "nerospace:ambient.cindara.additions",
+        "tick_chance": 0.0111
+      },
+      "mood": {
+        "sound": "nerospace:ambient.cindara.mood",
+        "tick_delay": 6000,
+        "block_search_extent": 8,
+        "offset": 2.0
+      }
+    }
+  },
   "carvers": [
     "minecraft:cave",
     "minecraft:cave_extra_underground"

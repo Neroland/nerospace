@@ -139,7 +139,7 @@ public abstract class PlanetDefinition {
         return true;
     }
 
-    /** Per-planet structure placement salt; 0 for the 1.x planets so existing structure positions never move. */
+    /** Per-planet structure placement salt; 0 for Greenxertz (the only 1.x world with structures) so its structure positions never move. */
     public long structureSalt() {
         return this.structureSalt;
     }
@@ -165,7 +165,7 @@ public abstract class PlanetDefinition {
     }
 
     /**
-     * This planet's terraform table (D7): the biome trio, surface swap, hydration liquid, flora, fauna, ore seeds
+     * This planet's terraform table: the biome trio, surface swap, hydration liquid, flora, fauna, ore seeds
      * and planet rules. Empty where the terraformer refuses (the station).
      */
     public Optional<TerraformTable> terraform() {
@@ -192,7 +192,7 @@ public abstract class PlanetDefinition {
     }
 
     /**
-     * Where a rocket with no pad to land on searches for its Landing Pod site (005 §1.4): X/Z only, Y ignored.
+     * Where a rocket with no pad to land on searches for its Landing Pod site: X/Z only, Y ignored.
      * {@code (0, 0)} for every planet unless a planet package overrides it. Not config, not saved.
      */
     public net.minecraft.core.BlockPos arrivalAnchor() {

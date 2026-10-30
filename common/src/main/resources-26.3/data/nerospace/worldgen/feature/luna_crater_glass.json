@@ -16,6 +16,13 @@
         "predicate_type": "minecraft:block_match",
         "block": "nerospace:anorthosite"
       }
+    },
+    {
+      "state": "nerospace:crater_glass",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:lunar_basalt"
+      }
     }
   ]
 }

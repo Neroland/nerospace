@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.rocket;
 import java.util.Locale;
 
 /**
- * What a {@link PadRegistry} node is (decision 001 §6.2, 005 §1.2). Persisted <b>by name</b>; an absent or
+ * What a {@link PadRegistry} node is. Persisted <b>by name</b>; an absent or
  * unknown name loads as {@link #LAUNCH_PAD}, so every 1.6.0 node keeps its meaning.
  */
 public enum PadKind {

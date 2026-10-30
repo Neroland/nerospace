@@ -28,14 +28,27 @@ public class AlienVillagerRenderer
     private static final Identifier MEADOW = tex("alien_villager_meadow");
     private static final Identifier CINDARA = tex("alien_villager_cindara");
     private static final Identifier GLACIRA = tex("alien_villager_glacira");
-    /** Placeholder until the Stage 6 art pass paints the Duskborn skin. */
     private static final Identifier DUSKBORN = tex("alien_villager_duskborn");
     private static final Identifier GLOW = tex("alien_villager_glow");
+    /** Per-culture glow: the Ember-kin lava hem, the Frostbound eyes, the Duskborn markings. */
+    private static final Identifier CINDARA_GLOW = tex("alien_villager_cindara_glow");
+    private static final Identifier GLACIRA_GLOW = tex("alien_villager_glacira_glow");
+    private static final Identifier DUSKBORN_GLOW = tex("alien_villager_duskborn_glow");
 
     @SuppressWarnings("this-escape")
     public AlienVillagerRenderer(EntityRendererProvider.Context context) {
         super(context, new AlienVillagerModel(AlienVillagerModel.createBodyLayer().bakeRoot()), 0.4F);
-        this.addLayer(new GlowEyesLayer<AlienVillagerRenderState>(this, GLOW));
+        this.addLayer(new GlowEyesLayer<AlienVillagerRenderState>(this, AlienVillagerRenderer::glowTexture));
+    }
+
+    /** The glow layer texture for a villager's culture. */
+    static Identifier glowTexture(AlienVillagerRenderState state) {
+        return switch (state.planet) {
+            case CINDARA -> CINDARA_GLOW;
+            case GLACIRA -> GLACIRA_GLOW;
+            case NYXARA -> DUSKBORN_GLOW;
+            case GREENXERTZ -> GLOW;
+        };
     }
 
     @Override
@@ -63,7 +76,7 @@ public class AlienVillagerRenderer
     }
 
     /**
-     * Per-culture silhouette (D8) on the shared model: Ember-kin stocky, Frostbound bulked by fur wraps, Duskborn
+     * Per-culture silhouette on the shared model: Ember-kin stocky, Frostbound bulked by fur wraps, Duskborn
      * tall and slender, Xertz unchanged. The hitbox is the same for every culture.
      */
     @Override

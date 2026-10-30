@@ -20,9 +20,9 @@ import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.registry.ModTags;
 
 /**
- * Snow-like weather layer (Ash Layer, 002 §1.3): vanilla snow-layer shape/stacking, plus weather accumulation through
+ * Snow-like weather layer (Ash Layer): vanilla snow-layer shape/stacking, plus weather accumulation through
  * {@link #accumulate}, a ×0.7 walk slow at 3+ layers, and melting only next to fire or lava (never by light).
- * Stage 3 registers it with {@code randomTicks()} and hooks {@link LayerWeather} to its planet's weather event.
+ * Register it with {@code randomTicks()} and hooks {@link LayerWeather} to its planet's weather event.
  */
 public class WeatherLayerBlock extends SnowLayerBlock {
 

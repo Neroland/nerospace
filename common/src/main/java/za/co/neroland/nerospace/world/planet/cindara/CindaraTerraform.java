@@ -10,7 +10,7 @@ import java.util.Optional;
 import za.co.neroland.nerospace.world.planet.TerraformTable;
 
 /**
- * Cindara terraform table (003 §8.1): ashstone turns to cinder soil (Rooted), the steam vents cool and water
+ * Cindara terraform table: ashstone turns to cinder soil (Rooted), the steam vents cool and water
  * appears (Hydrated), and the 1.x savanna settles — the kept {@code terraformed_savanna} id with its acacia-family
  * Cinder Trees and Ember Strutters (Living).
  */

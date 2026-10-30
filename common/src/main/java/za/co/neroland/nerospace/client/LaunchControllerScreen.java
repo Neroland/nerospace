@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.client.ui.Glyphs;
 import za.co.neroland.nerospace.client.ui.PendingSelection;
 import za.co.neroland.nerospace.menu.LaunchControllerMenu;
 import za.co.neroland.nerospace.rocket.DestinationSelection;
@@ -26,7 +27,8 @@ import za.co.neroland.nerospace.rocket.Destinations;
  * The Launch Controller console with two modes. <b>Build mode</b>: pick a target pad tier, load Launch
  * Pads / Station Wall / a Launch Gantry, preview the layout as a hologram, and Build lays it out in the
  * world. <b>Launch mode</b>: read the docked rocket's fuel/oxygen/power, pick its destination, and launch
- * it straight from the controller. Fully procedural hull (no texture).
+ * it straight from the controller. Fully procedural hull (no texture). Every control is a glyph or a label that
+ * is cut with an ellipsis and carries its full text in a tooltip, so no translation can overlap another.
  */
 public class LaunchControllerScreen extends TexturedContainerScreen<LaunchControllerMenu> {
 
@@ -36,6 +38,13 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     private static final int FUEL = 0xFFF0703C;
     private static final int O2 = 0xFF3CC8E6;
     private static final int POWER = 0xFFF5C542;
+    private static final int HULL = 0xFF0D1119;
+    private static final int HEADER = 0xFF14283C;
+    private static final int WELL = 0xFF0A1018;
+    private static final int VALUE = 0xFFB9C6D4;
+    private static final int LABEL = 0xFFCFE7FF;
+    private static final Glyphs.Glyph[] SLOT_GLYPHS = { Glyphs.Glyph.PAD, Glyphs.Glyph.WALL, Glyphs.Glyph.GANTRY };
+    private static final String[] SLOT_KEYS = { "pad", "wall", "gantry" };
 
     private static final int W = 176;
     private static final int H = 206;
@@ -48,20 +57,22 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     private SpaceButton previewButton;
     private SpaceButton buildButton;
     private SpaceButton destButton;
-    private SpaceButton prevDestButton;
-    private SpaceButton nextDestButton;
+    private IconButton prevDestButton;
+    private IconButton nextDestButton;
     private SpaceButton launchButton;
-    /** The optimistic destination: a step shows at once, the synced index settles it (004 §6). */
+    /** The optimistic destination: a step shows at once, the synced index settles it. */
     private final PendingSelection pending = new PendingSelection();
     @Nullable
     private Component status;
     private long statusUntil;
     /** Mask/selection the destination tooltip was last built for (rebuilt only when they change). */
     private long tooltipKey = Long.MIN_VALUE;
+    /** State the Build button's tooltip was last built for. */
+    private String buildTipKey = "";
 
     public LaunchControllerScreen(LaunchControllerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, W, H);
-        this.titleLabelY = 6;
+        this.titleLabelY = 4;
         this.inventoryLabelY = 10_000; // hide
     }
 
@@ -76,29 +87,30 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
             this.addRenderableWidget(b);
             this.tierButtons.add(b);
         }
-        this.modeButton = new SpaceButton(this.leftPos + W - 52, this.topPos + 3, 48, 11,
+        this.modeButton = new SpaceButton(this.leftPos + 116, this.topPos + 2, 56, 12,
                 Component.empty(), POWER, btn -> sendButton(LaunchControllerMenu.BUTTON_TOGGLE_MODE));
         this.addRenderableWidget(this.modeButton);
-        this.previewButton = new SpaceButton(this.leftPos + 8, this.topPos + 98, W - 16, 12,
-                Component.translatable("gui.nerospace.launch_controller.preview"), O2,
+        Component preview = Component.translatable("gui.nerospace.launch_controller.preview");
+        this.previewButton = new SpaceButton(this.leftPos + 8, this.topPos + 114, 76, 12, preview, O2,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_TOGGLE_HOLOGRAM));
+        this.previewButton.setTooltip(Tooltip.create(preview));
         this.addRenderableWidget(this.previewButton);
-        this.buildButton = new SpaceButton(this.leftPos + 8, this.topPos + 112, W - 16, 12,
+        this.buildButton = new SpaceButton(this.leftPos + 92, this.topPos + 114, 76, 12,
                 Component.translatable("gui.nerospace.launch_controller.build"), ACCENT,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_BUILD));
         this.addRenderableWidget(this.buildButton);
-        // Destination: ◀ [name] ▶ — the name steps forward too; the mouse wheel and Up/Down also step.
-        this.prevDestButton = new SpaceButton(this.leftPos + 8, this.topPos + 90, 14, 12,
-                Component.literal("◀"), ACCENT, btn -> stepDestination(-1));
+        // Destination: ◀ [name] ▶ as glyph buttons — the name steps forward too; the wheel and Up/Down also step.
+        this.prevDestButton = new IconButton(this.leftPos + 8, this.topPos + 96, 14, 12, Glyphs.Glyph.ARROW_L,
+                Component.translatable("gui.nerospace.launch_controller.prev_dest"), ACCENT, btn -> stepDestination(-1));
         this.addRenderableWidget(this.prevDestButton);
-        this.destButton = new SpaceButton(this.leftPos + 24, this.topPos + 90, W - 48, 12,
+        this.destButton = new SpaceButton(this.leftPos + 24, this.topPos + 96, 128, 12,
                 Component.empty(), ACCENT, btn -> stepDestination(1));
         this.addRenderableWidget(this.destButton);
-        this.nextDestButton = new SpaceButton(this.leftPos + W - 22, this.topPos + 90, 14, 12,
-                Component.literal("▶"), ACCENT, btn -> stepDestination(1));
+        this.nextDestButton = new IconButton(this.leftPos + 154, this.topPos + 96, 14, 12, Glyphs.Glyph.ARROW_R,
+                Component.translatable("gui.nerospace.launch_controller.next_dest"), ACCENT, btn -> stepDestination(1));
         this.addRenderableWidget(this.nextDestButton);
         this.tooltipKey = Long.MIN_VALUE;
-        this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + 104, W - 16, 12,
+        this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + 110, W - 16, 14,
                 Component.translatable("gui.nerospace.rocket.launch"), ACCENT,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_LAUNCH));
         this.addRenderableWidget(this.launchButton);
@@ -109,14 +121,25 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         int l = this.leftPos;
         int t = this.topPos;
         g.fill(l - 2, t - 2, l + W + 2, t + H + 2, INK);
-        g.fill(l, t, l + W, t + H, 0xFF0E1724);
-        g.fill(l, t, l + W, t + 16, 0xFF14283C);
+        g.fill(l, t, l + W, t + H, HULL);
+        g.fill(l, t, l + W, t + 16, HEADER);
         g.fill(l, t + 16, l + W, t + 17, ACCENT);
-        if (!this.menu.isLaunchMode()) {
+        if (this.menu.isLaunchMode()) {
+            well(g, 6, 19, 164, 74);
+        } else {
+            well(g, 6, 34, 164, 34); // materials well
             for (int sx : SLOT_X) {
                 slotWell(g, sx, SLOT_Y);
             }
         }
+    }
+
+    /** A recessed well: WELL body with an INK top/left edge. */
+    private void well(GuiGraphicsExtractor g, int dx, int dy, int w, int h) {
+        int x = this.leftPos + dx;
+        int y = this.topPos + dy;
+        g.fill(x, y, x + w, y + h, INK);
+        g.fill(x + 1, y + 1, x + w, y + h, WELL);
     }
 
     private void slotWell(GuiGraphicsExtractor g, int dx, int dy) {
@@ -129,9 +152,13 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     @Override
     protected void extractForeground(GuiGraphicsExtractor g) {
         boolean launch = this.menu.isLaunchMode();
-        this.modeButton.setMessage(Component.translatable(launch
+        Component mode = Component.translatable(launch
                 ? "gui.nerospace.launch_controller.mode_launch"
-                : "gui.nerospace.launch_controller.mode_build"));
+                : "gui.nerospace.launch_controller.mode_build");
+        if (!mode.equals(this.modeButton.getMessage())) {
+            this.modeButton.setMessage(mode);
+            this.modeButton.setTooltip(Tooltip.create(mode));
+        }
         this.modeButton.setSelected(launch);
 
         // Build-mode widgets.
@@ -144,7 +171,15 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         this.previewButton.visible = !launch;
         this.previewButton.setSelected(this.menu.isHologram());
         this.buildButton.visible = !launch;
-        this.buildButton.active = this.menu.canBuild();
+        boolean canBuild = this.menu.canBuild();
+        this.buildButton.active = canBuild;
+        String buildTip = canBuild + "," + this.menu.neededPads() + "," + this.menu.neededWall() + ","
+                + this.menu.neededGantry();
+        if (!buildTip.equals(this.buildTipKey)) {
+            this.buildTipKey = buildTip;
+            this.buildButton.setTooltip(Tooltip.create(canBuild
+                    ? Component.translatable("gui.nerospace.launch_controller.build") : neededText()));
+        }
 
         // Launch-mode widgets.
         boolean rocket = this.menu.rocketPresent();
@@ -161,28 +196,77 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     }
 
     private void drawBuildMode(GuiGraphicsExtractor g) {
-        // Material slot labels, centred above their wells.
-        label(g, Component.translatable("gui.nerospace.launch_controller.pad"), SLOT_X[0], SLOT_Y - 11, SUBTLE);
-        label(g, Component.translatable("gui.nerospace.launch_controller.wall"), SLOT_X[1], SLOT_Y - 11, SUBTLE);
-        label(g, Component.translatable("gui.nerospace.launch_controller.gantry"), SLOT_X[2] - 4, SLOT_Y - 11, SUBTLE);
-
-        // What's still needed for the selected tier.
-        label(g, Component.translatable("gui.nerospace.launch_controller.needed",
-                        this.menu.neededPads(), this.menu.neededWall(), this.menu.neededGantry()),
-                8, SLOT_Y + 20, 0xFFCFE7FF);
+        // Material slot glyphs above their wells (localisation-proof; the tooltip names them).
+        for (int i = 0; i < SLOT_X.length; i++) {
+            Glyphs.draw(g, SLOT_GLYPHS[i], this.leftPos + SLOT_X[i] + 4, this.topPos + 35, SUBTLE);
+        }
+        // What's still needed for the selected tier: glyph + "xN" triplets, the sentences in the tooltip.
+        int[] needed = { this.menu.neededPads(), this.menu.neededWall(), this.menu.neededGantry() };
+        for (int i = 0; i < 3; i++) {
+            int x = 8 + 52 * i;
+            Glyphs.draw(g, SLOT_GLYPHS[i], this.leftPos + x, this.topPos + 64, LABEL);
+            label(g, Component.literal("x" + needed[i]), x + 10, 64, needed[i] > 0 ? LABEL : SUBTLE);
+        }
         // The tier the pad actually forms, so a hand-built pad shows up here too.
-        label(g, Component.translatable("gui.nerospace.launch_controller.built_tier", this.menu.builtTier()),
-                8, SLOT_Y + 30, SUBTLE);
+        label(g, SpaceButton.fit(this.font, Component.translatable("gui.nerospace.launch_controller.built_tier",
+                this.menu.builtTier()), 160), 8, 74, SUBTLE);
 
-        // Resource hub levels (fed by pipes/cables → pumped into the docked rocket) — full-width bars.
-        int gx = 46;
-        int gw = W - gx - 8;
-        label(g, Component.translatable("gui.nerospace.launch_controller.hub.fuel"), 8, 73, 0xFFFFC9B0);
-        hGauge(g, gx, 73, gw, 5, this.menu.fuelFrac(), FUEL);
-        label(g, Component.translatable("gui.nerospace.launch_controller.hub.oxygen"), 8, 81, 0xFFBFEFFF);
-        hGauge(g, gx, 81, gw, 5, this.menu.oxygenFrac(), O2);
-        label(g, Component.translatable("gui.nerospace.launch_controller.hub.power"), 8, 89, 0xFFF6DC8A);
-        hGauge(g, gx, 89, gw, 5, this.menu.powerFrac(), POWER);
+        // Resource hub levels (fed by pipes/cables → pumped into the docked rocket): glyph, bar, value.
+        hubRow(g, 0, Glyphs.Glyph.FUEL, this.menu.fuelFrac(), FUEL);
+        hubRow(g, 1, Glyphs.Glyph.O2, this.menu.oxygenFrac(), O2);
+        hubRow(g, 2, Glyphs.Glyph.POWER, this.menu.powerFrac(), POWER);
+    }
+
+    private void hubRow(GuiGraphicsExtractor g, int k, Glyphs.Glyph glyph, float frac, int colour) {
+        int y = 86 + 10 * k;
+        Glyphs.draw(g, glyph, this.leftPos + 8, this.topPos + y, colour);
+        hGauge(g, 20, y + 1, 120, 5, frac, colour);
+        label(g, Component.literal(Math.round(Math.max(0F, Math.min(1F, frac)) * 100) + "%"), 146, y, VALUE);
+    }
+
+    /** The three "still needed" sentences (build-mode tooltip). */
+    private Component neededText() {
+        return Component.translatable("gui.nerospace.launch_controller.needed.pads", this.menu.neededPads())
+                .append("\n").append(Component.translatable("gui.nerospace.launch_controller.needed.wall",
+                        this.menu.neededWall()))
+                .append("\n").append(Component.translatable("gui.nerospace.launch_controller.needed.gantry",
+                        this.menu.neededGantry()));
+    }
+
+    /** Tooltips over the glyph-only rows (slot glyphs, needed triplets, hub rows). */
+    @Override
+    public void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractContents(g, mouseX, mouseY, partialTick);
+        if (this.menu.isLaunchMode()) {
+            return;
+        }
+        int mx = mouseX - this.leftPos;
+        int my = mouseY - this.topPos;
+        Component tip = null;
+        for (int i = 0; i < SLOT_X.length; i++) {
+            if (mx >= SLOT_X[i] && mx < SLOT_X[i] + 16 && my >= 34 && my < 44) {
+                tip = Component.translatable("gui.nerospace.launch_controller." + SLOT_KEYS[i]);
+            }
+        }
+        if (mx >= 8 && mx < 168 && my >= 64 && my < 73) {
+            tip = neededText();
+        }
+        String[] hub = { "fuel", "oxygen", "power" };
+        for (int k = 0; k < 3; k++) {
+            int y = 86 + 10 * k;
+            if (mx >= 8 && mx < 168 && my >= y && my < y + 9) {
+                tip = Component.translatable("gui.nerospace.launch_controller.hub." + hub[k]);
+            }
+        }
+        if (tip != null) {
+            g.setTooltipForNextFrame(this.font.split(tip, 200), mouseX, mouseY);
+        }
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor extractor, int mouseX, int mouseY) {
+        extractor.text(this.font, SpaceButton.fit(this.font, this.title, 108), this.titleLabelX, this.titleLabelY,
+                TITLE, false);
     }
 
     private void drawLaunchMode(GuiGraphicsExtractor g, boolean rocket) {
@@ -190,13 +274,13 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
             label(g, Component.translatable("gui.nerospace.launch_controller.no_rocket"), 8, 42, SUBTLE);
             return;
         }
-        label(g, Component.translatable("gui.nerospace.rocket.title", this.menu.rocketTier()), 8, 22, TITLE);
-        label(g, Component.translatable("gui.nerospace.rocket.fuel_label"), 8, 32, 0xFFFFC9B0);
-        hGauge(g, 8, 41, W - 16, 6, this.menu.rocketFuelFrac(), FUEL);
-        label(g, Component.translatable("gui.nerospace.rocket.oxygen_label"), 8, 50, 0xFFBFEFFF);
-        hGauge(g, 8, 59, W - 16, 6, this.menu.rocketOxygenFrac(), O2);
-        label(g, Component.translatable("gui.nerospace.rocket.power_label"), 8, 68, 0xFFF6DC8A);
-        hGauge(g, 8, 77, W - 16, 6, this.menu.rocketPowerFrac(), POWER);
+        label(g, Component.translatable("gui.nerospace.rocket.title", this.menu.rocketTier()), 10, 22, TITLE);
+        label(g, Component.translatable("gui.nerospace.rocket.fuel_label"), 10, 33, 0xFFFFC9B0);
+        hGauge(g, 10, 44, 156, 6, this.menu.rocketFuelFrac(), FUEL);
+        label(g, Component.translatable("gui.nerospace.rocket.oxygen_label"), 10, 53, 0xFFBFEFFF);
+        hGauge(g, 10, 64, 156, 6, this.menu.rocketOxygenFrac(), O2);
+        label(g, Component.translatable("gui.nerospace.rocket.power_label"), 10, 73, 0xFFF6DC8A);
+        hGauge(g, 10, 84, 156, 6, this.menu.rocketPowerFrac(), POWER);
 
         long now = System.currentTimeMillis();
         int synced = this.menu.rocketDestIndex();
@@ -270,8 +354,8 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         int x = this.leftPos + 8;
-        int y = this.topPos + 90;
-        if (destControlsLive() && scrollY != 0.0D && mouseX >= x && mouseX < x + W - 16 && mouseY >= y
+        int y = this.topPos + 96;
+        if (destControlsLive() && scrollY != 0.0D && mouseX >= x && mouseX < x + 160 && mouseY >= y
                 && mouseY < y + 12) {
             playClick();
             stepDestination(scrollY > 0.0D ? -1 : 1);

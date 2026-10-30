@@ -26,6 +26,7 @@ import za.co.neroland.nerospace.api.PlanetTraits;
 import za.co.neroland.nerospace.client.ui.PlanetAccents;
 import za.co.neroland.nerospace.client.ui.PlanetCard;
 import za.co.neroland.nerospace.client.ui.PlanetCardData;
+import za.co.neroland.nerospace.client.ui.PlanetCardFocus;
 import za.co.neroland.nerospace.client.ui.PendingSelection;
 import za.co.neroland.nerospace.rocket.DestinationSelection;
 import za.co.neroland.nerospace.rocket.DestinationTrace;
@@ -38,12 +39,12 @@ import za.co.neroland.nerospace.world.planet.Planets;
 import za.co.neroland.nerospace.world.planet.WeatherEvent;
 
 /**
- * The in-rocket flight console (004 §6, "list + card"): a vertical list of compact planet cards down the left
+ * The in-rocket flight console ("list + card"): a vertical list of compact planet cards down the left
  * (three visible, scrolled by the mouse wheel or the two chevrons), the instrument well (fuel, oxygen, power,
  * status, trip cost) top-right, the selected destination's standard planet card under it, and the dock/pad
  * cycler and Launch button bottom-left. Hull 212 × 244 and every slot coordinate are unchanged.
  *
- * <p>Procedural (no PNG): Stage 6 redraws the card art; the layout, fields and states here are final. The
+ * <p>Procedural (no PNG): the layout, fields and states here are final. The
  * player is NOT aboard while the console is open; pressing Launch is what boards them.</p>
  */
 public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
@@ -83,12 +84,14 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private SpaceButton padButton;
     private SpaceButton upButton;
     private SpaceButton downButton;
+    /** One focusable, narrated stand-in per visible card row. */
+    private final PlanetCardFocus[] rowFocus = new PlanetCardFocus[VISIBLE];
 
     /** Index of the first visible list entry. */
     private int scroll;
     /** The selection last scrolled into view (−1 = scroll on the next frame). */
     private int ensuredIndex = -1;
-    /** The optimistic highlight: a click shows at once, the synced index settles it (004 §6). */
+    /** The optimistic highlight: a click shows at once, the synced index settles it. */
     private final PendingSelection pending = new PendingSelection();
     /** A brief "can't select: …" notice and when it expires. */
     @Nullable
@@ -98,7 +101,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private int mouseY;
     /** Destination indices shown in the list this frame, in {@link Destinations} order. */
     private final List<Integer> entries = new ArrayList<>();
-    /** Locked destinations a station Observatory reveals this frame (shown as LOCKED_TIER cards, 005 §6.6). */
+    /** Locked destinations a station Observatory reveals this frame (shown as LOCKED_TIER cards). */
     private final List<Integer> revealed = new ArrayList<>();
     /** A revealed locked destination the player clicked to preview in the standard card, or −1. */
     private int previewIndex = -1;
@@ -119,6 +122,17 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         this.downButton = new SpaceButton(this.leftPos + LIST_X + 32, this.topPos + CHEVRON_Y, 28, 8,
                 Component.literal("▼"), ACCENT, b -> scrollBy(1));
         this.addRenderableWidget(this.downButton);
+        for (int row = 0; row < VISIBLE; row++) {
+            final int r = row;
+            this.rowFocus[row] = new PlanetCardFocus(this.leftPos + LIST_X, this.topPos + LIST_Y + row * PlanetCard.COMPACT_H,
+                    b -> {
+                        int i = this.scroll + r;
+                        if (i < this.entries.size()) {
+                            clickCard(this.entries.get(i));
+                        }
+                    });
+            this.addRenderableWidget(this.rowFocus[row]);
+        }
 
         // Dock cycler (Orbital Station) and pad cycler (every other destination) share one row, 96 wide.
         this.stationButton = new SpaceButton(this.leftPos + 8, this.topPos + DOCK_ROW_Y, ROW_W, 12,
@@ -128,7 +142,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
                 Component.empty(), O2, b -> sendButton(RocketMenu.BUTTON_CYCLE_PAD));
         this.addRenderableWidget(this.padButton);
         if (this.minecraft != null && this.minecraft.player != null && !RocketEntity.hasCharter(this.minecraft.player)) {
-            // Client hint only (005 §8): "New Station" is skipped without a charter; the server re-checks.
+            // Client hint only: "New Station" is skipped without a charter; the server re-checks.
             this.stationButton.setTooltip(Tooltip.create(Component.translatable("item.nerospace.station_charter.needed")));
         }
 
@@ -239,14 +253,21 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         PlanetCardData hovered = null;
         for (int row = 0; row < VISIBLE; row++) {
             int i = this.scroll + row;
+            PlanetCardFocus focus = this.rowFocus[row];
             if (i >= this.entries.size()) {
-                break;
+                if (focus != null) {
+                    focus.show(null);
+                }
+                continue;
             }
             int x = this.leftPos + LIST_X;
             int y = this.topPos + LIST_Y + row * PlanetCard.COMPACT_H;
             PlanetCardData data = cardData(this.entries.get(i));
             boolean hover = PlanetCard.hit(x, y, true, this.mouseX, this.mouseY);
             PlanetCard.draw(g, this.font, x, y, data, true, hover, now);
+            if (focus != null) {
+                focus.show(data);
+            }
             if (hover) {
                 hovered = data;
             }
@@ -365,7 +386,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
                 ? Destinations.indexOf(this.minecraft.level.dimension()) : -1;
     }
 
-    /** Fills a card from client state only (004 §5): planet traits, the synced clock/weather, the pad name. */
+    /** Fills a card from client state only: planet traits, the synced clock/weather, the pad name. */
     private PlanetCardData cardData(int index) {
         ResourceKey<Level> key = Destinations.byIndex(index);
         if (key == null) {
@@ -384,15 +405,16 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
                 index == shownSelection());
         double gravity = traits != null ? traits.defaultGravity() : 1.0D;
         Hazard hazard = traits != null ? traits.hazard() : Hazard.NONE;
-        boolean rad = traits != null && traits.radiation() > 0;
+        boolean rad = traits != null && planet != null
+                && PlanetCardData.needsRadLining(traits.radiation(), hazard, planet.weather().event());
         boolean fixed = traits != null && traits.fixedClock();
         boolean hasDay = traits == null || !fixed;
         float phase = current ? (float) ClientPlanetClock.phase(level)
                 : (planet != null && fixed ? (float) planet.pinnedPhase() : 0.5F);
         WeatherEvent weather = current ? ClientPlanetWeather.event(level) : WeatherEvent.NONE;
         float intensity = current ? ClientPlanetWeather.intensity(level) : 0.0F;
-        OxygenManager.SuitTier suit = traits != null && traits.airless() ? OxygenManager.SuitTier.TIER_1
-                : OxygenManager.SuitTier.NONE;
+        OxygenManager.SuitTier suit = traits == null ? OxygenManager.SuitTier.NONE
+                : PlanetCardData.requiredSuit(traits.airless(), hazard, traits.temperatureBand());
         return new PlanetCardData(key, Destinations.displayName(key), gravity, hazard, suit, rad, weather, intensity,
                 phase, fixed, hasDay, chosenPad(key), state, planet != null ? planet.unlockTier() : 1);
     }

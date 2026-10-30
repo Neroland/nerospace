@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Stripped Bio-Bark Log (002 §1.5): waking within 4 blocks of one heals 4 HP and gives Regeneration I 10 s, once. */
+/** Stripped Bio-Bark Log: waking within 4 blocks of one heals 4 HP and gives Regeneration I 10 s, once. */
 public final class HealBedRules {
 
     public static final int RADIUS = 4;

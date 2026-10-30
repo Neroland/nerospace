@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Perchlorate oxidiser in the Fuel Refinery (002 §1.2): +15 % output, one oxidiser per 4 buckets. */
+/** Perchlorate oxidiser in the Fuel Refinery: +15 % output, one oxidiser per 4 buckets. */
 public final class OxidiserRules {
 
     public static final double MULTIPLIER = 1.15;

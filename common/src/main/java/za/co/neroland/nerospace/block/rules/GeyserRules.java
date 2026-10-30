@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Frozen Geyser (002 §1.4): every 160 ticks it vents, adding +1.2 dy to entities on it, with 60 ticks fall grace. */
+/** Frozen Geyser: every 160 ticks it vents, adding +1.2 dy to entities on it, with 60 ticks fall grace. */
 public final class GeyserRules {
 
     public static final int INTERVAL_TICKS = 160;

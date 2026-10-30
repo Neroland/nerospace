@@ -65,8 +65,8 @@ class StarGuideLayoutFreezeTest {
             "freight/cargo_rocket=guide/cargo_rocket",
             "freight/first_freight=guide/first_freight");
 
-    private static final List<String> WORLDS_ORDER = List.of("worlds_luna", "worlds_greenxertz", "worlds_mars",
-            "worlds_cindara", "worlds_glacira", "worlds_nyxara");
+    private static final List<String> WORLDS_ORDER = List.of("worlds_luna", "worlds_mars", "worlds_cindara",
+            "worlds_glacira", "worlds_greenxertz", "worlds_nyxara");
 
     @Test
     @DisplayName("chapters 0-9: ids, step positions and advancements are the 1.6.0 layout")
@@ -95,11 +95,11 @@ class StarGuideLayoutFreezeTest {
     }
 
     @Test
-    @DisplayName("worlds_luna: arrival first (luna), the hidden big_cheese step last and the only hidden one")
+    @DisplayName("worlds_luna: arrival first (worlds_luna_arrive), the hidden big_cheese step last and the only hidden one")
     void lunaChapter() {
         StarGuide.Chapter luna = StarGuide.CHAPTERS.get(10);
         List<StarGuide.Step> steps = luna.steps();
-        assertEquals("luna", steps.get(0).id());
+        assertEquals("worlds_luna_arrive", steps.get(0).id());
         assertEquals("luna", steps.get(0).advancement().getPath());
         StarGuide.Step last = steps.get(steps.size() - 1);
         assertEquals("big_cheese", last.id());
@@ -124,7 +124,12 @@ class StarGuideLayoutFreezeTest {
                 assertTrue(paths.contains("worlds/" + planet + "/" + s), chapter.id() + " " + s);
             }
             assertTrue(WorldsProgress.WORLDS.contains(planet), planet);
+            StarGuide.Step arrive = chapter.steps().get(0);
+            assertEquals("worlds_" + planet + "_arrive", arrive.id(), "arrival step id");
+            assertEquals(planet, arrive.advancement().getPath(), "arrival is the top-level planet advancement");
         }
+        assertEquals(WorldsProgress.WORLDS, WORLDS_ORDER.stream().map(c -> c.substring("worlds_".length())).toList(),
+                "WorldsProgress follows the chapter (roster) order");
     }
 
     @Test

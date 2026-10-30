@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.rocket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringRepresentable;
 
-/** The nine cells of a Docking Ring, named by their offset from the centre (002 §1.7). */
+/** The nine cells of a Docking Ring, named by their offset from the centre. */
 public enum DockingRingPart implements StringRepresentable {
     CENTER("center", 0, 0),
     NORTH("north", 0, -1),

@@ -23,21 +23,28 @@ import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.village.AlienTrades;
 
 /**
- * Salvage Drone — the only merchant on Mars (D8). It hovers over a Rover Wreck and trades salvaged rover parts for
+ * Salvage Drone — the only merchant on Mars. It hovers over a Rover Wreck and trades salvaged rover parts for
  * raw hematite. Deliberately simpler than an Alien Villager: <b>no reputation, no village core, no per-player
  * state at all</b> — every player sees the same single-tier stock, and nothing about who traded is kept, in memory
- * or on disk (POPIA/GDPR: nothing to erase). Stock is rebuilt each time a trade window opens.
+ * or on disk (POPIA/GDPR: nothing to erase).
+ *
+ * <p>Stock is limited: the offers (with their uses) are saved with the drone as {@code Offers}, using the vanilla
+ * merchant-offer codec, which holds items and counts only, never a player. The list restocks once a day
+ * ({@link SalvageStock}), so the {@code maxUses} of each row are a real daily cap.</p>
  */
 public class SalvageDrone extends PathfinderMob implements Merchant {
 
     private Player tradingPlayer;
     private MerchantOffers offers;
+    private long lastRestock = SalvageStock.NEVER;
 
     public SalvageDrone(EntityType<? extends SalvageDrone> type, Level level) {
         super(type, level);
@@ -84,7 +91,7 @@ public class SalvageDrone extends PathfinderMob implements Merchant {
             return InteractionResult.SUCCESS;
         }
         if (this.getTradingPlayer() == null && this.isAlive()) {
-            this.offers = AlienTrades.resolve(AlienTrades.SALVAGE_TABLE, 1);
+            restockIfDue();
             this.setTradingPlayer(player);
             OptionalInt opt = MenuOpener.open(player, new SimpleMenuProvider(
                     (id, inv, p) -> new MerchantMenu(id, inv, this), this.getDisplayName()));
@@ -97,14 +104,21 @@ public class SalvageDrone extends PathfinderMob implements Merchant {
         return InteractionResult.SUCCESS;
     }
 
+    /** Rebuilds the whole price list (every row back to full) when it was never stocked or a day has passed. */
+    private void restockIfDue() {
+        long now = this.level().getGameTime();
+        if (this.offers == null || SalvageStock.due(now, this.lastRestock)) {
+            this.offers = AlienTrades.resolve(AlienTrades.SALVAGE_TABLE, 1);
+            this.lastRestock = now;
+        }
+    }
+
     // --- Merchant (no reputation, no player record) -----------------------------------------------------------
 
     @Override
     public void setTradingPlayer(Player player) {
+        // The offers stay: their uses are the drone's stock, not a per-window list.
         this.tradingPlayer = player;
-        if (player == null) {
-            this.offers = null;
-        }
     }
 
     @Override
@@ -115,7 +129,7 @@ public class SalvageDrone extends PathfinderMob implements Merchant {
     @Override
     public MerchantOffers getOffers() {
         if (this.offers == null) {
-            this.offers = AlienTrades.resolve(AlienTrades.SALVAGE_TABLE, 1);
+            restockIfDue();
         }
         return this.offers;
     }
@@ -165,6 +179,22 @@ public class SalvageDrone extends PathfinderMob implements Merchant {
     @Override
     public boolean stillValid(Player player) {
         return this.tradingPlayer == player && this.isAlive() && this.distanceToSqr(player) <= 100.0D;
+    }
+
+    // --- Persistence (stock only: items, counts and uses; no player field) -------------------------------------
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.storeNullable("Offers", MerchantOffers.CODEC, this.offers);
+        output.putLong("LastRestock", this.lastRestock);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.offers = input.read("Offers", MerchantOffers.CODEC).orElse(null);
+        this.lastRestock = input.getLongOr("LastRestock", SalvageStock.NEVER);
     }
 
     // --- Sounds --------------------------------------------------------------------------------------------------

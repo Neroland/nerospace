@@ -41,7 +41,7 @@ public record StationSyncPayload(int[] slots, String[] names) implements CustomP
 
     /**
      * Snapshot for one viewer: a {@code MEMBERS}-policy station the viewer cannot {@code canUse} is left out, so its
-     * name never reaches a player who may not dock there (005 §4; the server cycler skips it anyway).
+     * name never reaches a player who may not dock there (the server cycler skips it anyway).
      */
     public static StationSyncPayload of(StationRegistry registry, net.minecraft.server.level.ServerPlayer viewer) {
         return of(registry.all(), e -> StationDockingRule.mayChoose(e.docking(), StationRegistry.canUse(e, viewer)));

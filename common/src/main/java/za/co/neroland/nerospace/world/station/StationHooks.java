@@ -9,14 +9,21 @@ import za.co.neroland.nerospace.rocket.StationRegistry.StationEntry;
  */
 public final class StationHooks {
 
+    /** {@link VisitorSender#sendHome} result: refused, a player who cannot use the station is still aboard. */
+    public static final int VISITOR_ABOARD = -2;
+
     /**
-     * "Send riderless visitor rocket home": flies every <b>riderless</b> rocket that has been parked
+     * "Send riderless visitor rocket home": flies every <b>riderless</b> visitor rocket that has been parked
      * at least ten minutes on a dock of this station, blocking it, back to its own return pad (or a Landing Pod by the
-     * normal resolver in its origin dimension) and messages its owner. A rocket with a rider is never moved.
+     * normal resolver in its origin dimension) and tells the players on the station. A rocket with a rider is never
+     * moved, and nothing is sent while a player who cannot use the station is still aboard.
      */
     @FunctionalInterface
     public interface VisitorSender {
-        /** @return how many rockets were sent home, or {@code -1} when the feature is unavailable. */
+        /**
+         * @return how many rockets were sent home, {@code -1} when the feature is unavailable, or
+         *         {@link #VISITOR_ABOARD}.
+         */
         int sendHome(ServerLevel stationLevel, StationEntry entry);
     }
 

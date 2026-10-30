@@ -34,6 +34,8 @@ public final class CindaraPlanet extends PlanetDefinition {
                 Optional.of(biome("terraformed_savanna")), Optional.of(id("ember_kin")), id("ember_forge")),
                 "cindara", "Cindara")
                 .unlockTier(3)
+                // Cindara had no structures before 2.0, so it gets its own placement salt (only Greenxertz keeps 0).
+                .salt(0x43494E44L)
                 .daylight(CindaraPlanet::daylightAt, 4.6)
                 .weather(new WeatherParams(WeatherEvent.ASH_FALL, 36_000L, 3_000, 9_000))
                 .mining(0.8, 2)

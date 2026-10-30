@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Hydroponics Tray (002 §1.7; 005 §7.4): crops grow with a Hull Window within 3 above and inside an oxygen field. */
+/** Hydroponics Tray: crops grow with a Hull Window within 3 above and inside an oxygen field. */
 public final class HydroRules {
 
     public static final int WINDOW_RANGE = 3;

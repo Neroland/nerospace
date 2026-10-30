@@ -21,7 +21,7 @@ Each world with villagers has its own **culture**, with its own look, trades and
 | --- | --- | --- | --- | --- |
 | **Greenxertz** (and the mature `terraformed_meadow`) | **Xertz** | the classic green/steel alien | alien bricks, tile and crystal | yes |
 | **Cindara** | **Ember-kin** | stocky and broad, ember-red skin | cindrite, basalt and magma glass | no |
-| **Glacira** | **Frostbound** | bulky fur wraps, frost-pale skin | glacite, packed ice, permafrost and blue ice | no |
+| **Glacira** | **Frostbound** | bulky fur wraps, frost-pale skin | glacite, packed ice, packed cryo-ice and blue ice | no |
 | **Nyxara** (Twilight Band only) | **Duskborn** | tall and slender | nyx stone, void crystal and tinted glass | yes |
 
 The **Moon** has no villagers at all, and **Mars** has none either: it has wrecked rovers, a salvage drone and
@@ -101,9 +101,12 @@ the same tiers and reputation:
 
 | Culture | Buys | Sells (rising with trust) |
 | --- | --- | --- |
-| **Ember-kin** | Ash Dust, Alien Fragments | Cindrite, Sulfur, Block of Cindrite, Magma Glass, the heat-protection oxygen suit, diamonds, Alien Tech Scrap |
-| **Frostbound** | Frost Shards, Alien Fragments | Glacite, Methane Ice, Block of Glacite, Packed Cryo Ice, the cold-protection oxygen suit, diamonds, Helium-3 Canisters |
-| **Duskborn** | Shadow Lichen, Alien Fragments | Voidglass, Night Fibre, Void Crystal, Voidglass Lens, the Tier 2 oxygen suit, Gravity Shards, Void Shards |
+| **Ember-kin** | Ash Dust, Alien Fragments | Cindrite, Sulfur, Block of Cindrite, Magma Glass, the heat-protection suit helmet, diamonds, the rest of the heat-protection suit, Alien Tech Scrap |
+| **Frostbound** | Frost Shards, Alien Fragments | Glacite, Methane Ice, Block of Glacite, Packed Cryo Ice, the cold-protection suit helmet, diamonds, the rest of the cold-protection suit, Helium-3 Canisters |
+| **Duskborn** | Shadow Lichen, Alien Fragments | Voidglass, Night Fibre, Void Crystal, Voidglass Lens, the Tier 2 suit helmet, Gravity Shards, the rest of the Tier 2 suit, Void Shards |
+
+A village sells only the helmet of its world's protective suit until you reach its highest trust tier; the full
+suit is for its most trusted friends.
 
 The top tiers are the only trade source of the exclusive **[Artificer gear](Alien-Gear)**.
 

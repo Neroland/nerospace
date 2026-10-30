@@ -71,8 +71,8 @@ public final class ReturnSitePlacement {
     }
 
     /**
-     * Places (or keeps) a Landing Pod at {@code site} for a crewed arrival resolved by {@link LandingResolver}
-     * (005 §1.7): clears its headroom, builds the 3×3 station-floor foundation (5×5 for a climbed pod) into
+     * Places (or keeps) a Landing Pod at {@code site} for a crewed arrival resolved by {@link LandingResolver}:
+     * clears its headroom, builds the 3×3 station-floor foundation (5×5 for a climbed pod) into
      * replaceable cells only, and leaves the pod empty: the arriving rocket and its fuel stand on it (the 1.6.0
      * return kit WAS the arriving rocket, so filling it now would duplicate the rocket and its fuel).
      */

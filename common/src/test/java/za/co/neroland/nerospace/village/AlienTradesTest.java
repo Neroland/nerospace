@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-/** D8: one trade table per culture; the Xertz table is the 1.6.0 table row for row. */
+/** One trade table per culture; the Xertz table is the 1.6.0 table row for row. */
 class AlienTradesTest {
 
     /** The 1.6.0 {@code AlienTrades.forTier} body, transcribed: tier, costA, n, costB, b, result, rc, maxUses, xp. */
@@ -54,6 +54,18 @@ class AlienTradesTest {
             for (int tier = 1; tier <= 5; tier++) {
                 assertTrue(t.rowsUpTo(tier).size() > t.rowsUpTo(tier - 1).size(), id + " has no tier " + tier + " offer");
             }
+        }
+    }
+
+    @Test
+    void protectiveSuitIsOnePieceUntilTheTopTier() {
+        for (TradeTable t : List.of(AlienTrades.EMBER_KIN_TABLE, AlienTrades.FROSTBOUND_TABLE,
+                AlienTrades.DUSKBORN_TABLE)) {
+            long below = t.rowsUpTo(4).stream().filter(r -> r.result().contains("oxygen_suit")).count();
+            long all = t.rowsUpTo(5).stream().filter(r -> r.result().contains("oxygen_suit")).count();
+            assertEquals(1, below, "one suit piece (the helmet) below tier 5");
+            assertTrue(t.rowsUpTo(4).stream().anyMatch(r -> r.result().endsWith("_helmet")), "the helmet comes first");
+            assertEquals(4, all, "the full suit at tier 5");
         }
     }
 

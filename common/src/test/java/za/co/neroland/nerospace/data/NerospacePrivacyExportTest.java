@@ -49,9 +49,16 @@ class NerospacePrivacyExportTest {
                 stranger, "Theirs").id();
         routes.grantAccess(foreignPad, me);
 
+        ResourceKey<Level> overworld = ResourceKey.create(Registries.DIMENSION, Identifier.parse("minecraft:overworld"));
+        int route = routes.setRoute(pad, foreignPad).id();
+        RouteRegistry.Endpoint a = new RouteRegistry.Endpoint(overworld, new BlockPos(1, 64, 1), false);
+        RouteRegistry.Endpoint b = new RouteRegistry.Endpoint(overworld, new BlockPos(9, 64, 9), false);
+        routes.createFlight(route, pad, foreignPad, me.toString(), false, a, b, 10, List.of(), 0L, 100);
+        routes.createFlight(route, foreignPad, pad, stranger.toString(), true, b, a, 10, List.of(), 0L, 100);
+
         VillageCoreLedger.CoreLoc core = new VillageCoreLedger.CoreLoc("nerospace:greenxertz", new BlockPos(4, 70, 4).asLong());
         JsonObject doc = NerospacePrivacyExport.build(me, visits.export(me), stations.all(), "nerospace:station",
-                Set.of(core), routes.allPads(), routes.routesOwnedBy(me), 300, List.of(1, 0), List.of());
+                Set.of(core), routes.allPads(), routes.routesOwnedBy(me), routes.allFlights(), 300, List.of(1, 0), List.of());
 
         assertEquals(1, doc.getAsJsonArray("planets_visited").size());
         assertEquals(1, doc.getAsJsonArray("stations_owned").size());
@@ -62,6 +69,8 @@ class NerospacePrivacyExportTest {
         assertEquals("[4,70,4]", doc.getAsJsonArray("village_cores_owned").get(0).getAsJsonObject().get("pos").toString());
         assertEquals(1, doc.getAsJsonArray("cargo_pads_owned").size());
         assertEquals(1, doc.get("cargo_pads_shared_with_you").getAsInt());
+        assertEquals(1, doc.getAsJsonArray("cargo_flights_owned").size(), "own flights only");
+        assertEquals(route, doc.getAsJsonArray("cargo_flights_owned").get(0).getAsJsonObject().get("route").getAsInt());
 
         String json = doc.toString();
         assertFalse(json.contains(friend.toString()), "no member ids");

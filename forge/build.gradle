@@ -59,6 +59,23 @@ publishing {
 
 // Enable Forge's Jar-in-Jar task for embedded Sentry, mirroring Fabric include and NeoForge JarJar.
 jarJar.register()
+// Keep the JarJar metadata out of the plain jar. The plain jar is the Maven artifact other Nero mods
+// compile and dev-run against, and it never carries the nested Sentry jar (only the jarJar "-all" jar,
+// which is what players download, does). A plain jar with metadata but no nested jar makes Forge's
+// JarJar selector abort every dev run that has it on the classpath ("io.sentry ... no jar was provided").
+// The jarJar ("-all") jar is assembled from `jar`'s copy spec, so it loses the metadata too; add the
+// generated metadata to it directly. The "-all" jar keeps the same contents as before.
+tasks.named('jar', Jar) {
+    eachFile { if (it.relativePath.pathString.startsWith('META-INF/jarjar/')) it.exclude() }
+    includeEmptyDirs = false
+}
+tasks.named('jarJar') {
+    // Resolved lazily: the plugin registers jarJarMetadata after this script configures jarJar.
+    from({ tasks.findByName('jarJarMetadata') ?: [] }) {
+        into 'META-INF/jarjar'
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}
 
 // Pull in the shared common source + resources.
 sourceSets.main.java.srcDir rootProject.ext.commonJava
@@ -111,8 +128,10 @@ dependencies {
     // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
     compileOnly "za.co.neroland.neroeconomy:neroeconomy-forge-${mc}:${project.findProperty('neroeconomy_version')}"
 
+    // Sentry: compile + dev runtime from this one library. Core's plain Maven jar carries no nested copy or
+    // JarJar request (see the jar task above), so the dev run sees exactly one Sentry module.
     implementation 'io.sentry:sentry:8.60.0'
-    jarJar(group: 'io.sentry', name: 'sentry', version: '8.45.0')
+    jarJar(group: 'io.sentry', name: 'sentry', version: '8.60.0')
 
     // JEI common API only; Forge 26.x loader artifacts are not yet published on the pinned JEI lines.
     if (jeiVersion) {

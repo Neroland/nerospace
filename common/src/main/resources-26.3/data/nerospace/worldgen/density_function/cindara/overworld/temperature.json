@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:noise",
+  "noise": "nerospace:cindara/temperature",
+  "shift_x": "nerospace:cindara/shift_x",
+  "shift_z": "nerospace:cindara/shift_z",
+  "xz_scale": 0.25,
+  "y_scale": 0.0
+}

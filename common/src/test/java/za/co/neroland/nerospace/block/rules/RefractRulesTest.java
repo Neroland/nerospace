@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.6 Void Crystal, §11.2 (3D data indices: 0 down, 1 up, 2 N, 3 S, 4 W, 5 E). */
+/** Void Crystal (3D data indices: 0 down, 1 up, 2 N, 3 S, 4 W, 5 E). */
 @SuppressWarnings("unused")
 class RefractRulesTest {
 

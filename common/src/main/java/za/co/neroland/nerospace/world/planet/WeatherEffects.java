@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerLevel;
  * Dawnband flaring) register their handler from the block code that owns them; until then only the block-free
  * effects in {@link PlanetWeather} run.
  *
- * <p>Handlers run on the server thread and must respect the decision-003 budgets (one heightmap column per
+ * <p>Handlers run on the server thread and must respect the weather budgets (one heightmap column per
  * chunk per cadence, transition scans only on start/end). Never key anything by player.</p>
  */
 public interface WeatherEffects {

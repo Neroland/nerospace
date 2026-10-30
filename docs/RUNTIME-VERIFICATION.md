@@ -4,6 +4,114 @@ Checklists that need a running client/server, run before a release. Record what 
 cell, at the bottom of each section. Nothing here needs a real player account: single-player or a
 LAN world is enough. **Never run these against a production server or its saves.**
 
+## Planets and stations (2.0.0)
+
+Cells: NeoForge 26.3 dev client for everything (`:neoforge:26.3:runClient`); Fabric 26.3 and Forge 26.3 for the
+"other cells" items; one loader each on 26.1.2 and 26.2 for the upgrade and world-creation items. Use a creative world
+with cheats unless a step says otherwise. Switch the language with Options → Language and the GUI scale with
+Options → Video Settings → GUI Scale.
+
+### A. Upgrading a 1.x world (run first)
+
+1. Copy a world last saved by Nerospace 1.6.0 and open the copy on 2.0. Expect: it loads with no
+   saved-data recovery, no backup restore and no codec errors in `logs/latest.log`.
+2. Stations, named pads, a parked rocket, a running Terraformer, oxygen rooms, cargo routes, Village Cores and Star
+   Guide progress are all there and working. Each old station opens the Station Console as a *Waystation* with no
+   members and its original room untouched.
+3. On Cindara, Glacira and Greenxertz, walk from explored land into new land: old chunks unchanged, a visible seam,
+   new biomes beyond it. Greenxertz still has its 20-minute day; beds still skip the night.
+
+### B. World creation on 26.3
+
+1. On each 26.3 loader, create a brand-new single-player world from the title screen. Expect: the world opens without
+   a crash or a datapack error screen.
+2. Visit every planet once (`/execute in nerospace:<planet> run tp @s 0 120 0`): each loads, has its own blocks and
+   biomes, and creatures spawn within a few minutes.
+
+### C. Skies, one per world (NeoForge 26.3)
+
+For each world, check the sky at sunrise, noon, sunset and midnight (`/nerospace clock <planet> set 0`, `0.25`,
+`0.5`, `0.75`); nothing of the vanilla sky shows underneath.
+
+1. **Luna:** black sky with stars even at noon, a faint galaxy band, a white sun, the Earth over the horizon.
+2. **Mars:** butterscotch day, blue sunset, Phobos crossing quickly, Deimos slowly; brown tint in a dust storm
+   (`/nerospace weather mars start`).
+3. **Cindara:** red giant; at phase 0.45 the dark moon covers it and the light drops (eclipse), then dusk.
+4. **Glacira:** pale sun, the moons Rime and Hoar with phases; auroras at night, brighter in diamond dust.
+5. **Greenxertz:** twin suns (amber and pale green), ordinary clouds, a real day/night; pink tint in a spore bloom.
+6. **Nyxara:** sun fixed on the western horizon, galaxy in the east; walk east from x = 0 to past the band edge and
+   back: the horizon shifts from orange (west) to violet to deep purple (east) with no jump. Flares wash it gold.
+7. **Orbital Station:** the homeworld below, slowly turning; stars and galaxy always visible.
+8. **Other cells** (Fabric and Forge 26.3, and one 26.1.2 / 26.2 cell): each world shows its own colours, no fog
+   wall, Luna and the station black with stars.
+
+### D. Frame time (26.3)
+
+1. With F3 open, stand on each planet at noon and at midnight for 30 s, in clear weather and during its weather event.
+   Compare the frame time with the Overworld at the same render distance. Expect: no visible stutter and no
+   noticeable drop against the vanilla sky.
+2. Set `particles.enabled=false` in `config/nerospace.properties`, reload: no ambient particles at all.
+
+### E. Screens at GUI scale 2, 3 and 4, in English, Italian and Chinese
+
+At every scale and in every language: no text overlaps, nothing runs outside its panel, long labels end in "…" and
+show the full text in a tooltip.
+
+1. **Rocket screen:** the destination list of planet cards scrolls; the selected card shows gravity, hazard and suit,
+   weather, clock and landing pad. Nyxara shows its lock reason until Deep Space progress.
+2. **Launch Controller:** `◀ name ▶` destination arrows, pad/wall/gantry icons, hub gauges.
+3. **Station Console:** all four tabs (Overview, Members, Docking, Build); rename box and buttons do not collide.
+4. **Star Guide:** chapter rail scrolls with the wheel; Worlds chapters named by planet; bonus step dotted with a
+   star; description scrolls.
+5. **Terraformer and Terraform Monitor:** the refusal reason on the station and on Nyxara outside the band.
+6. **HUD:** clock dial above the oxygen gauge with sunrise on the right; phase name shown for 2 s on a change; the
+   weather line with its intensity bar; hazard and Geiger icons. Try `hud.clockDialScale=2`.
+
+### F. Destination selection
+
+1. On a Tier 4 rocket, click each destination card, then use the mouse wheel and Up/Down/Enter. Expect: the highlight
+   moves at once with a click sound, the selection survives closing and reopening the screen, and a locked world is
+   refused with its reason.
+2. Same on the Launch Controller with `◀` / `▶`.
+3. Repeat step 1 on 26.2: same behaviour.
+
+### G. Landing on pads
+
+1. Name-tag a Rocket Launch Pad "Base" in the Overworld and another "Base" on Mars. Fly from one to the other.
+   Expect: the rocket appears 48 blocks up, descends with its engines firing and stands centred on the pad, facing
+   its front; you stay seated until touchdown.
+2. Choose a specific pad with the pad button: the rocket lands there. Break that pad first: you are told and it
+   lands at the next spot.
+3. Park a rocket on a pad and fly a second one there: the occupied pad is skipped.
+4. Fly to a world with no pad nearby: a Landing Pod is placed on flat ground, with the rocket standing on it.
+5. Break the target pad during a descent: the rocket steers to the next spot. Disconnect mid-descent and reconnect:
+   you are on the pad.
+
+### H. Station flows
+
+1. Found a station from a rocket with a Station Charter: the charter is used up on arrival; without one, *New
+   Station* is hidden.
+2. In the console: change class (once per day), add a second player as a member (LAN), build the Habitat Ring,
+   Solar Wing, Hydroponics Bay, Gravity Deck and (Research class) Observatory; build again = free repair; a block in
+   the way stops the build and the console says where.
+3. Members-only docking: a non-member's rocket is refused; a visitor rocket left riderless for ten minutes can be sent
+   home by a member.
+4. Solar Wings power an adjacent battery; a crop grows on a Hydroponics Tray under a Hull Window; a Gravity Plate gives
+   normal gravity above it.
+
+### I. Privacy export and erasure
+
+1. As a player who has visited planets, owns a station and a cargo pad and is a member of another station, run
+   `/nerospace privacy export`. Expect: JSON shown only to you, listing your own data and nothing about anyone else.
+2. Run `/neroland data eraseme`. Expect: removed from every member list, station ownership cleared (the station stays),
+   and a second `/nerospace privacy export` lists no stations, memberships, pads, routes or planet visits.
+
+### Record
+
+| Date | Cell | Steps run | Result | Notes |
+| --- | --- | --- | --- | --- |
+| — | — | — | not yet run | All nine cells build and the plain-JVM tests pass; the agent sessions that built 2.0 could not start a client. Headless server checks (upgrade load, landing, erasure) passed; the visual, GUI and frame-time items above are for the owner before tagging. |
+
 ## Rocket visuals (1.6.0)
 
 Cell: any dev client; a creative world with a Tier 1 pad, a 3×3, a ringed 3×3 and a Heavy Launch Complex.

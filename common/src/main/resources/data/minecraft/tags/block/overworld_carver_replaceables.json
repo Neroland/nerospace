@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:red_regolith",
+    "nerospace:martian_sandstone",
+    "nerospace:martian_sandstone_strata_1",
+    "nerospace:martian_sandstone_strata_2",
+    "nerospace:martian_sandstone_strata_3",
+    "nerospace:martian_sandstone_strata_4",
+    "nerospace:dry_ice"
+  ]
+}

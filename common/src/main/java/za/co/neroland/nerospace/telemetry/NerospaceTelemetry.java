@@ -130,7 +130,7 @@ public final class NerospaceTelemetry {
             // Performance: sample a small fraction of traced operations (launch, pipe rebuild,
             // terraform work). Timing data only — no personal data in a transaction.
             options.setTracesSampleRate(0.05D);
-            options.setBeforeSend((event, hint) -> filterAndScrub(event));
+            options.setBeforeSend((event, hint) -> ForeignMixinFailure.matches(event) ? null : filterAndScrub(event));
         });
         Sentry.configureScope(scope -> {
             scope.setTag("loader", Services.PLATFORM.getPlatformName().toLowerCase(Locale.ROOT));

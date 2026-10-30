@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 /**
- * Per-light-engine index of light-absorbing blocks (Nyx Stone, decision 002 §1.6/§11.1). It keeps, per 16³ section, a
+ * Per-light-engine index of light-absorbing blocks (Nyx Stone). It keeps, per 16³ section, a
  * byte per cell counting the absorbers within its 3×3×3 neighbourhood, so the hot path ("is this cell within 1 block
  * of a Nyx Stone?") is one hash lookup plus one array read — and a single field read when the index is empty.
  *

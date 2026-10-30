@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.block.rules;
 
 /**
- * Snow-like layer accumulation (002 §1.3 Ash Layer, §3): weather adds one layer per chunk per
+ * Snow-like layer accumulation (Ash Layer): weather adds one layer per chunk per
  * {@link #INTERVAL_TICKS}, capped at {@link #WEATHER_CAP}; players stack to {@link #MAX}. Walkers slow at 3+.
  */
 public final class LayerRules {

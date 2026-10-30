@@ -13,9 +13,11 @@ import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 import za.co.neroland.nerospace.NerospaceCommon;
 
 /**
- * Nyxara's band width, stored with the world ({@code nerospace:nyxara_band} in the Nyxara level's data folder). The
- * only field is optional ({@code band_width}, default {@code -1} = never initialised); the first load writes the
- * current {@code nyxara.twilightBandWidth} and later config edits never change it. Holds no player data.
+ * Nyxara's band width, stored with the world ({@code nerospace:nyxara_band} in the Nyxara level's data folder, plus a
+ * second copy under the same id in the overworld's data folder). Both fields are optional ({@code band_width}, default
+ * {@code -1} = never initialised; {@code bound_at}, the game time it was first bound, default {@code -1} = unknown);
+ * the first load writes the current {@code nyxara.twilightBandWidth} and later config edits never change it. If one
+ * copy is lost (a recovery reset), the other restores it ({@link BandWidthRules#reconcile}). Holds no player data.
  */
 public final class NyxaraBandState extends SavedData {
 
@@ -26,6 +28,7 @@ public final class NyxaraBandState extends SavedData {
             new SavedDataType<>(ID, NyxaraBandState::new, codec(), null);
 
     int bandWidth = -1;
+    long boundAt = -1L;
 
     public NyxaraBandState() {
     }
@@ -36,14 +39,35 @@ public final class NyxaraBandState extends SavedData {
 
     private static Codec<NyxaraBandState> codec() {
         return RecordCodecBuilder.create(i -> i.group(
-                Codec.INT.optionalFieldOf("band_width", -1).forGetter(s -> s.bandWidth)
+                Codec.INT.optionalFieldOf("band_width", -1).forGetter(s -> s.bandWidth),
+                Codec.LONG.optionalFieldOf("bound_at", -1L).forGetter(s -> s.boundAt)
         ).apply(i, NyxaraBandState::of));
     }
 
-    private static NyxaraBandState of(int width) {
+    private static NyxaraBandState of(int width, long boundAt) {
         NyxaraBandState s = new NyxaraBandState();
         s.bandWidth = width;
+        s.boundAt = boundAt;
         return s;
+    }
+
+    /** The raw stored width ({@code <= 0} = none). */
+    public int storedWidth() {
+        return this.bandWidth;
+    }
+
+    /** The game time the width was first bound ({@code -1} = unknown). */
+    public long boundAt() {
+        return this.boundAt;
+    }
+
+    /** Stores a reconciled width; marks dirty only on change. */
+    public void store(int width, long at) {
+        if (this.bandWidth != width || this.boundAt != at) {
+            this.bandWidth = width;
+            this.boundAt = at;
+            setDirty();
+        }
     }
 
     /**

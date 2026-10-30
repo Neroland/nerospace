@@ -70,9 +70,9 @@ your own server** (plus one short-lived in-memory entry) — nothing here leaves
 | Store | What it holds | Erasure |
 |---|---|---|
 | Station registry | the owner UUID of each orbital station and the UUIDs of the players its owner has added as members (up to 16) | the owner is blanked and you are removed from every member list; the backup is rewritten at once. The station, its class, modules and founding day stay as shared world content |
-| Alien Villager reputation | a `UUID -> trade score` map inside each villager's entity data | swept from every loaded world, and stripped from a villager that loads later in the same server session |
+| Alien Villager reputation | a `UUID -> trade score` map inside each villager's entity data | swept from every loaded world; a villager that loads later drops your entry as it loads — in the same server session, or for up to 30 days afterwards (after a restart too) when the Village Core index still holds your erasure key (next row). No extra data is stored for this |
 | Village Core ownership | the owner's UUID inside the core block's data (no name: the display name 1.x stored beside it is no longer kept and drops out of old saves the next time the core's chunk saves; chat shows a name only while that player is online) | cleared from every loaded core at once; a core in an unloaded chunk is cleared the moment it loads again, even after a server restart (see the next row). The core keeps its stockpile, buildings and quest and becomes unclaimed |
-| Village Core index | where each claimed Village Core is (dimension and position) with a salted one-way hash of its owner's UUID — never the UUID or a name — so erasure can reach a core whose chunk is not loaded; plus, after an erasure, a list of core positions still to be cleared (positions only, at most 4096, each removed as soon as it is applied) and, for 1.x cores that have not loaded since the update, the salted hash of the erased player (at most 256, deleted after 90 days) | your rows are removed; your unloaded cores become position-only entries that are applied and deleted when they load; the backup is rewritten at once |
+| Village Core index | where each claimed Village Core is (dimension and position) with a salted one-way hash of its owner's UUID, so erasure can reach a core whose chunk is not loaded. The hash is **pseudonymised, not anonymous**: it is never your UUID or a name, and nobody can turn it back into your UUID, but this server holds the salt and can recognise your hash. Plus, after an erasure, a list of core positions still to be cleared (positions only, at most 4096, each removed as soon as it is applied) and — only if you had visited a planet with villages — your hash as an **erasure key** (at most 256 keys, each deleted after 30 days), used for nothing but finishing your erasure: clearing a 1.x core that has not loaded since the update, and dropping your reputation from a villager that loads later. If any of these lists ever fills up, the server log shows a count-only warning | your rows are removed; your unloaded cores become position-only entries that are applied and deleted when they load; the backup is rewritten at once |
 | Oxygen | your current air, in your player data | reset to a full tank |
 | Star Guide "seen" markers | which guide steps you have dismissed | cleared |
 | Planet visits | your UUID and the set of planets you have reached (no timestamps, no coordinates) | the row is dropped and the backup rewritten at once |
@@ -87,14 +87,15 @@ Bio-Bark, the last planet synced to your client, magnetic-ore pulls, geyser grac
 online players only, is never saved and disappears when you log out.
 All of these are registered with Neroland Core's shared erasure hook, so one
 `/neroland data eraseme` purges Nerospace along with every other Neroland mod. Two known
-limits are stated plainly rather than glossed over: an Alien Villager in a chunk that is never
-loaded again after a server restart can retain its reputation entry (re-running erasure after
-visiting the area clears it), and if you are offline when the request is processed, your oxygen and
-Star Guide markers are reset the next time you log in during that same server session.
+limits are stated plainly rather than glossed over: an Alien Villager in a chunk that is first
+loaded again more than 30 days after your erasure (or after 256 later erasures pushed your key out)
+can retain its reputation entry (re-running erasure after visiting the area clears it), and if you
+are offline when the request is processed, your oxygen and Star Guide markers are reset the next
+time you log in during that same server session.
 
 **See your data:** `/nerospace privacy export` shows you — and only you — everything above that
 Nerospace holds about you, as JSON you can copy: the planets you have reached, the stations you own
-and the ones you are a member of, your Village Cores, Cargo Pads and routes, your oxygen and Star
+and the ones you are a member of, your Village Cores, Cargo Pads, routes and cargo flights, your oxygen and Star
 Guide markers, and your reputation with loaded Alien Villagers. Positions and dimensions of your own
 things are included; nothing about another player is (a station you own shows how many members it
 has, never who they are).
@@ -116,8 +117,10 @@ edit the world remotely.
 
 The companion view of stations covers the stations you own or are a member of; member lists
 are shown only to the station's owner and its members, and operator status is deliberately
-not honoured. Members see each other's player ids there because they share that list; names
-are never sent. Only the owner can rename a station from the companion app.
+not honoured. Members see each other's player ids there because they share that list — this is
+deliberate: every member of a station can see who else may dock at it, exactly as in the in-game
+console; names are never sent, and non-members never see the list. Only the owner can rename a
+station from the companion app.
 
 Server operators (permission level 2 and above) can rename, re-class, remove and build on any
 station and manage its member list. Such operator actions are written to the server log with

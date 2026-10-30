@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.rocket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
-/** Pure Docking Ring rules (002 §1.7). */
+/** Pure Docking Ring rules. */
 public final class DockRules {
 
     private DockRules() {

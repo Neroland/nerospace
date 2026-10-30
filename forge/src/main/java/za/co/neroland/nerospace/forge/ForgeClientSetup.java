@@ -54,6 +54,9 @@ public final class ForgeClientSetup {
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(ForgeClientSetup::onRegisterEntityRenderers);
         ModelEvent.BakeFluidModels.BUS.addListener(ForgeClientSetup::onBakeFluidModels);
         AddGuiOverlayLayersEvent.BUS.addListener(ForgeClientSetup::onAddGuiLayers);
+        net.minecraftforge.client.event.RegisterParticleProvidersEvent.BUS.addListener(event ->
+                za.co.neroland.nerospace.client.particle.ClientParticles.registerAll((type, factory) ->
+                        event.registerSpriteSet(type, factory::apply)));
         // Planet sky profiles (client resources, reload with F3+T). Forge has no sky hook yet: data-only cell.
         net.minecraftforge.client.event.RegisterClientReloadListenersEvent.BUS.addListener(event ->
                 event.registerReloadListener(za.co.neroland.nerospace.client.sky.SkyProfiles.INSTANCE));
@@ -61,6 +64,7 @@ public final class ForgeClientSetup {
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
             GalleryCaptureHarness.tick();
+            za.co.neroland.nerospace.client.WeatherAmbience.tick();
         });
         // Client-side /nsgallery capture command tree (drives the local camera; separate dispatcher
         // from the server-side /nerospace gallery builder — a shared "nerospace" root would shadow it).

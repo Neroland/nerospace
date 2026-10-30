@@ -35,6 +35,26 @@ public final class ClockMath {
         return (double) Math.floorMod(elapsed, dayLength) / (double) dayLength;
     }
 
+    /**
+     * Continuous days since the clock started: whole days plus {@link #phase}, so it never wraps (the sky's orbiting
+     * bodies read it; a body whose period is not one day would jump at every sunrise on the wrapped phase). A fixed
+     * clock stays at its pinned phase; a frozen clock keeps its day.
+     */
+    public static double days(long gameTime, long epochTicks, long offsetTicks, long dayLength, double pinnedPhase,
+            boolean frozen, long frozenAt) {
+        if (dayLength <= 0L) {
+            return DaylightCurve.wrap(pinnedPhase);
+        }
+        long now = frozen ? frozenAt : gameTime;
+        long elapsed = now - epochTicks - offsetTicks;
+        return Math.floorDiv(elapsed, dayLength) + (double) Math.floorMod(elapsed, dayLength) / (double) dayLength;
+    }
+
+    /** {@link #days} for a vanilla-time mirror: day time over the vanilla day length. */
+    public static double mirrorDays(long dayTime) {
+        return Math.floorDiv(dayTime, VANILLA_DAY) + mirrorPhase(dayTime);
+    }
+
     /** The phase a vanilla-time mirror shows for a given day time. */
     public static double mirrorPhase(long dayTime) {
         return (double) Math.floorMod(dayTime, VANILLA_DAY) / (double) VANILLA_DAY;

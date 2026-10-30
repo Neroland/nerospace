@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -43,6 +44,16 @@ public final class ModDataComponents {
     public static final RegistryEntry<DataComponentType<FaceFilter>> ADVANCED_FILTER =
             COMPONENTS.register("advanced_filter", key -> DataComponentType.<FaceFilter>builder()
                     .persistent(FaceFilter.CODEC)
+                    .build());
+
+    /**
+     * Rad Lining upgrade on an Oxygen Suit piece (applied at a smithing table to a T2, heat or cryo piece; the item
+     * id and every other behaviour stay as they were). A full suit of lined pieces shields RADIATION.
+     */
+    public static final RegistryEntry<DataComponentType<Unit>> RAD_LINING =
+            COMPONENTS.register("rad_lining", key -> DataComponentType.<Unit>builder()
+                    .persistent(Unit.CODEC)
+                    .networkSynchronized(Unit.STREAM_CODEC)
                     .build());
 
     private ModDataComponents() {

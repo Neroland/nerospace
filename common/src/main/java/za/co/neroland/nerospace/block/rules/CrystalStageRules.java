@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Frost Crystal Cluster (002 §1.4): grows one stage when a diamond-dust event ends; stages 0–3, light 3/5/7/9. */
+/** Frost Crystal Cluster: grows one stage when a diamond-dust event ends; stages 0–3, light 3/5/7/9. */
 public final class CrystalStageRules {
 
     public static final int MAX_STAGE = 3;

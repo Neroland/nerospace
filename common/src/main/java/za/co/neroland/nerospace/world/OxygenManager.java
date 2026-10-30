@@ -1,5 +1,8 @@
 package za.co.neroland.nerospace.world;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -25,11 +28,14 @@ import za.co.neroland.nerospace.gas.NerospaceGasStorage;
 import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.registry.ModDataComponents;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.rocket.RocketEntity;
+import za.co.neroland.nerospace.world.planet.HazardOrderRules;
 import za.co.neroland.nerospace.world.planet.PlanetDefinition;
 import za.co.neroland.nerospace.world.planet.PlanetHazards;
 import za.co.neroland.nerospace.world.planet.Planets;
+import za.co.neroland.nerospace.world.planet.RadiationRules;
 
 /**
  * Oxygen / atmosphere survival (Phase 8c, simplified cross-loader port). On airless Nerospace
@@ -149,11 +155,16 @@ public final class OxygenManager {
             } else {
                 // Exposed: drain the tank — INCLUDING any rocket-carried arrival buffer (overfill above the
                 // normal tank) — at the normal rate. A worn suit drains far slower; an uncountered planet
-                // hazard (Cindara heat / Glacira cold) multiplies it. At zero the player suffocates.
+                // hazard (Cindara heat / Glacira cold / Nyxara radiation) multiplies it. At zero the player
+                // suffocates. The hazard is resolved per player: the first one here they are not shielded from.
+                HazardShield hazard = HazardShield.of(PlanetHazards.at(level, player.blockPosition(), player));
                 int drain = NerospaceConfig.scale(suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK,
-                        NerospaceConfig.oxygenDrainMultiplier()) * hazardDrainMultiplier(level, player);
+                        NerospaceConfig.oxygenDrainMultiplier()) * (hazard == HazardShield.NONE ? 1 : HAZARD_DRAIN_MULTIPLIER);
                 oxygen = Math.max(0, oxygen - drain);
-                hazardFeedback(level, player);
+                hazardFeedback(level, player, hazard);
+                if (hazard == HazardShield.RADIATION && player.tickCount % DAMAGE_INTERVAL_TICKS == 0) {
+                    radiationHit(level, player);
+                }
                 // Airlock: a worn suit beside a Gas Tank / Oxygen Generator holding O2 taps it to top up —
                 // a tank by the base door keeps you fuelled without a breathable bubble.
                 if (suited && oxygen < max) {
@@ -405,13 +416,83 @@ public final class OxygenManager {
         return HazardShield.of(PlanetHazards.at(level, pos));
     }
 
-    /** Drain factor for the player: ×{@link #HAZARD_DRAIN_MULTIPLIER} on an uncountered hazard, else 1. */
-    private static int hazardDrainMultiplier(ServerLevel level, Player player) {
-        HazardShield hazard = hazardAt(level, player.blockPosition());
-        if (hazard == HazardShield.NONE || hazardShield(player) == hazard) {
-            return 1;
+    /** The per-player hazard here (first unshielded of RADIATION, HEAT, COLD), for the HUD and the damage tick. */
+    public static HazardShield hazardAt(ServerLevel level, BlockPos pos, Player player) {
+        return HazardShield.of(PlanetHazards.at(level, pos, player));
+    }
+
+    /**
+     * Graded radiation damage for an exposed player without a full Rad-Lined suit: nothing below level 2, 1 at
+     * level 2, 2 at level 3 ({@link RadiationRules#damageFor}); a flare adds its +1 through the effective level.
+     */
+    private static void radiationHit(ServerLevel level, ServerPlayer player) {
+        float damage = RadiationRules.damageFor(PlanetHazards.radiationLevel(level, player.blockPosition()));
+        if (damage > 0.0F) {
+            player.hurtServer(level, level.damageSources().magic(), damage);
         }
-        return HAZARD_DRAIN_MULTIPLIER;
+    }
+
+    /**
+     * The worn suit for hazard purposes: a full matching Thermal or Cryo set, else a full set of Tier 2 class pieces
+     * (Tier 2, Thermal or Cryo, mixed), else any full Oxygen Suit (Tier 1), else nothing. Client-safe (armour slots
+     * only).
+     */
+    public static HazardOrderRules.SuitClass suitClass(Player player) {
+        HazardShield variant = hazardShield(player);
+        if (variant == HazardShield.HEAT) {
+            return HazardOrderRules.SuitClass.THERMAL;
+        }
+        if (variant == HazardShield.COLD) {
+            return HazardOrderRules.SuitClass.CRYO;
+        }
+        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.HEAD), ModItems.OXYGEN_SUIT_T2_HELMET.get(),
+                        ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_COLD_HELMET.get())
+                && isSuitPiece(player.getItemBySlot(EquipmentSlot.CHEST), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
+                        ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())
+                && isSuitPiece(player.getItemBySlot(EquipmentSlot.LEGS), ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(),
+                        ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())
+                && isSuitPiece(player.getItemBySlot(EquipmentSlot.FEET), ModItems.OXYGEN_SUIT_T2_BOOTS.get(),
+                        ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(), ModItems.OXYGEN_SUIT_COLD_BOOTS.get())) {
+            return HazardOrderRules.SuitClass.T2;
+        }
+        return isFullSuit(player) ? HazardOrderRules.SuitClass.T1 : HazardOrderRules.SuitClass.NONE;
+    }
+
+    /**
+     * The hazards the worn suit's variant shields regardless of position: the full-set heat / cryo variant, plus
+     * RADIATION when all four worn suit pieces carry the Rad Lining upgrade. A Tier 2 class suit also keeps out a
+     * cold world's milder cold, which depends on where the player stands: use
+     * {@link PlanetHazards#suitShields(Level, BlockPos, Player)} for that. A fresh mutable set. Client-safe.
+     */
+    public static Set<Hazard> shields(Player player) {
+        Set<Hazard> out = EnumSet.noneOf(Hazard.class);
+        HazardShield variant = hazardShield(player);
+        if (variant == HazardShield.HEAT) {
+            out.add(Hazard.HEAT);
+        } else if (variant == HazardShield.COLD) {
+            out.add(Hazard.COLD);
+        }
+        if (radLined(player)) {
+            out.add(Hazard.RADIATION);
+        }
+        return out;
+    }
+
+    /**
+     * Whether the player wears a full Oxygen Suit (any tier / variant) whose four pieces all carry the Rad Lining
+     * upgrade (applied at a smithing table to a T2, heat or cryo piece; the item id is unchanged).
+     */
+    public static boolean radLined(Player player) {
+        return isFullSuit(player)
+                && isRadLined(player.getItemBySlot(EquipmentSlot.HEAD))
+                && isRadLined(player.getItemBySlot(EquipmentSlot.CHEST))
+                && isRadLined(player.getItemBySlot(EquipmentSlot.LEGS))
+                && isRadLined(player.getItemBySlot(EquipmentSlot.FEET));
+    }
+
+    /** Whether one stack carries the Rad Lining upgrade. */
+    public static boolean isRadLined(ItemStack stack) {
+        return !stack.isEmpty() && stack.has(ModDataComponents.RAD_LINING.get());
     }
 
     /**
@@ -453,9 +534,8 @@ public final class OxygenManager {
      * a building frost vignette on the cold world (capped below fully-frozen so vanilla freeze damage
      * never double-dips), sparse smoke shimmer on the hot one.
      */
-    private static void hazardFeedback(ServerLevel level, Player player) {
-        HazardShield hazard = hazardAt(level, player.blockPosition());
-        if (hazard == HazardShield.NONE || hazardShield(player) == hazard) {
+    private static void hazardFeedback(ServerLevel level, Player player, HazardShield hazard) {
+        if (hazard == HazardShield.NONE) {
             return;
         }
         if (hazard == HazardShield.COLD) {

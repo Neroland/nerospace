@@ -8,14 +8,15 @@ for the uncrewed freight hull see [Cargo Rocket](Cargo-Rocket).
 
 Deploy a rocket item onto a [launch pad](Rocket-Launch-Pad), fuel it, right-click it to open the flight
 console and press **Launch**. You board as the engines light and arrive on the destination pad a few
-seconds later. Every tier can still fly to every lower tier's destinations.
+seconds later. Each tier reaches every destination of the tiers below it plus its own, so a Tier 3 or Tier 4
+rocket still flies to [Luna](Luna) and [Mars](Mars). Every rocket can fly home.
 
 | Tier | Reaches | Pad | Look |
 | --- | --- | --- | --- |
-| **Tier 1** | Orbital Station | one pad block | Red livery, single bell, four raked fins, four landing legs, porthole cockpit |
-| **Tier 2** | + Greenxertz | 3×3 | Nerosium-purple livery, twin strap-on boosters, spinning radar dish, two fins |
-| **Tier 3** | + Cindara | ringed 3×3 | Gold / green livery, main bell ringed by four verniers, fold-out solar wings, scanning dish boom, panoramic canopy, long nose |
-| **Tier 4** | + Glacira | Heavy Launch Complex | Ice-blue livery, wide five-engine core, four boosters, grid fins, heavy legs, the tallest nose |
+| **Tier 1** | Orbital Station, Luna | one pad block | Red livery, single bell, four raked fins, four landing legs, porthole cockpit |
+| **Tier 2** | Orbital Station, Luna, Greenxertz, Mars | 3×3 | Nerosium-purple livery, twin strap-on boosters, spinning radar dish, two fins |
+| **Tier 3** | Orbital Station, Luna, Greenxertz, Mars, Cindara | ringed 3×3 | Gold / green livery, main bell ringed by four verniers, fold-out solar wings, scanning dish boom, panoramic canopy, long nose |
+| **Tier 4** | Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira, Nyxara (after Deep Space progress) | Heavy Launch Complex | Ice-blue livery, wide five-engine core, four boosters, grid fins, heavy legs, the tallest nose |
 
 Each tier is bigger than the last, both in geometry and in scale, so the progression reads from across
 the base.

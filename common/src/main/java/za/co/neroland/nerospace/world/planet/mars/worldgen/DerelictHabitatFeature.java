@@ -28,7 +28,7 @@ import za.co.neroland.nerospace.world.planet.mars.MarsContent;
 import za.co.neroland.nerospace.world.station.StationContent;
 
 /**
- * Derelict Habitat (Mars, D8) — the ruin of an early surface habitat: a round station-floor pad, a cracked hull ring
+ * Derelict Habitat (Mars) — the ruin of an early surface habitat: a round station-floor pad, a cracked hull ring
  * with a window band, a half-collapsed dome, regolith drifted through the breaches, a dead console and a supply
  * locker. No villagers, no village core. Spaced by {@link StructureSpacing} with the Mars salt; every write stays in
  * the feature's 3×3-chunk region.

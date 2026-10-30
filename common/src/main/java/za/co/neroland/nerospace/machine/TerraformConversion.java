@@ -51,7 +51,7 @@ import za.co.neroland.nerospace.world.TerraformFauna;
  * {@link #vivifyColumn} = stage 3 (Living). Each is a per-stage no-op when re-run, so persistence stays
  * radii + cursors.</p>
  *
- * <p>2.0 (D7): what each stage writes comes from the planet's {@link TerraformTable} — biome per stage, surface
+ * <p>2.0: what each stage writes comes from the planet's {@link TerraformTable} — biome per stage, surface
  * swap, hydration liquid, flora, fauna, ore seeds and the planet rules — instead of per-dimension branches.
  * Off-planet dimensions use {@link TerraformTables#LEGACY} (the 1.x behaviour); a world without a table (the
  * station) refuses.</p>
@@ -240,9 +240,31 @@ public final class TerraformConversion {
 
     // --- Stage 2: Hydrated ---------------------------------------------------
 
+    /**
+     * The hydration disc of one terraformer (centre and squared Hydrated radius). Mars' spring is only ever opened
+     * on a column inside it, never elsewhere in the chunk.
+     */
+    public record SpringArea(int centerX, int centerZ, long radiusSq) {
+        public static SpringArea of(BlockPos center, int radius) {
+            return new SpringArea(center.getX(), center.getZ(), (long) radius * radius);
+        }
+
+        public boolean contains(int x, int z) {
+            long dx = (long) x - this.centerX;
+            long dz = (long) z - this.centerZ;
+            return dx * dx + dz * dz <= this.radiusSq;
+        }
+    }
+
     /** {@link #hydrateColumn(ServerLevel, int, int, int, HydrationSink, Set)} without a biome resync set. */
     public static boolean hydrateColumn(ServerLevel level, int x, int z, int waterTableY, HydrationSink sink) {
         return hydrateColumn(level, x, z, waterTableY, sink, new java.util.HashSet<>());
+    }
+
+    /** The column alone is the spring area (no terraformer disc known). */
+    public static boolean hydrateColumn(ServerLevel level, int x, int z, int waterTableY, HydrationSink sink,
+            Set<LevelChunk> biomeChanged) {
+        return hydrateColumn(level, x, z, waterTableY, sink, biomeChanged, new SpringArea(x, z, 0L));
     }
 
     /**
@@ -253,11 +275,12 @@ public final class TerraformConversion {
      * column of a chunk also opens a spring at the chunk's lowest surface cell (the first open water on Mars).
      *
      * @param sink hydration supply, or {@code null} for the free chunk-load catch-up
+     * @param springArea the terraformer's hydration disc; Mars' spring is opened only inside it
      * @return {@code false} when the sink ran dry mid-column (stall: re-run this column later);
      *         {@code true} when the column is fully hydrated (possibly needing no water at all)
      */
     public static boolean hydrateColumn(ServerLevel level, int x, int z, int waterTableY, HydrationSink sink,
-            Set<LevelChunk> biomeChanged) {
+            Set<LevelChunk> biomeChanged, SpringArea springArea) {
         TerraformTable table = tableFor(level);
         LevelChunk chunk = level.getChunkAt(new BlockPos(x, 0, z));
         if (table == null || !columnAllowed(level, table, x,
@@ -314,7 +337,7 @@ public final class TerraformConversion {
                 }
             }
             if (firstInChunk && table.has(TerraformTable.Rule.OPEN_WATER_SPRING)) {
-                openSpring(level, chunk, liquid);
+                openSpring(level, table, chunk, liquid, springArea);
             }
         }
         bumpStage(chunk, 2);
@@ -334,24 +357,37 @@ public final class TerraformConversion {
     }
 
     /**
-     * Mars' first open water (003 §8.1): one free source block at the chunk's lowest surface cell, placed once when
-     * the chunk first turns Hydrated. Skipped when that cell is not open (an overhang, a structure).
+     * Mars' first open water: one free source block at the lowest surface cell of the chunk's columns inside the
+     * terraformer's hydration disc, placed once when the chunk first turns Hydrated. Only natural ground counts as a
+     * floor (the planet's surface blocks or the terraform soil), so a hole a player dug into a build or the floor of
+     * a roofless build never gets the spring. Skipped when no such cell is open (an overhang, a structure).
      */
-    private static void openSpring(ServerLevel level, LevelChunk chunk, Block liquid) {
+    private static void openSpring(ServerLevel level, TerraformTable table, LevelChunk chunk, Block liquid,
+            SpringArea area) {
         int minX = chunk.getPos().getMinBlockX();
         int minZ = chunk.getPos().getMinBlockZ();
         int bestX = minX;
         int bestZ = minZ;
         int bestY = Integer.MAX_VALUE;
+        BlockPos.MutableBlockPos probe = new BlockPos.MutableBlockPos();
         for (int dx = 0; dx < 16; dx++) {
             for (int dz = 0; dz < 16; dz++) {
-                int h = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, minX + dx, minZ + dz);
-                if (h < bestY) {
-                    bestY = h;
-                    bestX = minX + dx;
-                    bestZ = minZ + dz;
+                int x = minX + dx;
+                int z = minZ + dz;
+                if (!area.contains(x, z)) {
+                    continue;
                 }
+                int h = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                if (h >= bestY || !isNaturalFloor(table, level.getBlockState(probe.set(x, h, z)))) {
+                    continue;
+                }
+                bestY = h;
+                bestX = x;
+                bestZ = z;
             }
+        }
+        if (bestY == Integer.MAX_VALUE) {
+            return; // no natural floor inside the disc in this chunk
         }
         BlockPos spring = new BlockPos(bestX, bestY + 1, bestZ);
         BlockState at = level.getBlockState(spring);
@@ -359,6 +395,14 @@ public final class TerraformConversion {
                 && level.getBlockState(spring.below()).isFaceSturdy(level, spring.below(), net.minecraft.core.Direction.UP)) {
             level.setBlock(spring, liquid.defaultBlockState(), Block.UPDATE_ALL);
         }
+    }
+
+    /** Natural terraformable ground: the tagged soils/stones, the planet's own surface, or the terraform soil. */
+    private static boolean isNaturalFloor(TerraformTable table, BlockState state) {
+        return state.is(ModTags.Blocks.TERRAFORM_TO_GRASS) || state.is(ModTags.Blocks.TERRAFORM_TO_DIRT)
+                || isExtraSurface(table, state)
+                || state.is(blockOr(table.surfaceTop(), Blocks.GRASS_BLOCK))
+                || state.is(blockOr(table.surfaceSub(), Blocks.DIRT));
     }
 
     /** A cell the liquid fill may occupy: air, the liquid itself, or replaceable ground cover (grass/flowers). */
@@ -421,7 +465,7 @@ public final class TerraformConversion {
     }
 
     /**
-     * Stage 3 thaws Permafrost under the surface (002 §1.4): grass on top, dirt below, {@code ThawRules.THAW_DEPTH}
+     * Stage 3 thaws Permafrost under the surface: grass on top, dirt below, {@code ThawRules.THAW_DEPTH}
      * deep. Columns without Permafrost (every 1.x chunk) are left exactly as they were.
      */
     private static void thawPermafrost(ServerLevel level, int x, int surfaceY, int z) {
@@ -579,7 +623,7 @@ public final class TerraformConversion {
     }
 
     /**
-     * Luna's shimmer dome (003 §8.1): a sparse ring of glints along the terraformer's Living radius — the only world
+     * Luna's shimmer dome: a sparse ring of glints along the terraformer's Living radius — the only world
      * whose terraformed edge glows, because there is no atmosphere to hold it. Visual only: no block, no state.
      */
     public static void shimmerDome(ServerLevel level, BlockPos center, int radius) {

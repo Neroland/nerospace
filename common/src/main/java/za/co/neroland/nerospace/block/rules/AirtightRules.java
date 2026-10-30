@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.block.rules;
 import java.util.List;
 
 /**
- * Airtight hull (002 §1.7, §10.5; 005 §7.1): {@code nerospace:airtight} ⊂ {@code nerospace:oxygen_sealing}; only
+ * Airtight hull: {@code nerospace:airtight} ⊂ {@code nerospace:oxygen_sealing}; only
  * Hull Plating and Hull Window are in it. Station Wall/Floor stay sealing-only.
  */
 public final class AirtightRules {

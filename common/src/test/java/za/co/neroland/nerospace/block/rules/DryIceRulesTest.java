@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.2 Dry Ice, §2.1.2 one-shot neighbour freeze. */
+/** Dry Ice one-shot neighbour freeze. */
 @SuppressWarnings("unused")
 class DryIceRulesTest {
 

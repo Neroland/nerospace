@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.world.planet.nyxara.worldgen;
 
 /**
- * Pure maths of Nyxara's fixed-X biome source (003 §7.3, width ruling in stage1-review): the planet is split by block
+ * Pure maths of Nyxara's fixed-X biome source ({@code width} is the full band width): the planet is split by block
  * X alone into a sunward dayside (west, −X), a habitable twilight band centred on {@code originX}, and a nightside
  * (east, +X). With no edge noise: {@code x − originX < −w/2} is {@link Side#WEST}, {@code |x − originX| ≤ w/2} is
  * {@link Side#BAND}, {@code x − originX > w/2} is {@link Side#EAST}. The edge noise moves each edge by a deterministic
@@ -33,8 +33,17 @@ public final class FixedXBands {
         return Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, width));
     }
 
-    /** The side at block ({@code x}, {@code z}); {@code width} is clamped to the config range. */
+    /** The side at block ({@code x}, {@code z}); {@code width} is clamped to the config range. Unseeded edges. */
     public static Side sideAt(int x, int z, int width, int originX, int edgeNoise) {
+        return sideAt(x, z, width, originX, edgeNoise, 0L);
+    }
+
+    /**
+     * {@link #sideAt(int, int, int, int, int)} with the terminator's raggedness mixed with a world seed, so every world
+     * gets its own edge shape. {@code seed = 0} is the unseeded (test) form. Only the edge offset depends on the seed:
+     * beyond {@code w/2 + 4·edgeNoise} the side never changes.
+     */
+    public static Side sideAt(int x, int z, int width, int originX, int edgeNoise, long seed) {
         double half = clampWidth(width) / 2.0;
         int noise = Math.max(0, Math.min(MAX_EDGE_NOISE, edgeNoise));
         double dx = (double) ((long) x - (long) originX);
@@ -45,8 +54,8 @@ public final class FixedXBands {
         if (dx > far) {
             return Side.EAST;
         }
-        double west = -half + noise * edgeOffset(x, z, SALT_WEST);
-        double east = half + noise * edgeOffset(x, z, SALT_EAST);
+        double west = -half + noise * edgeOffset(x, z, salt(SALT_WEST, seed));
+        double east = half + noise * edgeOffset(x, z, salt(SALT_EAST, seed));
         if (dx < west) {
             return Side.WEST;
         }
@@ -54,6 +63,16 @@ public final class FixedXBands {
             return Side.EAST;
         }
         return Side.BAND;
+    }
+
+    /** Mixes a world seed into an edge salt; {@code seed = 0} leaves the salt unchanged. Package-private for tests. */
+    static long salt(long base, long seed) {
+        if (seed == 0L) {
+            return base;
+        }
+        long h = seed * 0x9E3779B97F4A7C15L;
+        h ^= h >>> 31;
+        return base ^ h;
     }
 
     /**

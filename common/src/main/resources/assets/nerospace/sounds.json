@@ -106,5 +106,145 @@
   "entity.woolly_drift.death": {
     "subtitle": "subtitles.nerospace.woolly_drift.death",
     "sounds": [{ "name": "entity.sheep.death", "type": "event" }]
+  },
+
+  "ambient.luna.loop": {
+    "subtitle": "subtitles.nerospace.ambient.luna.loop",
+    "sounds": [
+      { "name": "minecraft:ambient.soul_sand_valley.loop", "type": "event", "volume": 0.12, "pitch": 0.5, "stream": true }
+    ]
+  },
+  "ambient.mars.loop": {
+    "subtitle": "subtitles.nerospace.ambient.mars.loop",
+    "sounds": [
+      { "name": "minecraft:ambient.soul_sand_valley.loop", "type": "event", "volume": 0.3, "pitch": 0.7, "stream": true }
+    ]
+  },
+  "ambient.mars.additions": {
+    "subtitle": "subtitles.nerospace.ambient.mars.additions",
+    "sounds": [
+      { "name": "minecraft:ambient.basalt_deltas.additions", "type": "event", "volume": 0.25, "pitch": 0.6 }
+    ]
+  },
+  "ambient.mars.storm": {
+    "subtitle": "subtitles.nerospace.ambient.mars.storm",
+    "sounds": [
+      { "name": "minecraft:item.elytra.flying", "type": "event", "volume": 0.6, "pitch": 0.5, "stream": true }
+    ]
+  },
+  "ambient.cindara.loop": {
+    "subtitle": "subtitles.nerospace.ambient.cindara.loop",
+    "sounds": [
+      { "name": "minecraft:ambient.basalt_deltas.loop", "type": "event", "volume": 0.35, "pitch": 0.85, "stream": true }
+    ]
+  },
+  "ambient.cindara.additions": {
+    "subtitle": "subtitles.nerospace.ambient.cindara.additions",
+    "sounds": [
+      { "name": "minecraft:block.lava.ambient", "type": "event", "volume": 0.5, "pitch": 0.9 },
+      { "name": "minecraft:block.fire.ambient", "type": "event", "volume": 0.3, "pitch": 0.7 },
+      { "name": "minecraft:ambient.basalt_deltas.additions", "type": "event", "volume": 0.3, "pitch": 0.8 }
+    ]
+  },
+  "ambient.cindara.mood": {
+    "subtitle": "subtitles.nerospace.ambient.cindara.mood",
+    "sounds": [
+      { "name": "minecraft:ambient.basalt_deltas.mood", "type": "event", "volume": 0.5, "pitch": 0.9 }
+    ]
+  },
+  "ambient.cindara.ashfall": {
+    "subtitle": "subtitles.nerospace.ambient.cindara.ashfall",
+    "sounds": [
+      { "name": "minecraft:ambient.nether_wastes.loop", "type": "event", "volume": 0.4, "pitch": 0.6, "stream": true }
+    ]
+  },
+  "ambient.glacira.loop": {
+    "subtitle": "subtitles.nerospace.ambient.glacira.loop",
+    "sounds": [
+      { "name": "minecraft:ambient.soul_sand_valley.loop", "type": "event", "volume": 0.2, "pitch": 1.3, "stream": true }
+    ]
+  },
+  "ambient.glacira.additions": {
+    "subtitle": "subtitles.nerospace.ambient.glacira.additions",
+    "sounds": [
+      { "name": "minecraft:block.amethyst_block.chime", "type": "event", "volume": 0.35, "pitch": 1.1 },
+      { "name": "minecraft:block.amethyst_block.chime", "type": "event", "volume": 0.35, "pitch": 1.4 },
+      { "name": "minecraft:block.powder_snow.step", "type": "event", "volume": 0.2, "pitch": 0.6 }
+    ]
+  },
+  "ambient.glacira.diamond_dust": {
+    "subtitle": "subtitles.nerospace.ambient.glacira.diamond_dust",
+    "sounds": [
+      { "name": "minecraft:block.amethyst_block.resonate", "type": "event", "volume": 0.3, "pitch": 1.2, "stream": true }
+    ]
+  },
+  "ambient.greenxertz.loop": {
+    "subtitle": "subtitles.nerospace.ambient.greenxertz.loop",
+    "sounds": [
+      { "name": "minecraft:ambient.crimson_forest.loop", "type": "event", "volume": 0.3, "pitch": 1.1, "stream": true }
+    ]
+  },
+  "ambient.greenxertz.additions": {
+    "subtitle": "subtitles.nerospace.ambient.greenxertz.additions",
+    "sounds": [
+      { "name": "minecraft:ambient.crimson_forest.additions", "type": "event", "volume": 0.35, "pitch": 1.2 },
+      { "name": "minecraft:block.big_dripleaf.tilt_down", "type": "event", "volume": 0.3, "pitch": 1.3 }
+    ]
+  },
+  "ambient.greenxertz.mood": {
+    "subtitle": "subtitles.nerospace.ambient.greenxertz.mood",
+    "sounds": [
+      { "name": "minecraft:ambient.crimson_forest.mood", "type": "event", "volume": 0.4, "pitch": 1.1 }
+    ]
+  },
+  "ambient.greenxertz.bloom": {
+    "subtitle": "subtitles.nerospace.ambient.greenxertz.bloom",
+    "sounds": [
+      { "name": "minecraft:ambient.crimson_forest.loop", "type": "event", "volume": 0.5, "pitch": 1.5, "stream": true }
+    ]
+  },
+  "ambient.nyxara.loop": {
+    "subtitle": "subtitles.nerospace.ambient.nyxara.loop",
+    "sounds": [
+      { "name": "minecraft:ambient.warped_forest.loop", "type": "event", "volume": 0.35, "pitch": 0.6, "stream": true }
+    ]
+  },
+  "ambient.nyxara.additions": {
+    "subtitle": "subtitles.nerospace.ambient.nyxara.additions",
+    "sounds": [
+      { "name": "minecraft:ambient.warped_forest.additions", "type": "event", "volume": 0.3, "pitch": 0.5 },
+      { "name": "minecraft:block.amethyst_block.chime", "type": "event", "volume": 0.2, "pitch": 0.5 }
+    ]
+  },
+  "ambient.nyxara.mood": {
+    "subtitle": "subtitles.nerospace.ambient.nyxara.mood",
+    "sounds": [
+      { "name": "minecraft:ambient.warped_forest.mood", "type": "event", "volume": 0.4, "pitch": 0.6 }
+    ]
+  },
+  "ambient.nyxara.flare": {
+    "subtitle": "subtitles.nerospace.ambient.nyxara.flare",
+    "sounds": [
+      { "name": "minecraft:block.beacon.ambient", "type": "event", "volume": 0.5, "pitch": 1.6, "stream": true }
+    ]
+  },
+  "ambient.nyxara.flare_onset": {
+    "subtitle": "subtitles.nerospace.ambient.nyxara.flare",
+    "sounds": [
+      { "name": "minecraft:block.respawn_anchor.charge", "type": "event", "volume": 0.6, "pitch": 0.8 }
+    ]
+  },
+  "ambient.station.loop": {
+    "subtitle": "subtitles.nerospace.ambient.station.loop",
+    "sounds": [
+      { "name": "minecraft:block.beacon.ambient", "type": "event", "volume": 0.35, "pitch": 0.55, "stream": true }
+    ]
+  },
+  "ambient.station.additions": {
+    "subtitle": "subtitles.nerospace.ambient.station.additions",
+    "sounds": [
+      { "name": "minecraft:block.piston.extend", "type": "event", "volume": 0.12, "pitch": 0.4 },
+      { "name": "minecraft:block.iron_door.open", "type": "event", "volume": 0.08, "pitch": 0.5 }
+    ]
   }
 }

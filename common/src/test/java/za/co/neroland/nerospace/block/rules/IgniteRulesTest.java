@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.3 Sulfur Crust. */
+/** Sulfur Crust. */
 @SuppressWarnings("unused")
 class IgniteRulesTest {
 

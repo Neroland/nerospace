@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Cache policy for per-chunk spread counts (002 §3): a cached count is trusted for 200 ticks, then rescanned. */
+/** Cache policy for per-chunk spread counts: a cached count is trusted for 200 ticks, then rescanned. */
 public final class ChunkCounterRules {
 
     public static final int TTL_TICKS = 200;

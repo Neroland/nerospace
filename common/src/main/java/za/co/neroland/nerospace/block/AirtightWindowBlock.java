@@ -19,7 +19,7 @@ import za.co.neroland.nerospace.block.rules.FrostRules;
 import za.co.neroland.nerospace.registry.ModDimensions;
 
 /**
- * Transparent airtight hull (Hull Window, 002 §1.7): vanilla-glass light, sealing via the {@code nerospace:airtight}
+ * Transparent airtight hull (Hull Window): vanilla-glass light, sealing via the {@code nerospace:airtight}
  * tag, and a {@code FROSTED} edge when it faces the void in the station (recomputed on neighbour change only).
  */
 public class AirtightWindowBlock extends TransparentBlock {

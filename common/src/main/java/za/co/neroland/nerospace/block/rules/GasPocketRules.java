@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Helium-3 Pocket yield gate (002 §1.1): silk touch or an adjacent Gas Tank keeps the full yield. */
+/** Helium-3 Pocket yield gate: silk touch or an adjacent Gas Tank keeps the full yield. */
 public final class GasPocketRules {
 
     public static final int BASE_YIELD = 2;

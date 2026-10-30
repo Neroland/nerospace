@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Hematite magnet (002 §1.2): drops fly to the breaker within 3 blocks at 0.2 b/t for 20 ticks. */
+/** Hematite magnet: drops fly to the breaker within 3 blocks at 0.2 b/t for 20 ticks. */
 public final class ItemMagnetRules {
 
     public static final double RANGE = 3.0;

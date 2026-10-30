@@ -30,7 +30,7 @@ import za.co.neroland.nerospace.block.rules.SporeBurstRules;
 import za.co.neroland.nerospace.block.rules.SporeContactRules;
 
 /**
- * Bursting pod (Spore Pod, 002 §1.5, §2.1.1): a living entity walking into it, or a punch with anything but shears or
+ * Bursting pod (Spore Pod): a living entity walking into it, or a punch with anything but shears or
  * a Silk Touch tool, consumes the block. The burst leaves a <b>visual</b> cloud (r 2.5, 100 ticks, no effect of its
  * own); {@link #tickBursts} applies Nausea I 8 s every 10 ticks to living entities inside it that are not wearing a
  * sealed helmet (a vanilla cloud cannot read armour). Shears/Silk Touch mine it normally — the loot table drops it.

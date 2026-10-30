@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §3 light absorb index: the 3×3×3 neighbourhood bitset behind the Nyx Stone mixin. */
+/** Light absorb index: the 3×3×3 neighbourhood bitset behind the Nyx Stone mixin. */
 class NyxLightIndexTest {
 
     @Test

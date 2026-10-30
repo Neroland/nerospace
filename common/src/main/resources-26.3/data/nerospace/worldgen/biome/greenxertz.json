@@ -1,5 +1,18 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "additions": {
+        "sound": "nerospace:ambient.greenxertz.additions",
+        "tick_chance": 0.0055
+      },
+      "loop": "nerospace:ambient.greenxertz.loop",
+      "mood": {
+        "block_search_extent": 8,
+        "offset": 2.0,
+        "sound": "nerospace:ambient.greenxertz.mood",
+        "tick_delay": 6000
+      }
+    },
     "minecraft:gameplay/natural_mob_spawns": {
       "argument": {
         "spawn_costs": {},

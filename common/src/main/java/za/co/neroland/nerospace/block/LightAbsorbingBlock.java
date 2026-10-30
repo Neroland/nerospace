@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 
 /**
- * Light-absorbing stone (Nyx Stone, 002 §1.6/§11.1). Block light spreading into any cell of its 3×3×3 loses 2
+ * Light-absorbing stone (Nyx Stone). Block light spreading into any cell of its 3×3×3 loses 2
  * extra levels (the {@code BlockLightEngineNyxMixin}); sky light is untouched. When {@code blocks.nyxStoneLightAbsorb}
  * is false — or another mod replaced the light engine — it is a plain full light blocker with no emission, the
  * documented fallback. {@link #useShapeForLightOcclusion} is true so placing/removing it always re-runs the light

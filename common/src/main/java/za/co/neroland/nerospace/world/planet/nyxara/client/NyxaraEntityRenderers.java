@@ -4,14 +4,12 @@ import net.minecraft.resources.Identifier;
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.ClientEntityRenderers;
-import za.co.neroland.nerospace.client.GreenlingModel;
 import za.co.neroland.nerospace.client.GreenxertzCreatureRenderer;
 import za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent;
 
 /**
  * Client renderers for Nyxara entities, called from the single {@link ClientEntityRenderers} call site on every
- * loader. The Dusk Moth is a placeholder (the Greenling body, small and flattened, violet-tinted, with a glow layer)
- * until the Stage 6 art pass.
+ * loader: the Dusk Moth on its own winged body ({@link DuskMothModel}) with the glow layer for its eye-spots.
  */
 public final class NyxaraEntityRenderers {
 
@@ -24,7 +22,7 @@ public final class NyxaraEntityRenderers {
 
     public static void registerAll(ClientEntityRenderers.Sink sink) {
         sink.register(NyxaraContent.DUSK_MOTH.get(), context -> new GreenxertzCreatureRenderer(context,
-                new GreenlingModel(GreenlingModel.createBodyLayer().bakeRoot()),
-                tex("dusk_moth"), 0.7F, 0.5F, 0.7F, 0.2F, tex("dusk_moth_glow")));
+                new DuskMothModel(DuskMothModel.createBodyLayer().bakeRoot()),
+                tex("dusk_moth"), 0.7F, 0.7F, 0.7F, 0.2F, tex("dusk_moth_glow")));
     }
 }

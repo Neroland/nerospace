@@ -18,7 +18,7 @@ Entry points
 * ``gen_textures.py`` imports this module and calls ``write_all(BLOCK_DIR, ITEM_DIR)`` at the end of
   its ``__main__`` (so ``./gradlew genAssets`` picks the planet set up with no Gradle change).
   The call is gated by ``ENABLED`` below: it is ``False`` until the planet blocks are registered
-  (Stage 3 flips it to ``True`` — or passes ``--planets`` on the command line).  Until then the
+  (flip it to ``True`` — or pass ``--planets`` on the command line).  Until then the
   table is inert and ``genAssets`` leaves the resource tree exactly as it was.
 * ``python tools/gen_planet_textures.py --multiloader [--force] [--planets]`` renders the table
   directly (same gate, same additive semantics).
@@ -50,7 +50,7 @@ except ModuleNotFoundError:  # mirrors gen_textures: committed art, Pillow optio
 S = 16
 CLEAR = (0, 0, 0, 0)
 
-# Stage 3 flips this to True once the planet blocks/items are registered. Until then the table is
+# Flip this to True once the planet blocks/items are registered. Until then the table is
 # only reachable through --planets (resource write) or --preview (planning folder).
 ENABLED = False
 
@@ -214,11 +214,15 @@ def holes(base_img, hole_palette, seed, *, count=5, radius=1.8, rim=True):
     return img
 
 
-def crystal_facets(palette, seed, *, cells=4, bev=True):
+def crystal_facets(palette, seed, *, cells=4, bev=True, glint=None):
     """Full-cube faceted crystal: triangular facets tiled `cells` x `cells`, lit top-left.
-    `palette` = (base/dark, body, tips/light)."""
+    `palette` = (base/dark, body, tips/light).  An optional `glint` colour is painted
+    ONLY on the facet edge lines (one pixel per facet diagonal) and the bevel highlight, so a
+    contrasting accent (the Gravity Shard's cyan) reads as a glint on a violet crystal instead of
+    tinting every lit facet (which made the block read as cyan next to Void Crystal)."""
     rng = random.Random(seed ^ 0xFACE)
     dark, body, light = palette[0], palette[1], palette[2]
+    edge = glint if glint is not None else light
     img = new_img()
     px = img.load()
     cs = S // cells
@@ -226,17 +230,18 @@ def crystal_facets(palette, seed, *, cells=4, bev=True):
         for cx in range(cells):
             flip = rng.random() < 0.5
             tone = rng.choice((body, body, mix(body, light, 0.3)))
+            sparkle = glint is not None and rng.random() < 0.5
             for y in range(cs):
                 for x in range(cs):
                     u, v = (x, y) if not flip else (cs - 1 - x, y)
                     if u + v < cs - 1:
                         px[cx * cs + x, cy * cs + y] = mix(tone, light, 0.35)
                     elif u + v == cs - 1:
-                        px[cx * cs + x, cy * cs + y] = light
+                        px[cx * cs + x, cy * cs + y] = edge if (glint is None or sparkle) else light
                     else:
                         px[cx * cs + x, cy * cs + y] = mix(tone, dark, 0.35)
     if bev:
-        bevel(img, light, dark)
+        bevel(img, edge if glint is not None else light, dark)
     return img
 
 
@@ -399,19 +404,36 @@ def layer_overlay(top_pal, side_pal, seed):
     return top, side
 
 
-def footprint_variant(base_img, dark, seed):
-    """Regolith FOOTPRINT state: two boot-shaped ovals pressed into the base in `dark`."""
+def footprint_variant(base_img, dark, seed, *, rim=None, tread=True):
+    """Regolith FOOTPRINT state: two boot-shaped ovals pressed into the base.  The
+    print has a pressed floor (`dark`, darkened a further 15 %), a one-pixel sunlit rim on the
+    upper-left edge (`rim`, default = base lightened) and a faint tread bar, so the "first steps"
+    state is legible at 16 px instead of a 12 % tone change."""
     img = base_img.copy()
     px = img.load()
     rng = random.Random(seed ^ 0xF007)
+    floor = shade(dark, 0.85)
     for (cx, cy, ang) in ((5.5, 7, 0.35), (10.5, 9.5, 0.35)):
+        inside = {}
         for y in range(S):
             for x in range(S):
                 dx, dy = (x - cx), (y - cy)
                 u = dx * math.cos(ang) + dy * math.sin(ang)
                 v = -dx * math.sin(ang) + dy * math.cos(ang)
-                if (u / 1.6) ** 2 + (v / 3.2) ** 2 <= 1.0:
-                    px[x, y] = dark if rng.random() < 0.85 else mix(dark, base_img.getpixel((x, y)), 0.5)
+                r2 = (u / 1.7) ** 2 + (v / 3.4) ** 2
+                if r2 <= 1.0:
+                    inside[(x, y)] = (u, v)
+        for (x, y), (u, v) in inside.items():
+            base = base_img.getpixel((x, y))
+            px[x, y] = floor if rng.random() < 0.8 else mix(floor, dark, 0.5)
+            if tread and int(round(v)) % 2 == 0 and abs(u) < 1.2:
+                px[x, y] = dark
+        # rim: pixels just outside the print on its upper-left side catch the light
+        for (x, y) in list(inside):
+            for (nx, ny) in ((x - 1, y), (x, y - 1), (x - 1, y - 1)):
+                if 0 <= nx < S and 0 <= ny < S and (nx, ny) not in inside:
+                    base = base_img.getpixel((nx, ny))
+                    px[nx, ny] = rim if rim is not None else shade(base, 1.18)
     return img
 
 
@@ -617,7 +639,7 @@ def _hull_window(spec):
 
 
 def _crystal_block(spec):
-    return {"block/%s.png" % spec["id"]: crystal_facets(spec["pal"], spec["seed"])}
+    return {"block/%s.png" % spec["id"]: crystal_facets(spec["pal"], spec["seed"], glint=spec.get("glint"))}
 
 
 def _crystal_cluster(spec):
@@ -725,11 +747,18 @@ def _pit(spec):
     for y in range(S):
         for x in range(S):
             d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
-            if d < 3.0:
-                px[x, y] = centre
-            elif d < 4.5:
+            # The pit reads as a depression — a dark throat, a graded funnel, a lit
+            # upper-left lip and a shadowed lower-right lip (same tones, stronger contrast).
+            if d < 2.2:
+                px[x, y] = shade(centre, 0.55)
+            elif d < 3.6:
+                px[x, y] = shade(centre, 0.75) if (x + y) % 2 else centre
+            elif d < 5.0:
                 px[x, y] = ring if (int(d * 2) + x) % 2 else mix(ring, centre, 0.5)
-            elif d < 6.5 and (x + y) % 3 == 0:
+            elif d < 6.2:
+                lit = (x - 7.5) + (y - 7.5) < 0
+                px[x, y] = shade(px[x, y], 1.15) if lit else shade(px[x, y], 0.8)
+            elif d < 7.5 and (x + y) % 3 == 0:
                 px[x, y] = ring
     return {"block/%s.png" % spec["id"]: img}
 
@@ -1211,7 +1240,67 @@ def _item_pigment(spec):
     return {"item/%s.png" % spec["id"]: img}
 
 
+_EGG_ROWS = {
+    2: (7, 9), 3: (6, 10), 4: (6, 10), 5: (5, 11), 6: (5, 11), 7: (4, 12), 8: (4, 12),
+    9: (4, 12), 10: (4, 12), 11: (4, 12), 12: (5, 11), 13: (5, 11), 14: (6, 10),
+}
+
+
+def _item_spawn_egg(spec):
+    """Spawn egg in the 1.6.0 silhouette (gen_textures._EGG_ROWS): base egg, accent spots,
+    dark outline, top-left highlight.  The planet-creature eggs live here so the
+    planet generator owns them (instead of flat single-colour eggs)."""
+    base, spot, outline = spec["pal"]
+    rng = random.Random(spec["seed"])
+    img = new_img()
+    px = img.load()
+    for y, (x0, x1) in _EGG_ROWS.items():
+        for x in range(x0, x1 + 1):
+            edge = (x == x0 or x == x1 or y == min(_EGG_ROWS) or y == max(_EGG_ROWS)
+                    or (y - 1 not in _EGG_ROWS) or (y + 1 not in _EGG_ROWS))
+            px[x, y] = outline if edge else (spot if rng.random() < 0.32 else base)
+    for (hx, hy) in ((7, 4), (8, 4), (6, 5)):
+        r, g, b, a = px[hx, hy]
+        if a:
+            px[hx, hy] = (min(255, r + 40), min(255, g + 40), min(255, b + 40), 255)
+    return {"item/%s.png" % spec["id"]: img}
+
+
+def _item_lining(spec):
+    """Rad Lining: a folded foil sheet (station greys) with a radiation trefoil in the Mars
+    warning orange — the only suit upgrade whose icon is a flat sheet, so it reads apart from
+    the module cards.  Palette: foil #E6E9EE/#A7AEB8/#5A6168 (titanium), accent #FF8C42."""
+    foil_hi, foil, foil_dk = spec["pal"]
+    accent = spec["accent"]
+    img = new_img()
+    px = img.load()
+    # sheet with a folded corner (top-right)
+    for y in range(3, 14):
+        for x in range(3, 13):
+            if x >= 10 and y <= 5 and (x - 10) + (5 - y) >= 2:
+                continue
+            px[x, y] = foil if (x + y) % 3 else foil_hi
+    for y in range(3, 14):
+        px[3, y] = foil_hi
+        px[12, y] = foil_dk if y > 5 else px[12, y]
+    for x in range(3, 13):
+        px[x, 13] = foil_dk
+        if x < 10:
+            px[x, 3] = foil_hi
+    for i in range(3):  # the fold
+        px[10 + i, 3 + i] = foil_dk
+        px[9 + i, 4 + i] = foil_hi
+    # trefoil: centre dot + three blades (pixel-art, 7x7 footprint)
+    cx, cy = 7, 9
+    blades = ((0, -2), (-2, 1), (2, 1), (0, -3), (-1, -2), (1, -2), (-3, 2), (-2, 2), (3, 2), (2, 2), (-1, 1), (1, 1))
+    for dx, dy in blades:
+        px[cx + dx, cy + dy] = accent
+    px[cx, cy] = foil_dk
+    return {"item/%s.png" % spec["id"]: img}
+
+
 FAMILIES = {
+    "item_spawn_egg": _item_spawn_egg, "item_lining": _item_lining,
     "ore": _ore, "noise": _noise, "polished": _polished, "glass": _glass, "hull_window": _hull_window,
     "crystal_block": _crystal_block, "crystal_cluster": _crystal_cluster, "strata": _strata,
     "crust": _crust, "cheese_ore": _cheese_ore, "cheese_wheel": _cheese_wheel, "column": _column,
@@ -1272,6 +1361,8 @@ PLANET_BLOCK_TEXTURES = [
     _row("luna", "titanium_ingot", "item_ingot", pal=(hexc("#E6E9EE"), hexc("#A7AEB8"), hexc("#5A6168"))),
     _row("luna", "helium3_canister", "item_canister", pal=(hexc("#8D949B"), hexc("#5A6168"), hexc("#7FF3FF"))),
     _row("luna", "moon_cheese", "item_wedge", pal=(hexc("#D9A528"), hexc("#F5C242"), hexc("#C68E1E"))),
+    # creature eggs: base = coat, spot = marking, outline = shade; palettes match gen_entity_skins.py
+    _row("luna", "moon_hopper_spawn_egg", "item_spawn_egg", pal=(hexc("#C9C9C2"), hexc("#7D7D78"), hexc("#4A4B50"))),
     # ---------------------------------------------------------------- Mars
     _row("mars", "red_regolith", "noise", pal=MARS_SAND, grain=0.4, chunk=0.45),
     _row("mars", "martian_sandstone", "strata", pal=MARS_BANDS, frames=4, frametime=20, amp=0.10, variants=True),
@@ -1283,6 +1374,8 @@ PLANET_BLOCK_TEXTURES = [
     _row("mars", "raw_hematite", "item_lump", pal=(hexc("#6B2F1E"), hexc("#8C3C2A"), hexc("#4A2016"), hexc("#C8683D"))),
     _row("mars", "rust_pigment", "item_pigment", pal=(hexc("#6B2F1E"), hexc("#B5532A"), hexc("#C8683D"))),
     _row("mars", "perchlorate_oxidiser", "item_gem", pal=(hexc("#C9D6DD"), hexc("#E8ECEF"), hexc("#F5F7F9")), shard=True),
+    _row("mars", "dust_strider_spawn_egg", "item_spawn_egg", pal=(hexc("#B5532A"), hexc("#D9A066"), hexc("#4A2016"))),
+    _row("mars", "rad_lining", "item_lining", pal=(hexc("#E6E9EE"), hexc("#A7AEB8"), hexc("#5A6168")), accent=hexc("#FF8C42")),
     # ---------------------------------------------------------------- Cindara
     _row("cindara", "ashstone", "noise", pal=CIND_ASH, grain=0.4, chunk=0.45),
     _row("cindara", "ember_cracked_ashstone", "glow_cracks", base=CIND_ASH,
@@ -1321,12 +1414,13 @@ PLANET_BLOCK_TEXTURES = [
     _row("nyxara", "dawnband_stone", "dawnband", base=NYX_STONE, vein=(hexc("#FFB86B"), hexc("#FFD39A")), frames=8, frametime=4, amp=0.30, hue=(0.08, 0.13)),
     _row("nyxara", "shadow_lichen", "multiface", pal=(hexc("#0D0A14"), hexc("#2B2440"), hexc("#5B2D8E"))),
     _row("nyxara", "voidglass_ore", "ore", base=NYX_STONE, ore=(hexc("#4DD0E1"), hexc("#C77DFF"), hexc("#E6D2FF")), glint=hexc("#FFFFFF"), count=3),
-    _row("nyxara", "gravity_shard_block", "crystal_block", pal=(hexc("#9B5DE5"), hexc("#C77DFF"), hexc("#4DD0E1"))),
+    _row("nyxara", "gravity_shard_block", "crystal_block", pal=(hexc("#9B5DE5"), hexc("#C77DFF"), hexc("#E6D2FF")), glint=hexc("#4DD0E1")),
     _row("nyxara", "voidglass", "item_gem", pal=(hexc("#2B2440"), hexc("#4DD0E1"), hexc("#C77DFF")), shard=True),
     _row("nyxara", "voidglass_lens", "item_lens", pal=(hexc("#5A6168"), hexc("#4DD0E1"), hexc("#C77DFF"))),
     _row("nyxara", "gravity_shard", "item_gem", pal=(hexc("#9B5DE5"), hexc("#C77DFF"), hexc("#4DD0E1")), shard=True),
     _row("nyxara", "night_fibre", "item_fibre", pal=(hexc("#0D0A14"), hexc("#2B2440"), hexc("#5B2D8E"))),
     _row("nyxara", "void_shard", "item_gem", pal=(hexc("#5B2D8E"), hexc("#9B5DE5"), hexc("#C77DFF")), shard=True),
+    _row("nyxara", "dusk_moth_spawn_egg", "item_spawn_egg", pal=(hexc("#2B2440"), hexc("#C77DFF"), hexc("#0D0A14"))),
     # ---------------------------------------------------------------- Station
     _row("station", "hull_plating", "plating", base=STATION_HULL, seam=STATION_SEAM, rivet=STATION_TEAL),
     _row("station", "hull_window", "hull_window", edge=STATION_HULL, pane=hexc("#C8D4DC"), sparkle=hexc("#FFFFFF"),

@@ -20,7 +20,7 @@ import net.minecraft.world.level.Level;
 import za.co.neroland.nerospace.entity.FaunaStats;
 
 /**
- * Dusk Moth (003 §8.1): the ambient flier of Nyxara's terraformed twilight grove. It drifts between the grove's
+ * Dusk Moth: the ambient flier of Nyxara's terraformed twilight grove. It drifts between the grove's
  * trees, flees when struck and never lands for long. It is an AMBIENT-category mob that only spawns where the light
  * is at most 7 ({@link FaunaStats#MOTH_MAX_LIGHT}), so it fills the grove's dim corners without eating the creature
  * cap. Native to Nyxara ({@code #nerospace:native_fauna}). Takes no fall damage. Sounds reuse the vanilla bat.

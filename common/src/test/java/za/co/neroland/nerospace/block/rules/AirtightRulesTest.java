@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.7, §10.5; 005 §7.1. */
+/** Airtight hull rules. */
 @SuppressWarnings("unused")
 class AirtightRulesTest {
 

@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.entity;
 
 /**
- * Plain numbers for the Stage 5 terraform fauna (003 §8.1): Moon Hopper (Luna), Dust Strider (Mars) and Dusk Moth
+ * Plain numbers for the terraform fauna: Moon Hopper (Luna), Dust Strider (Mars) and Dusk Moth
  * (Nyxara). Kept free of Minecraft types so the attribute sanity test can read them without a registry bootstrap;
  * each species' {@code createAttributes()} builds its attribute supplier from these.
  */
@@ -25,7 +25,7 @@ public final class FaunaStats {
     private FaunaStats() {
     }
 
-    /** True when a Dusk Moth may spawn at this light level (block and sky light combined, 0..15). */
+    /** True when a Dusk Moth may spawn at this block-light level (0..15; sky light is not counted). */
     public static boolean mothMaySpawnAt(int light) {
         return light >= 0 && light <= MOTH_MAX_LIGHT;
     }

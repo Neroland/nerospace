@@ -9,7 +9,7 @@ import net.minecraft.world.level.ChunkPos;
 /**
  * Bounded "loaded chunks" iteration for weather-driven block effects. Common code has no loaded-chunk iterator, so
  * this walks the chunks within {@link #RADIUS} of each player (de-duplicated) and skips any not already loaded. With
- * the default radius that is ≤ 81 chunks per player — the 002 §3 budget of one action per chunk per cadence.
+ * the default radius that is ≤ 81 chunks per player — the budget of one action per chunk per cadence.
  * No player data is kept.
  */
 public final class LoadedChunks {

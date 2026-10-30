@@ -17,9 +17,9 @@ import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.IgniteRules;
 
 /**
- * Flammable crust (Sulfur Crust, 002 §1.3): when a fire block appears next to it, each other flammable neighbour gets
+ * Flammable crust (Sulfur Crust): when a fire block appears next to it, each other flammable neighbour gets
  * fire above it (≤ 5 per trigger) — and the crust burns to {@code burnsTo}. No chaining through another crust in the
- * same tick (a crust neighbour is never a target). Flammability is registered by Stage 3 with the loader's flammable
+ * same tick (a crust neighbour is never a target). Flammability is registered with the loader's flammable
  * hook (30 / 60, {@link IgniteRules}).
  */
 public class IgnitingCrustBlock extends Block {

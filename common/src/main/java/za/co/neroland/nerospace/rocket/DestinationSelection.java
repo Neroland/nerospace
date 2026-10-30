@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Pure destination-selection rules shared by the rocket console, the Launch Controller and the server guard
- * (004 §5–6). Bit {@code i} of a mask stands for {@link Destinations} index {@code i}. No world state: the
+ * Bit {@code i} of a mask stands for {@link Destinations} index {@code i}. No world state: the
  * screens predict with it (optimistic highlight) and the server decides with it, so both always agree on why a
  * card can or cannot be picked.
  */

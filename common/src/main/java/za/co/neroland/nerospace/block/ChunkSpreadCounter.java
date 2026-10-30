@@ -16,7 +16,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import za.co.neroland.nerospace.block.rules.ChunkCounterRules;
 
 /**
- * Per-chunk block counts for capped spreading (002 §3), cached for {@link ChunkCounterRules#TTL_TICKS}. A cold
+ * Per-chunk block counts for capped spreading, cached for {@link ChunkCounterRules#TTL_TICKS}. A cold
  * entry costs one palette check per section and a scan only of sections that may hold the block. Keyed weakly by
  * level; holds counts only.
  */

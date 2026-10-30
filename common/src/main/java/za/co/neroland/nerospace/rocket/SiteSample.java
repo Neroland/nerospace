@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.rocket;
 import net.minecraft.core.BlockPos;
 
 /**
- * What the adapter read about one candidate Landing Pod site (005 §1.7). Arrays are the 5×5 footprint in
+ * What the adapter read about one candidate Landing Pod site. Arrays are the 5×5 footprint in
  * row-major order (dz outer, dx inner, −2..+2); {@code headroomClear} is the 5×5×3 box (75 cells).
  *
  * @param floorSolid      per floor cell (y−1): full-collision block
@@ -11,8 +11,8 @@ import net.minecraft.core.BlockPos;
  * @param headroomClear   per box cell (y..y+2): air/replaceable with no block entity
  * @param inStructure     a structure start intersects the box
  * @param nearestInaccessibleClaimDist Chebyshev distance to the nearest claim the rider cannot access
- * @param overlapsPad     the 5×5 overlaps a registered launch pad / dock box (hard rule, 005 G1/claim table)
- * @param podNearby       another standing Landing Pod node within 32 blocks (005 G8)
+ * @param overlapsPad     the 5×5 overlaps a registered launch pad / dock box (hard rule)
+ * @param podNearby       another standing Landing Pod node within 32 blocks
  * @param existingEmptyPod the site already holds an empty, unoccupied Landing Pod
  */
 public record SiteSample(BlockPos site, boolean[] floorSolid, boolean[] floorForbidden, boolean[] headroomClear,

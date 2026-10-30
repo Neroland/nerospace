@@ -35,6 +35,12 @@ Forge is **not blocked** anymore. The supported Forge pins are:
 - MC 26.1.2: `forge_version_26.1.2=26.1.2-64.0.10`
 - MC 26.2: `forge_version_26.2=26.2-65.0.0`
 
+Forge jars: players get the jarJar `-all` jar (Sentry nested in `META-INF/jarjar/`). The plain jar is the Maven
+artifact for sibling mods and carries no JarJar metadata; `forge/build.gradle` strips it from `jar` and adds it to
+`jarJar` directly. In the dev run Sentry comes only from the `implementation 'io.sentry:sentry'` library, so Core
+must resolve to a plain jar without JarJar metadata too (Core 1.17.0+, or a 1.16.0 rebuilt locally with the same `forge/build.gradle` change). A plain jar that
+names a nested jar it does not contain stops every Forge dev run with "io.sentry ... no jar was provided".
+
 ## Architecture
 
 `common/` must remain free of loader APIs. Shared code reaches loader behavior through Java
@@ -78,10 +84,39 @@ a loader or move a hook, update all three.
 | --- | --- | --- | --- | --- |
 | Planet clock + weather tick + client sync | `world.planet.PlanetTicks.serverTick(server)` | `NerospaceFabric`: `ServerTickEvents.END_SERVER_TICK` | `NerospaceNeoForge`: `ServerTickEvent.Post` | `NerospaceForge`: `TickEvent.ServerTickEvent.Post` |
 | Sky profile loading | `client.sky.SkyProfiles.INSTANCE` (reload listener) | `NerospaceFabricClient`: `ResourceLoader.get(CLIENT_RESOURCES).registerReloadListener` | `NeoForgeSky`: `AddClientReloadListenersEvent` | `ForgeClientSetup`: `RegisterClientReloadListenersEvent` |
-| Sky drawing | `client.sky.PlanetSkyRenderer.renderCurrent(level)` | none yet (no Fabric API sky hook on 26.x) | `NeoForgeSky`: `CustomSkyboxRenderer` `nerospace:planet` (26.3 only) | none yet |
+| Sky drawing | `client.sky.PlanetSkyRenderer.frame` + `scene` (pure `SkyScene` maths) | none yet (no Fabric API sky hook on 26.x) | `NeoForgePlanetSky` (`CustomSkyboxRenderer` `nerospace:planet`, 26.3 only) | none yet |
+| Ambient particle providers | `client.particle.ClientParticles.registerAll(sink)` | `NerospaceFabricClient`: `ParticleProviderRegistry` | `NeoForgeClientSetup`: `RegisterParticleProvidersEvent` | `ForgeClientSetup`: `RegisterParticleProvidersEvent` |
+| Ambient particles + weather loops | `client.WeatherAmbience.tick()` | `NerospaceFabricClient`: `END_CLIENT_TICK` | `NeoForgeClientSetup`: `ClientTickEvent.Post` | `ForgeClientSetup`: `TickEvent.ClientTickEvent.Post` |
+| HUD: oxygen gauge, status lines, clock dial | `client.OxygenHud.render(g)` (draws `client.ClockHud` too; geometry in `client.ui.HudLayout`) | `NerospaceFabricClient`: `HudElementRegistry` | `NeoForgeClientSetup`: `RegisterGuiLayersEvent` | `ForgeClientSetup`: `AddGuiOverlayLayersEvent` |
 
-Sky colours are carried by the dimension types themselves, so a cell without a sky hook still shows the
-planet's colours; the renderer only adds bodies, auroras and the like on top.
+Sky colours are carried by the dimension types themselves (`minecraft:visual/*` attributes: sky, fog, cloud and
+sunrise colours, a fixed sun/moon angle, star brightness), so a cell without a sky hook still shows the planet's
+palette. On NeoForge 26.3 every Nerospace dimension type also sets `neoforge:custom_skybox: nerospace:planet`, which
+hands the sky to `NeoForgePlanetSky`: gradient by clock phase, stars, galaxy band, aurora, haze, suns, moons and
+planets from `assets/nerospace/sky/<planet>.json`. A level without a profile (or with `vanillaSkybox: true`) gets the
+vanilla sky.
+
+Attribute formats (all three lines): `cloud_color` and `sunrise_sunset_color` are ARGB (`#AARRGGBB`), the other
+colours RGB (`#RRGGBB`); `moon_phase` is a name such as `full_moon`; `fog_start_distance` / `fog_end_distance` are in
+blocks (leave them out unless you mean a fixed fog wall). `SkyAssetsTest` checks these.
+
+Ambient particles have one source on every loader: `client.WeatherAmbience`, which honours `particles.enabled`,
+the per-type rates, `weather.particleBudget` and the open-sky rule. The planet biomes deliberately carry no
+`minecraft:visual/ambient_particles`: vanilla would roll those around the player every tick with no budget, indoors
+and underground too, and no config could turn them off. As a second guard, the particle providers create nothing
+while `particles.enabled=false`. The sky's orbiting bodies read the continuous planet day count
+(`ClientPlanetClock.days`), not the wrapped phase, so a body whose period is not one day never jumps at sunrise;
+Nyxara's band width comes from the world's bound value carried on the clock payload, with the config as fallback.
+
+### Loader-only resource overlays (NeoForge 26.3 skybox)
+
+`neoforge:custom_skybox` exists only on NeoForge, and Fabric and Forge reject a dimension type that names an unknown
+attribute, so the selection cannot live in the shared resources. `stonecutter.gradle` therefore also stages
+`<loader>/src/main/resources-<mc>` overlays (after the shared `common/src/main/resources-<mc>` ones of the same
+version, so the loader copy wins). The NeoForge 26.3 dimension types live in
+`neoforge/src/main/resources-26.3/data/nerospace/dimension_type/` and are generated: **after editing a dimension
+type, run `python tools/gen_sky_overlays.py`** (`--check` verifies). `SkyAssetsTest` fails on a missing or stale
+overlay and on the attribute ever appearing in the shared files.
 
 ### Chunk render layers (glass, ice, crystals, windows)
 
@@ -93,7 +128,7 @@ Fabric all follow it, so one texture rule covers all nine cells:
 | Texture alpha | Layer | Use for |
 | --- | --- | --- |
 | every pixel 255 | SOLID | ordinary blocks |
-| some pixels 0, none in 1–254 | CUTOUT | holes: panes, plants, the Cheese Wheel's cut faces |
+| some pixels 0, none in 1–254 | CUTOUT | holes: panes, plants, a sliced block's cut faces |
 | any pixel in 1–254 | TRANSLUCENT | tinted glass and ice: Crater Glass, Dry Ice (later Hull Window, Magma Glass, Void Crystal, Frost Crystal) |
 
 A see-through block also needs the right block properties, or neighbours' faces are culled and you see the void:
@@ -120,6 +155,7 @@ planet-block framework (`block/`) and planet packages:
 | `world/planet/greenxertz/block/BioBarkLogBlock` | `>=26.3` | `SoundEvents.AXE_STRIP` is a `Holder.Reference` (`.value()`) |
 | `world/planet/greenxertz/block/GlowcapFungusBlock` | `>=26.3` | the `BonemealableBlock` methods take a trailing `BonemealSource` |
 | `world/planet/greenxertz/world/GiantGlowcapFeature`, `GreenxertzContent.GIANT_GLOWCAP_FEATURE` | `<26.3` / `>=26.3` | the feature API split, as `RuinFeature` (`FEATURE_TYPES` codec vs `FEATURES` instance) |
+| `world/planet/mars/entity/DustDevil` | `<26.3` / `>=26.3` | client interpolation: a hand-held `InterpolationHandler` ticked in `tick()` before 26.3, the `createInterpolationHandler()` override (`LinearInterpolationHandler`) from 26.3; `hurtMarked` was renamed `needsSync` for the pushed item velocity |
 
 Version-neutral by design: the Nyx Stone light mixins (`mixin/LightEngineNyxMixin`, `mixin/BlockLightEngineNyxMixin`)
 target methods and the `newToLevel` local that are identical on 26.1.2, 26.2 and 26.3, and block classes do not
@@ -157,7 +193,8 @@ Rule: **after adding or editing any biome in `common/src/main/resources/data/ner
 `minCount == maxCount`, else `minecraft:uniform`; every category written, empty ones as `[]`; nothing else changed).
 Never edit the overlay by hand. `python tools/gen_biome_overlays.py --check` fails on a missing, stale or orphaned
 overlay, and `BiomeOverlay26_3Test` fails the build if a biome has no overlay, the overlay keeps `spawners` /
-`spawn_costs`, or its spawns differ from the shared biome.
+`spawn_costs`, its spawns differ from the shared biome, or it is not exactly the generator's transform of the shared
+biome (a `features` / `effects` / `attributes` edit without a re-run is caught too).
 
 ## Build
 

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:noise",
+  "noise": "nerospace:nyxara/vegetation",
+  "shift_x": "nerospace:nyxara/shift_x",
+  "shift_z": "nerospace:nyxara/shift_z",
+  "xz_scale": 0.25,
+  "y_scale": 0.0
+}

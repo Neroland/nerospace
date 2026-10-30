@@ -22,13 +22,17 @@ import za.co.neroland.nerospace.world.planet.ClockSource;
 /**
  * Greenxertz keeps its real clock: {@code nerospace:greenxertz} is a faithful copy of the vanilla
  * {@code minecraft:overworld} dimension type of the Minecraft version under test (the vanilla JSON is read from the
- * game jar on the test classpath, so each cell checks against its own version), changing only {@code skybox}.
- * Clock, bed, raid-darkness and spawn-relevant fields are also asserted one by one.
+ * game jar on the test classpath, so each cell checks against its own version), changing only {@code skybox} and the
+ * planet's colour attributes (sky, fog, cloud, sunrise colour and star brightness: the green sky). Clock, bed,
+ * raid-darkness and spawn-relevant fields are also asserted one by one.
  */
 class GreenxertzDimensionTypeTest {
 
     /** The only keys the Greenxertz type may add to vanilla overworld's, with their required value. */
     private static final Map<String, String> ALLOWED_EXTRA = Map.of("skybox", "overworld");
+    /** Visual attributes the planet palette may set or override; every other attribute stays vanilla. */
+    private static final Set<String> PALETTE = Set.of("minecraft:visual/sky_color", "minecraft:visual/fog_color",
+            "minecraft:visual/cloud_color", "minecraft:visual/sunrise_sunset_color", "minecraft:visual/star_brightness");
 
     private static JsonObject load(String path) throws IOException {
         try (InputStream in = GreenxertzDimensionTypeTest.class.getResourceAsStream(path)) {
@@ -43,6 +47,22 @@ class GreenxertzDimensionTypeTest {
         JsonObject vanilla = load("/data/minecraft/dimension_type/overworld.json");
         JsonObject ours = load("/data/nerospace/dimension_type/greenxertz.json");
         for (Map.Entry<String, JsonElement> e : vanilla.entrySet()) {
+            if (e.getKey().equals("attributes")) {
+                JsonObject va = e.getValue().getAsJsonObject();
+                JsonObject oa = ours.getAsJsonObject("attributes");
+                for (Map.Entry<String, JsonElement> a : va.entrySet()) {
+                    if (!PALETTE.contains(a.getKey())) {
+                        assertEquals(a.getValue(), oa.get(a.getKey()), "differs from vanilla overworld: " + a.getKey());
+                    }
+                }
+                for (String k : oa.keySet()) {
+                    // NeoForge 26.3 also selects the planet sky renderer (NeoForge-only overlay).
+                    boolean sky = k.equals("neoforge:custom_skybox")
+                            && "nerospace:planet".equals(oa.get(k).getAsString());
+                    assertTrue(va.has(k) || PALETTE.contains(k) || sky, "unexpected extra attribute " + k);
+                }
+                continue;
+            }
             assertEquals(e.getValue(), ours.get(e.getKey()), "differs from vanilla overworld: " + e.getKey());
         }
         for (String k : ours.keySet()) {

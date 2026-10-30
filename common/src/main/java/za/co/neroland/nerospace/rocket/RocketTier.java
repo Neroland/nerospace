@@ -16,8 +16,10 @@ import za.co.neroland.nerospace.registry.ModDimensions;
  * default selection, and is the 1.x default for every tier — appending a destination never moves it).
  *
  * <p><b>Destination progression:</b> Tier 1 reaches the Orbital Station and the Moon; Tier 2 adds
- * Greenxertz and Mars; Tier 3 adds Cindara; Tier 4 adds Glacira and Nyxara. Lists are append-only per tier
- * (pre-global rocket saves index into them).</p>
+ * Greenxertz and Mars; Tier 3 adds Cindara; Tier 4 adds Glacira and Nyxara. Reach is cumulative: every tier's
+ * list holds every destination of the tiers below it (Nyxara stays behind its Deep Space gate). Lists are
+ * append-only per tier (pre-global rocket saves index into them), so the cumulative entries a tier lacked in
+ * 1.x and early 2.0 are appended after its existing ones.</p>
  *
  * <p><b>Launch-pad progression</b> (the footprint a rocket of this tier must stand on — a higher pad
  * always satisfies a lower-tier rocket, see {@link LaunchPadMultiblock#padTier}):</p>
@@ -37,12 +39,15 @@ public enum RocketTier {
     TIER_1(1, 3_000, 1_000, 2_000, 4_000, ModDimensions.STATION_LEVEL,
             List.of(ModDimensions.STATION_LEVEL, ModDimensions.LUNA_LEVEL)),
     TIER_2(2, 6_000, 2_000, 4_000, 8_000, ModDimensions.GREENXERTZ_LEVEL,
-            List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.MARS_LEVEL)),
+            List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.MARS_LEVEL,
+                    ModDimensions.LUNA_LEVEL)),
     TIER_3(3, 12_000, 4_000, 8_000, 16_000, ModDimensions.CINDARA_LEVEL, List.of(
-            ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL)),
+            ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
+            ModDimensions.LUNA_LEVEL, ModDimensions.MARS_LEVEL)),
     TIER_4(4, 24_000, 8_000, 16_000, 30_000, ModDimensions.GLACIRA_LEVEL, List.of(
             ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
-            ModDimensions.GLACIRA_LEVEL, ModDimensions.NYXARA_LEVEL));
+            ModDimensions.GLACIRA_LEVEL, ModDimensions.NYXARA_LEVEL, ModDimensions.LUNA_LEVEL,
+            ModDimensions.MARS_LEVEL));
 
     private final int level;
     private final int fuelCapacity;

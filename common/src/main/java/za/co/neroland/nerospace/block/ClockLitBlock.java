@@ -18,7 +18,7 @@ import za.co.neroland.nerospace.block.rules.TickBootstrapRules;
 import za.co.neroland.nerospace.world.planet.PlanetClock;
 
 /**
- * Clock-gated emitter (Aurora Stone, 002 §1.4, §10.3): a self-rescheduling tick every 200 ticks sets {@code LIT} from
+ * Clock-gated emitter (Aurora Stone): a self-rescheduling tick every 200 ticks sets {@code LIT} from
  * the planet daylight — a block-state flip, not a light-engine hook. Register with
  * {@code lightLevel(s -> s.getValue(LIT) ? AuroraRules.LIGHT : 0)} and {@code randomTicks()}: worldgen never calls
  * {@code onPlace}, so a generated block starts its schedule on its first random tick ({@link TickBootstrapRules}).

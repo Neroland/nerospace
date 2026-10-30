@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Magma Glass (002 §1.3): the only transparent block lava cannot replace. */
+/** Magma Glass: the only transparent block lava cannot replace. */
 public final class LavaImmuneRules {
 
     private LavaImmuneRules() {

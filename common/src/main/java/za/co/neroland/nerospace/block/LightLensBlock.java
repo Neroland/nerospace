@@ -18,8 +18,8 @@ import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.LightLensRules;
 
 /**
- * Light lens glass (Crater Glass, 002 §1.1): emits {@code LENS} = brightest adjacent non-lens emitter + 1,
- * recomputed on placement and neighbour change only — no ticks, no chains. Stage 3 must register it with
+ * Light lens glass (Crater Glass): emits {@code LENS} = brightest adjacent non-lens emitter + 1,
+ * recomputed on placement and neighbour change only — no ticks, no chains. Register it with
  * {@code lightLevel(s -> s.getValue(LightLensBlock.LENS))}. Sparkles client-side at {@code LENS ≥ 8}.
  */
 public class LightLensBlock extends TransparentBlock {

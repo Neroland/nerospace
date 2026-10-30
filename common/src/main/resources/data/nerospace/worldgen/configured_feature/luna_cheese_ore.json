@@ -19,15 +19,6 @@
         },
         "target": {
           "predicate_type": "minecraft:block_match",
-          "block": "nerospace:lunar_basalt"
-        }
-      },
-      {
-        "state": {
-          "Name": "nerospace:cheese_ore"
-        },
-        "target": {
-          "predicate_type": "minecraft:block_match",
           "block": "nerospace:anorthosite"
         }
       }

@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Dust Devil Pit (002 §1.2): during a storm, 1-in-3 per 600 ticks, at most 2 devils in the 3×3 chunk area. */
+/** Dust Devil Pit: during a storm, 1-in-3 per 600 ticks, at most 2 devils in the 3×3 chunk area. */
 public final class SpawnerRules {
 
     public static final int INTERVAL_TICKS = 600;

@@ -17,7 +17,7 @@ import za.co.neroland.nerospace.rocket.LandingDecision.PodLanding;
 import za.co.neroland.nerospace.rocket.LandingDecision.StationDock;
 
 /**
- * The pure landing resolver (005 §1): explicit pad → return pad → paired pad by name → nearest node
+ * The pure landing resolver: explicit pad → return pad → paired pad by name → nearest node
  * (≤ 2048) → Landing Pod; station arrivals prefer a Docking Ring, then the legacy pad, then a pod at the pad
  * centre. No {@code Level}, no server: {@link LandingResolverLevelAdapter} builds the {@link LandingContext}
  * and applies the decision.
@@ -26,11 +26,11 @@ public final class LandingResolver {
 
     /** {@code RocketLaunchPadBlock.SURFACE_HEIGHT} (3/16), duplicated so this class stays loader-free. */
     public static final double SURFACE_HEIGHT = 3.0D / 16.0D;
-    /** A Landing Pod is a full cube: the rocket stands on its top face (orchestrator ruling on 005 §1.5). */
+    /** A Landing Pod is a full cube: the rocket stands on its top face. */
     public static final double POD_SURFACE_HEIGHT = 1.0D;
     /** Step 4 never picks a node farther than this (Chebyshev, horizontal) from {@code preferred}. */
     public static final int NEAREST_BOUND = 2048;
-    /** Step 3 with duplicate names needs one of them within this distance of {@code preferred} (005 G2). */
+    /** Step 3 with duplicate names needs one of them within this distance of {@code preferred}. */
     public static final int PAIR_AMBIGUITY_RADIUS = 256;
 
     private static final Pattern AUTO_LABEL = Pattern.compile("^Pad \\d+$");
@@ -122,7 +122,7 @@ public final class LandingResolver {
         return pod(ctx, st.padCenter(), new Flags(!ctx.excludedNodeIds().isEmpty(), occupied));
     }
 
-    /** 005 §1.4: where steps 4 and 5 search from. Never the rider's origin-dimension X/Z. */
+    /** Where steps 4 and 5 search from. Never the rider's origin-dimension X/Z. */
     static BlockPos preferred(LandingContext ctx, List<PadCandidate> pads) {
         Optional<ReturnSite> ret = ctx.returnSite();
         if (ret.isPresent() && !ret.get().standing()) {
@@ -158,9 +158,11 @@ public final class LandingResolver {
         if (origin.isEmpty() || AUTO_LABEL.matcher(origin).matches()) {
             return null;
         }
+        // Only usable duplicates count toward the ambiguity test: broken or occupied "Home" pads far away must not
+        // block a standing one.
         List<PadCandidate> named = new ArrayList<>();
         for (PadCandidate c : pads) {
-            if (c.kind() != PadKind.POD && c.name().strip().equals(origin)) {
+            if (c.kind() != PadKind.POD && c.usable() && c.name().strip().equals(origin)) {
                 named.add(c);
             }
         }
@@ -172,7 +174,7 @@ public final class LandingResolver {
                 }
             }
             if (!anyClose) {
-                return null; // ambiguous and far: fall to nearest (005 G2)
+                return null; // ambiguous and far: fall to nearest
             }
         }
         PadCandidate best = null;
@@ -201,6 +203,11 @@ public final class LandingResolver {
         return best;
     }
 
+    /** A Landing Pod near {@code preferred}: the touchdown fallback when another rocket already holds the target. */
+    public static PodLanding podNear(LandingContext ctx, BlockPos preferred) {
+        return pod(ctx, preferred, new Flags(false, true));
+    }
+
     private static PodLanding pod(LandingContext ctx, BlockPos preferred, Flags flags) {
         PodSearch.Found found = PodSearch.search(ctx.sampler(), preferred);
         int reusedId = -1;
@@ -219,7 +226,7 @@ public final class LandingResolver {
         return new PadLanding(pad, step, spawnOf(pad.center()), yawOf(pad.facing()), flags);
     }
 
-    /** 005 §1.5: {@code center + (0.5, SURFACE_HEIGHT, 0.5)}. */
+    /** {@code center + (0.5, SURFACE_HEIGHT, 0.5)}. */
     public static Vec3 spawnOf(BlockPos center) {
         return new Vec3(center.getX() + 0.5D, center.getY() + SURFACE_HEIGHT, center.getZ() + 0.5D);
     }
@@ -229,7 +236,7 @@ public final class LandingResolver {
         return new Vec3(pod.getX() + 0.5D, pod.getY() + POD_SURFACE_HEIGHT, pod.getZ() + 0.5D);
     }
 
-    /** 005 §1.5: SOUTH 0, WEST 90, NORTH 180, EAST −90; no facing → 0. */
+    /** SOUTH 0, WEST 90, NORTH 180, EAST −90; no facing → 0. */
     public static float yawOf(@Nullable Direction facing) {
         if (facing == null) {
             return 0.0F;

@@ -389,7 +389,9 @@ public class StationConsoleMenu extends AbstractContainerMenu {
                 return deny(sp);
             }
             int sent = StationHooks.sendVisitorsHome(level, entry);
-            sp.sendSystemMessage(sent < 0
+            sp.sendSystemMessage(sent == StationHooks.VISITOR_ABOARD
+                    ? Component.translatable("gui.nerospace.station_console.visitors_aboard")
+                    : sent < 0
                     ? Component.translatable("gui.nerospace.station_console.visitors_unavailable")
                     : Component.translatable("gui.nerospace.station_console.visitors_sent", sent));
             if (sent > 0 && StationAccess.useViaOp(entry.owner(), entry.members(), me, op)) {
@@ -491,8 +493,23 @@ public class StationConsoleMenu extends AbstractContainerMenu {
 
     // --- server: add member (payload) ------------------------------------------------------------
 
-    /** Handles {@code StationMemberPayload}: online-only, UUID-only, re-checked here. */
+    /**
+     * Whether an add-member request is bound to the console the player has open: the open container is a Station
+     * Console for the same slot and is still valid. Every other console action goes through {@code clickMenuButton},
+     * which has both checks; the payload path must not be weaker.
+     */
+    public static boolean boundToOpenConsole(boolean consoleOpen, int openSlot, boolean stillValid, int slot) {
+        return consoleOpen && stillValid && openSlot == slot && slot >= 0;
+    }
+
+    /** Handles {@code StationMemberPayload}: bound to the open console, online-only, UUID-only, re-checked here. */
     public static void addMember(ServerPlayer sp, int slot, UUID candidate) {
+        boolean open = sp.containerMenu instanceof StationConsoleMenu;
+        int openSlot = sp.containerMenu instanceof StationConsoleMenu m ? m.slot() : -1;
+        boolean valid = sp.containerMenu instanceof StationConsoleMenu m2 && m2.stillValid(sp);
+        if (!boundToOpenConsole(open, openSlot, valid, slot)) {
+            return; // a crafted packet without the console open: refused silently
+        }
         MinecraftServer server = sp.level().getServer();
         StationRegistry registry = StationRegistry.get(server);
         StationEntry entry = registry.get(slot);

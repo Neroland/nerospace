@@ -1,7 +1,7 @@
 {
   "default_block": "minecraft:stone",
   "default_fluid": "minecraft:air",
-  "disable_mob_generation": false,
+  "disable_mob_generation": true,
   "legacy_random_source": false,
   "material_rule": {
     "type": "minecraft:sequence",
@@ -2834,14 +2834,14 @@
     "min_y": -64
   },
   "noise_router": {
-    "chunk_surface_level": "minecraft:overworld/chunk_surface_level",
-    "continents": "minecraft:overworld/continents",
-    "depth": "minecraft:overworld/depth",
-    "erosion": "minecraft:overworld/erosion",
-    "final_density": "minecraft:overworld/final_density",
-    "ridges": "minecraft:overworld/ridges",
-    "temperature": "minecraft:overworld/temperature",
-    "vegetation": "minecraft:overworld/vegetation"
+    "chunk_surface_level": "nerospace:mars/overworld/chunk_surface_level",
+    "continents": "nerospace:mars/overworld/continents",
+    "depth": "nerospace:mars/overworld/depth",
+    "erosion": "nerospace:mars/overworld/erosion",
+    "final_density": "nerospace:mars/overworld/final_density",
+    "ridges": "nerospace:mars/overworld/ridges",
+    "temperature": "nerospace:mars/overworld/temperature",
+    "vegetation": "nerospace:mars/overworld/vegetation"
   },
   "sea_level": 63,
   "spawn_target": [

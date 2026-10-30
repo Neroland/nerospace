@@ -18,7 +18,7 @@ import za.co.neroland.nerospace.world.planet.WeatherEffects;
 import za.co.neroland.nerospace.world.planet.WeatherEvent;
 
 /**
- * In-place staged growth (Frost Crystal Cluster, 002 §1.4): when the event ends, every loaded sky-exposed cluster
+ * In-place staged growth (Frost Crystal Cluster): when the event ends, every loaded sky-exposed cluster
  * below stage 3 gains one stage (≤ 64 per chunk per event, config may lower). Never spreads. Register with
  * {@code lightLevel(s -> CrystalStageRules.light(s.getValue(STAGE)))} and
  * {@code CrystalStageBlock.register(WeatherEvent.DIAMOND_DUST, ModBlocks.FROST_CRYSTAL_CLUSTER::get)}.

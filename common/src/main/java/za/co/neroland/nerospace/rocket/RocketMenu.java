@@ -40,7 +40,7 @@ public class RocketMenu extends AbstractContainerMenu {
     /** Select destination {@code n} via button id {@code SELECT_DEST_BASE + n}. */
     public static final int SELECT_DEST_BASE = 100;
 
-    /** Synced values: 0..13 as before, [14] = destinationGateMask (004 §6), [15] = Observatory reveal count. */
+    /** Synced values: 0..13 as before, [14] = destinationGateMask, [15] = Observatory reveal count. */
     public static final int DATA_COUNT = 16;
     /** Data index of the per-viewer Core-gate mask (bit per {@link Destinations} index). */
     public static final int DATA_GATE_MASK = 14;
@@ -293,12 +293,12 @@ public class RocketMenu extends AbstractContainerMenu {
         return idx < 0 ? "Nearest pad" : "Pad " + (idx + 1);
     }
 
-    /** Bit per destination index whose Core gate is closed for this viewer (004 §6, LOCKED_GATE cards). */
+    /** Bit per destination index whose Core gate is closed for this viewer (LOCKED_GATE cards). */
     public int getGateMask() {
         return this.data.get(DATA_GATE_MASK);
     }
 
-    /** How many of the next locked destinations the viewer's station Observatory reveals (005 §6.6). */
+    /** How many of the next locked destinations the viewer's station Observatory reveals. */
     public int getRevealCount() {
         return this.data.get(DATA_REVEAL);
     }

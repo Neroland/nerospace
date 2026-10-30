@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Spore Pod area cloud (002 §1.5, §2.1.1): radius 2.5, 100 ticks, Nausea I 8 s; the pod is consumed. */
+/** Spore Pod area cloud: radius 2.5, 100 ticks, Nausea I 8 s; the pod is consumed. */
 public final class SporeBurstRules {
 
     public static final double RADIUS = 2.5;

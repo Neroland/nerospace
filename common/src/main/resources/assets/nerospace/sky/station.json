@@ -1,3 +1,79 @@
 {
-  "vanillaSkybox": true
+  "background": {
+    "zenith": "#000000",
+    "horizon": "#000000",
+    "nightZenith": "#000000",
+    "nightHorizon": "#000000",
+    "blend": "constant"
+  },
+  "fog": {
+    "color": "#000000",
+    "nightColor": "#000000",
+    "start": 0.95,
+    "end": 1.0
+  },
+  "stars": {
+    "count": 2500,
+    "brightness": 0.9,
+    "alwaysVisible": true,
+    "tint": "#FFFFFF"
+  },
+  "sun": [
+    {
+      "id": "sol",
+      "texture": "nerospace:textures/sky/sun_white.png",
+      "size": 6.0,
+      "color": "#FFFFFF",
+      "glow": 4.0,
+      "orbitPeriodDays": 0.0,
+      "phaseOffset": 0.0,
+      "inclination": 0.0,
+      "fixedAngle": {
+        "yaw": 0.0,
+        "pitch": 70.0
+      }
+    }
+  ],
+  "moons": [],
+  "bodies": [
+    {
+      "id": "homeworld",
+      "texture": "nerospace:textures/sky/earth_disk.png",
+      "size": 110.0,
+      "color": "#FFFFFF",
+      "glow": 2.0,
+      "orbitPeriodDays": 0.0,
+      "phaseOffset": 0.0,
+      "inclination": 0.0,
+      "fixedAngle": {
+        "yaw": 0.0,
+        "pitch": -55.0
+      }
+    }
+  ],
+  "galaxy": {
+    "texture": "nerospace:textures/sky/galaxy.png",
+    "opacity": 0.35,
+    "yaw": 120.0,
+    "pitch": 20.0
+  },
+  "clouds": "none",
+  "weatherTints": {},
+  "gradient": [
+    {
+      "phase": 0.0,
+      "zenith": "#000000",
+      "horizon": "#000000",
+      "fog": "#000000"
+    },
+    {
+      "phase": 1.0,
+      "zenith": "#000000",
+      "horizon": "#000000",
+      "fog": "#000000"
+    }
+  ],
+  "terminatorScroll": {
+    "periodTicks": 1800
+  }
 }

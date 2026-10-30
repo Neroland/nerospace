@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.world.planet;
 import java.util.function.DoubleSupplier;
 
 /**
- * The pure weather state machine (decision 003 §4.1), stepped once per second:
+ * The pure weather state machine, stepped once per second:
  * {@code CLEAR --(roll after cooldown)--> RISING --(reach target)--> PEAK --(duration)--> FADING --> CLEAR}.
  * Intensity ramps {@link #RAMP_PER_SECOND} per second; the target is rolled in [0.4, 1.0].
  *

@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Shadow Lichen (002 §1.6): spreads 1-in-10 in light ≤ 3, cap 32 faces per chunk; withers 1-in-2 during a Flare. */
+/** Shadow Lichen: spreads 1-in-10 in light ≤ 3, cap 32 faces per chunk; withers 1-in-2 during a Flare. */
 public final class LichenRules {
 
     public static final int MAX_LIGHT = 3;

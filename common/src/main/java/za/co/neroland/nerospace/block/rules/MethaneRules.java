@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.block.rules;
 
 /**
- * Methane Ice (002 §1.4, §11.5): explodes (power 2, no block damage unless configured) when a flame is within 2
+ * Methane Ice: explodes (power 2, no block damage unless configured) when a flame is within 2
  * blocks; scans a 5×5×5 every 40 ticks only while armed; at most 4 chained explosions per chunk per 100 ticks.
  */
 public final class MethaneRules {

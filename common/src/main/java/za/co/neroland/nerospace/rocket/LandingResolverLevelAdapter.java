@@ -32,11 +32,19 @@ import za.co.neroland.nerospace.world.planet.Planets;
 import za.co.neroland.nerospace.world.station.StationAccess;
 
 /**
- * The level side of {@link LandingResolver} (005 §1.1): builds the {@link LandingContext} snapshot from the
+ * The level side of {@link LandingResolver}: builds the {@link LandingContext} snapshot from the
  * live world (the only place that loads chunks for a landing), back-fills legacy pad centres once, and applies
  * a decision (places the Landing Pod and registers its {@code POD} node). Exercised by the runtime gate.
+ *
+ * <p>Nodes are probed lazily ({@link LandingCandidates}: explicit, return, same-name, and outward from
+ * the anchor / {@code preferred} to the first usable one, ≤ {@link LandingChunkBudget#MAX_PROBE_CHUNKS} chunks), and
+ * the pod search reads only the 4×4-chunk square around {@code preferred}. No chunk is force-loaded or ticketed.</p>
  */
 public final class LandingResolverLevelAdapter {
+
+    /** Chunks read by the last {@link #resolve} (server thread only); the dev landing harness reports it. */
+    private static final Set<Long> TALLY = new java.util.HashSet<>();
+    private static int lastLandingChunks;
 
     /** What the rocket knows about its flight. {@code rider} may be null (uncrewed / disconnected). */
     public record Flight(ResourceKey<Level> destination, int explicitPad, String returnDim, @Nullable BlockPos returnPos,
@@ -54,12 +62,27 @@ public final class LandingResolverLevelAdapter {
 
     // --- resolve ----------------------------------------------------------------------------------
 
-    /** Gathers the context and resolves (station structure ensured first; 005 §1.8). */
+    /** Gathers the context and resolves (station structure ensured first). */
     public static LandingDecision resolve(ServerLevel level, Flight flight, Set<Integer> excluded) {
+        TALLY.clear();
         if (isStation(flight.destination()) && flight.stationCentre() != null) {
             ensureStation(level, flight.stationSlot(), flight.stationCentre());
         }
-        return LandingResolver.resolve(gather(level, flight, excluded));
+        LandingDecision decision = LandingResolver.resolve(gather(level, flight, excluded));
+        lastLandingChunks = TALLY.size();
+        TALLY.clear();
+        DestinationTrace.log("landing chunks={} decision={}", lastLandingChunks, decision.getClass().getSimpleName());
+        return decision;
+    }
+
+    /** Distinct chunks the last landing resolve read (dev harness: "chunks loaded per landing"). */
+    public static int lastLandingChunks() {
+        return lastLandingChunks;
+    }
+
+    private static void touch(ServerLevel level, int blockX, int blockZ) {
+        TALLY.add(LandingChunkBudget.chunkKey(blockX >> 4, blockZ >> 4));
+        level.getChunk(blockX >> 4, blockZ >> 4);
     }
 
     public static boolean isStation(@Nullable ResourceKey<Level> dim) {
@@ -71,7 +94,7 @@ public final class LandingResolverLevelAdapter {
     /**
      * Makes sure the selected station exists. A founded station goes through {@link StationStructure#build}
      * (guarded by its Station Core); the shared origin platform is only built when it is genuinely empty
-     * (001 §13.1, {@link OriginPlatformGuard}) — otherwise only its pad node is kept registered.
+     * ({@link OriginPlatformGuard}) — otherwise only its pad node is kept registered.
      */
     public static void ensureStation(ServerLevel level, int slot, BlockPos centre) {
         if (slot >= 0) {
@@ -79,8 +102,8 @@ public final class LandingResolverLevelAdapter {
             return;
         }
         BlockPos padCentre = StationStructure.padCenter(centre);
-        level.getChunk(centre.getX() >> 4, centre.getZ() >> 4);
-        level.getChunk(padCentre.getX() >> 4, padCentre.getZ() >> 4);
+        touch(level, centre.getX(), centre.getZ());
+        touch(level, padCentre.getX(), padCentre.getZ());
         PadRegistry pads = PadRegistry.get(level.getServer());
         boolean hasCore = level.getBlockState(centre).is(ModBlocks.STATION_CORE.get());
         boolean hasNode = pads.at(level.dimension(), padCentre) != null;
@@ -102,10 +125,14 @@ public final class LandingResolverLevelAdapter {
 
         Optional<StationTarget> station = Optional.empty();
         List<PadCandidate> pads = new ArrayList<>();
+        PlanetDefinition planet = Planets.get(dest);
+        BlockPos anchor = planet != null ? planet.arrivalAnchor() : BlockPos.ZERO;
+        Optional<ReturnSite> returnSite = Optional.empty();
         if (isStation(dest) && flight.stationCentre() != null) {
+            // The nearest dock and the nearest legacy pad inside the claim, chosen as data; each probed once.
             BlockPos centre = flight.stationCentre();
-            PadCandidate dock = null;
-            PadCandidate legacy = null;
+            PadRegistry.PadNode dockNode = null;
+            PadRegistry.PadNode padNode = null;
             double dockSq = Double.MAX_VALUE;
             double padSq = Double.MAX_VALUE;
             for (PadRegistry.PadNode node : registry.nodesIn(dest)) {
@@ -115,28 +142,36 @@ public final class LandingResolverLevelAdapter {
                 double sq = node.centerOrPos().distSqr(centre);
                 if (node.kind() == PadKind.DOCK && sq < dockSq) {
                     dockSq = sq;
-                    dock = candidate(level, registry, node);
+                    dockNode = node;
                 } else if (node.kind() == PadKind.LAUNCH_PAD && sq < padSq) {
                     padSq = sq;
-                    legacy = candidate(level, registry, node);
+                    padNode = node;
                 }
             }
+            PadCandidate dock = dockNode != null ? candidate(level, registry, dockNode) : null;
+            PadCandidate legacy = padNode != null ? candidate(level, registry, padNode) : null;
             station = Optional.of(new StationTarget(flight.stationSlot(), centre, StationStructure.padCenter(centre),
                     Optional.ofNullable(dock), Optional.ofNullable(legacy)));
         } else {
-            for (PadRegistry.PadNode node : registry.inDimension(dest)) {
-                pads.add(candidate(level, registry, node));
+            BlockPos rp = flight.returnPos();
+            java.util.Map<Integer, PadCandidate> known = new HashMap<>();
+            if (rp != null && destId.equals(flight.returnDim())) {
+                ReturnSite site = returnSite(level, registry, rp);
+                returnSite = Optional.of(site);
+                site.registeredNode().ifPresent(n -> known.put(n.id(), n));
             }
+            List<PadRegistry.PadNode> registered = registry.inDimension(dest);
+            List<LandingCandidates.Node> nodes = new ArrayList<>(registered.size());
+            for (PadRegistry.PadNode node : registered) {
+                nodes.add(new LandingCandidates.Node(node.id(), node.name(), node.kind(), node.pos(),
+                        node.centerOrPos()));
+            }
+            boolean standing = returnSite.isPresent() && returnSite.get().standing();
+            LandingCandidates.Flight plan = new LandingCandidates.Flight(flight.explicitPad(),
+                    returnSite.isPresent() ? rp : null, standing, flight.originPadName(), flight.originRegistered(),
+                    anchor, excluded, known);
+            pads.addAll(LandingCandidates.plan(nodes, plan, i -> candidate(level, registry, registered.get(i))));
         }
-
-        Optional<ReturnSite> returnSite = Optional.empty();
-        BlockPos rp = flight.returnPos();
-        if (station.isEmpty() && rp != null && destId.equals(flight.returnDim())) {
-            returnSite = Optional.of(returnSite(level, registry, rp));
-        }
-
-        PlanetDefinition planet = Planets.get(dest);
-        BlockPos anchor = planet != null ? planet.arrivalAnchor() : BlockPos.ZERO;
         int voidFloorY = station.isPresent() ? StationRegistry.PLATFORM_Y : level.getMinY();
         return new LandingContext(destId, flight.explicitPad(), pads, returnSite, flight.originPadName(),
                 flight.originRegistered(), anchor, station, new LevelSampler(level, flight.rider(), voidFloorY),
@@ -147,7 +182,7 @@ public final class LandingResolverLevelAdapter {
 
     private static PadCandidate candidate(ServerLevel level, PadRegistry registry, PadRegistry.PadNode node) {
         BlockPos pos = node.pos();
-        level.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
+        touch(level, pos.getX(), pos.getZ());
         return switch (node.kind()) {
             case DOCK -> {
                 BlockPos centre = node.centerOrPos();
@@ -172,7 +207,7 @@ public final class LandingResolverLevelAdapter {
                 BlockPos centre = node.center().orElse(present ? LandingPadGeometry.centreOf(cluster, pos) : pos);
                 Direction facing = node.facing().orElse(present ? apronFacing(level, cluster, centre) : null);
                 if (present && (node.center().isEmpty() || node.facing().isEmpty())) {
-                    registry.fill(node.id(), centre, facing); // 005 §1.6 step 4: written back once
+                    registry.fill(node.id(), centre, facing); // written back once
                 }
                 boolean standing = level.getBlockState(centre).getBlock() instanceof RocketLaunchPadBlock;
                 yield new PadCandidate(node.id(), node.name(), PadKind.LAUNCH_PAD, pos, centre, facing, standing,
@@ -183,7 +218,7 @@ public final class LandingResolverLevelAdapter {
     }
 
     private static ReturnSite returnSite(ServerLevel level, PadRegistry registry, BlockPos pos) {
-        level.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
+        touch(level, pos.getX(), pos.getZ());
         boolean standing = level.getBlockState(pos).getBlock() instanceof RocketLaunchPadBlock;
         if (!standing) {
             return new ReturnSite(pos, false, false, pos, null, Optional.empty());
@@ -202,7 +237,7 @@ public final class LandingResolverLevelAdapter {
         return new ReturnSite(pos, true, occupied, centre, facing, registered);
     }
 
-    /** 005 §1.6 step 3: the side whose first cell beyond the square is air while the opposite one is not. */
+    /** The side whose first cell beyond the square is air while the opposite one is not. */
     public static Direction apronFacing(Level level, Set<BlockPos> cluster, BlockPos centre) {
         int half = LandingPadGeometry.halfSize(cluster, centre);
         boolean[] open = new boolean[4];
@@ -283,7 +318,69 @@ public final class LandingResolverLevelAdapter {
         return ((LandingDecision.PadLanding) decision).pad().kind();
     }
 
-    /** Whether the block the rocket is descending onto still stands (005 §3.3). */
+    /**
+     * Whether a rocket blocks a landing target: any other rocket that is parked there (not lifting off, not itself
+     * still descending). The descending rocket never blocks its own target.
+     */
+    public static boolean blocksLanding(boolean self, boolean launching, boolean descending) {
+        return !self && !launching && !descending;
+    }
+
+    /**
+     * Whether a descending rocket must leave its target: the target block broke, or another parked rocket stands on
+     * it. Pod-bound and pad-bound rockets alike: a Landing Pod can hold only one rocket too.
+     */
+    public static boolean mustLeaveTarget(boolean targetPresent, boolean occupiedByOther) {
+        return !targetPresent || occupiedByOther;
+    }
+
+    /**
+     * Whether another parked rocket stands on the target (the pad cluster, the docking ring's 3×3 or the pod).
+     * Entities load after blocks, so the resolver's snapshot of a cold chunk can miss a parked rocket; the descent
+     * re-checks with this once the entities are in (see {@link #entitiesReady}).
+     */
+    public static boolean targetOccupied(ServerLevel level, PadKind kind, BlockPos block, RocketEntity self) {
+        AABB box;
+        if (kind == PadKind.DOCK || kind == PadKind.POD) {
+            int half = kind == PadKind.DOCK ? 1 : 0;
+            box = new AABB(block.getX() - half, block.getY() + 0.05D, block.getZ() - half,
+                    block.getX() + 1 + half, block.getY() + 4.0D, block.getZ() + 1 + half);
+        } else {
+            Set<BlockPos> cluster = level.getBlockState(block).getBlock() instanceof RocketLaunchPadBlock
+                    ? LaunchPadMultiblock.connectedPads(level, block) : Set.of();
+            if (cluster.isEmpty()) {
+                return false;
+            }
+            box = LaunchPadMultiblock.scanBox(cluster);
+        }
+        for (RocketEntity r : level.getEntitiesOfClass(RocketEntity.class, box)) {
+            if (blocksLanding(r == self, r.isLaunching(), r.isDescending())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Whether the entities of the target's chunk have finished loading (they arrive some ticks after the blocks). */
+    public static boolean entitiesReady(ServerLevel level, BlockPos block) {
+        return level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.pack(block));
+    }
+
+    /**
+     * The touchdown fallback: a Landing Pod near {@code near}, for a rocket whose target turned out to be taken.
+     * {@code flight} is null for a rocket that resumed a descent from disk.
+     */
+    public static LandingDecision podFallback(ServerLevel level, @Nullable Flight flight, BlockPos near) {
+        TALLY.clear();
+        Flight f = flight != null ? flight
+                : new Flight(level.dimension(), -1, "", null, Optional.empty(), false, null, -1, null);
+        LandingDecision decision = LandingResolver.podNear(gather(level, f, Set.of()), near);
+        TALLY.clear();
+        DestinationTrace.log("landing pod fallback: target occupied");
+        return decision;
+    }
+
+    /** Whether the block the rocket is descending onto still stands. */
     public static boolean targetPresent(ServerLevel level, PadKind kind, BlockPos block) {
         BlockState s = level.getBlockState(block);
         return switch (kind) {
@@ -295,7 +392,10 @@ public final class LandingResolverLevelAdapter {
 
     // --- pod-site sampler -------------------------------------------------------------------------
 
-    /** Samples candidate pod sites from the live level, caching per column (005 §1.7, G5). */
+    /**
+     * Samples candidate pod sites from the live level, caching per column. Reads stay inside the
+     * 4×4-chunk square around {@code preferred}: a site whose 5×5 footprint leaves it is unsuitable without a read.
+     */
     private static final class LevelSampler implements PodSearch.Sampler {
 
         private final ServerLevel level;
@@ -304,6 +404,10 @@ public final class LandingResolverLevelAdapter {
         private final List<int[]> inaccessible = new ArrayList<>(); // x, z, halfBox
         private final List<BlockPos> padCentres = new ArrayList<>();
         private final List<BlockPos> podNodes = new ArrayList<>();
+        /** Pod nodes near {@code preferred} whose pod block stands (resolved once in {@link #begin}). */
+        private final List<BlockPos> standingPods = new ArrayList<>();
+        @Nullable
+        private LandingChunkBudget.Square square;
 
         LevelSampler(ServerLevel level, @Nullable ServerPlayer rider, int voidFloorY) {
             this.level = level;
@@ -338,12 +442,58 @@ public final class LandingResolverLevelAdapter {
         }
 
         @Override
+        public void begin(BlockPos preferred) {
+            LandingChunkBudget.Square sq = LandingChunkBudget.podSquare(preferred);
+            this.square = sq;
+            this.columns.clear();
+            this.standingPods.clear();
+            int reach = PodSearch.OUTER_RADIUS + PodSiteRules.POD_SPACING;
+            for (BlockPos p : this.podNodes) {
+                if (LandingResolver.chebyshev(p, preferred) > reach) {
+                    continue; // can never be within 32 of a site in the spiral
+                }
+                int cx = p.getX() >> 4;
+                int cz = p.getZ() >> 4;
+                boolean standing;
+                if (sq.containsChunk(cx, cz)) {
+                    touch(this.level, p.getX(), p.getZ());
+                    standing = this.level.getBlockState(p).is(ModBlocks.LANDING_POD.get());
+                } else if (this.level.hasChunk(cx, cz)) {
+                    standing = this.level.getBlockState(p).is(ModBlocks.LANDING_POD.get()); // already loaded
+                } else {
+                    standing = true; // outside the budget and unloaded: assume it stands (keeps the 32 spacing)
+                }
+                if (standing) {
+                    this.standingPods.add(p);
+                }
+            }
+        }
+
+        /** Whether the 5×5 footprint around {@code (x, z)} lies inside the chunk budget. */
+        private boolean inBudget(int x, int z) {
+            LandingChunkBudget.Square sq = this.square;
+            return sq == null || (sq.containsBlock(x - 2, z - 2) && sq.containsBlock(x + 2, z + 2));
+        }
+
+        private static SiteSample unsuitable(BlockPos site) {
+            return new SiteSample(site, SiteSample.fill(SiteSample.FOOTPRINT, false),
+                    SiteSample.fill(SiteSample.FOOTPRINT, false), SiteSample.fill(SiteSample.BOX, false), false,
+                    Integer.MAX_VALUE, false, false, false);
+        }
+
+        @Override
         public SiteSample column(int x, int z) {
             return this.columns.computeIfAbsent(BlockPos.asLong(x, 0, z), k -> sampleColumn(x, z));
         }
 
         private SiteSample sampleColumn(int x, int z) {
-            this.level.getChunk(x >> 4, z >> 4);
+            if (!inBudget(x, z)) {
+                return unsuitable(new BlockPos(x, this.voidFloorY, z));
+            }
+            touch(this.level, x - 2, z - 2);
+            touch(this.level, x + 2, z + 2);
+            touch(this.level, x - 2, z + 2);
+            touch(this.level, x + 2, z - 2);
             int y = this.level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
             if (y <= this.level.getMinY()) {
                 y = this.voidFloorY; // a void column (station): the climb builds the floor
@@ -363,6 +513,9 @@ public final class LandingResolverLevelAdapter {
 
         @Override
         public SiteSample at(BlockPos site) {
+            if (!inBudget(site.getX(), site.getZ())) {
+                return unsuitable(site);
+            }
             boolean[] solid = new boolean[SiteSample.FOOTPRINT];
             boolean[] forbidden = new boolean[SiteSample.FOOTPRINT];
             boolean[] clear = new boolean[SiteSample.BOX];
@@ -433,9 +586,17 @@ public final class LandingResolverLevelAdapter {
         }
 
         private boolean podNearby(BlockPos site) {
-            for (BlockPos p : this.podNodes) {
-                if (!p.equals(site) && LandingResolver.chebyshev(p, site) < PodSiteRules.POD_SPACING
-                        && this.level.getBlockState(p).is(ModBlocks.LANDING_POD.get())) {
+            if (this.square == null) { // no begin(): read every pod node (not reached through PodSearch)
+                for (BlockPos p : this.podNodes) {
+                    if (!p.equals(site) && LandingResolver.chebyshev(p, site) < PodSiteRules.POD_SPACING
+                            && this.level.getBlockState(p).is(ModBlocks.LANDING_POD.get())) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            for (BlockPos p : this.standingPods) {
+                if (!p.equals(site) && LandingResolver.chebyshev(p, site) < PodSiteRules.POD_SPACING) {
                     return true;
                 }
             }

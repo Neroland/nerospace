@@ -291,6 +291,17 @@ public final class LaunchPadMultiblock {
         if (pads.isEmpty()) {
             return null;
         }
+        List<RocketEntity> rockets = level.getEntitiesOfClass(RocketEntity.class, scanBox(pads));
+        for (RocketEntity rocket : rockets) {
+            if (!rocket.isLaunching()) {
+                return rocket;
+            }
+        }
+        return null;
+    }
+
+    /** The space above a non-empty pad cluster that {@link #rocketAbove} scans for a standing rocket. */
+    public static AABB scanBox(Set<BlockPos> pads) {
         int minX = Integer.MAX_VALUE;
         int minZ = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
@@ -302,14 +313,7 @@ public final class LaunchPadMultiblock {
             maxX = Math.max(maxX, pad.getX());
             maxZ = Math.max(maxZ, pad.getZ());
         }
-        AABB box = new AABB(minX, padY + 0.1D, minZ, maxX + 1.0D, padY + 1.0D + SCAN_HEIGHT, maxZ + 1.0D);
-        List<RocketEntity> rockets = level.getEntitiesOfClass(RocketEntity.class, box);
-        for (RocketEntity rocket : rockets) {
-            if (!rocket.isLaunching()) {
-                return rocket;
-            }
-        }
-        return null;
+        return new AABB(minX, padY + 0.1D, minZ, maxX + 1.0D, padY + 1.0D + SCAN_HEIGHT, maxZ + 1.0D);
     }
 
     private static boolean isPad(Level level, BlockPos pos) {

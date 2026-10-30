@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.6 Gravity Shard, §1.7 Gravity Plate, §10.4. */
+/** Gravity Shard and Gravity Plate. */
 @SuppressWarnings("unused")
 class BlockGravityRulesTest {
 

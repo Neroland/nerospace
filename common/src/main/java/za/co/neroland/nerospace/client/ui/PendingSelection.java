@@ -1,7 +1,7 @@
 package za.co.neroland.nerospace.client.ui;
 
 /**
- * The optimistic destination highlight (004 §6): a click shows its pick at once, and the synced menu value — the
+ * The optimistic destination highlight: a click shows its pick at once, and the synced menu value — the
  * server's decision — settles it. Pure; the host screen feeds it the synced index and the clock every frame.
  */
 public final class PendingSelection {

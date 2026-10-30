@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import za.co.neroland.nerospace.registry.ModDimensions;
 
 /**
- * Planet accent colours (004 §2.3): one accent and one dark stripe colour per planet, HOME as the fallback.
+ * Planet accent colours: one accent and one dark stripe colour per planet, HOME as the fallback.
  * The accent is used for card borders, rules and sky strips; the dark pair only for 1-px stripes, never text.
  */
 public final class PlanetAccents {

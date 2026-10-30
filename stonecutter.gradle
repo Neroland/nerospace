@@ -149,7 +149,15 @@ subprojects {
             }
             def base = new File(rootProject.ext.commonResources).canonicalFile
             def verOf = { File d -> d.name.substring('resources-'.length()) }
-            def overlays = (base.parentFile.listFiles() ?: [] as File[]).findAll {
+            // Loader-specific overlays (<loader>/src/main/resources-<mc>) follow the shared ones of the same version, so
+            // a file only one loader can read (e.g. NeoForge's custom_skybox dimension attribute) wins on that loader.
+            def loaderMain = new File(node.parent.projectDir, 'src/main')
+            def isLoader = { File d -> d.parentFile.canonicalFile == loaderMain.canonicalFile }
+            // The common nodes' loaderMain IS common/src/main: list it once.
+            def sameRoot = loaderMain.canonicalFile == base.parentFile.canonicalFile
+            def candidates = (base.parentFile.listFiles() ?: [] as File[]).toList() +
+                    (sameRoot ? [] : (loaderMain.listFiles() ?: [] as File[]).toList())
+            def overlays = candidates.findAll {
                 it.isDirectory() && it.name.startsWith('resources-') && sc.eval(sc.current.version, ">=" + verOf(it))
             }.sort { a, b ->
                 def x = verOf(a).tokenize('.')*.toInteger(), y = verOf(b).tokenize('.')*.toInteger()
@@ -158,7 +166,7 @@ subprojects {
                     int c = (i < x.size() ? x[i] : 0) <=> (i < y.size() ? y[i] : 0)
                     if (c != 0) return c
                 }
-                return 0
+                return (isLoader(a) ? 1 : 0) <=> (isLoader(b) ? 1 : 0)
             }
             if (overlays.isEmpty()) {
                 return

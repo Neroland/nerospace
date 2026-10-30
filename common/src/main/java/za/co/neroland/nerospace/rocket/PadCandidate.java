@@ -6,9 +6,9 @@ import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * One registered landing node as the pure {@link LandingResolver} sees it (005 §1.2): identity, resolved
+ * One registered landing node as the pure {@link LandingResolver} sees it: identity, resolved
  * centre/facing and the two world facts the adapter read — whether the pad/dock/pod block still stands and
- * whether a rocket already sits on it (005 G1).
+ * whether a rocket already sits on it.
  *
  * @param facing the node's front, or {@code null} when unknown (yaw 0)
  */

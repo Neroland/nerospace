@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
 
 /**
- * One planet's terraform payoff (D7, 003 §8.1): what each stage of the Rooted → Hydrated → Living pipeline writes
+ * One planet's terraform payoff: what each stage of the Rooted → Hydrated → Living pipeline writes
  * on that world. {@code TerraformConversion} reads this table instead of branching on the dimension.
  *
  * <p>Plain data on purpose: block, entity, particle and feature references are ids resolved against the live

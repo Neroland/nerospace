@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Martian Sandstone stonecutter strata (002 §1.2): exactly four rotation-aware variants. */
+/** Martian Sandstone stonecutter strata: exactly four rotation-aware variants. */
 public final class StrataRules {
 
     public static final int COUNT = 4;

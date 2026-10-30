@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 
@@ -124,8 +125,15 @@ public final class EmberStrike implements WeatherEffects {
         level.addFreshEntity(bolt);
         AABB box = new AABB(bolt.getX() - HIT_XZ, bolt.getY() - HIT_DOWN, bolt.getZ() - HIT_XZ,
                 bolt.getX() + HIT_XZ, bolt.getY() + HIT_UP, bolt.getZ() + HIT_XZ);
-        for (Entity e : level.getEntities(bolt, box, Entity::isAlive)) {
+        // Living entities only (players, villagers, fauna): dropped items, frames, paintings, boats and minecarts
+        // are left alone, so a storm near a base never grinds down its outdoor decorations.
+        for (Entity e : level.getEntities(bolt, box, EmberStrike::strikeable)) {
             e.thunderHit(level, bolt);
         }
+    }
+
+    /** Whether an ember strike hits this entity: a living one (player, villager, fauna), never an item or decoration. */
+    static boolean strikeable(Entity entity) {
+        return entity instanceof LivingEntity && entity.isAlive();
     }
 }

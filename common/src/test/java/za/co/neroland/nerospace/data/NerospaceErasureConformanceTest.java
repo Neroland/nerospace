@@ -34,7 +34,7 @@ import za.co.neroland.nerospace.village.VillageCoreLedger;
 import za.co.neroland.nerospace.village.VillageCoreOwnership;
 
 /**
- * 001 §12 / [COMPAT] 10 at unit level: Core's {@link ErasureConformance} over every player-keyed Nerospace store, with
+ * At unit level: Core's {@link ErasureConformance} over every player-keyed Nerospace store, with
  * the station store decoded from the <b>1.6.0 shape</b> (the migrated fixture) plus a 2.0 entry carrying members.
  * The eraser applies the same store operations, in the same order, as {@code NerospaceErasure.erasePlayer}.
  */
@@ -98,7 +98,7 @@ class NerospaceErasureConformanceTest {
             visits.forget(uuid);                                          // 2
             routes.forgetPlayer(uuid);                                    // 6
             loadedCore.forget(uuid);                                      // 7 (live sweep)
-            ledger.forgetOwner(uuid, Set.of(loaded)::contains, TODAY);    // 7 (unloaded -> pending)
+            ledger.forgetOwner(uuid, Set.of(loaded)::contains, TODAY, true);    // 7 (unloaded -> pending)
             LaunchCooldowns.forget(uuid);                                 // 8
         };
         PlayerDataErasure.register(eraser);
@@ -133,7 +133,7 @@ class NerospaceErasureConformanceTest {
         VillageCoreLedger ledger = new VillageCoreLedger();
         VillageCoreLedger.CoreLoc far = new VillageCoreLedger.CoreLoc("minecraft:overworld", 123L);
         ledger.record(far, owner);
-        assertEquals(1, ledger.forgetOwner(owner, l -> false, TODAY));
+        assertEquals(1, ledger.forgetOwner(owner, l -> false, TODAY, true));
         assertTrue(ledger.onLoaded(far, owner, TODAY + 400), "pending applies even after the legacy TTL");
         assertEquals(0, ledger.pendingCount(), "applied entry dropped");
         assertFalse(ledger.retainsData(owner));

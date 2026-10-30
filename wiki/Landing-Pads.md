@@ -43,10 +43,13 @@ New stations are built with a Docking Ring; older stations keep their pad.
 ## Landing Pods
 
 A Landing Pod needs a flat, solid 5×5 patch (no water, lava, leaves, ice or magma), three blocks of open space
-above it, no structure in the way, and some distance from other players' protected areas (stations, cargo
-pads you have no access to, terraformed ground) and from other pads. The search spirals out from the arrival
-area — up to 24 blocks — and, if nothing fits, builds a small platform in the air above. An empty pod nearby
-is reused, and pods are kept at least 32 blocks apart so they don't litter the landscape.
+above it, no structure in the way, and some distance from other players' stations you cannot use, from cargo
+pads you have no access to, from terraform regions that other mods register with Nerospace, and from other pads.
+Nothing else counts as off-limits: a Terraformer's own ground and other players' bases are not avoided. The search
+spirals out from the arrival area — up to 24 blocks — and, if nothing fits, builds a small platform in the air
+above, still keeping the same distances. An empty pod nearby is reused, and pods are
+kept at least 32 blocks apart so they don't litter the landscape. Breaking a Landing Pod removes it from the
+list of landing spots.
 
 ## Founding a station from a rocket
 
@@ -57,6 +60,15 @@ platform instead and get a message. The option is hidden in the dock list while 
 ## Good to know
 
 - If a pad is broken while your rocket is coming down, it steers to the next spot instead.
-- If you disconnect during the descent, the rocket finishes landing without you; you will be on the pad when
-  you log back in.
+- If you disconnect during the descent, the rocket still finishes landing.
+- If a rocket parked on your pad only shows up while you are coming down (its area had not loaded yet), your
+  rocket steers to the next spot, or sets down on a Landing Pod nearby; it never lands on top of another rocket.
 - A rocket saved halfway through a descent finishes landing the moment its area loads again.
+- A rider can launch once every five seconds. A launch inside that window is refused with a message, before any
+  launch fee is charged.
+- Landings only look at pads they could actually use and at the area around the landing spot, so a world with many
+  pads does not load chunks all over the planet.
+- Server owners can shorten the Landing Pod search with `landing.podSearchRadius` (default 24, range 6–24 blocks).
+- Rocket tiers and their destinations: Tier 1 reaches the Orbital Station and [Luna](Luna); Tier 2 adds
+  [Greenxertz](Greenxertz) and [Mars](Mars); Tier 3 adds [Cindara](Cindara); Tier 4 adds [Glacira](Glacira) and
+  [Nyxara](Nyxara). Each tier keeps every destination of the tiers below it, and every tier can fly home.

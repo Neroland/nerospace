@@ -57,6 +57,16 @@ public final class RadiationRules {
         return clamp(level);
     }
 
+    /**
+     * Damage per radiation hit for an unshielded, exposed player, graded by the effective level (0..3): nothing
+     * below {@link #DAMAGE_THRESHOLD} (the twilight band, a quiet Mars), 1 at level 2 (Mars dust storm, Nyxara
+     * dayside), 2 at level 3 (the nightside, or the dayside under a flare). The O₂ drain penalty applies on top.
+     */
+    public static float damageFor(int effectiveLevel) {
+        int level = clamp(effectiveLevel);
+        return level < DAMAGE_THRESHOLD ? 0.0F : (float) (level - DAMAGE_THRESHOLD + 1);
+    }
+
     private static int clamp(int v) {
         return Math.max(0, Math.min(MAX, v));
     }
