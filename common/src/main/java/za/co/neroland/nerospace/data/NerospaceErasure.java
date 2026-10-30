@@ -19,8 +19,11 @@ import za.co.neroland.nerospace.entity.AlienVillager;
 import za.co.neroland.nerospace.link.NerospaceLinkEvents;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.progression.PlanetVisitState;
+import za.co.neroland.nerospace.rocket.LaunchCooldowns;
 import za.co.neroland.nerospace.rocket.StationRegistry;
 import za.co.neroland.nerospace.route.RouteRegistry;
+import za.co.neroland.nerospace.village.VillageCoreBlockEntity;
+import za.co.neroland.nerospace.village.VillageCoreLedger;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
@@ -28,10 +31,11 @@ import za.co.neroland.nerospace.world.OxygenManager;
  * one {@code /neroland data eraseme} (or Core's retention sweep) purges Nerospace together with every
  * other Nero mod. Keyed only by UUID; player identity is never logged.
  *
- * <h2>The six stores</h2>
+ * <h2>The stores, in erasure order</h2>
  * <ol>
  *   <li><b>Station ownership</b> ({@link StationRegistry}) — the owner UUID is anonymised to {@code ""},
- *       keeping the physical station as shared world content. The last-known-good backup file is rewritten
+ *       keeping the physical station as shared world content, and the UUID is removed from every station's member
+ *       list (2.0, up to 16 members per station). The last-known-good backup file is rewritten
  *       immediately so the erased UUID is not retained there until the next periodic backup pass.</li>
  *   <li><b>Historical planet visits</b> ({@link PlanetVisitState}) — the player's whole row is dropped, and
  *       like stations the change is pushed into the backup file at once. This store holds only planet ids,
@@ -44,6 +48,13 @@ import za.co.neroland.nerospace.world.OxygenManager;
  *       anonymised (the station rule), they are dropped from every pad access list, and their flights are
  *       anonymised but keep flying: cargo is delivered or crated, never deleted, because items are not
  *       personal data — the ownership record is. Backup rewritten immediately.</li>
+ *   <li><b>Village Core ownership</b> ({@link VillageCoreBlockEntity}) — the owner UUID in the core's block-entity
+ *       data is cleared on every loaded core; the core keeps its stockpile, buildings and quest and becomes
+ *       unclaimed. The 1.x owner display name is no longer stored at all. The {@link VillageCoreLedger}
+ *       ({@code nerospace:village_cores}) turns every indexed core of the player that is in an unloaded chunk
+ *       into a position-only pending clear, applied (and dropped) the moment that core loads again — across
+ *       restarts, because the ledger is saved. Backup rewritten immediately.</li>
+ *   <li><b>Launch cooldown</b> ({@link LaunchCooldowns}) — the transient 100-tick per-rider entry (memory only).</li>
  * </ol>
  *
  * <p>The two API-facing stores added alongside the visit history — external oxygen contributions and
@@ -53,7 +64,7 @@ import za.co.neroland.nerospace.world.OxygenManager;
  * UUID, neither persisted) is dropped too.</p>
  *
  * <h2>What this can and cannot reach — stated honestly</h2>
- * <p>Two of the five stores are only fully reachable while the player is online or the world is loaded, and
+ * <p>Several stores are only fully reachable while the player is online or the world is loaded, and
  * pretending otherwise would be worse than saying so:</p>
  * <ul>
  *   <li><b>Alien Villagers in unloaded chunks.</b> The sweep walks every <em>loaded</em> level. A villager
@@ -65,6 +76,11 @@ import za.co.neroland.nerospace.world.OxygenManager;
  *       erase it, is a worse outcome than this bounded residue — and the residue is inert (it maps to a
  *       trade score for an account that no longer has any Nerospace record anywhere else). Re-running
  *       erasure after visiting the region closes it completely.</li>
+ *   <li><b>Village Cores in unloaded chunks.</b> Reached through the saved {@link VillageCoreLedger}: a core
+ *       that was claimed or loaded on 2.x is indexed, and its owner is cleared when its chunk next loads, even
+ *       after a restart. A 1.x core that has never loaded on 2.x is in no index; for those the ledger keeps a
+ *       salted hash of the erased owner (at most {@value VillageCoreLedger#MAX_LEGACY} entries, dropped after
+ *       {@value VillageCoreLedger#LEGACY_TTL_DAYS} days) and clears a matching core when it loads.</li>
  *   <li><b>An offline player's attachment data.</b> Both attachments are declared {@code .serialize(...)}
  *       with {@code copyOnDeath()}, so they persist in the player's own save file and do <em>not</em>
  *       "reset on their own" — the previous comment here was wrong. There is no cross-loader seam that
@@ -134,6 +150,23 @@ public final class NerospaceErasure {
         routes.forgetPlayer(uuid);
         RouteRegistry.backupNow(server, routes);
 
+        // 7. Village Core owner — held in block-entity data. Loaded cores are cleared now; every indexed core in an
+        // unloaded chunk becomes a saved, position-only pending clear applied when it loads (any session).
+        VillageCoreBlockEntity.syncLedger(server);
+        int cores = VillageCoreBlockEntity.forgetOwnerEverywhere(uuid);
+        VillageCoreLedger ledger = VillageCoreLedger.get(server);
+        java.util.Set<VillageCoreLedger.CoreLoc> loaded = VillageCoreBlockEntity.loadedLocations();
+        int pending = ledger.forgetOwner(uuid, loaded::contains, today());
+        VillageCoreLedger.backupNow(server, ledger);
+        if (cores > 0 || pending > 0) {
+            // Counts only (POPIA/GDPR).
+            NerospaceCommon.LOGGER.info("[Nerospace] Erasure: cleared ownership of {} loaded village core(s); "
+                    + "{} unloaded core(s) will be cleared when they load.", cores, pending);
+        }
+
+        // 8. The transient launch cooldown (memory only).
+        LaunchCooldowns.forget(uuid);
+
         // The link module's in-memory event bookkeeping (never persisted).
         NerospaceLinkEvents.forgetPlayer(uuid);
     }
@@ -182,6 +215,11 @@ public final class NerospaceErasure {
      */
     public static boolean erasedThisSession(UUID uuid) {
         return uuid != null && ERASED_THIS_SESSION.contains(uuid);
+    }
+
+    /** UTC epoch day, the ledger's clock for its bounded retention. */
+    static long today() {
+        return java.time.LocalDate.now(java.time.ZoneOffset.UTC).toEpochDay();
     }
 
     private static void resetAttachments(ServerPlayer player) {

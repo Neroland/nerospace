@@ -1,0 +1,126 @@
+{
+  "title": "chapter.nerospace.worlds_apart.title",
+  "icon": "nerospace:terraformer",
+  "quests": [
+    {
+      "quest": "nerospace:worlds_apart/luna_landfall",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:worlds_apart/luna_prospector",
+      "x": 1,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:worlds_apart/luna_weathered",
+      "x": 2,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:worlds_apart/luna_rooted",
+      "x": 3,
+      "y": 0
+    },
+    {
+      "quest": "nerospace:worlds_apart/greenxertz_landfall",
+      "x": 0,
+      "y": 1
+    },
+    {
+      "quest": "nerospace:worlds_apart/greenxertz_prospector",
+      "x": 1,
+      "y": 1
+    },
+    {
+      "quest": "nerospace:worlds_apart/greenxertz_weathered",
+      "x": 2,
+      "y": 1
+    },
+    {
+      "quest": "nerospace:worlds_apart/greenxertz_rooted",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "quest": "nerospace:worlds_apart/mars_landfall",
+      "x": 0,
+      "y": 2
+    },
+    {
+      "quest": "nerospace:worlds_apart/mars_prospector",
+      "x": 1,
+      "y": 2
+    },
+    {
+      "quest": "nerospace:worlds_apart/mars_weathered",
+      "x": 2,
+      "y": 2
+    },
+    {
+      "quest": "nerospace:worlds_apart/mars_rooted",
+      "x": 3,
+      "y": 2
+    },
+    {
+      "quest": "nerospace:worlds_apart/cindara_landfall",
+      "x": 0,
+      "y": 3
+    },
+    {
+      "quest": "nerospace:worlds_apart/cindara_prospector",
+      "x": 1,
+      "y": 3
+    },
+    {
+      "quest": "nerospace:worlds_apart/cindara_weathered",
+      "x": 2,
+      "y": 3
+    },
+    {
+      "quest": "nerospace:worlds_apart/cindara_rooted",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "quest": "nerospace:worlds_apart/glacira_landfall",
+      "x": 0,
+      "y": 4
+    },
+    {
+      "quest": "nerospace:worlds_apart/glacira_prospector",
+      "x": 1,
+      "y": 4
+    },
+    {
+      "quest": "nerospace:worlds_apart/glacira_weathered",
+      "x": 2,
+      "y": 4
+    },
+    {
+      "quest": "nerospace:worlds_apart/glacira_rooted",
+      "x": 3,
+      "y": 4
+    },
+    {
+      "quest": "nerospace:worlds_apart/nyxara_landfall",
+      "x": 0,
+      "y": 5
+    },
+    {
+      "quest": "nerospace:worlds_apart/nyxara_prospector",
+      "x": 1,
+      "y": 5
+    },
+    {
+      "quest": "nerospace:worlds_apart/nyxara_weathered",
+      "x": 2,
+      "y": 5
+    },
+    {
+      "quest": "nerospace:worlds_apart/nyxara_rooted",
+      "x": 3,
+      "y": 5
+    }
+  ]
+}

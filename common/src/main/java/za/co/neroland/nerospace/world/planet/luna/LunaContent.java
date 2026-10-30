@@ -5,6 +5,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -25,10 +28,13 @@ import za.co.neroland.nerospace.block.LightLensBlock;
 import za.co.neroland.nerospace.block.SolarSinterBlock;
 import za.co.neroland.nerospace.block.rules.CheeseRules;
 import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
+import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.world.planet.luna.block.CheeseWheelBlock;
 import za.co.neroland.nerospace.world.planet.luna.block.Helium3PocketBlock;
+import za.co.neroland.nerospace.world.planet.luna.entity.MoonHopper;
 
 /**
  * Luna's blocks and items, registered through the shared providers. Nothing registers until {@link #init()} loads
@@ -93,6 +99,14 @@ public final class LunaContent {
     public static final RegistryEntry<Item> HELIUM3_CANISTER = item("helium3_canister", Item::new);
     public static final RegistryEntry<MoonCheeseItem> MOON_CHEESE = ModItems.ITEMS.register("moon_cheese",
             key -> new MoonCheeseItem(new Item.Properties().setId(key).food(cheeseFood(), cheeseConsumable())));
+
+    // --- entities (003 §8.1 terraform fauna) -----------------------------------------------------
+    /** The Living-meadow grazer; seeded by TerraformFauna and spawned by terraformed_luna_living. */
+    public static final RegistryEntry<EntityType<MoonHopper>> MOON_HOPPER = ModEntities.ENTITY_TYPES.register(
+            "moon_hopper", key -> EntityType.Builder.<MoonHopper>of(MoonHopper::new, MobCategory.CREATURE)
+                    .sized(0.5F, 0.6F).eyeHeight(0.45F).clientTrackingRange(8).build(key));
+    public static final RegistryEntry<Item> MOON_HOPPER_SPAWN_EGG = ModItems.ITEMS.register("moon_hopper_spawn_egg",
+            key -> new NerospaceSpawnEggItem(new Item.Properties().setId(key), MOON_HOPPER));
 
     private LunaContent() {
     }

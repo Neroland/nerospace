@@ -142,6 +142,23 @@ string ids passed to `BLOCKS.register(...)`/`block(...)` and fails on any id tha
 commented `EXCLUDED` map (currently `rocket_fuel`, a fluid, and `ash_layer`, a snow-like layer). It also fails on
 stale or duplicate tag entries and if the tag file ever appears in the shared `resources/`.
 
+### 26.3 biome format
+
+26.3 moved a biome's mob spawns out of the top-level `spawners` / `spawn_costs` fields into the
+`minecraft:gameplay/natural_mob_spawns` environment attribute (`{"argument": {"spawn_costs": {...},
+"spawns_by_category": {"<category>": [{"type", "count", "weight"}]}}, "modifier": "overlay"}`, where `count` is an
+int or an int provider such as `minecraft:uniform`). 26.3 ignores the old fields without an error, so a biome written
+for 26.1.2 / 26.2 loads on 26.3 but spawns nothing. Every other biome field Nerospace uses (`attributes` sky/fog
+colours, `effects` water/grass/foliage colours, `carvers`, `features`, climate) reads the same on all three lines.
+
+Rule: **after adding or editing any biome in `common/src/main/resources/data/nerospace/worldgen/biome/`, run
+`python tools/gen_biome_overlays.py`.** It writes the 26.3 copy of every biome to
+`common/src/main/resources-26.3/data/nerospace/worldgen/biome/` (spawns converted, `count` an int when
+`minCount == maxCount`, else `minecraft:uniform`; every category written, empty ones as `[]`; nothing else changed).
+Never edit the overlay by hand. `python tools/gen_biome_overlays.py --check` fails on a missing, stale or orphaned
+overlay, and `BiomeOverlay26_3Test` fails the build if a biome has no overlay, the overlay keeps `spawners` /
+`spawn_costs`, or its spawns differ from the shared biome.
+
 ## Build
 
 Run from the repo root:

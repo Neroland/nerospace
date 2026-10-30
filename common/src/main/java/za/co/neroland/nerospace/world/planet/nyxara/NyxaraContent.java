@@ -9,6 +9,8 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
@@ -25,11 +27,14 @@ import za.co.neroland.nerospace.block.WeatherFlipBlock;
 import za.co.neroland.nerospace.block.rules.BlockGravityRules;
 import za.co.neroland.nerospace.block.rules.WarmthRules;
 import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
+import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.RegistrationProvider;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.world.planet.nyxara.block.ShadowLichenBlock;
 import za.co.neroland.nerospace.world.planet.nyxara.block.VoidCrystalBlock;
+import za.co.neroland.nerospace.world.planet.nyxara.entity.DuskMoth;
 import za.co.neroland.nerospace.world.planet.nyxara.worldgen.FixedXBiomeSource;
 
 /**
@@ -97,6 +102,14 @@ public final class NyxaraContent {
     public static final RegistryEntry<Item> NIGHT_FIBRE = item("night_fibre");
     /** Void Crystal mined without Silk Touch. */
     public static final RegistryEntry<Item> VOID_SHARD = item("void_shard");
+
+    // --- Entities (003 §8.1 terraform fauna) ---------------------------------------------------------------
+    /** Ambient flier of the twilight grove (light <= 7 only); spawned by terraformed_nyxara_living. */
+    public static final RegistryEntry<EntityType<DuskMoth>> DUSK_MOTH = ModEntities.ENTITY_TYPES.register(
+            "dusk_moth", key -> EntityType.Builder.<DuskMoth>of(DuskMoth::new, MobCategory.AMBIENT)
+                    .sized(0.5F, 0.5F).eyeHeight(0.3F).clientTrackingRange(8).build(key));
+    public static final RegistryEntry<Item> DUSK_MOTH_SPAWN_EGG = ModItems.ITEMS.register("dusk_moth_spawn_egg",
+            key -> new NerospaceSpawnEggItem(new Item.Properties().setId(key), DUSK_MOTH));
 
     private NyxaraContent() {
     }

@@ -1,0 +1,20 @@
+{
+  "parent": "nerospace:worlds/nyxara/arrive",
+  "criteria": {
+    "placed": {
+      "conditions": {
+        "location": {
+          "type": "minecraft:match_block",
+          "blocks": "nerospace:dawnband_stone"
+        }
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "requirements": [
+    [
+      "placed"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

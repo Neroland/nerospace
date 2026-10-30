@@ -147,10 +147,28 @@ public final class StationStructure {
         return null;
     }
 
-    /** Keeps the station's legacy landing pad registered as a travel node, named after the station. */
+    /**
+     * Keeps the station's legacy landing pad registered as a travel node, named after the station — but only when no
+     * node exists there yet. An existing node is never renamed (a player may have name-tagged it to pair it with a
+     * pad of the same name, D5 rule 3) and nothing is written on an ordinary arrival.
+     */
     private static void registerPad(ServerLevel level, BlockPos centre, BlockPos padCentre) {
+        PadRegistry pads = PadRegistry.get(level.getServer());
+        if (pads.at(level.dimension(), padCentre) != null) {
+            return; // the common case: no lookup of the station, no write
+        }
         StationRegistry.StationEntry entry = entryAt(level, centre);
-        String label = entry != null ? entry.name() : "Station";
-        PadRegistry.get(level.getServer()).register(label + " Landing", level.dimension(), padCentre);
+        registerPadIn(pads, level.dimension(), padCentre, entry != null ? entry.name() : "Station");
+    }
+
+    /** Registry half of {@link #registerPad}: registers "{@code <label>} Landing" only when no node is there. */
+    @Nullable
+    static PadRegistry.PadNode registerPadIn(PadRegistry pads,
+            net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim, BlockPos padCentre, String label) {
+        PadRegistry.PadNode existing = pads.at(dim, padCentre);
+        if (existing != null) {
+            return existing;
+        }
+        return pads.register(label + " Landing", dim, padCentre);
     }
 }

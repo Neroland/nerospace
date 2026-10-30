@@ -53,6 +53,7 @@ public final class NerospaceCommon {
         installMeteorPlanetProvider();
         // Hook gates (Star Guide hint, oxygen top-up): listens on Core's gate bus; no quest mod is imported.
         za.co.neroland.nerospace.progression.QuestHooks.init();
+        za.co.neroland.nerospace.progression.WorldsProgress.init();
 
         // The NeroLink module goes LAST, so a companion client is never told about something before the
         // mod itself has finished reacting to it, and its own init swallows any failure — a broken link

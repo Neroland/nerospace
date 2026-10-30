@@ -32,7 +32,7 @@ public final class LunaPlanet extends PlanetDefinition {
                 .unlockTier(1)
                 .salt(0x4C554E41L)
                 .daylight(LunaPlanet::daylightAt, 4.0)
-                .terraform(TreeStyle.OAK_BIRCH, null));
+                .terraform(TreeStyle.OAK_BIRCH, () -> LunaContent.MOON_HOPPER.get()));
     }
 
     static double daylightAt(double phase) {

@@ -1,0 +1,62 @@
+{
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "ambient": [],
+          "axolotls": [],
+          "creature": [
+            {
+              "count": {
+                "max_inclusive": 2,
+                "min_inclusive": 1,
+                "type": "minecraft:uniform"
+              },
+              "type": "nerospace:alien_villager",
+              "weight": 3
+            }
+          ],
+          "misc": [],
+          "monster": [],
+          "underground_water_creature": [],
+          "water_ambient": [],
+          "water_creature": []
+        }
+      },
+      "modifier": "overlay"
+    }
+  },
+  "carvers": [
+    "minecraft:cave",
+    "minecraft:cave_extra_underground"
+  ],
+  "downfall": 0.0,
+  "effects": {
+    "foliage_color": "#5b2d8e",
+    "grass_color": "#5b2d8e",
+    "water_color": "#9b5de5"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nerospace:nerosium_ore_placed",
+      "nerospace:nyxara_void_crystal_placed",
+      "nerospace:nyxara_dawnband_stone_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed",
+      "nerospace:mega_city_placed"
+    ],
+    [],
+    [],
+    [],
+    []
+  ],
+  "has_precipitation": false,
+  "temperature": 0.7
+}

@@ -11,6 +11,8 @@ import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.world.HamletFeature;
 import za.co.neroland.nerospace.world.MegaCityFeature;
 import za.co.neroland.nerospace.world.RuinFeature;
+import za.co.neroland.nerospace.world.planet.mars.worldgen.DerelictHabitatFeature;
+import za.co.neroland.nerospace.world.planet.mars.worldgen.RoverWreckFeature;
 
 /**
  * Custom worldgen feature types, ported cross-loader via {@link RegistrationProvider} over the vanilla
@@ -35,6 +37,12 @@ public final class ModFeatures {
     public static final RegistryEntry<com.mojang.serialization.MapCodec<MegaCityFeature>> MEGA_CITY =
             FEATURE_TYPES.register("mega_city", key -> MegaCityFeature.CODEC);
 
+    public static final RegistryEntry<com.mojang.serialization.MapCodec<RoverWreckFeature>> ROVER_WRECK =
+            FEATURE_TYPES.register("rover_wreck", key -> RoverWreckFeature.CODEC);
+
+    public static final RegistryEntry<com.mojang.serialization.MapCodec<DerelictHabitatFeature>> DERELICT_HABITAT =
+            FEATURE_TYPES.register("derelict_habitat", key -> DerelictHabitatFeature.CODEC);
+
     *///?} else {
     public static final RegistrationProvider<Feature<?>> FEATURES =
             RegistrationProvider.get(Registries.FEATURE, NerospaceCommon.MOD_ID);
@@ -47,6 +55,12 @@ public final class ModFeatures {
 
     public static final RegistryEntry<MegaCityFeature> MEGA_CITY =
             FEATURES.register("mega_city", key -> new MegaCityFeature(NoneFeatureConfiguration.CODEC));
+
+    public static final RegistryEntry<RoverWreckFeature> ROVER_WRECK =
+            FEATURES.register("rover_wreck", key -> new RoverWreckFeature(NoneFeatureConfiguration.CODEC));
+
+    public static final RegistryEntry<DerelictHabitatFeature> DERELICT_HABITAT =
+            FEATURES.register("derelict_habitat", key -> new DerelictHabitatFeature(NoneFeatureConfiguration.CODEC));
     //?}
 
     private ModFeatures() {

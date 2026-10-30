@@ -38,3 +38,8 @@ N N N
 ## Details
 
 - ID: `nerospace:terraform_monitor` · Tool: pickaxe, iron tier · Drops: itself
+
+## Planet readout (2.0)
+
+Under the local stage the Monitor shows what the next stage will plant on this world (for example *Next: the
+first open water on Mars*), or, where the Terraformer refuses, why.

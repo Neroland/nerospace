@@ -19,7 +19,9 @@
     [
       "nerospace:glacite_ore_placed",
       "nerospace:glacira_glacite_ore_bonus_placed",
-      "nerospace:glacira_aurora_stone_placed"
+      "nerospace:glacira_aurora_stone_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed"
     ],
     [],
     [],

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
@@ -70,6 +71,9 @@ public final class PlanetCard {
             if (d.weatherNow() != WeatherEvent.NONE) {
                 g.fill(x + 40, y + 22, x + 46, y + 28, weatherTint(d.weatherNow()));
             }
+            if (d.state() == PlanetCardData.State.SELECTED) {
+                selectedMarks(g, x, y, h, accent);
+            }
         } else {
             glyph(g, x + 3, y + 15, 9, d, locked);
             text(g, font, ellipsis(font, nameLine(d), 60), x + 16, y + 15, locked ? SUBTLE : nameColour);
@@ -108,16 +112,51 @@ public final class PlanetCard {
         }
     }
 
+    /**
+     * A selected compact card is marked by shape, not colour alone (004 §5.3): a pointer notch left of the card
+     * and a check mark bottom-right, both in the planet accent.
+     */
+    private static void selectedMarks(GuiGraphicsExtractor g, int x, int y, int h, int accent) {
+        int cy = y + h / 2;
+        g.fill(x - 6, cy - 3, x - 5, cy + 4, accent);
+        g.fill(x - 5, cy - 2, x - 4, cy + 3, accent);
+        g.fill(x - 4, cy - 1, x - 3, cy + 2, accent);
+        int cx = x + 54;
+        int by = y + 27;
+        g.fill(cx, by - 2, cx + 1, by - 1, accent);
+        g.fill(cx + 1, by - 1, cx + 2, by, accent);
+        g.fill(cx + 2, by - 2, cx + 3, by - 1, accent);
+        g.fill(cx + 3, by - 3, cx + 4, by - 2, accent);
+        g.fill(cx + 4, by - 4, cx + 5, by - 3, accent);
+        g.fill(cx + 5, by - 5, cx + 6, by - 4, accent);
+    }
+
     /** The four lines the compact card's tooltip shows, so compact never hides information (004 §5.2). */
     public static List<Component> tooltip(PlanetCardData d) {
+        return tooltip(d, false);
+    }
+
+    /**
+     * The compact card's tooltip; with {@code selectionHints} (a destination list) the second line says whether a
+     * click selects the card, or why it cannot (004 §6: an unselectable card always explains itself).
+     */
+    public static List<Component> tooltip(PlanetCardData d, boolean selectionHints) {
         List<Component> lines = new ArrayList<>();
         lines.add(d.name());
-        switch (d.state()) {
-            case LOCKED_TIER -> lines.add(Component.translatable("gui.nerospace.card.tier_tooltip", d.requiredTier()));
-            case LOCKED_GATE -> lines.add(Component.translatable("gui.nerospace.card.gate_tooltip"));
-            case HERE -> lines.add(Component.translatable("gui.nerospace.card.here"));
-            default -> {
-            }
+        Component reason = switch (d.state()) {
+            case LOCKED_TIER -> Component.translatable("gui.nerospace.card.tier_tooltip", d.requiredTier());
+            case LOCKED_GATE -> Component.translatable("gui.nerospace.card.gate_tooltip");
+            case HERE -> selectionHints ? Component.translatable("gui.nerospace.dest.reason.here")
+                    : Component.translatable("gui.nerospace.card.here");
+            default -> null;
+        };
+        if (reason != null) {
+            lines.add(selectionHints ? Component.translatable("gui.nerospace.dest.cant_select", reason)
+                    .withStyle(ChatFormatting.GOLD) : reason);
+        } else if (selectionHints) {
+            lines.add(d.state() == PlanetCardData.State.SELECTED
+                    ? Component.translatable("gui.nerospace.card.selected").withStyle(ChatFormatting.GREEN)
+                    : Component.translatable("gui.nerospace.card.click_select").withStyle(ChatFormatting.AQUA));
         }
         lines.add(Component.literal(String.format(Locale.ROOT, "%.2f g  ", d.gravity()))
                 .append(Component.translatable(PlanetCardData.suitKey(true, d.hazard(), d.needsRadLining()))));

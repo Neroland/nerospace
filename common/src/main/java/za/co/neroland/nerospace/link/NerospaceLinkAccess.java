@@ -104,11 +104,20 @@ final class NerospaceLinkAccess {
         String me = playerId.toString();
         List<StationRegistry.StationEntry> out = new ArrayList<>();
         for (StationRegistry.StationEntry entry : StationRegistry.get(runningServer).all()) {
-            if (entry.isOwned() && (me.equals(entry.owner()) || entry.members().contains(me))) {
+            if (visibleTo(entry, me)) {
                 out.add(entry);
             }
         }
         return out;
+    }
+
+    /**
+     * Pure form of the visibility rule (unit-tested): an owned station whose owner is {@code me} or whose member list
+     * contains {@code me}. An unowned or anonymised station is visible to nobody.
+     */
+    static boolean visibleTo(StationRegistry.StationEntry entry, @Nullable String me) {
+        return me != null && !me.isEmpty() && entry.isOwned()
+                && (me.equals(entry.owner()) || entry.members().contains(me));
     }
 
     /**

@@ -1,0 +1,22 @@
+{
+  "title": "quest.nerospace.worlds_apart.greenxertz_landfall.title",
+  "description": "quest.nerospace.worlds_apart.greenxertz_landfall.desc",
+  "icon": "nerospace:bio_bark_log",
+  "objectives": [
+    {
+      "type": "neroquests:reach_dimension",
+      "dimension": "nerospace:greenxertz"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 150
+    },
+    {
+      "type": "neroquests:mod_hook",
+      "gate": "nerospace:hook/worlds_briefing"
+    }
+  ],
+  "scope": "player"
+}

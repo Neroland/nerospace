@@ -359,10 +359,32 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
 
     /** Cycle the docked rocket's destination (launch mode). */
     public void cycleRocketDestination() {
+        stepRocketDestination(1, null);
+    }
+
+    /**
+     * Steps the docked rocket's destination forward ({@code dir} &gt; 0) or back, skipping worlds whose Core gate
+     * is closed for {@code player}. Invalidates the menu cache so the same broadcast carries the new value.
+     */
+    public DestinationSelection.Outcome stepRocketDestination(int dir, @Nullable Player player) {
         RocketEntity rocket = dockedRocket();
-        if (rocket != null) {
-            rocket.cycleDestination();
+        if (rocket == null) {
+            return DestinationSelection.Outcome.NO_ROCKET;
         }
+        DestinationSelection.Outcome outcome = rocket.stepDestination(dir, player);
+        this.cacheTick = -1L;
+        return outcome;
+    }
+
+    /** Selects the docked rocket's destination by {@link Destinations} index for {@code player} (launch mode). */
+    public DestinationSelection.Outcome selectRocketDestination(int index, @Nullable Player player) {
+        RocketEntity rocket = dockedRocket();
+        if (rocket == null) {
+            return DestinationSelection.Outcome.NO_ROCKET;
+        }
+        DestinationSelection.Outcome outcome = rocket.selectDestination(index, player);
+        this.cacheTick = -1L;
+        return outcome;
     }
 
     /** Board the player onto the docked rocket and launch it. @return true if the ascent started. */

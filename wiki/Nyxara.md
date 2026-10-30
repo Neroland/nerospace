@@ -42,6 +42,12 @@ the config later only affects new worlds. Nerosium ore generates everywhere on t
   Levitation I), whether you placed it or found it in the wild. Leave the column to come down. Nine **Gravity
   Shards** craft a block, and a block breaks back into nine.
 
+## The Duskborn
+
+The Twilight Band is home to the **Duskborn**, Nyxara's tall, slender **[villagers](Alien-Villagers)**. Their
+hamlets, ruins and rare Mega-Cities, built from nyx stone, void crystal and tinted glass, stand only inside the
+band, never on the dayside or the nightside. See **[Alien Structures](Alien-Structures)**.
+
 ## Weather: flares
 
 Every few days the fixed sun flares for one to two minutes. The sky washes gold. Dawnband Stone lights up and keeps the
@@ -52,3 +58,13 @@ still protects you. The Nightside faces away from the sun and is unaffected.
 ## Notes
 
 - Nyxara's clock is fixed. Light levels follow the normal block-light rules, so mobs still spawn in the dark.
+
+## Terraforming
+
+Nyxara's terraformed **twilight grove** only roots in the Twilight Band. Place a Terraformer on the dayside or
+nightside and it refuses: its screen and the Terraform Monitor say *only roots in the twilight band*, and it uses
+no energy. Inside the band it spreads outward and simply skips any ground beyond the band's edge. The grove keeps
+the band's mild radiation, and terraformed ground seeds Voidglass and Nerosium.
+
+**Worlds: Nyxara** in the Star Guide: land, mine Voidglass, build with Dawnband Stone, last two minutes under the
+open sky through a flare, and root your first terraformed ground.

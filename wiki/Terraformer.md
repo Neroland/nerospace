@@ -90,3 +90,13 @@ N B N
 - Config: only `terraformerForceLoadEnabled` (default `false`). Speed and energy also follow the
 
   global multipliers. See [Configuration](Configuration).
+
+## Every world terraforms its own way (2.0)
+
+The stages are the same everywhere (Rooted, Hydrated, Living) and the tiers keep their radius and energy, but
+what grows depends on the world: a lunar meadow on the Moon, red steppe and the first open water on Mars,
+savanna on Cindara, tundra on Glacira, a xertz garden on Greenxertz and a twilight grove on Nyxara. Outside the
+Nerospace worlds it works as it always did.
+
+The Terraformer **refuses** on an orbital station (there is no ground) and on Nyxara outside the Twilight Band.
+A refusing Terraformer shows the reason in place of its stage radii and spends no energy.

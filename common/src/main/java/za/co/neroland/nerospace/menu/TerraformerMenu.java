@@ -121,6 +121,11 @@ public class TerraformerMenu extends AbstractContainerMenu {
         return this.data.get(8) != 0;
     }
 
+    /** Why the machine refuses to run where it stands ({@code NONE} when it may run). */
+    public za.co.neroland.nerospace.world.planet.TerraformRefusal getRefusal() {
+        return za.co.neroland.nerospace.world.planet.TerraformRefusal.byOrdinal(this.data.get(9));
+    }
+
     public boolean isActive() {
         return getEnergy() > 0;
     }

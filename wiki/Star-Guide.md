@@ -53,3 +53,13 @@ S S S
 ## Details
 
 - IDs: `nerospace:star_guide` (block) · `nerospace:star_guide_book` (item)
+
+## Worlds chapters (2.0)
+
+Each world has its own chapter after Freight: **Worlds: Luna, Greenxertz, Mars, Cindara, Glacira and Nyxara**.
+Every one has five steps: land there, mine its ore, build with a block only that world gives you, weather its
+storm (on the Moon, its night) for two minutes under open sky, and root your first terraformed ground. Your
+progress in the older chapters is untouched.
+
+With NeroQuests installed, the **Worlds Apart** quest chapter follows the same journey with a four-quest line
+for each world.

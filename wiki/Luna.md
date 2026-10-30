@@ -36,3 +36,13 @@ Below the surface everything is Lunar Basalt.
 - Lay Anorthosite under your first solar panels on Luna; the long lunar day already makes them strong.
 - Carry a Gas Tank when you go He-3 hunting.
 - Nights are visual: the sky darkens with the planet's clock, but mob spawning still follows block light.
+
+## Terraforming
+
+A Terraformer on the Moon turns regolith into grey soil with lichen (Rooted), lets frost pools gather in the
+hollows (Hydrated) and finally settles a pressurised **lunar meadow** (Living). The Moon has no air to hold the
+change, so the edge of your breathable ground shimmers with a faint ring of light. Step past it and you are back
+in vacuum. Terraformed ground on the Moon seeds Ilmenite and Nerosium.
+
+The Star Guide's **Worlds: Luna** chapter asks you to land, mine Ilmenite, build with Polished Lunar Basalt,
+stay out under the open sky through two minutes of the lunar night, and root your first terraformed ground.

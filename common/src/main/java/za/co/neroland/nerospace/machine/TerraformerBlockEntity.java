@@ -30,6 +30,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.config.NerospaceConfig;
+import za.co.neroland.nerospace.world.planet.TerraformRefusal;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -54,7 +55,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
 
     public static final int UPGRADE_SLOT = 0;
     public static final int SIZE = 1;
-    public static final int DATA_COUNT = 9;
+    public static final int DATA_COUNT = 10;
 
     // --- Inlined Tuning/Config base values (config seam deferred) ---
     public static final int ENERGY_BUFFER = 100_000;
@@ -63,6 +64,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     private static final int STAGE2_ENERGY_PER_BLOCK = 24; // ×2
     private static final int STAGE3_ENERGY_PER_BLOCK = 48; // ×4
     private static final int WORK_INTERVAL_TICKS = 8;
+    private static final int SHIMMER_INTERVAL_TICKS = 40;
     private static final int HYDRATION_CAP = 1_024;
     private static final int MAX_COLUMNS_PER_TICK = 48;
     /** Opt-in (config) force-load window: a (2R+1)² chunk square centred on the machine (R=2 → 25 chunks). */
@@ -87,6 +89,8 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     private int hydration;
     /** Transient: stage 2 wants water but the hydration buffer ran dry (GUI/Monitor stall reason). */
     private transient boolean hydrationStalled;
+    /** Transient: why this machine will not run where it stands (Nyxara outside the band, the station). */
+    private transient TerraformRefusal refusal = TerraformRefusal.NONE;
 
     /** Transient per-stage caches of the current ring's column offsets (recomputed on load). */
     private final transient List<int[]>[] rings = newRingCache();
@@ -117,6 +121,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
                 case 6 -> hydrationRadius;
                 case 7 -> lifeRadius;
                 case 8 -> hydrationStalled ? 1 : 0;
+                case 9 -> refusal.ordinal();
                 default -> 0;
             };
         }
@@ -130,6 +135,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
                 case 6 -> hydrationRadius = value;
                 case 7 -> lifeRadius = value;
                 case 8 -> hydrationStalled = value != 0;
+                case 9 -> refusal = TerraformRefusal.byOrdinal(value);
                 default -> { }
             }
         }
@@ -147,6 +153,11 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
     /** Exposed via the mod's energy capability/lookup (insert-only — grid powered). */
     public NerospaceEnergyStorage getEnergy() {
         return this.energy;
+    }
+
+    /** Why this terraformer is not running where it stands (last work-cycle check). */
+    public TerraformRefusal getRefusal() {
+        return this.refusal;
     }
 
     public ContainerData getDataAccess() {
@@ -240,7 +251,16 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
         if (serverLevel.getGameTime() % NerospaceConfig.scaleInterval(
                         WORK_INTERVAL_TICKS, NerospaceConfig.machineSpeedMultiplier()) == 0
                 && MachineRedstone.allowsRun(level, pos)) {
-            work(serverLevel, pos);
+            // A planet that refuses (the station; Nyxara outside the twilight band) never sweeps: no energy spent.
+            this.refusal = TerraformConversion.refusalAt(serverLevel, pos);
+            if (this.refusal == TerraformRefusal.NONE) {
+                work(serverLevel, pos);
+            }
+        }
+
+        // Luna: once the meadow is Living, the edge of the breathable ground shimmers (visual only, sparse).
+        if (this.lifeRadius > 0 && serverLevel.getGameTime() % SHIMMER_INTERVAL_TICKS == 0) {
+            TerraformConversion.shimmerDome(serverLevel, pos, this.radius);
         }
     }
 
@@ -332,7 +352,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
             switch (stage) {
                 case 2 -> {
                     boolean done = TerraformConversion.hydrateColumn(level, x, z, waterTableY(),
-                            this::drawHydration);
+                            this::drawHydration, biomeChanged);
                     if (!done) {
                         // Out of glacite mid-column: stall without advancing — the GUI says why.
                         this.hydrationStalled = true;

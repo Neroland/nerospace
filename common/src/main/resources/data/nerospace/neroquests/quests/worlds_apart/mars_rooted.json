@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.mars_rooted.title",
+  "description": "quest.nerospace.worlds_apart.mars_rooted.desc",
+  "icon": "nerospace:terraformer",
+  "prerequisites": [
+    "nerospace:worlds_apart/mars_prospector"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/mars/terraform"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 400
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 200
+    }
+  ],
+  "scope": "player"
+}

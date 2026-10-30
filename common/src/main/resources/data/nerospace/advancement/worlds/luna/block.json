@@ -1,0 +1,22 @@
+{
+  "parent": "nerospace:luna",
+  "criteria": {
+    "placed": {
+      "conditions": {
+        "location": [
+          {
+            "block": "nerospace:polished_lunar_basalt",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "requirements": [
+    [
+      "placed"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

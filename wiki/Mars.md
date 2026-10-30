@@ -41,8 +41,34 @@ radioactive outside a sealed oxygen field. Dust Devil Pits may release **Dust De
 downwind and toss loose items into the air. They never break blocks, never pick anything up and never hurt
 players. Each lasts at most 30 seconds, and they all disappear when the storm ends.
 
+## Rover Wrecks, the Salvage Drone and Derelict Habitats
+
+Mars has no villagers. Someone was here before you, though:
+
+- **Rover Wrecks** are half-buried six-wheeled rovers with a snapped antenna, a solar wing and red regolith
+  drifted over the tail. Each has a salvage chest (Raw Hematite, Titanium Ingots, Hull Plating, Truss, Rust
+  Pigment, sometimes a Solar Wing or Alien Tech Scrap).
+- A **Salvage Drone** hovers over each wreck. Right-click it to trade **Raw Hematite** for rover parts: Hull
+  Plating, Truss, Titanium Ingots, Solar Wings, Frame Casing and Alien Tech Scrap. It has a single price list
+  for everyone. There is no reputation, it has no Village Core, and it keeps no record of who traded with it.
+- **Derelict Habitats** are the ruins of an early surface base: a round floor pad, a cracked hull with a
+  window band, a half-collapsed dome, regolith blown in through the gaps, a dead console and a supply locker.
+
+Wrecks appear in the dunes and canyons, and habitats in all three Mars biomes. Both appear only in newly
+generated land.
+
 ## Tips
 
 - Bring a Tier 2 suit with sealed boots before you walk across perchlorate patches.
 - Build with placed Red Regolith if you want your dunes to stay put.
 - Keep Dry Ice away from torches and lamps, or store it in a chest.
+
+## Terraforming
+
+On Mars the Terraformer turns rust sand into red loam under hardy grass (Rooted). Hydrated ground brings the
+**first open water on Mars**: one spring opens in each chunk, at its lowest point. Living ground settles into a
+treeless **red steppe**. Dust storms still blow over terraformed land, so keep your Rad Lining. Terraformed
+ground seeds Hematite and Nerosteel.
+
+**Worlds: Mars** in the Star Guide: land, mine Hematite, build with Martian Sandstone, last two minutes under the
+open sky in a dust storm, and root your first terraformed ground.

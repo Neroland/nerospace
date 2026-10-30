@@ -81,7 +81,7 @@ public class VillageCoreBlock extends BaseEntityBlock {
         if (stack.is(ModBlocks.NEROSTEEL_BLOCK.get().asItem())) {
             if (core.isClaimed() && !core.isOwner(player)) {
                 player.sendSystemMessage(Component.translatable(
-                        "message.nerospace.village_core.owned", core.getOwnerName()));
+                        "message.nerospace.village_core.owned", core.ownerDisplay(level.getServer())));
             } else {
                 if (!core.isClaimed()) {
                     core.claim(player);
@@ -116,7 +116,7 @@ public class VillageCoreBlock extends BaseEntityBlock {
             core.onUse(player);
         } else {
             player.sendSystemMessage(Component.translatable(
-                    "message.nerospace.village_core.owned", core.getOwnerName()));
+                    "message.nerospace.village_core.owned", core.ownerDisplay(level.getServer())));
         }
         return InteractionResult.SUCCESS;
     }

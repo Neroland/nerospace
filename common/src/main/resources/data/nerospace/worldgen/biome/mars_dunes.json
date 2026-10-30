@@ -21,7 +21,9 @@
       "nerospace:nerosium_ore_placed",
       "nerospace:nerosteel_ore_placed",
       "nerospace:mars_hematite_ore_placed",
-      "nerospace:mars_perchlorate_crust_placed"
+      "nerospace:mars_perchlorate_crust_placed",
+      "nerospace:rover_wreck_placed",
+      "nerospace:derelict_habitat_placed"
     ],
     [],
     [],

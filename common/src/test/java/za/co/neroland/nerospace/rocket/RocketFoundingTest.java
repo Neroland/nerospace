@@ -27,6 +27,23 @@ class RocketFoundingTest {
     }
 
     @Test
+    void parkedLegacyRocketFollowsTheCharterRule() {
+        // 1.6.0 save (no CharterRule): parked → 2.0 rule; already in flight → honoured once.
+        assertTrue(StationFounding.charterRuleAware(null, false));
+        assertFalse(StationFounding.charterRuleAware(null, true));
+        // 2.0 saves always carry the flag.
+        assertTrue(StationFounding.charterRuleAware(Boolean.TRUE, true));
+        assertTrue(StationFounding.charterRuleAware(Boolean.TRUE, false));
+        // The parked 1.6.0 rocket with StationSlot -2 and no charter is redirected, not founded for free.
+        boolean legacy = !StationFounding.charterRuleAware(null, false);
+        assertEquals(Outcome.REDIRECT, StationFounding.resolve(legacy, false, false));
+        assertEquals(Outcome.FOUND_CONSUME, StationFounding.resolve(legacy, true, false));
+        // The in-flight one founds for free, once.
+        boolean inFlight = !StationFounding.charterRuleAware(null, true);
+        assertEquals(Outcome.FOUND_FREE, StationFounding.resolve(inFlight, false, false));
+    }
+
+    @Test
     void originPlatformIsNeverRestamped() {
         assertTrue(OriginPlatformGuard.alreadyBuilt(false, true, false));
         assertTrue(OriginPlatformGuard.alreadyBuilt(false, false, true));

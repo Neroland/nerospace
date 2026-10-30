@@ -124,7 +124,10 @@ public class RocketEntity extends Entity implements MenuProvider {
     private float hatchAnim;
     private float hatchAnimPrev;
 
-    /** Where this rocket lifted off from (transient — used when it completes its launch this session). */
+    /**
+     * Where this rocket lifted off from. Saved as optional fields so a rocket reloaded mid-ascent keeps its return
+     * target; a 1.6.0 in-flight rocket (no fields) falls back to where it is when the ascent completes.
+     */
     @Nullable
     private net.minecraft.resources.ResourceKey<Level> launchOriginDim;
     @Nullable
@@ -140,6 +143,16 @@ public class RocketEntity extends Entity implements MenuProvider {
      * save has no {@code CharterRule} flag, so its in-flight "New Station" is honoured once for free.
      */
     private boolean charterRuleAware = true;
+
+    /**
+     * Whether this rocket arrived at a station whose rider could not {@code canUse} it (005 G7 as ruled). Saved as
+     * the optional {@code Visitor} boolean (default false, so 1.6.0 rockets are never sent home); never an identity.
+     */
+    private boolean visitor;
+    /** Transient: the Star Guide arrival drives already ran for this descent's rider. */
+    private boolean arrivalDrivesDone;
+    /** Transient per-viewer cache for the Rocket screen's gate mask / Observatory reveal (refreshed every 20 t). */
+    public static final int VIEWER_DATA_REFRESH_TICKS = 20;
 
     // --- Descent (005 §3) — the target pose is saved; the rest is transient -----------------------
 
@@ -166,9 +179,6 @@ public class RocketEntity extends Entity implements MenuProvider {
     private boolean arrivalPadOccupied;
     @Nullable
     private net.minecraft.resources.ResourceKey<Level> arrivalOrigin;
-
-    /** Transient per-rider launch cooldown (005 G5): rider UUID → game time; in memory only, never saved. */
-    private static final java.util.Map<java.util.UUID, Long> LAUNCH_COOLDOWN = new java.util.HashMap<>();
 
     /**
      * The authoritative fuel store, synced to the client via {@link #DATA_FUEL} for the GUI. Physical
@@ -379,6 +389,11 @@ public class RocketEntity extends Entity implements MenuProvider {
         return p == DescentMath.Phase.DESCENDING || p == DescentMath.Phase.ABORTED;
     }
 
+    /** Whether this rocket is a visitor at the station it is parked on (the console's send-home acts on these only). */
+    public boolean isVisitor() {
+        return this.visitor;
+    }
+
     /** Game ticks this rocket has stood parked (riderless, at rest), or −1 when unknown. For the station console. */
     public long parkedTicks() {
         if (this.parkedSince < 0L || isLaunching() || isDescending() || !getPassengers().isEmpty()) {
@@ -456,30 +471,43 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /** Cycles to the next destination available to this tier (server-side; from the menu button). */
     public void cycleDestination() {
-        if (level().isClientSide() || isLaunching()) {
-            return;
-        }
-        int mask = destinationMask();
-        int current = getDestinationIndex();
-        for (int step = 1; step <= Destinations.all().size(); step++) {
-            int next = Math.floorMod(current + step, Destinations.all().size());
-            if ((mask & (1 << next)) != 0) {
-                this.entityData.set(DATA_DEST, next);
-                this.entityData.set(DATA_PAD, -1); // pads differ per dimension — reset the sub-selection
-                return;
-            }
-        }
+        stepDestination(1, null);
     }
 
-    /** Selects a global destination directly by index (server-side; from the trajectory buttons). */
+    /**
+     * Steps the selection to the next ({@code dir} &gt; 0) or previous reachable destination, skipping worlds
+     * whose Core gate is closed for {@code player} (server-side; the console cyclers and the Launch Controller).
+     */
+    public DestinationSelection.Outcome stepDestination(int dir, @Nullable Player player) {
+        if (level().isClientSide()) {
+            return DestinationSelection.Outcome.NO_ROCKET;
+        }
+        int next = DestinationSelection.step(destinationMask(), player != null ? gateMask(player) : 0,
+                getDestinationIndex(), dir, Destinations.all().size());
+        return selectDestination(next, player);
+    }
+
+    /** Selects a global destination directly by index (server-side; ignores Core gates — API callers). */
     public void setDestinationIndex(int index) {
-        if (level().isClientSide() || isLaunching()) {
-            return;
+        selectDestination(index, null);
+    }
+
+    /**
+     * Selects a global destination for {@code player} (server-side; the menu's authority over the screens'
+     * optimistic highlight). Refuses while launching, outside this rocket's range, or behind a Core gate still
+     * closed for {@code player}; a refusal leaves the selection unchanged so the screen reconciles to it.
+     */
+    public DestinationSelection.Outcome selectDestination(int index, @Nullable Player player) {
+        if (level().isClientSide()) {
+            return DestinationSelection.Outcome.NO_ROCKET;
         }
-        if ((destinationMask() & (1 << index)) != 0) {
+        DestinationSelection.Outcome outcome = DestinationSelection.evaluate(index, destinationMask(),
+                player != null ? gateMask(player) : 0, getDestinationIndex(), isLaunching());
+        if (outcome == DestinationSelection.Outcome.OK) {
             this.entityData.set(DATA_DEST, index);
-            this.entityData.set(DATA_PAD, -1);
+            this.entityData.set(DATA_PAD, -1); // pads differ per dimension — reset the sub-selection
         }
+        return outcome;
     }
 
     // --- Orbital-station selection (which founded station the Station destination docks at) ---
@@ -876,27 +904,25 @@ public class RocketEntity extends Entity implements MenuProvider {
                 return;
             }
         }
-        // Optional NeroEconomy launch/docking fees — charged only now that every crewed check has passed.
-        // No request key: a crewed launch has no flight id, and the charge is a single synchronous call.
+        // 005 G5: one launch per rider per 100 ticks (stops macro-spam; in-memory only), checked BEFORE the optional
+        // NeroEconomy launch/docking fee so a launch refused for the cooldown is never charged. The fee is charged
+        // only now that every crewed check has passed; no request key (a crewed launch has no flight id).
         if (this.getFirstPassenger() instanceof ServerPlayer pilot && level() instanceof ServerLevel serverLevel) {
-            String refused = za.co.neroland.nerospace.compat.neroeconomy.NerospaceEconomy.chargeFlight(
-                    serverLevel.getServer(), pilot.getUUID(),
-                    ModDimensions.STATION_LEVEL.equals(selectedDestination()), null, null);
-            if (refused != null) {
+            boolean toStation = ModDimensions.STATION_LEVEL.equals(selectedDestination());
+            LaunchCooldowns.Gate gate = LaunchCooldowns.gate(pilot.getUUID(), level().getGameTime(),
+                    DescentMath.LAUNCH_COOLDOWN,
+                    () -> za.co.neroland.nerospace.compat.neroeconomy.NerospaceEconomy.chargeFlight(
+                            serverLevel.getServer(), pilot.getUUID(), toStation, null, null));
+            if (gate.verdict() == LaunchCooldowns.Verdict.COOLDOWN) {
+                pilot.sendSystemMessage(Component.translatable("entity.nerospace.rocket.launch_cooldown"));
+                return;
+            }
+            String refused = gate.refusal();
+            if (gate.verdict() == LaunchCooldowns.Verdict.REFUSED && refused != null) {
                 pilot.sendSystemMessage(Component.translatable("message.nerospace.economy.launch_refused"));
                 pilot.sendSystemMessage(Component.translatable(refused));
                 return;
             }
-        }
-        // 005 G5: one launch per rider per 100 ticks (stops macro-spam); in-memory only.
-        if (this.getFirstPassenger() instanceof ServerPlayer pilot2) {
-            long now = level().getGameTime();
-            Long until = LAUNCH_COOLDOWN.get(pilot2.getUUID());
-            if (until != null && now < until) {
-                return;
-            }
-            LAUNCH_COOLDOWN.entrySet().removeIf(e -> e.getValue() <= now);
-            LAUNCH_COOLDOWN.put(pilot2.getUUID(), now + DescentMath.LAUNCH_COOLDOWN);
         }
         // Remember the pad we're lifting off from so the return rocket can fly straight back to it.
         this.launchOriginDim = level().dimension();
@@ -1070,8 +1096,12 @@ public class RocketEntity extends Entity implements MenuProvider {
             MinecraftServer server = current.getServer();
             ServerLevel destination = server.getLevel(targetKey);
             if (destination != null) {
-                net.minecraft.resources.ResourceKey<Level> originDim = this.launchOriginDim;
-                BlockPos originPad = this.launchOriginPad;
+                // A rocket reloaded mid-ascent keeps its saved origin; a 1.6.0 in-flight one (no saved origin)
+                // falls back to where it is now, so the arriving rocket always has a way back.
+                net.minecraft.resources.ResourceKey<Level> savedDim = this.launchOriginDim;
+                BlockPos savedPad = this.launchOriginPad;
+                net.minecraft.resources.ResourceKey<Level> originDim = savedDim != null ? savedDim : current.dimension();
+                BlockPos originPad = savedPad != null ? savedPad : blockPosition();
                 LandingResolverLevelAdapter.Origin origin = originPad != null && current.dimension().equals(originDim)
                         ? LandingResolverLevelAdapter.origin(current, originPad, originPad)
                         : LandingResolverLevelAdapter.Origin.NONE;
@@ -1100,6 +1130,8 @@ public class RocketEntity extends Entity implements MenuProvider {
                     arriving.addFuel(carriedFuel);
                 }
                 arriving.setReturnTarget(originDim, originPad); // remember where the rider came from
+                arriving.visitor = StationVisitorSender.isVisitor(station, entry != null, true,
+                        entry != null && StationRegistry.canUse(entry, player));
                 arriving.beginDescent(decision, flight, player, arrivalMessage(decision, targetKey, entry), getOxygen());
                 destination.addFreshEntity(arriving);
 
@@ -1200,6 +1232,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.arrivalPadOccupied = decision.flags().padOccupied();
         this.arrivalOxygen = oxygen;
         this.arrivalOrigin = flight.destination();
+        this.arrivalDrivesDone = false;
         this.noPhysics = true;
         this.setYRot(decision.yaw());
         this.yRotO = decision.yaw();
@@ -1281,6 +1314,24 @@ public class RocketEntity extends Entity implements MenuProvider {
         ServerPlayer rider = level.getServer().getPlayerList().getPlayer(id);
         if (rider != null && rider.isAlive() && rider.level() == level && rider.getVehicle() != this) {
             rider.startRiding(this);
+        }
+        if (rider != null && rider.level() == level && !this.arrivalDrivesDone) {
+            // The rider has reached the destination: the Star Guide drives run while they are certainly present, so
+            // a disconnect mid-descent cannot lose the progression (the arrival message may be lost; that is fine).
+            arrivalDrives(level, rider);
+        }
+    }
+
+    /** Neroland Core progression (one-directional): reaching orbit; far planets open deep space. Once per descent. */
+    private void arrivalDrives(ServerLevel level, ServerPlayer player) {
+        if (this.arrivalDrivesDone) {
+            return;
+        }
+        this.arrivalDrivesDone = true;
+        za.co.neroland.nerospace.progression.StarGuideGrants.driveReachedOrbit(player);
+        var arrivedPlanet = za.co.neroland.nerospace.world.planet.Planets.get(level.dimension());
+        if (arrivedPlanet != null && arrivedPlanet.unlockTier() >= RocketTier.TIER_3.level()) {
+            za.co.neroland.nerospace.progression.StarGuideGrants.driveDeepSpace(player);
         }
     }
 
@@ -1370,25 +1421,21 @@ public class RocketEntity extends Entity implements MenuProvider {
         // NeroLink: an owner-scoped rocket_landed push. Best-effort — the publisher swallows its own failures.
         za.co.neroland.nerospace.link.NerospaceLinkEvents.rocketLanded(player, dim, getTier(),
                 getFuel(), this.arrivalOxygen, blockPosition());
-        // Neroland Core progression (one-directional): reaching orbit; far planets open deep space.
-        za.co.neroland.nerospace.progression.StarGuideGrants.driveReachedOrbit(player);
-        var arrivedPlanet = za.co.neroland.nerospace.world.planet.Planets.get(dim);
-        if (arrivedPlanet != null && arrivedPlanet.unlockTier() >= RocketTier.TIER_3.level()) {
-            za.co.neroland.nerospace.progression.StarGuideGrants.driveDeepSpace(player);
-        }
+        arrivalDrives(level, player); // no-op when the descent already ran them
         this.arrivalMessage = null;
         this.arrivalPadMissing = false;
         this.arrivalPadOccupied = false;
     }
 
     /**
-     * Station console "Send visitor rocket home" (005 G7 ruling): a riderless rocket at rest flies uncrewed back
-     * to its own return pad (or a Landing Pod by the normal resolver in its origin dimension). A rocket with a
-     * rider is never moved. @return whether it left.
+     * Station console "Send visitor rocket home" (005 G7 as ruled): a riderless <em>visitor</em> rocket at rest flies
+     * uncrewed back to its own return pad (or a Landing Pod by the normal resolver in its origin dimension). A rocket
+     * with a rider, or one that is not flagged {@code Visitor} (the owner's or a member's own), is never moved.
+     * @return whether it left.
      */
     public boolean sendHomeUncrewed() {
-        if (!(level() instanceof ServerLevel current) || isLaunching() || isDescending() || !getPassengers().isEmpty()
-                || this.returnDim.isEmpty()) {
+        if (!(level() instanceof ServerLevel current) || !this.visitor || isLaunching() || isDescending()
+                || !getPassengers().isEmpty() || this.returnDim.isEmpty()) {
             return false;
         }
         net.minecraft.resources.ResourceKey<Level> home = net.minecraft.resources.ResourceKey.create(
@@ -1463,7 +1510,7 @@ public class RocketEntity extends Entity implements MenuProvider {
             // Launch (RocketMenu.boardAndLaunch). Push the founded-station names for the dock cycler first.
             za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
                     za.co.neroland.nerospace.network.StationSyncPayload.of(
-                            StationRegistry.get(serverPlayer.level().getServer())));
+                            StationRegistry.get(serverPlayer.level().getServer()), serverPlayer));
             za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
                     za.co.neroland.nerospace.network.PadSyncPayload.of(
                             PadRegistry.get(serverPlayer.level().getServer())));
@@ -1546,7 +1593,20 @@ public class RocketEntity extends Entity implements MenuProvider {
         setLaunching(input.getBooleanOr("Launching", false));
         this.launchTicks = input.getIntOr("LaunchTicks", 0);
         // 2.0 fields — all optional, so a 1.6.0 rocket loads as before ([COMPAT] 4).
-        this.charterRuleAware = input.getBooleanOr("CharterRule", false);
+        // A parked 1.6.0 rocket follows the 2.0 charter rule; only one already in flight is honoured once (D6).
+        // The field is absent exactly when the two defaults disagree.
+        boolean ruleIfAbsentFalse = input.getBooleanOr("CharterRule", false);
+        boolean absent = !ruleIfAbsentFalse && input.getBooleanOr("CharterRule", true);
+        this.charterRuleAware = StationFounding.charterRuleAware(absent ? null : Boolean.valueOf(ruleIfAbsentFalse),
+                input.getBooleanOr("Launching", false));
+        this.visitor = input.getBooleanOr("Visitor", false);
+        String originDim = input.getStringOr("LaunchOriginDim", "");
+        if (!originDim.isEmpty() && input.getBooleanOr("HasLaunchOrigin", false)) {
+            this.launchOriginDim = net.minecraft.resources.ResourceKey.create(
+                    net.minecraft.core.registries.Registries.DIMENSION, Identifier.parse(originDim));
+            this.launchOriginPad = new BlockPos(input.getIntOr("LaunchOriginX", 0), input.getIntOr("LaunchOriginY", 0),
+                    input.getIntOr("LaunchOriginZ", 0));
+        }
         this.parkedSince = input.getLongOr("ParkedSince", -1L);
         this.arrivalOxygen = input.getIntOr("ArrivalOxygen", 0);
         DescentMath.Phase saved = DescentMath.Phase.byName(input.getStringOr("Phase", ""));
@@ -1589,6 +1649,16 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.putBoolean("Launching", isLaunching());
         output.putInt("LaunchTicks", this.launchTicks);
         output.putBoolean("CharterRule", true);
+        output.putBoolean("Visitor", this.visitor);
+        net.minecraft.resources.ResourceKey<Level> originDim = this.launchOriginDim;
+        BlockPos originPad = this.launchOriginPad;
+        output.putBoolean("HasLaunchOrigin", originDim != null && originPad != null);
+        if (originDim != null && originPad != null) {
+            output.putString("LaunchOriginDim", originDim.identifier().toString());
+            output.putInt("LaunchOriginX", originPad.getX());
+            output.putInt("LaunchOriginY", originPad.getY());
+            output.putInt("LaunchOriginZ", originPad.getZ());
+        }
         output.putLong("ParkedSince", this.parkedSince);
         output.putInt("ArrivalOxygen", this.arrivalOxygen);
         output.putString("Phase", getPhase().name());
@@ -1624,14 +1694,31 @@ public class RocketEntity extends Entity implements MenuProvider {
     private ContainerData viewerData(Player player) {
         ContainerData shared = this.dataAccess;
         return new ContainerData() {
+            /** Game time of the last refresh; the two per-viewer values are recomputed at most every 20 ticks. */
+            private long refreshedAt = Long.MIN_VALUE;
+            private int gate;
+            private int reveal;
+
+            private void refresh() {
+                long now = player.level().getGameTime();
+                if (now - this.refreshedAt < VIEWER_DATA_REFRESH_TICKS && now >= this.refreshedAt) {
+                    return;
+                }
+                this.refreshedAt = now;
+                this.gate = gateMask(player);
+                this.reveal = player instanceof ServerPlayer sp
+                        ? za.co.neroland.nerospace.world.station.StationObservatory.revealFor(sp) : 0;
+            }
+
             @Override
             public int get(int index) {
                 if (index == RocketMenu.DATA_GATE_MASK) {
-                    return gateMask(player);
+                    refresh();
+                    return this.gate;
                 }
                 if (index == RocketMenu.DATA_REVEAL) {
-                    return player instanceof ServerPlayer sp
-                            ? za.co.neroland.nerospace.world.station.StationObservatory.revealFor(sp) : 0;
+                    refresh();
+                    return this.reveal;
                 }
                 return shared.get(index);
             }

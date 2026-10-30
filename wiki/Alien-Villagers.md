@@ -15,8 +15,18 @@ into an engine → deeper structures (and a boss) open.*
 
 ## Where they live
 
-- Spawn naturally on **Greenxertz** (and the mature `terraformed_meadow`).
-- Sparse groups also spawn on **Cindara** and **Glacira**.
+Each world with villagers has its own **culture**, with its own look, trades and building style:
+
+| Planet | Culture | Look | Builds in | Mega-City |
+| --- | --- | --- | --- | --- |
+| **Greenxertz** (and the mature `terraformed_meadow`) | **Xertz** | the classic green/steel alien | alien bricks, tile and crystal | yes |
+| **Cindara** | **Ember-kin** | stocky and broad, ember-red skin | cindrite, basalt and magma glass | no |
+| **Glacira** | **Frostbound** | bulky fur wraps, frost-pale skin | glacite, packed ice, permafrost and blue ice | no |
+| **Nyxara** (Twilight Band only) | **Duskborn** | tall and slender | nyx stone, void crystal and tinted glass | yes |
+
+The **Moon** has no villagers at all, and **Mars** has none either: it has wrecked rovers, a salvage drone and
+abandoned habitats instead (see **[Mars](Mars)**). A villager's culture is fixed when it first appears and
+is kept with it, so villagers from earlier versions keep theirs.
 - Creative: the **Alien Villager Spawn Egg** (Nerospace tab).
 
 ## How they look
@@ -26,6 +36,10 @@ Every villager is visually unique without a new entity per look — a layered, s
 - **Per-individual tint** — a stored colour seed gives each villager a slightly different shade, so no
 
   two are identical. Deterministic: a given villager always looks the same.
+
+- **Per-culture silhouette** — Ember-kin are stocky, Frostbound bulked out by fur wraps, Duskborn tall and
+
+  slender. (Placeholder skins for now; the final culture art is still to come.)
 
 - **Per-planet skin** — Greenxertz green/steel, Cindara ember/red, Glacira frost/pale. Within
 
@@ -54,7 +68,11 @@ Reputation rises through:
 
 - **Gifts** — right-click a villager while holding a valued item (**Xertz Quartz**, **Nerosium Ingot**,
 
-  **Alien Fragment**, or **Emeralds**). It takes one, with happy-villager particles.
+  **Alien Fragment**, or **Emeralds**). It takes one, with happy-villager particles. Each culture also
+
+  welcomes its own favourite: **Ash Dust** (Ember-kin), **Frost Shard** (Frostbound), **Shadow Lichen**
+
+  (Duskborn).
 
 - **Trade volume** — every completed trade nudges trust up.
 - **Quests** — handing a village task in to a **[Village Core](Village-Core)** bumps the trust of every
@@ -77,6 +95,15 @@ goods are useful in any modpack.
 | T3 | 8 emeralds → diamond · 5 emeralds → Rocket Fuel Canister |
 | T4 | 12 emeralds + 2 Alien Tech Scrap → Alien Core · 16 emeralds → **[Xertz Resonator](Alien-Gear)** |
 | T5 | 18 emeralds → 3 diamonds · Alien Core + 24 emeralds → **[Grav Striders](Alien-Gear)** |
+
+That is the **Xertz** table, unchanged from earlier versions. The other cultures trade their own goods, with
+the same tiers and reputation:
+
+| Culture | Buys | Sells (rising with trust) |
+| --- | --- | --- |
+| **Ember-kin** | Ash Dust, Alien Fragments | Cindrite, Sulfur, Block of Cindrite, Magma Glass, the heat-protection oxygen suit, diamonds, Alien Tech Scrap |
+| **Frostbound** | Frost Shards, Alien Fragments | Glacite, Methane Ice, Block of Glacite, Packed Cryo Ice, the cold-protection oxygen suit, diamonds, Helium-3 Canisters |
+| **Duskborn** | Shadow Lichen, Alien Fragments | Voidglass, Night Fibre, Void Crystal, Voidglass Lens, the Tier 2 oxygen suit, Gravity Shards, Void Shards |
 
 The top tiers are the only trade source of the exclusive **[Artificer gear](Alien-Gear)**.
 

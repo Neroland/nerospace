@@ -24,10 +24,13 @@ import za.co.neroland.nerospace.block.PillarGrowthBlock;
 import za.co.neroland.nerospace.block.rules.StrataRules;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModEntities;
+import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.world.planet.mars.block.StrataBlock;
 import za.co.neroland.nerospace.world.planet.mars.entity.DustDevil;
+import za.co.neroland.nerospace.world.planet.mars.entity.DustStrider;
+import za.co.neroland.nerospace.world.planet.mars.entity.SalvageDrone;
 
 /**
  * Every Mars block, item and entity, registered through the shared providers. Blocks reuse the shared behaviour bases:
@@ -91,6 +94,18 @@ public final class MarsContent {
     public static final RegistryEntry<EntityType<DustDevil>> DUST_DEVIL = ModEntities.ENTITY_TYPES.register("dust_devil",
             key -> EntityType.Builder.<DustDevil>of(DustDevil::new, MobCategory.MISC)
                     .sized(0.9F, 2.5F).clientTrackingRange(8).updateInterval(2).build(key));
+
+    /** The Rover Wreck merchant: rover parts for raw hematite, no reputation, no player record. */
+    public static final RegistryEntry<EntityType<SalvageDrone>> SALVAGE_DRONE = ModEntities.ENTITY_TYPES.register(
+            "salvage_drone", key -> EntityType.Builder.<SalvageDrone>of(SalvageDrone::new, MobCategory.CREATURE)
+                    .sized(0.7F, 0.7F).clientTrackingRange(8).build(key));
+
+    /** The red-steppe herd grazer (003 §8.1); seeded by TerraformFauna and spawned by terraformed_mars_living. */
+    public static final RegistryEntry<EntityType<DustStrider>> DUST_STRIDER = ModEntities.ENTITY_TYPES.register(
+            "dust_strider", key -> EntityType.Builder.<DustStrider>of(DustStrider::new, MobCategory.CREATURE)
+                    .sized(0.9F, 1.6F).eyeHeight(1.4F).clientTrackingRange(8).build(key));
+    public static final RegistryEntry<Item> DUST_STRIDER_SPAWN_EGG = ModItems.ITEMS.register("dust_strider_spawn_egg",
+            key -> new NerospaceSpawnEggItem(new Item.Properties().setId(key), DUST_STRIDER));
 
     private MarsContent() {
     }

@@ -1,0 +1,75 @@
+{
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "ambient": [],
+          "axolotls": [],
+          "creature": [
+            {
+              "count": {
+                "max_inclusive": 2,
+                "min_inclusive": 1,
+                "type": "minecraft:uniform"
+              },
+              "type": "nerospace:alien_villager",
+              "weight": 3
+            }
+          ],
+          "misc": [],
+          "monster": [
+            {
+              "count": {
+                "max_inclusive": 2,
+                "min_inclusive": 1,
+                "type": "minecraft:uniform"
+              },
+              "type": "nerospace:frost_strider",
+              "weight": 14
+            }
+          ],
+          "underground_water_creature": [],
+          "water_ambient": [],
+          "water_creature": []
+        }
+      },
+      "modifier": "overlay"
+    }
+  },
+  "carvers": [
+    "minecraft:cave",
+    "minecraft:cave_extra_underground"
+  ],
+  "downfall": 0.0,
+  "effects": {
+    "foliage_color": "#a8d8e8",
+    "grass_color": "#c8e8f0",
+    "water_color": "#8a6ac2"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nerospace:glacite_ore_placed",
+      "nerospace:glacira_methane_ice_placed",
+      "nerospace:glacira_methane_ice_lakebed_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed"
+    ],
+    [],
+    [],
+    [
+      "nerospace:glacira_frozen_geyser_placed"
+    ],
+    [
+      "minecraft:freeze_top_layer"
+    ]
+  ],
+  "has_precipitation": false,
+  "temperature": -0.5
+}

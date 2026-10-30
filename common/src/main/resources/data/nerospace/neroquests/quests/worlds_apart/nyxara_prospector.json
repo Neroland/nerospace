@@ -1,0 +1,22 @@
+{
+  "title": "quest.nerospace.worlds_apart.nyxara_prospector.title",
+  "description": "quest.nerospace.worlds_apart.nyxara_prospector.desc",
+  "icon": "nerospace:voidglass",
+  "prerequisites": [
+    "nerospace:worlds_apart/nyxara_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:voidglass",
+      "count": 8
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 200
+    }
+  ],
+  "scope": "player"
+}

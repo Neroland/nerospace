@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "nerospace:nyxara_twilight_band"
+    "nerospace:nyxara_twilight_band",
+    "nerospace:terraformed_nyxara_rooted",
+    "nerospace:terraformed_nyxara_hydrated",
+    "nerospace:terraformed_nyxara_living"
   ]
 }

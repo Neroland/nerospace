@@ -19,7 +19,10 @@
     [
       "nerospace:nerosium_ore_placed",
       "nerospace:nyxara_void_crystal_placed",
-      "nerospace:nyxara_dawnband_stone_placed"
+      "nerospace:nyxara_dawnband_stone_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed",
+      "nerospace:mega_city_placed"
     ],
     [],
     [],
@@ -31,7 +34,14 @@
   "spawners": {
     "ambient": [],
     "axolotls": [],
-    "creature": [],
+    "creature": [
+      {
+        "type": "nerospace:alien_villager",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 3
+      }
+    ],
     "misc": [],
     "monster": [],
     "underground_water_creature": [],

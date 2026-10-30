@@ -59,35 +59,31 @@ public class HamletFeature extends Feature<NoneFeatureConfiguration> {
 
     /** Version-neutral body shared by both feature APIs. */
     private boolean generate(WorldGenLevel level, RandomSource rand, BlockPos o) {
-        if (!StructureSpacing.shouldPlace(o, StructureSpacing.Roi.HAMLET)) {
+        AlienBuild.Site site = SettlementPlacement.begin(level, o, StructureSpacing.Roi.HAMLET);
+        if (site == null) {
             return false;
         }
         int baseY = o.getY();
-        BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
 
         for (int dx = -PLAZA; dx <= PLAZA; dx++) {
             for (int dz = -PLAZA; dz <= PLAZA; dz++) {
-                m.set(o.getX() + dx, baseY - 1, o.getZ() + dz);
                 boolean edge = Math.abs(dx) == PLAZA || Math.abs(dz) == PLAZA;
-                level.setBlock(m, edge && (dx + dz) % 2 == 0 ? AlienBuild.lamp() : AlienBuild.tile(), 2);
+                site.set(o.getX() + dx, baseY - 1, o.getZ() + dz,
+                        edge && (dx + dz) % 2 == 0 ? site.lamp() : site.tile());
                 for (int dy = 0; dy < 4; dy++) {
-                    m.set(o.getX() + dx, baseY + dy, o.getZ() + dz);
-                    level.setBlock(m, AlienBuild.air(), 2);
+                    site.set(o.getX() + dx, baseY + dy, o.getZ() + dz, AlienBuild.air());
                 }
             }
         }
 
-        AlienBuild.tower(level, o.getX() - 4, baseY, o.getZ() - 4, 2, 4, false, rand, m);
-        AlienBuild.tower(level, o.getX() + 4, baseY, o.getZ() + 4, 2, 4, false, rand, m);
+        AlienBuild.tower(site, o.getX() - 4, baseY, o.getZ() - 4, 2, 4, false, rand);
+        AlienBuild.tower(site, o.getX() + 4, baseY, o.getZ() + 4, 2, 4, false, rand);
 
         BlockState core = ModBlocks.VILLAGE_CORE.get().defaultBlockState();
-        m.set(o.getX(), baseY - 1, o.getZ());
-        level.setBlock(m, AlienBuild.crystal(), 2);
-        m.set(o.getX(), baseY, o.getZ());
-        level.setBlock(m, core, 2);
+        site.set(o.getX(), baseY - 1, o.getZ(), site.crystal());
+        site.set(o.getX(), baseY, o.getZ(), core);
         for (int[] off : new int[][] {{-2, 0}, {2, 0}, {0, -2}, {0, 2}}) {
-            m.set(o.getX() + off[0], baseY, o.getZ() + off[1]);
-            level.setBlock(m, AlienBuild.lamp(), 2);
+            site.set(o.getX() + off[0], baseY, o.getZ() + off[1], site.lamp());
         }
         return true;
     }

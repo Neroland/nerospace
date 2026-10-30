@@ -136,6 +136,19 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
         return (argb & 0xFF000000) | (r << 16) | (gg << 8) | b;
     }
 
+    /**
+     * A brief notice (e.g. "can't select: …"): a small amber banner centred above the panel, or inside the top of
+     * the panel when the screen leaves no room above it.
+     */
+    protected void drawNotice(GuiGraphicsExtractor g, Component text) {
+        int w = Math.min(this.imageWidth + 40, this.font.width(text) + 8);
+        int x = this.leftPos + (this.imageWidth - w) / 2;
+        int y = this.topPos >= 14 ? this.topPos - 14 : this.topPos + 3;
+        g.fill(x - 1, y - 1, x + w + 1, y + 12, 0xFFF0A83C);
+        g.fill(x, y, x + w, y + 11, 0xF0140C04);
+        g.centeredText(this.font, text, x + w / 2, y + 2, 0xFFFFD9A0);
+    }
+
     /** Left-aligned label text at a panel-relative position. */
     protected void label(GuiGraphicsExtractor g, Component text, int dx, int dy, int color) {
         g.text(this.font, text, this.leftPos + dx, this.topPos + dy, color, false);

@@ -1,0 +1,22 @@
+{
+  "parent": "nerospace:greenxertz",
+  "criteria": {
+    "placed": {
+      "conditions": {
+        "location": [
+          {
+            "block": "nerospace:bio_bark_log",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "requirements": [
+    [
+      "placed"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

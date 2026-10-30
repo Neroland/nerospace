@@ -18,7 +18,7 @@ import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
 import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
 import za.co.neroland.nerolandcore.sideconfig.SideMode;
 import za.co.neroland.nerolandcore.sideconfig.SidePreset;
-
+
 import za.co.neroland.nerospace.block.rules.SolarReflectRules;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
@@ -179,7 +179,7 @@ public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured
         return Math.round(this.tier.fePerTick() * solarFactor(level, this.worldPosition) * reflectFactor(level));
     }
 
-    /** Cached Anorthosite reflector multiplier (002 §1.1); derived from the world, never saved. */
+    /** Cached Anorthosite reflector multiplier; derived from the world, never saved. */
     private float reflect = 1.0F;
     private long nextReflectCheck = Long.MIN_VALUE;
 

@@ -33,3 +33,12 @@ Every few days a spore bloom drifts over the planet. Spores fill the air, Spore 
 ## If you played Greenxertz before this update
 
 Chunks you have already explored are left exactly as they were. Newly explored land uses the new surface and biomes, so you may see a visible seam where old and new terrain meet. This is expected. Your villages, Village Cores, oxygen fields and landing pads keep working, and the day cycle has not changed.
+
+## Terraforming
+
+On Greenxertz the Rooted and Hydrated stages look like the familiar terraformed meadow. Living ground becomes a
+**xertz garden**: Xertz Soil on the surface, giant glowcaps among the trees, and Spore Moss that stays where it
+was planted (inside the garden it does not spread). Ground terraformed before 2.0 keeps its old meadow.
+
+**Worlds: Greenxertz** in the Star Guide: land, collect Amber Sap, build with Bio-Bark Logs, last two minutes
+under the open sky in a spore bloom, and root your first terraformed ground.

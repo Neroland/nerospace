@@ -75,7 +75,7 @@ public class LaunchGantryBlock extends BaseEntityBlock {
         if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
                     za.co.neroland.nerospace.network.StationSyncPayload.of(
-                            StationRegistry.get(serverPlayer.level().getServer())));
+                            StationRegistry.get(serverPlayer.level().getServer()), serverPlayer));
             za.co.neroland.nerospace.network.ModNetwork.sendToPlayer(serverPlayer,
                     za.co.neroland.nerospace.network.PadSyncPayload.of(
                             PadRegistry.get(serverPlayer.level().getServer())));

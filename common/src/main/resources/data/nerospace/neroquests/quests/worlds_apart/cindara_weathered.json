@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.cindara_weathered.title",
+  "description": "quest.nerospace.worlds_apart.cindara_weathered.desc",
+  "icon": "nerospace:magma_glass",
+  "prerequisites": [
+    "nerospace:worlds_apart/cindara_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/cindara/weather"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

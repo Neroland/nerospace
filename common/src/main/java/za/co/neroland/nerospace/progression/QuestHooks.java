@@ -21,8 +21,8 @@ import za.co.neroland.nerospace.progression.StarGuide.Step;
 import za.co.neroland.nerospace.world.OxygenManager;
 
 /**
- * Reacts to Nerospace's two <em>hook gates</em> — {@code nerospace:hook/reveal_star_guide_page} and
- * {@code nerospace:hook/oxygen_top_up}. A quest mod (or any other mod) that wants to hand a player one of
+ * Reacts to Nerospace's <em>hook gates</em> — {@code nerospace:hook/reveal_star_guide_page},
+ * {@code nerospace:hook/oxygen_top_up} and (2.0) {@code nerospace:hook/worlds_briefing}. A quest mod (or any other mod) that wants to hand a player one of
  * these effects opens the matching player-scope record gate through Neroland Core; Nerospace listens on
  * Core's gate bus, applies the effect once and closes the gate again to re-arm it. Nerospace itself never
  * reads these gates for anything else: they are records that gate nothing, and no quest mod is ever
@@ -64,6 +64,7 @@ public final class QuestHooks {
         server = player.level().getServer();
         deliverIfOpen(player, REVEAL_STAR_GUIDE_PAGE);
         deliverIfOpen(player, OXYGEN_TOP_UP);
+        deliverIfOpen(player, WorldsProgress.WORLDS_BRIEFING);
     }
 
     private static void onGateChange(GateChange change) {
@@ -71,7 +72,8 @@ public final class QuestHooks {
             return;
         }
         Identifier gate = change.gate();
-        if (!REVEAL_STAR_GUIDE_PAGE.equals(gate) && !OXYGEN_TOP_UP.equals(gate)) {
+        if (!REVEAL_STAR_GUIDE_PAGE.equals(gate) && !OXYGEN_TOP_UP.equals(gate)
+                && !WorldsProgress.WORLDS_BRIEFING.equals(gate)) {
             return;
         }
         MinecraftServer running = server;
@@ -104,6 +106,8 @@ public final class QuestHooks {
             revealNextStep(player);
         } else if (OXYGEN_TOP_UP.equals(gate)) {
             topUpOxygen(player);
+        } else if (WorldsProgress.WORLDS_BRIEFING.equals(gate)) {
+            WorldsProgress.briefing(player);
         }
     }
 

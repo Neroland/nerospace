@@ -133,7 +133,10 @@ class GreenxertzDataTest {
     @Test
     void everyBiomeKeepsTheGreenxertzSpawns() throws IOException {
         for (String b : BIOMES) {
-            String spawners = load("/data/nerospace/worldgen/biome/" + b + ".json").getAsJsonObject("spawners")
+            JsonObject biome = load("/data/nerospace/worldgen/biome/" + b + ".json");
+            // 26.1.2 / 26.2 read top-level "spawners"; the 26.3 overlay keeps them in the natural_mob_spawns attribute.
+            String spawners = (biome.has("spawners") ? biome.getAsJsonObject("spawners")
+                    : biome.getAsJsonObject("attributes").getAsJsonObject("minecraft:gameplay/natural_mob_spawns"))
                     .toString();
             for (String mob : List.of("nerospace:alien_villager", "nerospace:xertz_stalker",
                     "nerospace:quartz_crawler", "nerospace:greenling")) {

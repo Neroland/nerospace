@@ -8,6 +8,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HalfTransparentBlock;
@@ -19,9 +20,10 @@ import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.DryIceRules;
 
 /**
- * Dry Ice (002 §1.2, §2.1.2): on placement and neighbour change, each adjacent <b>source</b> water becomes ice (≤ 6,
- * one-shot, never spreads, never touches flowing water). Random tick: in block light above 11 it fumes and vanishes
- * 1-in-12, dropping nothing. Register with {@code randomTicks()} and {@code noOcclusion()}.
+ * Dry Ice: on placement and neighbour change, each adjacent <b>source</b> water becomes ice (≤ 6, one-shot, never
+ * spreads, never touches flowing water). Random tick: in <b>block</b> light above 11 it fumes and vanishes 1-in-12,
+ * dropping nothing. Sky light never counts, so the open polar cap under Mars' fixed noon persists; a torch or lamp
+ * beside it makes it fume. Register with {@code randomTicks()} and {@code noOcclusion()}.
  *
  * <p>Like vanilla ice it is half-transparent: its texture has translucent pixels, so 26.x puts it in the translucent
  * chunk layer, and faces between two Dry Ice blocks are skipped.</p>
@@ -70,7 +72,8 @@ public class DryIceBlock extends HalfTransparentBlock {
 
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        int light = level.getMaxLocalRawBrightness(pos);
+        // Block light only: Mars' fixed noon puts sky light at 15 on the open polar cap, which must persist.
+        int light = level.getBrightness(LightLayer.BLOCK, pos);
         if (!DryIceRules.sublimates(light)) {
             return;
         }

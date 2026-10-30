@@ -21,5 +21,7 @@ public final class PlanetTicks {
         PlanetSync.tick(server);
         za.co.neroland.nerospace.block.BlockTicks.serverTick(server);
         za.co.neroland.nerospace.world.planet.greenxertz.BioBarkHeal.tick(server);
+        // Village Cores that loaded since last tick: apply saved pending erasures, refresh the owner index.
+        za.co.neroland.nerospace.village.VillageCoreBlockEntity.syncLedger(server);
     }
 }

@@ -60,6 +60,10 @@ public class CappedSpreadBlock extends Block {
 
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        // Tame inside the terraformed xertz garden (D7): moss seeded by stage 3 stays where it was planted.
+        if (level.getBiome(pos).is(za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzTerraform.TABLE.living())) {
+            return;
+        }
         Direction dir = Direction.from2DDataValue(random.nextInt(4));
         BlockPos target = pos.relative(dir);
         boolean onSoil = level.getBlockState(target).isAir()

@@ -107,6 +107,7 @@ public class RocketMenu extends AbstractContainerMenu {
     public boolean clickMenuButton(Player player, int id) {
         RocketEntity current = this.rocket; // local copy so the null check holds for the analyzer
         if (current == null) {
+            DestinationTrace.log("rocket menu {} button {} rejected: no rocket", this.containerId, id);
             return false;
         }
         if (id == BUTTON_LAUNCH) {
@@ -119,7 +120,9 @@ public class RocketMenu extends AbstractContainerMenu {
             return true;
         }
         if (id == BUTTON_CYCLE_DEST) {
-            current.cycleDestination();
+            DestinationSelection.Outcome outcome = current.stepDestination(1, player);
+            DestinationTrace.log("rocket menu {} cycle -> dest {} mask {} {}", this.containerId,
+                    current.getDestinationIndex(), current.destinationMask(), outcome);
             return true;
         }
         if (id == BUTTON_CYCLE_STATION) {
@@ -130,10 +133,14 @@ public class RocketMenu extends AbstractContainerMenu {
             current.cyclePad();
             return true;
         }
-        if (id >= SELECT_DEST_BASE) {
-            current.setDestinationIndex(id - SELECT_DEST_BASE);
-            return true;
+        if (id >= SELECT_DEST_BASE && id < SELECT_DEST_BASE + Destinations.all().size()) {
+            int index = id - SELECT_DEST_BASE;
+            DestinationSelection.Outcome outcome = current.selectDestination(index, player);
+            DestinationTrace.log("rocket menu {} button {} -> index {} mask {} gate {} {}", this.containerId, id,
+                    index, current.destinationMask(), RocketEntity.gateMask(player), outcome);
+            return true; // always broadcast so the screen reconciles its optimistic highlight
         }
+        DestinationTrace.log("rocket menu {} ignored button {}", this.containerId, id);
         return false;
     }
 

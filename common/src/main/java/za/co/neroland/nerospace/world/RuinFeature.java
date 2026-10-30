@@ -62,17 +62,16 @@ public class RuinFeature extends Feature<NoneFeatureConfiguration> {
 
     /** Version-neutral body shared by both feature APIs. */
     private boolean generate(WorldGenLevel level, RandomSource rand, BlockPos o) {
-        if (!StructureSpacing.shouldPlace(o, StructureSpacing.Roi.RUIN)) {
+        AlienBuild.Site site = SettlementPlacement.begin(level, o, StructureSpacing.Roi.RUIN);
+        if (site == null) {
             return false;
         }
         int baseY = o.getY() - 2; // sunken
-        BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
 
-        AlienBuild.tower(level, o.getX(), baseY, o.getZ(), 6, 6, true, rand, m);
+        AlienBuild.tower(site, o.getX(), baseY, o.getZ(), 6, 6, true, rand);
 
         BlockState core = ModBlocks.VILLAGE_CORE.get().defaultBlockState();
-        m.set(o.getX(), baseY, o.getZ());
-        level.setBlock(m, core, 2);
+        site.set(o.getX(), baseY, o.getZ(), core);
 
         BlockPos chestPos = new BlockPos(o.getX() + 3, baseY, o.getZ() + 3);
         level.setBlock(chestPos, Blocks.CHEST.defaultBlockState(), 2);

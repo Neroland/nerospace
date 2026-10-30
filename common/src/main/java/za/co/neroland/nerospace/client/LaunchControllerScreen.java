@@ -4,12 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.Level;
+
+import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.client.ui.PendingSelection;
 import za.co.neroland.nerospace.menu.LaunchControllerMenu;
+import za.co.neroland.nerospace.rocket.DestinationSelection;
+import za.co.neroland.nerospace.rocket.DestinationTrace;
+import za.co.neroland.nerospace.rocket.Destinations;
 
 /**
  * The Launch Controller console with two modes. <b>Build mode</b>: pick a target pad tier, load Launch
@@ -37,7 +48,16 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     private SpaceButton previewButton;
     private SpaceButton buildButton;
     private SpaceButton destButton;
+    private SpaceButton prevDestButton;
+    private SpaceButton nextDestButton;
     private SpaceButton launchButton;
+    /** The optimistic destination: a step shows at once, the synced index settles it (004 §6). */
+    private final PendingSelection pending = new PendingSelection();
+    @Nullable
+    private Component status;
+    private long statusUntil;
+    /** Mask/selection the destination tooltip was last built for (rebuilt only when they change). */
+    private long tooltipKey = Long.MIN_VALUE;
 
     public LaunchControllerScreen(LaunchControllerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, W, H);
@@ -67,9 +87,17 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
                 Component.translatable("gui.nerospace.launch_controller.build"), ACCENT,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_BUILD));
         this.addRenderableWidget(this.buildButton);
-        this.destButton = new SpaceButton(this.leftPos + 8, this.topPos + 90, W - 16, 12,
-                Component.empty(), ACCENT, btn -> sendButton(LaunchControllerMenu.BUTTON_CYCLE_DEST));
+        // Destination: ◀ [name] ▶ — the name steps forward too; the mouse wheel and Up/Down also step.
+        this.prevDestButton = new SpaceButton(this.leftPos + 8, this.topPos + 90, 14, 12,
+                Component.literal("◀"), ACCENT, btn -> stepDestination(-1));
+        this.addRenderableWidget(this.prevDestButton);
+        this.destButton = new SpaceButton(this.leftPos + 24, this.topPos + 90, W - 48, 12,
+                Component.empty(), ACCENT, btn -> stepDestination(1));
         this.addRenderableWidget(this.destButton);
+        this.nextDestButton = new SpaceButton(this.leftPos + W - 22, this.topPos + 90, 14, 12,
+                Component.literal("▶"), ACCENT, btn -> stepDestination(1));
+        this.addRenderableWidget(this.nextDestButton);
+        this.tooltipKey = Long.MIN_VALUE;
         this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + 104, W - 16, 12,
                 Component.translatable("gui.nerospace.rocket.launch"), ACCENT,
                 btn -> sendButton(LaunchControllerMenu.BUTTON_LAUNCH));
@@ -121,6 +149,8 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         // Launch-mode widgets.
         boolean rocket = this.menu.rocketPresent();
         this.destButton.visible = launch && rocket;
+        this.prevDestButton.visible = launch && rocket;
+        this.nextDestButton.visible = launch && rocket;
         this.launchButton.visible = launch && rocket;
 
         if (!launch) {
@@ -168,8 +198,110 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         label(g, Component.translatable("gui.nerospace.rocket.power_label"), 8, 68, 0xFFF6DC8A);
         hGauge(g, 8, 77, W - 16, 6, this.menu.rocketPowerFrac(), POWER);
 
-        this.destButton.setMessage(Component.translatable("gui.nerospace.launch_controller.destination", this.menu.rocketDestDisplayName()));
-        this.launchButton.active = this.menu.rocketLaunchable();
+        long now = System.currentTimeMillis();
+        int synced = this.menu.rocketDestIndex();
+        if (this.pending.reconcile(synced, now) == PendingSelection.Result.REFUSED) {
+            showStatus(Component.translatable("gui.nerospace.dest.reason.refused"), now);
+        }
+        int shown = this.pending.shown(synced);
+        ResourceKey<Level> key = Destinations.byIndex(shown);
+        this.destButton.setMessage(Component.translatable("gui.nerospace.launch_controller.destination",
+                key == null ? Component.literal("—") : Destinations.displayName(key)));
+        int mask = this.menu.rocketDestMask();
+        boolean choice = Integer.bitCount(mask) > 1;
+        this.prevDestButton.active = choice;
+        this.nextDestButton.active = choice;
+        refreshDestTooltip(mask, shown);
+        this.launchButton.active = this.menu.rocketLaunchable() && !this.pending.active();
+        if (this.status != null && now < this.statusUntil) {
+            drawNotice(g, this.status);
+        }
+    }
+
+    /** The destination tooltip: every destination in range, the selected one marked, and the controls. */
+    private void refreshDestTooltip(int mask, int shown) {
+        long key = ((long) mask << 32) | (shown & 0xFFFFFFFFL);
+        if (key == this.tooltipKey) {
+            return;
+        }
+        this.tooltipKey = key;
+        MutableComponent text = Component.translatable("gui.nerospace.launch_controller.dest_list");
+        for (int i = 0; i < Destinations.all().size(); i++) {
+            if ((mask & (1 << i)) != 0) {
+                text.append("\n").append(Component.literal(i == shown ? "▶ " : "   "))
+                        .append(Destinations.displayName(Destinations.all().get(i)));
+            }
+        }
+        text.append("\n").append(Component.translatable("gui.nerospace.launch_controller.dest_hint"));
+        this.destButton.setTooltip(Tooltip.create(text));
+    }
+
+    /**
+     * Steps the docked rocket's destination: predicted and shown at once, then the server steps it (skipping
+     * worlds whose Core gate is closed for this player) and the synced index settles the display.
+     */
+    private void stepDestination(int dir) {
+        long now = System.currentTimeMillis();
+        int synced = this.menu.rocketDestIndex();
+        int mask = this.menu.rocketDestMask();
+        int current = this.pending.shown(synced);
+        int predicted = DestinationSelection.step(mask, 0, current, dir, Destinations.all().size());
+        DestinationTrace.log("controller screen {} step {} from {} mask {} -> {}", this.menu.containerId, dir,
+                current, mask, predicted);
+        if (predicted == current) {
+            showStatus(Component.translatable("gui.nerospace.dest.reason.only_one"), now);
+            return;
+        }
+        this.pending.begin(predicted, synced, now);
+        this.status = null;
+        sendButton(dir < 0 ? LaunchControllerMenu.BUTTON_PREV_DEST : LaunchControllerMenu.BUTTON_CYCLE_DEST);
+    }
+
+    private void showStatus(Component reason, long now) {
+        this.status = Component.translatable("gui.nerospace.dest.cant_select", reason);
+        this.statusUntil = now + 2500L;
+    }
+
+    private boolean destControlsLive() {
+        return this.menu.isLaunchMode() && this.menu.rocketPresent();
+    }
+
+    /** The mouse wheel over the destination row steps the destination. */
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        int x = this.leftPos + 8;
+        int y = this.topPos + 90;
+        if (destControlsLive() && scrollY != 0.0D && mouseX >= x && mouseX < x + W - 16 && mouseY >= y
+                && mouseY < y + 12) {
+            playClick();
+            stepDestination(scrollY > 0.0D ? -1 : 1);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    /** Up/Down step the destination; Enter launches when ready (launch mode). */
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (destControlsLive()) {
+            if (event.isUp() || event.isDown()) {
+                playClick();
+                stepDestination(event.isUp() ? -1 : 1);
+                return true;
+            }
+            if (event.isConfirmation() && this.launchButton.active) {
+                playClick();
+                sendButton(LaunchControllerMenu.BUTTON_LAUNCH);
+                return true;
+            }
+        }
+        return super.keyPressed(event);
+    }
+
+    private void playClick() {
+        if (this.minecraft != null) {
+            net.minecraft.client.gui.components.AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
+        }
     }
 
     private void sendButton(int id) {

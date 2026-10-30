@@ -36,10 +36,10 @@ class StationDockingRuleTest {
 
     @Test
     void visitorSendHomeEligibility() {
-        assertTrue(StationVisitorSender.eligible(false, 12_000L, true));
-        assertFalse(StationVisitorSender.eligible(false, 11_999L, true));
-        assertFalse(StationVisitorSender.eligible(true, 50_000L, true)); // never move a crewed rocket
-        assertFalse(StationVisitorSender.eligible(false, 50_000L, false)); // not blocking a dock
-        assertFalse(StationVisitorSender.eligible(false, -1L, true)); // unknown parking time
+        assertTrue(StationVisitorSender.eligible(true, false, 12_000L, true));
+        assertFalse(StationVisitorSender.eligible(true, false, 11_999L, true));
+        assertFalse(StationVisitorSender.eligible(true, true, 50_000L, true)); // never move a crewed rocket
+        assertFalse(StationVisitorSender.eligible(true, false, 50_000L, false)); // not blocking a dock
+        assertFalse(StationVisitorSender.eligible(true, false, -1L, true)); // unknown parking time
     }
 }

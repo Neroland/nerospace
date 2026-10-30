@@ -231,11 +231,17 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         }
     }
 
-    private static boolean isGift(ItemStack stack) {
+    private boolean isGift(ItemStack stack) {
         return !stack.isEmpty() && giftValue(stack) > 0;
     }
 
-    private static int giftValue(ItemStack stack) {
+    private int giftValue(ItemStack stack) {
+        // Each culture also welcomes the good its table buys (ash, frost shards, shadow lichen; Xertz: quartz).
+        String favourite = za.co.neroland.nerospace.village.VillagerCultures.byLegacy(getPlanet()).giftItem();
+        if (!stack.is(ModItems.XERTZ_QUARTZ.get())
+                && net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().equals(favourite)) {
+            return 3;
+        }
         if (stack.is(ModItems.XERTZ_QUARTZ.get())) {
             return 3;
         }
@@ -313,7 +319,8 @@ public class AlienVillager extends PathfinderMob implements Merchant {
 
     private void rebuildOffers(Player player) {
         int tier = player != null ? getTier(player) : 1;
-        this.offers = AlienTrades.forTier(Math.max(1, tier));
+        // One table per culture (D8); the culture follows from the ordinal-persisted species.
+        this.offers = AlienTrades.forCulture(getPlanet().culture(), Math.max(1, tier));
     }
 
     // --- Merchant -------------------------------------------------------------

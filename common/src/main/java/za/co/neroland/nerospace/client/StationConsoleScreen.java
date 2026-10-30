@@ -455,21 +455,21 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
     private void drawOverview(GuiGraphicsExtractor g, StationConsoleSyncPayload s, StationClass cls) {
         int l = this.leftPos;
         int t = this.topPos;
-        // Planet-card placeholder (the shared PlanetCard component replaces this box when it lands).
-        g.fill(l + 10, t + 40, l + 106, t + 96, INK);
-        g.fill(l + 11, t + 41, l + 105, t + 95, 0xFF05070C);
-        g.fill(l + 11, t + 41, l + 105, t + 53, 0xFF17625B);
-        label(g, tr("card.title"), 14, 43, TITLE);
         int built = this.menu.get(StationConsoleMenu.D_BUILT_MASK);
         int powered = this.menu.get(StationConsoleMenu.D_POWERED_MASK);
         int deckTile = ModuleKind.GRAVITY_DECK.tile();
         boolean deck = (built & (1 << deckTile)) != 0 && (powered & (1 << deckTile)) != 0;
-        label(g, tr(deck ? "card.gravity_deck" : "card.gravity"), 14, 56, VALUE);
-        label(g, tr("card.airless"), 14, 66, VALUE);
-        label(g, tr(this.menu.get(StationConsoleMenu.D_ARRIVAL_KIND) == 1 ? "arrival.ring" : "arrival.pad"), 14, 76,
-                VALUE);
+        za.co.neroland.nerospace.client.ui.PlanetCardData data = new za.co.neroland.nerospace.client.ui.PlanetCardData(
+                za.co.neroland.nerospace.registry.ModDimensions.STATION_LEVEL, Component.literal(s.name()),
+                deck ? 1.0 : 0.1, za.co.neroland.nerospace.api.Hazard.NONE,
+                za.co.neroland.nerospace.world.OxygenManager.SuitTier.TIER_1, false,
+                za.co.neroland.nerospace.world.planet.WeatherEvent.NONE, 0F, 0.5F, true, false,
+                java.util.Optional.of(Component.translatable("gui.nerospace.card.dock", s.name())),
+                za.co.neroland.nerospace.client.ui.PlanetCardData.State.AVAILABLE, 1);
+        za.co.neroland.nerospace.client.ui.PlanetCard.draw(g, this.font, l + 10, t + 40, data, false, false,
+                System.currentTimeMillis());
         if (s.revealCount() > 0) {
-            label(g, tr("card.observatory", s.revealCount()), 14, 86, ACCENT);
+            label(g, tr("card.observatory", s.revealCount()), 114, 154, ACCENT);
         }
 
         int day = this.menu.get(StationConsoleMenu.D_FOUNDED_DAY);

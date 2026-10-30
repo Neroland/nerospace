@@ -20,7 +20,8 @@
     [
       "nerospace:nerosium_ore_placed",
       "nerospace:nerosteel_ore_placed",
-      "nerospace:mars_hematite_ore_placed"
+      "nerospace:mars_hematite_ore_placed",
+      "nerospace:derelict_habitat_placed"
     ],
     [],
     [],

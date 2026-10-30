@@ -327,7 +327,10 @@ public final class ModItems {
                 List.<ItemLike>of(XERTZ_STALKER_SPAWN_EGG.get(), QUARTZ_CRAWLER_SPAWN_EGG.get(),
                         GREENLING_SPAWN_EGG.get(), ALIEN_VILLAGER_SPAWN_EGG.get(), CINDER_STALKER_SPAWN_EGG.get(),
                         FROST_STRIDER_SPAWN_EGG.get(), MEADOW_LOPER_SPAWN_EGG.get(), EMBER_STRUTTER_SPAWN_EGG.get(),
-                        WOOLLY_DRIFT_SPAWN_EGG.get()),
+                        WOOLLY_DRIFT_SPAWN_EGG.get(),
+                        za.co.neroland.nerospace.world.planet.luna.LunaContent.MOON_HOPPER_SPAWN_EGG.get(),
+                        za.co.neroland.nerospace.world.planet.mars.MarsContent.DUST_STRIDER_SPAWN_EGG.get(),
+                        za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH_SPAWN_EGG.get()),
                 CreativeModeTabs.COMBAT,
                 List.<ItemLike>of(
                         OXYGEN_SUIT_HELMET.get(), OXYGEN_SUIT_CHESTPLATE.get(), OXYGEN_SUIT_LEGGINGS.get(), OXYGEN_SUIT_BOOTS.get(),

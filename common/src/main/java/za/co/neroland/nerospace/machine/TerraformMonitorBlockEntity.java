@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerospace.world.planet.TerraformTables;
 import za.co.neroland.nerospace.menu.TerraformMonitorMenu;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
 import za.co.neroland.nerospace.world.TerraformManager;
@@ -27,7 +28,7 @@ import za.co.neroland.nerospace.world.TerraformManager;
  */
 public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProvider {
 
-    public static final int DATA_COUNT = 7;
+    public static final int DATA_COUNT = 9;
     /** How far (blocks, horizontal) the Monitor searches for a Terraformer to read. */
     public static final int LINK_RANGE = 32;
     /** Ticks between readout refreshes (display only — nothing gameplay-critical). */
@@ -40,10 +41,13 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
     private transient int hydration;
     private transient boolean stalled;
     private transient int localStage;
+    /** {@link TerraformTables#ORDER} index of this world's table (-1 = none: the terraformer refuses here). */
+    private transient int tableIndex = -1;
+    private transient int refusal;
 
     /**
      * Synced to the menu: [0]=linked [1]=rootedRadius [2]=hydrationRadius [3]=lifeRadius
-     * [4]=hydration [5]=stalled [6]=localStage.
+     * [4]=hydration [5]=stalled [6]=localStage [7]=table index (planet readout) [8]=refusal ordinal.
      */
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -56,6 +60,8 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
                 case 4 -> hydration;
                 case 5 -> stalled ? 1 : 0;
                 case 6 -> localStage;
+                case 7 -> tableIndex;
+                case 8 -> refusal;
                 default -> 0;
             };
         }
@@ -70,6 +76,8 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
                 case 4 -> hydration = value;
                 case 5 -> stalled = value != 0;
                 case 6 -> localStage = value;
+                case 7 -> tableIndex = value;
+                case 8 -> refusal = value;
                 default -> { }
             }
         }
@@ -105,6 +113,9 @@ public class TerraformMonitorBlockEntity extends BlockEntity implements MenuProv
     public void refresh(ServerLevel level, BlockPos pos) {
         int oldStage = this.localStage;
         this.localStage = TerraformConversion.effectiveStage(level.getChunkAt(pos));
+        // Planet-specific readout: which table applies here (what the next stage plants) and why it refuses.
+        this.tableIndex = TerraformTables.indexOf(TerraformConversion.tableFor(level));
+        this.refusal = TerraformConversion.refusalAt(level, pos).ordinal();
 
         BlockPos nearest = nearestTerraformer(level, pos);
         this.linked = nearest != null;

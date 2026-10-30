@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.luna_weathered.title",
+  "description": "quest.nerospace.worlds_apart.luna_weathered.desc",
+  "icon": "nerospace:polished_lunar_basalt",
+  "prerequisites": [
+    "nerospace:worlds_apart/luna_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/luna/weather"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

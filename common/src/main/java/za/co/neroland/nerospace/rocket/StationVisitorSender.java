@@ -8,11 +8,12 @@ import net.minecraft.world.phys.AABB;
 import za.co.neroland.nerospace.rocket.StationRegistry.StationEntry;
 
 /**
- * The Station Console's "Send visitor rocket home" (005 G7, orchestrator ruling 5), installed into
- * {@code StationHooks}: every riderless rocket parked at least 10 minutes on a dock or pad inside the station's
- * claim box flies uncrewed back to its own return pad (or a Landing Pod by the resolver in its origin dimension).
- * A rocket with a rider is never moved. Rockets carry no owner, so nobody is messaged; each send logs the action
- * and station slot only ({@link RocketEntity#sendHomeUncrewed}).
+ * The Station Console's "Send visitor rocket home" (005 G7 as ruled), installed into {@code StationHooks}: every
+ * riderless <em>visitor</em> rocket parked at least 10 minutes on a dock or pad inside the station's claim box flies
+ * uncrewed back to its own return pad (or a Landing Pod by the resolver in its origin dimension). A rocket is a
+ * visitor when its rider could not {@code canUse} the station at arrival; the flag is a saved boolean, never an
+ * identity. The owner's and members' own rockets, 1.6.0 rockets and any rocket with a rider are never moved.
+ * Nobody is messaged; each send logs the action and station slot only ({@link RocketEntity#sendHomeUncrewed}).
  */
 public final class StationVisitorSender {
 
@@ -22,9 +23,18 @@ public final class StationVisitorSender {
     private StationVisitorSender() {
     }
 
-    /** Pure rule: riderless, parked long enough, and standing on a landing block it blocks. */
-    public static boolean eligible(boolean hasRider, long parkedTicks, boolean onDock) {
-        return !hasRider && parkedTicks >= MIN_PARKED_TICKS && onDock;
+    /** Pure rule: a visitor rocket, riderless, parked long enough, and standing on a landing block it blocks. */
+    public static boolean eligible(boolean visitor, boolean hasRider, long parkedTicks, boolean onDock) {
+        return visitor && !hasRider && parkedTicks >= MIN_PARKED_TICKS && onDock;
+    }
+
+    /**
+     * The {@code Visitor} flag set on an arriving rocket: only a station arrival whose rider could not use the
+     * station. A planet arrival, the origin platform (no entry), an unowned station and an uncrewed send-home are
+     * never visitors.
+     */
+    public static boolean isVisitor(boolean stationArrival, boolean hasEntry, boolean hasRider, boolean riderCanUse) {
+        return stationArrival && hasEntry && hasRider && !riderCanUse;
     }
 
     public static int sendHome(ServerLevel level, StationEntry entry) {
@@ -37,7 +47,8 @@ public final class StationVisitorSender {
             if (rocket instanceof za.co.neroland.nerospace.route.CargoRocketEntity) {
                 continue;
             }
-            if (eligible(!rocket.getPassengers().isEmpty(), rocket.parkedTicks(), onDock(level, rocket.blockPosition()))
+            if (eligible(rocket.isVisitor(), !rocket.getPassengers().isEmpty(), rocket.parkedTicks(),
+                    onDock(level, rocket.blockPosition()))
                     && rocket.sendHomeUncrewed()) {
                 sent++;
             }

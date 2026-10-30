@@ -3,6 +3,7 @@ package za.co.neroland.nerospace.registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -27,6 +28,20 @@ public final class ModTags {
 
     private static TagKey<Biome> biomeTag(String namespace, String path) {
         return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(namespace, path));
+    }
+
+    public static final class EntityTypes {
+
+        private EntityTypes() {
+        }
+
+        /**
+         * Creatures native to a Nerospace planet (003 §8.1 terraform fauna). Planet hazards that touch living
+         * entities (contact hazards such as Perchlorate Crust, and any future per-entity oxygen or radiation rule)
+         * skip these: they evolved there.
+         */
+        public static final TagKey<EntityType<?>> NATIVE_FAUNA =
+                TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("nerospace", "native_fauna"));
     }
 
     public static final class Biomes {

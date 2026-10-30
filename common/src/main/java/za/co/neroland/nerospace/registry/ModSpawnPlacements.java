@@ -40,6 +40,23 @@ public final class ModSpawnPlacements {
         grass(sink, ModEntities.MEADOW_LOPER);
         grass(sink, ModEntities.EMBER_STRUTTER);
         grass(sink, ModEntities.WOOLLY_DRIFT);
+        // Terraform fauna (003 §8.1): the grazers need grassed (Living) ground; the moth needs the dark.
+        grass(sink, za.co.neroland.nerospace.world.planet.luna.LunaContent.MOON_HOPPER);
+        grass(sink, za.co.neroland.nerospace.world.planet.mars.MarsContent.DUST_STRIDER);
+        dim(sink, za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH);
+    }
+
+    /**
+     * Dark spots only (light at most {@link za.co.neroland.nerospace.entity.FaunaStats#MOTH_MAX_LIGHT}) with solid
+     * ground below and air at the spawn position: the Dusk Moth fills the grove's shade, not its open lawns.
+     */
+    private static <T extends Mob> void dim(Sink sink, RegistryEntry<EntityType<T>> entry) {
+        sink.register(entry.get(), SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) ->
+                        za.co.neroland.nerospace.entity.FaunaStats.mothMaySpawnAt(level.getMaxLocalRawBrightness(pos))
+                                && !level.getBlockState(pos.below()).isAir()
+                                && level.getBlockState(pos).isAir());
     }
 
     /** Solid ground below, open air at the spawn position; light-independent. */

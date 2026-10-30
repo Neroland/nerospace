@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
 import za.co.neroland.nerospace.block.rules.ContactHazardRules;
 import za.co.neroland.nerospace.block.rules.HeatContactRules;
+import za.co.neroland.nerospace.world.planet.PlanetHazards;
 
 /**
  * Step hazard ground (002 §1.2 Perchlorate Crust, §1.3 Ember-Cracked Ashstone). {@link Hazard#POISON}: Poison I 4 s
@@ -46,7 +47,8 @@ public class ContactHazardBlock extends Block {
 
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-        if (level instanceof ServerLevel server && entity instanceof LivingEntity living) {
+        if (level instanceof ServerLevel server && entity instanceof LivingEntity living
+                && !PlanetHazards.isNative(entity)) {
             switch (this.hazard) {
                 case POISON -> {
                     if (ContactHazardRules.poison(true, BlockSuits.sealedBoots(entity))

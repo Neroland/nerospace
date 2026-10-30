@@ -39,6 +39,15 @@ public final class ModEntityAttributes {
         sink.accept(ModEntities.EMBER_STRUTTER.get(), EmberStrutter.createAttributes());
         sink.accept(ModEntities.WOOLLY_DRIFT.get(), WoollyDrift.createAttributes());
         sink.accept(ModEntities.ALIEN_VILLAGER.get(), AlienVillager.createAttributes());
+        sink.accept(za.co.neroland.nerospace.world.planet.mars.MarsContent.SALVAGE_DRONE.get(),
+                za.co.neroland.nerospace.world.planet.mars.entity.SalvageDrone.createAttributes());
+        // Terraform fauna (003 §8.1).
+        sink.accept(za.co.neroland.nerospace.world.planet.luna.LunaContent.MOON_HOPPER.get(),
+                za.co.neroland.nerospace.world.planet.luna.entity.MoonHopper.createAttributes());
+        sink.accept(za.co.neroland.nerospace.world.planet.mars.MarsContent.DUST_STRIDER.get(),
+                za.co.neroland.nerospace.world.planet.mars.entity.DustStrider.createAttributes());
+        sink.accept(za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH.get(),
+                za.co.neroland.nerospace.world.planet.nyxara.entity.DuskMoth.createAttributes());
     }
 
     private ModEntityAttributes() {

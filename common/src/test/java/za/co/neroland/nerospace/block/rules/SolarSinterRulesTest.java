@@ -12,7 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/** 002 §1.1 Lunar Basalt sinter. */
+/** Lunar Basalt sinter. */
 @SuppressWarnings("unused")
 class SolarSinterRulesTest {
 
@@ -27,5 +27,39 @@ class SolarSinterRulesTest {
         assertEquals(6, SolarSinterRules.ONE_IN);
         assertTrue(SolarSinterRules.rolled(0));
         assertFalse(SolarSinterRules.rolled(5));
+    }
+
+    @Test
+    @DisplayName("the placed flag gates random ticking itself: worldgen basalt (Luna's default block) never ticks")
+    void placedFlagGatesTicking() throws Exception {
+        assertTrue(SolarSinterRules.ticks(true));
+        assertFalse(SolarSinterRules.ticks(false));
+        String s = source("block/SolarSinterBlock.java");
+        org.junit.jupiter.api.Assumptions.assumeTrue(s != null, "common sources not found");
+        int at = s.indexOf("boolean isRandomlyTicking(BlockState state)");
+        assertTrue(at >= 0, "SolarSinterBlock must override isRandomlyTicking");
+        assertTrue(s.substring(at, s.indexOf('}', at)).contains("SolarSinterRules.ticks(playerPlaced(state))"));
+    }
+
+    @Test
+    @DisplayName("Dry Ice sublimates on block light only (sky light at Mars' fixed noon must not erase the polar cap)")
+    void dryIceReadsBlockLight() throws Exception {
+        String s = source("block/DryIceBlock.java");
+        org.junit.jupiter.api.Assumptions.assumeTrue(s != null, "common sources not found");
+        assertTrue(s.contains("getBrightness(LightLayer.BLOCK, pos)"));
+        assertFalse(s.contains("getMaxLocalRawBrightness"), "raw brightness includes sky light");
+        assertFalse(DryIceRules.sublimates(0), "a dark cap under a 15 sky stays");
+        assertTrue(DryIceRules.sublimates(14), "a torch beside it fumes it");
+    }
+
+    static String source(String rel) throws java.io.IOException {
+        for (java.nio.file.Path p = java.nio.file.Path.of(System.getProperty("user.dir")).toAbsolutePath();
+                p != null; p = p.getParent()) {
+            java.nio.file.Path c = p.resolve("common/src/main/java/za/co/neroland/nerospace/" + rel);
+            if (java.nio.file.Files.isRegularFile(c)) {
+                return java.nio.file.Files.readString(c);
+            }
+        }
+        return null;
     }
 }

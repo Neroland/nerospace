@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.nyxara_weathered.title",
+  "description": "quest.nerospace.worlds_apart.nyxara_weathered.desc",
+  "icon": "nerospace:dawnband_stone",
+  "prerequisites": [
+    "nerospace:worlds_apart/nyxara_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/nyxara/weather"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

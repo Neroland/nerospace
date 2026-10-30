@@ -33,7 +33,7 @@ public final class GreenxertzPlanet extends PlanetDefinition {
     private GreenxertzPlanet() {
         super(new Spec(new PlanetTraits(planet("greenxertz"), 0.6, true, Hazard.NONE,
                 PlanetArchetype.JUNGLE, TemperatureBand.TEMPERATE, 0, 24_000L, id("greenxertz"),
-                Optional.of(biome("terraformed_meadow")), Optional.of(id("xertz")), id("canopy_commune")),
+                Optional.of(biome("terraformed_greenxertz_living")), Optional.of(id("xertz")), id("canopy_commune")),
                 "greenxertz", "Greenxertz")
                 .unlockTier(2)
                 .clock(ClockSource.LEVEL_TIME, 0.25)

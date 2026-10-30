@@ -35,8 +35,14 @@ public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> 
         segGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
 
         label(g, Component.translatable("gui.nerospace.terraformer.tier", this.menu.getTier()), 8, 48, ACCENT);
-        label(g, Component.translatable("gui.nerospace.terraformer.stages", this.menu.getRadius(),
-                this.menu.getHydrationRadius(), this.menu.getLifeRadius()), 8, 60, 0xFFB7E8C2);
+        za.co.neroland.nerospace.world.planet.TerraformRefusal refusal = this.menu.getRefusal();
+        if (refusal != za.co.neroland.nerospace.world.planet.TerraformRefusal.NONE) {
+            // Refusing (the station; Nyxara outside the twilight band): the reason replaces the stage radii.
+            label(g, Component.translatable(refusal.langKey()), 8, 60, 0xFFFF6A5E);
+        } else {
+            label(g, Component.translatable("gui.nerospace.terraformer.stages", this.menu.getRadius(),
+                    this.menu.getHydrationRadius(), this.menu.getLifeRadius()), 8, 60, 0xFFB7E8C2);
+        }
 
         boolean active = this.menu.isActive();
         label(g, Component.translatable(active
@@ -48,5 +54,6 @@ public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> 
         if (this.menu.isHydrationStalled()) {
             label(g, Component.translatable("gui.nerospace.terraformer.needs_glacite"), 116, 60, 0xFFFF6A5E);
         }
+
     }
 }

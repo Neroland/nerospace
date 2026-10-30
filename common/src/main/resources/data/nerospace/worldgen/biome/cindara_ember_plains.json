@@ -21,7 +21,9 @@
     [
       "nerospace:cindrite_ore_placed",
       "nerospace:cindara_cindrite_ore_bonus_placed",
-      "nerospace:cindara_ember_cracks_placed"
+      "nerospace:cindara_ember_cracks_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed"
     ],
     [],
     [],

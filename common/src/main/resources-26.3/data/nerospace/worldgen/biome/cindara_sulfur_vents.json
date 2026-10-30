@@ -1,0 +1,72 @@
+{
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "ambient": [],
+          "axolotls": [],
+          "creature": [
+            {
+              "count": {
+                "max_inclusive": 2,
+                "min_inclusive": 1,
+                "type": "minecraft:uniform"
+              },
+              "type": "nerospace:alien_villager",
+              "weight": 3
+            }
+          ],
+          "misc": [],
+          "monster": [
+            {
+              "count": {
+                "max_inclusive": 2,
+                "min_inclusive": 1,
+                "type": "minecraft:uniform"
+              },
+              "type": "nerospace:cinder_stalker",
+              "weight": 14
+            }
+          ],
+          "underground_water_creature": [],
+          "water_ambient": [],
+          "water_creature": []
+        }
+      },
+      "modifier": "overlay"
+    }
+  },
+  "carvers": [
+    "minecraft:cave",
+    "minecraft:cave_extra_underground"
+  ],
+  "downfall": 0.0,
+  "effects": {
+    "foliage_color": "#7a6a2a",
+    "grass_color": "#7a6a2a",
+    "water_color": "#70402a"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nerospace:cindrite_ore_placed",
+      "nerospace:cindara_sulfur_crust_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed"
+    ],
+    [],
+    [],
+    [
+      "nerospace:cindara_basalt_spire_placed"
+    ],
+    []
+  ],
+  "has_precipitation": false,
+  "temperature": 2.0
+}

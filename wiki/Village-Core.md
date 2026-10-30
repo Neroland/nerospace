@@ -71,4 +71,7 @@ Once buildings exist, the core becomes a small engine:
 ## Details
 
 - ID: `nerospace:village_core` · tool pickaxe · drops itself
-- Saves owner, stockpile, built count, the active build job, production buffers, and the current quest.
+- Saves the owner (as a player id only), stockpile, built count, the active build job, production buffers,
+  and the current quest. The owner's name is never saved: chat shows it while that player is online and says
+  "another player" otherwise. Cores from earlier versions keep their owner and drop the old saved name the
+  next time their chunk saves. A `/neroland data eraseme` request un-claims that player's cores.

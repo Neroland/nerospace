@@ -1,0 +1,22 @@
+{
+  "parent": "nerospace:worlds/mars/arrive",
+  "criteria": {
+    "placed": {
+      "conditions": {
+        "location": [
+          {
+            "block": "nerospace:martian_sandstone",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "requirements": [
+    [
+      "placed"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

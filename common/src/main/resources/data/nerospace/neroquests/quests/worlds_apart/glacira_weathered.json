@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.glacira_weathered.title",
+  "description": "quest.nerospace.worlds_apart.glacira_weathered.desc",
+  "icon": "nerospace:aurora_stone",
+  "prerequisites": [
+    "nerospace:worlds_apart/glacira_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/glacira/weather"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

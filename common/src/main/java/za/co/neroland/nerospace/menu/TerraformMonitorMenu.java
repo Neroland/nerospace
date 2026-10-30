@@ -78,4 +78,13 @@ public class TerraformMonitorMenu extends AbstractContainerMenu {
     public int getLocalStage() {
         return this.data.get(6);
     }
+
+    /** This world's terraform table ({@code TerraformTables.ORDER} index), or -1 where the terraformer refuses. */
+    public int getTableIndex() {
+        return this.data.get(7);
+    }
+
+    public za.co.neroland.nerospace.world.planet.TerraformRefusal getRefusal() {
+        return za.co.neroland.nerospace.world.planet.TerraformRefusal.byOrdinal(this.data.get(8));
+    }
 }

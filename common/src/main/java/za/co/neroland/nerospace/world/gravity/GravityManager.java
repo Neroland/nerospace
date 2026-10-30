@@ -77,7 +77,7 @@ public final class GravityManager {
      * gravity).
      */
     public static double factorAt(ServerLevel level, BlockPos pos) {
-        // Block overrides (decision 002 §10.4) come first: Gravity Plate beats Gravity Shard, then lowest factor.
+        // Block overrides come first: Gravity Plate beats Gravity Shard, then lowest factor.
         // A Shard's negative factor is intentional (slow levitation), so the floor below does not apply to it.
         double block = BlockGravityOverrides.factorAt(level, pos);
         // A switched-off station module (Gravity Deck power toggle) skips the overrides inside its box.

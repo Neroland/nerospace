@@ -27,7 +27,9 @@ import za.co.neroland.nerospace.registry.ModItems;
 /**
  * Living Mega-City — the massive end-state alien settlement: a pillared, lit, crenellated curtain wall
  * with four gates around a glowing tile plaza of towers, and a central keep guarded by the Ruin Warden
- * boss over a grand vault. Very rare, spaced via {@link StructureSpacing}.
+ * boss over a grand vault. Very rare, spaced via {@link StructureSpacing}. Built by the Xertz (Greenxertz) and the
+ * Duskborn (Nyxara twilight band only), each in its own palette; centred on its chunk so every write stays inside
+ * the feature's 3×3-chunk region.
  */
 //? if >=26.3 {
 /*public class MegaCityFeature implements Feature {
@@ -35,8 +37,11 @@ import za.co.neroland.nerospace.registry.ModItems;
 public class MegaCityFeature extends Feature<NoneFeatureConfiguration> {
 //?}
 
-    private static final int WALL_R = 20;   // 41x41 footprint
+    private static final int WALL_R = MegaCityLayout.WALL_R;   // 41x41 footprint
     private static final int WALL_H = 6;
+    private static final int CORNER_OFFSET = MegaCityLayout.CORNER_OFFSET;
+    private static final int CORNER_R = MegaCityLayout.CORNER_R;
+    private static final int KEEP_R = MegaCityLayout.KEEP_R;
 
     //? if >=26.3 {
     /*// Minecraft 26.3+: features are data-driven values; this configuration-free type has one instance.
@@ -68,20 +73,22 @@ public class MegaCityFeature extends Feature<NoneFeatureConfiguration> {
     //?}
 
     /** Version-neutral body shared by both feature APIs. */
-    private boolean generate(WorldGenLevel level, RandomSource rand, BlockPos o) {
-        if (!StructureSpacing.shouldPlace(o, StructureSpacing.Roi.MEGA_CITY)) {
+    private boolean generate(WorldGenLevel level, RandomSource rand, BlockPos origin) {
+        AlienBuild.Site site = SettlementPlacement.begin(level, origin, StructureSpacing.Roi.MEGA_CITY);
+        if (site == null) {
             return false;
         }
-        int baseY = o.getY();
-        BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
-        BlockState bricks = AlienBuild.bricks();
+        int cx = MegaCityLayout.centreFor(origin.getX());
+        int cz = MegaCityLayout.centreFor(origin.getZ());
+        int baseY = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, cx, cz);
+        BlockPos o = new BlockPos(cx, baseY, cz);
+        BlockState bricks = site.bricks();
 
         for (int dx = -WALL_R; dx <= WALL_R; dx++) {
             for (int dz = -WALL_R; dz <= WALL_R; dz++) {
                 int x = o.getX() + dx;
                 int z = o.getZ() + dz;
-                m.set(x, baseY - 1, z);
-                level.setBlock(m, AlienBuild.tile(), 2);
+                site.set(x, baseY - 1, z, site.tile());
                 boolean perimeter = Math.abs(dx) == WALL_R || Math.abs(dz) == WALL_R;
                 boolean gate = (Math.abs(dx) <= 1 && Math.abs(dz) == WALL_R)
                         || (Math.abs(dz) <= 1 && Math.abs(dx) == WALL_R);
@@ -91,15 +98,12 @@ public class MegaCityFeature extends Feature<NoneFeatureConfiguration> {
                 boolean pillar = (dx % 5 == 0) || (dz % 5 == 0) || (Math.abs(dx) == WALL_R && Math.abs(dz) == WALL_R);
                 int top = pillar ? WALL_H + 1 : WALL_H - 1;
                 for (int dy = 0; dy <= top; dy++) {
-                    m.set(x, baseY + dy, z);
-                    level.setBlock(m, pillar ? AlienBuild.pillar() : bricks, 2);
+                    site.set(x, baseY + dy, z, pillar ? site.pillar() : bricks);
                 }
                 if (pillar) {
-                    m.set(x, baseY + top + 1, z);
-                    level.setBlock(m, AlienBuild.lamp(), 2);
+                    site.set(x, baseY + top + 1, z, site.lamp());
                 } else if ((dx + dz) % 2 == 0) {
-                    m.set(x, baseY + top + 1, z);
-                    level.setBlock(m, bricks, 2);
+                    site.set(x, baseY + top + 1, z, bricks);
                 }
             }
         }
@@ -107,21 +111,20 @@ public class MegaCityFeature extends Feature<NoneFeatureConfiguration> {
             for (int s : new int[] {-2, 2}) {
                 int gx = o.getX() + (g[0] == 0 ? s : g[0]);
                 int gz = o.getZ() + (g[1] == 0 ? s : g[1]);
-                m.set(gx, baseY + WALL_H, gz);
-                level.setBlock(m, AlienBuild.lamp(), 2);
+                site.set(gx, baseY + WALL_H, gz, site.lamp());
             }
         }
 
-        AlienBuild.tower(level, o.getX() - 11, baseY, o.getZ() - 11, 3, 6, false, rand, m);
-        AlienBuild.tower(level, o.getX() + 11, baseY, o.getZ() - 11, 3, 6, false, rand, m);
-        AlienBuild.tower(level, o.getX() - 11, baseY, o.getZ() + 11, 3, 6, false, rand, m);
-        AlienBuild.tower(level, o.getX() + 11, baseY, o.getZ() + 11, 3, 5, false, rand, m);
+        int c = CORNER_OFFSET;
+        AlienBuild.tower(site, o.getX() - c, baseY, o.getZ() - c, CORNER_R, 6, false, rand);
+        AlienBuild.tower(site, o.getX() + c, baseY, o.getZ() - c, CORNER_R, 6, false, rand);
+        AlienBuild.tower(site, o.getX() - c, baseY, o.getZ() + c, CORNER_R, 6, false, rand);
+        AlienBuild.tower(site, o.getX() + c, baseY, o.getZ() + c, CORNER_R, 5, false, rand);
 
-        AlienBuild.tower(level, o.getX(), baseY, o.getZ(), 5, 8, false, rand, m);
-        m.set(o.getX(), baseY, o.getZ());
-        level.setBlock(m, ModBlocks.VILLAGE_CORE.get().defaultBlockState(), 2);
+        AlienBuild.tower(site, o.getX(), baseY, o.getZ(), KEEP_R, 8, false, rand);
+        site.set(o.getX(), baseY, o.getZ(), ModBlocks.VILLAGE_CORE.get().defaultBlockState());
         BlockPos chestPos = new BlockPos(o.getX() + 2, baseY, o.getZ() + 2);
-        level.setBlock(chestPos, Blocks.CHEST.defaultBlockState(), 2);
+        site.set(chestPos.getX(), chestPos.getY(), chestPos.getZ(), Blocks.CHEST.defaultBlockState());
         if (level.getBlockEntity(chestPos) instanceof ChestBlockEntity chest) {
             chest.setItem(4, new ItemStack(ModItems.ALIEN_CORE.get(), 2 + rand.nextInt(3)));
             chest.setItem(6, new ItemStack(ModItems.GRAV_STRIDERS.get(), 1));

@@ -1,0 +1,56 @@
+{
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "ambient": [],
+          "axolotls": [],
+          "creature": [],
+          "misc": [],
+          "monster": [],
+          "underground_water_creature": [],
+          "water_ambient": [],
+          "water_creature": []
+        }
+      },
+      "modifier": "overlay"
+    }
+  },
+  "carvers": [
+    "minecraft:cave",
+    "minecraft:cave_extra_underground",
+    "minecraft:canyon"
+  ],
+  "downfall": 0.0,
+  "effects": {
+    "foliage_color": "#9a4322",
+    "grass_color": "#9a4322",
+    "water_color": "#7a4a2e"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nerospace:nerosium_ore_placed",
+      "nerospace:nerosteel_ore_placed",
+      "nerospace:mars_hematite_ore_placed",
+      "nerospace:mars_perchlorate_crust_placed",
+      "nerospace:rover_wreck_placed",
+      "nerospace:derelict_habitat_placed"
+    ],
+    [],
+    [],
+    [
+      "nerospace:mars_basalt_column_sparse_placed",
+      "nerospace:mars_dust_devil_pit_placed"
+    ],
+    []
+  ],
+  "has_precipitation": false,
+  "temperature": 0.2
+}

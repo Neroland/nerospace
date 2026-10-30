@@ -1,0 +1,22 @@
+{
+  "title": "quest.nerospace.worlds_apart.nyxara_landfall.title",
+  "description": "quest.nerospace.worlds_apart.nyxara_landfall.desc",
+  "icon": "nerospace:dawnband_stone",
+  "objectives": [
+    {
+      "type": "neroquests:reach_dimension",
+      "dimension": "nerospace:nyxara"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 150
+    },
+    {
+      "type": "neroquests:mod_hook",
+      "gate": "nerospace:hook/worlds_briefing"
+    }
+  ],
+  "scope": "player"
+}

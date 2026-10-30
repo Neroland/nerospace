@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.greenxertz_weathered.title",
+  "description": "quest.nerospace.worlds_apart.greenxertz_weathered.desc",
+  "icon": "nerospace:bio_bark_log",
+  "prerequisites": [
+    "nerospace:worlds_apart/greenxertz_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/greenxertz/weather"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

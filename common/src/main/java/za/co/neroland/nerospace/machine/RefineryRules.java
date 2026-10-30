@@ -6,7 +6,7 @@ import za.co.neroland.nerospace.block.rules.OxidiserRules;
  * Pure Fuel Refinery maths (no Minecraft types, JUnit-tested): the Mars perchlorate oxidiser boost and the Luna
  * raw ilmenite line.
  *
- * <p>Oxidiser (002 §1.2): one Perchlorate Oxidiser covers {@link OxidiserRules#BUCKETS_PER_OXIDISER} buckets of
+ * <p>Oxidiser: one Perchlorate Oxidiser covers {@link OxidiserRules#BUCKETS_PER_OXIDISER} buckets of
  * base output; while covered, a batch yields {@link OxidiserRules#MULTIPLIER} times the base amount.</p>
  *
  * <p>Ilmenite (D3): one Raw Ilmenite becomes one Titanium Ingot plus {@link #ILMENITE_OXYGEN_MB} mB of oxygen.</p>

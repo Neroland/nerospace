@@ -13,6 +13,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import za.co.neroland.nerospace.registry.ModMenuTypes;
+import za.co.neroland.nerospace.rocket.DestinationSelection;
+import za.co.neroland.nerospace.rocket.DestinationTrace;
+import za.co.neroland.nerospace.rocket.Destinations;
 import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
 
 /**
@@ -33,6 +36,10 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
     public static final int BUTTON_CYCLE_DEST = 7;
     /** Launch the docked rocket (launch mode). */
     public static final int BUTTON_LAUNCH = 8;
+    /** Step the docked rocket's destination back (launch mode). */
+    public static final int BUTTON_PREV_DEST = 9;
+    /** Select the docked rocket's destination {@code n} via button id {@code SELECT_DEST_BASE + n} (launch mode). */
+    public static final int SELECT_DEST_BASE = 100;
 
     private static final int SLOTS = 3;
     private static final int DATA_COUNT = LaunchControllerBlockEntity.DATA_COUNT;
@@ -89,8 +96,16 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
             current.toggleMode();
             return true;
         }
-        if (id == BUTTON_CYCLE_DEST) {
-            current.cycleRocketDestination();
+        if (id == BUTTON_CYCLE_DEST || id == BUTTON_PREV_DEST) {
+            DestinationSelection.Outcome outcome = current.stepRocketDestination(id == BUTTON_CYCLE_DEST ? 1 : -1,
+                    player);
+            DestinationTrace.log("controller menu {} button {} -> {}", this.containerId, id, outcome);
+            return true;
+        }
+        if (id >= SELECT_DEST_BASE && id < SELECT_DEST_BASE + Destinations.all().size()) {
+            DestinationSelection.Outcome outcome = current.selectRocketDestination(id - SELECT_DEST_BASE, player);
+            DestinationTrace.log("controller menu {} button {} -> index {} {}", this.containerId, id,
+                    id - SELECT_DEST_BASE, outcome);
             return true;
         }
         if (id == BUTTON_LAUNCH) {
@@ -181,6 +196,16 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
 
     public boolean rocketLaunchable() {
         return this.data.get(20) != 0;
+    }
+
+    /** The docked rocket's selected {@link Destinations} index. */
+    public int rocketDestIndex() {
+        return this.data.get(18);
+    }
+
+    /** Bit per {@link Destinations} index the docked rocket can reach from here (server-computed). */
+    public int rocketDestMask() {
+        return this.data.get(19);
     }
 
     /** Display name of the docked rocket's selected destination. */

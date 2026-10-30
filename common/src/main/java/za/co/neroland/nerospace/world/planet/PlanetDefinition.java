@@ -164,6 +164,14 @@ public abstract class PlanetDefinition {
         return this.traits.terraformTarget();
     }
 
+    /**
+     * This planet's terraform table (D7): the biome trio, surface swap, hydration liquid, flora, fauna, ore seeds
+     * and planet rules. Empty where the terraformer refuses (the station).
+     */
+    public Optional<TerraformTable> terraform() {
+        return TerraformTables.forLangId(this.langId);
+    }
+
     /** Which tree family grows on this planet's Living ground. */
     public TreeStyle treeStyle() {
         return this.treeStyle;

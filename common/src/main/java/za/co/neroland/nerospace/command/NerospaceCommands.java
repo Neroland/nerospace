@@ -118,7 +118,13 @@ public final class NerospaceCommands {
                                         .then(Commands.argument("slot", IntegerArgumentType.integer(0))
                                                 .executes(ctx -> runSafely(ctx.getSource(), "station remove",
                                                         () -> removeStation(ctx.getSource(),
-                                                                IntegerArgumentType.getInteger(ctx, "slot"))))))));
+                                                                IntegerArgumentType.getInteger(ctx, "slot")))))))
+                        // POPIA s23 / GDPR Art. 15: any player may export what Nerospace stores about THEM.
+                        .then(Commands.literal("privacy")
+                                .requires(src -> src.getPlayer() != null)
+                                .then(Commands.literal("export")
+                                        .executes(ctx -> runSafely(ctx.getSource(), "privacy export",
+                                                () -> exportPrivacy(ctx.getSource()))))));
         // Ops-only planet clock + weather controls (permission level 2, consoles and command blocks too).
         dispatcher.register(PlanetCommands.build());
         // Dev-environment-only measurement tools (operator, refused outside a dev run).
@@ -223,7 +229,8 @@ public final class NerospaceCommands {
         registry.unregister(entry.slot());
         PadRegistry.get(source.getServer())
                 .unregisterAt(ModDimensions.STATION_LEVEL, StationStructure.padCenter(entry.center()));
-        source.sendSuccess(() -> Component.translatable("item.nerospace.station_charter.removed", entry.name()), true);
+        // Feedback to the invoker only: a broadcast would write the player's and the station's name to the server log.
+        source.sendSuccess(() -> Component.translatable("item.nerospace.station_charter.removed", entry.name()), false);
         return 1;
     }
 
@@ -243,6 +250,30 @@ public final class NerospaceCommands {
             }
         }
         return best;
+    }
+
+    /**
+     * {@code /nerospace privacy export} — the invoker's own Nerospace data as JSON, sent only to the invoker (never
+     * broadcast, never logged). See {@link za.co.neroland.nerospace.data.NerospacePrivacyExport}.
+     */
+    private static int exportPrivacy(CommandSourceStack source) {
+        ServerPlayer player = source.getPlayer();
+        if (player == null) {
+            source.sendFailure(Component.translatable("command.nerospace.player_only"));
+            return 0;
+        }
+        com.google.gson.JsonObject doc =
+                za.co.neroland.nerospace.data.NerospacePrivacyExport.collect(source.getServer(), player);
+        String json = doc.toString();
+        source.sendSuccess(() -> Component.translatable("command.nerospace.privacy.export.summary",
+                doc.getAsJsonArray("planets_visited").size(), doc.getAsJsonArray("stations_owned").size(),
+                doc.getAsJsonArray("station_memberships").size(), doc.getAsJsonArray("village_cores_owned").size(),
+                doc.getAsJsonArray("cargo_routes_owned").size()), false);
+        source.sendSuccess(() -> Component.translatable("command.nerospace.privacy.export.copy")
+                .withStyle(st -> st.withUnderlined(true)
+                        .withClickEvent(new net.minecraft.network.chat.ClickEvent.CopyToClipboard(json))), false);
+        source.sendSuccess(() -> Component.literal(json).withStyle(net.minecraft.ChatFormatting.GRAY), false);
+        return 1;
     }
 
     private static int runSafely(CommandSourceStack source, String commandName, CommandBody body) {

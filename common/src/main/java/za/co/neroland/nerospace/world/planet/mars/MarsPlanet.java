@@ -32,6 +32,6 @@ public final class MarsPlanet extends PlanetDefinition {
                 .salt(0x4D415253L)
                 .daylight(phase -> DaylightCurve.base(phase, 0.04, PEAK), 4.8)
                 .weather(new WeatherParams(WeatherEvent.DUST_STORM, 61_500L, 6_000, 18_000))
-                .terraform(TreeStyle.OAK_BIRCH, null));
+                .terraform(TreeStyle.OAK_BIRCH, () -> MarsContent.DUST_STRIDER.get()));
     }
 }

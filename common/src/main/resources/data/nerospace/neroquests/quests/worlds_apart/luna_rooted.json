@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.luna_rooted.title",
+  "description": "quest.nerospace.worlds_apart.luna_rooted.desc",
+  "icon": "nerospace:terraformer",
+  "prerequisites": [
+    "nerospace:worlds_apart/luna_prospector"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/luna/terraform"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 400
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 200
+    }
+  ],
+  "scope": "player"
+}

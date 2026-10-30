@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.mars_weathered.title",
+  "description": "quest.nerospace.worlds_apart.mars_weathered.desc",
+  "icon": "nerospace:martian_sandstone",
+  "prerequisites": [
+    "nerospace:worlds_apart/mars_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/mars/weather"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

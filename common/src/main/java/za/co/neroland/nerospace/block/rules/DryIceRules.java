@@ -1,6 +1,6 @@
 package za.co.neroland.nerospace.block.rules;
 
-/** Dry Ice (002 §1.2, §2.1.2): one-shot freeze of adjacent water sources; sublimates in light above 11. */
+/** Dry Ice: one-shot freeze of adjacent water sources; sublimates in block light (never sky light) above 11. */
 public final class DryIceRules {
 
     public static final int SUBLIMATE_LIGHT = 11;

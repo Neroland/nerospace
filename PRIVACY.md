@@ -64,24 +64,43 @@ ever sent before the config — and therefore your choice — has been loaded.
 
 ## In-world player data, and the NeroLink companion module
 
-Separately from telemetry, Nerospace stores six things in the **world save on your own
-server** — nothing here leaves that server:
+Separately from telemetry, Nerospace keeps the following personal data in the **world save on
+your own server** (plus one short-lived in-memory entry) — nothing here leaves that server:
 
 | Store | What it holds | Erasure |
 |---|---|---|
 | Station registry | the owner UUID of each orbital station and the UUIDs of the players its owner has added as members (up to 16) | the owner is blanked and you are removed from every member list; the backup is rewritten at once. The station, its class, modules and founding day stay as shared world content |
 | Alien Villager reputation | a `UUID -> trade score` map inside each villager's entity data | swept from every loaded world, and stripped from a villager that loads later in the same server session |
+| Village Core ownership | the owner's UUID inside the core block's data (no name: the display name 1.x stored beside it is no longer kept and drops out of old saves the next time the core's chunk saves; chat shows a name only while that player is online) | cleared from every loaded core at once; a core in an unloaded chunk is cleared the moment it loads again, even after a server restart (see the next row). The core keeps its stockpile, buildings and quest and becomes unclaimed |
+| Village Core index | where each claimed Village Core is (dimension and position) with a salted one-way hash of its owner's UUID — never the UUID or a name — so erasure can reach a core whose chunk is not loaded; plus, after an erasure, a list of core positions still to be cleared (positions only, at most 4096, each removed as soon as it is applied) and, for 1.x cores that have not loaded since the update, the salted hash of the erased player (at most 256, deleted after 90 days) | your rows are removed; your unloaded cores become position-only entries that are applied and deleted when they load; the backup is rewritten at once |
 | Oxygen | your current air, in your player data | reset to a full tank |
 | Star Guide "seen" markers | which guide steps you have dismissed | cleared |
 | Planet visits | your UUID and the set of planets you have reached (no timestamps, no coordinates) | the row is dropped and the backup rewritten at once |
 | Cargo routes | the owner UUID of each Cargo Pad, route and cargo flight, plus the UUIDs a pad owner shared their pad with; retention: completed flight records are pruned after 7 in-game days (`cargoFlightRetentionDays`) | your routes are removed, your pads and flights are unlinked from you (a pad stays as shared world content, cargo in the air is still delivered or crated — never deleted), and you are removed from every access list; the backup is rewritten at once |
+| Launch cooldown (memory only) | your UUID and the game time you may launch again, for 5 seconds after a launch; never saved | dropped |
 
-All six are registered with Neroland Core's shared erasure hook, so one
+Everything else Nerospace saves holds **no personal data**: planet clocks and weather, the Nyxara
+band width, per-block gravity overrides, launch and cargo pads' positions and labels, station
+classes, modules and founding day, terraformers and their overlays, oxygen fields and external
+oxygen contributions, and meteor events. Short-lived in-memory state (who is asleep near
+Bio-Bark, the last planet synced to your client, magnetic-ore pulls, geyser grace) refers to
+online players only, is never saved and disappears when you log out.
+All of these are registered with Neroland Core's shared erasure hook, so one
 `/neroland data eraseme` purges Nerospace along with every other Neroland mod. Two known
-limits are stated plainly rather than glossed over: a villager in a chunk that is never
-loaded again after a server restart can retain its entry (re-running erasure after visiting
-the area clears it), and if you are offline when the request is processed, your oxygen and
+limits are stated plainly rather than glossed over: an Alien Villager in a chunk that is never
+loaded again after a server restart can retain its reputation entry (re-running erasure after
+visiting the area clears it), and if you are offline when the request is processed, your oxygen and
 Star Guide markers are reset the next time you log in during that same server session.
+
+**See your data:** `/nerospace privacy export` shows you — and only you — everything above that
+Nerospace holds about you, as JSON you can copy: the planets you have reached, the stations you own
+and the ones you are a member of, your Village Cores, Cargo Pads and routes, your oxygen and Star
+Guide markers, and your reputation with loaded Alien Villagers. Positions and dimensions of your own
+things are included; nothing about another player is (a station you own shows how many members it
+has, never who they are).
+
+The salvage drones at Mars Rover Wrecks keep no reputation and no record of who traded with
+them, so there is nothing of yours to erase there.
 
 If the **NeroLink companion bridge** is installed, Nerospace exposes a read-only view of
 your own data to your paired companion client: your rockets and the launch pads around you,

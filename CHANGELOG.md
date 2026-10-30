@@ -22,7 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rocket destination numbers are append-only (the Moon, Mars and Nyxara take 5, 6 and 7), every rocket tier
   keeps its 1.x destinations and its 1.x default selection, and a rocket saved mid-flight still lands where
   it was going.
-- Terraformers already running on Glacira carry on from their current stage exactly as before. The new
+- Terraformers already running on Glacira carry on from their current stage exactly as before. Ground
+  terraformed before 2.0 keeps its old biome; only ground the Terraformer reaches from now on takes the new
+  per-world biomes. The new
   Permafrost only exists in newly generated land, where a Terraformer thaws it at its final stage.
 - All 24 existing config keys keep their names and defaults; new keys are added with safe defaults.
 - New saved data (`nerospace:planet_clock`, `nerospace:planet_weather`) is per planet, holds no player
@@ -45,9 +47,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Station API stays compatible: `StationInfo` keeps its 1.x constructor and accessors and gains
   `stationClass()` (the class by name). `routeCapacity()` now follows the class — Waystation 9 (so every
   migrated station reports one route more than before), Trade 10, Research and Industrial 8.
+- Villagers keep their species: a villager from 1.6.0 stays Xertz, Ember-kin or Frostbound, and the Xertz
+  trade table and the reputation tiers are unchanged. Hamlets, Ruins and Mega-Cities on Greenxertz keep
+  generating where they always did (Greenxertz, Cindara and Glacira keep the original structure grid).
+- **Village Cores no longer store the owner's name.** A claimed core keeps its owner; the display name that
+  1.x saved beside it is dropped the next time the core's chunk saves, and chat now shows the owner's name
+  only while they are online ("another player" otherwise).
+- **Erasure covers old and new data alike.** `/neroland data eraseme` (and an operator's
+  `/neroland data erase`) still clears everything Nerospace kept in 1.x, and now also removes you from
+  every station's member list and drops your launch cooldown. A world saved by 1.6.0 needs nothing done
+  to it: erasure works on it as loaded.
+
+### Privacy
+
+- **Village Cores in unloaded areas are now reached by erasure, even after a restart.** Nerospace keeps
+  a small index of where claimed Village Cores are (a new world file, `nerospace:village_cores`), holding
+  each owner only as a salted one-way hash. When a player is erased, a core whose chunk is not loaded
+  becomes a position-only "clear on next load" entry; the core is unclaimed the moment it loads and the
+  entry is deleted. The list is bounded, and the hash kept for 1.x cores that have not loaded since the
+  update is deleted after 90 days.
+- **`/nerospace privacy export`**: any player can see everything Nerospace stores about them — planets
+  reached, stations owned and station memberships, Village Cores, Cargo Pads and routes, oxygen, Star
+  Guide markers and reputation with loaded Alien Villagers — as JSON shown only to them. Nothing about
+  another player is included.
+- Removing a station with `/nerospace station remove` no longer broadcasts the result to operators, so
+  the server log no longer records the player's name next to the station's name.
+- `PRIVACY.md` lists every store, including the ones that hold no personal data.
 
 ### Added
 
+- **New life on terraformed Luna, Mars and Nyxara.** Fully terraformed (Living) ground now grows its own
+  creatures: the Moon Hopper bounds across Luna's lunar meadow, herds of Dust Striders graze Mars' red steppe, and
+  Dusk Moths flit through the shade of Nyxara's twilight grove. Each has a spawn egg and a small drop (regolith, rust
+  pigment, night fibre), and none of them is harmed by its home planet. Their looks are placeholders for now.
 - **Station Console.** Right-clicking a Station Core now opens a four-tab console — Overview (class, modules,
   power, oxygen, members, routes), Members, Docking and Build. Anyone can look; only the owner, members and
   operators see the member list.
@@ -176,6 +208,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Rocket screen**: destinations are now a scrollable list of planet cards (gravity, hazard and suit, weather,
   clock, and the pad you will land on), with a larger card for the selected destination. Worlds still behind
   deep-space clearance show why they are locked.
+- **Villager cultures.** Each villager world has its own culture, trade table and building style: the
+  Xertz of Greenxertz (unchanged), the stocky **Ember-kin** of Cindara (cindrite, sulfur, heat-suit parts;
+  they buy ash), the fur-wrapped **Frostbound** of Glacira (glacite, methane ice, cold-suit parts; they buy
+  frost shards) and the tall **Duskborn** of Nyxara's Twilight Band (voidglass, void crystal, Tier 2 suit
+  parts; they buy shadow lichen). Each culture also accepts its favourite good as a gift. The culture models
+  and skins are placeholders until the art pass.
+- **Settlements on every villager world.** Hamlets and Ruins now generate on Cindara, Glacira and in the
+  Nyxara Twilight Band, each built in its culture's materials. Mega-Cities generate on Greenxertz and in the
+  Twilight Band only. New chunks only.
+- **Mars: Rover Wrecks, the Salvage Drone and Derelict Habitats.** Half-buried rovers with a salvage chest,
+  each watched over by a Salvage Drone that trades rover parts for raw hematite (one price list for everyone,
+  no reputation, no record of who traded), and the ruins of early surface habitats. Mars and the Moon have no
+  villagers.
+- **Every world terraforms its own way.** The Terraformer now reads a per-planet table: each world gets
+  its own Rooted, Hydrated and Living biomes, its own soil, ground cover, ore seeds and livestock. The Moon
+  grows a lunar meadow whose edge shimmers (it has no air to hold it); Mars gets red steppe and its first
+  open water, one spring per chunk; Cindara keeps its savanna; Glacira keeps its tundra (permafrost thaws at
+  the last stage); Greenxertz becomes a xertz garden with Xertz Soil, giant glowcaps and Spore Moss that stays
+  where it was planted; Nyxara grows a twilight grove that only roots in the Twilight Band. The station has no
+  ground, so the Terraformer refuses there.
+- **The Terraformer and Terraform Monitor say why.** A refusing Terraformer shows the reason (no ground; outside
+  the Twilight Band) and spends no energy. The Monitor shows what the next stage will plant on this world.
+- **Worlds chapters in the Star Guide.** One per world (Moon, Greenxertz, Mars, Cindara, Glacira, Nyxara):
+  land, mine the local ore, build with a block only that world gives you, weather its storm (the Moon: its
+  night) for two minutes under open sky, and root your first terraformed ground.
+- **Quest pack: Worlds Apart.** With NeroQuests installed, a new chapter gives every world its own four-quest
+  line. Without NeroQuests the files do nothing.
+- **For mod authors:** three anonymous threshold channels on Neroland Core, `nerospace:planet_first_visit`,
+  `nerospace:weather_survived` and `nerospace:station_module_built` (the scope is a planet or a module kind,
+  never a player), a `nerospace:hook/worlds_briefing` quest hook, and player record gates
+  `nerospace:worlds/<planet>/weather` and `nerospace:worlds/<planet>/terraform`.
 
 ### Changed
 
@@ -196,9 +259,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - On Minecraft 26.3, Nerospace blocks are now recognised by terrain height checks: rain and snow stop on modded ground, mobs spawn at the right height, and ores placed by height (such as Luna's) generate again.
+- On Minecraft 26.3, creatures and alien villagers spawn on Nerospace planets again. Every planet and terraformed biome now also ships in the 26.3 biome format (generated by `tools/gen_biome_overlays.py`); 26.3 had been ignoring their spawn lists, so no Nerospace biome spawned any mobs.
 - Crafting recipes now unlock in the recipe book the first time a player picks up one of their ingredients (92 recipe-unlock advancements, generated by `tools/gen_recipe_unlocks.py`; run it again after adding a recipe, `--check` verifies).
 - The shared origin platform at the orbital station is no longer rebuilt on every arrival, so changes players
   make to it are kept.
+- Mega-Cities are now always built whole. A city whose centre fell near a chunk edge lost part of its wall
+  and plaza (the game discarded those blocks and logged a "far chunk" error for each one); cities are now
+  centred on their chunk. Only newly generated cities change.
 
 ## [1.6.0] - 2026-10-23
 

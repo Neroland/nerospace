@@ -2,7 +2,9 @@ package za.co.neroland.nerospace.world.planet;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
 
 import za.co.neroland.nerospace.api.Hazard;
@@ -16,6 +18,16 @@ import za.co.neroland.nerospace.registry.ModTags;
 public final class PlanetHazards {
 
     private PlanetHazards() {
+    }
+
+    /**
+     * True for a creature native to a Nerospace planet ({@code #nerospace:native_fauna}: Moon Hopper, Dust Strider,
+     * Dusk Moth). Every hazard that touches non-player living entities checks this first and leaves natives alone.
+     * Oxygen ({@code OxygenManager}) and weather radiation only ever tick players, so natives need no check there.
+     */
+    public static boolean isNative(Entity entity) {
+        // EntityType#is(TagKey) is gone on 26.3; the registry holder answers the same on every line.
+        return BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(ModTags.EntityTypes.NATIVE_FAUNA);
     }
 
     public static Hazard at(ServerLevel level, BlockPos pos) {

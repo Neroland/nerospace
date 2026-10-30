@@ -2,11 +2,17 @@ package za.co.neroland.nerospace.machine;
 
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 //? if <26.3 {
@@ -28,9 +34,11 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.world.planet.PlanetDefinition;
 import za.co.neroland.nerospace.world.planet.Planets;
+import za.co.neroland.nerospace.world.planet.TerraformRefusal;
+import za.co.neroland.nerospace.world.planet.TerraformTable;
+import za.co.neroland.nerospace.world.planet.TerraformTables;
 import za.co.neroland.nerospace.world.planet.TreeStyle;
 import za.co.neroland.nerospace.registry.ModTags;
-import za.co.neroland.nerospace.world.ModBiomes;
 import za.co.neroland.nerospace.world.TerraformFauna;
 
 /**
@@ -42,6 +50,11 @@ import za.co.neroland.nerospace.world.TerraformFauna;
  * <p>Stages: {@link #convertColumn} = stage 1 (Rooted), {@link #hydrateColumn} = stage 2 (Hydrated),
  * {@link #vivifyColumn} = stage 3 (Living). Each is a per-stage no-op when re-run, so persistence stays
  * radii + cursors.</p>
+ *
+ * <p>2.0 (D7): what each stage writes comes from the planet's {@link TerraformTable} — biome per stage, surface
+ * swap, hydration liquid, flora, fauna, ore seeds and the planet rules — instead of per-dimension branches.
+ * Off-planet dimensions use {@link TerraformTables#LEGACY} (the 1.x behaviour); a world without a table (the
+ * station) refuses.</p>
  *
  * <p>Cross-loader port note: the per-chunk stage bookkeeping (TERRAFORMED / TERRAFORM_STAGE) goes
  * through the {@link Services#PLATFORM} chunk data-attachment seam rather than NeoForge's
@@ -58,7 +71,88 @@ public final class TerraformConversion {
     private static final double RESOURCE_CHANCE = 0.015D;
     private static final double TREE_CHANCE = 0.03D;
 
+    /** {@code #nerospace:nyxara_band} — the twilight band (and the terraformed grove inside it). */
+    private static final net.minecraft.tags.TagKey<Biome> NYXARA_BAND = net.minecraft.tags.TagKey.create(
+            Registries.BIOME, Identifier.fromNamespaceAndPath("nerospace", "nyxara_band"));
+
+    /** Shimmer dome: points per pulse (sparse — a hint of the edge, not a wall). */
+    private static final int DOME_POINTS = 24;
+
     private TerraformConversion() {
+    }
+
+    // --- Table lookup ----------------------------------------------------------
+
+    /** The table for this level: the planet's own, LEGACY off-planet, null where the terraformer refuses. */
+    @Nullable
+    public static TerraformTable tableFor(ServerLevel level) {
+        return TerraformTables.resolve(Planets.get(level.dimension()));
+    }
+
+    /** Why a terraformer at {@code pos} will not run, or {@link TerraformRefusal#NONE}. */
+    public static TerraformRefusal refusalAt(ServerLevel level, BlockPos pos) {
+        TerraformTable table = tableFor(level);
+        boolean bandOnly = table != null && table.has(TerraformTable.Rule.BAND_ONLY);
+        return TerraformRefusal.evaluate(table != null, bandOnly, !bandOnly || inBand(level, table, pos));
+    }
+
+    /** Band-only planets: a column roots only where its biome is the band (or already one of the trio). */
+    private static boolean columnAllowed(ServerLevel level, TerraformTable table, int x, int y, int z) {
+        return !table.has(TerraformTable.Rule.BAND_ONLY) || inBand(level, table, new BlockPos(x, y, z));
+    }
+
+    private static boolean inBand(ServerLevel level, TerraformTable table, BlockPos pos) {
+        Holder<Biome> biome = level.getBiome(pos);
+        return biome.is(NYXARA_BAND)
+                || biome.unwrapKey().map(table::isTrioBiome).orElse(false);
+    }
+
+    /**
+     * The biome {@code stage} writes in this level. A stage biome that is not registered (a datapack removed it)
+     * falls back to the LEGACY biome for that stage, so conversion never throws.
+     */
+    public static ResourceKey<Biome> stageBiomeFor(ServerLevel level, int stage) {
+        TerraformTable table = tableFor(level);
+        return stageBiome(level, table == null ? TerraformTables.LEGACY : table, stage);
+    }
+
+    private static ResourceKey<Biome> stageBiome(ServerLevel level, TerraformTable table, int stage) {
+        ResourceKey<Biome> legacy = TerraformTables.LEGACY.stageBiome(stage).orElse(TerraformTables.LEGACY.living());
+        return table.stageBiome(stage)
+                .filter(key -> level.registryAccess().lookupOrThrow(Registries.BIOME).get(key).isPresent())
+                .orElse(legacy);
+    }
+
+    /**
+     * The mature stage-3 biome for this dimension (§4): the planet's terraform target. Unknown dimensions, planets
+     * without a target, and targets whose biome is not registered settle as meadow (the 1.x fallback).
+     */
+    public static ResourceKey<Biome> matureBiomeFor(ServerLevel level) {
+        return stageBiomeFor(level, 3);
+    }
+
+    @Nullable
+    private static Block block(Identifier id) {
+        if (!BuiltInRegistries.BLOCK.containsKey(id)) {
+            return null;
+        }
+        Block b = BuiltInRegistries.BLOCK.getValue(id);
+        return b == Blocks.AIR ? null : b;
+    }
+
+    private static Block blockOr(Identifier id, Block fallback) {
+        Block b = block(id);
+        return b == null ? fallback : b;
+    }
+
+    private static boolean isExtraSurface(TerraformTable table, BlockState state) {
+        for (Identifier id : table.extraSurface()) {
+            Block b = block(id);
+            if (b != null && state.is(b)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // --- Stage bookkeeping ---------------------------------------------------
@@ -90,7 +184,7 @@ public final class TerraformConversion {
         int draw(int units);
     }
 
-    /** Convert one surface column: terrain → grass/dirt, flag breathable, write biome, plants, ore. */
+    /** Convert one surface column: terrain → the planet's soil, flag breathable, write biome, plants, ore. */
     public static void convertColumn(ServerLevel level, int x, int z, int tier, Set<LevelChunk> biomeChanged) {
         convertColumn(level, x, z, level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z), tier, biomeChanged);
     }
@@ -102,65 +196,91 @@ public final class TerraformConversion {
      */
     public static void convertColumn(ServerLevel level, int x, int z, int surfaceY, int tier,
             Set<LevelChunk> biomeChanged) {
+        TerraformTable table = tableFor(level);
+        if (table == null || !columnAllowed(level, table, x, surfaceY - 1, z)) {
+            return; // the station, or outside Nyxara's band: nothing roots here
+        }
         BlockPos top = new BlockPos(x, surfaceY - 1, z);
         BlockState topState = level.getBlockState(top);
+        LevelChunk chunk = level.getChunkAt(top);
+        Block topBlock = blockOr(table.surfaceTop(), Blocks.GRASS_BLOCK);
+        Block subBlock = blockOr(table.surfaceSub(), Blocks.DIRT);
 
-        if (topState.is(ModTags.Blocks.TERRAFORM_TO_GRASS) && !topState.is(Blocks.GRASS_BLOCK)) {
-            level.setBlock(top, Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
+        // A stage-3 living top (Greenxertz' Xertz Soil) is kept out of the stage-1 swap once the chunk is Living.
+        Block livingTop = table.livingTop().map(TerraformConversion::block).orElse(null);
+        boolean keepLivingTop = livingTop != null && topState.is(livingTop) && effectiveStage(chunk) >= 3;
+
+        if (!keepLivingTop && (topState.is(ModTags.Blocks.TERRAFORM_TO_GRASS) || isExtraSurface(table, topState))
+                && !topState.is(topBlock)) {
+            level.setBlock(top, topBlock.defaultBlockState(), Block.UPDATE_CLIENTS);
             for (int d = 1; d <= 3; d++) {
                 BlockPos below = new BlockPos(x, surfaceY - 1 - d, z);
-                if (level.getBlockState(below).is(ModTags.Blocks.TERRAFORM_TO_DIRT)) {
-                    level.setBlock(below, Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
+                BlockState belowState = level.getBlockState(below);
+                if (belowState.is(ModTags.Blocks.TERRAFORM_TO_DIRT) || isExtraSurface(table, belowState)) {
+                    level.setBlock(below, subBlock.defaultBlockState(), Block.UPDATE_CLIENTS);
                 }
             }
-            frontierFx(level, x, surfaceY, z);
+            frontierFx(level, table, x, surfaceY, z);
         }
 
         // Atmosphere payoff (§3.4): flag the chunk permanently breathable at/above the surface.
-        LevelChunk chunk = level.getChunkAt(top);
         if (!Services.PLATFORM.isTerraformed(chunk)) {
             Services.PLATFORM.setTerraformed(chunk, true);
             chunk.markUnsaved();
         }
         bumpStage(chunk, 1);
 
-        if (writeBiomeColumn(level, chunk, x, z, ModBiomes.TERRAFORMED)) {
+        if (writeBiomeColumn(level, chunk, x, z, stageBiome(level, table, 1))) {
             biomeChanged.add(chunk);
         }
 
-        scatterPlant(level, x, surfaceY, z);
-        seedResource(level, x, surfaceY, z, tier);
+        scatterPlant(level, table, topBlock, x, surfaceY, z);
+        seedResource(level, table, x, surfaceY, z, tier);
     }
 
     // --- Stage 2: Hydrated ---------------------------------------------------
 
+    /** {@link #hydrateColumn(ServerLevel, int, int, int, HydrationSink, Set)} without a biome resync set. */
+    public static boolean hydrateColumn(ServerLevel level, int x, int z, int waterTableY, HydrationSink sink) {
+        return hydrateColumn(level, x, z, waterTableY, sink, new java.util.HashSet<>());
+    }
+
     /**
-     * Stage-2 conversion of one column: fill the basin below {@code waterTableY} with still water,
-     * one hydration unit per source placed. The scan walks down from the table; columns whose terrain
-     * sits at/above the table get no water (dry hills), and a chasm deeper than {@code WATER_MAX_DEPTH}
-     * is skipped entirely rather than part-filled mid-air.
+     * Stage-2 conversion of one column: fill the basin below {@code waterTableY} with the planet's still liquid,
+     * one hydration unit per source placed, and write the Hydrated biome. The scan walks down from the table;
+     * columns whose terrain sits at/above the table get no water (dry hills), and a chasm deeper than
+     * {@code WATER_MAX_DEPTH} is skipped entirely rather than part-filled mid-air. On Mars the first hydrated
+     * column of a chunk also opens a spring at the chunk's lowest surface cell (the first open water on Mars).
      *
      * @param sink hydration supply, or {@code null} for the free chunk-load catch-up
      * @return {@code false} when the sink ran dry mid-column (stall: re-run this column later);
      *         {@code true} when the column is fully hydrated (possibly needing no water at all)
      */
-    public static boolean hydrateColumn(ServerLevel level, int x, int z, int waterTableY, HydrationSink sink) {
+    public static boolean hydrateColumn(ServerLevel level, int x, int z, int waterTableY, HydrationSink sink,
+            Set<LevelChunk> biomeChanged) {
+        TerraformTable table = tableFor(level);
         LevelChunk chunk = level.getChunkAt(new BlockPos(x, 0, z));
+        if (table == null || !columnAllowed(level, table, x,
+                level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1, z)) {
+            return true; // nothing to hydrate here — never a stall
+        }
+        Block liquid = blockOr(table.liquid(), Blocks.WATER);
+        boolean firstInChunk = Services.PLATFORM.getTerraformStage(chunk) < 2;
         if (WATER_ENABLED) {
             int maxDepth = WATER_MAX_DEPTH;
-            int table = Math.max(waterTableY, level.getMinY() + 1);
+            int tableY = Math.max(waterTableY, level.getMinY() + 1);
 
             // Find the basin floor: first non-fillable cell at/below the table, within the depth cap.
-            BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(x, table, z);
+            BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(x, tableY, z);
             int floorY = Integer.MIN_VALUE;
             for (int depth = 0; depth <= maxDepth; depth++) {
-                int y = table - depth;
+                int y = tableY - depth;
                 if (y <= level.getMinY()) {
                     break;
                 }
                 cursor.setY(y);
                 BlockState state = level.getBlockState(cursor);
-                if (!isWaterFillable(state)) {
+                if (!isFillable(state, liquid)) {
                     floorY = y;
                     break;
                 }
@@ -172,15 +292,16 @@ public final class TerraformConversion {
                         level.getBlockState(cursor).is(ModTags.Blocks.HYDRATION_IMMUNE))) {
                     // Permafrost floor: the stage advances, but no meltwater until stage 3 thaws it.
                     bumpStage(chunk, 2);
+                    writeHydratedBiome(level, table, chunk, x, z, biomeChanged);
                     return true;
                 }
             }
-            if (floorY != Integer.MIN_VALUE && floorY < table) {
+            if (floorY != Integer.MIN_VALUE && floorY < tableY) {
                 // Fill bottom-up so a stall never leaves water floating above a gap.
-                for (int y = floorY + 1; y <= table; y++) {
+                for (int y = floorY + 1; y <= tableY; y++) {
                     cursor.setY(y);
                     BlockState state = level.getBlockState(cursor);
-                    if (state.is(Blocks.WATER)) {
+                    if (state.is(liquid)) {
                         continue; // already hydrated — idempotent, no cost
                     }
                     if (!state.isAir() && !state.canBeReplaced()) {
@@ -189,35 +310,114 @@ public final class TerraformConversion {
                     if (sink != null && sink.draw(1) <= 0) {
                         return false; // out of glacite — stall, keep the cursor on this column
                     }
-                    level.setBlock(cursor, Blocks.WATER.defaultBlockState(), Block.UPDATE_CLIENTS);
+                    level.setBlock(cursor, liquid.defaultBlockState(), Block.UPDATE_CLIENTS);
                 }
+            }
+            if (firstInChunk && table.has(TerraformTable.Rule.OPEN_WATER_SPRING)) {
+                openSpring(level, chunk, liquid);
             }
         }
         bumpStage(chunk, 2);
+        writeHydratedBiome(level, table, chunk, x, z, biomeChanged);
         return true;
     }
 
-    /** A cell the water fill may occupy: air, water, or replaceable ground cover (grass/flowers). */
-    private static boolean isWaterFillable(BlockState state) {
-        return state.isAir() || state.is(Blocks.WATER) || state.canBeReplaced();
+    private static void writeHydratedBiome(ServerLevel level, TerraformTable table, LevelChunk chunk, int x, int z,
+            Set<LevelChunk> biomeChanged) {
+        // Never step a Living column back to Hydrated (a catch-up replay after stage 3 is impossible, but be safe).
+        if (effectiveStage(chunk) >= 3) {
+            return;
+        }
+        if (writeBiomeColumn(level, chunk, x, z, stageBiome(level, table, 2))) {
+            biomeChanged.add(chunk);
+        }
+    }
+
+    /**
+     * Mars' first open water (003 §8.1): one free source block at the chunk's lowest surface cell, placed once when
+     * the chunk first turns Hydrated. Skipped when that cell is not open (an overhang, a structure).
+     */
+    private static void openSpring(ServerLevel level, LevelChunk chunk, Block liquid) {
+        int minX = chunk.getPos().getMinBlockX();
+        int minZ = chunk.getPos().getMinBlockZ();
+        int bestX = minX;
+        int bestZ = minZ;
+        int bestY = Integer.MAX_VALUE;
+        for (int dx = 0; dx < 16; dx++) {
+            for (int dz = 0; dz < 16; dz++) {
+                int h = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, minX + dx, minZ + dz);
+                if (h < bestY) {
+                    bestY = h;
+                    bestX = minX + dx;
+                    bestZ = minZ + dz;
+                }
+            }
+        }
+        BlockPos spring = new BlockPos(bestX, bestY + 1, bestZ);
+        BlockState at = level.getBlockState(spring);
+        if ((at.isAir() || at.canBeReplaced()) && !at.is(liquid)
+                && level.getBlockState(spring.below()).isFaceSturdy(level, spring.below(), net.minecraft.core.Direction.UP)) {
+            level.setBlock(spring, liquid.defaultBlockState(), Block.UPDATE_ALL);
+        }
+    }
+
+    /** A cell the liquid fill may occupy: air, the liquid itself, or replaceable ground cover (grass/flowers). */
+    private static boolean isFillable(BlockState state, Block liquid) {
+        return state.isAir() || state.is(liquid) || state.canBeReplaced();
     }
 
     // --- Stage 3: Living -----------------------------------------------------
 
     /**
-     * Stage-3 conversion of one column: settle the mature per-planet biome (real weather), grow the
-     * occasional tree, and seed a starter herd of the planet's livestock. Idempotent per stage.
+     * Stage-3 conversion of one column: settle the mature per-planet biome (real weather), thaw permafrost, grow
+     * the occasional tree, lay the planet's living top and ground cover, and seed a starter herd of the planet's
+     * livestock. Idempotent per stage.
      */
     public static void vivifyColumn(ServerLevel level, int x, int z, Set<LevelChunk> biomeChanged) {
+        TerraformTable table = tableFor(level);
+        int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+        if (table == null || !columnAllowed(level, table, x, surfaceY - 1, z)) {
+            return;
+        }
         LevelChunk chunk = level.getChunkAt(new BlockPos(x, 0, z));
-        if (writeBiomeColumn(level, chunk, x, z, matureBiomeFor(level))) {
+        if (writeBiomeColumn(level, chunk, x, z, stageBiome(level, table, 3))) {
             biomeChanged.add(chunk);
         }
-        int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+        Block topBlock = blockOr(table.surfaceTop(), Blocks.GRASS_BLOCK);
         thawPermafrost(level, x, surfaceY, z);
-        placeTree(level, x, surfaceY, z);
-        TerraformFauna.seedHerd(level, x, surfaceY, z);
+        placeTree(level, table, topBlock, x, surfaceY, z);
+        layLivingTop(level, table, topBlock, x, surfaceY, z);
+        TerraformFauna.seedHerd(level, table, x, surfaceY, z);
         bumpStage(chunk, 3);
+    }
+
+    /**
+     * Greenxertz: Xertz Soil replaces the stage-1 top on Living ground, with tame Spore Moss and glowcaps on it.
+     * A table without a living top (every other planet) leaves the column exactly as it was and rolls nothing.
+     */
+    private static void layLivingTop(ServerLevel level, TerraformTable table, Block topBlock, int x, int surfaceY,
+            int z) {
+        Block living = table.livingTop().map(TerraformConversion::block).orElse(null);
+        if (living == null) {
+            return;
+        }
+        BlockPos ground = new BlockPos(x, surfaceY - 1, z);
+        if (!level.getBlockState(ground).is(topBlock)) {
+            return;
+        }
+        level.setBlock(ground, living.defaultBlockState(), Block.UPDATE_CLIENTS);
+        BlockPos above = ground.above();
+        RandomSource rnd = level.getRandom();
+        if (!PLANTS_ENABLED || table.livingFlora().isEmpty() || rnd.nextDouble() >= PLANT_CHANCE) {
+            return;
+        }
+        BlockState aboveState = level.getBlockState(above);
+        if (!aboveState.isAir() && !aboveState.canBeReplaced()) {
+            return;
+        }
+        TerraformTable.pick(table.livingFlora(), rnd.nextInt(TerraformTable.totalWeight(table.livingFlora())))
+                .map(TerraformConversion::block)
+                .ifPresent(plant -> level.setBlock(above, plant.defaultBlockState(), Block.UPDATE_CLIENTS));
     }
 
     /**
@@ -239,28 +439,19 @@ public final class TerraformConversion {
         }
     }
 
-    /**
-     * The mature stage-3 biome for this dimension (§4): the planet's terraform target. Unknown dimensions, planets
-     * without a target, and targets whose biome is not registered yet settle as meadow (the 1.x fallback).
-     */
-    public static ResourceKey<Biome> matureBiomeFor(ServerLevel level) {
-        PlanetDefinition planet = Planets.get(level.dimension());
-        if (planet == null) {
-            return ModBiomes.TERRAFORMED_MEADOW;
-        }
-        return planet.terraformLiving()
-                .filter(key -> level.registryAccess().lookupOrThrow(Registries.BIOME).get(key).isPresent())
-                .orElse(ModBiomes.TERRAFORMED_MEADOW);
-    }
-
-    /** Sparse GROWN trees on Living ground (§4): vanilla features, themed per planet. */
-    private static void placeTree(ServerLevel level, int x, int surfaceY, int z) {
-        if (!PLANTS_ENABLED || level.getRandom().nextDouble() >= TREE_CHANCE) {
+    /** Sparse GROWN trees on Living ground (§4): the planet's feature or vanilla family, scaled per planet. */
+    private static void placeTree(ServerLevel level, TerraformTable table, Block topBlock, int x, int surfaceY,
+            int z) {
+        if (!PLANTS_ENABLED || level.getRandom().nextDouble() >= TREE_CHANCE * table.treeChance()) {
             return;
         }
         BlockPos ground = new BlockPos(x, surfaceY - 1, z);
         BlockPos above = ground.above();
-        if (!level.getBlockState(ground).is(Blocks.GRASS_BLOCK) || !level.getBlockState(above).isAir()) {
+        if (!level.getBlockState(ground).is(topBlock) || !level.getBlockState(above).isAir()) {
+            return;
+        }
+        if (table.treeFeature().isPresent() && level.getRandom().nextBoolean()
+                && placeFeature(level, table.treeFeature().get(), above)) {
             return;
         }
         PlanetDefinition planet = Planets.get(level.dimension());
@@ -282,6 +473,19 @@ public final class TerraformConversion {
         //?}
                 .ifPresent(holder -> holder.value().place(
                         level, level.getChunkSource().getGenerator(), level.getRandom(), above));
+    }
+
+    /** Places a data-driven feature by id (a planet's own tree analogue); false when it is missing or fails. */
+    private static boolean placeFeature(ServerLevel level, Identifier id, BlockPos at) {
+        //? if >=26.3 {
+        /*var key = ResourceKey.create(Registries.FEATURE, id);
+        return level.registryAccess().lookupOrThrow(Registries.FEATURE).get(key)
+        *///?} else {
+        var key = ResourceKey.create(Registries.CONFIGURED_FEATURE, id);
+        return level.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(key)
+        //?}
+                .map(holder -> holder.value().place(level, level.getChunkSource().getGenerator(), level.getRandom(), at))
+                .orElse(false);
     }
 
     /** Write {@code biomeKey} down this column's sections. @return true if anything changed. */
@@ -310,9 +514,10 @@ public final class TerraformConversion {
         return changed;
     }
 
-    /** Sparse grass/flower/sapling scatter on freshly grassed ground (terraform design §2.2). */
-    private static void scatterPlant(ServerLevel level, int x, int surfaceY, int z) {
-        if (!PLANTS_ENABLED) {
+    /** Sparse ground-cover scatter on freshly converted ground — the planet's flora set (terraform design §2.2). */
+    private static void scatterPlant(ServerLevel level, TerraformTable table, Block topBlock, int x, int surfaceY,
+            int z) {
+        if (!PLANTS_ENABLED || table.flora().isEmpty()) {
             return;
         }
         RandomSource rnd = level.getRandom();
@@ -321,28 +526,16 @@ public final class TerraformConversion {
         }
         BlockPos ground = new BlockPos(x, surfaceY - 1, z);
         BlockPos above = new BlockPos(x, surfaceY, z);
-        if (!level.getBlockState(ground).is(Blocks.GRASS_BLOCK) || !level.getBlockState(above).isAir()) {
+        if (!level.getBlockState(ground).is(topBlock) || !level.getBlockState(above).isAir()) {
             return;
         }
-        double roll = rnd.nextDouble();
-        Block plant;
-        if (roll < 0.06D) {
-            plant = Blocks.OAK_SAPLING;
-        } else if (roll < 0.30D) {
-            plant = switch (rnd.nextInt(4)) {
-                case 0 -> Blocks.POPPY;
-                case 1 -> Blocks.DANDELION;
-                case 2 -> Blocks.CORNFLOWER;
-                default -> Blocks.AZURE_BLUET;
-            };
-        } else {
-            plant = Blocks.SHORT_GRASS;
-        }
-        level.setBlock(above, plant.defaultBlockState(), Block.UPDATE_CLIENTS);
+        TerraformTable.pick(table.flora(), rnd.nextInt(TerraformTable.totalWeight(table.flora())))
+                .map(TerraformConversion::block)
+                .ifPresent(plant -> level.setBlock(above, plant.defaultBlockState(), Block.UPDATE_CLIENTS));
     }
 
-    /** Tier-3 low-rate ore seeding into the converted subsurface (terraform design §2.2 / §T3). */
-    private static void seedResource(ServerLevel level, int x, int surfaceY, int z, int tier) {
+    /** Tier-3 low-rate ore seeding into the converted subsurface — the planet's ore seed set (§2.2 / §T3). */
+    private static void seedResource(ServerLevel level, TerraformTable table, int x, int surfaceY, int z, int tier) {
         if (tier < 3 || !RESOURCES_ENABLED) {
             return;
         }
@@ -350,28 +543,62 @@ public final class TerraformConversion {
         if (rnd.nextDouble() >= RESOURCE_CHANCE) {
             return;
         }
-        Block ore = TerraformResources.pickOre(rnd);
+        Block ore = TerraformResources.pickOre(table, rnd);
         if (ore == null) {
             return;
         }
         int y = surfaceY - 4 - rnd.nextInt(8);
         BlockPos orePos = new BlockPos(x, y, z);
-        if (level.hasChunk(orePos.getX() >> 4, orePos.getZ() >> 4)
-                && level.getBlockState(orePos).is(ModTags.Blocks.TERRAFORM_TO_DIRT)) {
+        BlockState at = level.hasChunk(orePos.getX() >> 4, orePos.getZ() >> 4) ? level.getBlockState(orePos) : null;
+        if (at != null && (at.is(ModTags.Blocks.TERRAFORM_TO_DIRT) || isExtraSurface(table, at)
+                || at.is(blockOr(table.surfaceSub(), Blocks.DIRT)))) {
             level.setBlock(orePos, ore.defaultBlockState(), Block.UPDATE_CLIENTS);
         }
     }
 
-    /** Sparse green frontier dust + a soft soil sound as a shell converts (terraform design §2.4). */
-    private static void frontierFx(ServerLevel level, int x, int surfaceY, int z) {
+    /** Sparse frontier particles (the planet's own) + a soft soil sound as a shell converts (§2.4). */
+    private static void frontierFx(ServerLevel level, TerraformTable table, int x, int surfaceY, int z) {
         RandomSource rnd = level.getRandom();
         if (rnd.nextFloat() < 0.10F) {
-            level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                    x + 0.5D, surfaceY + 0.1D, z + 0.5D, 2, 0.3D, 0.2D, 0.3D, 0.0D);
+            level.sendParticles(particle(table), x + 0.5D, surfaceY + 0.1D, z + 0.5D, 2, 0.3D, 0.2D, 0.3D, 0.0D);
         }
         if (rnd.nextFloat() < 0.02F) {
             level.playSound(null, x + 0.5D, surfaceY, z + 0.5D,
                     SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.3F, 0.8F + rnd.nextFloat() * 0.3F);
+        }
+    }
+
+    private static SimpleParticleType particle(TerraformTable table) {
+        if (BuiltInRegistries.PARTICLE_TYPE.containsKey(table.particle())) {
+            ParticleType<?> type = BuiltInRegistries.PARTICLE_TYPE.getValue(table.particle());
+            if (type instanceof SimpleParticleType simple) {
+                return simple;
+            }
+        }
+        return ParticleTypes.HAPPY_VILLAGER;
+    }
+
+    /**
+     * Luna's shimmer dome (003 §8.1): a sparse ring of glints along the terraformer's Living radius — the only world
+     * whose terraformed edge glows, because there is no atmosphere to hold it. Visual only: no block, no state.
+     */
+    public static void shimmerDome(ServerLevel level, BlockPos center, int radius) {
+        TerraformTable table = tableFor(level);
+        if (table == null || !table.has(TerraformTable.Rule.SHIMMER_DOME) || radius <= 0) {
+            return;
+        }
+        RandomSource rnd = level.getRandom();
+        SimpleParticleType glint = particle(table);
+        for (int i = 0; i < DOME_POINTS; i++) {
+            double a = rnd.nextDouble() * Math.PI * 2.0D;
+            int x = center.getX() + (int) Math.round(Math.cos(a) * radius);
+            int z = center.getZ() + (int) Math.round(Math.sin(a) * radius);
+            if (!level.hasChunk(x >> 4, z >> 4)) {
+                continue;
+            }
+            int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+            level.sendParticles(glint, x + 0.5D, y + 0.5D + rnd.nextDouble() * 6.0D, z + 0.5D, 1,
+                    0.1D, 0.4D, 0.1D, 0.0D);
         }
     }
 }

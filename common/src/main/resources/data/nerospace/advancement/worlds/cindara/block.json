@@ -1,0 +1,22 @@
+{
+  "parent": "nerospace:cindara",
+  "criteria": {
+    "placed": {
+      "conditions": {
+        "location": [
+          {
+            "block": "nerospace:magma_glass",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "requirements": [
+    [
+      "placed"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

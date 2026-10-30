@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -22,6 +26,9 @@ import za.co.neroland.nerospace.api.PlanetTraits;
 import za.co.neroland.nerospace.client.ui.PlanetAccents;
 import za.co.neroland.nerospace.client.ui.PlanetCard;
 import za.co.neroland.nerospace.client.ui.PlanetCardData;
+import za.co.neroland.nerospace.client.ui.PendingSelection;
+import za.co.neroland.nerospace.rocket.DestinationSelection;
+import za.co.neroland.nerospace.rocket.DestinationTrace;
 import za.co.neroland.nerospace.rocket.Destinations;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.rocket.RocketMenu;
@@ -79,7 +86,14 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
     /** Index of the first visible list entry. */
     private int scroll;
-    private boolean scrolledToSelection;
+    /** The selection last scrolled into view (−1 = scroll on the next frame). */
+    private int ensuredIndex = -1;
+    /** The optimistic highlight: a click shows at once, the synced index settles it (004 §6). */
+    private final PendingSelection pending = new PendingSelection();
+    /** A brief "can't select: …" notice and when it expires. */
+    @Nullable
+    private Component status;
+    private long statusUntil;
     private int mouseX;
     private int mouseY;
     /** Destination indices shown in the list this frame, in {@link Destinations} order. */
@@ -121,7 +135,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         this.launchButton = new SpaceButton(this.leftPos + 8, this.topPos + LAUNCH_ROW_Y, ROW_W, 16,
                 Component.translatable("gui.nerospace.rocket.launch"), ACCENT, b -> sendButton(RocketMenu.BUTTON_LAUNCH));
         this.addRenderableWidget(this.launchButton);
-        this.scrolledToSelection = false;
+        this.ensuredIndex = -1;
     }
 
     // --- Procedural hull -----------------------------------------------------
@@ -204,13 +218,22 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
         // Destination list: reachable destinations in Destinations order, plus the "you are here" node.
         rebuildEntries();
-        int selected = this.menu.getDestinationIndex();
-        if (!this.scrolledToSelection) {
+        int synced = this.menu.getDestinationIndex();
+        if (this.pending.reconcile(synced, now) == PendingSelection.Result.REFUSED) {
+            showStatus(Component.translatable("gui.nerospace.dest.reason.refused"), now);
+        }
+        int selected = this.pending.shown(synced);
+        if (selected != this.ensuredIndex) {
+            // Keep the selection in view (on open, and after every pick by click, key or server).
             int at = this.entries.indexOf(selected);
             if (at >= 0) {
-                this.scroll = Math.max(0, Math.min(at, this.entries.size() - VISIBLE));
+                if (at < this.scroll) {
+                    this.scroll = at;
+                } else if (at >= this.scroll + VISIBLE) {
+                    this.scroll = at - VISIBLE + 1;
+                }
+                this.ensuredIndex = selected;
             }
-            this.scrolledToSelection = true;
         }
         this.scroll = Math.max(0, Math.min(this.scroll, Math.max(0, this.entries.size() - VISIBLE)));
         PlanetCardData hovered = null;
@@ -269,9 +292,32 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             this.launchButton.active = ready;
             this.launchButton.setSelected(ready && ((now / 500L) & 1L) == 0L);
         }
-        if (hovered != null) {
-            g.setComponentTooltipForNextFrame(this.font, PlanetCard.tooltip(hovered), this.mouseX, this.mouseY);
+        if (this.status != null && now < this.statusUntil) {
+            drawNotice(g, this.status);
         }
+        if (hovered != null) {
+            g.setComponentTooltipForNextFrame(this.font, PlanetCard.tooltip(hovered, true), this.mouseX, this.mouseY);
+        }
+    }
+
+    private void showStatus(Component reason, long now) {
+        this.status = Component.translatable("gui.nerospace.dest.cant_select", reason);
+        this.statusUntil = now + 2500L;
+    }
+
+    /** The player-facing reason for a refused pick of {@code index}. */
+    private Component reasonFor(DestinationSelection.Outcome outcome, int index) {
+        if (outcome == DestinationSelection.Outcome.PREVIEW) {
+            PlanetDefinition planet = Planets.get(Destinations.byIndex(index));
+            return Component.translatable("gui.nerospace.card.tier_tooltip", planet != null ? planet.unlockTier() : 1);
+        }
+        String key = outcome.langKey();
+        return Component.translatable(key != null ? key : "gui.nerospace.dest.reason.refused");
+    }
+
+    /** The displayed selection: the optimistic pick while it is pending, else the synced index. */
+    private int shownSelection() {
+        return this.pending.shown(this.menu.getDestinationIndex());
     }
 
     private void rebuildEntries() {
@@ -335,7 +381,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         boolean gate = (this.menu.getGateMask() & (1 << index)) != 0;
         boolean tierLocked = this.revealed.contains(index); // an Observatory preview: full LOCKED_TIER card
         PlanetCardData.State state = PlanetCardData.stateFor(here, gate && !tierLocked, tierLocked,
-                index == this.menu.getDestinationIndex());
+                index == shownSelection());
         double gravity = traits != null ? traits.defaultGravity() : 1.0D;
         Hazard hazard = traits != null ? traits.hazard() : Hazard.NONE;
         boolean rad = traits != null && traits.radiation() > 0;
@@ -376,8 +422,9 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
-            int mask = this.menu.getDestinationMask();
+        // Never compare against a literal button number: 26.3 moved input to SDL, where the left button is 1
+        // (GLFW, up to 26.2, used 0). InputConstants carries the right value for each version.
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             for (int row = 0; row < VISIBLE; row++) {
                 int i = this.scroll + row;
                 if (i >= this.entries.size()) {
@@ -386,21 +433,86 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
                 int x = this.leftPos + LIST_X;
                 int y = this.topPos + LIST_Y + row * PlanetCard.COMPACT_H;
                 if (PlanetCard.hit(x, y, true, event.x(), event.y())) {
-                    int index = this.entries.get(i);
-                    if (this.revealed.contains(index)) {
-                        this.previewIndex = this.previewIndex == index ? -1 : index; // preview only, never selectable
-                        return true;
-                    }
-                    this.previewIndex = -1;
-                    boolean gate = (this.menu.getGateMask() & (1 << index)) != 0;
-                    if ((mask & (1 << index)) != 0 && !gate && Integer.bitCount(mask) > 1) {
-                        sendButton(RocketMenu.SELECT_DEST_BASE + index);
-                    }
+                    clickCard(this.entries.get(i));
                     return true;
                 }
             }
         }
         return super.mouseClicked(event, doubleClick);
+    }
+
+    private void clickCard(int index) {
+        if (this.revealed.contains(index)) {
+            // An Observatory preview: toggles the standard card, never selectable — say why.
+            this.previewIndex = this.previewIndex == index ? -1 : index;
+            playClick();
+            showStatus(reasonFor(DestinationSelection.Outcome.PREVIEW, index), System.currentTimeMillis());
+            return;
+        }
+        this.previewIndex = -1;
+        select(index);
+    }
+
+    /** Picks {@code index}: highlighted at once, sent to the server, and reconciled with the synced value. */
+    private void select(int index) {
+        long now = System.currentTimeMillis();
+        int synced = this.menu.getDestinationIndex();
+        int mask = this.menu.getDestinationMask();
+        int gate = this.menu.getGateMask();
+        DestinationSelection.Outcome outcome = DestinationSelection.evaluateCard(index, mask, gate,
+                this.pending.shown(synced), index == hereIndex(), false);
+        DestinationTrace.log("rocket screen {} click index {} mask {} gate {} -> {}", this.menu.containerId, index,
+                mask, gate, outcome);
+        if (outcome == DestinationSelection.Outcome.OK) {
+            this.pending.begin(index, synced, now);
+            this.status = null;
+            playClick();
+            sendButton(RocketMenu.SELECT_DEST_BASE + index);
+        } else if (!outcome.accepted()) {
+            showStatus(reasonFor(outcome, index), now);
+        }
+    }
+
+    /** Up/Down move the selection through the selectable cards; Enter launches when ready. */
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (event.isUp() || event.isDown()) {
+            int current = shownSelection();
+            int next = nextSelectable(current, event.isUp() ? -1 : 1);
+            if (next >= 0 && next != current) {
+                this.previewIndex = -1;
+                select(next);
+            }
+            return true;
+        }
+        if (event.isConfirmation() && this.launchButton != null && this.launchButton.active
+                && !this.pending.active()) {
+            playClick();
+            sendButton(RocketMenu.BUTTON_LAUNCH);
+            return true;
+        }
+        return super.keyPressed(event);
+    }
+
+    /** The next selectable list entry after {@code current} in direction {@code dir}, or −1 (no wrap). */
+    private int nextSelectable(int current, int dir) {
+        int mask = this.menu.getDestinationMask();
+        int gate = this.menu.getGateMask();
+        int at = this.entries.indexOf(current);
+        int i = at < 0 ? (dir > 0 ? -1 : this.entries.size()) : at;
+        for (i += dir; i >= 0 && i < this.entries.size(); i += dir) {
+            int index = this.entries.get(i);
+            if (!this.revealed.contains(index) && DestinationSelection.selectable(index, mask, gate)) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private void playClick() {
+        if (this.minecraft != null) {
+            AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
+        }
     }
 
     @Override

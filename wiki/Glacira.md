@@ -33,6 +33,12 @@ Glacite ore generates in the stone under every Glacira biome.
 | Methane Crystal | Fuel: it burns in the Combustion Generator (2 400 ticks, one and a half times coal) and makes torches. |
 | Glacite | Unchanged: the cryo-suit and terraforming material. |
 
+## The Frostbound
+
+Glacira's **[villagers](Alien-Villagers)** are the fur-wrapped **Frostbound**. They build hamlets and ruins
+from glacite and ice, and they trade glacite, methane ice and cold-protection suit parts. They also buy frost
+shards. Their settlements appear only in newly generated land.
+
 ## Diamond dust
 
 During a diamond-dust storm, sparkling ice crystals hang in the air, and open water under the sky slowly freezes over (a few blocks per chunk per storm). When the storm ends, every Frost Crystal Cluster that can see the sky grows one stage.
@@ -40,3 +46,13 @@ During a diamond-dust storm, sparkling ice crystals hang in the air, and open wa
 ## Upgrading from 1.x
 
 Glacira keeps its dimension id, its biome and its glacite. Chunks you explored in 1.x stay exactly as they were. Only land that has never been generated gets the new terrain, so where old and new ground meet you may see a seam in the surface blocks. The shape of the land generally lines up across it. Terraformers you already built carry on from their current stage.
+
+## Terraforming
+
+On Glacira the Terraformer lays moss over the ice (Rooted) and brings meltwater (Hydrated), but **Permafrost
+never melts until the final stage**: hydration skips it, and only Living ground thaws it. The land settles into
+the **tundra** you know from 1.x, with spruces and Woolly Drifts. A Terraformer that was already running on
+Glacira before 2.0 carries on exactly where it was.
+
+**Worlds: Glacira** in the Star Guide: land, mine Glacite, build with Aurora Stone, last two minutes under the
+open sky in diamond dust, and root your first terraformed ground.

@@ -1,0 +1,41 @@
+{
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "ambient": [],
+          "axolotls": [],
+          "creature": [
+            {
+              "count": {
+                "max_inclusive": 4,
+                "min_inclusive": 2,
+                "type": "minecraft:uniform"
+              },
+              "type": "nerospace:ember_strutter",
+              "weight": 10
+            }
+          ],
+          "misc": [],
+          "monster": [],
+          "underground_water_creature": [],
+          "water_ambient": [],
+          "water_creature": []
+        }
+      },
+      "modifier": "overlay"
+    }
+  },
+  "carvers": [],
+  "downfall": 0.3,
+  "effects": {
+    "dry_foliage_color": "#aea42a",
+    "foliage_color": "#aea42a",
+    "grass_color": "#bfb755",
+    "water_color": "#4c8fbf"
+  },
+  "features": [],
+  "has_precipitation": true,
+  "temperature": 1.2
+}

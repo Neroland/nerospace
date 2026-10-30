@@ -19,7 +19,9 @@
     [
       "nerospace:glacite_ore_placed",
       "nerospace:glacira_methane_ice_placed",
-      "nerospace:glacira_methane_ice_lakebed_placed"
+      "nerospace:glacira_methane_ice_lakebed_placed",
+      "nerospace:hamlet_placed",
+      "nerospace:ruin_placed"
     ],
     [],
     [],

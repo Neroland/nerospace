@@ -1,0 +1,17 @@
+{
+  "parent": "nerospace:station",
+  "criteria": {
+    "reached": {
+      "conditions": {
+        "to": "nerospace:mars"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "requirements": [
+    [
+      "reached"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

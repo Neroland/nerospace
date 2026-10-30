@@ -56,6 +56,7 @@ public final class StarGuideGrants {
             ProgressionGates.open(player, LIVING_WORLD_GATE);
         }
         driveCoreGates(player, stage);
+        WorldsProgress.tick(player, Math.max(stage, Services.PLATFORM.isTerraformed(chunk) ? 1 : 0));
     }
 
     /**
@@ -94,7 +95,8 @@ public final class StarGuideGrants {
         ProgressionGates.tryOpen(player, CoreGates.FIRST_COLONY);
     }
 
-    private static boolean isDone(ServerPlayer player, String path) {
+    /** Whether the Nerospace advancement {@code path} is complete for {@code player} (missing = not done). */
+    public static boolean isDone(ServerPlayer player, String path) {
         ServerAdvancementManager manager = player.level().getServer().getAdvancements();
         AdvancementHolder holder = manager.get(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path));
         if (holder == null) {

@@ -2,6 +2,8 @@ package za.co.neroland.nerospace.client;
 
 import java.util.Random;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -26,6 +28,8 @@ public class AlienVillagerRenderer
     private static final Identifier MEADOW = tex("alien_villager_meadow");
     private static final Identifier CINDARA = tex("alien_villager_cindara");
     private static final Identifier GLACIRA = tex("alien_villager_glacira");
+    /** Placeholder until the Stage 6 art pass paints the Duskborn skin. */
+    private static final Identifier DUSKBORN = tex("alien_villager_duskborn");
     private static final Identifier GLOW = tex("alien_villager_glow");
 
     @SuppressWarnings("this-escape")
@@ -53,9 +57,28 @@ public class AlienVillagerRenderer
         return switch (state.planet) {
             case CINDARA -> CINDARA;
             case GLACIRA -> GLACIRA;
-            // No Duskborn skin until the art pass; the base skin keeps the entity renderable.
-            case NYXARA -> BASE;
+            case NYXARA -> DUSKBORN;
             case GREENXERTZ -> (state.biomeId != null && state.biomeId.contains("meadow")) ? MEADOW : BASE;
+        };
+    }
+
+    /**
+     * Per-culture silhouette (D8) on the shared model: Ember-kin stocky, Frostbound bulked by fur wraps, Duskborn
+     * tall and slender, Xertz unchanged. The hitbox is the same for every culture.
+     */
+    @Override
+    protected void scale(AlienVillagerRenderState state, PoseStack poseStack) {
+        float[] s = silhouette(state.planet);
+        poseStack.scale(s[0], s[1], s[0]);
+    }
+
+    /** {width, height} scale for a species. */
+    static float[] silhouette(AlienVillager.Planet planet) {
+        return switch (planet) {
+            case CINDARA -> new float[] {1.15F, 0.88F};
+            case GLACIRA -> new float[] {1.08F, 1.04F};
+            case NYXARA -> new float[] {0.9F, 1.14F};
+            case GREENXERTZ -> new float[] {1.0F, 1.0F};
         };
     }
 

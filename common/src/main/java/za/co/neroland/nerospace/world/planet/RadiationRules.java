@@ -29,10 +29,15 @@ public final class RadiationRules {
         if (NYXARA_DAYSIDE.equals(biomeId)) {
             return 2;
         }
-        if (NYXARA_BAND.equals(biomeId)) {
-            return 1;
+        if (NYXARA_BAND.equals(biomeId) || isTerraformedGrove(biomeId)) {
+            return 1; // the terraformed twilight grove only roots in the band, so it keeps the band's level
         }
         return clamp(traitRadiation);
+    }
+
+    /** The three terraformed twilight-grove biomes ({@code terraformed_nyxara_rooted/hydrated/living}). */
+    public static boolean isTerraformedGrove(String biomeId) {
+        return biomeId != null && biomeId.startsWith("nerospace:terraformed_nyxara_");
     }
 
     /** Whether a flare adds its +1 here: an active flare, an exposed and unsealed position, not the nightside. */

@@ -33,6 +33,6 @@ public final class NyxaraPlanet extends PlanetDefinition {
                 .clock(ClockSource.PLANET_CLOCK, 0.25)
                 .daylight(DaylightCurve.constant(0.6), 3.4)
                 .weather(new WeatherParams(WeatherEvent.FLARE, 96_000L, 1_200, 2_400))
-                .terraform(TreeStyle.OAK_BIRCH, null));
+                .terraform(TreeStyle.OAK_BIRCH, () -> NyxaraContent.DUSK_MOTH.get()));
     }
 }

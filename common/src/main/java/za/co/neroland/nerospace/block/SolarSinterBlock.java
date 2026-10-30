@@ -12,8 +12,9 @@ import za.co.neroland.nerospace.world.planet.PlanetClock;
 import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
- * Lunar Basalt (002 §1.1): a player-placed block in Luna sunlight sinters into its polished form, 1-in-6 per random
- * tick. Stage 3 passes the polished block and must give {@code Properties.randomTicks()}.
+ * Lunar Basalt: a player-placed block in Luna sunlight sinters into its polished form, 1-in-6 per random tick. The
+ * properties carry {@code randomTicks()}, but only player-placed states ever tick: Lunar Basalt is Luna's default
+ * block, so worldgen basalt must never enter {@link #randomTick} (see {@link #isRandomlyTicking}).
  */
 public class SolarSinterBlock extends PlacedFlagBlock {
 
@@ -22,6 +23,12 @@ public class SolarSinterBlock extends PlacedFlagBlock {
     public SolarSinterBlock(Properties properties, Supplier<BlockState> sintered) {
         super(properties);
         this.sintered = sintered;
+    }
+
+    /** Vanilla's leaves pattern: worldgen basalt (PLACED=false) is never scheduled for random ticks at all. */
+    @Override
+    protected boolean isRandomlyTicking(BlockState state) {
+        return SolarSinterRules.ticks(playerPlaced(state));
     }
 
     @Override

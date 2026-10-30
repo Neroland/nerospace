@@ -21,6 +21,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
+import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.entity.AlienVillager;
 import za.co.neroland.nerospace.registry.ModBlockEntities;
@@ -55,8 +56,8 @@ public class VillageCoreBlockEntity extends BlockEntity {
     private static final int DARK_THRESHOLD = 4;
     private static final int[][] PLOT_OFFSETS = {{8, 0}, {-8, 0}, {0, 8}, {0, -8}, {8, 8}, {-8, -8}};
 
-    private UUID owner;
-    private String ownerName = "";
+    /** Owner UUID only; the 1.6.0 display name is no longer stored (see {@link VillageCoreOwnership}). */
+    private final VillageCoreOwnership ownership = new VillageCoreOwnership();
 
     private int stockpile;
     private int builtCount;
@@ -76,27 +77,171 @@ public class VillageCoreBlockEntity extends BlockEntity {
     private int raidTick;
     private int questOrdinal = -1;
 
+    /**
+     * Server-side cores currently in a loaded chunk, for the erasure sweep. Weak, runtime-only, never persisted;
+     * {@link #setRemoved()} only unregisters (no world access there — it also fires on chunk unload).
+     */
+    private static final java.util.Set<VillageCoreBlockEntity> LOADED =
+            java.util.Collections.synchronizedSet(java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>()));
+
     public VillageCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.VILLAGE_CORE.get(), pos, state);
+    }
+
+    /**
+     * Cores that have just joined a server level and still need their {@link VillageCoreLedger} check (a pending
+     * erasure applied, the index row refreshed). Drained on the server thread by {@link #syncLedger}, never inside
+     * {@code setLevel} (that runs mid chunk load).
+     */
+    private static final java.util.Queue<VillageCoreBlockEntity> AWAITING_LEDGER =
+            new java.util.concurrent.ConcurrentLinkedQueue<>();
+
+    @Override
+    public void setLevel(Level level) {
+        super.setLevel(level);
+        if (level instanceof ServerLevel) {
+            LOADED.add(this);
+            AWAITING_LEDGER.add(this);
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        LOADED.remove(this);
+        super.setRemoved();
+    }
+
+    /** The block was broken (not a chunk unload): its ledger row and any pending clear go with it. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level instanceof ServerLevel server) {
+            VillageCoreLedger.get(server.getServer()).remove(loc(server, pos));
+        }
+    }
+
+    static VillageCoreLedger.CoreLoc loc(Level level, BlockPos pos) {
+        return new VillageCoreLedger.CoreLoc(level.dimension().identifier().toString(), pos.asLong());
+    }
+
+    /**
+     * Server tick (and the start of an erasure or export): every core that joined a level since the last call is
+     * checked against the {@link VillageCoreLedger} — a pending erasure for its position clears the owner and is
+     * dropped, and the owner index row is refreshed.
+     */
+    public static void syncLedger(net.minecraft.server.MinecraftServer server) {
+        if (AWAITING_LEDGER.isEmpty() || server == null) {
+            return;
+        }
+        VillageCoreLedger ledger = VillageCoreLedger.get(server);
+        long today = java.time.LocalDate.now(java.time.ZoneOffset.UTC).toEpochDay();
+        int cleared = 0;
+        VillageCoreBlockEntity core;
+        while ((core = AWAITING_LEDGER.poll()) != null) {
+            if (core.isRemoved() || !(core.level instanceof ServerLevel lvl) || lvl.getServer() != server) {
+                continue;
+            }
+            if (ledger.onLoaded(loc(lvl, core.worldPosition), core.ownership.owner(), today)) {
+                core.ownership.clear();
+                core.setChanged();
+                cleared++;
+            }
+        }
+        if (cleared > 0) {
+            // Count only (POPIA/GDPR).
+            NerospaceCommon.LOGGER.info("[Nerospace] Erasure: applied {} pending village core owner clear(s).", cleared);
+        }
+    }
+
+    /** Locations of every loaded, live core (erasure: which ledger rows the live sweep already reached). */
+    public static java.util.Set<VillageCoreLedger.CoreLoc> loadedLocations() {
+        java.util.Set<VillageCoreLedger.CoreLoc> out = new java.util.HashSet<>();
+        synchronized (LOADED) {
+            for (VillageCoreBlockEntity core : LOADED) {
+                if (!core.isRemoved() && core.level != null) {
+                    out.add(loc(core.level, core.worldPosition));
+                }
+            }
+        }
+        return out;
+    }
+
+    /** Privacy export: locations of the loaded cores {@code playerId} owns. */
+    public static List<VillageCoreLedger.CoreLoc> loadedOwnedBy(UUID playerId) {
+        List<VillageCoreLedger.CoreLoc> out = new java.util.ArrayList<>();
+        synchronized (LOADED) {
+            for (VillageCoreBlockEntity core : LOADED) {
+                if (!core.isRemoved() && core.level != null && core.ownership.isOwner(playerId)) {
+                    out.add(loc(core.level, core.worldPosition));
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * POPIA/GDPR erasure: clears {@code playerId} as owner of every loaded core.
+     *
+     * @return how many cores were owned by the player
+     */
+    public static int forgetOwnerEverywhere(UUID playerId) {
+        List<VillageCoreBlockEntity> snapshot;
+        synchronized (LOADED) {
+            snapshot = new java.util.ArrayList<>(LOADED);
+        }
+        int cleared = 0;
+        for (VillageCoreBlockEntity core : snapshot) {
+            if (!core.isRemoved() && core.forgetOwner(playerId)) {
+                cleared++;
+            }
+        }
+        return cleared;
     }
 
     // --- Claiming -------------------------------------------------------------
 
     public boolean isClaimed() {
-        return this.owner != null;
+        return this.ownership.isClaimed();
     }
 
     public boolean isOwner(Player player) {
-        return player.getUUID().equals(this.owner);
+        return this.ownership.isOwner(player.getUUID());
     }
 
-    public String getOwnerName() {
-        return this.ownerName;
+    /** Whether {@code playerId} owns this core (erasure sweep). */
+    public boolean isOwnedBy(UUID playerId) {
+        return this.ownership.isOwner(playerId);
+    }
+
+    /**
+     * The owner's name for a chat line, resolved now and never stored: the live name of an online owner, otherwise
+     * "another player".
+     */
+    public Component ownerDisplay(net.minecraft.server.MinecraftServer server) {
+        UUID owner = this.ownership.owner();
+        Player online = owner == null || server == null ? null : server.getPlayerList().getPlayer(owner);
+        return online != null ? online.getName()
+                : Component.translatable("message.nerospace.village_core.owned_by_offline");
+    }
+
+    /**
+     * POPIA/GDPR: clears the owner if it is {@code playerId}; the core keeps its stockpile, buildings and quest.
+     *
+     * @return whether this core was owned by the player
+     */
+    public boolean forgetOwner(UUID playerId) {
+        if (this.ownership.forget(playerId)) {
+            setChanged();
+            return true;
+        }
+        return false;
     }
 
     public void claim(Player player) {
-        this.owner = player.getUUID();
-        this.ownerName = player.getName().getString();
+        this.ownership.claim(player.getUUID());
+        if (this.level instanceof ServerLevel server) {
+            VillageCoreLedger.get(server.getServer()).record(loc(server, this.worldPosition), player.getUUID());
+        }
         if (this.questOrdinal < 0) {
             rollQuest();
         }
@@ -333,8 +478,8 @@ public class VillageCoreBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putString("Owner", this.owner == null ? "" : this.owner.toString());
-        output.putString("OwnerName", this.ownerName);
+        // Owner UUID only. The 1.6.0 "OwnerName" key is never written, so it drops out at the next chunk save.
+        this.ownership.write(output::putString);
         output.putInt("Stockpile", this.stockpile);
         output.putInt("BuiltCount", this.builtCount);
         output.putInt("JobType", this.jobType == null ? -1 : this.jobType.ordinal());
@@ -350,17 +495,9 @@ public class VillageCoreBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        String stored = input.getStringOr("Owner", "");
-        if (stored.isEmpty()) {
-            this.owner = null;
-        } else {
-            try {
-                this.owner = UUID.fromString(stored);
-            } catch (IllegalArgumentException ex) {
-                this.owner = null;
-            }
-        }
-        this.ownerName = input.getStringOr("OwnerName", "");
+        // "OwnerName" (1.6.0) is ignored. An owner erased earlier this session is dropped on load (POPIA/GDPR).
+        this.ownership.read(key -> input.getStringOr(key, ""),
+                za.co.neroland.nerospace.data.NerospaceErasure::erasedThisSession);
         this.stockpile = input.getIntOr("Stockpile", 0);
         this.builtCount = input.getIntOr("BuiltCount", 0);
         this.jobType = Type.byOrdinalOrNull(input.getIntOr("JobType", -1));
