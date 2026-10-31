@@ -3,6 +3,7 @@
   "block": "nerospace:shadow_lichen",
   "can_be_placed_on": [
     "nerospace:nyx_stone",
+    "nerospace:smoke_crystal",
     "minecraft:blackstone",
     "minecraft:stone",
     "minecraft:deepslate",

@@ -50,7 +50,21 @@ public final class SubmitNodeCollector {
         ((net.minecraft.client.model.EntityModel<net.minecraft.client.renderer.entity.state.EntityRenderState>) model)
                 .setupAnim((net.minecraft.client.renderer.entity.state.EntityRenderState) state);
     }
-    //?}
+    //?} else {
+    /^public <S> void submitModel(Model model, S state, PoseStack poseStack, RenderType renderType, int light,
+            int overlay, int color, @Nullable Object sprite, int outlineColor, @Nullable Object crumbling) {
+        if (model instanceof EntityModel<?> entityModel) {
+            setup(entityModel, state);
+        }
+        model.renderToBuffer(poseStack, this.buffers.getBuffer(renderType), light, overlay, color);
+    }
+
+    // 1.21.1: the client.compat EntityModel look-alike poses itself from the client.compat render state.
+    @SuppressWarnings("unchecked")
+    private static <S> void setup(EntityModel<?> model, S state) {
+        ((EntityModel<EntityRenderState>) model).setupAnim((EntityRenderState) state);
+    }
+    ^///?}
 
     @FunctionalInterface
     public interface CustomGeometryRenderer {

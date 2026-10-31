@@ -13,8 +13,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
 import za.co.neroland.nerospace.api.Hazard;
+import za.co.neroland.nerospace.block.rules.PrismBeamRules;
+import za.co.neroland.nerospace.block.rules.RadShadeRules;
 import za.co.neroland.nerospace.registry.ModTags;
 import za.co.neroland.nerospace.world.OxygenManager;
+import za.co.neroland.nerospace.world.planet.nyxara.NyxaraCrystalHazards;
 
 /**
  * Resolves the hazard at an exact position. The player-less {@link #at(ServerLevel, BlockPos)} returns one primary
@@ -141,8 +144,9 @@ public final class PlanetHazards {
     }
 
     /**
-     * Effective radiation (0..3) at a position: the planet trait, Nyxara's band biomes overriding it, plus weather
-     * on exposed positions outside an oxygen field (dust storm lifts to 2, a flare adds 1 off the nightside).
+     * Effective radiation (0..3) at a position: the planet trait, Nyxara's band biomes overriding it, one lower under a
+     * Sunglass Crystal roof (three cells above the head), plus weather on exposed positions outside an oxygen field (dust
+     * storm lifts to 2, a flare adds 1 off the nightside, 2 inside a flaring Nyx Prism's beam).
      * 0 off a planet. Reads only loaded chunks.
      */
     public static int radiationLevel(ServerLevel level, BlockPos pos) {
@@ -151,10 +155,17 @@ public final class PlanetHazards {
             return 0;
         }
         String biome = biomeId(level, pos);
-        int base = RadiationRules.base(planet.traits().radiation(), biome);
+        int base = RadShadeRules.effectiveRadiation(RadiationRules.base(planet.traits().radiation(), biome),
+                NyxaraCrystalHazards.shaded(level, pos));
         WeatherEvent event = PlanetWeather.event(level);
         boolean exposed = event != WeatherEvent.NONE && PlanetWeather.exposedUnsealed(level, pos);
-        return RadiationRules.effective(base, event, biome, exposed);
+        int effective = RadiationRules.effective(base, event, biome, exposed);
+        if (RadiationRules.flareApplies(event, biome, exposed)) {
+            // A flaring Nyx Prism's beam turns the flare's +1 into +2.
+            effective += PrismBeamRules.flareRadiation(true, NyxaraCrystalHazards.inPrismBeam(level, pos))
+                    - PrismBeamRules.flareRadiation(true, false);
+        }
+        return Math.min(RadiationRules.MAX, effective);
     }
 
     /** The biome id at a loaded position as {@code namespace:path}, or "" when unloaded/unbound. */

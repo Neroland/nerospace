@@ -53,12 +53,15 @@
   "features": [
     [],
     [],
-    [],
+    [
+      "nerospace:nyxara_crystal_geode_placed"
+    ],
     [],
     [],
     [],
     [
       "nerospace:nerosium_ore_placed",
+      "nerospace:nyxara_rose_field_placed",
       "nerospace:nyxara_void_crystal_placed",
       "nerospace:nyxara_dawnband_stone_placed",
       "nerospace:hamlet_placed",
@@ -67,7 +70,11 @@
     ],
     [],
     [],
-    [],
+    [
+      "nerospace:nyxara_crystal_spire_placed",
+      "nerospace:nyxara_prism_spire_placed",
+      "nerospace:nyxara_crystal_cluster_placed"
+    ],
     []
   ],
   "has_precipitation": false,

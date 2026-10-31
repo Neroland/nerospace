@@ -1,6 +1,10 @@
 {
   "ambient_light": 0.0,
   "attributes": {
+    "minecraft:gameplay/bed_rule": {
+      "can_set_spawn": "always",
+      "can_sleep": "always"
+    },
     "minecraft:visual/cloud_color": "#ffd9a066",
     "minecraft:visual/fog_color": "#C8683D",
     "minecraft:visual/moon_angle": 155.0,

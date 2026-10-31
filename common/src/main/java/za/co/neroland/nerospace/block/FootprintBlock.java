@@ -76,9 +76,15 @@ public class FootprintBlock extends Block {
         super.fallOn(level, state, pos, entity, fallDistance);
     }
 
+    //? if >=1.21.2 {
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
             Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+    //?} else {
+    /*@Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState,
+            net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    *///?}
         if (state.getValue(FOOTPRINT) && FootprintRules.shouldClear(direction == Direction.UP, false)) {
             return state.setValue(FOOTPRINT, Boolean.FALSE);
         }

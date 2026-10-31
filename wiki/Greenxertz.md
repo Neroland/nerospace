@@ -52,9 +52,11 @@ See [Planet Clock and Weather](Planet-Clock-and-Weather).
 
 ## Sky
 
-Twin suns, a large amber one and a smaller pale-green companion, cross a green-tinted sky with ordinary clouds; at
-night faint green stars come out, and a spore bloom tints the sky pink. The full sky is drawn on NeoForge for Minecraft 26.3; on every other version
-Greenxertz shows its colours with the vanilla sky shapes.
+Twin suns, a large amber one and a smaller pale-green companion, cross a green-tinted sky with ordinary
+clouds. A spore bloom tints the sky pink and sends a shimmering pink veil rolling all round the horizon, even by day.
+At night faint green stars twinkle and a soft bioluminescent glow sits on the horizon.
+
+The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Greenxertz shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
 
 ## Villagers and structures
 

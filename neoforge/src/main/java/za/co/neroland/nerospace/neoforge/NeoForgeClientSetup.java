@@ -85,6 +85,17 @@ public final class NeoForgeClientSetup {
             GalleryCaptureHarness.tick();
             za.co.neroland.nerospace.client.WeatherAmbience.tick();
         });
+        // World fog follows the planet sky profile (phase, position, weather, eclipse) on every NeoForge line; the
+        // dimension's fog attribute stays the floor when the hook returns no colour.
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.client.event.ViewportEvent.ComputeFogColor event) -> {
+            int rgb = za.co.neroland.nerospace.client.sky.PlanetSkyRenderer.fogRgb(event.getCamera(),
+                    (float) event.getPartialTick());
+            if (rgb >= 0) {
+                event.setRed(((rgb >> 16) & 0xFF) / 255.0F);
+                event.setGreen(((rgb >> 8) & 0xFF) / 255.0F);
+                event.setBlue((rgb & 0xFF) / 255.0F);
+            }
+        });
         // Client-side /nsgallery capture command tree (drives the local camera; separate dispatcher
         // from the server-side /nerospace gallery builder — a shared "nerospace" root would shadow it).
         NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent event) ->

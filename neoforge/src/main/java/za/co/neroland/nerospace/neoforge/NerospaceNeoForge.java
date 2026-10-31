@@ -81,6 +81,23 @@ public final class NerospaceNeoForge {
             // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
             za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(event.getServer());
         });
+        // Planet sleeping (see docs/MULTILOADER.md): the bed gate runs after vanilla's own checks (so a refused bed
+        // still sets spawn); the end-of-night skip runs at the start of the server tick, before any level ticks.
+        NeoForge.EVENT_BUS.addListener(
+                (net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent event) -> {
+                    net.minecraft.world.entity.player.Player.BedSleepingProblem vanilla = event.getProblem();
+                    if (vanilla == null
+                            || net.minecraft.world.entity.player.Player.BedSleepingProblem.NOT_SAFE.equals(vanilla)) {
+                        net.minecraft.world.entity.player.Player.BedSleepingProblem planet =
+                                za.co.neroland.nerospace.world.planet.PlanetSleep.refusal(event.getEntity(),
+                                        event.getPos());
+                        if (planet != null) {
+                            event.setProblem(planet);
+                        }
+                    }
+                });
+        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Pre event) ->
+                za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.getServer()));
         // Artificer gear: Grav Striders cushion the wearer — negate fall damage while carried.
         NeoForge.EVENT_BUS.addListener((LivingFallEvent event) -> {
             if (AlienGearAbilities.negatesFall(event.getEntity())) {

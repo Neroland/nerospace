@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "flaring=false": {
+      "model": "nerospace:block/nyx_prism"
+    },
+    "flaring=true": {
+      "model": "nerospace:block/nyx_prism_flaring"
+    }
+  }
+}

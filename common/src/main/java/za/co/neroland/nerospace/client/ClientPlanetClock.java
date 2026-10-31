@@ -72,6 +72,24 @@ public final class ClientPlanetClock {
         return c.bandWidth();
     }
 
+    /**
+     * The planet's day length in ticks as last synced for this level (the vanilla day for a vanilla-time mirror), or 0
+     * for a fixed clock or when unknown.
+     */
+    public static long dayLength(@Nullable Level level) {
+        PlanetClockPayload c = current;
+        if (c == null || level == null || !c.dimension().equals(level.dimension().identifier())) {
+            return 0L;
+        }
+        return c.mirrorVanilla() ? ClockMath.VANILLA_DAY : Math.max(0L, c.dayLength());
+    }
+
+    /** Whether this level's planet clock is frozen (by {@code /nerospace clock freeze} or the sky gallery). */
+    public static boolean frozen(@Nullable Level level) {
+        PlanetClockPayload c = current;
+        return c != null && level != null && c.frozen() && c.dimension().equals(level.dimension().identifier());
+    }
+
     /** The planet day ("Sol N" on Mars) as last synced, or 0 when unknown. */
     public static long dayNumber() {
         PlanetClockPayload c = current;

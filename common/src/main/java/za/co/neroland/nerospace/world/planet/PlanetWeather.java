@@ -200,6 +200,30 @@ public final class PlanetWeather {
         return true;
     }
 
+    /**
+     * Starts the planet's event now at full strength, already at its peak (the sky gallery): the same state machine
+     * as {@link #start}, without the ramp. @return false when the planet has no weather.
+     */
+    public static boolean startAtPeak(ServerLevel level) {
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet == null || !planet.weather().hasWeather()) {
+            return false;
+        }
+        PlanetWeatherState state = state(level);
+        WeatherParams p = params(planet);
+        state.machine.forceStart(p, WeatherMachine.MAX_TARGET, p.maxDurationTicks(), level.getRandom().nextLong());
+        state.machine.reachPeak();
+        state.markChanged();
+        WeatherEffects.Registry.get(state.machine.event).onStart(level, state.machine);
+        syncLevel(level);
+        return true;
+    }
+
+    /** Whether the server settings let this planet's weather run at all (a started event is cleared otherwise). */
+    public static boolean enabledFor(PlanetDefinition planet) {
+        return NerospaceConfig.weatherEnabled() && NerospaceConfig.planetWeatherEnabled(planet.weatherConfigKey());
+    }
+
     /** Clears the weather now. @return false when the planet has no weather. */
     public static boolean clear(ServerLevel level) {
         PlanetDefinition planet = Planets.get(level.dimension());

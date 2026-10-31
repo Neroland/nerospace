@@ -16,13 +16,17 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+//? if >=1.21.2 {
 import net.minecraft.world.item.ToolMaterial;
+//?}
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+//? if >=1.21.2 {
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
+//?}
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 
@@ -189,6 +193,12 @@ public final class ModItems {
             key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.CINDARA_LEVEL));
     public static final RegistryEntry<Item> GLACIRA_COMPASS = ITEMS.register("glacira_compass",
             key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.GLACIRA_LEVEL));
+    public static final RegistryEntry<Item> LUNA_COMPASS = ITEMS.register("luna_compass",
+            key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.LUNA_LEVEL));
+    public static final RegistryEntry<Item> MARS_COMPASS = ITEMS.register("mars_compass",
+            key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.MARS_LEVEL));
+    public static final RegistryEntry<Item> NYXARA_COMPASS = ITEMS.register("nyxara_compass",
+            key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.NYXARA_LEVEL));
 
     /** Station Charter: right-click founds a player station in the void station dimension + travels there. */
     public static final RegistryEntry<Item> STATION_CHARTER = ITEMS.register("station_charter",
@@ -213,6 +223,7 @@ public final class ModItems {
     public static final RegistryEntry<Item> WOOLLY_DRIFT_SPAWN_EGG = spawnEgg("woolly_drift_spawn_egg", ModEntities.WOOLLY_DRIFT);
 
     // --- Tool + armor materials --------------------------------------------
+    //? if >=1.21.2 {
     public static final ToolMaterial NEROSIUM_TOOL_MATERIAL = new ToolMaterial(
             BlockTags.INCORRECT_FOR_IRON_TOOL, 350, 7.0F, 2.5F, 15, cTag("ingots/nerosium"));
 
@@ -234,14 +245,89 @@ public final class ModItems {
             36, T2_DEFENSE, 14, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, 0.0F, cTag("gems/cindrite"), OXYGEN_SUIT_HEAT_ASSET);
     public static final ArmorMaterial OXYGEN_SUIT_COLD_MATERIAL = new ArmorMaterial(
             36, T2_DEFENSE, 14, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, 0.0F, cTag("gems/glacite"), OXYGEN_SUIT_COLD_ASSET);
+    //?} else {
+    /*// Minecraft 1.21.1: tools take a Tier; armour materials are entries of the ARMOR_MATERIAL registry (texture
+    // textures/models/armor/<name>_layer_1|2.png, derived from the equipment textures at build time) and each
+    // armour piece sets its own durability (durability multiplier 28 / 36, as the 1.21.2+ materials).
+    public static final net.minecraft.world.item.Tier NEROSIUM_TOOL_MATERIAL = new net.minecraft.world.item.Tier() {
+        @Override
+        public int getUses() {
+            return 350;
+        }
+
+        @Override
+        public float getSpeed() {
+            return 7.0F;
+        }
+
+        @Override
+        public float getAttackDamageBonus() {
+            return 2.5F;
+        }
+
+        @Override
+        public TagKey<Block> getIncorrectBlocksForDrops() {
+            return BlockTags.INCORRECT_FOR_IRON_TOOL;
+        }
+
+        @Override
+        public int getEnchantmentValue() {
+            return 15;
+        }
+
+        @Override
+        public net.minecraft.world.item.crafting.Ingredient getRepairIngredient() {
+            return net.minecraft.world.item.crafting.Ingredient.of(cTag("ingots/nerosium"));
+        }
+    };
+
+    public static final RegistrationProvider<net.minecraft.world.item.ArmorMaterial> ARMOR_MATERIALS =
+            RegistrationProvider.get(Registries.ARMOR_MATERIAL, NerospaceCommon.MOD_ID);
+
+    private static final Map<net.minecraft.world.item.ArmorItem.Type, Integer> T1_DEFENSE = Map.of(
+            net.minecraft.world.item.ArmorItem.Type.HELMET, 3, net.minecraft.world.item.ArmorItem.Type.CHESTPLATE, 7,
+            net.minecraft.world.item.ArmorItem.Type.LEGGINGS, 6, net.minecraft.world.item.ArmorItem.Type.BOOTS, 3);
+    private static final Map<net.minecraft.world.item.ArmorItem.Type, Integer> T2_DEFENSE = Map.of(
+            net.minecraft.world.item.ArmorItem.Type.HELMET, 4, net.minecraft.world.item.ArmorItem.Type.CHESTPLATE, 8,
+            net.minecraft.world.item.ArmorItem.Type.LEGGINGS, 6, net.minecraft.world.item.ArmorItem.Type.BOOTS, 4);
+
+    // An armour material entry plus the durability multiplier its pieces use.
+    public record LegacyArmorMaterial(RegistryEntry<net.minecraft.world.item.ArmorMaterial> entry, int durability) {
+    }
+
+    public static final LegacyArmorMaterial OXYGEN_SUIT_MATERIAL = armorMaterial("oxygen_suit", 28, T1_DEFENSE, 12,
+            SoundEvents.ARMOR_EQUIP_IRON, 1.5F, "ingots/nerosteel");
+    public static final LegacyArmorMaterial OXYGEN_SUIT_T2_MATERIAL = armorMaterial("oxygen_suit_t2", 36, T2_DEFENSE, 14,
+            SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, "gems/cindrite");
+    public static final LegacyArmorMaterial OXYGEN_SUIT_HEAT_MATERIAL = armorMaterial("oxygen_suit_heat", 36, T2_DEFENSE,
+            14, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, "gems/cindrite");
+    public static final LegacyArmorMaterial OXYGEN_SUIT_COLD_MATERIAL = armorMaterial("oxygen_suit_cold", 36, T2_DEFENSE,
+            14, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, "gems/glacite");
+
+    private static LegacyArmorMaterial armorMaterial(String name, int durability,
+            Map<net.minecraft.world.item.ArmorItem.Type, Integer> defense, int enchantability,
+            net.minecraft.core.Holder<net.minecraft.sounds.SoundEvent> sound, float toughness, String repairTag) {
+        RegistryEntry<net.minecraft.world.item.ArmorMaterial> entry = ARMOR_MATERIALS.register(name,
+                key -> new net.minecraft.world.item.ArmorMaterial(defense, enchantability, sound,
+                        () -> net.minecraft.world.item.crafting.Ingredient.of(cTag(repairTag)),
+                        List.of(new net.minecraft.world.item.ArmorMaterial.Layer(
+                                Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, name))),
+                        toughness, 0.0F));
+        return new LegacyArmorMaterial(entry, durability);
+    }
+    *///?}
 
     // --- Tools + armor items -----------------------------------------------
     public static final RegistryEntry<Item> NEROSIUM_PICKAXE =
             //? if >=1.21.5 {
             item("nerosium_pickaxe", p -> p.pickaxe(NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F));
-            //?} else {
+            //?} else if >=1.21.2 {
             /*ITEMS.register("nerosium_pickaxe", key -> new net.minecraft.world.item.PickaxeItem(
                     NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F, new Item.Properties().setId(key)));
+            *///?} else {
+            /*ITEMS.register("nerosium_pickaxe", key -> new net.minecraft.world.item.PickaxeItem(
+                    NEROSIUM_TOOL_MATERIAL, new Item.Properties().attributes(
+                            net.minecraft.world.item.PickaxeItem.createAttributes(NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F))));
             *///?}
 
     public static final RegistryEntry<Item> OXYGEN_SUIT_HELMET = armor("oxygen_suit_helmet", OXYGEN_SUIT_MATERIAL, ArmorType.HELMET);
@@ -272,14 +358,29 @@ public final class ModItems {
         return ITEMS.register(name, key -> new Item(cfg.apply(new Item.Properties().setId(key))));
     }
 
+    //? if >=1.21.5 {
     private static RegistryEntry<Item> armor(String name, ArmorMaterial material, ArmorType type) {
-        //? if >=1.21.5 {
         return item(name, p -> p.humanoidArmor(material, type));
-        //?} else {
-        /*return ITEMS.register(name, key -> new net.minecraft.world.item.ArmorItem(material, type,
-                new Item.Properties().setId(key)));
-        *///?}
     }
+    //?} else if >=1.21.2 {
+    /*private static RegistryEntry<Item> armor(String name, ArmorMaterial material, ArmorType type) {
+        return ITEMS.register(name, key -> new net.minecraft.world.item.ArmorItem(material, type,
+                new Item.Properties().setId(key)));
+    }
+    *///?} else {
+    /*private static RegistryEntry<Item> armor(String name, LegacyArmorMaterial material,
+            net.minecraft.world.item.ArmorItem.Type type) {
+        // The material registers in its own (ARMOR_MATERIAL) registry event, which a loader may fire after the item
+        // one: take a registration reference by key, bound once the material registers.
+        ResourceKey<net.minecraft.world.item.ArmorMaterial> materialKey =
+                ResourceKey.create(Registries.ARMOR_MATERIAL, material.entry().id());
+        return ITEMS.register(name, key -> new net.minecraft.world.item.ArmorItem(
+                ((net.minecraft.core.MappedRegistry<net.minecraft.world.item.ArmorMaterial>)
+                        net.minecraft.core.registries.BuiltInRegistries.ARMOR_MATERIAL)
+                        .createRegistrationLookup().getOrThrow(materialKey),
+                type, new Item.Properties().durability(type.getDurability(material.durability()))));
+    }
+    *///?}
 
     private static RegistryEntry<BlockItem> blockItem(String name, RegistryEntry<? extends Block> block) {
         // NOTE: 26.x Item.getDescriptionId() is final and resolves to item.nerospace.<id>; BlockItem no
@@ -300,9 +401,11 @@ public final class ModItems {
         return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", path));
     }
 
+    //? if >=1.21.2 {
     private static ResourceKey<EquipmentAsset> equipAsset(String name) {
         return ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, name));
     }
+    //?}
 
     /** Items grouped by the vanilla creative tab they should appear in. */
     public static Map<ResourceKey<CreativeModeTab>, List<ItemLike>> creativeTabItems() {
@@ -331,7 +434,8 @@ public final class ModItems {
                         ROCKET_TIER_1.get(), ROCKET_TIER_2.get(), ROCKET_TIER_3.get(), ROCKET_TIER_4.get(),
                         CARGO_ROCKET.get(),
                         STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(), CINDARA_COMPASS.get(),
-                        GLACIRA_COMPASS.get(), METEOR_CALLER.get(), METEOR_TRACKER.get(),
+                        GLACIRA_COMPASS.get(), LUNA_COMPASS.get(), MARS_COMPASS.get(), NYXARA_COMPASS.get(),
+                        METEOR_CALLER.get(), METEOR_TRACKER.get(),
                         CONFIGURATOR.get(), PIPE_FILTER.get(), ADVANCED_PIPE_FILTER.get(),
                         SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get(),
                         STAR_GUIDE_BOOK.get(), STATION_CHARTER.get()),

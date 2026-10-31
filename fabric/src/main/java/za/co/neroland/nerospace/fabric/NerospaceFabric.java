@@ -123,6 +123,12 @@ public final class NerospaceFabric implements ModInitializer {
             // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
             za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(server);
         });
+        // Planet sleeping (see docs/MULTILOADER.md): ALLOW_SLEEPING fires from Player.startSleepInBed, after
+        // ServerPlayer's own checks have set the respawn point; the end-of-night skip runs before any level ticks.
+        net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents.ALLOW_SLEEPING.register((player, pos) ->
+                player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                        ? za.co.neroland.nerospace.world.planet.PlanetSleep.refusal(serverPlayer, pos) : null);
+        ServerTickEvents.START_SERVER_TICK.register(za.co.neroland.nerospace.world.planet.PlanetSleep::serverTickStart);
         // Creative debug commands (/nerospace gallery).
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 NerospaceCommands.register(dispatcher));

@@ -18,7 +18,8 @@ with nobody there, so unattended machines see the same day and storms as visitor
 
 **What a clock drives:** the sky (sun, moons, stars, colours), the HUD clock dial, [solar panel](Solar-Panel) output,
 when weather may start (Glacira's diamond dust only forms at night or in twilight; Cindara's ash fall never starts near
-the eclipse), Aurora Stone (it glows only during Glacira's night) and the Star Guide's lunar-night step.
+the eclipse), Aurora Stone (it glows only during Glacira's night), the Star Guide's lunar-night step and when you can
+[sleep](#sleeping).
 
 **What it never changes:** block light and sky light. It is as bright underfoot at a planet's "night" as it was in
 1.x, and mobs spawn by light exactly as before. Greenxertz is the exception only because it runs on the real
@@ -40,6 +41,32 @@ A panel on a planet peaks at that planet's noon, dips at night and in a Mars dus
 output at the height of the storm), and over a full day gives at least the old constant double rate on every planet:
 the peaks are higher to make up for the nights. The orbital station stays at a constant double rate. Set
 `solar.clockDriven=false` to restore the 1.x constant output everywhere.
+
+### Sleeping
+
+Vanilla time stands still on the worlds with their own clock, so a bed there follows the planet's clock instead:
+
+| World | When you can sleep | What a full night's sleep does |
+|---|---|---|
+| Luna, Mars, Cindara, Glacira | in the planet's night: from just after sunset until shortly before sunrise | once enough players on that planet are asleep, the clock jumps to sunrise and the day count (Mars: the sol) goes up by one, as if you had waited the night out |
+| Greenxertz | at night, as in the Overworld | the Overworld's own night skip: Greenxertz shares the Overworld's day |
+| Nyxara | in a bed on the **Nightside**, at any time | you rest and get up on your own a few seconds later; nothing is skipped, the sun never moves. In the Twilight Band and on the Dayside: "The sun never sets here" |
+| Orbital Station | never: "The station's lights never dim" | — |
+
+- Every bed on every world sets your respawn point, even where you cannot sleep, and no bed explodes.
+- "Enough players" is the `players_sleeping_percentage` game rule, counted per world: players asleep on Luna skip
+  Luna's night only, and a planet's night never moves the Overworld's time.
+- Cindara's eclipse is not night: the window opens after sunset. Glacira's night ends part-way through the dawn
+  twilight.
+- Sleeping never ends planet weather: a dust storm, an ash fall or diamond dust keeps running.
+- While an operator has frozen a clock (`/nerospace clock <planet> freeze`, or a `/nerospace gallery sky` state) you
+  can still lie down at night and get up rested, but the night does not pass. With `clock.enabled=false` every clock
+  reads noon, so beds on Luna, Mars, Cindara and Glacira only set your spawn point.
+- The vanilla `advance_time` rule (`doDaylightCycle` before 1.21.11) does not stop a planet's clock or its night
+  skip; only `/nerospace clock <planet> freeze` does.
+- Open water freezes under the sky on the cold worlds (Luna, Mars, Glacira, the Nyxara Nightside and the orbital
+  station), as in a snowy Overworld biome, unless the block light at the water is 10 or more. Sugar cane planted by
+  frozen water breaks, so light the water or farm under a roof.
 
 ## Weather
 
@@ -78,6 +105,39 @@ chime as a flare begins. With `hud.weatherLine` on, the HUD shows the current we
 
 Greenxertz follows the normal day, so use `/time` there. Nyxara and the station have fixed clocks that cannot be set
 or frozen. The commands need operator permission (level 2).
+
+### Sky gallery
+
+`/nerospace gallery sky` holds a world's sky in one of its showcase states, for screenshots and for checking how a
+world looks. It needs operator permission (level 2), like the clock and weather commands, and is run by a player.
+
+| Command | What it does |
+|---|---|
+| `/nerospace gallery sky` | Lists every world and its states |
+| `/nerospace gallery sky <planet> <state>` | Sets that world's clock to the state's time and holds it there, and starts its weather at full strength or clears it. Everyone on that world sees the change at once |
+| `/nerospace gallery sky <planet> <state> here` | The same, and moves you to a viewing spot on that world (your own spot if you are already there; Nyxara picks the band or a side), facing the view |
+| `/nerospace gallery sky reset [<planet>]` | Lets the clock run again and clears the weather, on one world or on all of them |
+
+Tab completion only offers the states the chosen world has:
+
+| World | States |
+|---|---|
+| Greenxertz | `dawn`, `noon`, `dusk`, `night`, `twin_noon`, `spore_bloom` |
+| Cindara | `dawn`, `noon`, `dusk`, `night`, `eclipse`, `ash_fall` |
+| Glacira | `dawn`, `noon`, `dusk`, `night`, `twilight`, `aurora`, `diamond_dust` |
+| Orbital Station | `dawn`, `noon`, `dusk`, `night`, `sunrise`, `planet_night` |
+| Luna | `dawn`, `noon`, `dusk`, `night`, `earthrise` |
+| Mars | `dawn`, `noon`, `dusk`, `night`, `blue_sunset`, `dust_storm` |
+| Nyxara | `dayside`, `band`, `nightside`, `galaxy_side`, `flare`; `noon`, `dawn`/`dusk` and `night` mean the dayside, the band and the nightside |
+
+- Weather states (`spore_bloom`, `ash_fall`, `diamond_dust`, `dust_storm`, `flare`) start the event at its peak; it
+  then lasts its normal time and fades. Run the state again to restart it. If a world's weather is switched off in the
+  server settings, the clock still changes but no weather starts.
+- Nyxara's sun never moves, so its states are places: without `here` the command tells you roughly which X to stand at.
+- Greenxertz shares the Overworld's day, so its states set the Overworld's time too and the day keeps running.
+- The full set pieces are drawn on NeoForge for Minecraft 26.3; on other versions a state shows that world's colours
+  at the matching time, and the world fog still follows it.
+- A held sky keeps its aurora, shooting stars and star twinkle moving; the sun, moons and colours stay put.
 
 ## Configuration
 

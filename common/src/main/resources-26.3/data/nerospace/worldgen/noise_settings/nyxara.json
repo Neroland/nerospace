@@ -43,12 +43,12 @@
                           },
                           "then_run": {
                             "type": "minecraft:block",
-                            "result_state": "minecraft:smooth_basalt"
+                            "result_state": "nerospace:nyx_stone"
                           }
                         },
                         {
                           "type": "minecraft:block",
-                          "result_state": "nerospace:nyx_stone"
+                          "result_state": "nerospace:sunglass_crystal"
                         }
                       ]
                     }
@@ -59,12 +59,26 @@
                       "type": "minecraft:stone_depth",
                       "add_surface_depth": true,
                       "offset": 0,
-                      "secondary_depth_range": 5,
+                      "secondary_depth_range": 3,
                       "surface_type": "floor"
                     },
                     "then_run": {
                       "type": "minecraft:block",
-                      "result_state": "minecraft:smooth_basalt"
+                      "result_state": "nerospace:sunglass_crystal"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 8,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:nyx_stone"
                     }
                   }
                 ]
@@ -103,7 +117,12 @@
                         },
                         {
                           "type": "minecraft:block",
-                          "result_state": "nerospace:nyx_stone"
+                          "result_state": {
+                            "id": "nerospace:twilight_crystal",
+                            "properties": {
+                              "glow": "3"
+                            }
+                          }
                         }
                       ]
                     }
@@ -114,7 +133,26 @@
                       "type": "minecraft:stone_depth",
                       "add_surface_depth": true,
                       "offset": 0,
-                      "secondary_depth_range": 5,
+                      "secondary_depth_range": 3,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": {
+                        "id": "nerospace:twilight_crystal",
+                        "properties": {
+                          "glow": "0"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 8,
                       "surface_type": "floor"
                     },
                     "then_run": {
@@ -153,12 +191,12 @@
                           },
                           "then_run": {
                             "type": "minecraft:block",
-                            "result_state": "minecraft:blackstone"
+                            "result_state": "nerospace:nyx_stone"
                           }
                         },
                         {
                           "type": "minecraft:block",
-                          "result_state": "nerospace:nyx_stone"
+                          "result_state": "nerospace:smoke_crystal"
                         }
                       ]
                     }
@@ -169,12 +207,26 @@
                       "type": "minecraft:stone_depth",
                       "add_surface_depth": true,
                       "offset": 0,
-                      "secondary_depth_range": 5,
+                      "secondary_depth_range": 3,
                       "surface_type": "floor"
                     },
                     "then_run": {
                       "type": "minecraft:block",
-                      "result_state": "minecraft:blackstone"
+                      "result_state": "nerospace:smoke_crystal"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": true,
+                      "offset": 0,
+                      "secondary_depth_range": 8,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:nyx_stone"
                     }
                   }
                 ]

@@ -122,6 +122,18 @@ public final class WeatherMachine {
         this.seed = newSeed;
     }
 
+    /**
+     * Jumps a just-started event straight to its peak (the gallery's screenshot states): the intensity reaches its
+     * target and the event holds there for its duration, then fades as usual. No-op when nothing is active.
+     */
+    public void reachPeak() {
+        if (!active()) {
+            return;
+        }
+        this.intensity = this.target;
+        this.state = WeatherState.PEAK;
+    }
+
     /** Whether an event is in progress (any state but CLEAR). */
     public boolean active() {
         return this.state != WeatherState.CLEAR && this.event != WeatherEvent.NONE;

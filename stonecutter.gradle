@@ -183,6 +183,19 @@ ext.legacyRenames = [
     [below: '1.21.5', from: /@Override(\s+)public void preRemoveSideEffects\(/, to: 'public void preRemoveSideEffects('],
     [below: '1.21.5', from: /\bsuper\.preRemoveSideEffects\(\w+, \w+\);/, to: ''],
     [below: '1.21.5', from: /\bsuper\.affectNeighborsAfterRemoval\(\w+, \w+, \w+, \w+\);/, to: ''],
+    // 1.21.2 renames: item/block Properties carry their registry id (setId), entity types are built from their key,
+    // level heights became getMinY/getMaxY (max is inclusive now), MobSpawnType -> EntitySpawnReason,
+    // spawnAtLocation/hurtServer take the server level, chunks markUnsaved().
+    [below: '1.21.2', from: /\.setId\((key|k)\)/, to: ''],
+    [below: '1.21.2', from: /\.build\(key\)\)/, to: '.build(key.location().toString()))'],
+    [below: '1.21.2', from: /(\w+(?:\(\))?)\.getMaxY\(\)/, to: '($1.getMaxBuildHeight() - 1)'],
+    [below: '1.21.2', from: /\.getMinY\(\)/, to: '.getMinBuildHeight()'],
+    [below: '1.21.2', from: /(\w+(?:\(\))?)\.getMaxSectionY\(\)/, to: '($1.getMaxSection() - 1)'],
+    [below: '1.21.2', from: /\.getMinSectionY\(\)/, to: '.getMinSection()'],
+    [below: '1.21.2', from: /\bEntitySpawnReason\b/, to: 'MobSpawnType'],
+    [below: '1.21.2', from: /\.spawnAtLocation\(\w+, /, to: '.spawnAtLocation('],
+    [below: '1.21.2', from: /\.hurtServer\(\w+, /, to: '.hurt('],
+    [below: '1.21.2', from: /\.markUnsaved\(\)/, to: '.setUnsaved(true)'],
     // Forge before 1.21.6 runs EventBus 6: one IEventBus per mod (no BusGroup), game events on
     // MinecraftForge.EVENT_BUS with the event type taken from the (typed) listener, generic capability events.
     [below: '1.21.6', from: /import net\.minecraftforge\.eventbus\.api\.bus\.BusGroup;/, to: 'import net.minecraftforge.eventbus.api.IEventBus;'],
@@ -201,6 +214,61 @@ ext.legacyRenames = [
     [below: '1.21.6', from: /\b(?:[a-z]\w*\.)*[A-Z][\w.]*\.getBus\((\w+)\)\.addListener\(/, to: '$1.addListener('],
     [below: '1.21.6', from: /\b((?:[a-z]\w*\.)*[A-Z][\w.]*)\.BUS\.addListener\((\w+) ->/, to: 'net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(($1 $2) ->'],
     [below: '1.21.6', from: /\b(?:[a-z]\w*\.)*[A-Z][\w.]*\.BUS\.addListener\(/, to: 'net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener('],
+    // 1.21.2 folded ItemInteractionResult into InteractionResult: before it the blocks' useItemOn bodies run as helpers
+    // (//? blocks) whose TRY_WITH_EMPTY_HAND / super.useItemOn(..) go through compat.mc.UseCompat.
+    [below: '1.21.2', from: /\bInteractionResult\.TRY_WITH_EMPTY_HAND\b/, to: 'za.co.neroland.nerospace.compat.mc.UseCompat.TRY_WITH_EMPTY_HAND'],
+    [below: '1.21.2', from: /\breturn super\.useItemOn\((\w+), (\w+), (\w+), (\w+), (\w+), (\w+), (\w+)\);/,
+            to: 'return za.co.neroland.nerospace.compat.mc.UseCompat.fromItem(super.useItemOn($1, $2, $3, $4, $5, $6, $7));'],
+    // 1.21.2 reordered Block.updateShape's arguments and added the tick scheduler + random (the overrides are //? blocks).
+    [below: '1.21.2', from: /import net\.minecraft\.world\.level\.ScheduledTickAccess;/, to: ''],
+    [below: '1.21.2', from: /\bsuper\.updateShape\((\w+), (\w+), \w+, (\w+), (\w+), (\w+), (\w+), \w+\)/, to: 'super.updateShape($1, $4, $6, $2, $3, $5)'],
+    // 1.21.2 replaced neighborChanged's source position with the (nullable) redstone Orientation; unused by the overrides.
+    [below: '1.21.2', from: /import net\.minecraft\.world\.level\.redstone\.Orientation;/, to: ''],
+    [below: '1.21.2', from: /\bneighborChanged\(BlockState (\w+), Level (\w+), BlockPos (\w+), Block (\w+), Orientation (\w+),/,
+            to: 'neighborChanged(BlockState $1, Level $2, BlockPos $3, Block $4, BlockPos $5,'],
+    // 1.21.2 added AbstractContainerMenu.addStandardInventorySlots; compat.mc.MenuCompat lays the same slots out before it.
+    [below: '1.21.2', from: /\bthis\.addStandardInventorySlots\(/, to: 'za.co.neroland.nerospace.compat.mc.MenuCompat.addStandardInventorySlots(this::addSlot, '],
+    // 1.21.2 split the spreading half of MultifaceBlock into MultifaceSpreadeableBlock (MultifaceBlock was it before).
+    [below: '1.21.2', from: /\bMultifaceSpreadeableBlock\b/, to: 'MultifaceBlock'],
+    // Other 1.21.2 renames: EntityType.create(level, reason) was create(level), SPAWN_ITEM_USE was SPAWN_EGG,
+    // Animal.createAnimalAttributes was Mob.createMobAttributes, Merchant.stillValid was not part of the interface,
+    // Block.getCloneItemStack had no includeData flag, LevelHeightAccessor had only isOutsideBuildHeight.
+    [below: '1.21.2', from: /\.create\(([\w.]+(?:\(\))?), (?:EntitySpawnReason|MobSpawnType)\.\w+\)/, to: '.create($1)'],
+    [below: '1.21.2', from: /\bMobSpawnType\.SPAWN_ITEM_USE\b/, to: 'MobSpawnType.SPAWN_EGG'],
+    [below: '1.21.2', from: /\bAnimal\.createAnimalAttributes\(\)/, to: 'net.minecraft.world.entity.Mob.createMobAttributes()'],
+    [below: '1.21.2', from: /@Override(\s+)public boolean stillValid\(Player /, to: 'public boolean stillValid(Player '],
+    [below: '1.21.2', from: /\bgetCloneItemStack\(LevelReader (\w+), BlockPos (\w+), BlockState (\w+), boolean \w+\)/,
+            to: 'getCloneItemStack(LevelReader $1, BlockPos $2, BlockState $3)'],
+    [below: '1.21.2', from: /!(\w+)\.isInsideBuildHeight\(/, to: '$1.isOutsideBuildHeight('],
+    // 1.21.2 added Entity.teleportTo's trailing setCamera flag (always true here; 1.21.1 always resets the camera).
+    [below: '1.21.2', from: /\.teleportTo\(([^;]*?),(\s*)Set\.of\(\), ([^;]*?), true\);/, to: '.teleportTo($1,$2Set.of(), $3);'],
+    // JEI 19 (Minecraft 1.21.1): RecipeType was a class in mezz.jei.api.recipe, and the slot builder's add(..) overloads
+    // were addItemStack(..) / addFluidStack(..).
+    [below: '1.21.2', from: /import mezz\.jei\.api\.recipe\.types\.IRecipeType;/, to: 'import mezz.jei.api.recipe.RecipeType;'],
+    [below: '1.21.2', from: /\bIRecipeType\b/, to: 'RecipeType'],
+    [below: '1.21.2', from: /(SlotBackground\(\)\s*)\.add\(/, to: '$1.addItemStack('],
+    [below: '1.21.2', from: /\bregistration\.addCraftingStation\(/, to: 'registration.addRecipeCatalysts('],
+    [below: '1.21.2', from: /\.add\((\w+), mb\)/, to: '.addFluidStack($1, mb)'],
+    // 1.21.2 moved the armour slot type to equipment.ArmorType (ArmorItem.Type before; the materials are //? blocks).
+    [below: '1.21.2', from: /\bArmorType\./, to: 'net.minecraft.world.item.ArmorItem.Type.'],
+    // 1.21.2 entity render states: before it, client.compat has same-named look-alikes (render states, a state-posed
+    // EntityModel, MobRenderer, EyesLayer) that extract the state from the entity and draw through vanilla's 1.21.1 renderers.
+    [below: '1.21.2', from: /import net\.minecraft\.client\.renderer\.entity\.state\.(EntityRenderState|LivingEntityRenderState);/,
+            to: 'import za.co.neroland.nerospace.client.compat.$1;'],
+    [below: '1.21.2', from: /import net\.minecraft\.client\.model\.EntityModel;/, to: 'import za.co.neroland.nerospace.client.compat.EntityModel;'],
+    [below: '1.21.2', from: /import net\.minecraft\.client\.renderer\.entity\.(MobRenderer|RenderLayerParent|layers\.EyesLayer);/,
+            to: 'import za.co.neroland.nerospace.client.compat.$1;'],
+    [below: '1.21.2', from: /import za\.co\.neroland\.nerospace\.client\.compat\.layers\.EyesLayer;/, to: 'import za.co.neroland.nerospace.client.compat.EyesLayer;'],
+    // 1.21.2 made PartPose a record (its fields were public finals before).
+    [below: '1.21.2', from: /\.getInitialPose\(\)\.([xyz]Rot|[xyz])\(\)/, to: '.getInitialPose().$1'],
+    // 1.21.4 item render states (client.compat look-alikes before it), the GUI blit render-type argument and
+    // AbstractWidget.playButtonClickSound(..) arrived after 1.21.1.
+    [below: '1.21.2', from: /import net\.minecraft\.client\.renderer\.item\.ItemStackRenderState;/,
+            to: 'import za.co.neroland.nerospace.client.compat.ItemStackRenderState;'],
+    [below: '1.21.2', from: /\bMinecraft\.getInstance\(\)\.getItemModelResolver\(\)/, to: 'za.co.neroland.nerospace.client.compat.ItemModelResolver.INSTANCE'],
+    [below: '1.21.2', from: /\.blit\(net\.minecraft\.client\.renderer\.RenderType::guiTextured,\s*((?:[^,;]+,){8}[^,;]+)\);/, to: '.blit($1);'],
+    [below: '1.21.2', from: /(?:\bnet\.minecraft\.client\.gui\.components\.)?\bAbstractWidget\.playButtonClickSound\(([^;]*)\);/,
+            to: '$1.play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));'],
 ]
 
 // Shared common source — pulled into every loader node (single copy -> no drift).
@@ -440,6 +508,27 @@ subprojects {
             node.sourceSets.main.resources.srcDir(node.files(outDir).builtBy(mergeResources))
             node.tasks.named('processResources') {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            }
+        }
+    }
+    // Armour textures: before 1.21.2 an armour material draws textures/models/armor/<name>_layer_1|2.png. Derive them
+    // from the 1.21.2+ equipment textures (humanoid / humanoid_leggings) at build time instead of keeping a copy.
+    if (isNode) {
+        afterEvaluate { node ->
+            def sc = node.extensions.findByName('stonecutter')
+            if (sc == null || !sc.eval(sc.current.version, '<1.21.2')) {
+                return
+            }
+            def equipment = new File(rootProject.ext.commonResources, 'assets/nerospace/textures/entity/equipment')
+            node.tasks.named('processResources') {
+                from(new File(equipment, 'humanoid')) {
+                    into 'assets/nerospace/textures/models/armor'
+                    rename(/(.+)\.png/, '$1_layer_1.png')
+                }
+                from(new File(equipment, 'humanoid_leggings')) {
+                    into 'assets/nerospace/textures/models/armor'
+                    rename(/(.+)\.png/, '$1_layer_2.png')
+                }
             }
         }
     }

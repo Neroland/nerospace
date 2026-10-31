@@ -53,9 +53,10 @@ Each tier folds the **previous panel** into its recipe, so upgrading reuses what
 
   output × (10 − sky darkness) / 10. Rain and storms darken the sky, so output drops with them.
 
-- **Nerospace planets** (Greenxertz, Cindara, Glacira) follow the planet's own day: a panel peaks
+- **Nerospace planets** (Greenxertz, Cindara, Glacira, Luna, Mars and Nyxara) follow the planet's own day: a panel
 
-  at that planet's noon, dips at night, and on Cindara dims during the eclipse. Over a full planet day
+  peaks at that planet's noon, dips at night, on Cindara dims during the eclipse and on Mars falls during a dust storm.
+  Nyxara's sun never moves, so a panel there gives a steady ×2.04. Over a full planet day
   every planet gives **at least the old ×2 rate on average** (the peaks are higher to make up for the
   nights), so bases that run at night need a battery. The **Orbital Station** (and founded stations) stays
   a constant ×2. Panels do **not** need a view of the sky on a planet. Server owners can restore the old

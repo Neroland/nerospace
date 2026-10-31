@@ -52,7 +52,9 @@ class HeightmapTagCoverageTest {
             "rocket_fuel", "fluid block (no collision) - vanilla excludes water/lava",
             "ash_layer", "snow-like weather layer (forceSolidOff) - vanilla excludes minecraft:snow layers",
             // Nyxara: glow-lichen-style multiface, noCollision - vanilla 26.3 excludes minecraft:glow_lichen
-            "shadow_lichen", "multiface carpet (noCollision) - vanilla excludes minecraft:glow_lichen");
+            "shadow_lichen", "multiface carpet (noCollision) - vanilla excludes minecraft:glow_lichen",
+            "shard_drift", "snow-like crystal layer (forceSolidOff) - vanilla excludes minecraft:snow layers",
+            "nyx_crystal_cluster", "cross-model cluster with no collision (noCollision) - like a plant, not a solid");
 
     private static final Pattern REGISTER = Pattern.compile("(?:BLOCKS\\.register|\\bblock)\\(\\s*\"([a-z0-9_]+)\"");
 

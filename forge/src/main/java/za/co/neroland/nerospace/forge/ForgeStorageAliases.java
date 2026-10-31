@@ -44,7 +44,11 @@ public final class ForgeStorageAliases {
         for (MissingMappingsEvent.Mapping<T> mapping : event.getMappings(registryKey, "nerospace")) {
             String path = mapping.getKey().getPath();
             if (MOVED.contains(path)) {
+                //? if >=1.21.2 {
                 T value = registry.getValue(Identifier.fromNamespaceAndPath("nerolandcore", path));
+                //?} else {
+                /*T value = registry.get(Identifier.fromNamespaceAndPath("nerolandcore", path));
+                *///?}
                 if (value != null) {
                     mapping.remap(value);
                 }

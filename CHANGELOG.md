@@ -7,6 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Richer planet skies** (full sky on NeoForge for Minecraft 26.3). Folding, drifting **aurora curtains** with
+  scrolling rays on Glacira (green to teal, with a rose fringe in diamond dust), over Nyxara's Nightside (violet and
+  cyan) and, for about a minute after a dust storm clears, faintly over Mars; a pink spore shimmer round the
+  Greenxertz horizon during a bloom. Set pieces: Earth on Luna with a blue rim, true phases and city lights on its
+  night side; Mars' **blue sunset** and Phobos and Deimos with phases; Cindara's eclipse **corona and diamond ring**
+  and a low ash cloud deck lit orange from below; Glacira's 22° halo and sun dogs; Nyxara's flare ray fans, a
+  crystal-refracted arc in the band and two nebulae; the station's homeworld below to the east, its night side dark
+  with city lights that fade as it turns to day, the sun rising through its rim. Everywhere: natural-colour stars
+  (smaller, twinkling where there is air), shooting stars, a softer horizon gradient, and weather that fades in and
+  out instead of popping. New client settings `sky.aurora`, `sky.shootingStars` and `sky.quality` (`full` / `lite`).
+
+- `/nerospace gallery sky` (operators): holds a world's sky in a showcase state for screenshots. `gallery sky` lists
+  every world and its states; `gallery sky <planet> <state>` sets that world's clock to the state's time and holds it,
+  and starts its weather at full strength or clears it, for everyone on that world at once; add `here` to be moved to
+  a viewing spot on that world; `gallery sky reset [<planet>]` lets the clock run again and clears the weather. Tab
+  completion offers only the chosen world's states (for example `earthrise` on Luna, `dust_storm` and `blue_sunset` on
+  Mars, `eclipse` on Cindara, `aurora` on Glacira, `galaxy_side` and `flare` on Nyxara, `planet_night` on the station).
+- **Nyxara is now a glassy crystal world.** Each region floors with its own crystal over Nyx Stone (stone shows on
+  cliffs): sun-bleached **Sunglass Crystal** with **Crazed Crystal** patches and loose **Shard Drift** on the Dayside;
+  violet **Twilight Crystal** with **Rose Crystal**, **Crystal Spire** forests (some tipped with a **Nyx Prism**),
+  **Nyx Crystal Clusters** and geode hollows with **Budding Nyx Crystal** in the Twilight Band; dark **Smoke Crystal**
+  and flat **Mirror Crystal** lakes on the Nightside. Eleven new blocks and the **Crystal Shard**, each with its own
+  trick: Sunglass overhead lowers ambient radiation by one, Crazed Crystal shatters under a fall from 3+ blocks (and
+  halves the fall damage), Shard Drift cuts bare feet, Twilight Crystal glows with the sky light it soaks up, Rose
+  Crystal lights up where you walk, Smoke Crystal silences footsteps and vibrations, Mirror Crystal glows under the
+  Nightside sky, Budding Nyx Crystal grows clusters (faster in a flare), a full cluster gives a pickaxe two shards
+  (one by hand), spires chime when struck, and a Nyx Prism blazes in a flare and casts a beam that doubles the flare's
+  radiation bump. Recipes: 4 Crystal Shards make a Twilight Crystal; 8 shards around a Voidglass make a Nyx Prism; 2
+  shards and a glass block make 2 Mirror Crystals. Crystal Shards carry the Neroland Core materials slot highlight.
+  Spires, prisms and mirror lakes are translucent; the ground is glassy but opaque. Ore rates, the Twilight Band,
+  Duskborn villages and Dawnband flares are unchanged. Italian and Chinese names are provisional.
+- **Sleep through a planet's night.** On Luna, Mars, Cindara and Glacira a bed works in the planet's own night; once
+  enough players on that world are asleep (the `players_sleeping_percentage` game rule, counted per world) its clock
+  jumps to sunrise and the day count goes up by one. On Nyxara you can sleep only on the Nightside (you rest, nothing
+  is skipped: the sun never moves); the band and the Dayside refuse. The station never sleeps. Every bed still sets
+  your respawn point and none explodes. Greenxertz keeps the Overworld's own night skip. Sleeping never ends planet
+  weather, a frozen clock (`/nerospace clock freeze`, `/nerospace gallery sky`) lets you rest without skipping the
+  night, and vanilla's `advance_time` rule has no say on a planet. Italian and Chinese messages are provisional.
+
+### Changed
+
+- The world fog on planets now follows the sky: time of day, weather, the eclipse and (on Nyxara) where you stand, on
+  every loader and Minecraft version (before, only the 26.3 NeoForge sky followed it); with Night Vision the usual
+  brightened fog stays. Ambient particles and weather sounds now ease in and out with the sky.
+  `/nerospace gallery sky ... here` faces each set piece.
+- `/nerospace clock <planet> set` now always moves a planet's clock forward to the next time it reads that phase
+  (setting an earlier phase starts the next day) instead of sometimes back into the same day.
+- The wiki now says where open water freezes (Luna, Mars, Glacira, the Nyxara Nightside and the station) and what
+  that does to sugar cane farms.
+
+## [2.0.1] - 2026-10-31
+
+### Changed
+
+- Release uploads now target CurseForge and GitHub Releases only.
+- Removed automatic project description and gallery uploads.
+- Renamed the website overview source to `art/description.md` and refreshed public documentation links.
+
 ## [2.0.0] - 2026-10-30
 
 The planets and stations update: three new worlds (Luna, Mars and Nyxara), every world rebuilt with its own blocks,
@@ -63,14 +123,14 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
 
 #### Minecraft 1.21.x builds
 
-- **Nerospace now also ships for Minecraft 1.21.x**, next to 26.1.2, 26.2 and 26.3: builds for Minecraft 1.21.4, 1.21.5,
-  1.21.8 (also runs on 1.21.7), 1.21.10 (also runs on 1.21.9) and 1.21.11, each on NeoForge, Forge and Fabric.
+- **Nerospace now also ships for Minecraft 1.21.x**, next to 26.1.2, 26.2 and 26.3: builds for Minecraft 1.21.1, 1.21.4,
+  1.21.5, 1.21.8 (also runs on 1.21.7), 1.21.10 (also runs on 1.21.9) and 1.21.11, each on NeoForge, Forge and Fabric.
   These builds need Java 21 (the 26.x builds keep Java 25). Worlds, items and progression are the same as on 26.x.
 - On Minecraft 1.21.x a few optional extras are not available, because the mod or game feature they rely on does
   not exist there:
   - **EMI recipe pages** are not included on 1.21.4 to 1.21.11 (EMI has no build for these Minecraft versions).
     JEI pages work.
-  - **Fabric on 1.21.4 and 1.21.5**: the oxygen gauge is shown, but vanilla's air bubbles are not hidden on airless worlds.
+  - **Fabric on 1.21.1 to 1.21.5**: the oxygen gauge is shown, but vanilla's air bubbles are not hidden on airless worlds.
 
 #### New worlds
 
@@ -213,6 +273,8 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
 - Operators can manage any station; each operator action is logged with the station's slot and the action only.
 - NeroLink: the stations section includes stations you are a member of, with class, modules, docking, pressurised
   modules, power and the member list (owner and members only).
+- NeroLink: a public `wiki` section serves the bundled Nerospace wiki pages in the companion app. The pages are the
+  same for every player and carry no personal data.
 
 #### Rockets and landing
 
@@ -256,6 +318,8 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
   `nerospace:weather_survived`, `nerospace:station_module_built`; the scope is a planet or a module kind, never a
   player), a `nerospace:hook/worlds_briefing` quest hook, and player record gates
   `nerospace:worlds/<planet>/weather` and `nerospace:worlds/<planet>/terraform`.
+- **Luna, Mars and Nyxara Compasses**: creative-only travel compasses for the new worlds, like the Station,
+  Greenxertz, Cindara and Glacira ones (no recipe). The Nyxara Compass sets you down in the twilight band.
 
 ### Changed
 
@@ -302,6 +366,11 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
 - On Forge, the jar now embeds Sentry 8.60.0, like the NeoForge and Fabric jars (it embedded 8.45.0).
 - On Minecraft 26.3, clicking a destination in the Rocket screen or the Launch Controller works again (left clicks were
   ignored, so the destination never changed).
+- The Rocket screen and the Launch Controller now show Nyxara as locked until you have deep-space clearance. Before,
+  it looked selectable, the pick was refused with "the rocket kept its course", and the rocket flew to its previous
+  destination. When a pick is refused, both screens now give the server's reason.
+- In creative mode, Core progression gates no longer block choosing or launching to a destination. Survival,
+  adventure and spectator players still need clearance.
 - On Minecraft 26.3, Nerospace blocks are now recognised by terrain height checks: rain and snow stop on modded ground,
   mobs spawn at the right height, and ores placed by height generate again.
 - On Minecraft 26.3, creatures and alien villagers spawn on Nerospace planets again (26.3 had been ignoring every
@@ -1000,8 +1069,7 @@ before the stable release; please report issues on the
 **Wider platform support**
 
 - Now available on **NeoForge, Forge, and Fabric** for **Minecraft 26.1.2 and 26.2** — six builds in
-  all, each one a self-contained jar tagged for its exact loader and game version on CurseForge,
-  Modrinth, and GitHub.
+  all, each one a self-contained jar tagged for its exact loader and game version on CurseForge and GitHub.
 
 **Rocket return & the Launch Controller**
 

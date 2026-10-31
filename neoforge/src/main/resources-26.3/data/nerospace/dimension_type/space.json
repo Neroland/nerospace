@@ -8,6 +8,10 @@
         "tick_chance": 0.002
       }
     },
+    "minecraft:gameplay/bed_rule": {
+      "can_set_spawn": "always",
+      "can_sleep": "always"
+    },
     "minecraft:visual/cloud_color": "#ff000000",
     "minecraft:visual/fog_color": "#000000",
     "minecraft:visual/moon_angle": 160.0,

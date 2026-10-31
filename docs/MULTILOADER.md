@@ -83,11 +83,27 @@ a loader or move a hook, update all three.
 | Concern | Common entry point | Fabric | NeoForge | Forge |
 | --- | --- | --- | --- | --- |
 | Planet clock + weather tick + client sync | `world.planet.PlanetTicks.serverTick(server)` | `NerospaceFabric`: `ServerTickEvents.END_SERVER_TICK` | `NerospaceNeoForge`: `ServerTickEvent.Post` | `NerospaceForge`: `TickEvent.ServerTickEvent.Post` |
+| Planet sleeping: bed gate (after vanilla has set the respawn point) | `world.planet.PlanetSleep.refusal(player, pos)` / `allowsTime(player, pos)` | `NerospaceFabric`: `EntitySleepEvents.ALLOW_SLEEPING` (fired from `Player.startSleepInBed`, after `ServerPlayer`'s checks) | `NerospaceNeoForge`: `CanPlayerSleepEvent` (only when vanilla found no problem, or only monsters) | `NerospaceForge`: `SleepingTimeCheckEvent` → `Result.DENY` (also asked every tick while asleep; the action-bar line is sent only on the click) |
+| Planet sleeping: end-of-night skip / rest wake-up, before any level ticks | `world.planet.PlanetSleep.serverTickStart(server)` | `NerospaceFabric`: `ServerTickEvents.START_SERVER_TICK` | `NerospaceNeoForge`: `ServerTickEvent.Pre` | `NerospaceForge`: `TickEvent.ServerTickEvent.Pre` |
 | Sky profile loading | `client.sky.SkyProfiles.INSTANCE` (reload listener) | `NerospaceFabricClient`: `ResourceLoader.get(CLIENT_RESOURCES).registerReloadListener` | `NeoForgeSky`: `AddClientReloadListenersEvent` | `ForgeClientSetup`: `RegisterClientReloadListenersEvent` |
 | Sky drawing | `client.sky.PlanetSkyRenderer.frame` + `scene` (pure `SkyScene` maths) | none yet (no Fabric API sky hook on 26.x) | `NeoForgePlanetSky` (`CustomSkyboxRenderer` `nerospace:planet`, 26.3 only) | none yet |
+| Weather smoothing for sky and particles | `client.ClientPlanetWeather.clientTick(level)` | via `WeatherAmbience.tick()` | via `WeatherAmbience.tick()` | via `WeatherAmbience.tick()` |
+| World fog colour (sky profile fog by phase, position, weather, eclipse) | `client.sky.PlanetSkyRenderer.fogRgb(camera, partialTick)` | `fabric/.../mixin/FogColorPlanetMixin` (client, `@Pseudo`, `require = 0`, TAIL of `FogRenderer.computeFogColor`; no Fabric API fog event on 26.x) | `NeoForgeClientSetup`: `ViewportEvent.ComputeFogColor` | `ForgeClientSetup`: `ViewportEvent.ComputeFogColor.BUS` |
 | Ambient particle providers | `client.particle.ClientParticles.registerAll(sink)` | `NerospaceFabricClient`: `ParticleProviderRegistry` | `NeoForgeClientSetup`: `RegisterParticleProvidersEvent` | `ForgeClientSetup`: `RegisterParticleProvidersEvent` |
 | Ambient particles + weather loops | `client.WeatherAmbience.tick()` | `NerospaceFabricClient`: `END_CLIENT_TICK` | `NeoForgeClientSetup`: `ClientTickEvent.Post` | `ForgeClientSetup`: `TickEvent.ClientTickEvent.Post` |
 | HUD: oxygen gauge, status lines, clock dial | `client.OxygenHud.render(g)` (draws `client.ClockHud` too; geometry in `client.ui.HudLayout`) | `NerospaceFabricClient`: `HudElementRegistry` | `NeoForgeClientSetup`: `RegisterGuiLayersEvent` | `ForgeClientSetup`: `AddGuiOverlayLayersEvent` |
+
+Planet sleeping keeps vanilla time frozen on every planet with its own clock. Each such dimension type declares
+`minecraft:gameplay/bed_rule {can_set_spawn: always, can_sleep: always}` (no `error_message`: Forge's time check
+would print vanilla's line over the planet's own), so vanilla never refuses for the time of day and never kicks a
+sleeper out; `PlanetSleep` is the only "when" rule (`PlanetSleepRules`, pure and unit-tested). The skip runs at the
+start of the server tick, so it always sees a full night of sleepers one tick before vanilla's own check inside
+`ServerLevel.tick` and wakes them first: vanilla never skips a planet night (on 1.21.x that would move the shared
+Overworld day time). The version seams are in `compat.mc.SleepCompat`: the `players_sleeping_percentage` game rule
+(registry-backed `gamerules.GameRules` from 1.21.11, `GameRules.Key` before) and the bed refusal (a record carrying its
+message from 1.21.11, an enum before, where the line is sent separately). 1.21.1-1.21.10 dimension types have no
+`bed_rule` attribute: they need `natural: true` / `bed_works: true` instead, and `Level.isDay()` is false on a
+fixed-time world there, so vanilla lets the attempt through to the planet gate.
 
 Sky colours are carried by the dimension types themselves (`minecraft:visual/*` attributes: sky, fog, cloud and
 sunrise colours, a fixed sun/moon angle, star brightness), so a cell without a sky hook still shows the planet's
@@ -107,6 +123,35 @@ and underground too, and no config could turn them off. As a second guard, the p
 while `particles.enabled=false`. The sky's orbiting bodies read the continuous planet day count
 (`ClientPlanetClock.days`), not the wrapped phase, so a body whose period is not one day never jumps at sunrise;
 Nyxara's band width comes from the world's bound value carried on the clock payload, with the config as fallback.
+
+### What each cell shows in the sky
+
+| Cell | Sky | World fog colour |
+| --- | --- | --- |
+| NeoForge 26.3 | the full planet sky (`NeoForgePlanetSky`): gradient, natural-colour stars with twinkle, galaxy, aurora curtains, decals (halo, corona, diamond ring, flare rays, refraction bow, nebulae, limb sunrise), bodies with limb glow, night shade and city lights, cloud deck with underglow, shooting stars, haze | the profile fog via `ViewportEvent.ComputeFogColor`; the sky disc fades into the same colour |
+| NeoForge 26.1.2, 26.2 | the colour floor: the dimension type's `minecraft:visual/*` attributes and vanilla sun/moon at the fixed angles | the profile fog via `ViewportEvent.ComputeFogColor` |
+| Forge 26.1.2, 26.2, 26.3 | the colour floor | the profile fog via `ViewportEvent.ComputeFogColor.BUS` |
+| Fabric 26.1.2, 26.2, 26.3 | the colour floor | the profile fog via `FogColorPlanetMixin`; if a line moves `computeFogColor` the injection is skipped and the attribute fog stays |
+
+On every floor cell the bodies, aurora, eclipse, galaxy, decals and shooting stars do not exist; the planet's identity
+is its colours. The fog push leaves water, lava and powder-snow fog and blindness / darkness / night vision alone. Weather on the sky
+(tints, fades, aurora gates, cloud opacity) and the ambient particles read `ClientPlanetWeather.smoothedIntensity`
+(0.6 s ease, ticked from `WeatherAmbience.tick`), so a forced or cleared event never pops. The client switches
+`sky.aurora`, `sky.shootingStars` and `sky.quality` (`full` / `lite`) only affect the 26.3 renderer.
+
+The sky path allocates nothing per frame. `PlanetSkyRenderer` keeps one `SkyScene` (recomputed in place from pooled
+quads and scratch arrays, reused when the fog hook and the sky pass ask for the same instant and camera position), one
+`Inputs` and the last `Frame`; profile colour strings are parsed once. The 26.3 renderer fills one scratch matrix and
+colour per draw for `writeTransform`, keys its meshes in fastutil primitive maps, and rebuilds the aurora curtains from
+the fold model into persistent direct byte buffers uploaded with `CommandEncoder.writeToBuffer` into buffers created
+once with `GpuBuffer.USAGE_VERTEX | USAGE_COPY_DST` (the writes happen before the render pass opens; Blaze3D refuses
+buffer writes inside one), skipping the upload while the aurora clock has not moved; everything else is static meshes
+built once. All of them are closed on a sky-profile reload (`SkyProfiles.generation()`) and when the sky disables itself
+after a render error, and rebuilt lazily. A body's night shade is one frame of a 16-frame phase sheet
+(`<texture>_00 … _15`, from `tools/gen_sky_textures.py`), chosen by the lit fraction and drawn centred on the body; a
+resource pack that replaces the shade texture supplies its own sheet beside it. `SkyProfile` has more top-level fields than one
+`RecordCodecBuilder` group allows (16), so its codec joins two map codecs with `Codec.mapPair`; the `Aurora` and `Decal`
+records are at 16 fields, so a new field must go into a nested record (`Fold`, `Drift`, `Visibility`).
 
 ### Loader-only resource overlays (NeoForge 26.3 skybox)
 
@@ -155,6 +200,7 @@ planet-block framework (`block/`) and planet packages:
 | `world/planet/greenxertz/block/BioBarkLogBlock` | `>=26.3` | `SoundEvents.AXE_STRIP` is a `Holder.Reference` (`.value()`) |
 | `world/planet/greenxertz/block/GlowcapFungusBlock` | `>=26.3` | the `BonemealableBlock` methods take a trailing `BonemealSource` |
 | `world/planet/greenxertz/world/GiantGlowcapFeature`, `GreenxertzContent.GIANT_GLOWCAP_FEATURE` | `<26.3` / `>=26.3` | the feature API split, as `RuinFeature` (`FEATURE_TYPES` codec vs `FEATURES` instance) |
+| `world/planet/nyxara/NyxaraContent` | `>=26.3` | `PushReaction.DESTROY` was renamed `POPPED` (Shard Drift, Budding Nyx Crystal and the clusters break when pushed) |
 | `world/planet/mars/entity/DustDevil` | `<26.3` / `>=26.3` | client interpolation: a hand-held `InterpolationHandler` ticked in `tick()` before 26.3, the `createInterpolationHandler()` override (`LinearInterpolationHandler`) from 26.3; `hurtMarked` was renamed `needsSync` for the pushed item velocity |
 
 Version-neutral by design: the Nyx Stone light mixins (`mixin/LightEngineNyxMixin`, `mixin/BlockLightEngineNyxMixin`)

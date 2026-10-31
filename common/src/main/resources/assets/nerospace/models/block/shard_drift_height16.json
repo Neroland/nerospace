@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nerospace:block/shard_drift",
+    "bottom": "nerospace:block/shard_drift",
+    "side": "nerospace:block/shard_drift_side"
+  }
+}

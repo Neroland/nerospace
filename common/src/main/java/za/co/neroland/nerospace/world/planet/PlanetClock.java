@@ -24,7 +24,8 @@ import za.co.neroland.nerospace.network.PlanetClockPayload;
  * The server-authoritative planet clock. One phase per planet level, advanced per the planet's day length and
  * stored in {@link PlanetClockState}. Greenxertz ({@link ClockSource#LEVEL_TIME}) mirrors its vanilla day time and
  * never writes. Vanilla time on every other planet stays frozen, so block light, sky light and mob spawning never
- * follow this clock — it drives the sky, the sun, solar output and villagers.
+ * follow this clock — it drives the sky, the sun, solar output and the clock-lit blocks. (Alien villagers have no
+ * day schedule: they wander the same way at any phase.)
  *
  * <p>The clock starts on its first read (or first tick), whether or not a player is present, so unattended
  * force-loaded machinery sees a moving clock. Reads are memoised per level and game tick, so hundreds of solar
@@ -91,6 +92,15 @@ public final class PlanetClock {
         return PlanetClockState.get(level).readDay(level.getGameTime(), planet.traits().dayLengthTicks());
     }
 
+    /** Whether a PLANET_CLOCK planet's clock is frozen (ops freeze or the sky gallery); false elsewhere. */
+    public static boolean frozen(ServerLevel level) {
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet == null || planet.clockSource() != ClockSource.PLANET_CLOCK) {
+            return false;
+        }
+        return PlanetClockState.get(level).frozen;
+    }
+
     /** Drops the memo for a level (after an ops change). */
     private static void invalidate(ServerLevel level) {
         MEMO_TIME.remove(level);
@@ -113,7 +123,11 @@ public final class PlanetClock {
 
     // --- Ops -------------------------------------------------------------------------------------------
 
-    /** Sets the clock so its phase is {@code target} now. @return false for a non-planet level. */
+    /**
+     * Sets the clock so its phase is {@code target} now, moving forward to the next time it reads {@code target} (the
+     * day number goes up when that crosses sunrise). Used by {@code /nerospace clock set}, the sky gallery and a full
+     * night's sleep. @return false for a non-planet level.
+     */
     public static boolean set(ServerLevel level, double target) {
         PlanetDefinition planet = Planets.get(level.dimension());
         if (planet == null) {
@@ -146,8 +160,10 @@ public final class PlanetClock {
         if (planet.traits().fixedClock()) {
             s.pinnedOverride = wrapped;
         } else {
+            // Forward only: setting the clock (ops or a night's sleep) never runs it backwards.
             long now = s.frozen ? s.frozenAt : level.getGameTime();
-            s.offsetTicks = ClockMath.offsetFor(now, s.epochTicks, planet.traits().dayLengthTicks(), wrapped);
+            s.offsetTicks = ClockMath.forwardOffset(now, s.epochTicks, s.offsetTicks, planet.traits().dayLengthTicks(),
+                    wrapped);
         }
         s.markChanged();
         invalidate(level);
@@ -176,6 +192,26 @@ public final class PlanetClock {
         s.frozen = frozen;
         s.markChanged();
         invalidate(level);
+        syncLevel(level);
+        return true;
+    }
+
+    /**
+     * Drops an ops override on a fixed clock (Nyxara, the station) so it reads the planet's own pinned phase again.
+     * @return false when the planet has no fixed clock.
+     */
+    public static boolean resetPinned(ServerLevel level) {
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet == null || planet.clockSource() != ClockSource.PLANET_CLOCK || !planet.traits().fixedClock()) {
+            return false;
+        }
+        PlanetClockState s = PlanetClockState.get(level);
+        s.initialise(level.getGameTime());
+        if (s.pinnedOverride >= 0.0) {
+            s.pinnedOverride = -1.0;
+            s.markChanged();
+            invalidate(level);
+        }
         syncLevel(level);
         return true;
     }

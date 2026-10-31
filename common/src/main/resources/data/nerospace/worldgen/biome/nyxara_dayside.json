@@ -27,11 +27,15 @@
     [],
     [
       "nerospace:nerosium_ore_placed",
-      "nerospace:nyxara_dawnband_stone_sparse_placed"
+      "nerospace:nyxara_dawnband_stone_sparse_placed",
+      "nerospace:nyxara_crazed_patch_placed"
     ],
     [],
     [],
-    [],
+    [
+      "nerospace:nyxara_shard_drift_placed",
+      "nerospace:nyxara_shard_drift_deep_placed"
+    ],
     []
   ],
   "has_precipitation": false,

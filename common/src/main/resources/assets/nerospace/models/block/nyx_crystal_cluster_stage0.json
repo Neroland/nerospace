@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "nerospace:block/nyx_crystal_cluster_stage0"
+  }
+}

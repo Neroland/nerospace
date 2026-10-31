@@ -4,7 +4,9 @@
     "horizon": "#000000",
     "nightZenith": "#000000",
     "nightHorizon": "#000000",
-    "blend": "constant"
+    "blend": "constant",
+    "rampTopDeg": 72.0,
+    "rampTexture": "nerospace:textures/sky/horizon_ramp_soft.png"
   },
   "fog": {
     "color": "#000000",
@@ -16,7 +18,10 @@
     "count": 2500,
     "brightness": 0.9,
     "alwaysVisible": true,
-    "tint": "#FFFFFF"
+    "tint": "#FFFFFF",
+    "palette": "natural",
+    "twinkle": 0.0,
+    "sizeScale": 0.75
   },
   "sun": [
     {
@@ -25,20 +30,17 @@
       "size": 6.0,
       "color": "#FFFFFF",
       "glow": 4.0,
-      "orbitPeriodDays": 0.0,
+      "orbitPeriodDays": 1.0,
       "phaseOffset": 0.0,
       "inclination": 0.0,
-      "fixedAngle": {
-        "yaw": 0.0,
-        "pitch": 70.0
-      }
+      "glowTexture": "nerospace:textures/sky/sun_aureole.png"
     }
   ],
   "moons": [],
   "bodies": [
     {
       "id": "homeworld",
-      "texture": "nerospace:textures/sky/earth_disk.png",
+      "texture": "nerospace:textures/sky/earth_disk_globe.png",
       "size": 110.0,
       "color": "#FFFFFF",
       "glow": 2.0,
@@ -46,8 +48,22 @@
       "phaseOffset": 0.0,
       "inclination": 0.0,
       "fixedAngle": {
-        "yaw": 0.0,
-        "pitch": -55.0
+        "yaw": 270.0,
+        "pitch": -50.0
+      },
+      "limbGlow": {
+        "texture": "nerospace:textures/sky/limb_glow.png",
+        "color": "#7FB8FF",
+        "scale": 1.03,
+        "strength": 0.5
+      },
+      "nightShade": {
+        "texture": "nerospace:textures/sky/terminator.png",
+        "strength": 0.92,
+        "softness": 0.3,
+        "lightsTexture": "nerospace:textures/sky/earth_disk_lights.png",
+        "lightsColor": "#FFD9A0",
+        "lightsStrength": 0.55
       }
     }
   ],
@@ -75,5 +91,51 @@
   ],
   "terminatorScroll": {
     "periodTicks": 1800
+  },
+  "decals": [
+    {
+      "id": "nebula_rose",
+      "texture": "nerospace:textures/sky/nebula_a.png",
+      "anchor": "fixed",
+      "yaw": 120.0,
+      "pitch": 30.0,
+      "size": 80.0,
+      "color": "#FFFFFF",
+      "opacity": 0.55,
+      "additive": true
+    },
+    {
+      "id": "nebula_teal",
+      "texture": "nerospace:textures/sky/nebula_b.png",
+      "anchor": "fixed",
+      "yaw": 150.0,
+      "pitch": 4.0,
+      "size": 60.0,
+      "color": "#FFFFFF",
+      "opacity": 0.45,
+      "additive": true
+    },
+    {
+      "id": "limb_sunrise",
+      "texture": "nerospace:textures/sky/sun_aureole.png",
+      "anchor": "sun",
+      "size": 44.0,
+      "color": "#FFE0B0",
+      "opacity": 0.95,
+      "additive": true,
+      "visibility": {
+        "pitchBelow": 8.0
+      }
+    }
+  ],
+  "shootingStars": {
+    "ratePerMinute": 1.0,
+    "maxConcurrent": 2,
+    "texture": "nerospace:textures/sky/meteor_streak.png",
+    "color": "#FFFFFF",
+    "lengthDeg": 10.0,
+    "durationTicks": 12,
+    "nightOnly": false,
+    "minPitch": 12.0
   }
 }

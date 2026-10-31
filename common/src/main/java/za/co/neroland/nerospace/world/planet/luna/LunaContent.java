@@ -14,9 +14,11 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+//? if >=1.21.2 {
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+//?}
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -98,7 +100,11 @@ public final class LunaContent {
     public static final RegistryEntry<Item> TITANIUM_INGOT = item("titanium_ingot", Item::new);
     public static final RegistryEntry<Item> HELIUM3_CANISTER = item("helium3_canister", Item::new);
     public static final RegistryEntry<MoonCheeseItem> MOON_CHEESE = ModItems.ITEMS.register("moon_cheese",
+            //? if >=1.21.2 {
             key -> new MoonCheeseItem(new Item.Properties().setId(key).food(cheeseFood(), cheeseConsumable())));
+            //?} else {
+            /*key -> new MoonCheeseItem(new Item.Properties().setId(key).food(cheeseFood())));
+            *///?}
 
     // --- entities (terraform fauna) -----------------------------------------------------
     /** The Living-meadow grazer; seeded by TerraformFauna and spawned by terraformed_luna_living. */
@@ -117,15 +123,22 @@ public final class LunaContent {
 
     static FoodProperties cheeseFood() {
         return new FoodProperties.Builder().nutrition(CheeseRules.NUTRITION).saturationModifier(CheeseRules.SATURATION)
+                //? if >=1.21.2 {
                 .alwaysEdible().build();
+                //?} else {
+                /*.alwaysEdible().fast() // 1.21.1 food carries its own eat time (fast = 0.8 s) and effects
+                .effect(new MobEffectInstance(MobEffects.REGENERATION, CheeseRules.REGEN_TICKS, 0), 1.0F).build();
+                *///?}
     }
 
+    //? if >=1.21.2 {
     static Consumable cheeseConsumable() {
         return Consumables.defaultFood().consumeSeconds(CHEESE_EAT_SECONDS)
                 .onConsume(new ApplyStatusEffectsConsumeEffect(
                         new MobEffectInstance(MobEffects.REGENERATION, CheeseRules.REGEN_TICKS, 0)))
                 .build();
     }
+    //?}
 
     /** Creative order: blocks first, stone before its ores, then the items. */
     public static List<Supplier<? extends ItemLike>> creativeContents() {

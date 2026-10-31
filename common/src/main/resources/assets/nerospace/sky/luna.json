@@ -4,7 +4,9 @@
     "horizon": "#050505",
     "nightZenith": "#000000",
     "nightHorizon": "#020202",
-    "blend": "constant"
+    "blend": "constant",
+    "rampTopDeg": 72.0,
+    "rampTexture": "nerospace:textures/sky/horizon_ramp_soft.png"
   },
   "fog": {
     "color": "#000000",
@@ -16,7 +18,10 @@
     "count": 3000,
     "brightness": 1.0,
     "alwaysVisible": true,
-    "tint": "#FFFFFF"
+    "tint": "#FFFFFF",
+    "palette": "natural",
+    "twinkle": 0.0,
+    "sizeScale": 0.75
   },
   "sun": [
     {
@@ -27,26 +32,42 @@
       "glow": 6.0,
       "orbitPeriodDays": 1.0,
       "phaseOffset": 0.0,
-      "inclination": 0.0
+      "inclination": 0.0,
+      "glowTexture": "nerospace:textures/sky/sun_aureole.png"
     }
   ],
   "moons": [],
   "bodies": [
     {
       "id": "earth",
-      "texture": "nerospace:textures/sky/earth.png",
+      "texture": "nerospace:textures/sky/earth_globe.png",
       "size": 14.0,
       "color": "#FFFFFF",
       "glow": 1.5,
       "orbitPeriodDays": 1.0,
       "phaseOffset": 0.22,
       "inclination": 12.0,
-      "phases": true
+      "phases": true,
+      "limbGlow": {
+        "texture": "nerospace:textures/sky/limb_glow.png",
+        "color": "#7FB8FF",
+        "scale": 1.08,
+        "strength": 0.9
+      },
+      "nightShade": {
+        "texture": "nerospace:textures/sky/terminator.png",
+        "strength": 0.9,
+        "softness": 0.3,
+        "lightsTexture": "nerospace:textures/sky/earth_lights.png",
+        "lightsColor": "#FFD9A0",
+        "lightsStrength": 0.8
+      },
+      "earthshine": 0.6
     }
   ],
   "galaxy": {
     "texture": "nerospace:textures/sky/galaxy.png",
-    "opacity": 0.15,
+    "opacity": 0.22,
     "yaw": 35.0,
     "pitch": 30.0
   },
@@ -80,6 +101,29 @@
       "zenith": "#000000",
       "horizon": "#020202",
       "fog": "#000000"
+    }
+  ],
+  "shootingStars": {
+    "ratePerMinute": 3.0,
+    "maxConcurrent": 2,
+    "texture": "nerospace:textures/sky/meteor_streak.png",
+    "color": "#FFFFFF",
+    "lengthDeg": 10.0,
+    "durationTicks": 12,
+    "nightOnly": false,
+    "minPitch": 12.0
+  },
+  "decals": [
+    {
+      "id": "veil",
+      "texture": "nerospace:textures/sky/nebula_b.png",
+      "anchor": "fixed",
+      "yaw": 35.0,
+      "pitch": 52.0,
+      "size": 62.0,
+      "color": "#FFFFFF",
+      "opacity": 0.1,
+      "additive": true
     }
   ]
 }

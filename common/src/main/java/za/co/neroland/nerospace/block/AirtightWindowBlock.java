@@ -59,9 +59,15 @@ public class AirtightWindowBlock extends TransparentBlock {
         return defaultBlockState().setValue(FROSTED, frosted(context.getLevel(), context.getClickedPos()));
     }
 
+    //? if >=1.21.2 {
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
             Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+    //?} else {
+    /*@Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState,
+            net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    *///?}
         BlockState updated = super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbourState, random);
         if (direction.getAxis().isHorizontal() && updated.is(this)) {
             return updated.setValue(FROSTED, frosted(level, pos));

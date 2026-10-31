@@ -408,6 +408,434 @@ class SkyAssetsTest {
         return e;
     }
 
+    // ------------------------------------------------------------------------------------------------ sky upgrade
+
+    private static SkyProfile profile(String sky) throws IOException {
+        return decode(read(assets().resolve("sky/" + sky + ".json")));
+    }
+
+    private static za.co.neroland.nerospace.world.planet.PlanetDefinition planet(String langId) {
+        return za.co.neroland.nerospace.world.planet.Planets.ALL.stream().filter(p -> p.langId().equals(langId))
+                .findFirst().orElseThrow();
+    }
+
+    /** A scene for a planet (by lang id) at a clock phase, weather and position, like the gallery state shows it. */
+    private static SkyScene sceneAt(String langId, double phase, String weather, float intensity, double x,
+            SkyScene.Config config) throws IOException {
+        za.co.neroland.nerospace.world.planet.PlanetDefinition p = planet(langId);
+        SkyProfile profile = profile(p.traits().skyProfile().getPath());
+        double days = 3.0 + phase;
+        return SkyScene.compute(profile, new SkyScene.Inputs(phase, days, p.daylight().at(phase), weather, intensity,
+                "NONE", 0.0F, x, 2048, 48_000.0, 24_000L, true, 7L, config));
+    }
+
+    private static boolean hasQuad(List<SkyScene.Quad> quads, String texture, float minAlpha) {
+        return quads.stream().anyMatch(q -> q.texture().getPath().endsWith("/" + texture + ".png")
+                && q.alpha() >= minAlpha);
+    }
+
+    @Test
+    @DisplayName("sky upgrade: every texture a profile names exists, and the owner's star rulings hold")
+    void upgradeTexturesExist() throws IOException {
+        Path a = assets();
+        for (String sky : SKIES) {
+            SkyProfile p = profile(sky);
+            List<String> where = new ArrayList<>();
+            List<net.minecraft.resources.Identifier> tex = new ArrayList<>();
+            p.background().rampTexture().ifPresent(tex::add);
+            List<SkyProfile.Body> bodies = new ArrayList<>(p.sun());
+            bodies.addAll(p.moons());
+            bodies.addAll(p.bodies());
+            for (SkyProfile.Body b : bodies) {
+                b.glowTexture().ifPresent(tex::add);
+                b.limbGlow().ifPresent(g -> tex.add(g.texture()));
+                b.horizonGlow().ifPresent(g -> tex.add(g.texture()));
+                b.nightShade().ifPresent(n -> {
+                    tex.add(n.texture());
+                    for (int f = 0; f < SkyScene.SHADE_FRAMES; f++) {
+                        tex.add(SkyScene.shadeTexture(n.texture(), f));
+                    }
+                    n.lightsTexture().ifPresent(tex::add);
+                });
+            }
+            p.aurora().ifPresent(au -> {
+                tex.addAll(au.textures());
+                au.fringe().ifPresent(f -> tex.add(f.texture()));
+            });
+            p.eclipse().ifPresent(e -> {
+                e.corona().ifPresent(c -> tex.add(c.texture()));
+                e.diamondRing().ifPresent(r -> tex.add(r.texture()));
+            });
+            p.decals().forEach(d -> tex.add(d.texture()));
+            p.cloudLayer().ifPresent(c -> tex.add(c.texture()));
+            p.shootingStars().ifPresent(s -> tex.add(s.texture()));
+            for (net.minecraft.resources.Identifier t : tex) {
+                assertTexture(a, t.getPath(), sky);
+            }
+            assertEquals(0.75F, p.stars().sizeScale(), 1e-6F, sky + " star size (owner ruling: 0.75 everywhere)");
+            assertEquals("natural", p.stars().palette(), sky);
+            for (SkyProfile.Decal d : p.decals()) {
+                assertTrue(Set.of("fixed", "sun", "antisun", "body").contains(d.anchor()), sky + "/" + d.id());
+                d.visibility().flatMap(SkyProfile.Visibility::weather).ifPresent(g ->
+                        assertNotNull(za.co.neroland.nerospace.world.planet.WeatherEvent.valueOf(g.event()), g.event()));
+            }
+        }
+        assertTexture(a, "textures/sky/stars_natural.png", "renderer");
+        assertTexture(a, "textures/sky/horizon_ramp_soft.png", "renderer");
+        // Kept for resource packs and the defaults (owner ruling).
+        assertTexture(a, "textures/sky/earth.png", "kept");
+        assertTexture(a, "textures/sky/earth_disk.png", "kept");
+        // The station's homeworld sits east and below so the sun rises through its limb (owner ruling).
+        SkyProfile.Body home = profile("station").bodies().get(0);
+        assertEquals(270.0F, home.fixedAngle().orElseThrow().yaw(), 1e-6F);
+        assertEquals(-50.0F, home.fixedAngle().orElseThrow().pitch(), 1e-6F);
+        assertEquals(3.0F, profile("luna").shootingStars().orElseThrow().ratePerMinute(), 1e-6F);
+        assertFalse(profile("luna").shootingStars().orElseThrow().nightOnly());
+    }
+
+    @Test
+    @DisplayName("sky upgrade: a 2.0.0 profile decodes with every new field at its default, and profiles round-trip")
+    void upgradeDefaultsAndRoundTrip() throws IOException {
+        Path r = repo();
+        Assumptions.assumeTrue(r != null);
+        SkyProfile old = decode(read(r.resolve("common/src/test/resources/sky/glacira-2.0.0.json")));
+        assertTrue(old.decals().isEmpty());
+        assertTrue(old.cloudLayer().isEmpty());
+        assertTrue(old.shootingStars().isEmpty());
+        assertEquals(55.0F, old.background().rampTopDeg(), 1e-6F);
+        assertTrue(old.background().rampTexture().isEmpty());
+        assertEquals("white", old.stars().palette());
+        assertEquals(1.0F, old.stars().sizeScale(), 1e-6F);
+        assertEquals(0.0F, old.stars().twinkle(), 1e-6F);
+        SkyProfile.Aurora au = old.aurora().orElseThrow();
+        assertTrue(au.textures().isEmpty());
+        assertEquals(2, au.layers());
+        assertEquals(180.0F, au.yaw(), 1e-6F);
+        assertTrue(au.fringe().isEmpty() && au.drift().isEmpty() && au.weather().isEmpty());
+        for (SkyProfile.Body b : old.moons()) {
+            assertTrue(b.nightShade().isEmpty() && b.limbGlow().isEmpty() && b.glowTexture().isEmpty());
+            assertEquals(0.0F, b.earthshine(), 1e-6F);
+        }
+        // The old scene still computes: legacy aurora strips tinted by the colour cycle.
+        SkyScene s = SkyScene.compute(old, 0.75, 3.75, 0.0, "NONE", 0.0F, 0.0, 2048, 0.0);
+        assertEquals(2, s.auroraLayers.size());
+        assertTrue(s.auroraLayers.get(0).texture().getPath().endsWith("aurora_0.png"));
+        // Encode then decode gives the same profile (the paired map codec writes one flat object).
+        for (String sky : SKIES) {
+            SkyProfile p = profile(sky);
+            JsonElement json = SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, p).getOrThrow();
+            assertTrue(json.isJsonObject() && json.getAsJsonObject().has("background"), sky);
+            assertEquals(p, decode(json), sky + " round trip");
+        }
+    }
+
+    @Test
+    @DisplayName("sky upgrade: the aurora runs on game time (regression guard): no drift or curtain jump, layers stay "
+            + "apart, a clock set or freeze changes nothing, the curtains keep moving")
+    void auroraRunsOnGameTime() throws IOException {
+        double[] a = new double[4];
+        double[] b = new double[4];
+        for (String sky : SKIES) {
+            SkyProfile p = profile(sky);
+            if (p.aurora().isEmpty()) {
+                continue;
+            }
+            SkyProfile.Aurora au = p.aurora().get();
+            for (long dayLength : new long[] {24_000L, 24_600L, 48_000L, 72_000L, 672_000L}) {
+                for (int n = 1; n <= 5; n++) {
+                    double t0 = n * dayLength - 1e-3;
+                    double t1 = n * dayLength + 1e-3;
+                    assertEquals(SkyScene.auroraYaw(au, t0, dayLength), SkyScene.auroraYaw(au, t1, dayLength), 1e-3,
+                            sky + " drift jumps at sunrise " + n);
+                    for (int layer = 0; layer < 3; layer++) {
+                        SkyScene.curtain(au, layer, 0.5, SkyScene.auroraSeconds(t0), a);
+                        SkyScene.curtain(au, layer, 0.5, SkyScene.auroraSeconds(t1), b);
+                        for (int k = 0; k < 4; k++) {
+                            assertEquals(a[k], b[k], 1e-3, sky + " curtain " + k + " jumps at sunrise " + n);
+                        }
+                    }
+                }
+            }
+            // A clock set (the day count jumps) or a freeze (frozen flag) at the same game time changes nothing.
+            SkyScene before = SkyScene.compute(p, new SkyScene.Inputs(0.10, 4.10, 0.0, "NONE", 0.0F, "NONE", 0.0F, 5000.0,
+                    2048, 123_456.0, 72_000L, false, 1L, SkyScene.Config.FULL));
+            SkyScene after = SkyScene.compute(p, new SkyScene.Inputs(0.75, 9.75, 0.0, "NONE", 0.0F, "NONE", 0.0F, 5000.0,
+                    2048, 123_456.0, 72_000L, true, 1L, SkyScene.Config.FULL));
+            assertEquals(before.auroraSeconds, after.auroraSeconds, 1e-9, sky);
+            assertEquals(before.auroraYaw, after.auroraYaw, 1e-6F, sky);
+            // What can regress: the drift is continuous in game time ...
+            if (au.drift().isPresent()) {
+                for (long dayLength : new long[] {0L, 24_000L, 72_000L}) {
+                    for (double t : new double[] {0.0, 12_345.6, 999_999.9, 5_000_000.0}) {
+                        assertEquals(SkyScene.auroraYaw(au, t, dayLength), SkyScene.auroraYaw(au, t + 1e-3, dayLength),
+                                1e-3, sky + " drift is not continuous at " + t);
+                    }
+                }
+            }
+            // ... and the per-layer phase offsets keep layers 0..2 apart at the same (un, t).
+            double[][] layers = new double[3][4];
+            for (int layer = 0; layer < 3; layer++) {
+                SkyScene.curtain(au, layer, 0.3, 437.0, layers[layer]);
+            }
+            for (int i = 0; i < 3; i++) {
+                for (int j = i + 1; j < 3; j++) {
+                    boolean apart = false;
+                    for (int k = 0; k < 4; k++) {
+                        apart |= Math.abs(layers[i][k] - layers[j][k]) > 1e-3;
+                    }
+                    assertTrue(apart, sky + " aurora layers " + i + " and " + j + " collapsed onto each other");
+                }
+            }
+            // And it moves with game time (the curtains animate, also on Nyxara's fixed clock and when frozen).
+            SkyScene.curtain(au, 0, 0.5, SkyScene.auroraSeconds(0.0), a);
+            SkyScene.curtain(au, 0, 0.5, SkyScene.auroraSeconds(2_000.0), b);
+            assertTrue(Math.abs(a[3] - b[3]) > 1e-3 || Math.abs(a[0] - b[0]) > 1e-3, sky + " aurora never moves");
+        }
+    }
+
+    @Test
+    @DisplayName("sky upgrade: no glow, shade or decal jumps across sunrise")
+    void quadsContinuousAcrossTheDayWrap() throws IOException {
+        for (String sky : SKIES) {
+            SkyProfile p = profile(sky);
+            for (int day = 1; day <= 10; day++) {
+                double before = day - 1e-4;
+                double after = day + 1e-4;
+                SkyScene s0 = SkyScene.compute(p, new SkyScene.Inputs(before - Math.floor(before), before, 0.5, "NONE",
+                        0.0F, "NONE", 0.0F, 0.0, 2048, 1000.0, 24_000L, false, 1L, SkyScene.Config.FULL));
+                SkyScene s1 = SkyScene.compute(p, new SkyScene.Inputs(after - Math.floor(after), after, 0.5, "NONE",
+                        0.0F, "NONE", 0.0F, 0.0, 2048, 1000.0, 24_000L, false, 1L, SkyScene.Config.FULL));
+                for (SkyScene.Quad q : s0.quads) {
+                    boolean near = s1.quads.stream().anyMatch(o -> sameLayer(o.texture(), q.texture())
+                            && separation(new float[] {o.yaw(), o.pitch()}, new float[] {q.yaw(), q.pitch()}) < 1.0
+                            && Math.abs(o.alpha() - q.alpha()) < 0.05F);
+                    assertTrue(near || q.alpha() < 0.05F, sky + " " + q.texture() + " jumps at sunrise " + day);
+                }
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("sky upgrade: every gallery sky state shows its set piece")
+    void galleryStatesShowTheirSetPieces() throws IOException {
+        SkyScene.Config full = SkyScene.Config.FULL;
+        // Luna Earthrise: Earth low in the east with its night shade and city lights.
+        SkyScene earthrise = sceneAt("luna", state("luna", "earthrise"), "NONE", 0.0F, 0.0, full);
+        SkyScene.BodyDraw earth = earthrise.bodies.stream().filter(b -> b.id().equals("earth")).findFirst().orElseThrow();
+        assertTrue(earth.pitch() > 0.0F && earth.pitch() < 45.0F && SkyScene.direction(earth.yaw(), earth.pitch())[0] > 0.3F,
+                "Earth rises in the east");
+        // A gibbous Earth: a late phase-sheet frame, and its city lights faded by the lit fraction.
+        assertTrue(shadeFrameOf(earthrise.quads) >= 9, "Earthrise shows a mostly lit Earth");
+        assertTrue(hasQuad(earthrise.quads, "earth_lights", 0.0F));
+        assertFalse(earthrise.shootingStars == null);
+        // Mars blue sunset: a clearly blue aureole at full strength; much weaker at dusk.
+        SkyScene blue = sceneAt("mars", state("mars", "blue_sunset"), "NONE", 0.0F, 0.0, full);
+        SkyScene.Quad aureole = blue.quads.stream().filter(q -> q.texture().getPath().endsWith("sun_aureole.png")
+                && q.size() > 30.0F).findFirst().orElseThrow();
+        int r = (aureole.rgb() >> 16) & 0xFF;
+        int bl = aureole.rgb() & 0xFF;
+        assertTrue(bl > r + 120 && aureole.alpha() > 0.8F, "the Mars sunset aureole must read blue");
+        int horizon = blue.horizon;
+        assertTrue((horizon & 0xFF) > ((horizon >> 16) & 0xFF), "the blue-sunset horizon leans blue");
+        SkyScene dusk = sceneAt("mars", state("mars", "dusk"), "NONE", 0.0F, 0.0, full);
+        float duskGlow = (float) dusk.quads.stream().filter(q -> q.texture().getPath().endsWith("sun_aureole.png")
+                && q.size() > 30.0F).mapToDouble(SkyScene.Quad::alpha).max().orElse(0.0);
+        assertTrue(duskGlow < aureole.alpha() * 0.5F, "Mars dusk is not the blue sunset");
+        // Mars dust storm hides the stars and bodies; its recovery shows a faint aurora at night.
+        SkyScene storm = sceneAt("mars", state("mars", "dust_storm"), "DUST_STORM", 1.0F, 0.0, full);
+        assertEquals(0.0F, storm.starAlpha, 1e-6F);
+        SkyProfile mars = profile("mars");
+        SkyScene recovering = SkyScene.compute(mars, new SkyScene.Inputs(0.75, 3.75, planet("mars").daylight().at(0.75),
+                "NONE", 0.0F, "DUST_STORM", 1.0F, 0.0, 2048, 0.0, 24_600L, false, 1L, full));
+        assertFalse(recovering.auroraLayers.isEmpty(), "Mars dust-storm recovery aurora");
+        SkyScene calm = SkyScene.compute(mars, new SkyScene.Inputs(0.75, 3.75, planet("mars").daylight().at(0.75),
+                "NONE", 0.0F, "NONE", 0.0F, 0.0, 2048, 0.0, 24_600L, false, 1L, full));
+        assertTrue(calm.auroraLayers.isEmpty(), "no Mars aurora without a storm");
+        // Cindara eclipse: corona; ash fall thickens the cloud deck.
+        assertTrue(hasQuad(sceneAt("cindara", state("cindara", "eclipse"), "NONE", 0.0F, 0.0, full).quads, "corona",
+                0.3F));
+        SkyScene ash = sceneAt("cindara", state("cindara", "ash_fall"), "ASH_FALL", 1.0F, 0.0, full);
+        assertTrue(ash.cloud.orElseThrow().alpha() > 0.85F);
+        // Glacira: three curtains at night; the rose fringe joins them in diamond dust; the halo by day.
+        assertEquals(3, sceneAt("glacira", state("glacira", "aurora"), "NONE", 0.0F, 0.0, full).auroraLayers.size());
+        SkyScene dd = sceneAt("glacira", state("glacira", "diamond_dust"), "DIAMOND_DUST", 1.0F, 0.0, full);
+        assertTrue(dd.auroraLayers.stream().anyMatch(l -> l.texture().getPath().endsWith("aurora_fringe_rose.png")));
+        assertTrue(hasQuad(sceneAt("glacira", state("glacira", "noon"), "NONE", 0.0F, 0.0, full).quads, "halo_22",
+                0.1F));
+        // Greenxertz: the spore shimmer by day in a bloom; two suns at twin noon.
+        assertFalse(sceneAt("greenxertz", state("greenxertz", "spore_bloom"), "SPORE_BLOOM", 1.0F, 0.0, full)
+                .auroraLayers.isEmpty());
+        SkyScene twin = sceneAt("greenxertz", state("greenxertz", "twin_noon"), "NONE", 0.0F, 0.0, full);
+        assertTrue(twin.bodies.stream().filter(SkyScene.BodyDraw::emissive).allMatch(b -> b.pitch() > 45.0F));
+        // Nyxara: flare ray fans in the band, the bow in the band, the aurora only on the nightside.
+        SkyScene flare = sceneAt("nyxara", 0.6, "FLARE", 1.0F, 0.0, full);
+        assertEquals(2, flare.quads.stream().filter(q -> q.texture().getPath().endsWith("flare_rays.png")).count());
+        assertTrue(hasQuad(sceneAt("nyxara", 0.6, "NONE", 0.0F, 0.0, full).quads, "rainbow_arc", 0.2F));
+        assertFalse(sceneAt("nyxara", 0.6, "NONE", 0.0F, 3000.0, full).auroraLayers.isEmpty(), "galaxy side aurora");
+        assertTrue(sceneAt("nyxara", 0.6, "NONE", 0.0F, -3000.0, full).auroraLayers.isEmpty(), "no dayside aurora");
+        // Station: the sun rises through the homeworld's limb; the night side shows city lights.
+        SkyScene sunrise = sceneAt("station", state("station", "sunrise"), "NONE", 0.0F, 0.0, full);
+        assertTrue(sunrise.quads.stream().anyMatch(q -> q.texture().getPath().endsWith("sun_aureole.png")
+                && q.size() > 40.0F && q.alpha() > 0.5F), "limb sunrise aureole");
+        SkyScene planetNight = sceneAt("station", state("station", "planet_night"), "NONE", 0.0F, 0.0, full);
+        assertTrue(hasQuad(planetNight.quads, "earth_disk_lights", 0.3F));
+        // The homeworld's near side is dark at night (frame <= 2) and at the limb sunrise (<= 3).
+        assertTrue(shadeFrameOf(planetNight.quads) <= 2, "station planet_night frame " + shadeFrameOf(planetNight.quads));
+        assertTrue(shadeFrameOf(sunrise.quads) <= 3, "station sunrise frame " + shadeFrameOf(sunrise.quads));
+    }
+
+    /**
+     * Same texture, or neighbouring frames of the night-shade phase sheet (the frame steps by one when the lit
+     * fraction crosses a rounding boundary; that is the sheet's resolution, not a jump).
+     */
+    private static boolean sameLayer(net.minecraft.resources.Identifier a, net.minecraft.resources.Identifier b) {
+        if (a.equals(b)) {
+            return true;
+        }
+        String pa = a.getPath();
+        String pb = b.getPath();
+        int ia = pa.lastIndexOf('_');
+        int ib = pb.lastIndexOf('_');
+        if (ia < 0 || ib < 0 || !pa.substring(0, ia).equals(pb.substring(0, ib)) || !pa.substring(0, ia)
+                .endsWith("/terminator")) {
+            return false;
+        }
+        int fa = Integer.parseInt(pa.substring(ia + 1, pa.length() - 4));
+        int fb = Integer.parseInt(pb.substring(ib + 1, pb.length() - 4));
+        return Math.abs(fa - fb) <= 1;
+    }
+
+    /** The night-shade phase-sheet frame drawn in {@code quads} ({@code terminator_NN}), or -1. */
+    private static int shadeFrameOf(List<SkyScene.Quad> quads) {
+        for (SkyScene.Quad q : quads) {
+            String path = q.texture().getPath();
+            int at = path.lastIndexOf("/terminator_");
+            if (at >= 0 && path.endsWith(".png")) {
+                return Integer.parseInt(path.substring(at + "/terminator_".length(), path.length() - 4));
+            }
+        }
+        return -1;
+    }
+
+    private static double state(String planet, String name) {
+        return za.co.neroland.nerospace.command.GallerySkyStates.find(planet, name).orElseThrow().phase();
+    }
+
+    @Test
+    @DisplayName("sky upgrade: the client switches turn off aurora and shooting stars, lite trims the layers")
+    void clientSwitches() throws IOException {
+        SkyScene off = sceneAt("glacira", 0.75, "NONE", 0.0F, 0.0, new SkyScene.Config(false, false, false));
+        assertTrue(off.auroraLayers.isEmpty());
+        assertEquals(0.0F, off.auroraAlpha, 1e-6F);
+        SkyScene lunaOff = sceneAt("luna", 0.75, "NONE", 0.0F, 0.0, new SkyScene.Config(true, false, false));
+        assertTrue(lunaOff.shootingStars.isEmpty());
+        SkyScene lite = sceneAt("glacira", 0.75, "NONE", 0.0F, 0.0, new SkyScene.Config(true, true, true));
+        assertEquals(1, lite.auroraLayers.size());
+        assertEquals(SkyScene.AURORA_SEGMENTS_LITE, lite.auroraSegments);
+        assertEquals(0.75F * 0.85F, lite.starSizeScale, 1e-5F);
+        assertTrue(sceneAt("cindara", 0.25, "NONE", 0.0F, 0.0, new SkyScene.Config(true, true, true)).cloud.isEmpty());
+        assertTrue(sceneAt("cindara", 0.25, "NONE", 0.0F, 0.0, SkyScene.Config.FULL).cloud.isPresent());
+        assertTrue(za.co.neroland.nerospace.config.NerospaceConfig.isLite(" Lite "));
+        assertFalse(za.co.neroland.nerospace.config.NerospaceConfig.isLite("full"));
+        assertFalse(za.co.neroland.nerospace.config.NerospaceConfig.isLite("bogus"));
+    }
+
+    @Test
+    @DisplayName("sky upgrade: shooting stars keep their rate and never exceed the concurrency cap")
+    void shootingStarSchedule() throws IOException {
+        SkyProfile.ShootingStars s = profile("luna").shootingStars().orElseThrow();
+        int starts = 0;
+        boolean wasVisible = false;
+        int minutes = 20;
+        for (int t = 0; t < minutes * 1200; t++) {
+            List<SkyScene.Quad> out = new ArrayList<>();
+            SkyScene.shootingStars(s, t, 42L, 0.0, out);
+            assertTrue(out.size() <= s.maxConcurrent());
+            boolean visible = !out.isEmpty();
+            if (visible && !wasVisible) {
+                starts++;
+            }
+            wasVisible = visible;
+            for (SkyScene.Quad q : out) {
+                assertTrue(q.pitch() > -15.0F && q.alpha() <= 1.0F);
+                assertEquals(s.lengthDeg() / 8.0F, q.size(), 1e-5F);
+            }
+        }
+        double perMinute = starts / (double) minutes;
+        assertTrue(perMinute > s.ratePerMinute() * 0.5 && perMinute < s.ratePerMinute() * 1.5, "rate " + perMinute);
+    }
+
+    @Test
+    @DisplayName("sky upgrade: the night shade picks its phase-sheet frame by lit fraction and turns away from the sun")
+    void nightShade() throws IOException {
+        float[] sun = SkyScene.direction(270.0F, 0.0F);
+        // A body opposite the sun is full: the last (clear) frame.
+        float[] full = SkyScene.shade(90.0F, 0.0F, sun);
+        assertEquals(1.0F, full[1], 1e-4F);
+        assertEquals(15, SkyScene.shadeFrame(full[1]));
+        // A body beside the sun is new: the first (all dark) frame.
+        float[] newMoon = SkyScene.shade(270.0F, 1.0F, sun);
+        assertEquals(0.0F, newMoon[1], 1e-3F);
+        assertEquals(0, SkyScene.shadeFrame(newMoon[1]));
+        // Quarter: half lit, the middle of the sheet; local +x toward the sun.
+        float[] quarter = SkyScene.shade(0.0F, 0.0F, sun);
+        assertEquals(0.5F, quarter[1], 1e-4F);
+        int mid = SkyScene.shadeFrame(quarter[1]);
+        assertTrue(mid == 7 || mid == 8, "quarter frame " + mid);
+        // The sheet frames exist and get darker as the lit fraction falls; the lit side faces local +x (the sun).
+        net.minecraft.resources.Identifier base = net.minecraft.resources.Identifier.fromNamespaceAndPath("nerospace",
+                "textures/sky/terminator.png");
+        Path a = assets();
+        int previous = -1;
+        for (int f = SkyScene.SHADE_FRAMES - 1; f >= 0; f--) {
+            net.minecraft.resources.Identifier frame = SkyScene.shadeTexture(base, f);
+            assertTrue(frame.getPath().endsWith(String.format("terminator_%02d.png", f)), frame.toString());
+            java.awt.image.BufferedImage img = javax.imageio.ImageIO.read(a.resolve(frame.getPath()).toFile());
+            assertNotNull(img, frame.toString());
+            int dark = 0;
+            for (int y = 0; y < img.getHeight(); y += 4) {
+                for (int x = 0; x < img.getWidth(); x += 4) {
+                    dark += (img.getRGB(x, y) >>> 24) > 128 ? 1 : 0;
+                }
+            }
+            assertTrue(dark >= previous, "frame " + f + " is not darker than frame " + (f + 1));
+            previous = dark;
+        }
+        java.awt.image.BufferedImage crescent = javax.imageio.ImageIO.read(a.resolve(SkyScene.shadeTexture(base, 2)
+                .getPath()).toFile());
+        int c = crescent.getHeight() / 2;
+        assertTrue((crescent.getRGB(crescent.getWidth() - 8, c) >>> 24) < (crescent.getRGB(8, c) >>> 24),
+                "the lit crescent is on the sun side (+x)");
+        assertTrue((SkyScene.shadeTexture(base, 15).getPath()).endsWith("terminator_15.png"));
+        float[][] axes = SkyScene.axes(0.0F, 0.0F);
+        double r = Math.toRadians(quarter[0]);
+        float[] toward = {(float) (axes[0][0] * Math.cos(r) + axes[1][0] * Math.sin(r)),
+                (float) (axes[0][1] * Math.cos(r) + axes[1][1] * Math.sin(r)),
+                (float) (axes[0][2] * Math.cos(r) + axes[1][2] * Math.sin(r))};
+        assertTrue(toward[0] * sun[0] + toward[1] * sun[1] + toward[2] * sun[2] > 0.99F);
+    }
+
+    @Test
+    @DisplayName("sky upgrade: the world fog pushed on every cell is the scene's fog colour")
+    void fogColourFollowsScene() throws IOException {
+        for (za.co.neroland.nerospace.world.planet.PlanetDefinition planet
+                : za.co.neroland.nerospace.world.planet.Planets.ALL) {
+            SkyProfile p = profile(planet.traits().skyProfile().getPath());
+            for (double phase : new double[] {0.02, 0.25, 0.48, 0.75}) {
+                PlanetSkyRenderer.Frame frame = new PlanetSkyRenderer.Frame(planet, p, phase, 2.0 + phase,
+                        planet.daylight().at(phase), za.co.neroland.nerospace.world.planet.WeatherEvent.NONE, 0.0F,
+                        2048, 24_000L, false, za.co.neroland.nerospace.world.planet.WeatherEvent.NONE, 0.0F,
+                        SkyScene.Config.FULL);
+                double time = 1000.0 + phase * 100.0;
+                int fog = PlanetSkyRenderer.scene(frame, 0.0, time).fog;
+                assertEquals(SkyScene.compute(p, PlanetSkyRenderer.inputs(frame, 0.0, time)).fog, fog,
+                        planet.langId() + " at " + phase);
+                assertEquals(SkyScene.compute(p, phase, 2.0 + phase, planet.daylight().at(phase), "NONE", 0.0F, 0.0,
+                        2048, time).fog, fog, planet.langId() + " fog is the 2.0.0 scene fog");
+            }
+        }
+    }
+
     private static void assertTexture(Path assets, String path, String what) {
         Path png = assets.resolve(path);
         assertTrue(Files.isRegularFile(png), what + ": missing " + png);

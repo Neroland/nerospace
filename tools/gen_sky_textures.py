@@ -8,6 +8,13 @@ sheets for the six custom particle types, into the resource tree:
     textures/sky/      galaxy.png, galaxy_nyx.png, aurora_0.png, aurora_1.png, stars.png, horizon_ramp.png,
                        sun_white.png, sun_small.png, sun_pale.png, sun_amber.png, red_giant.png, dark_moon.png,
                        earth.png, earth_disk.png, phobos.png, deimos.png, moon_small.png
+                       -- sky upgrade (2.0.x) --
+                       stars_natural.png (temperature-coloured star sheet), aurora_glacira_0..2, aurora_nyxara_0..1,
+                       aurora_mars_0, aurora_greenxertz_0 (gradient curtains: RGB = the colour gradient bottom->top,
+                       alpha = the ray mask), aurora_fringe_rose.png, meteor_streak.png, limb_glow.png,
+                       terminator.png, terminator_00..15.png (night-shade phase sheet), earth_globe.png, earth_disk_globe.png, earth_lights.png, earth_disk_lights.png, corona.png, diamond_ring.png,
+                       halo_22.png, rainbow_arc.png, flare_rays.png, caustic_band.png, nebula_a.png, nebula_b.png,
+                       clouds_ash.png, sun_aureole.png, horizon_ramp_soft.png
     textures/particle/ dust_0..3, ash_0..3, spore_0..3, diamond_dust_0..3, ember_0..3, nebula_mote_0..3 (8x8)
 
 Everything is deterministic: each output seeds its own ``numpy`` generator from the md5 of its name (same rule as
@@ -20,6 +27,14 @@ Conventions
   identity).
 * The galaxy bands and aurora strips tile horizontally (periodic value noise), so the renderer can wrap them
   around the sky dome with ``yaw``.
+* Gradient curtains (``aurora_<planet>_<n>``) carry the planet's vertical colour gradient in RGB because the sky
+  renderer draws them through an additive POSITION_TEX pipeline with one tint per draw: the texture supplies the
+  colour run, the tint supplies intensity. Decal textures anchored to a body (``halo_22``, ``rainbow_arc``,
+  ``corona``, ``limb_glow``, ``flare_rays``) are drawn on a flat tangent quad, so an angular radius ``a`` inside a
+  quad of half-angle ``h`` sits at ``tan(a) / tan(h)`` of the half-size - the constants below say which ``h``
+  they assume.
+* Existing textures are never changed by the upgrade (their functions are untouched); ``--check`` therefore still
+  passes on a tree that has only the old files plus the new ones.
 * ``stars.png`` is a 4x4 sheet of 16x16 sprites (point, soft, cross, 6-ray at two brightnesses); the renderer
   picks a sprite per star by hash and tints with ``stars.tint``.
 * Particle sprites are 8x8 like vanilla's and come in four frames per type (``<type>_0..3``), listed in that order
@@ -221,6 +236,19 @@ def rocky_moon(name, size, radius, base_grey, crater_count, potato=0.0):
 
 
 def earth(name, size):
+    rgb, a, _ = earth_parts(name, size)
+    return to_image(rgb, a)
+
+
+def earth_globe(name, size, source):
+    """``earth`` without the baked upper-left daylight: a flat-lit globe for bodies that carry a ``nightShade`` (the
+    renderer's terminator supplies the light direction, so a baked one would fight it). Same land as ``source``."""
+    rgb, a, _ = earth_parts(source, size, baked_light=False)
+    return to_image(rgb, a)
+
+
+def earth_parts(name, size, baked_light=True):
+    """The earth render plus its land mask (same RNG order as the 2.0.0 ``earth``; output is byte-identical)."""
     rng = rng_of(name)
     dx, dy, r = radial(size)
     radius = 0.86
@@ -243,7 +271,7 @@ def earth(name, size):
     cloud = np.clip((cl - 0.5) / 0.12, 0, 1)
     rgb = rgb * (1 - cloud[..., None] * 0.95) + hexc("#FFFFFF")[None, None, :] * cloud[..., None] * 0.95
     # day-side shading (light from upper-left) and limb darkening
-    light = np.clip(0.55 + 0.45 * (-(dx + dy) / 1.414), 0.15, 1.0)
+    light = np.clip(0.55 + 0.45 * (-(dx + dy) / 1.414), 0.15, 1.0) if baked_light else 0.92
     limb = 1.0 - 0.35 * np.clip(r / radius, 0, 1) ** 3
     rgb *= (light * limb)[..., None]
     # atmosphere rim inside + glow outside
@@ -252,7 +280,7 @@ def earth(name, size):
     glow = np.exp(-(np.abs(r - radius) / 0.07) ** 1.5) * (r > radius)
     rgb = np.where((r > radius)[..., None], hexc("#7FB8FF")[None, None, :], rgb)
     a = np.clip((radius - r) / 0.008, 0, 1) + glow * 0.8
-    return to_image(rgb, a)
+    return rgb, a, landmask * (r < radius)
 
 
 # ======================================================================================= bands
@@ -398,6 +426,393 @@ def particle_frames(kind):
     return frames
 
 
+
+# ======================================================================================= sky upgrade: stars
+
+def star_sheet_natural(name="stars_natural", cell=16, n=4):
+    """Like ``star_sheet`` but each sprite carries a real colour temperature. The renderer picks a cell per star by
+    hash, so the cell counts set the sky's colour census: 4 blue-white (O/B/A), 6 white and yellow-white (F/G),
+    3 yellow (G/K), 2 orange (K) and 1 red (M) - a dark-sky look, not a flat white field."""
+    rng = rng_of(name)
+    size = cell * n
+    rgb = np.ones((size, size, 3), dtype=np.float32)
+    a = np.zeros((size, size), dtype=np.float32)
+    kinds = ["point", "soft", "cross", "point2", "soft2", "point", "ray6", "softw",
+             "point", "soft", "point2", "cross2", "soft", "pointw", "ray6b", "soft2"]
+    temps = ["#9FB7FF", "#AEC4FF", "#CAD7FF", "#DCE5FF", "#F3F4FF", "#FFFFFF", "#FFF8F0", "#FFF4E6",
+             "#FFF1DE", "#FFEBD0", "#FFE4B5", "#FFDCA8", "#FFC98A", "#FFB070", "#FF9A60", "#FF7A50"]
+    for i, kind in enumerate(kinds):
+        cx = (i % n) * cell
+        cy = (i // n) * cell
+        dx, dy, r = radial(cell)
+        if kind == "point":
+            spr = (r < 0.08).astype(np.float32) * 0.8
+        elif kind == "point2":
+            spr = np.clip(1 - r / 0.16, 0, 1)
+        elif kind == "pointw":
+            spr = (r < 0.08).astype(np.float32) * 0.5
+        elif kind == "soft":
+            spr = np.exp(-(r / 0.22) ** 2)
+        elif kind == "soft2":
+            spr = np.exp(-(r / 0.3) ** 2) * 0.9
+        elif kind == "softw":
+            spr = np.exp(-(r / 0.18) ** 2) * 0.6
+        elif kind.startswith("cross"):
+            arm = (np.abs(dx) < 0.07) | (np.abs(dy) < 0.07)
+            spr = arm * np.clip(1 - r / (0.5 if kind == "cross" else 0.75), 0, 1) + np.exp(-(r / 0.16) ** 2)
+        else:
+            ang = np.arctan2(dy, dx)
+            ray = np.abs(np.cos(ang * 3)) ** 40
+            spr = ray * np.clip(1 - r / 0.8, 0, 1) * 0.8 + np.exp(-(r / 0.2) ** 2)
+        a[cy:cy + cell, cx:cx + cell] = np.clip(spr, 0, 1)
+        col = hexc(temps[i])
+        # the core stays near white so bright stars do not read as coloured dots; the colour lives in the skirt
+        core = np.exp(-(r / 0.12) ** 2)[..., None]
+        rgb[cy:cy + cell, cx:cx + cell] = col[None, None, :] * (1 - core * 0.6) + core * 0.6
+        rng.random()  # keep one draw per sprite so a future sprite tweak does not shift its neighbours
+    return to_image(rgb, a)
+
+
+# ======================================================================================= sky upgrade: aurora
+
+def gradient_curtain(name, w, h, stops, ray_base=22, ray_gain=1.0, glow=0.0):
+    """A horizontally periodic aurora curtain: RGB is the vertical gradient (``stops`` = [(v, hex)] from the
+    bottom, v in 0..1 where 0 is the bottom edge of the curtain), alpha is the ray mask - dense vertical rays that
+    are brightest just above the lower edge and fray upward. The renderer folds this geometry; the texture holds
+    no fold of its own, so stacked layers never share a silhouette."""
+    rng = rng_of(name)
+    ys = np.linspace(1.0, 0.0, h, dtype=np.float32)[:, None]  # row 0 = top of the curtain
+    rays = fbm(rng, w, 1, base=ray_base, octaves=4, persistence=0.62, wrap_x=True)[0]
+    rays2 = fbm(rng, w, 1, base=max(3, ray_base // 3), octaves=3, wrap_x=True)[0]
+    fine = fbm(rng, w, 1, base=ray_base * 3, octaves=2, wrap_x=True)[0]
+    ray = np.clip((rays - 0.38) / 0.36, 0, 1) * (0.35 + 0.65 * rays2) * (0.7 + 0.3 * fine)
+    ray = np.clip(ray * ray_gain, 0, 1)
+    base_y = 0.10 + 0.06 * (fbm(rng, w, 1, base=4, octaves=2, wrap_x=True)[0] - 0.5)
+    # bright lower edge, long upward fray whose reach varies along the curtain
+    reach = 0.55 + 0.4 * fbm(rng, w, 1, base=6, octaves=2, wrap_x=True)[0]
+    edge = np.exp(-((ys - base_y[None, :]) / 0.06) ** 2)
+    up = np.clip(1 - (ys - base_y[None, :]) / reach[None, :], 0, 1) ** 1.6 * (ys > base_y[None, :])
+    below = np.exp(-((base_y[None, :] - ys) / 0.05) ** 2) * (ys < base_y[None, :])
+    vert = edge + up * 0.75 + below * 0.6
+    wisps = fbm(rng, w, h, base=14, octaves=3, wrap_x=True, aspect=0.5)
+    inten = ray[None, :] * vert * (0.55 + 0.45 * wisps) + glow * up * 0.2
+    inten = np.clip(inten, 0, 1) * np.clip((1.0 - ys) / 0.14, 0, 1)  # nothing reaches the top edge
+    rgb = np.zeros((h, w, 3), dtype=np.float32)
+    vv = ys[:, 0]
+    for i in range(len(stops) - 1):
+        v0, c0 = stops[i]
+        v1, c1 = stops[i + 1]
+        t = np.clip((vv - v0) / max(1e-6, v1 - v0), 0, 1)
+        seg = (vv >= v0) & (vv <= v1) if i < len(stops) - 2 else (vv >= v0)
+        col = hexc(c0)[None, :] * (1 - t[:, None]) + hexc(c1)[None, :] * t[:, None]
+        rgb[seg] = np.repeat(col[seg][:, None, :], w, axis=1)
+    rgb[vv < stops[0][0]] = hexc(stops[0][1])
+    return to_image(rgb, inten)
+
+
+def aurora_fringe(name="aurora_fringe_rose", w=512, h=128):
+    """Rose upper fringe for diamond-dust nights: colour only in the top 45 % of the curtain, soft rays."""
+    rng = rng_of(name)
+    ys = np.linspace(1.0, 0.0, h, dtype=np.float32)[:, None]
+    rays = fbm(rng, w, 1, base=16, octaves=3, persistence=0.6, wrap_x=True)[0]
+    ray = np.clip((rays - 0.3) / 0.6, 0, 1) ** 0.8
+    band = np.clip((ys - 0.40) / 0.25, 0, 1) * np.clip((1.0 - ys) / 0.14, 0, 1)
+    wisps = fbm(rng, w, h, base=10, octaves=3, wrap_x=True, aspect=0.5)
+    a = np.clip(ray[None, :] * band * (0.5 + 0.5 * wisps), 0, 1)
+    rgb = np.ones((h, w, 3), dtype=np.float32) * hexc("#FF7AC8")[None, None, :]
+    rgb = rgb * (1 - ys[..., None] * 0.3) + hexc("#FFB3E0")[None, None, :] * ys[..., None] * 0.3
+    return to_image(rgb, a)
+
+
+# ======================================================================================= sky upgrade: decals
+
+def meteor_streak(name="meteor_streak", w=128, h=16):
+    """Shooting-star streak: bright head on the right, tail fading to the left. Drawn additively, tinted."""
+    rng = rng_of(name)
+    xs = np.linspace(0, 1, w, dtype=np.float32)[None, :]
+    ys = (np.linspace(-1, 1, h, dtype=np.float32))[:, None]
+    width = 0.25 + 0.75 * xs
+    core = np.exp(-(ys / (width * 0.55)) ** 2)
+    tail = np.clip(xs, 0, 1) ** 1.8
+    head = np.exp(-(((xs - 0.93) / 0.06) ** 2 + (ys / 0.5) ** 2))
+    flick = 0.85 + 0.15 * fbm(rng, w, 1, base=10, octaves=2)[0][None, :]
+    a = np.clip(core * tail * flick + head, 0, 1)
+    rgb = np.ones((h, w, 3), dtype=np.float32)
+    rgb[..., 2] = 1.0 - 0.15 * tail  # a touch warm toward the head
+    return to_image(rgb, a)
+
+
+def limb_glow(name="limb_glow", size=256, radius=0.86, width=0.07):
+    """Atmospheric limb: a soft ring on the disc edge of the earth textures (radius 0.86 of the quad); the profile's
+    ``limbGlow.scale`` fits it to bodies whose disc radius differs."""
+    dx, dy, r = radial(size)
+    inner = np.exp(-(np.maximum(radius - r, 0) / (width * 1.2)) ** 2)
+    outer = np.exp(-(np.maximum(r - radius, 0) / width) ** 1.2)
+    a = np.where(r < radius, inner * 0.55, outer) * np.clip((1.0 - r) / 0.03, 0, 1)
+    rgb = np.ones((size, size, 3), dtype=np.float32)
+    return to_image(rgb, a)
+
+
+def terminator(name="terminator", size=256, softness=0.3):
+    """Night-side shade: black on the left half with a soft edge; alpha 0 on the right. Rotated by the renderer so the
+    dark half points away from the sun, scaled to the body. Circular so nothing spills past the disc."""
+    dx, dy, r = radial(size)
+    edge = np.clip((-dx) / softness * 0.5 + 0.5, 0, 1)
+    disc = np.clip((0.98 - r) / 0.02, 0, 1)
+    a = smoothstep(edge) * disc
+    rgb = np.zeros((size, size, 3), dtype=np.float32)
+    return to_image(rgb, a)
+
+
+def terminator_phase(name, k, size=256, softness=0.3):
+    """Night-shade phase sheet frame for the lit fraction ``k`` (0 = new, 1 = full): dark where
+    ``x < (1 - 2k) * sqrt(1 - y^2)`` (an elliptical terminator, local +x toward the sun), the same soft edge and
+    circular mask as ``terminator``. Sixteen frames ``terminator_00..15`` (``k = i / 15``); the renderer picks
+    ``round(k * 15)`` and draws it centred on the body, turned so +x faces the sun."""
+    dx, dy, r = radial(size)
+    yy = np.clip(dy / 0.98, -1.0, 1.0)
+    limb = 0.98 * np.sqrt(np.maximum(0.0, 1.0 - yy * yy))
+    c = 1.0 - 2.0 * k
+    # The soft edge is pushed fully off the disc at the two ends (frame 0 all dark, frame 15 clear) with a margin
+    # that vanishes towards quadrature, so the in-between frames keep the true ellipse.
+    s = c * limb + softness * c * abs(c) ** 3 - dx
+    edge = np.clip(s / softness * 0.5 + 0.5, 0, 1)
+    disc = np.clip((0.98 - r) / 0.02, 0, 1)
+    a = smoothstep(edge) * disc
+    rgb = np.zeros((size, size, 3), dtype=np.float32)
+    return to_image(rgb, a)
+
+
+TERMINATOR_FRAMES = 16
+
+
+def city_lights(name, size, source):
+    """Warm light specks on the land of ``source`` (``earth`` or ``earth_disk``), denser near coasts. Additive."""
+    rng = rng_of(name)
+    _, _, land = earth_parts(source, size)
+    land_img = Image.fromarray((land * 255).astype(np.uint8))
+    coast = np.array(land_img.filter(ImageFilter.GaussianBlur(size / 64.0)), dtype=np.float32) / 255.0
+    coast = coast * (1 - coast) * 4.0  # peaks on the land/sea boundary
+    density = (0.35 + 0.65 * coast) * land
+    n = fbm(rng, size, size, base=max(4, size // 24), octaves=3)
+    specks = (rng.random((size, size)).astype(np.float32) < density * 0.028 * (0.5 + n)).astype(np.float32)
+    specks *= 0.6 + 0.4 * rng.random((size, size)).astype(np.float32)
+    bloom = np.array(Image.fromarray((np.clip(specks, 0, 1) * 255).astype(np.uint8)).filter(
+        ImageFilter.GaussianBlur(max(0.6, size / 200.0))), dtype=np.float32) / 255.0
+    a = np.clip(specks * 0.9 + bloom * 2.2, 0, 1) * land
+    dx, dy, r = radial(size)
+    a *= (r < 0.86)
+    rgb = np.ones((size, size, 3), dtype=np.float32) * hexc("#FFD9A0")[None, None, :]
+    return to_image(rgb, a)
+
+
+def corona(name="corona", size=256):
+    """Solar corona for totality: pearl streamers, brightest at the limb, reaching ~2.2 solar radii (the quad is
+    sized by the profile so the inner edge sits on the occulting disc)."""
+    rng = rng_of(name)
+    dx, dy, r = radial(size)
+    ang = np.arctan2(dy, dx)
+    inner = 0.30
+    radial_fall = np.exp(-np.maximum(r - inner, 0) / 0.22)
+    streamers = fbm(rng, size, 1, base=9, octaves=4, persistence=0.6, wrap_x=True)[0]
+    idx = ((ang + math.pi) / (2 * math.pi) * (size - 1)).astype(int)
+    st = 0.45 + 0.55 * np.clip((streamers[idx] - 0.3) / 0.5, 0, 1)
+    polar = 0.75 + 0.25 * np.abs(np.cos(ang))  # equatorial streamers reach further, polar plumes are short
+    wisps = fbm(rng, size, size, base=12, octaves=3)
+    a = radial_fall * st * polar * (0.7 + 0.3 * wisps)
+    a *= np.clip((r - inner + 0.02) / 0.04, 0, 1)
+    a = np.clip(a * 1.1, 0, 1)
+    rgb = np.ones((size, size, 3), dtype=np.float32) * hexc("#FFF6EA")[None, None, :]
+    rgb = rgb * (1 - np.clip(r, 0, 1)[..., None] * 0.2) + hexc("#FFD2B0")[None, None, :] * np.clip(r, 0, 1)[..., None] * 0.2
+    return to_image(rgb, a)
+
+
+def diamond_ring(name="diamond_ring", size=64):
+    """The diamond-ring flash: a hard white point with four long rays. Placed on the limb by the renderer."""
+    dx, dy, r = radial(size)
+    ang = np.arctan2(dy, dx)
+    core = np.exp(-(r / 0.10) ** 2)
+    rays = np.abs(np.cos(ang * 2)) ** 30 * np.clip(1 - r / 0.95, 0, 1) * 0.9
+    rays += np.abs(np.sin(ang * 2)) ** 60 * np.clip(1 - r / 0.6, 0, 1) * 0.5
+    halo = np.exp(-(r / 0.35) ** 2) * 0.5
+    a = np.clip(core + rays + halo, 0, 1)
+    rgb = np.ones((size, size, 3), dtype=np.float32)
+    return to_image(rgb, a)
+
+
+def halo_22(name="halo_22", size=512, half_angle=26.0):
+    """22-degree halo with sun dogs and an upper tangent arc, on a tangent quad of ``half_angle`` degrees.
+    Inner edge red, outer edge blue-white, as ice-crystal halos are; sun dogs sit on the horizontal through the
+    sun (the quad's local x axis, which the renderer keeps level)."""
+    rng = rng_of(name)
+    dx, dy, r = radial(size)
+    r0 = math.tan(math.radians(22.0)) / math.tan(math.radians(half_angle))
+    width = 0.045
+    ring = np.exp(-((r - r0) / width) ** 2) * (r >= r0 * 0.93) + np.exp(-((r0 - r) / (width * 0.5)) ** 2) * (r < r0 * 0.93) * 0.4
+    t = np.clip((r - r0 + width) / (2.2 * width), 0, 1)
+    inner = hexc("#FFB080")
+    outer = hexc("#CFE8FF")
+    rgb = inner[None, None, :] * (1 - t[..., None]) + outer[None, None, :] * t[..., None]
+    dogs = np.exp(-(((np.abs(dx) - r0) / 0.06) ** 2 + (dy / 0.05) ** 2)) * 1.6
+    dogs += np.exp(-(((np.abs(dx) - r0 - 0.08) / 0.12) ** 2 + (dy / 0.045) ** 2)) * 0.7  # tails pointing away
+    arc = np.exp(-((dy + r0) / 0.05) ** 2) * np.exp(-(dx / 0.35) ** 2) * 0.9 * (dy < 0)
+    glow = np.exp(-(r / 0.22) ** 2) * 0.35  # forward-scatter brightening near the sun
+    grain = 0.85 + 0.15 * fbm(rng, size, size, base=6, octaves=2)
+    a = np.clip((ring * 0.45 + dogs * 1.2 + arc * 0.8 + glow) * grain, 0, 1)
+    a *= np.clip((1.0 - r) / 0.05, 0, 1)
+    rgb = np.where(dogs[..., None] > 0.5, hexc("#FFE8C8")[None, None, :], rgb)
+    return to_image(rgb, a)
+
+
+def rainbow_arc(name="rainbow_arc", size=512, half_angle=46.0):
+    """Crystal-refracted bow around the anti-solar point: a 42-degree ring, violet inside to red outside, with a
+    faint secondary at 51 degrees reversed. Full ring; the horizon hides what is below it."""
+    rng = rng_of(name)
+    dx, dy, r = radial(size)
+    r1 = math.tan(math.radians(42.0)) / math.tan(math.radians(half_angle))
+    r2 = math.tan(math.radians(51.0)) / math.tan(math.radians(half_angle))
+    bands = ["#8A5CFF", "#4D8CFF", "#4DD0E1", "#60E0A0", "#F2E86B", "#FFA050", "#FF6B6B"]
+    rgb = np.zeros((size, size, 3), dtype=np.float32)
+    a = np.zeros((size, size), dtype=np.float32)
+    w = 0.09
+    for i, c in enumerate(bands):
+        rc = r1 - w / 2 + w * (i + 0.5) / len(bands)
+        m = np.exp(-((r - rc) / (w / len(bands) * 0.9)) ** 2)
+        rgb += hexc(c)[None, None, :] * m[..., None]
+        a += m
+    for i, c in enumerate(reversed(bands)):
+        rc = r2 - w / 2 + w * (i + 0.5) / len(bands)
+        m = np.exp(-((r - rc) / (w / len(bands) * 1.1)) ** 2) * 0.35
+        rgb += hexc(c)[None, None, :] * m[..., None]
+        a += m
+    rgb = rgb / np.maximum(a, 1e-4)[..., None]
+    shimmer = 0.75 + 0.25 * fbm(rng, size, size, base=5, octaves=3)
+    a = np.clip(a * 0.85 * shimmer, 0, 1)
+    a *= np.clip((1.0 - r) / 0.04, 0, 1)
+    return to_image(rgb, a)
+
+
+def flare_rays(name="flare_rays", size=512):
+    """Crepuscular burst for Nyxara flares: dozens of thin radial streaks of random length, brightest at the
+    centre and dying before the quad edge. Two copies counter-rotate in the renderer."""
+    rng = rng_of(name)
+    dx, dy, r = radial(size)
+    ang = (np.arctan2(dy, dx) + math.pi) / (2 * math.pi)
+    n_rays = 1024
+    prof = fbm(rng, n_rays, 1, base=48, octaves=4, persistence=0.65, wrap_x=True)[0]
+    prof2 = fbm(rng, n_rays, 1, base=12, octaves=2, wrap_x=True)[0]
+    idx = np.clip((ang * n_rays).astype(int), 0, n_rays - 1)
+    strength = np.clip((prof[idx] - 0.42) / 0.3, 0, 1) ** 1.5
+    reach = 0.35 + 0.6 * prof2[idx]
+    a = strength * np.clip(1 - r / reach, 0, 1) ** 1.2 * np.clip(r / 0.08, 0, 1)
+    a += np.exp(-(r / 0.10) ** 2) * 0.8
+    grain = 0.8 + 0.2 * fbm(rng, size, size, base=20, octaves=2)
+    a = np.clip(a * grain, 0, 1)
+    rgb = np.ones((size, size, 3), dtype=np.float32)
+    rgb = rgb * (1 - r[..., None] * 0.25) + hexc("#FFD6A0")[None, None, :] * r[..., None] * 0.25
+    return to_image(rgb, a)
+
+
+def caustic_band(name="caustic_band", w=512, h=64):
+    """Crystal-scatter shimmer: a horizontally periodic strip of soft caustic blotches, violet-white, for a low
+    band over the horizon (lit by the flare rays through the crystal)."""
+    rng = rng_of(name)
+    ys = np.linspace(0, 1, h, dtype=np.float32)[:, None]
+    n1 = fbm(rng, w, h, base=10, octaves=4, persistence=0.6, wrap_x=True, aspect=0.4)
+    n2 = fbm(rng, w, h, base=22, octaves=3, wrap_x=True, aspect=0.4)
+    ridges = 1.0 - np.abs(n1 * 2 - 1)
+    caustic = np.clip((ridges - 0.55) / 0.35, 0, 1) ** 1.8 * (0.6 + 0.4 * n2)
+    vert = np.exp(-((ys - 0.6) / 0.22) ** 2) * np.clip(ys / 0.12, 0, 1) * np.clip((1 - ys) / 0.12, 0, 1)
+    xs = np.linspace(0, 1, w, endpoint=False, dtype=np.float32)[None, :]
+    ends = np.clip(np.minimum(xs, 1 - xs) / 0.12, 0, 1)  # drawn as one quad, not tiled: fade both ends
+    a = np.clip(caustic * vert * ends, 0, 1)
+    rgb = hexc("#E6D2FF")[None, None, :] * (1 - ys[..., None] * 0.4) + hexc("#9B5DE5")[None, None, :] * ys[..., None] * 0.4
+    rgb = np.repeat(rgb, w, axis=1)
+    return to_image(rgb, a)
+
+
+def nebula_patch(name, size, cols, density=1.0):
+    """A soft nebula cloud: fbm blobs in two or three colours with a feathered circular edge and a few embedded
+    stars. Drawn additively on a fixed dome quad; two patches at different sizes give the depth cue."""
+    rng = rng_of(name)
+    dx, dy, r = radial(size)
+    edge = np.clip((0.95 - r) / 0.35, 0, 1) ** 1.5
+    n1 = fbm(rng, size, size, base=3, octaves=6, persistence=0.58)
+    n2 = fbm(rng, size, size, base=5, octaves=5, persistence=0.55)
+    n3 = fbm(rng, size, size, base=9, octaves=3)
+    m1 = np.clip((n1 - 0.42) / 0.3, 0, 1)
+    m2 = np.clip((n2 - 0.48) / 0.25, 0, 1)
+    lanes = np.clip((n3 - 0.58) / 0.1, 0, 1)
+    rgb = hexc(cols[0])[None, None, :] * m1[..., None]
+    rgb = rgb * (1 - m2[..., None] * 0.7) + hexc(cols[1])[None, None, :] * m2[..., None] * 0.7
+    if len(cols) > 2:
+        m3 = np.clip((n3 - 0.5) / 0.3, 0, 1) * m1
+        rgb = rgb * (1 - m3[..., None] * 0.5) + hexc(cols[2])[None, None, :] * m3[..., None] * 0.5
+    a = np.clip((m1 * 0.8 + m2 * 0.5) * (1 - lanes * 0.25) * edge * density, 0, 1)
+    n_st = int(size * size * 0.0015)
+    sx = rng.integers(0, size, n_st)
+    sy = rng.integers(0, size, n_st)
+    keep = a[sy, sx] > 0.15
+    stars = np.zeros((size, size), dtype=np.float32)
+    stars[sy[keep], sx[keep]] = rng.uniform(0.4, 1.0, keep.sum())
+    rgb = rgb * (1 - stars[..., None]) + np.ones(3)[None, None, :] * stars[..., None]
+    a = np.clip(a + stars * 0.9, 0, 1)
+    return to_image(rgb, a)
+
+
+def clouds_ash(name="clouds_ash", size=512):
+    """Cindara's ash deck: a tileable (both axes) broken cloud layer. RGB is a neutral warm grey so the profile
+    tints it (day / night / lava underglow); alpha is coverage with ragged holes."""
+    rng = rng_of(name)
+    lat = rng.random((9, 9)).astype(np.float32)
+    lat[:, -1] = lat[:, 0]
+    lat[-1, :] = lat[0, :]
+    out = np.zeros((size, size), dtype=np.float32)
+    amp, tot, f = 1.0, 0.0, 4
+    for o in range(5):
+        l = rng.random((f + 1, f + 1)).astype(np.float32)
+        l[:, -1] = l[:, 0]
+        l[-1, :] = l[0, :]
+        xs = np.linspace(0, f, size, endpoint=False, dtype=np.float32)
+        x0 = np.floor(xs).astype(int)
+        tx = smoothstep(xs - x0)
+        x1 = (x0 + 1) % (f + 1)
+        row = l[x0][:, x0] * (1 - tx)[None, :] * (1 - tx)[:, None]
+        row += l[x0][:, x1] * tx[None, :] * (1 - tx)[:, None]
+        row += l[x1][:, x0] * (1 - tx)[None, :] * tx[:, None]
+        row += l[x1][:, x1] * tx[None, :] * tx[:, None]
+        out += amp * row
+        tot += amp
+        amp *= 0.55
+        f *= 2
+    n = out / tot
+    cover = np.clip((n - 0.46) / 0.22, 0, 1)
+    detail = np.clip((n - 0.52) / 0.1, 0, 1)
+    a = np.clip(cover * (0.55 + 0.45 * detail), 0, 1) * 0.9
+    lum = 0.55 + 0.45 * detail
+    rgb = np.stack([lum, lum * 0.96, lum * 0.92], axis=-1)
+    return to_image(rgb, a)
+
+
+def sun_aureole(name="sun_aureole", size=128):
+    """Broad soft disc for the Martian blue sunset aureole (and any horizon glow): white, tinted by the profile."""
+    dx, dy, r = radial(size)
+    a = np.exp(-(r / 0.45) ** 1.6) * 0.9
+    a *= np.clip((1.0 - r) / 0.1, 0, 1)
+    rgb = np.ones((size, size, 3), dtype=np.float32)
+    return to_image(rgb, a)
+
+
+AURORA_GRADIENTS = {
+    # bottom -> top. Glacira: the concept sheet's aurora green into teal, pale blue at the top (the rose fringe is a
+    # separate weather-gated texture). Nyxara: violet into cyan over the crystal. Mars: a ghost of green with a
+    # red upper edge (weak field, CO2 emission). Greenxertz: a pink spore shimmer, no night gate.
+    "glacira": [(0.0, "#1FC46A"), (0.3, "#4FE89A"), (0.6, "#3FC8C8"), (1.0, "#9ADCFF")],
+    "nyxara": [(0.0, "#6B2FB8"), (0.3, "#9B5DE5"), (0.65, "#5FB8E8"), (1.0, "#4DD0E1")],
+    "mars": [(0.0, "#3E9A66"), (0.5, "#60A080"), (1.0, "#C85A6A")],
+    "greenxertz": [(0.0, "#FF7AC8"), (0.6, "#FFA6DC"), (1.0, "#FFD6EC")],
+}
+
 # ======================================================================================= table
 
 def sky_textures():
@@ -420,6 +835,36 @@ def sky_textures():
         "aurora_1": lambda: aurora_strip("aurora_1", 512, 128, 0.5),
         "stars": lambda: star_sheet(),
         "horizon_ramp": lambda: horizon_ramp(),
+        # ---- sky upgrade ----
+        "stars_natural": lambda: star_sheet_natural(),
+        "aurora_glacira_0": lambda: gradient_curtain("aurora_glacira_0", 512, 128, AURORA_GRADIENTS["glacira"], ray_base=22),
+        "aurora_glacira_1": lambda: gradient_curtain("aurora_glacira_1", 512, 128, AURORA_GRADIENTS["glacira"], ray_base=16, ray_gain=0.9),
+        "aurora_glacira_2": lambda: gradient_curtain("aurora_glacira_2", 512, 128, AURORA_GRADIENTS["glacira"], ray_base=30, ray_gain=0.8, glow=0.4),
+        "aurora_nyxara_0": lambda: gradient_curtain("aurora_nyxara_0", 512, 128, AURORA_GRADIENTS["nyxara"], ray_base=20),
+        "aurora_nyxara_1": lambda: gradient_curtain("aurora_nyxara_1", 512, 128, AURORA_GRADIENTS["nyxara"], ray_base=28, ray_gain=0.85, glow=0.3),
+        "aurora_mars_0": lambda: gradient_curtain("aurora_mars_0", 512, 128, AURORA_GRADIENTS["mars"], ray_base=12, ray_gain=0.7, glow=0.5),
+        "aurora_greenxertz_0": lambda: gradient_curtain("aurora_greenxertz_0", 512, 128, AURORA_GRADIENTS["greenxertz"], ray_base=10, ray_gain=0.6, glow=0.8),
+        "aurora_fringe_rose": lambda: aurora_fringe(),
+        "meteor_streak": lambda: meteor_streak(),
+        "limb_glow": lambda: limb_glow(),
+        "terminator": lambda: terminator(),
+        **{"terminator_%02d" % i: (lambda i=i: terminator_phase("terminator_%02d" % i, i / (TERMINATOR_FRAMES - 1.0)))
+           for i in range(TERMINATOR_FRAMES)},
+        "earth_globe": lambda: earth_globe("earth_globe", 128, "earth"),
+        "earth_disk_globe": lambda: earth_globe("earth_disk_globe", 1024, "earth_disk"),
+        "earth_lights": lambda: city_lights("earth_lights", 128, "earth"),
+        "earth_disk_lights": lambda: city_lights("earth_disk_lights", 1024, "earth_disk"),
+        "corona": lambda: corona(),
+        "diamond_ring": lambda: diamond_ring(),
+        "halo_22": lambda: halo_22(),
+        "rainbow_arc": lambda: rainbow_arc(),
+        "flare_rays": lambda: flare_rays(),
+        "caustic_band": lambda: caustic_band(),
+        "nebula_a": lambda: nebula_patch("nebula_a", 512, ("#FF6EC7", "#9B5DE5", "#FFD6EC")),
+        "nebula_b": lambda: nebula_patch("nebula_b", 512, ("#4DD0E1", "#2D6F9E", "#A9E3FF"), density=0.8),
+        "clouds_ash": lambda: clouds_ash(),
+        "sun_aureole": lambda: sun_aureole(),
+        "horizon_ramp_soft": lambda: horizon_ramp_soft(),
     }
 
 
@@ -429,6 +874,15 @@ def horizon_ramp(name="horizon_ramp", w=4, h=64):
     the zenith-to-horizon gradient of every sky."""
     t = (np.arange(h, dtype=np.float32) + 0.5) / h
     alpha = np.repeat((t ** 1.6)[:, None], w, axis=1)
+    rgb = np.ones((h, w, 3), dtype=np.float32)
+    return to_image(rgb, alpha)
+
+
+def horizon_ramp_soft(name="horizon_ramp_soft", w=4, h=64):
+    """Like ``horizon_ramp`` but eased at the top (smoothstep^1.3) for a taller ramp (72 degrees), so the zenith
+    colour has no visible rim where the ramp begins."""
+    t = (np.arange(h, dtype=np.float32) + 0.5) / h
+    alpha = np.repeat((smoothstep(t) ** 1.3)[:, None], w, axis=1)
     rgb = np.ones((h, w, 3), dtype=np.float32)
     return to_image(rgb, alpha)
 

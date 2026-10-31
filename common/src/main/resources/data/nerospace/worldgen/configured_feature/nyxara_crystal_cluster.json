@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "nerospace:nyx_crystal_cluster",
+        "Properties": {
+          "stage": "1",
+          "facing": "up"
+        }
+      }
+    }
+  }
+}

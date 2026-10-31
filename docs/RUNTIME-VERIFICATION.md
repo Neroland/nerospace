@@ -112,6 +112,209 @@ show the full text in a tooltip.
 | --- | --- | --- | --- | --- |
 | — | — | — | not yet run | All nine cells build and the plain-JVM tests pass; the agent sessions that built 2.0 could not start a client. Headless server checks (upgrade load, landing, erasure) passed; the visual, GUI and frame-time items above are for the owner before tagging. |
 
+## 2.0.x Nyxara crystal / sky / clocks (unreleased)
+
+One owner checklist for the unreleased 2.0.x work: the sky gallery and planet clocks (J, K), the Nyxara crystal (L),
+the sky upgrade (M) and planet sleeping (N). Run it before the 2.0.x release and record each part at the bottom of its
+section. The three checks the release must not skip:
+
+- **Every `/nerospace gallery sky` state on every planet**: J.2 (you land, the sky holds, weather arrives at its peak)
+  and M.1 (the look on NeoForge 26.3), plus M.5 for the colour floor and the fog on the other cells.
+- **Nyxara crystal biomes at render distances 8, 12 and 16** (GUI scale 2 and 3): L.1.
+- **Frame time with the aurora on and off** (and with `sky.quality=lite`): M.3.
+
+A practical order: J, L and M on the NeoForge 26.3 dev client (`here` moves you between set pieces), then K, N and M.5
+on the Fabric and Forge clients.
+
+### Sky gallery and planet clocks
+
+Cells: NeoForge 26.3 dev client for the skies (`:neoforge:26.3:runClient`), plus one other loader on any version for
+the command itself. Creative world with cheats, as an operator.
+
+#### J. `/nerospace gallery sky`
+
+1. `/nerospace gallery sky`: every world is listed with its states. Typing `/nerospace gallery sky mars ` offers only
+   Mars's states (`dawn`, `noon`, `dusk`, `night`, `blue_sunset`, `dust_storm`), and the same for each world.
+2. For **every state on every world**, run `/nerospace gallery sky <planet> <state> here`. Expect: you land on solid,
+   dry ground on that world (a small floor on the station), facing the view; the sky jumps to that time at once and
+   stays there; weather states arrive at full strength with no ramp. Note any state that looks wrong:
+   - Greenxertz: `dawn`, `noon`, `dusk`, `night`, `twin_noon`, `spore_bloom` (the Overworld's time changes too, and
+     the day keeps running).
+   - Cindara: `dawn`, `noon`, `dusk`, `night`, `eclipse`, `ash_fall`.
+   - Glacira: `dawn`, `noon`, `dusk`, `night`, `twilight`, `aurora`, `diamond_dust`.
+   - Orbital Station: `dawn`, `noon`, `dusk`, `night`, `sunrise`, `planet_night` (it should look east and down at
+     the homeworld; the look itself is M.1).
+   - Luna: `dawn`, `noon`, `dusk`, `night`, `earthrise`.
+   - Mars: `dawn`, `noon`, `dusk`, `night`, `blue_sunset`, `dust_storm`.
+   - Nyxara: `dayside`, `band`, `nightside`, `galaxy_side`, `flare`, and `dawn`, `noon`, `dusk`, `night`. Each side
+     spot is past the ragged edge of the band.
+3. With a second player on the same world, run a state: both see the change at the same moment.
+4. Run a state without `here` on Nyxara: the chat names an X to go to and you are not moved.
+5. `/nerospace gallery sky reset mars`: the Mars clock runs again and the storm ends. `/nerospace gallery sky reset`
+   does the same everywhere. `/nerospace clock mars` afterwards shows the clock moving.
+6. As a non-operator in creative, `/nerospace gallery sky` is not offered and is refused.
+7. Switch the game to Italian and Chinese and repeat step 1 and one state: the messages are translated (the Italian and
+   Chinese texts are provisional and need a native check).
+
+#### K. Planet clocks, crops, beds and daylight detectors
+
+1. On every world plant wheat, carrots, potatoes, beetroot, melon and pumpkin stems, sugar cane, a sapling and a sweet
+   berry bush under open sky, next to water, and wait or use `/tick sprint`. Expect: all of them grow at any planet
+   clock phase (the headless crop probe saw this; this is the in-game check).
+2. Beds: run section N (planet sleeping), which replaces the bed check that stood here before planets got their own
+   nights. The rule that carries over: no bed explodes on any world.
+3. Place a daylight detector on each world and change the clock with `/nerospace gallery sky`. The probe found its
+   signal stays the same at every planet phase except on Greenxertz; note whether that matters for your builds.
+4. Watch a Solar Panel's output through a day on Mars and Cindara (peak at noon, low at night, dimmed in a dust storm
+   and during the eclipse) and on Nyxara (steady).
+
+#### Record
+
+| Date | Cell | Steps run | Result | Notes |
+| --- | --- | --- | --- | --- |
+| — | — | — | not yet run | The nine cells build and the plain-JVM tests pass; the crop probe ran headless on NeoForge 26.3. |
+
+### Nyxara crystal
+
+Cells: NeoForge 26.3 dev client (`:neoforge:26.3:runClient`) and one 26.1.2 or 26.2 client (Fabric or Forge), new
+creative world, cheats on. Use `/nerospace gallery sky nyxara <dayside|band|nightside|flare> here` to move around.
+
+#### L. Crystal biomes, translucency and the flare prism
+
+1. **Render distance 8, 12 and 16**, at GUI scale 2 and 3, in each region: the Dayside (pale Sunglass ground, Crazed
+   patches, shard drifts), the Twilight Band (violet ground, rose patches, spire forests, some spires tipped with a
+   prism, clusters) and the Nightside (dark Smoke ground, flat Mirror lakes). Expect: the ground reads as crystal, not
+   stone; cliffs show Nyx Stone; no missing-texture blocks. Note the frame time (F3) in a spire forest and over a
+   lake at each distance, against a stone area of the band (budget: about +1.2 ms in a spire forest, +1 ms at a lake
+   view, at distance 12).
+2. **Translucency.** Look through a Crystal Spire, a Nyx Prism and a Mirror lake against the sky and against terrain:
+   you see what is behind them (tinted), and never the void or missing faces. On the 26.1.2 / 26.2 client the same
+   three blocks must look the same as on 26.3. Clusters show clean cut-out edges; the ground blocks are opaque.
+3. **Flare prism.** Stand in the band near a prism-tipped spire and run `/nerospace gallery sky nyxara flare`. Expect:
+   prisms brighten, and a violet-to-gold particle ray runs 6 blocks east (away from the sun) from each one. With
+   `particles.enabled=false` the ray is gone and the glow stays. Standing in the ray during the flare without a
+   Rad-Lined suit hurts more than standing beside it. `/nerospace gallery sky reset nyxara` ends it.
+4. **Crystal behaviour.** Jump onto natural Crazed Crystal from 4 blocks (it and its neighbours shatter, the fall
+   hurts less); walk barefoot in Shard Drift (it hurts) and with boots (it does not); walk on Rose Crystal (the trail
+   glows for 3 seconds); walk on Smoke Crystal (no footsteps); hit a spire at its base and its top (low and high
+   chime); dig a Mirror lake block and place it in the band (it goes dark); place Twilight Crystal under the open sky
+   and in a cave (glows / dark).
+5. **Sunglass shade.** On the Dayside without a Rad-Lined suit, stand in the open (radiation damage), then under a
+   Sunglass Crystal roof 2-4 blocks above your head (no damage at Dayside level 2).
+6. Repeat step 1 once in Italian and Chinese and check the crystal names (provisional, need a native check).
+7. **After the review fixes.** Mine a full Nyx Crystal Cluster by hand (1 shard) and with a pickaxe (2); judge the
+   Mirror-lake density by eye on the Nightside (about one lake every eight chunks); a Crystal Shard shows the Neroland
+   Core materials slot border; a camera clipped into a Mirror lake shows no overlay.
+
+#### Record
+
+| Date | Cell | Steps run | Result | Notes |
+| --- | --- | --- | --- | --- |
+| — | — | — | not yet run | The nine cells build and the plain-JVM tests pass; the worldgen probe, relight bench and fixture checks ran headless on NeoForge 26.3. |
+
+### Sky upgrade
+
+Cells: NeoForge 26.3 dev client (`:neoforge:26.3:runClient`) for the full sky, plus one client on each other loader
+(a Fabric and a Forge 26.1.2 or 26.2 client) for the fallback. Creative world, cheats on, operator. Every state below is
+`/nerospace gallery sky <world> <state> here`; `/nerospace gallery sky reset` afterwards. The frames in the art preview
+set are the reference look; the game draws the same shapes (stars are placed differently).
+
+#### M. Planet skies, frame time and fallback
+
+1. **Set pieces (NeoForge 26.3).** Expect, per world:
+   - Luna `night`, `earthrise`: hard natural-colour stars that do not twinkle, a faint nebula veil; Earth rises in the
+     east with a blue rim, a dark side with city lights and the terminator facing away from the sun; shooting stars
+     a few times a minute, also by day.
+   - Mars `noon`, `dusk`, `blue_sunset`, `night`, `dust_storm`: butterscotch day; at `dusk` a tan sky; at
+     `blue_sunset` (looking west) a **clearly blue** glow around the setting sun on a grey-blue horizon; Phobos and
+     Deimos show phases; `dust_storm` turns the sky rust, hides the stars, dims the moons. Then `night` and
+     `/nerospace weather start` + `/nerospace weather clear`: a faint green aurora over the north for about a minute.
+   - Cindara `eclipse` (looking west): the sky dims, a pearl corona around the dark moon, a diamond-ring flash on the
+     limb shortly before and after totality (run `/nerospace clock set` through 0.41-0.49 to see both); `ash_fall`:
+     the low cloud deck thickens and greys, its underside glows orange near the horizon.
+   - Glacira `noon`: a faint 22° halo with sun dogs; `aurora` (looking north): three folding green-teal curtains with
+     rays that scroll and drift; `diamond_dust`: brighter curtains with a rose upper fringe, the halo much stronger by
+     day; `twilight`: long mauve dusk.
+   - Greenxertz `twin_noon` (looking up): both suns; `spore_bloom`: a pink shimmer all round the horizon; `night`:
+     green twinkling stars and a soft green horizon glow.
+   - Nyxara `dayside` (looking west), `band`, `galaxy_side`, `flare`: the galaxy climbing from the east and two
+     nebulae; a rainbow-like arc low in the east from the band; violet-cyan curtains only on the nightside; in a
+     flare two counter-rotating ray fans from the western sun, a shimmer along the western horizon and a gold wash,
+     pointing the same way as the prism rays on the ground.
+   - Station `noon`, `sunrise` (looking east, slightly down), `planet_night`: the homeworld fills the lower eastern sky
+     with a blue rim; at `planet_night` the near side is **mostly dark** with city lights (at most a thin lit edge
+     toward the sun), and at `sunrise` the near side is still dark with lights while the sun comes up through the
+     homeworld's rim with a warm flash; nebulae and the galaxy behind. On a mostly lit body the city lights fade out.
+2. **No pops.** Start and clear each world's weather (`gallery sky <world> <weather state>`, then `reset`): the tint,
+   haze, aurora gate, cloud opacity and particles fade over about 1.5 s both ways. Stand through a sunrise with
+   `/nerospace clock thaw` on Glacira and Mars: no body or curtain jumps; set the clock and freeze it: the aurora keeps
+   moving smoothly (it runs on game time).
+3. **Frame time (F3, 1080p, render distance 12)** on each world's busiest state, with `sky.aurora=true` and `false`
+   and with `sky.quality=lite`. Budget (full / lite, ms of sky): Luna 0.30 / 0.22, Mars 0.40 / 0.30, Cindara 0.50 /
+   0.32, Glacira 0.70 / 0.40, Greenxertz 0.40 / 0.30, Nyxara 0.65 / 0.42, station 0.45 / 0.35; `lite` must stay under
+   0.45 ms everywhere. Compare with the vanilla Overworld sky.
+4. **Client switches.** `sky.aurora=false` removes every curtain; `sky.shootingStars=false` removes the streaks;
+   `sky.quality=lite` keeps one Glacira curtain and drops Cindara's cloud deck. Reload the config (or restart) between
+   changes. A server never changes these.
+5. **Fallback cells (Fabric and Forge 26.1.2 / 26.2 / 26.3, NeoForge 26.1.2 / 26.2).** Each world shows its colour
+   floor (vanilla sun/moon shapes) and the **world fog follows the profile**: Mars fog darkens at `night` and turns rust
+   in `dust_storm`; Cindara's fog dims in `eclipse`; Nyxara's fog changes between `dayside`, `band` and `nightside`.
+   Underwater, in lava, in powder snow and with Blindness the vanilla fog is unchanged. No log errors from the fog
+   mixin on Fabric.
+6. **Fog agreement on 26.3.** Near the horizon the terrain fog and the sky meet without a visible band at every state.
+7. **Night Vision.** On Mars or Glacira at `night`, `/effect give @s minecraft:night_vision`: the world fog is vanilla's
+   brightened fog (not the dark night fog under a bright view); remove the effect and the planet fog returns. Same on
+   one fallback cell.
+8. **Resource reload (26.3).** On Glacira `aurora`, press F3+T: the sky redraws after the reload (meshes rebuilt), no
+   log errors, no visible hitch beyond the reload itself.
+
+#### Record
+
+| Date | Cell | Steps run | Result | Notes |
+| --- | --- | --- | --- | --- |
+| — | — | — | not yet run | The nine cells build and the plain-JVM tests pass (sky codec, scene maths, continuity, gallery set pieces, smoothing, config keys); the fixture checks ran headless on NeoForge 26.3. Frame time and the look are owner-side (no headless client capture on 26.3). |
+
+### Planet sleeping
+
+Cells: one client per loader (NeoForge, Fabric and Forge, any 26.x line), survival world with cheats on, operator; a
+second player (a LAN guest or a second client) for step 3. Bring a bed and a few torches. `/nerospace clock <planet>
+get` shows the phase and the day count; `/nerospace clock <planet> set <phase>` moves it. Section K step 2 now points
+here (it recorded the old behaviour, no sleep off Greenxertz).
+
+#### N. Sleeping on each world
+
+1. **Mars at night.** `/nerospace clock mars set 0.75`, place a bed, sleep. Expect: you fall asleep, after about five
+   seconds the sky snaps to sunrise, the HUD dial reads *Sunrise* and `clock mars get` shows the next sol. Start a
+   dust storm first (`/nerospace weather mars start`) and check it is still blowing after the skip.
+2. **Noon refuses.** `/nerospace clock mars set 0.25`, use the bed. Expect "You can only sleep in the planet's night"
+   on the action bar, no sleep, no explosion, and dying sends you back to that bed. Repeat at Cindara's eclipse
+   (`/nerospace clock cindara set 0.45`): refused.
+3. **Two players.** Both on Luna at night (`/nerospace clock luna set 0.75`), default `players_sleeping_percentage`
+   100. One sleeps: nothing is skipped and the vanilla "1/2 players sleeping" line shows. The second sleeps: both wake
+   at sunrise. Set the game rule to 50 and repeat: one sleeper is enough.
+4. **Greenxertz is vanilla.** At Overworld night sleep on Greenxertz: the night is skipped once (the Overworld is at
+   morning too, not a day later). Sleep on Luna at Luna's night and check the Overworld time did not move.
+5. **Nyxara.** Beds in the Twilight Band and on the Dayside: "The sun never sets here", spawn still set. A bed on the
+   Nightside: you sleep and get up on your own after about five seconds; the sky does not change.
+6. **Station.** A bed on the station: "The station's lights never dim", no sleep, no explosion, and you respawn
+   there.
+7. **Frozen clock.** `/nerospace gallery sky luna night` (or `/nerospace clock luna freeze` at night), then sleep.
+   Expect: you sleep, get up after about five seconds with "Time stands still here; you rest, but the night does not
+   pass", and the sky stays at night. `/nerospace gallery sky reset luna`, sleep again: the night is skipped.
+8. **advance_time off.** `/gamerule advance_time false` (`doDaylightCycle` before 1.21.11), then step 1 on Mars:
+   the skip still happens (the planet clock ignores that rule). Set it back to true.
+9. **Water freezing.** On Luna, Mars, Glacira, the Nyxara Nightside and the station, pour water under the open sky
+   with no light near it and plant sugar cane beside it: within a few minutes the water ices over and the cane breaks.
+   With a torch within a few blocks of the water it stays liquid. Check the wiki wording matches what you see.
+10. **Languages.** Read the four refusal / rest lines in Italian and Chinese (they are provisional translations):
+    `nerospace.sleep.day`, `nerospace.sleep.frozen`, `nerospace.sleep.station`, `nerospace.sleep.nyxara_bright`.
+
+#### Record
+
+| Date | Cell | Steps run | Result | Notes |
+| --- | --- | --- | --- | --- |
+| — | — | — | not yet run | The nine cells build and the plain-JVM tests pass (sleep window, decisions, sleepers maths, forward clock set, bed rules); a headless sleep probe ran every row it can (all but the 1.21.x shared-time check) on NeoForge 26.3. Fabric and Forge hooks are untested at runtime (no headless harness on those loaders). |
+
 ## Rocket visuals (1.6.0)
 
 Cell: any dev client; a creative world with a Tier 1 pad, a 3×3, a ringed 3×3 and a Heavy Launch Complex.

@@ -52,11 +52,23 @@ marks both and names them *Twilight*. Aurora Stone only glows at night.
 water under the sky slowly freezes over (a few blocks per chunk per storm). When the storm ends, every Frost Crystal
 Cluster that can see the sky grows one stage. See [Planet Clock and Weather](Planet-Clock-and-Weather).
 
+**Beds** work at night (from just after sunset until part-way through the dawn twilight): when enough players on
+Glacira are asleep, the clock jumps to sunrise. Diamond dust keeps falling through it. See
+[Sleeping](Planet-Clock-and-Weather#sleeping).
+
+**Open water freezes** even without diamond dust: Glacira is cold, so water under the open sky turns to ice like in a
+snowy Overworld biome, unless the block light at the water is 10 or more. Sugar cane planted by that water breaks
+when it freezes. Keep a light source within a few blocks of the water, or farm under a roof.
+
 ## Sky
 
-A pale, cold sky with a small white sun and two little moons, Rime and Hoar, that wax and wane as they cross it. On
-clear nights green, pink and blue auroras ripple overhead, brighter still during diamond dust. The full sky is drawn
-on NeoForge for Minecraft 26.3; on every other version Glacira shows its colours with the vanilla sky shapes.
+A pale, cold sky with a small white sun ringed by a faint 22° halo with sun dogs, which brightens sharply in
+diamond dust. Two little moons, Rime and Hoar, show real phases as they cross. Twilight is long and mauve. On clear
+nights three layers of green-to-teal **aurora curtains** fold, ripple and drift slowly across the northern sky over
+the days; during diamond dust they brighten and a rose fringe rides their upper edge. Shooting stars cross the night
+sky.
+
+The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Glacira shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
 
 ## The Frostbound
 

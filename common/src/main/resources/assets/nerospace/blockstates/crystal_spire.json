@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "segment=base": {
+      "model": "nerospace:block/crystal_spire"
+    },
+    "segment=mid": {
+      "model": "nerospace:block/crystal_spire"
+    },
+    "segment=tip": {
+      "model": "nerospace:block/crystal_spire_tip"
+    }
+  }
+}

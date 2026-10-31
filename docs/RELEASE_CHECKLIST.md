@@ -1,7 +1,6 @@
 # Nerospace — 1.0.0 Release Checklist
 
-Versioning goes **straight to 1.0.0** (no public beta), published to **CurseForge** first, **Modrinth
-later**. No deadline — quality-driven; every section below gates the release. This file now lists only
+Versioning goes **straight to 1.0.0** (no public beta), published to **CurseForge** and GitHub Releases. No deadline — quality-driven; every section below gates the release. This file now lists only
 the **remaining** work; completed items and anything already documented in the wiki have been pruned.
 Tick a box only after the gradle-MCP build + gametests are green AND the in-game check passed.
 
@@ -58,12 +57,11 @@ Tick a box only after the gradle-MCP build + gametests are green AND the in-game
 
 - [ ] **Release-jar Sentry test** — PRIVACY.md, opt-out, and POPIA/GDPR scrubbing are in place in
       source; what REMAINS is the end-to-end test on the **release-candidate jar** (see §9.3).
-- [ ] **End-to-end publish test** — version is already 1.0.0 in the working tree, and the three
-      publish tokens (`CURSE_FORGE_API_TOKEN`, `SENTRY_ORG`, `MODRINTH_API_TOKEN`) are **org-level
+- [ ] **End-to-end publish test** — version is already 1.0.0 in the working tree, and the
+      publish credentials (`CURSE_FORGE_API_TOKEN`, `SENTRY_ORG`) are **org-level
       secrets that ARE available to the workflows** (confirmed 2026-06-13 — they don't show in a
       repo-scoped `gh secret list`; use `gh secret list --org`). So the publish itself IS the
-      end-to-end test of `publish.yml`; the Modrinth listing + page fields follow once the first
-      version clears review (see §9.1b, §9.4 — ⚠️ pushing the gradle.properties bump publishes 1.0.0).
+      end-to-end test of `publish.yml` (⚠️ pushing the gradle.properties bump publishes 1.0.0).
 
 ## 7. Marketing & community
 
@@ -99,18 +97,6 @@ Project: <https://www.curseforge.com/minecraft/mc-mods/nerospace>
       `neoforge/versions/26.2/runs/client/screenshots/nerospace/` (written by `/nsgallery capture`).
       CurseForge has no gallery API, so this is a manual web upload of that same folder.
 
-### 9.1b Modrinth project settings
-
-Project: <https://modrinth.com/mod/nerospace> (created 2026-06-12; the first uploaded version goes
-through Modrinth moderation review before the page goes public).
-
-- [ ] **Gallery:** auto-synced — the `Sync Modrinth gallery` workflow mirrors
-      `neoforge/versions/26.2/runs/client/screenshots/nerospace/*.png` (the same folder CurseForge
-      uses) to the Modrinth gallery on push, with per-shot titles/descriptions baked into the
-      workflow. No manual upload — just commit the PNGs.
-- [ ] File uploads themselves are automatic — `publish.yml` targets CurseForge **and** Modrinth in
-      the same run.
-
 ### 9.2 Release-jar telemetry verification (§6 PRIVACY sign-off)
 
 On the **final release candidate jar** (not a dev run):
@@ -133,10 +119,9 @@ change** — sequence accordingly:
 2. Add the secrets from §6.
 3. If release day isn't 2026-06-11, update the date in `CHANGELOG.md`'s `## [1.0.0]` heading.
 4. Commit everything; push to `main`. The workflow: builds → creates the Sentry release → uploads to
-   CurseForge **and Modrinth** (as **release**-type files, changelog section as release notes) →
+   CurseForge (as **release**-type files, changelog section as release notes) →
    creates the GitHub release + `v1.0.0` tag.
-5. Watch the run (`gh run watch`); CurseForge files sit in moderation briefly, and Modrinth also
-   reviews the project itself on its first version.
+5. Watch the run (`gh run watch`); CurseForge files sit in moderation briefly.
 6. After approval: check the file page renders, then run §9.3 against the *published* jar if you
    didn't already on the identical RC.
 7. If a publish half-fails **after** the tag was created: delete the `v1.0.0` tag/release and re-run
@@ -179,14 +164,12 @@ shot <name>` grabs the current view. Re-run after any texture/model change to re
 
 Canonical gallery folder: run the capture from the **NeoForge 26.2 client** so the PNGs land in
 `neoforge/versions/26.2/runs/client/screenshots/nerospace/` — that's the one path tracked by git and
-mirrored to Modrinth (and uploaded manually to CurseForge). Commit the shots you want public; the
-`Sync Modrinth gallery` workflow re-uploads them in the curated order on push.
+uploaded manually to CurseForge. Review the shots you want public before uploading.
 
 Before committing, normalise the sizes: the harness captures at the game window's native resolution,
 so on a big display the PNGs come out 2.5k+ wide and 5–8 MB. Run **`./gradlew compressScreenshots`**
 (needs Pillow — the task pip-installs it if missing) to cap every shot at 1920 px wide and **< 4 MB**
-in place (the 1920×1080 CurseForge target + under the gallery upload limit; the Modrinth workflow also
-re-encodes to JPEG for its own upload). Tune with `-PscreenshotArgs="--max-mb 3 --max-width 1600"`.
+in place (the 1920×1080 CurseForge target). Tune with `-PscreenshotArgs="--max-mb 3 --max-width 1600"`.
 
 ### 9.5 Trailer / showcase video outline
 

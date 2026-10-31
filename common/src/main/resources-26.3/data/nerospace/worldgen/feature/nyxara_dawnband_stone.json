@@ -14,7 +14,14 @@
       "state": "nerospace:dawnband_stone",
       "target": {
         "predicate_type": "minecraft:block_match",
-        "block": "minecraft:smooth_basalt"
+        "block": "nerospace:twilight_crystal"
+      }
+    },
+    {
+      "state": "nerospace:dawnband_stone",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:sunglass_crystal"
       }
     }
   ]

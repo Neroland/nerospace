@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:block_column",
+  "allowed_placement": {
+    "type": "minecraft:matching_block_tag",
+    "tag": "minecraft:air"
+  },
+  "direction": "up",
+  "layers": [
+    {
+      "height": 1,
+      "provider": {
+        "id": "nerospace:crystal_spire",
+        "properties": {
+          "segment": "base"
+        }
+      }
+    },
+    {
+      "height": {
+        "type": "minecraft:uniform",
+        "min_inclusive": 2,
+        "max_inclusive": 8
+      },
+      "provider": {
+        "id": "nerospace:crystal_spire",
+        "properties": {
+          "segment": "mid"
+        }
+      }
+    },
+    {
+      "height": 1,
+      "provider": {
+        "id": "nerospace:crystal_spire",
+        "properties": {
+          "segment": "tip"
+        }
+      }
+    }
+  ],
+  "prioritize_tip": true
+}

@@ -71,6 +71,16 @@ public final class NyxaraBand {
         return source(level) instanceof FixedXBiomeSource fixedX ? fixedX.edgeNoise() : FixedXBands.DEFAULT_EDGE_NOISE;
     }
 
+    /**
+     * The band side at block ({@code x}, {@code z}) on {@code level} (the same edges the biome source draws, seeded
+     * raggedness included), or null when the level does not use the fixed-X source.
+     */
+    public static FixedXBands.Side sideAt(ServerLevel level, int x, int z) {
+        return source(level) instanceof FixedXBiomeSource fixedX
+                ? FixedXBands.sideAt(x, z, fixedX.width(), fixedX.originX(), fixedX.edgeNoise(), fixedX.seed())
+                : null;
+    }
+
     private static BiomeSource source(ServerLevel level) {
         return level.getChunkSource().getGenerator().getBiomeSource();
     }

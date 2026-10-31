@@ -909,7 +909,8 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (this.getFirstPassenger() instanceof ServerPlayer gated) {
             var gatedPlanet = za.co.neroland.nerospace.world.planet.Planets.get(selectedDestination());
             if (gatedPlanet != null && gatedPlanet.coreGate().isPresent()
-                    && !za.co.neroland.nerolandcore.progression.ProgressionGates.isOpen(gated, gatedPlanet.coreGate().get())) {
+                    && !DestinationSelection.gateOpenFor(gated.isCreative(),
+                            za.co.neroland.nerolandcore.progression.ProgressionGates.isOpen(gated, gatedPlanet.coreGate().get()))) {
                 gated.sendSystemMessage(Component.translatable("entity.nerospace.rocket.gate_locked",
                         Destinations.displayName(gatedPlanet.dimension())));
                 return;
@@ -1590,8 +1591,17 @@ public class RocketEntity extends Entity implements MenuProvider {
         };
     }
 
+    //? if >=1.21.2 {
     @Override
     public boolean hurtServer(ServerLevel level, net.minecraft.world.damagesource.DamageSource damageSource, float amount) {
+    //?} else {
+    /*// Before 1.21.2 hurt(..) runs on both sides; only the server applies it.
+    @Override
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource damageSource, float amount) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return false;
+        }
+    *///?}
         if (this.isRemoved() || isLaunching() || isDescending()) {
             return false;
         }
@@ -1751,13 +1761,13 @@ public class RocketEntity extends Entity implements MenuProvider {
         ContainerData shared = this.dataAccess;
         return new ContainerData() {
             /** Game time of the last refresh; the two per-viewer values are recomputed at most every 20 ticks. */
-            private long refreshedAt = Long.MIN_VALUE;
+            private long refreshedAt = DestinationSelection.NEVER;
             private int gate;
             private int reveal;
 
             private void refresh() {
                 long now = player.level().getGameTime();
-                if (now - this.refreshedAt < VIEWER_DATA_REFRESH_TICKS && now >= this.refreshedAt) {
+                if (!DestinationSelection.refreshDue(now, this.refreshedAt, VIEWER_DATA_REFRESH_TICKS)) {
                     return;
                 }
                 this.refreshedAt = now;
@@ -1791,9 +1801,12 @@ public class RocketEntity extends Entity implements MenuProvider {
         };
     }
 
-    /** Bit per destination index whose planet's Core gate is closed for {@code player} (server-side). */
+    /**
+     * Bit per destination index whose planet's Core gate is closed for {@code player} (server-side). A creative
+     * player bypasses the gates (mask 0); spectators are held to them like survival players.
+     */
     public static int gateMask(Player player) {
-        if (!(player instanceof ServerPlayer sp)) {
+        if (!(player instanceof ServerPlayer sp) || sp.isCreative()) {
             return 0;
         }
         int mask = 0;

@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.api.Hazard;
 import za.co.neroland.nerospace.api.PlanetTraits;
+import za.co.neroland.nerospace.client.ui.DestinationList;
 import za.co.neroland.nerospace.client.ui.PlanetAccents;
 import za.co.neroland.nerospace.client.ui.PlanetCard;
 import za.co.neroland.nerospace.client.ui.PlanetCardData;
@@ -126,9 +127,9 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             final int r = row;
             this.rowFocus[row] = new PlanetCardFocus(this.leftPos + LIST_X, this.topPos + LIST_Y + row * PlanetCard.COMPACT_H,
                     b -> {
-                        int i = this.scroll + r;
-                        if (i < this.entries.size()) {
-                            clickCard(this.entries.get(i));
+                        int index = DestinationList.indexAt(this.entries, this.scroll, r, VISIBLE);
+                        if (index >= 0) {
+                            clickCard(index);
                         }
                     });
             this.addRenderableWidget(this.rowFocus[row]);
@@ -233,28 +234,21 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         // Destination list: reachable destinations in Destinations order, plus the "you are here" node.
         rebuildEntries();
         int synced = this.menu.getDestinationIndex();
-        if (this.pending.reconcile(synced, now) == PendingSelection.Result.REFUSED) {
-            showStatus(Component.translatable("gui.nerospace.dest.reason.refused"), now);
+        if (this.pending.reconcile(synced, this.menu.getLastOutcomeCode(), now) == PendingSelection.Result.REFUSED) {
+            showStatus(refusalReason(this.pending.refusal(), synced), now);
         }
         int selected = this.pending.shown(synced);
-        if (selected != this.ensuredIndex) {
+        if (selected != this.ensuredIndex && this.entries.contains(selected)) {
             // Keep the selection in view (on open, and after every pick by click, key or server).
-            int at = this.entries.indexOf(selected);
-            if (at >= 0) {
-                if (at < this.scroll) {
-                    this.scroll = at;
-                } else if (at >= this.scroll + VISIBLE) {
-                    this.scroll = at - VISIBLE + 1;
-                }
-                this.ensuredIndex = selected;
-            }
+            this.scroll = DestinationList.scrollToShow(this.entries, this.scroll, selected, VISIBLE);
+            this.ensuredIndex = selected;
         }
-        this.scroll = Math.max(0, Math.min(this.scroll, Math.max(0, this.entries.size() - VISIBLE)));
+        this.scroll = DestinationList.clampScroll(this.scroll, this.entries.size(), VISIBLE);
         PlanetCardData hovered = null;
         for (int row = 0; row < VISIBLE; row++) {
-            int i = this.scroll + row;
+            int index = DestinationList.indexAt(this.entries, this.scroll, row, VISIBLE);
             PlanetCardFocus focus = this.rowFocus[row];
-            if (i >= this.entries.size()) {
+            if (index < 0) {
                 if (focus != null) {
                     focus.show(null);
                 }
@@ -262,7 +256,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             }
             int x = this.leftPos + LIST_X;
             int y = this.topPos + LIST_Y + row * PlanetCard.COMPACT_H;
-            PlanetCardData data = cardData(this.entries.get(i));
+            PlanetCardData data = cardData(index);
             boolean hover = PlanetCard.hit(x, y, true, this.mouseX, this.mouseY);
             PlanetCard.draw(g, this.font, x, y, data, true, hover, now);
             if (focus != null) {
@@ -332,8 +326,13 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             PlanetDefinition planet = Planets.get(Destinations.byIndex(index));
             return Component.translatable("gui.nerospace.card.tier_tooltip", planet != null ? planet.unlockTier() : 1);
         }
-        String key = outcome.langKey();
-        return Component.translatable(key != null ? key : "gui.nerospace.dest.reason.refused");
+        return Component.translatable(DestinationSelection.refusalKey(outcome));
+    }
+
+    /** The server's reason for a refused pick; the generic "kept its course" only when the server never answered. */
+    private Component refusalReason(@Nullable DestinationSelection.Outcome outcome, int index) {
+        return outcome == null ? Component.translatable(DestinationSelection.refusalKey(null))
+                : reasonFor(outcome, index);
     }
 
     /** The displayed selection: the optimistic pick while it is pending, else the synced index. */
@@ -342,18 +341,12 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     }
 
     private void rebuildEntries() {
-        this.entries.clear();
         int mask = this.menu.getDestinationMask();
         int here = hereIndex();
-        List<ResourceKey<Level>> all = Destinations.all();
-        for (int i = 0; i < all.size(); i++) {
-            if ((mask & (1 << i)) != 0 || i == here) {
-                this.entries.add(i);
-            }
-        }
         this.revealed.clear();
         this.revealed.addAll(revealedLocked(mask, here, this.menu.getTier().level(), this.menu.getRevealCount()));
-        this.entries.addAll(this.revealed);
+        this.entries.clear();
+        this.entries.addAll(DestinationList.entries(mask, here, Destinations.all().size(), this.revealed));
     }
 
     /**
@@ -454,14 +447,14 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         // (GLFW, up to 26.2, used 0). InputConstants carries the right value for each version.
         if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             for (int row = 0; row < VISIBLE; row++) {
-                int i = this.scroll + row;
-                if (i >= this.entries.size()) {
+                int index = DestinationList.indexAt(this.entries, this.scroll, row, VISIBLE);
+                if (index < 0) {
                     break;
                 }
                 int x = this.leftPos + LIST_X;
                 int y = this.topPos + LIST_Y + row * PlanetCard.COMPACT_H;
                 if (PlanetCard.hit(x, y, true, event.x(), event.y())) {
-                    clickCard(this.entries.get(i));
+                    clickCard(index);
                     return true;
                 }
             }
@@ -496,7 +489,7 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         DestinationTrace.log("rocket screen {} click index {} mask {} gate {} -> {}", this.menu.containerId, index,
                 mask, gate, outcome);
         if (outcome == DestinationSelection.Outcome.OK) {
-            this.pending.begin(index, synced, now);
+            this.pending.begin(index, synced, this.menu.getLastOutcomeCode(), now);
             this.status = null;
             playClick();
             sendButton(RocketMenu.SELECT_DEST_BASE + index);

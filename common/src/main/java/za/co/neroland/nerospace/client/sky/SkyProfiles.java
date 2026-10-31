@@ -33,6 +33,7 @@ public final class SkyProfiles implements ResourceManagerReloadListener {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "sky_profiles");
 
     private static volatile Map<Identifier, SkyProfile> profiles = Map.of();
+    private static volatile int generation;
 
     private SkyProfiles() {
     }
@@ -40,6 +41,14 @@ public final class SkyProfiles implements ResourceManagerReloadListener {
     /** The profile for a sky id (the planet's {@code skyProfile} trait), or {@link SkyProfile#VANILLA}. */
     public static SkyProfile get(Identifier skyId) {
         return profiles.getOrDefault(skyId, SkyProfile.VANILLA);
+    }
+
+    /**
+     * Bumped on every reload, so a renderer that keeps GPU meshes keyed on profile values (ramp elevation, cloud deck,
+     * star count) can release them when the profiles change.
+     */
+    public static int generation() {
+        return generation;
     }
 
     @Override
@@ -62,5 +71,6 @@ public final class SkyProfiles implements ResourceManagerReloadListener {
             }
         }
         profiles = Map.copyOf(loaded);
+        generation++;
     }
 }

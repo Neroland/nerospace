@@ -60,11 +60,22 @@ drift downwind and toss loose items into the air. They never break blocks, never
 players. Each lasts at most 30 seconds, and they all disappear when the storm ends. See
 [Planet Clock and Weather](Planet-Clock-and-Weather).
 
+**Beds** work in the Martian night: when enough players on Mars are asleep, the clock jumps to sunrise and the sol
+count goes up by one. A dust storm keeps blowing through it. See [Sleeping](Planet-Clock-and-Weather#sleeping).
+
+**Open water freezes.** Mars is cold, so water under the open sky turns to ice like in a snowy Overworld biome,
+unless the block light at the water is 10 or more. Sugar cane planted by that water breaks when it freezes. Keep a
+light source within a few blocks of the water, or farm under a roof.
+
 ## Sky
 
-A butterscotch sky with a small, pale-blue sun that sets in a blue glow, Phobos racing across the sky several times
-a sol and slow little Deimos. Dust storms tint everything brown. The full sky is drawn on NeoForge for Minecraft 26.3;
-on every other version Mars shows its colours with the vanilla sky shapes.
+A butterscotch sky by day with a small, cool-white sun. At sunset the sky turns grey-blue and the sun wears a
+clearly **blue glow** around it, the real Martian effect of fine dust scattering the light. Phobos races across
+several times a sol and slow little Deimos follows, both showing phases. A dust storm turns the sky rust and brown,
+hides the stars and dims the moons; for about a minute after it clears, a faint green aurora hangs over the north.
+Shooting stars cross the night sky.
+
+The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Mars shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
 
 ## Rover Wrecks, the Salvage Drone and Derelict Habitats
 

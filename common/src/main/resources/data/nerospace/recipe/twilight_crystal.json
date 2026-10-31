@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nerospace:crystal_shard",
+    "nerospace:crystal_shard",
+    "nerospace:crystal_shard",
+    "nerospace:crystal_shard"
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:twilight_crystal"
+  }
+}

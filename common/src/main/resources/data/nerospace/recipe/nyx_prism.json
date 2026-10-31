@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": "nerospace:crystal_shard",
+    "V": "nerospace:voidglass"
+  },
+  "pattern": [
+    "SSS",
+    "SVS",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:nyx_prism"
+  }
+}

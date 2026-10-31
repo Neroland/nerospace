@@ -116,6 +116,17 @@ Fees go to NeroEconomy's Reserve. Without NeroEconomy these keys do nothing.
 | --- | --- | --- |
 | `welcomeMessageEnabled` | `true` | Send the two-line Nerospace welcome (the Star Guide Book prompt and the feedback link) when a player joins. Set `false` to join silently. Applies on config reload. The server decides. |
 
+### Sky (client-side)
+
+Each player sets these for themselves; a server never overrides them. They only change what the full planet sky
+draws (NeoForge for Minecraft 26.3).
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `sky.aurora` | `true` | Aurora curtains (Glacira, Nyxara's Nightside, Mars after a dust storm, the Greenxertz spore shimmer). `false` hides them. |
+| `sky.shootingStars` | `true` | Shooting stars. `false` hides them. |
+| `sky.quality` | `full` | `lite` halves the aurora layers and their detail, drops Cindara's ash cloud deck and draws slightly smaller stars, for low-end graphics cards. |
+
 ## Removed keys (for modpack authors)
 
 These keys no longer exist. If they are still in your file, they do nothing.

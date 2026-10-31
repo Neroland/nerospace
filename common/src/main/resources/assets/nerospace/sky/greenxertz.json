@@ -1,10 +1,12 @@
 {
   "background": {
-    "zenith": "#1D4D2B",
+    "zenith": "#3F8F5A",
     "horizon": "#3FBF6F",
     "nightZenith": "#07140B",
     "nightHorizon": "#1D4D2B",
-    "blend": "daylight"
+    "blend": "daylight",
+    "rampTopDeg": 72.0,
+    "rampTexture": "nerospace:textures/sky/horizon_ramp_soft.png"
   },
   "fog": {
     "color": "#3FBF6F",
@@ -13,10 +15,13 @@
     "end": 0.9
   },
   "stars": {
-    "count": 1200,
+    "count": 1600,
     "brightness": 0.5,
     "alwaysVisible": false,
-    "tint": "#A6FF4D"
+    "tint": "#A6FF4D",
+    "palette": "natural",
+    "twinkle": 0.6,
+    "sizeScale": 0.75
   },
   "sun": [
     {
@@ -27,7 +32,8 @@
       "glow": 4.0,
       "orbitPeriodDays": 1.0,
       "phaseOffset": 0.0,
-      "inclination": 0.0
+      "inclination": 0.0,
+      "glowTexture": "nerospace:textures/sky/sun_aureole.png"
     },
     {
       "id": "pale_green",
@@ -37,7 +43,8 @@
       "glow": 3.0,
       "orbitPeriodDays": 1.0,
       "phaseOffset": -0.05,
-      "inclination": 6.0
+      "inclination": 6.0,
+      "glowTexture": "nerospace:textures/sky/sun_aureole.png"
     }
   ],
   "moons": [],
@@ -45,13 +52,15 @@
   "clouds": "vanilla",
   "horizonHaze": {
     "color": "#3FBF6F",
-    "strength": 0.5
+    "strength": 0.5,
+    "nightColor": "#3FBF6F",
+    "nightStrength": 0.55
   },
   "weatherTints": {
     "SPORE_BLOOM": {
-      "sky": "#FF7AC8",
-      "fog": "#FF7AC8",
-      "strengthAtPeak": 0.3
+      "sky": "#E8A0D8",
+      "fog": "#E0A8D8",
+      "strengthAtPeak": 0.35
     }
   },
   "gradient": [
@@ -63,19 +72,19 @@
     },
     {
       "phase": 0.08,
-      "zenith": "#1D4D2B",
+      "zenith": "#2E7046",
       "horizon": "#3FBF6F",
       "fog": "#3FBF6F"
     },
     {
       "phase": 0.25,
-      "zenith": "#245F38",
-      "horizon": "#8FD6A0",
-      "fog": "#6FCF8A"
+      "zenith": "#3F8F5A",
+      "horizon": "#A8E0B8",
+      "fog": "#7FCF95"
     },
     {
       "phase": 0.42,
-      "zenith": "#1D4D2B",
+      "zenith": "#2E7046",
       "horizon": "#3FBF6F",
       "fog": "#3FBF6F"
     },
@@ -103,5 +112,41 @@
       "horizon": "#1D4D2B",
       "fog": "#0D2414"
     }
-  ]
+  ],
+  "aurora": {
+    "colors": [
+      "#FF7AC8"
+    ],
+    "opacity": 0.6,
+    "speed": 0.8,
+    "nightOnly": false,
+    "textures": [
+      "nerospace:textures/sky/aurora_greenxertz_0.png"
+    ],
+    "layers": 1,
+    "yaw": 0.0,
+    "arcDeg": 360.0,
+    "baseDeg": 8.0,
+    "topDeg": 34.0,
+    "fold": {
+      "amplitudeDeg": 4.0,
+      "frequency": 3.0,
+      "speed": 1.2
+    },
+    "weather": {
+      "event": "SPORE_BLOOM",
+      "active": true,
+      "recovery": false
+    }
+  },
+  "shootingStars": {
+    "ratePerMinute": 2.0,
+    "maxConcurrent": 2,
+    "texture": "nerospace:textures/sky/meteor_streak.png",
+    "color": "#E8FFD0",
+    "lengthDeg": 10.0,
+    "durationTicks": 12,
+    "nightOnly": true,
+    "minPitch": 12.0
+  }
 }

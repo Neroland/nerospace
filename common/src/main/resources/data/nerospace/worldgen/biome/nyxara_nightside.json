@@ -27,7 +27,10 @@
   "features": [
     [],
     [],
-    [],
+    [
+      "nerospace:nyxara_crystal_geode_sparse_placed",
+      "nerospace:nyxara_mirror_lake_placed"
+    ],
     [],
     [],
     [],

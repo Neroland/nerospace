@@ -1,0 +1,158 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:shard_drift",
+                "state": {
+                  "layers": "1"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:set_count",
+                  "count": 1
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:shard_drift",
+                "state": {
+                  "layers": "2"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:set_count",
+                  "count": 2
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:shard_drift",
+                "state": {
+                  "layers": "3"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:set_count",
+                  "count": 3
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:shard_drift",
+                "state": {
+                  "layers": "4"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:set_count",
+                  "count": 4
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:shard_drift",
+                "state": {
+                  "layers": "5"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:set_count",
+                  "count": 5
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:shard_drift",
+                "state": {
+                  "layers": "6"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:set_count",
+                  "count": 6
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:shard_drift",
+                "state": {
+                  "layers": "7"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:set_count",
+                  "count": 7
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "nerospace:shard_drift",
+                "state": {
+                  "layers": "8"
+                }
+              },
+              "modifier": [
+                {
+                  "type": "minecraft:set_count",
+                  "count": 8
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            }
+          ]
+        }
+      ],
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:match_tool",
+        "predicate": {
+          "items": "#minecraft:shovels"
+        }
+      }
+    }
+  ],
+  "random_sequence": "nerospace:blocks/shard_drift"
+}

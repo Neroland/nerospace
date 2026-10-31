@@ -284,14 +284,15 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
 
         long now = System.currentTimeMillis();
         int synced = this.menu.rocketDestIndex();
-        if (this.pending.reconcile(synced, now) == PendingSelection.Result.REFUSED) {
-            showStatus(Component.translatable("gui.nerospace.dest.reason.refused"), now);
+        if (this.pending.reconcile(synced, this.menu.lastOutcomeCode(), now) == PendingSelection.Result.REFUSED) {
+            showStatus(Component.translatable(DestinationSelection.refusalKey(this.pending.refusal())), now);
         }
         int shown = this.pending.shown(synced);
         ResourceKey<Level> key = Destinations.byIndex(shown);
         this.destButton.setMessage(Component.translatable("gui.nerospace.launch_controller.destination",
                 key == null ? Component.literal("—") : Destinations.displayName(key)));
-        int mask = this.menu.rocketDestMask();
+        // Worlds whose Core gate is still closed for this viewer are never offered (a creative viewer has none).
+        int mask = this.menu.rocketDestMask() & ~this.menu.gateMask();
         boolean choice = Integer.bitCount(mask) > 1;
         this.prevDestButton.active = choice;
         this.nextDestButton.active = choice;
@@ -329,14 +330,14 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         int synced = this.menu.rocketDestIndex();
         int mask = this.menu.rocketDestMask();
         int current = this.pending.shown(synced);
-        int predicted = DestinationSelection.step(mask, 0, current, dir, Destinations.all().size());
+        int predicted = DestinationSelection.step(mask, this.menu.gateMask(), current, dir, Destinations.all().size());
         DestinationTrace.log("controller screen {} step {} from {} mask {} -> {}", this.menu.containerId, dir,
                 current, mask, predicted);
         if (predicted == current) {
             showStatus(Component.translatable("gui.nerospace.dest.reason.only_one"), now);
             return;
         }
-        this.pending.begin(predicted, synced, now);
+        this.pending.begin(predicted, synced, this.menu.lastOutcomeCode(), now);
         this.status = null;
         sendButton(dir < 0 ? LaunchControllerMenu.BUTTON_PREV_DEST : LaunchControllerMenu.BUTTON_CYCLE_DEST);
     }

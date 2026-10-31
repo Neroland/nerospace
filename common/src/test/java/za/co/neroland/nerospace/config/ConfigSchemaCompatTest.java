@@ -107,7 +107,7 @@ class ConfigSchemaCompatTest {
     }
 
     @Test
-    @DisplayName("the ambient particle and HUD keys are client-side (never forced by a server)")
+    @DisplayName("the ambient particle, HUD and sky keys are client-side (never forced by a server)")
     void particleKeysAreClientSide() {
         Map<String, String> m = new LinkedHashMap<>();
         m.put("particles.enabled", "true");
@@ -120,6 +120,9 @@ class ConfigSchemaCompatTest {
         m.put("hud.clockDial", "true");
         m.put("hud.clockDialScale", "1");
         m.put("hud.weatherLine", "true");
+        m.put("sky.aurora", "true");
+        m.put("sky.shootingStars", "true");
+        m.put("sky.quality", "full");
         for (Map.Entry<String, String> e : m.entrySet()) {
             ConfigValue<?> v = NerospaceConfig.schema().value(e.getKey());
             assertNotNull(v, "missing key " + e.getKey());

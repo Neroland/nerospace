@@ -1,0 +1,38 @@
+{
+  "variants": {
+    "lit=false": [
+      {
+        "model": "nerospace:block/rose_crystal"
+      },
+      {
+        "model": "nerospace:block/rose_crystal",
+        "y": 90
+      },
+      {
+        "model": "nerospace:block/rose_crystal",
+        "y": 180
+      },
+      {
+        "model": "nerospace:block/rose_crystal",
+        "y": 270
+      }
+    ],
+    "lit=true": [
+      {
+        "model": "nerospace:block/rose_crystal_lit"
+      },
+      {
+        "model": "nerospace:block/rose_crystal_lit",
+        "y": 90
+      },
+      {
+        "model": "nerospace:block/rose_crystal_lit",
+        "y": 180
+      },
+      {
+        "model": "nerospace:block/rose_crystal_lit",
+        "y": 270
+      }
+    ]
+  }
+}

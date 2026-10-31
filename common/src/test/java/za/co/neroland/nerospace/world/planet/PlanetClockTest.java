@@ -41,6 +41,42 @@ class PlanetClockTest {
     }
 
     @Test
+    @DisplayName("forwardOffset: dawn from any night phase moves forward, the day number goes up by exactly one")
+    void forwardToDawn() {
+        for (long day : new long[] {24_000L, 24_600L, 48_000L, 72_000L, 672_000L}) {
+            long epoch = 5_000L;
+            for (long offset : new long[] {0L, 777L, -3L * day + 11L}) {
+                for (double night : new double[] {0.52, 0.6, 0.75, 0.9, 0.979}) {
+                    // A game time at which the clock reads `night`.
+                    long now = epoch + offset + 3L * day + Math.round(night * day);
+                    assertEquals(night, ClockMath.phase(now, epoch, offset, day, 0.0, false, 0L), 1.0 / day);
+                    long before = ClockMath.dayNumber(now, epoch, offset, day, false, 0L);
+                    long moved = ClockMath.forwardOffset(now, epoch, offset, day, 0.0);
+                    assertTrue(moved <= offset, "the offset only shrinks (the clock runs forward)");
+                    assertEquals(0.0, ClockMath.phase(now, epoch, moved, day, 0.0, false, 0L), EPS);
+                    assertEquals(before + 1L, ClockMath.dayNumber(now, epoch, moved, day, false, 0L),
+                            day + " " + offset + " " + night);
+                    assertTrue(ClockMath.days(now, epoch, moved, day, 0.0, false, 0L)
+                            > ClockMath.days(now, epoch, offset, day, 0.0, false, 0L));
+                }
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("forwardOffset: setting the phase it already reads changes nothing; any target reads back")
+    void forwardIsIdempotent() {
+        long day = 24_600L;
+        long now = 987_654L;
+        for (double target : new double[] {0.0, 0.1, 0.25, 0.6, 0.99}) {
+            long moved = ClockMath.forwardOffset(now, 1_234L, 0L, day, target);
+            assertEquals(target, ClockMath.phase(now, 1_234L, moved, day, 0.0, false, 0L), 1.0 / day);
+            assertEquals(moved, ClockMath.forwardOffset(now, 1_234L, moved, day, target));
+        }
+        assertEquals(42L, ClockMath.forwardOffset(now, 0L, 42L, 0L, 0.5), "a fixed clock keeps its offset");
+    }
+
+    @Test
     @DisplayName("a frozen clock stops at the freeze time")
     void frozen() {
         long day = 72_000L;

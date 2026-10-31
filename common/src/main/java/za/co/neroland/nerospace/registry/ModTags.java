@@ -108,6 +108,8 @@ public final class ModTags {
         public static final TagKey<Block> XERTZ_ROOTABLE = blockTag("nerospace", "xertz_rootable");
         /** Blocks a beam can be deflected by (Void Crystal); additive API, see {@code api.optics.BeamRefraction}. */
         public static final TagKey<Block> BEAM_REFRACTORS = blockTag("nerospace", "beam_refractors");
+        /** Overhead blocks that shade a player from ambient radiation (Sunglass Crystal). */
+        public static final TagKey<Block> RADIATION_SHADE = blockTag("nerospace", "radiation_shade");
         /** Blocks custom lava interactions must never replace (Magma Glass). */
         public static final TagKey<Block> LAVA_IMMUNE = blockTag("nerospace", "lava_immune");
         /** Blocks that act as oxygen sources for the field (generators; later: alien flora). */

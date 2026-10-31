@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "nerospace:block/crystal_spire_top",
+    "side": "nerospace:block/crystal_spire"
+  }
+}

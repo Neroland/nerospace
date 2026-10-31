@@ -242,8 +242,17 @@ public class FallingMeteorEntity extends Entity {
         return false;
     }
 
+    //? if >=1.21.2 {
     @Override
     public boolean hurtServer(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
+    //?} else {
+    /*// Before 1.21.2 hurt(..) runs on both sides; only the server applies it.
+    @Override
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return false;
+        }
+    *///?}
         return false; // indestructible in flight
     }
 

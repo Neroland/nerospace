@@ -181,6 +181,47 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
 sourceSets.main.resources.srcDir generateModMetadata
 eclipse.synchronizationTasks generateModMetadata
 
+// Bundle the in-repo wiki/ pages as runtime classpath resources under assets/nerospace/wiki/ so the
+// NeroLink `wiki` section (link.WikiLibrary) can serve them on the server. wiki/ stays the single
+// source of truth; a generated index.json (slug + title per page) rides along, since classpath
+// directory listing is unreliable across loaders. Wiki chrome (_Sidebar and other _* pages) is left out.
+def generateWikiResources = tasks.register('generateWikiResources', Copy) {
+    def wikiSrcDir = file("${rootProject.projectDir}/wiki")
+    inputs.dir(wikiSrcDir)
+    from(wikiSrcDir) {
+        include '*.md'
+        exclude '_*.md'
+        into 'assets/nerospace/wiki'
+    }
+    into layout.buildDirectory.dir('generated/sources/wiki')
+    doLast {
+        def outDir = layout.buildDirectory.dir('generated/sources/wiki/assets/nerospace/wiki').get().asFile
+        outDir.mkdirs()
+        def entries = []
+        wikiSrcDir.listFiles()?.findAll { it.isFile() && it.name.endsWith('.md') && !it.name.startsWith('_') }
+                ?.sort { it.name }?.each { f ->
+            def slug = f.name.substring(0, f.name.length() - 3)
+            def title = slug.replace('-', ' ')
+            for (String line : f.readLines('UTF-8')) {
+                def t = line.trim()
+                if (t.startsWith('# ')) { title = t.substring(2).trim(); break }
+                if (!t.isEmpty()) break
+            }
+            entries << [slug: slug, title: title]
+        }
+        def sb = new StringBuilder('{\n  "pages": [\n')
+        entries.eachWithIndex { e, i ->
+            sb.append('    {"slug": ').append(groovy.json.JsonOutput.toJson(e.slug))
+              .append(', "title": ').append(groovy.json.JsonOutput.toJson(e.title)).append('}')
+              .append(i < entries.size() - 1 ? ',' : '').append('\n')
+        }
+        sb.append('  ]\n}\n')
+        new File(outDir, 'index.json').write(sb.toString(), 'UTF-8')
+    }
+}
+sourceSets.main.resources.srcDir generateWikiResources
+eclipse.synchronizationTasks generateWikiResources
+
 // The access widener's namespace differs by era: 26.x is `official` (de-obfuscated), 1.21.x is `named`
 // (Mojang mappings, remapped to intermediary in remapJar). Each 1.21.x line has its own file under
 // src/main/accesswidener/, swapped into the jar under the name fabric.mod.json declares.

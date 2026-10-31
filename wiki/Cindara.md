@@ -56,9 +56,13 @@ Spire is never struck. Ash Fall never starts close to the eclipse. See
 
 ## Sky
 
-A dusky sky with faint, warm stars, dominated by a huge, glowing red giant, and the dark moon
-that eclipses it. Ash Fall greys the sky. The full sky is drawn on NeoForge for Minecraft 26.3; on every other version
-Cindara shows its colours with the vanilla sky shapes.
+A dusky sky with faint, warm stars, dominated by a huge red giant with a burning rim, and the dark moon that
+eclipses it every day around midday-to-dusk (clock phase 0.40 to 0.50). As the eclipse deepens the sky dims, a pearly
+**corona** blooms around the darkened sun, and a **diamond ring** flashes on its edge just before and after totality.
+A deck of ash clouds hangs low over the horizon, lit orange from below by the lava fields; Ash Fall thickens it and
+greys the sky.
+
+The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Cindara shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
 
 ## The Ember-kin
 

@@ -58,11 +58,23 @@ earthshine; the HUD clock dial marks that stretch of the night and names it *Ear
 light, sky light and mob spawning work as before. Luna has no weather. See
 [Planet Clock and Weather](Planet-Clock-and-Weather).
 
+**Beds** work once the lunar night has fallen: when enough players on Luna are asleep, the clock jumps to sunrise
+(Earthrise is skipped if you sleep before it). A bed always sets your respawn point. See
+[Sleeping](Planet-Clock-and-Weather#sleeping).
+
+**Open water freezes.** Luna is cold, so water under the open sky turns to ice like in a snowy Overworld biome,
+unless the block light at the water is 10 or more. Sugar cane planted by that water breaks when it freezes. Keep a
+light source within a few blocks of the water, or farm under a roof.
+
 ## Sky
 
-A black sky full of stars, even in daylight, with a faint band of the galaxy, a hard white sun and the blue Earth
-hanging over the horizon. The full sky is drawn on NeoForge for Minecraft 26.3; on every other version Luna shows its
-colours with the vanilla sky shapes.
+A black sky full of hard, steady stars in their natural colours (no twinkle: there is no air), with a faint band
+of the galaxy and a pale nebula veil. The sun is hard and white with a soft glow. Earth hangs over the eastern
+horizon with a blue atmospheric rim, a real day and night side, and city lights on the dark side; it rises around
+clock phase 0.78 (Earthrise) and its light brightens the horizon haze. Meteoroid flashes streak across the sky a few
+times a minute, day and night.
+
+The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Luna shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
 
 ## Villagers and structures
 

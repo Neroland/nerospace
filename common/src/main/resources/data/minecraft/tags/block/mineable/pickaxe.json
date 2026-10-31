@@ -84,6 +84,16 @@
     "nerospace:solar_wing",
     "nerospace:gravity_plate",
     "nerospace:hydroponics_tray",
-    "nerospace:telescope"
+    "nerospace:telescope",
+    "nerospace:sunglass_crystal",
+    "nerospace:crazed_crystal",
+    "nerospace:twilight_crystal",
+    "nerospace:rose_crystal",
+    "nerospace:smoke_crystal",
+    "nerospace:mirror_crystal",
+    "nerospace:budding_nyx_crystal",
+    "nerospace:nyx_crystal_cluster",
+    "nerospace:crystal_spire",
+    "nerospace:nyx_prism"
   ]
 }

@@ -66,11 +66,21 @@ public class XertzVineBlock extends Block {
         return up.is(this) || up.isFaceSturdy(level, above, Direction.DOWN);
     }
 
+    //? if >=1.21.2 {
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
             Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+    //?} else {
+    /*@Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+            net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    *///?}
         if (direction == Direction.UP && !state.canSurvive(level, pos)) {
+            //? if >=1.21.2 {
             ticks.scheduleTick(pos, this, 1);
+            //?} else {
+            /*level.scheduleTick(pos, this, 1);
+            *///?}
         }
         if (direction == Direction.DOWN) {
             return state.setValue(TIP, !neighborState.is(this));

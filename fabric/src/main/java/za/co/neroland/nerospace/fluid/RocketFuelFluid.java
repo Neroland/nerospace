@@ -47,8 +47,13 @@ public abstract class RocketFuelFluid extends FlowingFluid {
         return fluid == ModFluids.ROCKET_FUEL.get() || fluid == ModFluids.ROCKET_FUEL_FLOWING.get();
     }
 
+    //? if >=1.21.2 {
     @Override
     protected boolean canConvertToSource(ServerLevel level) {
+    //?} else {
+    /*@Override
+    protected boolean canConvertToSource(net.minecraft.world.level.Level level) {
+    *///?}
         return false;
     }
 

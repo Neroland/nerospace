@@ -1,5 +1,7 @@
 # Project context for AI coding agents — nerospace
 
+> Modrinth is temporarily being removed from the upload and is no longer being referenced. Avoid making references to modrinth.
+
 > `AGENTS.md` and `CLAUDE.md` are kept byte-identical; update both together.
 
 ## The mod

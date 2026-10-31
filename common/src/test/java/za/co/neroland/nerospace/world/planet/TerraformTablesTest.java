@@ -185,9 +185,10 @@ class TerraformTablesTest {
         switch (type) {
             case "minecraft:block" -> {
                 if (floor) {
-                    // 26.1.2 / 26.2: {"Name": id, ...}; 26.3: a plain state string.
+                    // 26.1.2 / 26.2: {"Name": id, ...}; 26.3: a plain state string, or {"id": id, "properties": ...}.
                     com.google.gson.JsonElement state = o.get("result_state");
-                    out.add(state.isJsonObject() ? state.getAsJsonObject().get("Name").getAsString()
+                    out.add(state.isJsonObject()
+                            ? state.getAsJsonObject().get(state.getAsJsonObject().has("Name") ? "Name" : "id").getAsString()
                             : state.getAsString().replaceFirst("\\[.*$", ""));
                 }
             }

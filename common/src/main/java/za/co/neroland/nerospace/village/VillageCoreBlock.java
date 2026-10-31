@@ -68,9 +68,22 @@ public class VillageCoreBlock extends BaseEntityBlock {
                 (lvl, pos, st, be) -> be.serverTick(lvl, pos, st));
     }
 
+    //? if >=1.21.2 {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
+    //?} else {
+    /*// Before 1.21.2 useItemOn returns an ItemInteractionResult; the 26.x body below runs as a helper.
+    @Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level,
+            BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return za.co.neroland.nerospace.compat.mc.UseCompat.toItem(
+                useItemOnResult(stack, state, level, pos, player, hand, hit));
+    }
+
+    private InteractionResult useItemOnResult(ItemStack stack, BlockState state, Level level, BlockPos pos,
+            Player player, InteractionHand hand, BlockHitResult hit) {
+    *///?}
         if (!(level.getBlockEntity(pos) instanceof VillageCoreBlockEntity core)) {
             return super.useItemOn(stack, state, level, pos, player, hand, hit);
         }

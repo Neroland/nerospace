@@ -1,0 +1,104 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "predicates": {
+                      "minecraft:enchantments": [
+                        {
+                          "enchantments": "minecraft:silk_touch",
+                          "levels": {
+                            "min": 1
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "block": "nerospace:nyx_crystal_cluster",
+                  "function": "minecraft:copy_state",
+                  "properties": [
+                    "stage"
+                  ]
+                }
+              ],
+              "name": "nerospace:nyx_crystal_cluster"
+            },
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "block": "nerospace:nyx_crystal_cluster",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "stage": "3"
+                  }
+                },
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "items": "#minecraft:pickaxes"
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 2.0,
+                  "add": false
+                },
+                {
+                  "function": "minecraft:apply_bonus",
+                  "enchantment": "minecraft:fortune",
+                  "formula": "minecraft:ore_drops"
+                },
+                {
+                  "function": "minecraft:explosion_decay"
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            },
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "block": "nerospace:nyx_crystal_cluster",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "stage": "3"
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 1.0,
+                  "add": false
+                },
+                {
+                  "function": "minecraft:explosion_decay"
+                }
+              ],
+              "name": "nerospace:crystal_shard"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "nerospace:blocks/nyx_crystal_cluster"
+}

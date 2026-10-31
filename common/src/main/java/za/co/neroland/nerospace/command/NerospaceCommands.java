@@ -102,7 +102,9 @@ public final class NerospaceCommands {
                                         () -> buildGallery(ctx.getSource())))
                                 .then(Commands.literal("clear")
                                         .executes(ctx -> runSafely(ctx.getSource(), "gallery clear",
-                                                () -> clearGallery(ctx.getSource())))))
+                                                () -> clearGallery(ctx.getSource()))))
+                                // Operator-only sky showcase (permission level 2 on its own node).
+                                .then(PlanetCommands.gallerySky()))
                         .then(Commands.literal("gravity")
                                 .requires(src -> src.getPlayer() != null)
                                 .executes(ctx -> runSafely(ctx.getSource(), "gravity",

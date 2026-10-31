@@ -9,6 +9,20 @@
         "predicate_type": "minecraft:block_match",
         "block": "nerospace:nyx_stone"
       }
+    },
+    {
+      "state": "nerospace:void_crystal",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:twilight_crystal"
+      }
+    },
+    {
+      "state": "nerospace:void_crystal",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:rose_crystal"
+      }
     }
   ]
 }

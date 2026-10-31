@@ -137,8 +137,20 @@ public class AdvancedPipeFilterItem extends Item {
         }
     }
 
+    //? if >=1.21.2 {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    //?} else {
+    /*// Before 1.21.2 Item.use returns the held stack with the result.
+    @Override
+    public net.minecraft.world.InteractionResultHolder<net.minecraft.world.item.ItemStack> use(Level level,
+            Player player, InteractionHand hand) {
+        InteractionResult result = useResult(level, player, hand);
+        return new net.minecraft.world.InteractionResultHolder<>(result, player.getItemInHand(hand));
+    }
+
+    private InteractionResult useResult(Level level, Player player, InteractionHand hand) {
+    *///?}
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             return MenuOpener.openOrConsume(serverPlayer, new SimpleMenuProvider(
                     (id, inventory, p) -> new AdvancedFilterMenu(id, inventory, hand),

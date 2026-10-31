@@ -45,7 +45,8 @@ public abstract class MappedRegistryStorageAliasMixin<T> implements Registry<T> 
             "creative_battery", "creative_fluid_tank", "creative_gas_tank", "creative_item_store",
             "trash_can");
 
-    /** Holder lookup by key — the path the chunk block-state decoder uses. */
+    //? if >=1.21.2 {
+    // Holder lookup by key — the path the chunk block-state decoder uses.
     @Inject(method = "get(Lnet/minecraft/resources/ResourceKey;)Ljava/util/Optional;",
             at = @At("HEAD"), cancellable = true, require = 0)
     private void nerospace$aliasHolderByKey(ResourceKey<T> key, CallbackInfoReturnable<Optional<Holder.Reference<T>>> cir) {
@@ -55,7 +56,7 @@ public abstract class MappedRegistryStorageAliasMixin<T> implements Registry<T> 
         }
     }
 
-    /** Holder lookup by id (the by-id default funnels here on some paths). */
+    // Holder lookup by id (the by-id default funnels here on some paths).
     @Inject(method = "get(Lnet/minecraft/resources/Identifier;)Ljava/util/Optional;",
             at = @At("HEAD"), cancellable = true, require = 0)
     private void nerospace$aliasHolderById(Identifier id, CallbackInfoReturnable<Optional<Holder.Reference<T>>> cir) {
@@ -65,7 +66,7 @@ public abstract class MappedRegistryStorageAliasMixin<T> implements Registry<T> 
         }
     }
 
-    /** Value lookup by id — direct registry queries (commands, code). */
+    // Value lookup by id — direct registry queries (commands, code).
     @Inject(method = "getValue(Lnet/minecraft/resources/Identifier;)Ljava/lang/Object;",
             at = @At("HEAD"), cancellable = true, require = 0)
     private void nerospace$aliasValueById(Identifier id, CallbackInfoReturnable<T> cir) {
@@ -75,6 +76,36 @@ public abstract class MappedRegistryStorageAliasMixin<T> implements Registry<T> 
         }
     }
 
+    //?} else {
+    /*// Before 1.21.2 the holder lookups were getHolder(..) and the value lookup by id was get(ResourceLocation).
+    @Inject(method = "getHolder(Lnet/minecraft/resources/ResourceKey;)Ljava/util/Optional;",
+            at = @At("HEAD"), cancellable = true, require = 0)
+    private void nerospace$aliasHolderByKey(ResourceKey<T> key, CallbackInfoReturnable<Optional<Holder.Reference<T>>> cir) {
+        Identifier coreId = nerospace$coreIdFor(key.identifier());
+        if (coreId != null) {
+            cir.setReturnValue(this.getHolder(ResourceKey.create(this.key(), coreId)));
+        }
+    }
+
+    @Inject(method = "getHolder(Lnet/minecraft/resources/Identifier;)Ljava/util/Optional;",
+            at = @At("HEAD"), cancellable = true, require = 0)
+    private void nerospace$aliasHolderById(Identifier id, CallbackInfoReturnable<Optional<Holder.Reference<T>>> cir) {
+        Identifier coreId = nerospace$coreIdFor(id);
+        if (coreId != null) {
+            cir.setReturnValue(this.getHolder(ResourceKey.create(this.key(), coreId)));
+        }
+    }
+
+    @Inject(method = "get(Lnet/minecraft/resources/Identifier;)Ljava/lang/Object;",
+            at = @At("HEAD"), cancellable = true, require = 0)
+    private void nerospace$aliasValueById(Identifier id, CallbackInfoReturnable<T> cir) {
+        Identifier coreId = nerospace$coreIdFor(id);
+        if (coreId != null) {
+            cir.setReturnValue(this.get(coreId));
+        }
+    }
+
+    *///?}
     /**
      * If {@code id} is one of the moved {@code nerospace:*} ids AND this is the
      * BLOCK / ITEM / BLOCK_ENTITY_TYPE registry, return the {@code nerolandcore:}

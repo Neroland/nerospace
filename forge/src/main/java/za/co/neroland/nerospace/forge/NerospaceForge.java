@@ -75,6 +75,18 @@ public final class NerospaceForge {
             // NeroLink needs its own server handle (Core's SPI hands a provider only a player UUID).
             za.co.neroland.nerospace.link.NerospaceLinkModule.rememberServer(event.server());
         });
+        // Planet sleeping (see docs/MULTILOADER.md): Forge has no after-checks sleep event, so the planet rule answers
+        // the time check (after the respawn point is set; also asked every tick while asleep), and the end-of-night
+        // skip runs at the start of the server tick, before any level ticks.
+        net.minecraftforge.event.entity.player.SleepingTimeCheckEvent.BUS.addListener(event -> {
+            if (event.getEntity() instanceof ServerPlayer serverPlayer
+                    && !za.co.neroland.nerospace.world.planet.PlanetSleep.allowsTime(serverPlayer,
+                            event.getSleepingLocation().orElse(serverPlayer.blockPosition()))) {
+                event.setResult(net.minecraftforge.common.util.Result.DENY);
+            }
+        });
+        TickEvent.ServerTickEvent.Pre.BUS.addListener(event ->
+                za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.server()));
         LivingFallEvent.BUS.addListener(event -> {
             if (AlienGearAbilities.negatesFall(event.getEntity())) {
                 event.setDamageMultiplier(0.0F);

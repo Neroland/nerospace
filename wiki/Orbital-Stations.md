@@ -108,9 +108,19 @@ telescope shows one more world, up to three.
 
 ## Sky, clock and weather
 
-The station's clock is fixed in permanent daylight and it has no weather. The homeworld turns slowly below the
-station under a black, star-filled sky (the full sky is drawn on NeoForge for Minecraft 26.3). Station gravity is about
+The station's clock is fixed in permanent daylight and it has no weather. The homeworld fills the lower sky to the
+east, turning slowly, with a blue rim, a day side and a night side sprinkled with city lights; the sun stands high
+in a black, star-filled sky with the galaxy and two nebulae behind it, and an operator can show the sunrise through
+the homeworld's rim with `/nerospace gallery sky station sunrise` (the full sky is drawn on NeoForge for Minecraft
+26.3; elsewhere the station shows its colours with the vanilla sky shapes). Station gravity is about
 a tenth of the Overworld's, except above Gravity Plates. See [Planet Clock and Weather](Planet-Clock-and-Weather).
+
+**Beds** never let you sleep on the station ("The station's lights never dim"), but a bed there still sets your
+respawn point and never explodes.
+
+**Open water freezes:** the station is cold, so water under the open sky turns to ice unless the block light at the
+water is 10 or more, and sugar cane planted by it breaks. Keep a light source within a few blocks of the water, or
+farm under the station roof.
 
 ## Server settings
 

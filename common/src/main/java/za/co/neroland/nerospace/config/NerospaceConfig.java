@@ -178,6 +178,16 @@ public final class NerospaceConfig {
     private static final ConfigValue<Boolean> HUD_WEATHER_LINE = SCHEMA.bool("hud.weatherLine", true, false,
             "show the current planet weather and its intensity above the oxygen gauge. Client-side only");
 
+    // --- Sky (client-side, per player; never server-authoritative) ----------------------------------------
+    private static final ConfigValue<Boolean> SKY_AURORA = SCHEMA.bool("sky.aurora", true, false,
+            "draw aurora curtains in planet skies (Glacira, Nyxara's nightside, Mars after a dust storm, the Greenxertz "
+            + "spore shimmer). Client-side only; false = none");
+    private static final ConfigValue<Boolean> SKY_SHOOTING_STARS = SCHEMA.bool("sky.shootingStars", true, false,
+            "draw shooting stars in planet skies. Client-side only; false = none");
+    private static final ConfigValue<String> SKY_QUALITY = SCHEMA.string("sky.quality", "full", false,
+            "planet sky detail: full, or lite (half the aurora layers and segments, no cloud deck, slightly smaller "
+            + "stars) for low-end GPUs. Client-side only");
+
     private static ConfigValue<Double> particleRate(String type, double def, String what) {
         return SCHEMA.doubleRange("particles." + type + ".perPlayerPerTick", def, 0.0D, 8.0D, false,
                 what + ": particles spawned around you per tick at full weather (0..8; also capped by "
@@ -354,6 +364,26 @@ public final class NerospaceConfig {
     /** Client-side: whether the HUD weather line shows. */
     public static boolean hudWeatherLine() {
         return HUD_WEATHER_LINE.get();
+    }
+
+    /** Client-side: whether planet skies draw aurora curtains. */
+    public static boolean skyAurora() {
+        return SKY_AURORA.get();
+    }
+
+    /** Client-side: whether planet skies draw shooting stars. */
+    public static boolean skyShootingStars() {
+        return SKY_SHOOTING_STARS.get();
+    }
+
+    /** Client-side: whether the sky runs at {@code lite} quality ({@code sky.quality=lite}; anything else is full). */
+    public static boolean skyLite() {
+        return isLite(SKY_QUALITY.get());
+    }
+
+    /** {@code sky.quality} parsing: {@code lite} (any case, trimmed) is lite, everything else full. */
+    public static boolean isLite(String quality) {
+        return quality != null && "lite".equalsIgnoreCase(quality.trim());
     }
 
     /** Client-side: whether ambient planet particles spawn at all. */

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:simple_block",
+  "to_place": {
+    "id": "nerospace:nyx_crystal_cluster",
+    "properties": {
+      "stage": "1",
+      "facing": "up"
+    }
+  }
+}

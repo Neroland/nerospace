@@ -2,7 +2,9 @@ package za.co.neroland.nerospace.neoforge;
 
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
+//? if >=1.21.2 {
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+//?}
 
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.client.sky.SkyProfiles;
@@ -22,8 +24,14 @@ public final class NeoForgeSky {
     }
 
     public static void init(IEventBus modEventBus) {
+        //? if >=1.21.2 {
         modEventBus.addListener((AddClientReloadListenersEvent event) ->
                 event.addListener(SkyProfiles.ID, SkyProfiles.INSTANCE));
+        //?} else {
+        /*// NeoForge 21.1 registers client reload listeners without an id.
+        modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent event) ->
+                event.registerReloadListener(SkyProfiles.INSTANCE));
+        *///?}
         //? if >=26.3 {
         /*modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent event) ->
                 event.registerSkyboxRenderer(SKY_ID, new NeoForgePlanetSky()));

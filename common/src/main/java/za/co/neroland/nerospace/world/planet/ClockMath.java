@@ -73,6 +73,25 @@ public final class ClockMath {
     }
 
     /**
+     * The offset that moves the clock <em>forward</em> from where it is now to the next moment its phase reads
+     * {@code target} (or leaves it where it is when it already does). Setting the clock never runs it backwards, so
+     * setting dawn from a night phase starts the next day: the day number goes up by exactly one, as if the night had
+     * been waited out. The result may be negative (the offset only ever shrinks).
+     *
+     * @param now          the game time the clock reads at (its frozen time when frozen)
+     * @param offsetTicks  the current offset
+     */
+    public static long forwardOffset(long now, long epochTicks, long offsetTicks, long dayLength, double target) {
+        if (dayLength <= 0L) {
+            return offsetTicks;
+        }
+        long elapsed = now - epochTicks - offsetTicks;
+        long want = Math.round(DaylightCurve.wrap(target) * dayLength);
+        long ahead = Math.floorMod(want - elapsed, dayLength);
+        return offsetTicks - ahead;
+    }
+
+    /**
      * The 1-based day count ("Sol N" on Mars) since the clock started, following the same timeline as
      * {@link #phase}. Never below 1. Fixed clocks are always day 1.
      */

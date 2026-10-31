@@ -58,6 +58,10 @@ public final class WeatherAmbience {
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
         LocalPlayer player = mc.player;
+        if (!mc.isPaused()) {
+            // Eases the client's weather copy (sky fades, particle ramp) once per tick on every loader.
+            ClientPlanetWeather.clientTick(level);
+        }
         if (level == null || player == null || mc.isPaused()) {
             if (level == null) {
                 stopLoop();
@@ -71,8 +75,9 @@ public final class WeatherAmbience {
             lastEvent = WeatherEvent.NONE;
             return;
         }
-        WeatherEvent event = ClientPlanetWeather.event(level);
-        float intensity = ClientPlanetWeather.intensity(level);
+        // The smoothed copy, so a forced gallery state or a cleared storm fades in and out with the sky.
+        WeatherEvent event = ClientPlanetWeather.smoothedEvent(level);
+        float intensity = ClientPlanetWeather.smoothedIntensity(level, 1.0F);
         sounds(mc, planet.langId(), event, intensity);
         if (NerospaceConfig.particlesEnabled()) {
             particles(level, player, planet.langId(), event, intensity);

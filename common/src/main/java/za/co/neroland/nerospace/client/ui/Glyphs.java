@@ -66,8 +66,16 @@ public final class Glyphs {
     /** Blits {@code glyph} at {@code (x, y)}, {@code size} 8 or 16 px, tinted with {@code argb}. */
     public static void draw(GuiGraphicsExtractor g, Glyph glyph, int x, int y, int size, int argb) {
         int s = size >= 16 ? 16 : CELL;
+        //? if >=1.21.2 {
         g.blit(RenderPipelines.GUI_TEXTURED, SHEET, x, y, glyph.u(), glyph.v(), s, s, CELL, CELL, SHEET_W, SHEET_H,
                 argb);
+        //?} else {
+        /*// 1.21.1 blit has no tint argument: the tint is the shader colour around the draw.
+        com.mojang.blaze3d.systems.RenderSystem.setShaderColor(((argb >> 16) & 0xFF) / 255.0F,
+                ((argb >> 8) & 0xFF) / 255.0F, (argb & 0xFF) / 255.0F, ((argb >>> 24) & 0xFF) / 255.0F);
+        g.blit(SHEET, x, y, s, s, glyph.u(), glyph.v(), CELL, CELL, SHEET_W, SHEET_H);
+        com.mojang.blaze3d.systems.RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        *///?}
     }
 
     /** An 8 px glyph. */

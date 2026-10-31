@@ -108,6 +108,14 @@ public abstract class PlanetDefinition {
         return this.pinnedPhase;
     }
 
+    /**
+     * The clock phases a bed may be used in on this planet (moving clocks only; fixed clocks decide by place, see
+     * {@link PlanetSleepRules}). Override to give a planet its own night.
+     */
+    public PlanetSleepRules.Window sleepWindow() {
+        return PlanetSleepRules.DEFAULT_WINDOW;
+    }
+
     /** Daylight in [0,1] as a function of clock phase. */
     public DaylightCurve daylight() {
         return this.daylight;

@@ -1,0 +1,131 @@
+{
+  "background": {
+    "zenith": "#6CC2EF",
+    "horizon": "#F2FBFF",
+    "nightZenith": "#0A1430",
+    "nightHorizon": "#2D6F9E",
+    "blend": "daylight"
+  },
+  "fog": {
+    "color": "#F2FBFF",
+    "nightColor": "#0F1F3A",
+    "start": 0.4,
+    "end": 0.95
+  },
+  "stars": {
+    "count": 2200,
+    "brightness": 0.8,
+    "alwaysVisible": false,
+    "tint": "#E8F6FF"
+  },
+  "sun": [
+    {
+      "id": "pale_sun",
+      "texture": "nerospace:textures/sky/sun_pale.png",
+      "size": 3.0,
+      "color": "#F2FBFF",
+      "glow": 5.0,
+      "orbitPeriodDays": 1.0,
+      "phaseOffset": 0.0,
+      "inclination": 0.0
+    }
+  ],
+  "moons": [
+    {
+      "id": "rime",
+      "texture": "nerospace:textures/sky/moon_small.png",
+      "size": 1.5,
+      "color": "#DCEFFF",
+      "glow": 0.3,
+      "orbitPeriodDays": 3.5,
+      "phaseOffset": 0.2,
+      "inclination": 15.0,
+      "phases": true
+    },
+    {
+      "id": "hoar",
+      "texture": "nerospace:textures/sky/moon_small.png",
+      "size": 1.0,
+      "color": "#CFE3F5",
+      "glow": 0.2,
+      "orbitPeriodDays": 7.0,
+      "phaseOffset": 0.7,
+      "inclination": -8.0,
+      "phases": true
+    }
+  ],
+  "bodies": [],
+  "aurora": {
+    "colors": [
+      "#60E0A0",
+      "#FF7AC8",
+      "#A9E3FF"
+    ],
+    "opacity": 0.55,
+    "speed": 0.6,
+    "nightOnly": true,
+    "boostOnWeather": "DIAMOND_DUST"
+  },
+  "clouds": "none",
+  "horizonHaze": {
+    "color": "#F2FBFF",
+    "strength": 0.3
+  },
+  "weatherTints": {
+    "DIAMOND_DUST": {
+      "sky": "#A9E3FF",
+      "fog": "#F2FBFF",
+      "strengthAtPeak": 0.4
+    }
+  },
+  "gradient": [
+    {
+      "phase": 0.95,
+      "zenith": "#0A1430",
+      "horizon": "#2D6F9E",
+      "fog": "#0F1F3A"
+    },
+    {
+      "phase": 0.0,
+      "zenith": "#2D4F8E",
+      "horizon": "#C77DBF",
+      "fog": "#7A8FC0"
+    },
+    {
+      "phase": 0.05,
+      "zenith": "#6CC2EF",
+      "horizon": "#F2FBFF",
+      "fog": "#F2FBFF"
+    },
+    {
+      "phase": 0.25,
+      "zenith": "#6CC2EF",
+      "horizon": "#F2FBFF",
+      "fog": "#F2FBFF"
+    },
+    {
+      "phase": 0.45,
+      "zenith": "#6CC2EF",
+      "horizon": "#F2FBFF",
+      "fog": "#F2FBFF"
+    },
+    {
+      "phase": 0.5,
+      "zenith": "#2D4F8E",
+      "horizon": "#C77DBF",
+      "fog": "#7A8FC0"
+    },
+    {
+      "phase": 0.55,
+      "zenith": "#0A1430",
+      "horizon": "#2D6F9E",
+      "fog": "#0F1F3A"
+    },
+    {
+      "phase": 0.75,
+      "zenith": "#0A1430",
+      "horizon": "#1E4A70",
+      "fog": "#0F1F3A"
+    }
+  ]
+}

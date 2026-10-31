@@ -63,7 +63,8 @@ public final class ForgeClientSetup {
         net.minecraftforge.client.event.RegisterParticleProvidersEvent.BUS.addListener(event ->
                 za.co.neroland.nerospace.client.particle.ClientParticles.registerAll((type, factory) ->
                         event.registerSpriteSet(type, factory::apply)));
-        // Planet sky profiles (client resources, reload with F3+T). Forge has no sky hook yet: data-only cell.
+        // Planet sky profiles (client resources, reload with F3+T). Forge has no sky hook yet: data-only sky, but the
+        // profile drives the world fog (below).
         net.minecraftforge.client.event.RegisterClientReloadListenersEvent.BUS.addListener(event ->
                 event.registerReloadListener(za.co.neroland.nerospace.client.sky.SkyProfiles.INSTANCE));
         TickEvent.ClientTickEvent.Post.BUS.addListener(event -> {
@@ -71,6 +72,17 @@ public final class ForgeClientSetup {
             ClientOxygenVisuals.tick();
             GalleryCaptureHarness.tick();
             za.co.neroland.nerospace.client.WeatherAmbience.tick();
+        });
+        // World fog follows the planet sky profile (phase, position, weather, eclipse) on every Forge line; the
+        // dimension's fog attribute stays the floor when the hook returns no colour.
+        net.minecraftforge.client.event.ViewportEvent.ComputeFogColor.BUS.addListener(event -> {
+            int rgb = za.co.neroland.nerospace.client.sky.PlanetSkyRenderer.fogRgb(event.getCamera(),
+                    event.getPartialTick());
+            if (rgb >= 0) {
+                event.setRed(((rgb >> 16) & 0xFF) / 255.0F);
+                event.setGreen(((rgb >> 8) & 0xFF) / 255.0F);
+                event.setBlue((rgb & 0xFF) / 255.0F);
+            }
         });
         // Client-side /nsgallery capture command tree (drives the local camera; separate dispatcher
         // from the server-side /nerospace gallery builder — a shared "nerospace" root would shadow it).

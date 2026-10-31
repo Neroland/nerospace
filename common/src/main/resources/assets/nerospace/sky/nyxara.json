@@ -4,7 +4,9 @@
     "horizon": "#FFB86B",
     "nightZenith": "#0D0A14",
     "nightHorizon": "#0D0A14",
-    "blend": "constant"
+    "blend": "constant",
+    "rampTopDeg": 72.0,
+    "rampTexture": "nerospace:textures/sky/horizon_ramp_soft.png"
   },
   "fog": {
     "color": "#2B2440",
@@ -16,22 +18,26 @@
     "count": 3500,
     "brightness": 1.0,
     "alwaysVisible": true,
-    "tint": "#F4ECFF"
+    "tint": "#F4ECFF",
+    "palette": "natural",
+    "twinkle": 0.2,
+    "sizeScale": 0.75
   },
   "sun": [
     {
       "id": "sun",
       "texture": "nerospace:textures/sky/sun_white.png",
-      "size": 4.0,
+      "size": 14.0,
       "color": "#FFB86B",
-      "glow": 10.0,
+      "glow": 6.0,
       "orbitPeriodDays": 0.0,
       "phaseOffset": 0.0,
       "inclination": 0.0,
       "fixedAngle": {
         "yaw": 90.0,
         "pitch": 2.0
-      }
+      },
+      "glowTexture": "nerospace:textures/sky/sun_aureole.png"
     }
   ],
   "moons": [],
@@ -51,7 +57,9 @@
     "FLARE": {
       "sky": "#FFB86B",
       "fog": "#FFB86B",
-      "strengthAtPeak": 0.5
+      "strengthAtPeak": 0.5,
+      "hazeBoost": 0.4,
+      "hazeColor": "#FFB86B"
     }
   },
   "gradient": [
@@ -86,5 +94,140 @@
       "horizon": "#5B2D8E",
       "fog": "#1A1428"
     }
+  },
+  "aurora": {
+    "colors": [
+      "#9B5DE5",
+      "#4DD0E1"
+    ],
+    "opacity": 0.65,
+    "speed": 0.7,
+    "nightOnly": false,
+    "textures": [
+      "nerospace:textures/sky/aurora_nyxara_0.png",
+      "nerospace:textures/sky/aurora_nyxara_1.png"
+    ],
+    "layers": 2,
+    "yaw": 205.0,
+    "arcDeg": 170.0,
+    "baseDeg": 12.0,
+    "topDeg": 55.0,
+    "fold": {
+      "amplitudeDeg": 8.0,
+      "frequency": 2.4,
+      "speed": 0.9
+    },
+    "positionSides": [
+      "east"
+    ]
+  },
+  "decals": [
+    {
+      "id": "flare_rays_a",
+      "texture": "nerospace:textures/sky/flare_rays.png",
+      "anchor": "sun",
+      "size": 96.0,
+      "color": "#FFB86B",
+      "opacity": 0.9,
+      "additive": true,
+      "spinDegPerSecond": 0.6,
+      "visibility": {
+        "weather": {
+          "event": "FLARE",
+          "active": true
+        },
+        "positionSides": [
+          "west",
+          "band"
+        ]
+      }
+    },
+    {
+      "id": "flare_rays_b",
+      "texture": "nerospace:textures/sky/flare_rays.png",
+      "anchor": "sun",
+      "size": 72.0,
+      "color": "#FFE0B0",
+      "opacity": 0.6,
+      "additive": true,
+      "spinDegPerSecond": -0.4,
+      "visibility": {
+        "weather": {
+          "event": "FLARE",
+          "active": true
+        },
+        "positionSides": [
+          "west",
+          "band"
+        ]
+      }
+    },
+    {
+      "id": "crystal_caustics",
+      "texture": "nerospace:textures/sky/caustic_band.png",
+      "anchor": "fixed",
+      "yaw": 90.0,
+      "pitch": 9.0,
+      "size": 22.0,
+      "aspect": 5.0,
+      "color": "#E6D2FF",
+      "opacity": 0.7,
+      "additive": true,
+      "visibility": {
+        "weather": {
+          "event": "FLARE",
+          "active": true
+        },
+        "positionSides": [
+          "band"
+        ]
+      }
+    },
+    {
+      "id": "refraction_bow",
+      "texture": "nerospace:textures/sky/rainbow_arc.png",
+      "anchor": "antisun",
+      "size": 92.0,
+      "color": "#FFFFFF",
+      "opacity": 0.35,
+      "additive": true,
+      "visibility": {
+        "positionSides": [
+          "band"
+        ]
+      }
+    },
+    {
+      "id": "nebula_rose",
+      "texture": "nerospace:textures/sky/nebula_a.png",
+      "anchor": "fixed",
+      "yaw": 250.0,
+      "pitch": 45.0,
+      "size": 70.0,
+      "color": "#FFFFFF",
+      "opacity": 0.5,
+      "additive": true
+    },
+    {
+      "id": "nebula_teal",
+      "texture": "nerospace:textures/sky/nebula_b.png",
+      "anchor": "fixed",
+      "yaw": 300.0,
+      "pitch": 14.0,
+      "size": 50.0,
+      "color": "#FFFFFF",
+      "opacity": 0.45,
+      "additive": true
+    }
+  ],
+  "shootingStars": {
+    "ratePerMinute": 2.0,
+    "maxConcurrent": 2,
+    "texture": "nerospace:textures/sky/meteor_streak.png",
+    "color": "#F4ECFF",
+    "lengthDeg": 10.0,
+    "durationTicks": 12,
+    "nightOnly": false,
+    "minPitch": 12.0
   }
 }

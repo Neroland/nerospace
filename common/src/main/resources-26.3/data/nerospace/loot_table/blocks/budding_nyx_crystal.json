@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": "minecraft:tool/can_silk_touch",
+          "name": "nerospace:budding_nyx_crystal"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nerospace:blocks/budding_nyx_crystal"
+}

@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "nerospace:block/sunglass_crystal"
+      },
+      {
+        "model": "nerospace:block/sunglass_crystal",
+        "y": 90
+      },
+      {
+        "model": "nerospace:block/sunglass_crystal",
+        "y": 180
+      },
+      {
+        "model": "nerospace:block/sunglass_crystal",
+        "y": 270
+      }
+    ]
+  }
+}

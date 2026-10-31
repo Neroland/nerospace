@@ -46,9 +46,15 @@ public class SporePodBlock extends SporeBurstBlock {
         return level.getBlockState(below).isFaceSturdy(level, below, Direction.UP);
     }
 
+    //? if >=1.21.2 {
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
             Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+    //?} else {
+    /*@Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+            net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    *///?}
         if (direction == Direction.DOWN && !state.canSurvive(level, pos)) {
             return Blocks.AIR.defaultBlockState();
         }
