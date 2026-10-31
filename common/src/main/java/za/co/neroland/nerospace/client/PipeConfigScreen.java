@@ -27,7 +27,13 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
 
 
     public PipeConfigScreen(PipeConfigMenu menu, Inventory playerInventory, Component title) {
+        //? if >=26.1 {
         super(menu, playerInventory, title, 176, 240);
+        //?} else {
+        /*super(menu, playerInventory, title);
+        this.imageWidth = 176;
+        this.imageHeight = 240;
+        *///?}
         this.titleLabelX = 8;
         this.titleLabelY = 6;
         this.inventoryLabelX = 8;
@@ -49,8 +55,29 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
         }
     }
 
+    //? if >=26.1 {
     @Override
     public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        drawBackdrop(extractor);
+        super.extractContents(extractor, mouseX, mouseY, partialTick);
+        drawOverlay(extractor);
+    }
+    //?} else {
+    /*// Before 26.1: backdrop as the container background, overlay on top of slots/labels, tooltip drawn here.
+    @Override
+    public void render(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        super.render(extractor, mouseX, mouseY, partialTick);
+        drawOverlay(extractor);
+        this.renderTooltip(extractor, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderBg(GuiGraphicsExtractor extractor, float partialTick, int mouseX, int mouseY) {
+        drawBackdrop(extractor);
+    }
+    *///?}
+
+    private void drawBackdrop(GuiGraphicsExtractor extractor) {
         // Plain hull panel + top accent line (no texture asset).
         extractor.fill(this.leftPos, this.topPos, this.leftPos + this.imageWidth, this.topPos + this.imageHeight, PANEL);
         extractor.fill(this.leftPos, this.topPos, this.leftPos + this.imageWidth, this.topPos + 1, ACCENT);
@@ -67,9 +94,9 @@ public class PipeConfigScreen extends AbstractContainerScreen<PipeConfigMenu> {
         for (int col = 0; col < 9; col++) {
             socket(extractor, 8 + col * 18, PipeConfigMenu.INV_Y + 58);
         }
+    }
 
-        super.extractContents(extractor, mouseX, mouseY, partialTick);
-
+    private void drawOverlay(GuiGraphicsExtractor extractor) {
         // Selected layer.
         extractor.text(this.font, Component.translatable("gui.nerospace.pipe_config.layer", this.menu.getSelectedType().label()),
                 this.leftPos + 8, this.topPos + 19, TITLE, false);

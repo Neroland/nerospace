@@ -105,15 +105,16 @@ them, so there is nothing of yours to erase there.
 
 If the **NeroLink companion bridge** is installed, Nerospace exposes a read-only view of
 your own data to your paired companion client: your rockets and the launch pads around you,
-the stations **you** own, planet traits and which worlds you have reached, your life support,
-and your Star Guide progress. Every section is filtered by the requesting player's UUID —
-another player's station, oxygen or progress can never appear in a response, ownership by
-other players is never named, and operator status is deliberately not honoured. Rockets and
+the stations you own or are a member of, planet traits and which worlds you have reached, your
+life support, and your Star Guide progress. Every section is filtered by the requesting player's
+UUID — a station you neither own nor belong to, and another player's oxygen or progress, can
+never appear in a response, and operator status is deliberately not honoured. Rockets and
 pads have no owner in Nerospace, so that section reports only what you could already see
 from where you are standing (a 128-block radius, while online) rather than a server-wide
 list. The only two things a companion client can change are the name of a station you own
 and the acknowledgement of your own alerts; nothing can launch a rocket, move a player or
-edit the world remotely.
+edit the world remotely. The companion app can also read the Nerospace wiki pages bundled with
+the mod; they are the same for every player and the request uses nothing about you.
 
 The companion view of stations covers the stations you own or are a member of; member lists
 are shown only to the station's owner and its members, and operator status is deliberately

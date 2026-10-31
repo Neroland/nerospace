@@ -102,8 +102,13 @@ public final class ForgeAttachments {
         }
 
         void load(CompoundTag tag) {
+            //? if >=1.21.5 {
             oxygen = tag.getIntOr("oxygen", OxygenManager.OXYGEN_MAX);
             int[] seen = tag.getIntArray("star_guide_seen").orElse(new int[0]);
+            //?} else {
+            /*oxygen = tag.contains("oxygen") ? tag.getInt("oxygen") : OxygenManager.OXYGEN_MAX;
+            int[] seen = tag.getIntArray("star_guide_seen");
+            *///?}
             List<Integer> values = new ArrayList<>(seen.length);
             for (int value : seen) {
                 values.add(value);
@@ -144,8 +149,13 @@ public final class ForgeAttachments {
         }
 
         void load(CompoundTag tag) {
+            //? if >=1.21.5 {
             terraformed = tag.getBooleanOr("terraformed", false);
             terraformStage = tag.getIntOr("terraform_stage", 0);
+            //?} else {
+            /*terraformed = tag.getBoolean("terraformed");
+            terraformStage = tag.getInt("terraform_stage");
+            *///?}
         }
     }
 

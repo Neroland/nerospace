@@ -30,17 +30,44 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
 
     protected TexturedContainerScreen(T menu, Inventory playerInventory, Component title, Identifier background,
                                       int accent, int width, int height) {
+        //? if >=26.1 {
         super(menu, playerInventory, title, width, height);
+        //?} else {
+        /*super(menu, playerInventory, title);
+        this.imageWidth = width;
+        this.imageHeight = height;
+        *///?}
         this.background = background;
         this.accent = accent;
     }
 
+    //? if >=26.1 {
     @Override
     public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
         drawPanel(extractor);
         super.extractContents(extractor, mouseX, mouseY, partialTick);
         extractForeground(extractor);
     }
+    //?} else {
+    /*// Before 26.1: the panel is the container background (renderBg) and render() does not draw the hovered-slot
+    // tooltip by itself. extractContents keeps the 26.x contract (everything but the tooltip) so subclasses
+    // override it unchanged.
+    @Override
+    public void render(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        extractContents(extractor, mouseX, mouseY, partialTick);
+        this.renderTooltip(extractor, mouseX, mouseY);
+    }
+
+    public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        super.render(extractor, mouseX, mouseY, partialTick);
+        extractForeground(extractor);
+    }
+
+    @Override
+    protected void renderBg(GuiGraphicsExtractor extractor, float partialTick, int mouseX, int mouseY) {
+        drawPanel(extractor);
+    }
+    *///?}
 
     /**
      * Draws the screen's backing panel. Default blits the {@code background} PNG (top-left

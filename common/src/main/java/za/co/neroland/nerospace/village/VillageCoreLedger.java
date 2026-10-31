@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -74,7 +75,7 @@ public final class VillageCoreLedger extends SavedData {
     public static final long LEGACY_TTL_DAYS = 30;
 
     public static final SavedDataType<VillageCoreLedger> TYPE =
-            new SavedDataType<>(ID, VillageCoreLedger::new, codec(), null);
+            SavedDataCompat.type(ID, VillageCoreLedger::new, codec());
 
     /** A core's location: dimension id + {@code BlockPos.asLong()}. */
     public record CoreLoc(String dim, long pos) {

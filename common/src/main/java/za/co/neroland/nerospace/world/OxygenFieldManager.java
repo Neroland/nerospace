@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -44,8 +45,7 @@ public final class OxygenFieldManager extends SavedData {
 
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_field");
 
-    public static final SavedDataType<OxygenFieldManager> TYPE = new SavedDataType<>(
-            ID, OxygenFieldManager::new, codec(), null);
+    public static final SavedDataType<OxygenFieldManager> TYPE = SavedDataCompat.type(ID, OxygenFieldManager::new, codec());
 
     // --- Inlined from Config (root shipped defaults) until the config seam lands ---
     private static final int MAX_CONCENTRATION = 15;

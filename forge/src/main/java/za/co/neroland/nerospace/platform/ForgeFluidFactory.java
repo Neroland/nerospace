@@ -23,7 +23,32 @@ public final class ForgeFluidFactory implements FluidFactory {
             "rocket_fuel", () -> new FluidType(FluidType.Properties.create()
                     .density(1200)
                     .viscosity(1500)
-                    .canConvertToSource(false)));
+                    .canConvertToSource(false))
+            //? if <26.1 {
+            /*{
+                // Before 26.1 Forge takes a fluid's still/flow sprites from its type's client extension.
+                @Override
+                public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions> consumer) {
+                    consumer.accept(new net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions() {
+                        private final net.minecraft.resources.Identifier still = net.minecraft.resources.Identifier
+                                .fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still");
+                        private final net.minecraft.resources.Identifier flow = net.minecraft.resources.Identifier
+                                .fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow");
+
+                        @Override
+                        public net.minecraft.resources.Identifier getStillTexture() {
+                            return still;
+                        }
+
+                        @Override
+                        public net.minecraft.resources.Identifier getFlowingTexture() {
+                            return flow;
+                        }
+                    });
+                }
+            }
+            *///?}
+            );
 
     private static final ForgeFlowingFluid.Properties PROPERTIES = new ForgeFlowingFluid.Properties(
             ROCKET_FUEL_TYPE, ModFluids.ROCKET_FUEL, ModFluids.ROCKET_FUEL_FLOWING)

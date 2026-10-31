@@ -365,8 +365,14 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     }
 
     /** Up/Down step the destination; Enter launches when ready (launch mode). */
+    //? if >=1.21.9 {
     @Override
     public boolean keyPressed(KeyEvent event) {
+    //?} else {
+    /*@Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        KeyEvent event = new KeyEvent(keyCode, scanCode, modifiers);
+    *///?}
         if (destControlsLive()) {
             if (event.isUp() || event.isDown()) {
                 playClick();
@@ -379,7 +385,11 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
                 return true;
             }
         }
+        //? if >=1.21.9 {
         return super.keyPressed(event);
+        //?} else {
+        /*return super.keyPressed(event.key(), event.scancode(), event.modifiers());
+        *///?}
     }
 
     private void playClick() {

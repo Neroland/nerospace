@@ -53,7 +53,8 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
             NerospaceLinkModule.SECTION_PLANETS,
             NerospaceLinkModule.SECTION_LIFE_SUPPORT,
             NerospaceLinkModule.SECTION_STAR_GUIDE,
-            NerospaceLinkModule.SECTION_ROUTE);
+            NerospaceLinkModule.SECTION_ROUTE,
+            NerospaceLinkModule.SECTION_WIKI);
 
     @Override
     public String moduleId() {
@@ -74,6 +75,9 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
     public JsonObject snapshot(UUID playerId, String section, Map<String, String> params) {
         if (playerId == null || section == null) {
             return new JsonObject();
+        }
+        if (NerospaceLinkModule.SECTION_WIKI.equals(section)) {
+            return wiki(params); // public pages: no server, no player data
         }
         MinecraftServer server = NerospaceLinkAccess.server();
         if (server == null || !NerospaceLinkAccess.enabled()) {
@@ -96,6 +100,45 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
                     section, e);
             return new JsonObject();
         }
+    }
+
+    // --- wiki ---------------------------------------------------------------
+
+    /**
+     * PUBLIC wiki section (wiki contract v1): the page index, or one page's markdown with {@code page=<slug>}.
+     * The requester's UUID is ignored; the pages are the same for every player and hold no personal data.
+     */
+    static JsonObject wiki(Map<String, String> params) {
+        long now = System.currentTimeMillis();
+        String page = params == null ? null : params.get("page");
+        JsonObject out = new JsonObject();
+        if (page == null || page.isEmpty()) {
+            out.addProperty("mod", NerospaceLinkModule.MODULE_ID);
+            out.addProperty("title", "Nerospace");
+            JsonArray pages = new JsonArray();
+            for (WikiLibrary.Page p : WikiLibrary.pages()) {
+                JsonObject entry = new JsonObject();
+                entry.addProperty("slug", p.slug());
+                entry.addProperty("title", p.title());
+                pages.add(entry);
+            }
+            out.add("pages", pages);
+            out.addProperty("asOf", now);
+            return out;
+        }
+        return WikiLibrary.content(page).map(md -> {
+            out.addProperty("mod", NerospaceLinkModule.MODULE_ID);
+            out.addProperty("slug", page);
+            out.addProperty("title", WikiLibrary.titleOf(page));
+            out.addProperty("format", "markdown");
+            out.addProperty("content", md);
+            out.addProperty("asOf", now);
+            return out;
+        }).orElseGet(() -> {
+            out.addProperty("error", "unknown page");
+            out.addProperty("slug", page);
+            return out;
+        });
     }
 
     // --- rockets ------------------------------------------------------------

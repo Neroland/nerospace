@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-26.1.2%20%7C%2026.2%20%7C%2026.3-62B47A">
+  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.21.4%E2%80%931.21.11%20%7C%2026.1.2%20%7C%2026.2%20%7C%2026.3-62B47A">
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge%20%7C%20Forge%20%7C%20Fabric-F16436">
   <img alt="Java" src="https://img.shields.io/badge/Java-25-007396">
   <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue">
@@ -73,10 +73,10 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 
 | | |
 | --- | --- |
-| Minecraft | 26.1.2, 26.2 or 26.3 |
+| Minecraft | 1.21.4, 1.21.5, 1.21.7–1.21.8, 1.21.9–1.21.10, 1.21.11, 26.1.2, 26.2 or 26.3 |
 | Mod loader | NeoForge, MinecraftForge/Forge, or Fabric |
-| Java | JDK 25 (64-bit) |
-| Required mod | Neroland Core 1.16.0 or newer (the only dependency; no third-party mods needed) |
+| Java | JDK 21 for Minecraft 1.21.x, JDK 25 for 26.x (64-bit) |
+| Required mod | Neroland Core 1.17.0 or newer (the only dependency; no third-party mods needed) |
 
 ## Installing
 
@@ -86,8 +86,8 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 
 ## Building from source
 
-This repo is the flattened multiloader build. `common/` is shared into nine Stonecutter nodes:
-NeoForge, Forge, and Fabric for Minecraft 26.1.2, 26.2 and 26.3. No separate Gradle install is needed.
+This repo is the flattened multiloader build. `common/` is shared into 27 Stonecutter nodes:
+NeoForge, Forge, and Fabric for Minecraft 1.21.1, 1.21.4, 1.21.5, 1.21.8, 1.21.10, 1.21.11, 26.1.2, 26.2 and 26.3. No separate Gradle install is needed.
 
 ```bash
 # Build one cell
@@ -95,8 +95,8 @@ NeoForge, Forge, and Fabric for Minecraft 26.1.2, 26.2 and 26.3. No separate Gra
 ./gradlew :forge:26.2:build
 ./gradlew :fabric:26.2:build
 
-# Build all nine cells
-./gradlew :neoforge:26.1.2:build :neoforge:26.2:build :neoforge:26.3:build :forge:26.1.2:build :forge:26.2:build :forge:26.3:build :fabric:26.1.2:build :fabric:26.2:build :fabric:26.3:build
+# Build all 27 cells
+./gradlew :neoforge:1.21.1:build :neoforge:1.21.4:build :neoforge:1.21.5:build :neoforge:1.21.8:build :neoforge:1.21.10:build :neoforge:1.21.11:build :neoforge:26.1.2:build :neoforge:26.2:build :neoforge:26.3:build :forge:1.21.1:build :forge:1.21.4:build :forge:1.21.5:build :forge:1.21.8:build :forge:1.21.10:build :forge:1.21.11:build :forge:26.1.2:build :forge:26.2:build :forge:26.3:build :fabric:1.21.1:build :fabric:1.21.4:build :fabric:1.21.5:build :fabric:1.21.8:build :fabric:1.21.10:build :fabric:1.21.11:build :fabric:26.1.2:build :fabric:26.2:build :fabric:26.3:build
 
 # Launch a dev client / server for a cell
 ./gradlew :neoforge:26.2:runClient

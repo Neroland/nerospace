@@ -11,7 +11,9 @@ import net.minecraft.core.Holder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+//? if >=26.1 {
 import net.minecraft.world.clock.WorldClock;
+//?}
 import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.config.NerospaceConfig;
@@ -120,6 +122,7 @@ public final class PlanetClock {
         double wrapped = DaylightCurve.wrap(target);
         if (planet.clockSource() == ClockSource.LEVEL_TIME) {
             // Greenxertz: same as /time set on its clock (shared with the Overworld, exactly as /time is).
+            //? if >=26.1 {
             Optional<Holder<WorldClock>> clock = level.dimensionType().defaultClock();
             if (clock.isEmpty()) {
                 return false;
@@ -127,6 +130,14 @@ public final class PlanetClock {
             long dayStart = Math.floorDiv(level.getDefaultClockTime(), ClockMath.VANILLA_DAY) * ClockMath.VANILLA_DAY;
             long ticks = dayStart + Math.round(wrapped * ClockMath.VANILLA_DAY);
             level.getServer().clockManager().setTotalTicks(clock.get(), ticks);
+            //?} else {
+            /*// Before 26.1 there are no world clocks: /time set writes the day time of every level.
+            long dayStart = Math.floorDiv(level.getDayTime(), ClockMath.VANILLA_DAY) * ClockMath.VANILLA_DAY;
+            long ticks = dayStart + Math.round(wrapped * ClockMath.VANILLA_DAY);
+            for (ServerLevel each : level.getServer().getAllLevels()) {
+                each.setDayTime(ticks);
+            }
+            *///?}
             syncLevel(level);
             return true;
         }

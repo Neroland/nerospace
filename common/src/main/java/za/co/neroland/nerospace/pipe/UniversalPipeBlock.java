@@ -214,4 +214,16 @@ public class UniversalPipeBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.UNIVERSAL_PIPE.get(),
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
+
+    //? if <1.21.5 {
+    /*// Before 1.21.5 there is no BlockEntity.preRemoveSideEffects hook: run it from the block when it is replaced.
+    @Override
+    protected void onRemove(net.minecraft.world.level.block.state.BlockState state, net.minecraft.world.level.Level level,
+            net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity be) {
+            be.preRemoveSideEffects(pos, state);
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+    *///?}
 }

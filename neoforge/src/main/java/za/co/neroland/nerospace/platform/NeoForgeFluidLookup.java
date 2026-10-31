@@ -4,8 +4,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
+//? if >=1.21.9 {
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+//?}
 
 import org.jetbrains.annotations.Nullable;
 
@@ -38,8 +40,13 @@ public final class NeoForgeFluidLookup implements FluidLookup {
             return own;
         }
         // Five-arg query: the null state/block-entity let NeoForge resolve them itself.
+        //? if >=1.21.9 {
         ResourceHandler<FluidResource> standard =
                 Capabilities.Fluid.BLOCK.getCapability(level, pos, null, null, side);
+        //?} else {
+        /*net.neoforged.neoforge.fluids.capability.IFluidHandler standard =
+                Capabilities.FluidHandler.BLOCK.getCapability(level, pos, null, null, side);
+        *///?}
         return NeoForgeFluidStorageAdapter.of(standard);
     }
 }

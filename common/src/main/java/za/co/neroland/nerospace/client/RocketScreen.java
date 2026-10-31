@@ -442,8 +442,14 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
 
     // --- Input ---------------------------------------------------------------
 
+    //? if >=1.21.9 {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    //?} else {
+    /*@Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        MouseButtonEvent event = new MouseButtonEvent(mouseX, mouseY, button);
+    *///?}
         // Never compare against a literal button number: 26.3 moved input to SDL, where the left button is 1
         // (GLFW, up to 26.2, used 0). InputConstants carries the right value for each version.
         if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
@@ -460,7 +466,11 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
                 }
             }
         }
+        //? if >=1.21.9 {
         return super.mouseClicked(event, doubleClick);
+        //?} else {
+        /*return super.mouseClicked(event.x(), event.y(), event.button());
+        *///?}
     }
 
     private void clickCard(int index) {
@@ -496,8 +506,14 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     }
 
     /** Up/Down move the selection through the selectable cards; Enter launches when ready. */
+    //? if >=1.21.9 {
     @Override
     public boolean keyPressed(KeyEvent event) {
+    //?} else {
+    /*@Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        KeyEvent event = new KeyEvent(keyCode, scanCode, modifiers);
+    *///?}
         if (event.isUp() || event.isDown()) {
             int current = shownSelection();
             int next = nextSelectable(current, event.isUp() ? -1 : 1);
@@ -513,7 +529,11 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
             sendButton(RocketMenu.BUTTON_LAUNCH);
             return true;
         }
+        //? if >=1.21.9 {
         return super.keyPressed(event);
+        //?} else {
+        /*return super.keyPressed(event.key(), event.scancode(), event.modifiers());
+        *///?}
     }
 
     /** The next selectable list entry after {@code current} in direction {@code dir}, or −1 (no wrap). */

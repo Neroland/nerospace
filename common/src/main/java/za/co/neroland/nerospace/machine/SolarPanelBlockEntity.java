@@ -267,17 +267,31 @@ public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured
         return Mth.clamp((10 - darken) / 10.0F, 0.0F, 1.0F);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+    //?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ValueOutput output = ValueOutput.of(tag, registries);
+    *///?}
         output.putInt("Energy", this.energy.getRaw());
         output.putLong("Anchor", anchorPos().asLong());
         this.sideConfig.save(output);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+    //?} else {
+    /*@Override
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        ValueInput input = ValueInput.of(tag, registries);
+    *///?}
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.anchorPos = BlockPos.of(input.getLongOr("Anchor", this.worldPosition.asLong()));
         this.sideConfig.load(input);

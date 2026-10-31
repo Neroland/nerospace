@@ -64,6 +64,7 @@ ITEMS = ["nerosium_ingot", "nerosium_dust", "raw_nerosium", "nerosium_pickaxe",
          "cindrite", "rocket_fuel_bucket", "glacite",
          "loper_haunch", "strutter_drumstick", "drift_fleece",
          "station_compass", "greenxertz_compass", "cindara_compass", "glacira_compass",
+         "luna_compass", "mars_compass", "nyxara_compass",
          "star_guide_book", "station_charter",
          "frame_casing", "speed_module", "efficiency_module", "fortune_module", "silk_touch_module",
          "alien_fragment", "alien_tech_scrap", "alien_core", "meteor_tracker", "meteor_caller"]

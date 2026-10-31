@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -22,7 +23,7 @@ public final class PlanetWeatherState extends SavedData {
     public static final String RECOVERY_NAME = "nerospace:planet_weather";
 
     public static final SavedDataType<PlanetWeatherState> TYPE =
-            new SavedDataType<>(ID, PlanetWeatherState::new, codec(), null);
+            SavedDataCompat.type(ID, PlanetWeatherState::new, codec());
 
     final WeatherMachine machine = new WeatherMachine();
 

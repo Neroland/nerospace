@@ -1,11 +1,15 @@
 package za.co.neroland.nerospace.neoforge;
 
 import net.minecraft.client.Minecraft;
+//? if >=26.1 {
 import net.minecraft.client.renderer.block.FluidModel;
+//?}
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+//? if >=26.1 {
 import net.minecraft.client.resources.model.sprite.Material;
+//?}
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -15,11 +19,15 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+//? if >=26.1 {
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
+//?}
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+//? if >=26.1 {
 import net.neoforged.neoforge.client.fluid.FluidTintSources;
+//?}
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -55,7 +63,11 @@ public final class NeoForgeClientSetup {
 
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterScreens);
+        //? if >=26.1 {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterFluidModels);
+        //?} else {
+        /*modEventBus.addListener(NeoForgeClientSetup::onRegisterClientExtensions);
+        *///?}
         modEventBus.addListener(NeoForgeClientSetup::onRegisterEntityRenderers);
         modEventBus.addListener(NeoForgeClientSetup::onRegisterGuiLayers);
         modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent event) ->
@@ -111,8 +123,13 @@ public final class NeoForgeClientSetup {
         });
         ClientBlockEntityRenderers.registerAll(new ClientBlockEntityRenderers.Sink() {
             @Override
+            //? if >=1.21.9 {
             public <T extends BlockEntity, S extends BlockEntityRenderState> void register(
                     BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider) {
+            //?} else {
+            /*public <T extends BlockEntity> void register(BlockEntityType<? extends T> type,
+                    BlockEntityRendererProvider<T> provider) {
+            *///?}
                 event.registerBlockEntityRenderer(type, provider);
             }
         });
@@ -139,6 +156,7 @@ public final class NeoForgeClientSetup {
         event.register(ModMenuTypes.CARGO_PAD.get(), za.co.neroland.nerospace.client.CargoPadScreen::new);
     }
 
+    //? if >=26.1 {
     /** Rocket fuel renders as itself (amber still/flow) instead of the default missing art. */
     private static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
         Material still = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still"));
@@ -147,4 +165,23 @@ public final class NeoForgeClientSetup {
                 new FluidModel.Unbaked(still, flow, still, FluidTintSources.constant(0xFFFFFFFF)),
                 ModFluids.ROCKET_FUEL, ModFluids.ROCKET_FUEL_FLOWING);
     }
+    //?} else {
+    /*// Before 26.1: the same still/flow sprites through the fluid type's client extension.
+    private static void onRegisterClientExtensions(
+            net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent event) {
+        Identifier still = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still");
+        Identifier flow = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow");
+        event.registerFluidType(new net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions() {
+            @Override
+            public Identifier getStillTexture() {
+                return still;
+            }
+
+            @Override
+            public Identifier getFlowingTexture() {
+                return flow;
+            }
+        }, za.co.neroland.nerospace.platform.NeoForgeFluidFactory.ROCKET_FUEL_TYPE.get());
+    }
+    *///?}
 }

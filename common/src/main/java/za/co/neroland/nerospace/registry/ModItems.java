@@ -237,7 +237,12 @@ public final class ModItems {
 
     // --- Tools + armor items -----------------------------------------------
     public static final RegistryEntry<Item> NEROSIUM_PICKAXE =
+            //? if >=1.21.5 {
             item("nerosium_pickaxe", p -> p.pickaxe(NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F));
+            //?} else {
+            /*ITEMS.register("nerosium_pickaxe", key -> new net.minecraft.world.item.PickaxeItem(
+                    NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F, new Item.Properties().setId(key)));
+            *///?}
 
     public static final RegistryEntry<Item> OXYGEN_SUIT_HELMET = armor("oxygen_suit_helmet", OXYGEN_SUIT_MATERIAL, ArmorType.HELMET);
     public static final RegistryEntry<Item> OXYGEN_SUIT_CHESTPLATE = armor("oxygen_suit_chestplate", OXYGEN_SUIT_MATERIAL, ArmorType.CHESTPLATE);
@@ -268,7 +273,12 @@ public final class ModItems {
     }
 
     private static RegistryEntry<Item> armor(String name, ArmorMaterial material, ArmorType type) {
+        //? if >=1.21.5 {
         return item(name, p -> p.humanoidArmor(material, type));
+        //?} else {
+        /*return ITEMS.register(name, key -> new net.minecraft.world.item.ArmorItem(material, type,
+                new Item.Properties().setId(key)));
+        *///?}
     }
 
     private static RegistryEntry<BlockItem> blockItem(String name, RegistryEntry<? extends Block> block) {

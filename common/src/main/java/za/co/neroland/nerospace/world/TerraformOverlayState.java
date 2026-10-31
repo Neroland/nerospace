@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -39,7 +40,7 @@ public final class TerraformOverlayState extends SavedData {
             Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "terraform_overlays");
 
     public static final SavedDataType<TerraformOverlayState> TYPE =
-            new SavedDataType<>(ID, TerraformOverlayState::new, codec(), null);
+            SavedDataCompat.type(ID, TerraformOverlayState::new, codec());
 
     /** Stable non-identifying label for the recovery helper's logs, telemetry and backup file name. */
     public static final String RECOVERY_NAME = "nerospace:terraform_overlays";

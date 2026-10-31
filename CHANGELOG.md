@@ -5,11 +5,13 @@ All notable changes to **Nerospace** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [2.0.0] - 2026-10-30
 
 The planets and stations update: three new worlds (Luna, Mars and Nyxara), every world rebuilt with its own blocks,
 ores, biomes, sky, clock, weather and terraforming, and orbital stations that grow into habitats. See the wiki page
-*Upgrading to 2.0* before updating a 1.x world.
+*Upgrading to 2.0* before updating a 1.x world. Nerospace 2.0 also runs on Minecraft 1.21.x.
 
 ### Compatibility
 
@@ -17,7 +19,7 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
   dimension and saved-data id from 1.6.0 keeps its id; saved stations, pads, rockets, terraformers,
   oxygen fields, routes, Star Guide progress and config files load unchanged. Back up your world before
   upgrading, as always.
-- **Requires Neroland Core 1.16.0 or newer.** Client and server must run the same Nerospace version: 2.0 adds
+- **Requires Neroland Core 1.17.0 or newer.** Client and server must run the same Nerospace version: 2.0 adds
   network messages and Rocket screen data that a 1.x client does not understand.
 - **Old terrain is never rewritten.** Chunks already generated on Greenxertz, Cindara and Glacira keep their terrain;
   only newly generated chunks use the new worldgen, so a visible seam between old and new terrain is expected.
@@ -58,6 +60,17 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
   `routeCapacity()` now follows the class (Waystation 9, Trade 10, Research and Industrial 8).
 
 ### Added
+
+#### Minecraft 1.21.x builds
+
+- **Nerospace now also ships for Minecraft 1.21.x**, next to 26.1.2, 26.2 and 26.3: builds for Minecraft 1.21.4, 1.21.5,
+  1.21.8 (also runs on 1.21.7), 1.21.10 (also runs on 1.21.9) and 1.21.11, each on NeoForge, Forge and Fabric.
+  These builds need Java 21 (the 26.x builds keep Java 25). Worlds, items and progression are the same as on 26.x.
+- On Minecraft 1.21.x a few optional extras are not available, because the mod or game feature they rely on does
+  not exist there:
+  - **EMI recipe pages** are not included on 1.21.4 to 1.21.11 (EMI has no build for these Minecraft versions).
+    JEI pages work.
+  - **Fabric on 1.21.4 and 1.21.5**: the oxygen gauge is shown, but vanilla's air bubbles are not hidden on airless worlds.
 
 #### New worlds
 
@@ -246,6 +259,7 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
 
 ### Changed
 
+- Now requires Neroland Core 1.17.0 or later.
 - **Rocket reach is cumulative.** A rocket reaches every destination of its own tier and the tiers below it, so Tier 2
   to 4 rockets fly to Luna and Tier 3 and 4 rockets to Mars. Nyxara still needs Deep Space progress. Each tier's
   pre-selected destination is unchanged.

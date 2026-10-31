@@ -265,6 +265,12 @@ public class RocketEntity extends Entity implements MenuProvider {
         return this.interpolation;
     }
     //?}
+    //? if <1.21.5 {
+    /*@Override
+    public void lerpTo(double x, double y, double z, float yRot, float xRot, int steps) {
+        this.interpolation.interpolateTo(x, y, z, yRot, xRot, steps);
+    }
+    *///?}
 
     // --- Per-tier presentation ----------------------------------------------
 
@@ -1602,8 +1608,14 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     // --- Persistence (Value I/O) -------------------------------------------
 
+    //? if >=1.21.6 {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
+    //?} else {
+    /*@Override
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        ValueInput input = ValueInput.of(tag, this.registryAccess());
+    *///?}
         this.entityData.set(DATA_TIER, input.getIntOr("Tier", RocketTier.TIER_1.ordinal()));
         boolean globalDestination = input.getBooleanOr("GlobalDestination", false);
         int storedDestination = input.getIntOr("Destination", globalDestination
@@ -1664,8 +1676,14 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.entityData.set(DATA_PHASE_TICK, 0);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
+    //?} else {
+    /*@Override
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        ValueOutput output = ValueOutput.of(tag, this.registryAccess());
+    *///?}
         output.putInt("Tier", getTier().ordinal());
         output.putInt("Destination", getDestinationIndex());
         output.putBoolean("GlobalDestination", true);

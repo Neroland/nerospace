@@ -494,9 +494,16 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
 
     // --- Persistence --------------------------------------------------------
 
+    //? if >=1.21.6 {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+    //?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ValueOutput output = ValueOutput.of(tag, registries);
+    *///?}
         output.putInt("Energy", this.energy.getRaw());
         output.putInt("Tier", this.tier);
         output.putInt("Radius", this.radius);
@@ -509,9 +516,16 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
         output.store("Upgrade", ItemStack.OPTIONAL_CODEC, this.items.get(UPGRADE_SLOT));
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+    //?} else {
+    /*@Override
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        ValueInput input = ValueInput.of(tag, registries);
+    *///?}
         this.energy.setRaw(input.getIntOr("Energy", 0));
         this.tier = Math.max(1, input.getIntOr("Tier", 1));
         this.radius = input.getIntOr("Radius", 0);

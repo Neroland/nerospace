@@ -44,8 +44,16 @@ public final class PlanetCardFocus extends Button {
         return out;
     }
 
+    //? if >=26.1 {
     @Override
     protected void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+    //?} else if >=1.21.11 {
+    /*@Override
+    protected void renderContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+    *///?} else {
+    /*@Override
+    protected void renderWidget(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+    *///?}
         if (!isFocused()) {
             return; // the screen draws the card itself; only keyboard focus needs a ring
         }

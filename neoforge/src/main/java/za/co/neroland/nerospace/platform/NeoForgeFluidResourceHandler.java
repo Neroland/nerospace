@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.platform;
 
+//? if >=1.21.9 {
 import java.util.Objects;
 
 import net.minecraft.world.level.material.Fluid;
@@ -185,3 +186,94 @@ public final class NeoForgeFluidResourceHandler extends SnapshotJournal<NeoForge
         }
     }
 }
+//?} else {
+/*import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+
+import org.jetbrains.annotations.Nullable;
+
+import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
+
+// Before NeoForge 21.9 (Minecraft 1.21.9) the standard fluid capability was IFluidHandler: one tank exposing a
+// Nerospace fluid store, same rules as the ResourceHandler version (only plain fluids of the held kind).
+public final class NeoForgeFluidResourceHandler implements IFluidHandler {
+
+    private final NerospaceFluidStorage tank;
+
+    private NeoForgeFluidResourceHandler(NerospaceFluidStorage tank) {
+        this.tank = tank;
+    }
+
+    @Nullable
+    public static NeoForgeFluidResourceHandler of(@Nullable NerospaceFluidStorage tank) {
+        return tank == null ? null : new NeoForgeFluidResourceHandler(tank);
+    }
+
+    private static Fluid normalise(Fluid fluid) {
+        return fluid instanceof FlowingFluid flowing ? flowing.getSource() : fluid;
+    }
+
+    private static int clamp(long amount) {
+        return (int) Math.max(0L, Math.min(Integer.MAX_VALUE, amount));
+    }
+
+    @Override
+    public int getTanks() {
+        return 1;
+    }
+
+    @Override
+    public FluidStack getFluidInTank(int tank) {
+        Fluid held = normalise(this.tank.getFluid());
+        long amount = this.tank.getAmount();
+        return held == Fluids.EMPTY || amount <= 0 ? FluidStack.EMPTY : new FluidStack(held, clamp(amount));
+    }
+
+    @Override
+    public int getTankCapacity(int tank) {
+        return clamp(this.tank.getCapacity());
+    }
+
+    @Override
+    public boolean isFluidValid(int tank, FluidStack stack) {
+        if (stack.isEmpty()) {
+            return true;
+        }
+        if (!stack.isComponentsPatchEmpty()) {
+            return false;
+        }
+        Fluid held = normalise(this.tank.getFluid());
+        return held == Fluids.EMPTY || held == normalise(stack.getFluid());
+    }
+
+    @Override
+    public int fill(FluidStack resource, FluidAction action) {
+        if (resource.isEmpty() || !isFluidValid(0, resource)) {
+            return 0;
+        }
+        return clamp(this.tank.fill(normalise(resource.getFluid()), resource.getAmount(), action.simulate()));
+    }
+
+    @Override
+    public FluidStack drain(FluidStack resource, FluidAction action) {
+        if (resource.isEmpty() || !resource.isComponentsPatchEmpty()
+                || normalise(resource.getFluid()) != normalise(this.tank.getFluid())) {
+            return FluidStack.EMPTY;
+        }
+        return drain(resource.getAmount(), action);
+    }
+
+    @Override
+    public FluidStack drain(int maxDrain, FluidAction action) {
+        Fluid held = normalise(this.tank.getFluid());
+        if (held == Fluids.EMPTY || maxDrain <= 0) {
+            return FluidStack.EMPTY;
+        }
+        long drained = this.tank.drain(maxDrain, action.simulate());
+        return drained <= 0 ? FluidStack.EMPTY : new FluidStack(held, clamp(drained));
+    }
+}
+*///?}

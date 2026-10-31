@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -34,7 +35,7 @@ public final class OxygenContributionState extends SavedData {
             Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_contributions");
 
     public static final SavedDataType<OxygenContributionState> TYPE =
-            new SavedDataType<>(ID, OxygenContributionState::new, codec(), null);
+            SavedDataCompat.type(ID, OxygenContributionState::new, codec());
 
     /** Stable non-identifying label for the recovery helper's logs, telemetry and backup file name. */
     public static final String RECOVERY_NAME = "nerospace:oxygen_contributions";

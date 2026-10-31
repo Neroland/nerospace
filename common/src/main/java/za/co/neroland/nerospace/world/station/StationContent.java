@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 
+import za.co.neroland.nerolandcore.registry.BlockEntityTypeCompat;
 import za.co.neroland.nerospace.block.AirtightBlock;
 import za.co.neroland.nerospace.block.AirtightWindowBlock;
 import za.co.neroland.nerospace.block.GravityOverrideBlock;
@@ -72,7 +73,7 @@ public final class StationContent {
     // --- block entities -------------------------------------------------------------------------
     public static final RegistryEntry<BlockEntityType<SolarWingBlockEntity>> SOLAR_WING_BE =
             ModBlockEntities.BLOCK_ENTITIES.register("solar_wing",
-                    key -> new BlockEntityType<>(SolarWingBlockEntity::new, java.util.Set.of(SOLAR_WING.get())));
+                    key -> BlockEntityTypeCompat.create(SolarWingBlockEntity::new, SOLAR_WING.get()));
 
     // --- block items ----------------------------------------------------------------------------
     public static final RegistryEntry<BlockItem> HULL_PLATING_ITEM = blockItem("hull_plating", HULL_PLATING);

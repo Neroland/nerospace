@@ -51,7 +51,68 @@ public final class DestinationSelection {
         }
     }
 
+    /** "Never computed" marker for {@link #refreshDue}. */
+    public static final long NEVER = Long.MIN_VALUE;
+
+    /** Synced outcome code meaning "the server has not answered a pick on this menu yet". */
+    public static final int NO_OUTCOME = 0;
+
+    private static final Outcome[] OUTCOMES = Outcome.values();
+
     private DestinationSelection() {
+    }
+
+    /**
+     * Whether a cached per-viewer value computed at game time {@code last} must be recomputed at {@code now}.
+     * {@link #NEVER} is always due and never takes part in a subtraction ({@code now - Long.MIN_VALUE} overflows to
+     * a negative number, which would read as "fresh" forever); a clock that went backwards is due too.
+     */
+    public static boolean refreshDue(long now, long last, long interval) {
+        return last == NEVER || now < last || now - last >= interval;
+    }
+
+    /**
+     * The Core-gate mask a viewer is held to: a creative player bypasses progression gates for destination
+     * selection; everyone else (survival, adventure and spectators) gets {@code closed}, the gates still shut.
+     */
+    public static int viewerGateMask(boolean creative, int closed) {
+        return creative ? 0 : closed;
+    }
+
+    /** Whether a viewer may fly through a closed gate: only a creative player bypasses it. */
+    public static boolean gateOpenFor(boolean creative, boolean gateOpen) {
+        return creative || gateOpen;
+    }
+
+    /**
+     * Packs the server's answer to a pick into one synced menu value: a rolling 11-bit sequence (so two equal
+     * answers in a row still change the value and are re-sent) and the outcome. Always non-zero and below 32767,
+     * so it survives the 16-bit container-data sync.
+     */
+    public static int encodeOutcome(int sequence, Outcome outcome) {
+        return ((sequence & 0x7FF) << 4) | (outcome.ordinal() + 1);
+    }
+
+    /**
+     * Lang key naming why a pick did not stand: the outcome's own reason, "no other destination" for a step that
+     * went nowhere, and the generic "kept its course" only for a pick the server never answered ({@code null}).
+     */
+    public static String refusalKey(@Nullable Outcome outcome) {
+        if (outcome == null) {
+            return "gui.nerospace.dest.reason.refused";
+        }
+        if (outcome == Outcome.ALREADY_SELECTED) {
+            return "gui.nerospace.dest.reason.only_one";
+        }
+        String key = outcome.langKey();
+        return key != null ? key : "gui.nerospace.dest.reason.refused";
+    }
+
+    /** The outcome packed by {@link #encodeOutcome}, or {@code null} for {@link #NO_OUTCOME} or a bad code. */
+    @Nullable
+    public static Outcome decodeOutcome(int code) {
+        int ordinal = (code & 0xF) - 1;
+        return code > 0 && ordinal >= 0 && ordinal < OUTCOMES.length ? OUTCOMES[ordinal] : null;
     }
 
     /**

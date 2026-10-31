@@ -97,8 +97,9 @@ Forge uses ForgeGradle 7 and Gradle 9.6.0.
 
 ## CI / VS Code
 
-- **`.github/workflows/multiloader.yml`** — strict loader × version matrix for all
-  six cells.
+- **`.github/workflows/publish.yml`** — builds every loader × version cell (27: fabric/neoforge/forge ×
+  1.21.1/1.21.4/1.21.5/1.21.8/1.21.10/1.21.11/26.1.2/26.2/26.3) on a release; there is no separate per-push
+  matrix workflow any more.
 - **`.vscode/`** — `ML: …` tasks (build/run/debug per loader+MC) run the repo-root
   `./gradlew`. `runClient`/`runServer` come from Fabric Loom (`:fabric`) and
   ModDevGradle (`:neoforge`) / ForgeGradle (`:forge`); the `Debug: <cell>` configs
@@ -126,8 +127,8 @@ is frozen until the port is 120% confirmed.
 
 ## Build matrix status (2026-06-25)
 
-All six loader × version cells build from **public artifacts**, and CI
-(`.github/workflows/multiloader.yml`) builds all six strictly (any failure fails the run):
+All six loader × version cells build from **public artifacts** (historical snapshot; the matrix is now 27 cells,
+built by `.github/workflows/publish.yml` on release):
 
 | | 26.1.2 | 26.2 |
 | --- | --- | --- |

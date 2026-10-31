@@ -183,16 +183,30 @@ public class SalvageDrone extends PathfinderMob implements Merchant {
 
     // --- Persistence (stock only: items, counts and uses; no player field) -------------------------------------
 
+    //? if >=1.21.6 {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
+    //?} else {
+    /*@Override
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        ValueOutput output = ValueOutput.of(tag, this.registryAccess());
+    *///?}
         output.storeNullable("Offers", MerchantOffers.CODEC, this.offers);
         output.putLong("LastRestock", this.lastRestock);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
+    //?} else {
+    /*@Override
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        ValueInput input = ValueInput.of(tag, this.registryAccess());
+    *///?}
         this.offers = input.read("Offers", MerchantOffers.CODEC).orElse(null);
         this.lastRestock = input.getLongOr("LastRestock", SalvageStock.NEVER);
     }

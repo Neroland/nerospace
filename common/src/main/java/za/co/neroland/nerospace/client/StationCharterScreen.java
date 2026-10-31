@@ -52,8 +52,14 @@ public class StationCharterScreen extends TexturedContainerScreen<StationCharter
     }
 
     /** Let the focused name box swallow all typing (incl. the inventory key) so it never closes the screen. */
+    //? if >=1.21.9 {
     @Override
     public boolean keyPressed(KeyEvent event) {
+    //?} else {
+    /*@Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        KeyEvent event = new KeyEvent(keyCode, scanCode, modifiers);
+    *///?}
         if (event.key() == 256) { // Escape
             this.onClose();
             return true;
@@ -61,7 +67,11 @@ public class StationCharterScreen extends TexturedContainerScreen<StationCharter
         if (this.nameBox != null && (this.nameBox.keyPressed(event) || this.nameBox.canConsumeInput())) {
             return true;
         }
+        //? if >=1.21.9 {
         return super.keyPressed(event);
+        //?} else {
+        /*return super.keyPressed(event.key(), event.scancode(), event.modifiers());
+        *///?}
     }
 
     private void confirm() {

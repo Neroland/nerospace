@@ -4,8 +4,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
+//? if >=1.21.9 {
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+//?}
 
 import org.jetbrains.annotations.Nullable;
 
@@ -26,8 +28,13 @@ public final class NeoForgeItemLookup implements ItemLookup {
     @Override
     public NerospaceItemStore find(Level level, BlockPos pos, @Nullable Direction side) {
         // Five-arg query: the null state/block-entity let NeoForge resolve them itself.
+        //? if >=1.21.9 {
         ResourceHandler<ItemResource> handler =
                 Capabilities.Item.BLOCK.getCapability(level, pos, null, null, side);
+        //?} else {
+        /*net.neoforged.neoforge.items.IItemHandler handler =
+                Capabilities.ItemHandler.BLOCK.getCapability(level, pos, null, null, side);
+        *///?}
         return NeoForgeItemStoreAdapter.of(handler);
     }
 }

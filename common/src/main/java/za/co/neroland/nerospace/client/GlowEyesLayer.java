@@ -37,12 +37,21 @@ public class GlowEyesLayer<S extends LivingEntityRenderState> extends EyesLayer<
         this.glowTexture = glowTexture;
     }
 
+    //? if >=1.21.9 {
     @Override
     public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, S state,
             float yRot, float xRot) {
         this.current = this.types.computeIfAbsent(this.glowTexture.apply(state), RenderTypes::eyes);
         super.submit(poseStack, submitNodeCollector, lightCoords, state, yRot, xRot);
     }
+    //?} else {
+    /*@Override
+    public void render(PoseStack poseStack, net.minecraft.client.renderer.MultiBufferSource buffers, int lightCoords,
+            S state, float yRot, float xRot) {
+        this.current = this.types.computeIfAbsent(this.glowTexture.apply(state), RenderTypes::eyes);
+        super.render(poseStack, buffers, lightCoords, state, yRot, xRot);
+    }
+    *///?}
 
     @Override
     public RenderType renderType() {

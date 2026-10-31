@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -26,7 +27,7 @@ public final class PlanetClockState extends SavedData {
     public static final String RECOVERY_NAME = "nerospace:planet_clock";
 
     public static final SavedDataType<PlanetClockState> TYPE =
-            new SavedDataType<>(ID, PlanetClockState::new, codec(), null);
+            SavedDataCompat.type(ID, PlanetClockState::new, codec());
 
     /** Game time the clock started at; {@code -1} until the first tick initialises it. */
     long epochTicks = -1L;

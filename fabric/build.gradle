@@ -2,17 +2,29 @@
 // module's source directly (single copy -> no drift).
 
 plugins {
-    id 'net.fabricmc.fabric-loom'
+    // Two Loom flavours from the same plugin jar: `fabric-loom` for de-obfuscated 26.x (no mappings, no
+    // remap) and `fabric-loom-remap` for obfuscated 1.21.x (Mojang mappings + remapJar to intermediary).
+    // Neither is applied here; the node picks one below from its Minecraft version.
+    id 'net.fabricmc.fabric-loom' apply false
+    id 'net.fabricmc.fabric-loom-remap' apply false
     id 'eclipse'   // for eclipse.synchronizationTasks (VS Code / Buildship import hook)
     id 'maven-publish'
 }
 
 // MC version comes from the Stonecutter node (e.g. :fabric:26.1.2), not a global property.
 def mc = stonecutter.current.version
-// Upper bound of this cell's Minecraft range: the next minor line (26.1.2 -> 26.2, 26.2 -> 26.3).
-// Without it a jar built for one line loads on the next and dies on a changed signature at runtime
+// Minecraft before 26.1 ships obfuscated, so those cells need mappings and a remapped jar.
+def obfuscated = mc.startsWith('1.')
+apply plugin: obfuscated ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
+// Upper bound of this cell's Minecraft range: the next minor line (26.1.2 -> 26.2, 26.2 -> 26.3); 1.21.x
+// lines are spelled out in gradle.properties (mc_ceiling_<v>). Without it a jar built for one line loads on
+// the next and dies on a changed signature at runtime
 // (Sentry MC-NEROLAND-CORE-2: a 26.2 jar on 26.3 hit NoSuchMethodError in ResourceManager.listResources).
-def mcCeiling = mc.tokenize('.').with { "${it[0]}.${it[1].toInteger() + 1}" }
+def mcCeiling = project.findProperty("mc_ceiling_${mc}") ?: mc.tokenize('.').with { "${it[0]}.${it[1].toInteger() + 1}" }
+// Lowest Minecraft this jar accepts: the compiled version, or an older hotfix sibling (gradle.properties).
+def mcFloor = project.findProperty("mc_floor_${mc}") ?: mc
+// Official EMI (dev.emi on the TerraformersMC maven) for lines the unofficial 26.x port does not cover.
+def emiVersion = project.findProperty("emi_version_${mc}")
 def fabricApi = project.findProperty("fabric_api_version_${mc}")
 def jeiVersion = project.findProperty("jei_version_${mc}")
 // Oldest JEI this cell supports (optional-dependency floor in fabric.mod.json `breaks`); falls back to the pin.
@@ -36,7 +48,9 @@ publishing {
             groupId = rootProject.mod_group_id
             artifactId = "nerospace-fabric-${mc}"
             version = rootProject.mod_version
-            artifact tasks.named('jar')
+            // 1.21.x consumers remap Nerospace with modCompileOnly/modImplementation, so they need the
+            // intermediary jar.
+            artifact tasks.named(obfuscated ? 'remapJar' : 'jar')
         }
     }
     repositories {
@@ -57,6 +71,18 @@ sourceSets.main.resources.srcDir rootProject.ext.commonResources
 
 dependencies {
     minecraft "com.mojang:minecraft:${mc}"
+    if (obfuscated) {
+        // Obfuscated 1.21.x: Mojang's official names, remapped to intermediary on jar. Mod dependencies
+        // (loader, Fabric API, Core) go through modImplementation so Loom remaps them; optional NeroEconomy is
+        // remapped compile-only.
+        mappings loom.officialMojangMappings()
+        modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+        if (fabricApi != null) {
+            modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+        }
+        modImplementation "za.co.neroland.nerolandcore:nerolandcore-fabric-${mc}:${nerolandcoreVersion}"
+        modCompileOnly "za.co.neroland.neroeconomy:neroeconomy-fabric-${mc}:${project.findProperty('neroeconomy_version')}"
+    } else {
     // NOTE: no `mappings` — de-obfuscated 26.x needs none (Fabric Loom 1.17+).
     implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     if (fabricApi != null) {
@@ -74,6 +100,7 @@ dependencies {
     // NeroEconomy — OPTIONAL. Its public API on the compile classpath only: never bundled, never required.
     // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
     compileOnly "za.co.neroland.neroeconomy:neroeconomy-fabric-${mc}:${project.findProperty('neroeconomy_version')}"
+    }
 
     // Sentry SDK (telemetry/NerospaceTelemetry): compile against it + embed it as a jar-in-jar so the
     // shipped Fabric jar carries it. Counterpart to the NeoForge JarJar bundling.
@@ -84,7 +111,18 @@ dependencies {
     // the loader-agnostic JEI common API; on Fabric it compiles against the common + fabric APIs and loads
     // against the Fabric JEI mod at dev runtime. JEI is a soft dependency (compile-time API only; the mod
     // is runtime-only). Same per-MC version as NeoForge (jei_version_<mc>, BlameJared maven from the root).
-    if (jeiVersion) {
+    if (jeiVersion && obfuscated) {
+        // 1.21.x: JEI's Fabric artifacts are intermediary-named, so they go through Loom's remap. JEI published
+        // no Fabric build for 1.21.4, so that cell compiles against the (Mojang-named) common API only
+        // (jei_fabric_<mc>=false in gradle.properties).
+        if (project.findProperty("jei_fabric_${mc}") != 'false') {
+            modCompileOnly "mezz.jei:jei-${mc}-common-api-intermediary:${jeiVersion}"
+            modCompileOnly "mezz.jei:jei-${mc}-fabric-api:${jeiVersion}"
+            modRuntimeOnly "mezz.jei:jei-${mc}-fabric:${jeiVersion}"
+        } else {
+            compileOnly "mezz.jei:jei-${mc}-common-api:${jeiVersion}"
+        }
+    } else if (jeiVersion) {
         compileOnly "mezz.jei:jei-${mc}-common-api:${jeiVersion}"
         compileOnly "mezz.jei:jei-${mc}-fabric-api:${jeiVersion}"
         runtimeOnly "mezz.jei:jei-${mc}-fabric:${jeiVersion}"
@@ -99,6 +137,18 @@ dependencies {
             runtimeOnly "curse.maven:emi-unofficial-port-unstable-1544558:${emiFile}"
         }
     }
+    if (emiVersion) {
+        modCompileOnly "dev.emi:emi-fabric:${emiVersion}:api"
+        if (project.hasProperty('withEmi')) {
+            modRuntimeOnly "dev.emi:emi-fabric:${emiVersion}"
+        }
+    }
+}
+
+// compat/emi compiles only where an EMI API exists for this Minecraft line (the 26.x port or official EMI on
+// 1.21.1). Elsewhere EMI itself does not exist, so the plugin is left out of the jar.
+if (!emiFile && !emiVersion) {
+    sourceSets.main.java.exclude('za/co/neroland/nerospace/compat/emi/**')
 }
 
 // Expand fabric.mod.json from src/main/templates into a generated resources dir.
@@ -114,7 +164,7 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
         mod_authors          : rootProject.mod_authors,
         mod_license          : rootProject.mod_license,
         fabric_loader_version: rootProject.fabric_loader_version,
-        minecraft_version    : mc,
+        minecraft_version    : mcFloor,
         minecraft_version_ceiling: mcCeiling,
         // Floor the required Core version at what we compile against so the loader refuses to
         // run Nerospace against a Core too old to have the APIs it references (e.g. the
@@ -131,8 +181,20 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
 sourceSets.main.resources.srcDir generateModMetadata
 eclipse.synchronizationTasks generateModMetadata
 
+// The access widener's namespace differs by era: 26.x is `official` (de-obfuscated), 1.21.x is `named`
+// (Mojang mappings, remapped to intermediary in remapJar). Each 1.21.x line has its own file under
+// src/main/accesswidener/, swapped into the jar under the name fabric.mod.json declares.
+def awFile = obfuscated ? file("${branchDir}/src/main/accesswidener/${mc}.accesswidener")
+        : file("${branchDir}/src/main/resources/nerospace.accesswidener")
+if (obfuscated) {
+    tasks.named('processResources', ProcessResources) {
+        exclude 'nerospace.accesswidener'
+        from(awFile) { rename { 'nerospace.accesswidener' } }
+    }
+}
+
 loom {
-    accessWidenerPath = file("${branchDir}/src/main/resources/nerospace.accesswidener")
+    accessWidenerPath = awFile
 
     runs {
         client {
@@ -186,7 +248,7 @@ tasks.register('ecjCheck', JavaExec) {
                 .join(File.pathSeparator)
         def srcDirs = sourceSets.main.java.srcDirs.findAll { it.exists() }.collect { it.absolutePath }
         args = [
-                '--release', '25',
+                '--release', "${project.javaRelease}",
                 '-proc:none',
                 '-d', 'none',
                 '-properties', rootProject.file('tools/ecj.prefs').absolutePath,

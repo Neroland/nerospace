@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -25,7 +26,7 @@ public final class NyxaraBandState extends SavedData {
     public static final String RECOVERY_NAME = "nerospace:nyxara_band";
 
     public static final SavedDataType<NyxaraBandState> TYPE =
-            new SavedDataType<>(ID, NyxaraBandState::new, codec(), null);
+            SavedDataCompat.type(ID, NyxaraBandState::new, codec());
 
     int bandWidth = -1;
     long boundAt = -1L;

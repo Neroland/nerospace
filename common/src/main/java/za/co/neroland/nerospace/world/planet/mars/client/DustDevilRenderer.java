@@ -61,7 +61,11 @@ public class DustDevilRenderer extends EntityRenderer<DustDevil, EntityRenderSta
         float alpha = fade(age);
         float half = HALF_WIDTH * grow(age);
         if (alpha > 0.0F && half > 0.0F) {
+            //? if >=1.21.9 {
             int light = state.lightCoords;
+            //?} else {
+            /*int light = this.light();
+            *///?}
             int a = Math.round(alpha * 255.0F);
             float u0 = frame(age) * 0.25F;
             float u1 = u0 + 0.25F;

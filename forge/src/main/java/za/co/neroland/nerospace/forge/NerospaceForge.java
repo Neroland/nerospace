@@ -92,8 +92,14 @@ public final class NerospaceForge {
                 TerraformManager.get(serverLevel).onChunkLoaded(serverLevel, chunk);
             }
         });
+        //? if >=1.21.9 {
         EntityAttributeCreationEvent.BUS.addListener(this::onCreateEntityAttributes);
         SpawnPlacementRegisterEvent.BUS.addListener(this::onRegisterSpawnPlacements);
+        //?} else {
+        /*// Forge 1.21.6-1.21.8: these mod-bus events are reached through the mod's bus group.
+        EntityAttributeCreationEvent.getBus(modBusGroup).addListener(this::onCreateEntityAttributes);
+        SpawnPlacementRegisterEvent.getBus(modBusGroup).addListener(this::onRegisterSpawnPlacements);
+        *///?}
     }
 
     private void onCreateEntityAttributes(EntityAttributeCreationEvent event) {

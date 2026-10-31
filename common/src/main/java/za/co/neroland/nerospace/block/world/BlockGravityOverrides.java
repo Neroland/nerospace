@@ -18,6 +18,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -52,7 +53,7 @@ public final class BlockGravityOverrides extends SavedData {
     ).apply(i, BlockGravityOverrides::of));
 
     public static final SavedDataType<BlockGravityOverrides> TYPE =
-            new SavedDataType<>(ID, BlockGravityOverrides::new, CODEC, null);
+            SavedDataCompat.type(ID, BlockGravityOverrides::new, CODEC);
 
     private static final Map<ServerLevel, BlockGravityOverrides> CACHE = Collections.synchronizedMap(new WeakHashMap<>());
 

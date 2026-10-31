@@ -16,6 +16,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -41,7 +42,7 @@ public final class PlanetVisitState extends SavedData {
             Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "planet_visits");
 
     public static final SavedDataType<PlanetVisitState> TYPE =
-            new SavedDataType<>(ID, PlanetVisitState::new, codec(), null);
+            SavedDataCompat.type(ID, PlanetVisitState::new, codec());
 
     /** Stable non-identifying label for the recovery helper's logs, telemetry and backup file name. */
     public static final String RECOVERY_NAME = "nerospace:planet_visits";

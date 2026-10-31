@@ -423,9 +423,16 @@ public class AlienVillager extends PathfinderMob implements Merchant {
 
     // --- Persistence -----------------------------------------------------------
 
+    //? if >=1.21.6 {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
+    //?} else {
+    /*@Override
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        ValueOutput output = ValueOutput.of(tag, this.registryAccess());
+    *///?}
         output.putInt("Planet", this.entityData.get(DATA_PLANET));
         output.putString("HomeBiome", getBiomeId());
         output.putInt("ColorSeed", getColorSeed());
@@ -436,9 +443,16 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         output.store("Reputation", REP_CODEC, serial);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
+    //?} else {
+    /*@Override
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        ValueInput input = ValueInput.of(tag, this.registryAccess());
+    *///?}
         this.entityData.set(DATA_PLANET, input.getIntOr("Planet", Planet.GREENXERTZ.ordinal()));
         setBiomeId(input.getStringOr("HomeBiome", ""));
         setColorSeed(input.getIntOr("ColorSeed", 0));

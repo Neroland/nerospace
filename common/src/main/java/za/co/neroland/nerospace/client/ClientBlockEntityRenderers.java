@@ -17,8 +17,12 @@ public final class ClientBlockEntityRenderers {
 
     /** A loader's BER-registration entry point. */
     public interface Sink {
+        //? if >=1.21.9 {
         <T extends BlockEntity, S extends BlockEntityRenderState> void register(
                 BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider);
+        //?} else {
+        /*<T extends BlockEntity> void register(BlockEntityType<? extends T> type, BlockEntityRendererProvider<T> provider);
+        *///?}
     }
 
     private ClientBlockEntityRenderers() {

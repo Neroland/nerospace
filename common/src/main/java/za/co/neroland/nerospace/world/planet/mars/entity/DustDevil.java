@@ -69,6 +69,12 @@ public class DustDevil extends Entity {
         return this.interpolation;
     }
     //?}
+    //? if <1.21.5 {
+    /*@Override
+    public void lerpTo(double x, double y, double z, float yRot, float xRot, int steps) {
+        this.interpolation.interpolateTo(x, y, z, yRot, xRot, steps);
+    }
+    *///?}
 
     @Override
     public void tick() {
@@ -162,13 +168,25 @@ public class DustDevil extends Entity {
         return false;
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
+    //?} else {
+    /*@Override
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        ValueInput input = ValueInput.of(tag, this.registryAccess());
+    *///?}
         this.age = input.getIntOr("Age", 0);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
+    //?} else {
+    /*@Override
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        ValueOutput output = ValueOutput.of(tag, this.registryAccess());
+    *///?}
         output.putInt("Age", this.age);
     }
 }

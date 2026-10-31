@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -61,6 +62,12 @@ public class RocketMenu extends AbstractContainerMenu {
     private final int playerInvEnd;
     @Nullable
     private final RocketEntity rocket;
+    /**
+     * This viewer's last destination answer from the server ({@link DestinationSelection#encodeOutcome}), synced
+     * after the shared data so the screen can name the real reason for a refusal. Per menu, so per viewer.
+     */
+    private final DataSlot lastOutcome = DataSlot.standalone();
+    private int outcomeSequence;
 
     /** Client constructor (referenced by the menu type); rocket state arrives via the synced data. */
     public RocketMenu(int containerId, Inventory playerInventory) {
@@ -93,6 +100,13 @@ public class RocketMenu extends AbstractContainerMenu {
         this.playerInvEnd = PLAYER_INV_START + rows * 9 + 9;
 
         this.addDataSlots(data);
+        this.addDataSlot(this.lastOutcome);
+    }
+
+    /** Records the server's answer to a pick so the next broadcast carries it to this viewer's screen. */
+    private void report(DestinationSelection.Outcome outcome) {
+        this.outcomeSequence++;
+        this.lastOutcome.set(DestinationSelection.encodeOutcome(this.outcomeSequence, outcome));
     }
 
     /**
@@ -121,6 +135,7 @@ public class RocketMenu extends AbstractContainerMenu {
         }
         if (id == BUTTON_CYCLE_DEST) {
             DestinationSelection.Outcome outcome = current.stepDestination(1, player);
+            report(outcome);
             DestinationTrace.log("rocket menu {} cycle -> dest {} mask {} {}", this.containerId,
                     current.getDestinationIndex(), current.destinationMask(), outcome);
             return true;
@@ -136,6 +151,7 @@ public class RocketMenu extends AbstractContainerMenu {
         if (id >= SELECT_DEST_BASE && id < SELECT_DEST_BASE + Destinations.all().size()) {
             int index = id - SELECT_DEST_BASE;
             DestinationSelection.Outcome outcome = current.selectDestination(index, player);
+            report(outcome);
             DestinationTrace.log("rocket menu {} button {} -> index {} mask {} gate {} {}", this.containerId, id,
                     index, current.destinationMask(), RocketEntity.gateMask(player), outcome);
             return true; // always broadcast so the screen reconciles its optimistic highlight
@@ -296,6 +312,11 @@ public class RocketMenu extends AbstractContainerMenu {
     /** Bit per destination index whose Core gate is closed for this viewer (LOCKED_GATE cards). */
     public int getGateMask() {
         return this.data.get(DATA_GATE_MASK);
+    }
+
+    /** The server's last answer to this viewer's pick ({@link DestinationSelection#encodeOutcome}); 0 = none yet. */
+    public int getLastOutcomeCode() {
+        return this.lastOutcome.get();
     }
 
     /** How many of the next locked destinations the viewer's station Observatory reveals. */

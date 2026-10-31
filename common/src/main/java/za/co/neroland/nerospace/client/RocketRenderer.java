@@ -109,7 +109,11 @@ public class RocketRenderer extends EntityRenderer<RocketEntity, RocketRenderSta
             model.setupAnim(state);
             RenderType renderType = model.renderType(state.texture);
             boolean lit = pass == Pass.HULL || pass == Pass.GLASS;
+            //? if >=1.21.9 {
             int light = lit ? state.lightCoords : FULL_BRIGHT;
+            //?} else {
+            /*int light = lit ? this.light() : FULL_BRIGHT;
+            *///?}
             int order = pass == Pass.HULL ? 0 : 1;
             //? if >=26.3 {
             /*collector.order(order).submitModel(model, state, poseStack, renderType, light, OverlayTexture.NO_OVERLAY, -1);

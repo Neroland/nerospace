@@ -76,8 +76,18 @@ public class GravityOverrideBlock extends Block {
         }
     }
 
+    //? if >=1.21.5 {
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+    //?} else {
+    /*@Override
+    protected void onRemove(BlockState state, net.minecraft.world.level.Level world, BlockPos pos, BlockState newState,
+            boolean movedByPiston) {
+        super.onRemove(state, world, pos, newState, movedByPiston);
+        if (!(world instanceof ServerLevel level) || state.is(newState.getBlock())) {
+            return;
+        }
+    *///?}
         BlockGravityOverrides.get(level).unregister(pos);
         super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
     }

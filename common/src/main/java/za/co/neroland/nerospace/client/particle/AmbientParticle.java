@@ -3,7 +3,12 @@ package za.co.neroland.nerospace.client.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
+//? if >=1.21.9 {
 import net.minecraft.client.particle.SingleQuadParticle;
+//?} else {
+/*import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.TextureSheetParticle;
+*///?}
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
@@ -16,7 +21,11 @@ import za.co.neroland.nerospace.world.planet.WeatherEvent;
  * colour ramp over the particle's life, so one 4-frame sprite set serves every palette. All are translucent; embers
  * and nebula motes are full-bright. The spawner ({@code WeatherAmbience}) passes the drift velocity.
  */
+//? if >=1.21.9 {
 public class AmbientParticle extends SingleQuadParticle {
+//?} else {
+/*public class AmbientParticle extends TextureSheetParticle {
+*///?}
 
     /** Lifetime, size, ramp and motion of one type. Colours are 0xRRGGBB. */
     public enum Kind {
@@ -59,7 +68,11 @@ public class AmbientParticle extends SingleQuadParticle {
 
     protected AmbientParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
             SpriteSet sprites, Kind kind) {
+        //? if >=1.21.9 {
         super(level, x, y, z, sprites.first());
+        //?} else {
+        /*super(level, x, y, z);
+        *///?}
         this.sprites = sprites;
         this.kind = kind;
         this.xd = xd;
@@ -90,10 +103,17 @@ public class AmbientParticle extends SingleQuadParticle {
         this.setSpriteFromAge(sprites);
     }
 
+    //? if >=1.21.9 {
     @Override
     public SingleQuadParticle.Layer getLayer() {
         return SingleQuadParticle.Layer.TRANSLUCENT;
     }
+    //?} else {
+    /*@Override
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    }
+    *///?}
 
     @Override
     public void tick() {
@@ -193,8 +213,13 @@ public class AmbientParticle extends SingleQuadParticle {
 
         @Override
         @org.jetbrains.annotations.Nullable
+        //? if >=1.21.9 {
         public Particle createParticle(SimpleParticleType options, ClientLevel level, double x, double y, double z,
                 double xd, double yd, double zd, RandomSource random) {
+        //?} else {
+        /*public Particle createParticle(SimpleParticleType options, ClientLevel level, double x, double y, double z,
+                double xd, double yd, double zd) {
+        *///?}
             // The config switch gates every source of these particles, not only the ambience spawner.
             if (!za.co.neroland.nerospace.config.NerospaceConfig.particlesEnabled()) {
                 return null;

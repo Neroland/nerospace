@@ -3107,6 +3107,10 @@ if __name__ == "__main__":
     gen_glacite()
     gen_rocket_tier("rocket_tier_4", I_FROST, I_CYAN, I_BLUE, boosters=True, glow=I_WHITE)
     gen_destination_compass("glacira_compass", I_CYAN)
+    # Luna, Mars and Nyxara compasses: the needle takes each planet's accent (client/ui/PlanetAccents).
+    gen_destination_compass("luna_compass", (201, 201, 194, 255))
+    gen_destination_compass("mars_compass", (217, 160, 102, 255))
+    gen_destination_compass("nyxara_compass", (155, 93, 229, 255))
     # Cargo rockets (docs/CARGO-ROCKETS.md): pad plate + hull/rocket/crate icons.
     gen_cargo_pad()
     gen_cargo_hull()

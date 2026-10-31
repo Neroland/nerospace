@@ -348,8 +348,14 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
     }
 
     /** Up / Down with keyboard focus on the rail move the chapter selection. */
+    //? if >=1.21.9 {
     @Override
     public boolean keyPressed(KeyEvent event) {
+    //?} else {
+    /*@Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        KeyEvent event = new KeyEvent(keyCode, scanCode, modifiers);
+    *///?}
         GuiEventListener focused = getFocused();
         if (focused instanceof RailEntry && (event.isUp() || event.isDown())) {
             int next = this.selectedChapter + (event.isUp() ? -1 : 1);
@@ -358,7 +364,11 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
             }
             return true;
         }
+        //? if >=1.21.9 {
         return super.keyPressed(event);
+        //?} else {
+        /*return super.keyPressed(event.key(), event.scancode(), event.modifiers());
+        *///?}
     }
 
     /** A dotted 2px line between two points (axis-aligned or otherwise), ~5px pitch. */
@@ -393,8 +403,16 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
             setTooltip(Tooltip.create(Component.translatable(StarGuide.CHAPTERS.get(chapter).titleKey())));
         }
 
+        //? if >=26.1 {
         @Override
         protected void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        //?} else if >=1.21.11 {
+        /*@Override
+        protected void renderContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        *///?} else {
+        /*@Override
+        protected void renderWidget(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        *///?}
             int colour = drawFrame(g);
             int x = getX();
             int y = getY();
@@ -424,8 +442,16 @@ public class StarGuideScreen extends TexturedContainerScreen<StarGuideMenu> {
             setDotted(bonus);
         }
 
+        //? if >=26.1 {
         @Override
         protected void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        //?} else if >=1.21.11 {
+        /*@Override
+        protected void renderContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        *///?} else {
+        /*@Override
+        protected void renderWidget(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        *///?}
             int colour = drawFrame(g);
             int x = getX();
             int y = getY();

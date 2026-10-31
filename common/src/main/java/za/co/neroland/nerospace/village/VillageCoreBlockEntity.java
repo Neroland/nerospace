@@ -475,9 +475,16 @@ public class VillageCoreBlockEntity extends BlockEntity {
 
     // --- Persistence ----------------------------------------------------------
 
+    //? if >=1.21.6 {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+    //?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ValueOutput output = ValueOutput.of(tag, registries);
+    *///?}
         // Owner UUID only. The 1.6.0 "OwnerName" key is never written, so it drops out at the next chunk save.
         this.ownership.write(output::putString);
         output.putInt("Stockpile", this.stockpile);
@@ -492,9 +499,16 @@ public class VillageCoreBlockEntity extends BlockEntity {
         output.putInt("Quest", this.questOrdinal);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+    //?} else {
+    /*@Override
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        ValueInput input = ValueInput.of(tag, registries);
+    *///?}
         // "OwnerName" (1.6.0) is ignored. An owner erased earlier this session is dropped on load (POPIA/GDPR).
         this.ownership.read(key -> input.getStringOr(key, ""),
                 za.co.neroland.nerospace.data.NerospaceErasure::erasedThisSession);

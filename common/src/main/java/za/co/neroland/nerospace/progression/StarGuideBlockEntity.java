@@ -123,16 +123,30 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
 
     // --- Persistence + client sync -----------------------------------------------------------
 
+    //? if >=1.21.6 {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+    //?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ValueOutput output = ValueOutput.of(tag, registries);
+    *///?}
         output.store("Book", ItemStack.OPTIONAL_CODEC, this.book);
         output.store("Hologram", ItemStack.OPTIONAL_CODEC, this.hologram);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+    //?} else {
+    /*@Override
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        ValueInput input = ValueInput.of(tag, registries);
+    *///?}
         this.book = input.read("Book", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         this.hologram = input.read("Hologram", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
     }

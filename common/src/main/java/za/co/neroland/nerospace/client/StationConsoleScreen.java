@@ -207,8 +207,12 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
     }
 
     private boolean isOperator() {
+        //? if >=1.21.11 {
         return this.minecraft != null && this.minecraft.player != null && this.minecraft.player.permissions()
                 .hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER);
+        //?} else {
+        /*return this.minecraft != null && this.minecraft.player != null && this.minecraft.player.hasPermissions(2);
+        *///?}
     }
 
     private void confirmRename() {
@@ -392,8 +396,14 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
 
     // --- input -----------------------------------------------------------------------------------
 
+    //? if >=1.21.9 {
     @Override
     public boolean keyPressed(KeyEvent event) {
+    //?} else {
+    /*@Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        KeyEvent event = new KeyEvent(keyCode, scanCode, modifiers);
+    *///?}
         if (event.isEscape()) {
             this.onClose();
             return true;
@@ -413,7 +423,11 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
             rebuild();
             return true;
         }
+        //? if >=1.21.9 {
         return super.keyPressed(event);
+        //?} else {
+        /*return super.keyPressed(event.key(), event.scancode(), event.modifiers());
+        *///?}
     }
 
     @Override

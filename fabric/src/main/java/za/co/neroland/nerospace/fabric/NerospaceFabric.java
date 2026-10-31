@@ -131,8 +131,13 @@ public final class NerospaceFabric implements ModInitializer {
                 PlayerJoinHandler.onPlayerJoin(handler.player));
         // Terraform catch-up: convert any in-range columns on chunks that load after the frontier passed.
         // (Fabric's Load SAM passes a third "newly generated" flag, which we don't need.)
+        //? if >=26.1 {
         ServerChunkEvents.CHUNK_LOAD.register((serverLevel, chunk, newlyGenerated) ->
                 TerraformManager.get(serverLevel).onChunkLoaded(serverLevel, chunk));
+        //?} else {
+        /*ServerChunkEvents.CHUNK_LOAD.register((serverLevel, chunk) ->
+                TerraformManager.get(serverLevel).onChunkLoaded(serverLevel, chunk));
+        *///?}
         // Artificer gear: Grav Striders cushion the wearer — cancel fall damage while carried
         // (counterpart to NeoForge's LivingFallEvent; returning false vetoes the damage).
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) ->

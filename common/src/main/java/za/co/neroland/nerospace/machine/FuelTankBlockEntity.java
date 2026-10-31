@@ -279,18 +279,32 @@ public class FuelTankBlockEntity extends BlockEntity implements WorldlyContainer
 
     // --- Persistence (Value I/O) -------------------------------------------
 
+    //? if >=1.21.6 {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+    //?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ValueOutput output = ValueOutput.of(tag, registries);
+    *///?}
         output.putString("Fluid", BuiltInRegistries.FLUID.getKey(this.tank.getRawFluid()).toString());
         output.putInt("Amount", this.tank.getRawAmount());
         output.store("Canister", ItemStack.OPTIONAL_CODEC, this.items.get(CANISTER_SLOT));
         this.sideConfig.save(output);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+    //?} else {
+    /*@Override
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        ValueInput input = ValueInput.of(tag, registries);
+    *///?}
         Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(input.getStringOr("Fluid", "minecraft:empty")));
         this.tank.setRaw(fluid, input.getIntOr("Amount", 0));
         this.items.set(CANISTER_SLOT, input.read("Canister", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));

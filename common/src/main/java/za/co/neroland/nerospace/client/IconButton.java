@@ -20,8 +20,16 @@ public class IconButton extends SpaceButton {
         this.glyph = glyph;
     }
 
+    //? if >=26.1 {
     @Override
     protected void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+    //?} else if >=1.21.11 {
+    /*@Override
+    protected void renderContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+    *///?} else {
+    /*@Override
+    protected void renderWidget(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+    *///?}
         int colour = drawFrame(extractor);
         int gx = getX() + (getWidth() - Glyphs.CELL) / 2;
         int gy = getY() + (getHeight() - Glyphs.CELL) / 2;

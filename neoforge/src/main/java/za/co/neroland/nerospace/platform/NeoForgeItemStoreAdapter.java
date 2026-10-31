@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.platform;
 
+//? if >=1.21.9 {
 import java.util.function.Predicate;
 
 import net.minecraft.world.item.ItemStack;
@@ -90,3 +91,54 @@ public final class NeoForgeItemStoreAdapter implements NerospaceItemStore {
         }
     }
 }
+//?} else {
+/*import java.util.function.Predicate;
+
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+
+import org.jetbrains.annotations.Nullable;
+
+import za.co.neroland.nerospace.item.NerospaceItemStore;
+
+// Before NeoForge 21.9 (Minecraft 1.21.9) the standard item capability was IItemHandler: same adapter, older API.
+public final class NeoForgeItemStoreAdapter implements NerospaceItemStore {
+
+    private final IItemHandler handler;
+
+    private NeoForgeItemStoreAdapter(IItemHandler handler) {
+        this.handler = handler;
+    }
+
+    @Nullable
+    public static NeoForgeItemStoreAdapter of(@Nullable IItemHandler handler) {
+        return handler == null ? null : new NeoForgeItemStoreAdapter(handler);
+    }
+
+    @Override
+    public ItemStack insert(ItemStack stack, boolean simulate) {
+        if (stack.isEmpty()) {
+            return stack;
+        }
+        return ItemHandlerHelper.insertItemStacked(this.handler, stack.copy(), simulate);
+    }
+
+    @Override
+    public ItemStack extract(Predicate<ItemStack> filter, int maxCount, boolean simulate) {
+        if (maxCount <= 0) {
+            return ItemStack.EMPTY;
+        }
+        for (int i = 0; i < this.handler.getSlots(); i++) {
+            ItemStack inSlot = this.handler.getStackInSlot(i);
+            if (!inSlot.isEmpty() && filter.test(inSlot)) {
+                ItemStack got = this.handler.extractItem(i, Math.min(maxCount, inSlot.getCount()), simulate);
+                if (!got.isEmpty()) {
+                    return got;
+                }
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+}
+*///?}

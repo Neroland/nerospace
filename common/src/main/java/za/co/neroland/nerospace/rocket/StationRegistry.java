@@ -18,6 +18,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -62,8 +63,7 @@ public final class StationRegistry extends SavedData {
     /** A station's claim box half-width around its centre (slots are 4096 apart). */
     public static final int CLAIM_RADIUS = 48;
 
-    public static final SavedDataType<StationRegistry> TYPE = new SavedDataType<>(
-            ID, StationRegistry::new, codec(), null);
+    public static final SavedDataType<StationRegistry> TYPE = SavedDataCompat.type(ID, StationRegistry::new, codec());
 
     /**
      * One founded station. The four 1.x fields are unchanged; every 2.0 field is

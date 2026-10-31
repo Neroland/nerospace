@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "format_version": "4.10",
+    "model_format": "java_block",
+    "box_uv": false
+  },
+  "name": "mars_compass",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "mars_compass",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        0,
+        0,
+        7.5
+      ],
+      "to": [
+        16,
+        16,
+        8.5
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "uv_offset": [
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            0
+          ],
+          "texture": null
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            0
+          ],
+          "texture": null
+        }
+      },
+      "type": "cube",
+      "uuid": "42b0d3f8-45b5-403a-8235-0127ba7f591f"
+    }
+  ],
+  "outliner": [
+    "42b0d3f8-45b5-403a-8235-0127ba7f591f"
+  ],
+  "textures": [
+    {
+      "path": "C:\\Users\\dario\\Documents\\projects\\github\\nerospace\\common\\src\\main\\resources\\assets\\nerospace\\textures\\item\\mars_compass.png",
+      "name": "mars_compass.png",
+      "folder": "item",
+      "namespace": "nerospace",
+      "id": "0",
+      "particle": true,
+      "render_mode": "default",
+      "render_sides": "auto",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "381f9c2a-224c-443b-b0c5-5a9e3a40448c",
+      "relative_path": "../../../common/src/main/resources/assets/nerospace/textures/item/mars_compass.png",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsklEQVR4nGNgoBAwYhOUUdD5j038yYMrGOoxBGCaWyYsQxGvKYjCaggLumaYxo6qJBQDYOI1BVH/sbmEQUZB5/+CDZf+a2iZoOCbC9JQ+As2XPqP7EUmfH7eWGaEQmPzKhOyE9Gd7d91DoWGeQ05fJgYCABkzdgAQQO2bNpEmQEiIiLEGVBTEMVQ0TaPkHkMFW3z4GkCbgDWeCUAYHpQNOJLSDDX1RREoVhIcVKmODNRDADBLV/BsilAZAAAAABJRU5ErkJggg=="
+    }
+  ]
+}

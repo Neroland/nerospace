@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.platform;
 
+//? if >=1.21.9 {
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -149,3 +150,98 @@ public final class NeoForgeFluidStorageAdapter implements NerospaceFluidStorage 
         return ((a ^ sum) & (b ^ sum)) < 0 ? Long.MAX_VALUE : sum;
     }
 }
+//?} else {
+/*import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+
+import org.jetbrains.annotations.Nullable;
+
+import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
+
+// Before NeoForge 21.9 (Minecraft 1.21.9) the standard fluid capability was IFluidHandler: same adapter, older API.
+public final class NeoForgeFluidStorageAdapter implements NerospaceFluidStorage {
+
+    private final IFluidHandler handler;
+
+    private NeoForgeFluidStorageAdapter(IFluidHandler handler) {
+        this.handler = handler;
+    }
+
+    @Nullable
+    public static NeoForgeFluidStorageAdapter of(@Nullable IFluidHandler handler) {
+        return handler == null ? null : new NeoForgeFluidStorageAdapter(handler);
+    }
+
+    private FluidStack held() {
+        for (int i = 0; i < this.handler.getTanks(); i++) {
+            FluidStack stack = this.handler.getFluidInTank(i);
+            if (!stack.isEmpty()) {
+                return stack;
+            }
+        }
+        return FluidStack.EMPTY;
+    }
+
+    @Override
+    public Fluid getFluid() {
+        FluidStack held = held();
+        return held.isEmpty() ? Fluids.EMPTY : held.getFluid();
+    }
+
+    @Override
+    public long getAmount() {
+        FluidStack held = held();
+        if (held.isEmpty()) {
+            return 0L;
+        }
+        long total = 0L;
+        for (int i = 0; i < this.handler.getTanks(); i++) {
+            FluidStack stack = this.handler.getFluidInTank(i);
+            if (FluidStack.isSameFluidSameComponents(held, stack)) {
+                total += stack.getAmount();
+            }
+        }
+        return total;
+    }
+
+    @Override
+    public long getCapacity() {
+        FluidStack held = held();
+        long total = 0L;
+        for (int i = 0; i < this.handler.getTanks(); i++) {
+            FluidStack stack = this.handler.getFluidInTank(i);
+            if (stack.isEmpty() || held.isEmpty() || FluidStack.isSameFluidSameComponents(held, stack)) {
+                total += this.handler.getTankCapacity(i);
+            }
+        }
+        return Math.max(total, getAmount());
+    }
+
+    @Override
+    public long fill(Fluid fluid, long amount, boolean simulate) {
+        if (fluid == null || fluid == Fluids.EMPTY || amount <= 0) {
+            return 0L;
+        }
+        FluidStack held = held();
+        FluidStack offered = !held.isEmpty() && held.getFluid() == fluid
+                ? held.copyWithAmount(clamp(amount)) : new FluidStack(fluid, clamp(amount));
+        return this.handler.fill(offered, simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
+    }
+
+    @Override
+    public long drain(long amount, boolean simulate) {
+        FluidStack held = held();
+        if (held.isEmpty() || amount <= 0) {
+            return 0L;
+        }
+        return this.handler.drain(held.copyWithAmount(clamp(amount)),
+                simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE).getAmount();
+    }
+
+    private static int clamp(long amount) {
+        return (int) Math.max(0L, Math.min(Integer.MAX_VALUE, amount));
+    }
+}
+*///?}

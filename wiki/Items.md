@@ -132,10 +132,12 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 ## Travel devices (creative)
 
-- **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira Compasses** are
+- **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira / Luna / Mars / Nyxara Compasses** are
 
   creative-only one-click travel aids for testing and building (no survival recipe — rockets are the
   survival route).
+  The Nyxara Compass always sets you down inside the twilight band, and every compass lays a small platform
+  under you if there is no ground below.
 
 ## Spawn eggs
 

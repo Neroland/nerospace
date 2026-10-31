@@ -21,6 +21,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -45,8 +46,7 @@ public final class TerraformManager extends SavedData {
 
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "terraformers");
 
-    public static final SavedDataType<TerraformManager> TYPE = new SavedDataType<>(
-            ID, TerraformManager::new, codec(), null);
+    public static final SavedDataType<TerraformManager> TYPE = SavedDataCompat.type(ID, TerraformManager::new, codec());
 
     /** Terraformer centre (packed BlockPos) → current horizontal stage-1 radius. */
     private final Long2IntOpenHashMap radius = new Long2IntOpenHashMap();

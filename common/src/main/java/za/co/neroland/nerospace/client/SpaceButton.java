@@ -50,8 +50,16 @@ public class SpaceButton extends Button {
         super.setTooltip(tooltip);
     }
 
+    //? if >=26.1 {
     @Override
     protected void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+    //?} else if >=1.21.11 {
+    /*@Override
+    protected void renderContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+    *///?} else {
+    /*@Override
+    protected void renderWidget(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+    *///?}
         int textColor = drawFrame(extractor);
         Font font = Minecraft.getInstance().font;
         Component message = getMessage();

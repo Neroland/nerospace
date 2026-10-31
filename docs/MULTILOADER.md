@@ -208,8 +208,9 @@ Run from the repo root:
 
 Jars land in `<loader>/versions/<mc>/build/libs/`.
 
-CI builds the same nine-cell matrix in `.github/workflows/multiloader.yml`. Publishing builds all nine cells
-and tags the release for `fabric`, `neoforge`, `forge`, `26.1.2`, `26.2`, and `26.3`.
+Publishing (`.github/workflows/publish.yml`) builds all 27 cells (the 26.x cells above plus Minecraft 1.21.1,
+1.21.4, 1.21.5, 1.21.8, 1.21.10 and 1.21.11 on each loader) and tags each upload with its loader and game
+versions (the 1.21.8 jar also lists 1.21.7, the 1.21.10 jar also lists 1.21.9).
 
 ## IDE
 

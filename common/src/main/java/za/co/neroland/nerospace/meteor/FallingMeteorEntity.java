@@ -109,6 +109,12 @@ public class FallingMeteorEntity extends Entity {
         return this.interpolation;
     }
     //?}
+    //? if <1.21.5 {
+    /*@Override
+    public void lerpTo(double x, double y, double z, float yRot, float xRot, int steps) {
+        this.interpolation.interpolateTo(x, y, z, yRot, xRot, steps);
+    }
+    *///?}
 
     private Vec3 targetVec() {
         return new Vec3(this.targetX + 0.5D, this.targetY + 0.5D, this.targetZ + 0.5D);
@@ -241,8 +247,14 @@ public class FallingMeteorEntity extends Entity {
         return false; // indestructible in flight
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
+    //?} else {
+    /*@Override
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        ValueInput input = ValueInput.of(tag, this.registryAccess());
+    *///?}
         this.targetX = input.getIntOr("TargetX", 0);
         this.targetY = input.getIntOr("TargetY", 0);
         this.targetZ = input.getIntOr("TargetZ", 0);
@@ -250,8 +262,14 @@ public class FallingMeteorEntity extends Entity {
         this.frozen = input.getBooleanOr("Frozen", false);
     }
 
+    //? if >=1.21.6 {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
+    //?} else {
+    /*@Override
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag) {
+        ValueOutput output = ValueOutput.of(tag, this.registryAccess());
+    *///?}
         output.putInt("TargetX", this.targetX);
         output.putInt("TargetY", this.targetY);
         output.putInt("TargetZ", this.targetZ);

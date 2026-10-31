@@ -3,6 +3,8 @@ package za.co.neroland.nerospace.registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
+import za.co.neroland.nerolandcore.registry.BlockEntityTypeCompat;
+
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
@@ -38,90 +40,90 @@ public final class ModBlockEntities {
 
     public static final RegistryEntry<BlockEntityType<CombustionGeneratorBlockEntity>> COMBUSTION_GENERATOR =
             BLOCK_ENTITIES.register("combustion_generator",
-                    key -> new BlockEntityType<>(CombustionGeneratorBlockEntity::new, java.util.Set.of(ModBlocks.COMBUSTION_GENERATOR.get())));
+                    key -> BlockEntityTypeCompat.create(CombustionGeneratorBlockEntity::new, ModBlocks.COMBUSTION_GENERATOR.get()));
 
     public static final RegistryEntry<BlockEntityType<NerosiumGrinderBlockEntity>> NEROSIUM_GRINDER =
             BLOCK_ENTITIES.register("nerosium_grinder",
-                    key -> new BlockEntityType<>(NerosiumGrinderBlockEntity::new, java.util.Set.of(ModBlocks.NEROSIUM_GRINDER.get())));
+                    key -> BlockEntityTypeCompat.create(NerosiumGrinderBlockEntity::new, ModBlocks.NEROSIUM_GRINDER.get()));
 
     public static final RegistryEntry<BlockEntityType<PassiveGeneratorBlockEntity>> PASSIVE_GENERATOR =
             BLOCK_ENTITIES.register("passive_generator",
-                    key -> new BlockEntityType<>(PassiveGeneratorBlockEntity::new, java.util.Set.of(ModBlocks.PASSIVE_GENERATOR.get())));
+                    key -> BlockEntityTypeCompat.create(PassiveGeneratorBlockEntity::new, ModBlocks.PASSIVE_GENERATOR.get()));
 
     public static final RegistryEntry<BlockEntityType<UniversalPipeBlockEntity>> UNIVERSAL_PIPE =
             BLOCK_ENTITIES.register("universal_pipe",
-                    key -> new BlockEntityType<>(UniversalPipeBlockEntity::new, java.util.Set.of(ModBlocks.UNIVERSAL_PIPE.get())));
+                    key -> BlockEntityTypeCompat.create(UniversalPipeBlockEntity::new, ModBlocks.UNIVERSAL_PIPE.get()));
 
     public static final RegistryEntry<BlockEntityType<OxygenGeneratorBlockEntity>> OXYGEN_GENERATOR =
             BLOCK_ENTITIES.register("oxygen_generator",
-                    key -> new BlockEntityType<>(OxygenGeneratorBlockEntity::new, java.util.Set.of(ModBlocks.OXYGEN_GENERATOR.get())));
+                    key -> BlockEntityTypeCompat.create(OxygenGeneratorBlockEntity::new, ModBlocks.OXYGEN_GENERATOR.get()));
 
     public static final RegistryEntry<BlockEntityType<SolarPanelBlockEntity>> SOLAR_PANEL =
             BLOCK_ENTITIES.register("solar_panel",
-                    key -> new BlockEntityType<>(SolarPanelBlockEntity::new, java.util.Set.of(
-                            ModBlocks.SOLAR_PANEL.get(), ModBlocks.SOLAR_PANEL_T2.get(), ModBlocks.SOLAR_PANEL_T3.get())));
+                    key -> BlockEntityTypeCompat.create(SolarPanelBlockEntity::new, 
+                            ModBlocks.SOLAR_PANEL.get(), ModBlocks.SOLAR_PANEL_T2.get(), ModBlocks.SOLAR_PANEL_T3.get()));
 
     public static final RegistryEntry<BlockEntityType<FuelTankBlockEntity>> FUEL_TANK =
             BLOCK_ENTITIES.register("fuel_tank",
-                    key -> new BlockEntityType<>(FuelTankBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_TANK.get())));
+                    key -> BlockEntityTypeCompat.create(FuelTankBlockEntity::new, ModBlocks.FUEL_TANK.get()));
 
     public static final RegistryEntry<BlockEntityType<za.co.neroland.nerospace.route.CargoPadBlockEntity>> CARGO_PAD =
             BLOCK_ENTITIES.register("cargo_pad",
-                    key -> new BlockEntityType<>(za.co.neroland.nerospace.route.CargoPadBlockEntity::new,
-                            java.util.Set.of(ModBlocks.CARGO_PAD.get())));
+                    key -> BlockEntityTypeCompat.create(za.co.neroland.nerospace.route.CargoPadBlockEntity::new,
+                            ModBlocks.CARGO_PAD.get()));
 
     public static final RegistryEntry<BlockEntityType<FuelRefineryBlockEntity>> FUEL_REFINERY =
             BLOCK_ENTITIES.register("fuel_refinery",
-                    key -> new BlockEntityType<>(FuelRefineryBlockEntity::new, java.util.Set.of(ModBlocks.FUEL_REFINERY.get())));
+                    key -> BlockEntityTypeCompat.create(FuelRefineryBlockEntity::new, ModBlocks.FUEL_REFINERY.get()));
 
     public static final RegistryEntry<BlockEntityType<QuarryControllerBlockEntity>> QUARRY_CONTROLLER =
             BLOCK_ENTITIES.register("quarry_controller",
-                    key -> new BlockEntityType<>(QuarryControllerBlockEntity::new, java.util.Set.of(ModBlocks.QUARRY_CONTROLLER.get())));
+                    key -> BlockEntityTypeCompat.create(QuarryControllerBlockEntity::new, ModBlocks.QUARRY_CONTROLLER.get()));
 
     public static final RegistryEntry<BlockEntityType<QuarryLandmarkBlockEntity>> QUARRY_LANDMARK =
             BLOCK_ENTITIES.register("quarry_landmark",
-                    key -> new BlockEntityType<>(QuarryLandmarkBlockEntity::new, java.util.Set.of(ModBlocks.QUARRY_LANDMARK.get())));
+                    key -> BlockEntityTypeCompat.create(QuarryLandmarkBlockEntity::new, ModBlocks.QUARRY_LANDMARK.get()));
 
     public static final RegistryEntry<BlockEntityType<MeteorCoreBlockEntity>> METEOR_CORE =
             BLOCK_ENTITIES.register("meteor_core",
-                    key -> new BlockEntityType<>(MeteorCoreBlockEntity::new, java.util.Set.of(ModBlocks.METEOR_CORE.get())));
+                    key -> BlockEntityTypeCompat.create(MeteorCoreBlockEntity::new, ModBlocks.METEOR_CORE.get()));
 
     public static final RegistryEntry<BlockEntityType<TerraformerBlockEntity>> TERRAFORMER =
             BLOCK_ENTITIES.register("terraformer",
-                    key -> new BlockEntityType<>(TerraformerBlockEntity::new, java.util.Set.of(ModBlocks.TERRAFORMER.get())));
+                    key -> BlockEntityTypeCompat.create(TerraformerBlockEntity::new, ModBlocks.TERRAFORMER.get()));
 
     public static final RegistryEntry<BlockEntityType<HydrationModuleBlockEntity>> HYDRATION_MODULE =
             BLOCK_ENTITIES.register("hydration_module",
-                    key -> new BlockEntityType<>(HydrationModuleBlockEntity::new, java.util.Set.of(ModBlocks.HYDRATION_MODULE.get())));
+                    key -> BlockEntityTypeCompat.create(HydrationModuleBlockEntity::new, ModBlocks.HYDRATION_MODULE.get()));
 
     public static final RegistryEntry<BlockEntityType<TerraformMonitorBlockEntity>> TERRAFORM_MONITOR =
             BLOCK_ENTITIES.register("terraform_monitor",
-                    key -> new BlockEntityType<>(TerraformMonitorBlockEntity::new, java.util.Set.of(ModBlocks.TERRAFORM_MONITOR.get())));
+                    key -> BlockEntityTypeCompat.create(TerraformMonitorBlockEntity::new, ModBlocks.TERRAFORM_MONITOR.get()));
 
     public static final RegistryEntry<BlockEntityType<StarGuideBlockEntity>> STAR_GUIDE =
             BLOCK_ENTITIES.register("star_guide",
-                    key -> new BlockEntityType<>(StarGuideBlockEntity::new, java.util.Set.of(ModBlocks.STAR_GUIDE.get())));
+                    key -> BlockEntityTypeCompat.create(StarGuideBlockEntity::new, ModBlocks.STAR_GUIDE.get()));
 
     public static final RegistryEntry<BlockEntityType<StationCoreBlockEntity>> STATION_CORE =
             BLOCK_ENTITIES.register("station_core",
-                    key -> new BlockEntityType<>(StationCoreBlockEntity::new, java.util.Set.of(ModBlocks.STATION_CORE.get())));
+                    key -> BlockEntityTypeCompat.create(StationCoreBlockEntity::new, ModBlocks.STATION_CORE.get()));
 
     public static final RegistryEntry<BlockEntityType<LaunchGantryBlockEntity>> LAUNCH_GANTRY =
             BLOCK_ENTITIES.register("launch_gantry",
-                    key -> new BlockEntityType<>(LaunchGantryBlockEntity::new, java.util.Set.of(ModBlocks.LAUNCH_GANTRY.get())));
+                    key -> BlockEntityTypeCompat.create(LaunchGantryBlockEntity::new, ModBlocks.LAUNCH_GANTRY.get()));
 
     public static final RegistryEntry<BlockEntityType<LaunchControllerBlockEntity>> LAUNCH_CONTROLLER =
             BLOCK_ENTITIES.register("launch_controller",
-                    key -> new BlockEntityType<>(LaunchControllerBlockEntity::new, java.util.Set.of(ModBlocks.LAUNCH_CONTROLLER.get())));
+                    key -> BlockEntityTypeCompat.create(LaunchControllerBlockEntity::new, ModBlocks.LAUNCH_CONTROLLER.get()));
 
     public static final RegistryEntry<BlockEntityType<ReturnSiteBlockEntity>> RETURN_SITE =
             BLOCK_ENTITIES.register("return_site",
-                    key -> new BlockEntityType<>(ReturnSiteBlockEntity::new, java.util.Set.of(
-                            ModBlocks.LANDING_POD.get(), ModBlocks.DOCKING_PORT.get())));
+                    key -> BlockEntityTypeCompat.create(ReturnSiteBlockEntity::new, 
+                            ModBlocks.LANDING_POD.get(), ModBlocks.DOCKING_PORT.get()));
 
     public static final RegistryEntry<BlockEntityType<VillageCoreBlockEntity>> VILLAGE_CORE =
             BLOCK_ENTITIES.register("village_core",
-                    key -> new BlockEntityType<>(VillageCoreBlockEntity::new, java.util.Set.of(ModBlocks.VILLAGE_CORE.get())));
+                    key -> BlockEntityTypeCompat.create(VillageCoreBlockEntity::new, ModBlocks.VILLAGE_CORE.get()));
 
     private ModBlockEntities() {
     }

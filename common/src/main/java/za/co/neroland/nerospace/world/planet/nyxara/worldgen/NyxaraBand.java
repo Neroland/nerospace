@@ -61,6 +61,16 @@ public final class NyxaraBand {
         return source(level) instanceof FixedXBiomeSource fixedX ? fixedX.width() : FixedXBands.DEFAULT_WIDTH;
     }
 
+    /** The X the twilight band is centred on ({@code 0} unless a datapack moves it). */
+    public static int originX(ServerLevel level) {
+        return source(level) instanceof FixedXBiomeSource fixedX ? fixedX.originX() : 0;
+    }
+
+    /** The terminator's raggedness in blocks on {@code level}. */
+    public static int edgeNoise(ServerLevel level) {
+        return source(level) instanceof FixedXBiomeSource fixedX ? fixedX.edgeNoise() : FixedXBands.DEFAULT_EDGE_NOISE;
+    }
+
     private static BiomeSource source(ServerLevel level) {
         return level.getChunkSource().getGenerator().getBiomeSource();
     }

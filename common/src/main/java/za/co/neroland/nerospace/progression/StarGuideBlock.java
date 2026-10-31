@@ -123,4 +123,16 @@ public class StarGuideBlock extends BaseEntityBlock {
     protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         return level.getBlockEntity(pos) instanceof StarGuideBlockEntity guide ? guide.comparatorSignal() : 0;
     }
+
+    //? if <1.21.5 {
+    /*// Before 1.21.5 there is no BlockEntity.preRemoveSideEffects hook: run it from the block when it is replaced.
+    @Override
+    protected void onRemove(net.minecraft.world.level.block.state.BlockState state, net.minecraft.world.level.Level level,
+            net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof StarGuideBlockEntity be) {
+            be.preRemoveSideEffects(pos, state);
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+    *///?}
 }

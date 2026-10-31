@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +18,7 @@ import za.co.neroland.nerospace.rocket.DestinationSelection;
 import za.co.neroland.nerospace.rocket.DestinationTrace;
 import za.co.neroland.nerospace.rocket.Destinations;
 import za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity;
+import za.co.neroland.nerospace.rocket.RocketEntity;
 
 /**
  * Menu for the Launch Controller: three material slots (Launch Pad / Station Wall / Launch Gantry), the
@@ -48,6 +50,11 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
     private final ContainerData data;
     @Nullable
     private final LaunchControllerBlockEntity controller;
+    /** This viewer's Core-gate mask (bit per destination index still closed for them), so the screen predicts steps. */
+    private final DataSlot gateMask;
+    /** This viewer's last destination answer from the server ({@link DestinationSelection#encodeOutcome}). */
+    private final DataSlot lastOutcome = DataSlot.standalone();
+    private int outcomeSequence;
 
     public LaunchControllerMenu(int id, Inventory playerInventory) {
         this(id, playerInventory, new SimpleContainer(SLOTS), new SimpleContainerData(DATA_COUNT), null);
@@ -76,6 +83,48 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 186));
         }
         this.addDataSlots(data);
+        this.gateMask = controller != null ? viewerGateSlot(playerInventory.player) : DataSlot.standalone();
+        this.addDataSlot(this.gateMask);
+        this.addDataSlot(this.lastOutcome);
+    }
+
+    /** The server side of the per-viewer gate mask, recomputed at most once a second. */
+    private static DataSlot viewerGateSlot(Player player) {
+        return new DataSlot() {
+            private long refreshedAt = DestinationSelection.NEVER;
+            private int mask;
+
+            @Override
+            public int get() {
+                long now = player.level().getGameTime();
+                if (DestinationSelection.refreshDue(now, this.refreshedAt, RocketEntity.VIEWER_DATA_REFRESH_TICKS)) {
+                    this.refreshedAt = now;
+                    this.mask = RocketEntity.gateMask(player);
+                }
+                return this.mask;
+            }
+
+            @Override
+            public void set(int value) {
+                // Server-computed; read-only from the client.
+            }
+        };
+    }
+
+    /** Records the server's answer to a pick so the next broadcast carries it to this viewer's screen. */
+    private void report(DestinationSelection.Outcome outcome) {
+        this.outcomeSequence++;
+        this.lastOutcome.set(DestinationSelection.encodeOutcome(this.outcomeSequence, outcome));
+    }
+
+    /** Bit per destination index whose Core gate is still closed for this viewer (0 for a creative player). */
+    public int gateMask() {
+        return this.gateMask.get();
+    }
+
+    /** The server's last answer to this viewer's pick ({@link DestinationSelection#encodeOutcome}); 0 = none yet. */
+    public int lastOutcomeCode() {
+        return this.lastOutcome.get();
     }
 
     @Override
@@ -99,11 +148,13 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
         if (id == BUTTON_CYCLE_DEST || id == BUTTON_PREV_DEST) {
             DestinationSelection.Outcome outcome = current.stepRocketDestination(id == BUTTON_CYCLE_DEST ? 1 : -1,
                     player);
+            report(outcome);
             DestinationTrace.log("controller menu {} button {} -> {}", this.containerId, id, outcome);
             return true;
         }
         if (id >= SELECT_DEST_BASE && id < SELECT_DEST_BASE + Destinations.all().size()) {
             DestinationSelection.Outcome outcome = current.selectRocketDestination(id - SELECT_DEST_BASE, player);
+            report(outcome);
             DestinationTrace.log("controller menu {} button {} -> index {} {}", this.containerId, id,
                     id - SELECT_DEST_BASE, outcome);
             return true;

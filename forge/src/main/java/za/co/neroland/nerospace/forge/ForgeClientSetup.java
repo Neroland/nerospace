@@ -1,12 +1,16 @@
 package za.co.neroland.nerospace.forge;
 
 import net.minecraft.client.gui.screens.MenuScreens;
+//? if >=26.1 {
 import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.renderer.block.FluidModel;
+//?}
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+//? if >=26.1 {
 import net.minecraft.client.resources.model.sprite.Material;
+//?}
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -52,7 +56,9 @@ public final class ForgeClientSetup {
     public static void init(BusGroup modBusGroup) {
         FMLClientSetupEvent.getBus(modBusGroup).addListener(ForgeClientSetup::onClientSetup);
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(ForgeClientSetup::onRegisterEntityRenderers);
+        //? if >=26.1 {
         ModelEvent.BakeFluidModels.BUS.addListener(ForgeClientSetup::onBakeFluidModels);
+        //?}
         AddGuiOverlayLayersEvent.BUS.addListener(ForgeClientSetup::onAddGuiLayers);
         net.minecraftforge.client.event.RegisterParticleProvidersEvent.BUS.addListener(event ->
                 za.co.neroland.nerospace.client.particle.ClientParticles.registerAll((type, factory) ->
@@ -91,8 +97,13 @@ public final class ForgeClientSetup {
         });
         ClientBlockEntityRenderers.registerAll(new ClientBlockEntityRenderers.Sink() {
             @Override
+            //? if >=1.21.9 {
             public <T extends BlockEntity, S extends BlockEntityRenderState> void register(
                     BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider) {
+            //?} else {
+            /*public <T extends BlockEntity> void register(BlockEntityType<? extends T> type,
+                    BlockEntityRendererProvider<T> provider) {
+            *///?}
                 event.registerBlockEntityRenderer(type, provider);
             }
         });
@@ -119,6 +130,7 @@ public final class ForgeClientSetup {
         MenuScreens.register(ModMenuTypes.CARGO_PAD.get(), za.co.neroland.nerospace.client.CargoPadScreen::new);
     }
 
+    //? if >=26.1 {
     private static void onBakeFluidModels(ModelEvent.BakeFluidModels event) {
         Material still = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still"));
         Material flow = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow"));
@@ -127,4 +139,5 @@ public final class ForgeClientSetup {
         event.register(ModFluids.ROCKET_FUEL.get(), model);
         event.register(ModFluids.ROCKET_FUEL_FLOWING.get(), model);
     }
+    //?}
 }

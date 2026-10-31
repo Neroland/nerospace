@@ -22,6 +22,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -56,7 +57,7 @@ public final class RouteRegistry extends SavedData {
     /** Stable, non-identifying label for logs, telemetry and the recovery backup file name. */
     public static final String RECOVERY_NAME = "nerospace:cargo_routes";
 
-    public static final SavedDataType<RouteRegistry> TYPE = new SavedDataType<>(ID, RouteRegistry::new, codec(), null);
+    public static final SavedDataType<RouteRegistry> TYPE = SavedDataCompat.type(ID, RouteRegistry::new, codec());
 
     /** Insertion-ordered by id. */
     private final Map<Integer, PadRecord> pads = new LinkedHashMap<>();

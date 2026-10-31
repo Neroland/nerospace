@@ -20,6 +20,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -47,8 +48,7 @@ public final class PadRegistry extends SavedData {
     /** Separate cap on Landing Pod nodes; the oldest pod node is evicted when full. */
     public static final int MAX_POD_NODES = 128;
 
-    public static final SavedDataType<PadRegistry> TYPE = new SavedDataType<>(
-            ID, PadRegistry::new, codec(), null);
+    public static final SavedDataType<PadRegistry> TYPE = SavedDataCompat.type(ID, PadRegistry::new, codec());
 
     /**
      * One landing node: an id (never reused), a label, its dimension id, its block position (identity), and

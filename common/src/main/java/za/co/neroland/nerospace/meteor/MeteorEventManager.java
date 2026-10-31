@@ -17,6 +17,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import za.co.neroland.nerolandcore.data.SavedDataCompat;
 import za.co.neroland.nerolandcore.data.SavedDataRecovery;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -41,7 +42,7 @@ public final class MeteorEventManager extends SavedData {
     // DataFixTypes); the 3-arg form the standalone NeoForge mod uses is a loader convenience. New mod
     // data has no datafixer schema, so DataFixTypes is null (no fixes to apply).
     public static final SavedDataType<MeteorEventManager> TYPE =
-            new SavedDataType<>(ID, MeteorEventManager::new, codec(), null);
+            SavedDataCompat.type(ID, MeteorEventManager::new, codec());
 
     // --- Inlined from Config (root shipped defaults) until the config seam lands ---
     /** Whether meteors fall naturally near players. */

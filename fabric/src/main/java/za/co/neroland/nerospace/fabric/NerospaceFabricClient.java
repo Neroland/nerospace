@@ -3,19 +3,29 @@ package za.co.neroland.nerospace.fabric;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+//? if >=26.1 {
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderingRegistry;
+//?}
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+//? if >=1.21.6 {
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+//?}
 import net.minecraft.client.Minecraft;
+//? if >=26.1 {
 import net.minecraft.client.color.block.BlockTintSources;
+//?}
 import net.minecraft.client.gui.screens.MenuScreens;
+//? if >=26.1 {
 import net.minecraft.client.renderer.block.FluidModel;
+//?}
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+//? if >=26.1 {
 import net.minecraft.client.resources.model.sprite.Material;
+//?}
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -80,21 +90,47 @@ public final class NerospaceFabricClient implements ClientModInitializer {
         });
         ClientBlockEntityRenderers.registerAll(new ClientBlockEntityRenderers.Sink() {
             @Override
+            //? if >=1.21.9 {
             public <T extends BlockEntity, S extends BlockEntityRenderState> void register(
                     BlockEntityType<? extends T> type, BlockEntityRendererProvider<T, S> provider) {
+            //?} else {
+            /*public <T extends BlockEntity> void register(BlockEntityType<? extends T> type,
+                    BlockEntityRendererProvider<T> provider) {
+            *///?}
                 BlockEntityRendererRegistry.register(type, provider);
             }
         });
 
         registerFluidRendering();
+        //? if >=26.1 {
         za.co.neroland.nerospace.client.particle.ClientParticles.registerAll((type, factory) ->
                 net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry.getInstance()
                         .register(type, sprites -> factory.apply(sprites)));
+        //?} else {
+        /*za.co.neroland.nerospace.client.particle.ClientParticles.registerAll((type, factory) ->
+                net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.getInstance()
+                        .register(type, sprites -> factory.apply(sprites)));
+        *///?}
         registerOxygenHud();
         // Planet sky profiles (client resources, reload with F3+T). Fabric API has no sky hook on 26.x: data-only.
+        //? if >=26.1 {
         net.fabricmc.fabric.api.resource.v1.ResourceLoader.get(net.minecraft.server.packs.PackType.CLIENT_RESOURCES)
                 .registerReloadListener(za.co.neroland.nerospace.client.sky.SkyProfiles.ID,
                         za.co.neroland.nerospace.client.sky.SkyProfiles.INSTANCE);
+        //?} else {
+        /*net.fabricmc.fabric.api.resource.ResourceManagerHelper.get(net.minecraft.server.packs.PackType.CLIENT_RESOURCES)
+                .registerReloadListener(new net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener() {
+                    @Override
+                    public Identifier getFabricId() {
+                        return za.co.neroland.nerospace.client.sky.SkyProfiles.ID;
+                    }
+
+                    @Override
+                    public void onResourceManagerReload(net.minecraft.server.packs.resources.ResourceManager manager) {
+                        za.co.neroland.nerospace.client.sky.SkyProfiles.INSTANCE.onResourceManagerReload(manager);
+                    }
+                });
+        *///?}
 
         // Meteor Tracker readout + oxygen-field visuals + the screenshot harness — counterpart to
         // NeoForge's ClientTickEvent.Post.
@@ -117,6 +153,12 @@ public final class NerospaceFabricClient implements ClientModInitializer {
      * server still mirrors oxygen onto the air supply — that mirror IS the client sync the gauge reads).
      */
     private static void registerOxygenHud() {
+        //? if <1.21.6 {
+        /*// Fabric API before 1.21.6 has no HUD element registry: the oxygen readout is drawn from the HUD callback
+        // and vanilla's air bubbles cannot be hidden on airless worlds (cosmetic only).
+        net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback.EVENT.register(
+                (graphics, delta) -> OxygenHud.render(graphics));
+        *///?} else {
         HudElementRegistry.addLast(
                 Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_hud"),
                 (graphics, delta) -> OxygenHud.render(graphics));
@@ -128,6 +170,7 @@ public final class NerospaceFabricClient implements ClientModInitializer {
             }
             original.extractRenderState(graphics, delta);
         });
+        //?}
     }
 
     /**
@@ -138,9 +181,18 @@ public final class NerospaceFabricClient implements ClientModInitializer {
      * {@code BlockTintSources.constant(...)} (the Fabric-rendering-fluids-v1 module ships in fabric-api).
      */
     private static void registerFluidRendering() {
+        //? if >=26.1 {
         Material still = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still"));
         Material flow = new Material(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow"));
         FluidModel.Unbaked model = new FluidModel.Unbaked(still, flow, still, BlockTintSources.constant(0xFFFFFFFF));
         FluidRenderingRegistry.register(ModFluids.ROCKET_FUEL.get(), ModFluids.ROCKET_FUEL_FLOWING.get(), model);
+        //?} else {
+        /*// Before 26.1: Fabric API's FluidRenderHandlerRegistry with the same still/flow sprites, untinted.
+        net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry.INSTANCE.register(
+                ModFluids.ROCKET_FUEL.get(), ModFluids.ROCKET_FUEL_FLOWING.get(),
+                new net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler(
+                        Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_still"),
+                        Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow")));
+        *///?}
     }
 }
