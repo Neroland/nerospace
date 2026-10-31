@@ -62,17 +62,17 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 - **火箭（1／2／3／4 级）**——部署到[火箭发射台](Rocket-Launch-Pad.md)上，加注燃料，
 
-  登舱，选择目的地，然后发射（目的地是累积的）：
+  board, pick a destination, and launch (every rocket can also fly home):
 
-  - **1 级** → 轨道空间站（以及任何[已建立的空间站](Station-Charter.md)）。
+  - **Tier 1** → the Orbital Station (and any [founded station](Station-Charter)) and [Luna](Luna).
 
-  - **2 级** → + Greenxertz。
+  - **Tier 2** → the Orbital Station, Luna, Greenxertz and [Mars](Mars).
 
-  - **Tier 3** → + Cindara. (Needs a 3×3 pad ringed with [Station Wall](Station-Wall) **or** a
+  - **Tier 3** → the Orbital Station, Luna, Greenxertz, Mars and Cindara. (Needs a 3×3 pad ringed with [Station Wall](Station-Wall) **or** a
 
     [重型发射综合设施](Launch-Gantry.md)。）
 
-  - **Tier 4** → + Glacira. **4 级** → + Glacira。（**只能**在[重型发射综合设施](Launch-Gantry.md)上部署；
+  - **Tier 4** → the Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira and [Nyxara](Nyxara) (Nyxara after Deep Space progress). **4 级** → + Glacira。（**只能**在[重型发射综合设施](Launch-Gantry.md)上部署；
 
     24,000 mB tank.)
     The in-rocket screen shows a live fuel gauge, a selectable destination trajectory, a station
@@ -133,10 +133,12 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 ## 旅行装置（创造模式）
 
-- **Greenxertz导航器**以及**空间站／Greenxertz／Cindara／Glacira 指南针**是
+- **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira / Luna / Mars / Nyxara Compasses** are
 
-  仅限创造模式的一键旅行辅助工具，用于测试和建造（没有生存配方——火箭才是
-  生存模式的路线）。
+  creative-only one-click travel aids for testing and building (no survival recipe — rockets are the
+  survival route).
+  The Nyxara Compass always sets you down inside the twilight band, and every compass lays a small platform
+  under you if there is no ground below.
 
 ## 刷怪蛋
 
