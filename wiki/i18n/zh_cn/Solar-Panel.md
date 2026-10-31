@@ -54,11 +54,14 @@ Q G Q
 
   产出 × (10 − 天空暗度) / 10。下雨和暴风雨会使天空变暗，因此产出随之下降。 Rain and storms darken the sky, so output drops with them.
 
-- **无空气维度**（轨道空间站、Greenxertz、Cindara、Glacira、玩家建立的空间站）拥有
+- **Nerospace planets** (Greenxertz, Cindara, Glacira, Luna, Mars and Nyxara) follow the planet's own day: a panel
 
-  永久的阳光，因此那里的太阳能板以满功率运行，**并获得 ×2 加成**。在那里它们也**不**需要
-  看到天空。太阳能是外星世界天然的电力来源。 They also do **not** need a
-  view of the sky there. Solar is the natural off-world power source.
+  peaks at that planet's noon, dips at night, on Cindara dims during the eclipse and on Mars falls during a dust storm.
+  Nyxara's sun never moves, so a panel there gives a steady ×2.04. Over a full planet day
+  every planet gives **at least the old ×2 rate on average** (the peaks are higher to make up for the
+  nights), so bases that run at night need a battery. The **Orbital Station** (and founded stations) stays
+  a constant ×2. Panels do **not** need a view of the sky on a planet. Server owners can restore the old
+  constant ×2 with `solar.clockDriven=false`. Solar is the natural off-world power source.
 
 - 产出和储存随等级缩放（所有数值 × `energyRateMultiplier` 配置）。缓存 The buffer
 
