@@ -106,6 +106,17 @@ Le tariffe vanno alla Riserva di NeroEconomy. Senza NeroEconomy queste chiavi no
 | ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `welcomeMessageEnabled` | `true`      | Invia il messaggio di benvenuto di Nerospace su due righe (l'invito al Libro della Guida stellare e il link per i commenti) quando un giocatore entra. Imposta `false` per entrare in silenzio. Si applica al ricaricamento della configurazione. Decide il server. |
 
+### Sky (client-side)
+
+Each player sets these for themselves; a server never overrides them. They only change what the full planet sky
+draws (NeoForge for Minecraft 26.3).
+
+| Key                 | Default | Meaning                                                                                                                                                                      |
+| ------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sky.aurora`        | `true`  | Aurora curtains (Glacira, Nyxara's Nightside, Mars after a dust storm, the Greenxertz spore shimmer). `false` hides them. |
+| `sky.shootingStars` | `true`  | Shooting stars. `false` hides them.                                                                                                          |
+| `sky.quality`       | `full`  | `lite` halves the aurora layers and their detail and draws slightly smaller stars, for low-end graphics cards.                                               |
+
 ## Chiavi rimosse (per gli autori di modpack)
 
 Queste chiavi non esistono più. Se sono ancora nel tuo file, non fanno nulla.
