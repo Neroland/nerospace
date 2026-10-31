@@ -54,10 +54,14 @@ Each tier folds the **previous panel** into its recipe, so upgrading reuses what
 
   output × (10 − sky darkness) / 10. Rain and storms darken the sky, so output drops with them.
 
-- **Airless dimensions** (Orbital Station, Greenxertz, Cindara, Glacira, founded stations) have a
+- **Nerospace planets** (Greenxertz, Cindara, Glacira, Luna, Mars and Nyxara) follow the planet's own day: a panel
 
-  permanent sun, so panels there run at full **and earn a ×2 bonus**. They also do **not** need a
-  view of the sky there. Solar is the natural off-world power source.
+  peaks at that planet's noon, dips at night, on Cindara dims during the eclipse and on Mars falls during a dust storm.
+  Nyxara's sun never moves, so a panel there gives a steady ×2.04. Over a full planet day
+  every planet gives **at least the old ×2 rate on average** (the peaks are higher to make up for the
+  nights), so bases that run at night need a battery. The **Orbital Station** (and founded stations) stays
+  a constant ×2. Panels do **not** need a view of the sky on a planet. Server owners can restore the old
+  constant ×2 with `solar.clockDriven=false`. Solar is the natural off-world power source.
 
 - Output and storage scale by tier (all values × the `energyRateMultiplier` config). The buffer
 
