@@ -76,8 +76,14 @@ public final class ForgeClientSetup {
         // World fog follows the planet sky profile (phase, position, weather, eclipse) on every Forge line; the
         // dimension's fog attribute stays the floor when the hook returns no colour.
         net.minecraftforge.client.event.ViewportEvent.ComputeFogColor.BUS.addListener(event -> {
+            //? if >=1.21.9 {
             int rgb = za.co.neroland.nerospace.client.sky.PlanetSkyRenderer.fogRgb(event.getCamera(),
                     event.getPartialTick());
+            //?} else {
+            /*// Before Forge 58 (1.21.9) the fog event reports the partial tick as a double.
+            int rgb = za.co.neroland.nerospace.client.sky.PlanetSkyRenderer.fogRgb(event.getCamera(),
+                    (float) event.getPartialTick());
+            *///?}
             if (rgb >= 0) {
                 event.setRed(((rgb >> 16) & 0xFF) / 255.0F);
                 event.setGreen(((rgb >> 8) & 0xFF) / 255.0F);

@@ -27,7 +27,8 @@ public final class ChatCompat {
 
     /** {@code ServerPlayer.sendSystemMessage(message, overlay)}: unchanged across versions, kept for the rewrite. */
     public static void system(ServerPlayer player, Component message, boolean overlay) {
-        player.sendSystemMessage(message, overlay);
+        // Parenthesised receiver: keeps the legacyRenames sendSystemMessage rewrite from turning this into a self-call.
+        (player).sendSystemMessage(message, overlay);
     }
 
     /** An action-bar (overlay) message to this player only. */

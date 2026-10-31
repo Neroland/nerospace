@@ -78,9 +78,15 @@ public class NyxCrystalClusterBlock extends Block {
         return level.getBlockState(support).isFaceSturdy(level, support, facing);
     }
 
+    //? if >=1.21.2 {
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
             Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+    //?} else {
+    /*@Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState,
+            net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    *///?}
         if (direction == state.getValue(FACING).getOpposite() && !state.canSurvive(level, pos)) {
             return Blocks.AIR.defaultBlockState();
         }

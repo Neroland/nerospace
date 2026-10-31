@@ -24,7 +24,14 @@ public class NyxPrismBlock extends WeatherFlipBlock {
 
     public static final MapCodec<NyxPrismBlock> CODEC = BlockCodecs.simple(NyxPrismBlock::new);
 
+    //? if >=1.21.2 {
     private static final DustColorTransitionOptions RAY = new DustColorTransitionOptions(0x9B5DE5, 0xFFB86B, 0.8F);
+    //?} else {
+    /*// 1.21.1 dust colours are float vectors.
+    private static final DustColorTransitionOptions RAY = new DustColorTransitionOptions(
+            net.minecraft.world.phys.Vec3.fromRGB24(0x9B5DE5).toVector3f(),
+            net.minecraft.world.phys.Vec3.fromRGB24(0xFFB86B).toVector3f(), 0.8F);
+    *///?}
 
     public NyxPrismBlock(Properties properties) {
         super(properties);

@@ -82,7 +82,11 @@ public final class NerospaceForge {
             if (event.getEntity() instanceof ServerPlayer serverPlayer
                     && !za.co.neroland.nerospace.world.planet.PlanetSleep.allowsTime(serverPlayer,
                             event.getSleepingLocation().orElse(serverPlayer.blockPosition()))) {
+                //? if >=1.21.6 {
                 event.setResult(net.minecraftforge.common.util.Result.DENY);
+                //?} else {
+                /*event.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY); // before 1.21.6: EventBus 6 results
+                *///?}
             }
         });
         TickEvent.ServerTickEvent.Pre.BUS.addListener(event ->

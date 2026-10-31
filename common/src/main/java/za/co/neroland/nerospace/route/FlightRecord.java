@@ -41,7 +41,10 @@ public final class FlightRecord {
                 Codec.STRING.fieldOf("dest_dim").forGetter(Path::destDim),
                 BlockPos.CODEC.fieldOf("dest_pos").forGetter(Path::destPos),
                 Codec.INT.optionalFieldOf("fuel", 0).forGetter(Path::fuel),
-                ItemStack.OPTIONAL_CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(Path::items),
+                // Lazy: resolving ItemStack's codec initialises the item registries, which only a flight that carries
+                // items needs (and which plain-JVM tests on the 1.21.x lines cannot bootstrap).
+                Codec.lazyInitialized(() -> ItemStack.OPTIONAL_CODEC).listOf()
+                        .optionalFieldOf("items", List.of()).forGetter(Path::items),
                 Codec.LONG.fieldOf("departed_at").forGetter(Path::departedAt),
                 Codec.LONG.fieldOf("arrives_at").forGetter(Path::arrivesAt)
         ).apply(inst, Path::new));

@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.List;
@@ -212,7 +211,12 @@ class HazardModelTest {
     private static JsonElement load(String path) throws IOException {
         try (InputStream in = HazardModelTest.class.getResourceAsStream(path)) {
             assertNotNull(in, "missing " + path);
-            return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            // The 1.21.1 build rewrites short-form ingredients ("id" / "#tag") into {"item": ..} / {"tag": ..}
+            // objects; fold them back so the checks read one format on every version.
+            String json = new String(in.readAllBytes(), StandardCharsets.UTF_8)
+                    .replaceAll("\\{\\s*\"item\"\\s*:\\s*(\"[^\"]+\")\\s*}", "$1")
+                    .replaceAll("\\{\\s*\"tag\"\\s*:\\s*\"([^\"]+)\"\\s*}", "\"#$1\"");
+            return JsonParser.parseString(json);
         }
     }
 

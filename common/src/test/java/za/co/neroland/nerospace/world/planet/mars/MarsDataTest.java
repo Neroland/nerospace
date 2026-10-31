@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,12 @@ class MarsDataTest {
     private static JsonElement load(String path) throws IOException {
         try (InputStream in = MarsDataTest.class.getResourceAsStream(path)) {
             assertNotNull(in, "missing " + path);
-            return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            // The 1.21.1 build rewrites short-form ingredients ("id" / "#tag") into {"item": ..} / {"tag": ..}
+            // objects; fold them back so the checks read one format on every version.
+            String json = new String(in.readAllBytes(), StandardCharsets.UTF_8)
+                    .replaceAll("\\{\\s*\"item\"\\s*:\\s*(\"[^\"]+\")\\s*}", "$1")
+                    .replaceAll("\\{\\s*\"tag\"\\s*:\\s*\"([^\"]+)\"\\s*}", "\"#$1\"");
+            return JsonParser.parseString(json);
         }
     }
 
@@ -85,7 +89,11 @@ class MarsDataTest {
         assertEquals(384, t.get("height").getAsInt());
         assertEquals(384, t.get("logical_height").getAsInt());
         assertEquals(1.0, t.get("coordinate_scale").getAsDouble());
+        //? if >=1.21.11 {
         assertTrue(t.get("has_fixed_time").getAsBoolean(), "the planet clock drives the sol");
+        //?} else {
+        /*assertTrue(t.has("fixed_time"), "the planet clock drives the sol"); // the build's pre-1.21.11 form
+        *///?}
         JsonObject dim = load("/data/nerospace/dimension/mars.json").getAsJsonObject();
         assertEquals("nerospace:mars", dim.get("type").getAsString());
         JsonObject gen = dim.getAsJsonObject("generator");

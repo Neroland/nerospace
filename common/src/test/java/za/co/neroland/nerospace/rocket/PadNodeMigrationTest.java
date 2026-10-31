@@ -84,7 +84,11 @@ class PadNodeMigrationTest {
     @Test
     void unknownKindLoadsAsLaunchPad() {
         CompoundTag root = legacyStore();
+        //? if >=1.21.5 {
         ((CompoundTag) root.getListOrEmpty("pads").get(0)).putString("kind", "WARP_GATE");
+        //?} else {
+        /*root.getList("pads", Tag.TAG_COMPOUND).getCompound(0).putString("kind", "WARP_GATE");
+        *///?}
         assertEquals(PadKind.LAUNCH_PAD, decode(root).byId(0).kind());
     }
 

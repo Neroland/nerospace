@@ -67,6 +67,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed automatic project description and gallery uploads.
 - Renamed the website overview source to `art/description.md` and refreshed public documentation links.
 
+### Fixed
+
+- **Minecraft 1.21.x**: the planets and the station now load on every 1.21.x build (their world data is converted to
+  each version's format when the mod is built), and the radiation-lining upgrades for oxygen suits now load on 1.21.1
+  and 1.21.4.
+- Planet skies on Minecraft 1.21.1 to 1.21.10 are simpler, because those versions can't show everything: each planet
+  keeps its sky and fog colours and its fixed sun position, but sunrise colours, star brightness and cloud colours are
+  the game's defaults (clouds are white; on 1.21.6 and later they are hidden where the planet has dark clouds),
+  Nyxara's moon sits opposite its sun, and the station's sky uses the game's default colour. On 1.21.11 only the
+  faint Greenxertz ambient light tint is missing.
+
 ## [2.0.0] - 2026-10-30
 
 The planets and stations update: three new worlds (Luna, Mars and Nyxara), every world rebuilt with its own blocks,

@@ -24,7 +24,8 @@ import za.co.neroland.nerospace.world.planet.ClockSource;
  * {@code minecraft:overworld} dimension type of the Minecraft version under test (the vanilla JSON is read from the
  * game jar on the test classpath, so each cell checks against its own version), changing only {@code skybox} and the
  * planet's colour attributes (sky, fog, cloud, sunrise colour and star brightness: the green sky). Clock, bed,
- * raid-darkness and spawn-relevant fields are also asserted one by one.
+ * raid-darkness and spawn-relevant fields are also asserted one by one. Before 26.1 the build rewrites the type into
+ * that line's format (stonecutter.gradle, legacyWorldgen), so the file under test here is the rewritten one.
  */
 class GreenxertzDimensionTypeTest {
 
@@ -78,16 +79,26 @@ class GreenxertzDimensionTypeTest {
         JsonObject vanilla = load("/data/minecraft/dimension_type/overworld.json");
         JsonObject ours = load("/data/nerospace/dimension_type/greenxertz.json");
         assertFalse(ours.has("has_fixed_time") && ours.get("has_fixed_time").getAsBoolean(), "real clock");
+        //? if >=26.1 {
         assertEquals("minecraft:overworld", ours.get("default_clock").getAsString());
+        //?}
         assertEquals(vanilla.get("timelines"), ours.get("timelines"));
         for (String k : Set.of("ambient_light", "has_skylight", "has_ceiling", "monster_spawn_light_level",
                 "monster_spawn_block_light_limit", "infiniburn")) {
             assertEquals(vanilla.get(k), ours.get(k), k);
         }
+        //? if >=1.21.11 {
         JsonObject attrs = ours.getAsJsonObject("attributes");
         assertEquals(vanilla.getAsJsonObject("attributes").get("minecraft:gameplay/bed_rule"),
                 attrs.get("minecraft:gameplay/bed_rule"), "bed rule: sleeping still skips the night");
         assertEquals("when_dark", attrs.getAsJsonObject("minecraft:gameplay/bed_rule").get("can_sleep").getAsString());
+        //?} else {
+        /*// Before 1.21.11 the build rewrites the type into the old field set: no fixed time, beds and raids as overworld's.
+        assertFalse(ours.has("fixed_time"), "real clock");
+        for (String k : Set.of("bed_works", "natural", "has_raids", "effects")) {
+            assertEquals(vanilla.get(k), ours.get(k), k + ": sleeping still skips the night");
+        }
+        *///?}
         assertEquals(-64, ours.get("min_y").getAsInt());
         assertEquals(384, ours.get("height").getAsInt());
         assertEquals(384, ours.get("logical_height").getAsInt());
