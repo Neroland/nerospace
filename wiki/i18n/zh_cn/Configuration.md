@@ -114,6 +114,17 @@ Fees go to NeroEconomy's Reserve. 费用进入 NeroEconomy 的储备金。没有
 | ----------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `welcomeMessageEnabled` | `true` | 玩家加入时发送两行 Nerospace 欢迎消息（星际指南书提示和反馈链接）。设为 `false` 即可静默加入。在配置重载时生效。由服务器决定。 Set `false` to join silently. Applies on config reload. The server decides. |
 
+### Sky (client-side)
+
+Each player sets these for themselves; a server never overrides them. They only change what the full planet sky
+draws (NeoForge for Minecraft 26.3).
+
+| Key                 | Default | Meaning                                                                                                                                                                      |
+| ------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sky.aurora`        | `true`  | Aurora curtains (Glacira, Nyxara's Nightside, Mars after a dust storm, the Greenxertz spore shimmer). `false` hides them. |
+| `sky.shootingStars` | `true`  | Shooting stars. `false` hides them.                                                                                                          |
+| `sky.quality`       | `full`  | `lite` halves the aurora layers and their detail and draws slightly smaller stars, for low-end graphics cards.                                               |
+
 ## 已移除的键（供整合包作者参考）
 
 这些键已不再存在。如果它们仍在你的文件中，也不会起任何作用。 If they are still in your file, they do nothing.
