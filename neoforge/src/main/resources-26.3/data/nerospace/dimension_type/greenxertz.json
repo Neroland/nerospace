@@ -39,7 +39,7 @@
       }
     },
     "minecraft:visual/ambient_light_color": "#0a0a0a",
-    "minecraft:visual/cloud_color": "#ffbfefc8",
+    "minecraft:visual/cloud_color": "#00000000",
     "minecraft:visual/cloud_height": 192.33,
     "minecraft:visual/fog_color": "#3FBF6F",
     "minecraft:visual/sky_color": "#2E8F55",

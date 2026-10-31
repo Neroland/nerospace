@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
@@ -21,7 +21,7 @@ import za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent;
  * face gains a stage up to 3. It never grows past its six faces and ignores light. Register with {@code randomTicks()}
  * and {@code pushReaction(DESTROY)}: a piston breaks it and it drops nothing without Silk Touch.
  */
-public class BuddingNyxCrystalBlock extends Block {
+public class BuddingNyxCrystalBlock extends HalfTransparentBlock {
 
     public static final MapCodec<BuddingNyxCrystalBlock> CODEC = BlockCodecs.simple(BuddingNyxCrystalBlock::new);
 

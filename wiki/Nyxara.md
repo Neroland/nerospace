@@ -58,6 +58,8 @@ shape: its hills and valleys do not line up with the Overworld's.
 
 ### Crystal blocks
 
+The crystal blocks have translucent surfaces. Void Crystal pulses gently, while Smoke and Mirror Crystal have animated highlights.
+
 Most crystal drops itself. The glassy pieces (Crazed Crystal, Mirror Crystal, the Nyx Prism, full clusters, Shard
 Drift) break into **Crystal Shards** unless you use Silk Touch. Four Crystal Shards craft a Twilight Crystal, so the
 ground is buildable without Silk Touch.

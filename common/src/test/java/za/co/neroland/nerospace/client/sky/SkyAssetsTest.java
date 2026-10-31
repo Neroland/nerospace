@@ -88,6 +88,20 @@ class SkyAssetsTest {
     }
 
     @Test
+    void planetDimensionCloudsAreTransparent() throws IOException {
+        Path root = repo();
+        Assumptions.assumeTrue(root != null, "repo not found");
+        for (String dimension : List.of("space", "luna", "mars", "cindara", "glacira", "greenxertz", "nyxara")) {
+            Path file = root.resolve("common/src/main/resources/data/nerospace/dimension_type/" + dimension + ".json");
+            assertEquals("#00000000", read(file).getAsJsonObject("attributes")
+                    .get("minecraft:visual/cloud_color").getAsString(), dimension);
+        }
+        Path overlay = root.resolve("common/src/main/resources-26.3/data/nerospace/dimension_type/greenxertz.json");
+        assertEquals("#00000000", read(overlay).getAsJsonObject("attributes")
+                .get("minecraft:visual/cloud_color").getAsString());
+    }
+
+    @Test
     @DisplayName("every sky profile decodes, and its textures exist")
     void skyProfiles() throws IOException {
         Path a = assets();
@@ -651,11 +665,11 @@ class SkyAssetsTest {
         SkyScene calm = SkyScene.compute(mars, new SkyScene.Inputs(0.75, 3.75, planet("mars").daylight().at(0.75),
                 "NONE", 0.0F, "NONE", 0.0F, 0.0, 2048, 0.0, 24_600L, false, 1L, full));
         assertTrue(calm.auroraLayers.isEmpty(), "no Mars aurora without a storm");
-        // Cindara eclipse: corona; ash fall thickens the cloud deck.
+        // Cindara eclipse: corona; ash fall does not add a cloud deck.
         assertTrue(hasQuad(sceneAt("cindara", state("cindara", "eclipse"), "NONE", 0.0F, 0.0, full).quads, "corona",
                 0.3F));
         SkyScene ash = sceneAt("cindara", state("cindara", "ash_fall"), "ASH_FALL", 1.0F, 0.0, full);
-        assertTrue(ash.cloud.orElseThrow().alpha() > 0.85F);
+        assertTrue(ash.cloud.isEmpty());
         // Glacira: three curtains at night; the rose fringe joins them in diamond dust; the halo by day.
         assertEquals(3, sceneAt("glacira", state("glacira", "aurora"), "NONE", 0.0F, 0.0, full).auroraLayers.size());
         SkyScene dd = sceneAt("glacira", state("glacira", "diamond_dust"), "DIAMOND_DUST", 1.0F, 0.0, full);
@@ -734,7 +748,7 @@ class SkyAssetsTest {
         assertEquals(SkyScene.AURORA_SEGMENTS_LITE, lite.auroraSegments);
         assertEquals(0.75F * 0.85F, lite.starSizeScale, 1e-5F);
         assertTrue(sceneAt("cindara", 0.25, "NONE", 0.0F, 0.0, new SkyScene.Config(true, true, true)).cloud.isEmpty());
-        assertTrue(sceneAt("cindara", 0.25, "NONE", 0.0F, 0.0, SkyScene.Config.FULL).cloud.isPresent());
+        assertTrue(sceneAt("cindara", 0.25, "NONE", 0.0F, 0.0, SkyScene.Config.FULL).cloud.isEmpty());
         assertTrue(za.co.neroland.nerospace.config.NerospaceConfig.isLite(" Lite "));
         assertFalse(za.co.neroland.nerospace.config.NerospaceConfig.isLite("full"));
         assertFalse(za.co.neroland.nerospace.config.NerospaceConfig.isLite("bogus"));

@@ -139,20 +139,6 @@
       "fog": "#2A1A1A"
     }
   ],
-  "cloudLayer": {
-    "texture": "nerospace:textures/sky/clouds_ash.png",
-    "color": "#6A4A44",
-    "nightColor": "#1E1216",
-    "underglow": "#FF5A1F",
-    "underglowStrength": 0.9,
-    "altitudeDeg": 34.0,
-    "opacity": 0.55,
-    "driftDegPerSecond": 0.12,
-    "tilesAround": 6,
-    "weatherOpacity": {
-      "ASH_FALL": 0.9
-    }
-  },
   "shootingStars": {
     "ratePerMinute": 1.5,
     "maxConcurrent": 2,

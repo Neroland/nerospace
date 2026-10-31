@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
@@ -17,7 +17,7 @@ import za.co.neroland.nerolandcore.registry.BlockCodecs;
  * reads (any beam mod may call it) and which the Observatory telescope counts along its sightline
  * ({@code TelescopeSightline}). Client-side it sheds about one portal particle per 60 ticks.
  */
-public class VoidCrystalBlock extends Block {
+public class VoidCrystalBlock extends HalfTransparentBlock {
 
     public static final MapCodec<VoidCrystalBlock> CODEC = BlockCodecs.simple(VoidCrystalBlock::new);
 

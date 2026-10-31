@@ -23,7 +23,8 @@ import za.co.neroland.nerospace.world.planet.ClockSource;
  * Greenxertz keeps its real clock: {@code nerospace:greenxertz} is a faithful copy of the vanilla
  * {@code minecraft:overworld} dimension type of the Minecraft version under test (the vanilla JSON is read from the
  * game jar on the test classpath, so each cell checks against its own version), changing only {@code skybox} and the
- * planet's colour attributes (sky, fog, cloud, sunrise colour and star brightness: the green sky). Clock, bed,
+ * planet's colour attributes (sky, fog, cloud, sunrise colour and star brightness: the green sky). On 1.21.6–1.21.10
+ * the cloud height is absent to disable clouds. Clock, bed,
  * raid-darkness and spawn-relevant fields are also asserted one by one. Before 26.1 the build rewrites the type into
  * that line's format (stonecutter.gradle, legacyWorldgen), so the file under test here is the rewritten one.
  */
@@ -48,6 +49,12 @@ class GreenxertzDimensionTypeTest {
         JsonObject vanilla = load("/data/minecraft/dimension_type/overworld.json");
         JsonObject ours = load("/data/nerospace/dimension_type/greenxertz.json");
         for (Map.Entry<String, JsonElement> e : vanilla.entrySet()) {
+            //? if >=1.21.6 && <1.21.11 {
+            /*if (e.getKey().equals("cloud_height")) {
+                assertFalse(ours.has("cloud_height"), "planet clouds are disabled");
+                continue;
+            }
+            *///?}
             if (e.getKey().equals("attributes")) {
                 JsonObject va = e.getValue().getAsJsonObject();
                 JsonObject oa = ours.getAsJsonObject("attributes");

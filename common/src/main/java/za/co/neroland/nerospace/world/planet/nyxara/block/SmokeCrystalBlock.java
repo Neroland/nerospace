@@ -3,7 +3,7 @@ package za.co.neroland.nerospace.world.planet.nyxara.block;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.SoundType;
 
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
@@ -13,7 +13,7 @@ import za.co.neroland.nerolandcore.registry.BlockCodecs;
  * {@code intentionally_empty} event), breaking and placing sound like amethyst, and it is in
  * {@code #minecraft:occludes_vibration_signals} and {@code #minecraft:dampens_vibrations}. Faint inner glow, light 1.
  */
-public class SmokeCrystalBlock extends Block {
+public class SmokeCrystalBlock extends HalfTransparentBlock {
 
     public static final MapCodec<SmokeCrystalBlock> CODEC = BlockCodecs.simple(SmokeCrystalBlock::new);
 

@@ -5,7 +5,7 @@
       "can_set_spawn": "always",
       "can_sleep": "always"
     },
-    "minecraft:visual/cloud_color": "#ff000000",
+    "minecraft:visual/cloud_color": "#00000000",
     "minecraft:visual/fog_color": "#000000",
     "minecraft:visual/moon_angle": 145.0,
     "minecraft:visual/moon_phase": "full_moon",

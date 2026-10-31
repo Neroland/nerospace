@@ -61,21 +61,21 @@ class ChunkLayerTexturesTest {
         EXPECTED.put("shadow_lichen", Layer.CUTOUT);
         EXPECTED.put("nyx_stone", Layer.SOLID);
         EXPECTED.put("dawnband_stone", Layer.SOLID);
-        EXPECTED.put("void_crystal", Layer.SOLID);
+        EXPECTED.put("void_crystal", Layer.TRANSLUCENT);
         EXPECTED.put("voidglass_ore", Layer.SOLID);
-        EXPECTED.put("gravity_shard_block", Layer.SOLID);
-        EXPECTED.put("sunglass_crystal", Layer.SOLID);
-        EXPECTED.put("crazed_crystal", Layer.SOLID);
+        EXPECTED.put("gravity_shard_block", Layer.TRANSLUCENT);
+        EXPECTED.put("sunglass_crystal", Layer.TRANSLUCENT);
+        EXPECTED.put("crazed_crystal", Layer.TRANSLUCENT);
         EXPECTED.put("shard_drift_height2", Layer.SOLID);
-        EXPECTED.put("twilight_crystal", Layer.SOLID);
-        EXPECTED.put("rose_crystal", Layer.SOLID);
-        EXPECTED.put("rose_crystal_lit", Layer.SOLID);
-        EXPECTED.put("smoke_crystal", Layer.SOLID);
-        EXPECTED.put("budding_nyx_crystal", Layer.SOLID);
-        EXPECTED.put("nyx_crystal_cluster_stage0", Layer.CUTOUT);
-        EXPECTED.put("nyx_crystal_cluster_stage1", Layer.CUTOUT);
-        EXPECTED.put("nyx_crystal_cluster_stage2", Layer.CUTOUT);
-        EXPECTED.put("nyx_crystal_cluster_stage3", Layer.CUTOUT);
+        EXPECTED.put("twilight_crystal", Layer.TRANSLUCENT);
+        EXPECTED.put("rose_crystal", Layer.TRANSLUCENT);
+        EXPECTED.put("rose_crystal_lit", Layer.TRANSLUCENT);
+        EXPECTED.put("smoke_crystal", Layer.TRANSLUCENT);
+        EXPECTED.put("budding_nyx_crystal", Layer.TRANSLUCENT);
+        EXPECTED.put("nyx_crystal_cluster_stage0", Layer.TRANSLUCENT);
+        EXPECTED.put("nyx_crystal_cluster_stage1", Layer.TRANSLUCENT);
+        EXPECTED.put("nyx_crystal_cluster_stage2", Layer.TRANSLUCENT);
+        EXPECTED.put("nyx_crystal_cluster_stage3", Layer.TRANSLUCENT);
         EXPECTED.put("crystal_spire", Layer.TRANSLUCENT);
         EXPECTED.put("crystal_spire_tip", Layer.TRANSLUCENT);
         EXPECTED.put("nyx_prism", Layer.TRANSLUCENT);
@@ -109,6 +109,28 @@ class ChunkLayerTexturesTest {
             }
         }
         return partial ? Layer.TRANSLUCENT : clear ? Layer.CUTOUT : Layer.SOLID;
+    }
+
+    @Test
+    void voidCrystalAnimationHasDistinctTranslucentFrames() throws IOException {
+        Path root = assets();
+        Assumptions.assumeTrue(root != null, "assets not found");
+        Path png = root.resolve("textures/block/void_crystal.png");
+        BufferedImage image = ImageIO.read(png.toFile());
+        assertEquals(16, image.getWidth());
+        assertEquals(128, image.getHeight());
+        assertEquals(Layer.TRANSLUCENT, layerOf(png));
+        boolean different = false;
+        for (int y = 0; y < 16; y++) {
+            for (int x = 0; x < 16; x++) {
+                different |= image.getRGB(x, y) != image.getRGB(x, y + 32);
+            }
+        }
+        assertTrue(different, "the pulse must change the texture");
+        JsonObject meta = JsonParser.parseString(Files.readString(Path.of(png + ".mcmeta"), StandardCharsets.UTF_8))
+                .getAsJsonObject().getAsJsonObject("animation");
+        assertTrue(meta.get("interpolate").getAsBoolean());
+        assertEquals(12, meta.get("frametime").getAsInt());
     }
 
     @Test

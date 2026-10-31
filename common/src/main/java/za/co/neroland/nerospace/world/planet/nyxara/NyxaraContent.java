@@ -16,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -93,7 +94,7 @@ public final class NyxaraContent {
                     .strength(0.2F).sound(SoundType.GLOW_LICHEN).randomTicks()));
 
     public static final RegistryEntry<VoidCrystalBlock> VOID_CRYSTAL = ModBlocks.BLOCKS.register("void_crystal",
-            key -> new VoidCrystalBlock(props(key).mapColor(MapColor.COLOR_PURPLE).strength(1.5F, 1.5F)
+            key -> new VoidCrystalBlock(props(key).mapColor(MapColor.COLOR_PURPLE).noOcclusion().strength(1.5F, 1.5F)
                     .requiresCorrectToolForDrops().sound(SoundType.AMETHYST).lightLevel(s -> VoidCrystalBlock.LIGHT)));
 
     public static final RegistryEntry<Block> VOIDGLASS_ORE = ModBlocks.BLOCKS.register("voidglass_ore",
@@ -102,18 +103,18 @@ public final class NyxaraContent {
 
     public static final RegistryEntry<GravityOverrideBlock> GRAVITY_SHARD_BLOCK = ModBlocks.BLOCKS.register(
             "gravity_shard_block",
-            key -> new GravityOverrideBlock(props(key).mapColor(MapColor.COLOR_MAGENTA).strength(3.0F, 6.0F)
+            key -> new GravityOverrideBlock(props(key).mapColor(MapColor.COLOR_MAGENTA).noOcclusion().strength(3.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.AMETHYST).lightLevel(s -> 5)
                     .randomTicks(),
                     BlockGravityRules.Kind.SHARD));
 
     // --- Crystal blocks (glassy crystal surface; see each class for its behaviour) ------------------------
     public static final RegistryEntry<Block> SUNGLASS_CRYSTAL = ModBlocks.BLOCKS.register("sunglass_crystal",
-            key -> new Block(props(key).mapColor(MapColor.SAND).strength(1.5F, 3.0F)
+            key -> new HalfTransparentBlock(props(key).mapColor(MapColor.SAND).noOcclusion().strength(1.5F, 3.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.AMETHYST)));
 
     public static final RegistryEntry<CrazedCrystalBlock> CRAZED_CRYSTAL = ModBlocks.BLOCKS.register("crazed_crystal",
-            key -> new CrazedCrystalBlock(props(key).mapColor(MapColor.SNOW).strength(0.6F, 0.6F)
+            key -> new CrazedCrystalBlock(props(key).mapColor(MapColor.SNOW).noOcclusion().strength(0.6F, 0.6F)
                     .requiresCorrectToolForDrops().sound(SoundType.GLASS)));
 
     public static final RegistryEntry<ShardDriftBlock> SHARD_DRIFT = ModBlocks.BLOCKS.register("shard_drift",
@@ -122,12 +123,12 @@ public final class NyxaraContent {
 
     public static final RegistryEntry<TwilightCrystalBlock> TWILIGHT_CRYSTAL = ModBlocks.BLOCKS.register(
             "twilight_crystal",
-            key -> new TwilightCrystalBlock(props(key).mapColor(MapColor.COLOR_PURPLE).strength(1.5F, 3.0F)
+            key -> new TwilightCrystalBlock(props(key).mapColor(MapColor.COLOR_PURPLE).noOcclusion().strength(1.5F, 3.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.AMETHYST)
                     .lightLevel(s -> SkySoakRules.light(s.getValue(TwilightCrystalBlock.GLOW)))));
 
     public static final RegistryEntry<RoseCrystalBlock> ROSE_CRYSTAL = ModBlocks.BLOCKS.register("rose_crystal",
-            key -> new RoseCrystalBlock(props(key).mapColor(MapColor.COLOR_PINK).strength(1.5F, 3.0F)
+            key -> new RoseCrystalBlock(props(key).mapColor(MapColor.COLOR_PINK).noOcclusion().strength(1.5F, 3.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.AMETHYST)
                     .lightLevel(s -> FootglowRules.light(s.getValue(RoseCrystalBlock.LIT)))));
 
@@ -143,7 +144,7 @@ public final class NyxaraContent {
 
     public static final RegistryEntry<BuddingNyxCrystalBlock> BUDDING_NYX_CRYSTAL = ModBlocks.BLOCKS.register(
             "budding_nyx_crystal",
-            key -> new BuddingNyxCrystalBlock(props(key).mapColor(MapColor.COLOR_PURPLE).strength(1.5F, 1.5F)
+            key -> new BuddingNyxCrystalBlock(props(key).mapColor(MapColor.COLOR_PURPLE).noOcclusion().strength(1.5F, 1.5F)
                     .requiresCorrectToolForDrops().sound(SoundType.AMETHYST).randomTicks()
                     .pushReaction(BREAKS_WHEN_PUSHED)));
 
@@ -155,7 +156,7 @@ public final class NyxaraContent {
                     .lightLevel(s -> ClusterLootRules.light(s.getValue(NyxCrystalClusterBlock.STAGE)))));
 
     public static final RegistryEntry<SmokeCrystalBlock> SMOKE_CRYSTAL = ModBlocks.BLOCKS.register("smoke_crystal",
-            key -> new SmokeCrystalBlock(props(key).mapColor(MapColor.COLOR_BLACK).strength(1.5F, 3.0F)
+            key -> new SmokeCrystalBlock(props(key).mapColor(MapColor.COLOR_BLACK).noOcclusion().strength(1.5F, 3.0F)
                     .requiresCorrectToolForDrops().sound(SmokeCrystalBlock.HUSH).lightLevel(s -> HushRules.LIGHT)));
 
     public static final RegistryEntry<MirrorCrystalBlock> MIRROR_CRYSTAL = ModBlocks.BLOCKS.register("mirror_crystal",

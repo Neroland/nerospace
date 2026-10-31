@@ -8,6 +8,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -22,7 +23,7 @@ import za.co.neroland.nerospace.block.rules.SkySoakRules;
  * placed or exposed block re-reads it two ticks after placement or a neighbour change (one state change at most, and
  * only when the value differs). Register with {@code lightLevel(s -> SkySoakRules.light(s.getValue(GLOW)))}.
  */
-public class TwilightCrystalBlock extends Block {
+public class TwilightCrystalBlock extends HalfTransparentBlock {
 
     public static final MapCodec<TwilightCrystalBlock> CODEC = BlockCodecs.simple(TwilightCrystalBlock::new);
 

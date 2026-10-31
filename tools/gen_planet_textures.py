@@ -639,7 +639,27 @@ def _hull_window(spec):
 
 
 def _crystal_block(spec):
-    return {"block/%s.png" % spec["id"]: crystal_facets(spec["pal"], spec["seed"], glint=spec.get("glint"))}
+    img = crystal_facets(spec["pal"], spec["seed"], glint=spec.get("glint"))
+    if spec["id"] in ("void_crystal", "gravity_shard_block"):
+        px = img.load()
+        for y in range(1, S - 1):
+            for x in range(1, S - 1):
+                r, g, b, _ = px[x, y]
+                px[x, y] = (r, g, b, 175)
+    if spec["id"] == "void_crystal":
+        frames = []
+        for frame in range(8):
+            strength = 0.08 * (1.0 + math.sin(2.0 * math.pi * frame / 8))
+            animated = img.copy()
+            pixels = animated.load()
+            for y in range(1, S - 1):
+                for x in range(1, S - 1):
+                    r, g, b, a = pixels[x, y]
+                    tint = mix((r, g, b, 255), spec["pal"][2], strength)
+                    pixels[x, y] = (tint[0], tint[1], tint[2], a)
+            frames.append(animated)
+        return {"block/void_crystal.png": (strip_of(frames), mcmeta(12, interpolate=True), img)}
+    return {"block/%s.png" % spec["id"]: img}
 
 
 def _crystal_cluster(spec):

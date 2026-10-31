@@ -29,6 +29,10 @@ public final class NyxaraWarmth {
         for (int dx = -R; dx <= R; dx++) {
             for (int dy = -R; dy <= R; dy++) {
                 for (int dz = -R; dz <= R; dz++) {
+                    int distanceSquared = dx * dx + dy * dy + dz * dz;
+                    if (distanceSquared > R * R) {
+                        continue;
+                    }
                     cursor.set(pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz);
                     if (!level.isLoaded(cursor)) {
                         continue;
@@ -36,7 +40,7 @@ public final class NyxaraWarmth {
                     BlockState s = level.getBlockState(cursor);
                     if (s.is(NyxaraContent.DAWNBAND_STONE.get())
                             && WarmthRules.shielded(s.getValue(WeatherFlipBlock.FLARING),
-                                    Math.sqrt((double) dx * dx + (double) dy * dy + (double) dz * dz),
+                                    Math.sqrt(distanceSquared),
                                     WarmthRules.RADIUS)) {
                         return true;
                     }

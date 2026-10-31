@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -22,7 +23,7 @@ import za.co.neroland.nerospace.block.rules.FootglowRules;
  * left alone, so each block entered costs at most one state change. Idle light 2. Register with
  * {@code lightLevel(s -> FootglowRules.light(s.getValue(LIT)))}.
  */
-public class RoseCrystalBlock extends Block {
+public class RoseCrystalBlock extends HalfTransparentBlock {
 
     public static final MapCodec<RoseCrystalBlock> CODEC = BlockCodecs.simple(RoseCrystalBlock::new);
 

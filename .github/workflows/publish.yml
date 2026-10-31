@@ -406,6 +406,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-tag: v${{ needs.detect.outputs.version }}
+          github-prerelease: ${{ needs.build.outputs.version_type != 'release' }}
           name: Nerospace ${{ needs.detect.outputs.version }}
           version: ${{ needs.detect.outputs.version }}
           version-type: ${{ needs.build.outputs.version_type }}

@@ -4,7 +4,7 @@ Checklists that need a running client/server, run before a release. Record what 
 cell, at the bottom of each section. Nothing here needs a real player account: single-player or a
 LAN world is enough. **Never run these against a production server or its saves.**
 
-## Planets and stations (2.0.0)
+## Planets and stations (2.0.0-alpha.1)
 
 Cells: NeoForge 26.3 dev client for everything (`:neoforge:26.3:runClient`); Fabric 26.3 and Forge 26.3 for the
 "other cells" items; one loader each on 26.1.2 and 26.2 for the upgrade and world-creation items. Use a creative world
@@ -114,8 +114,8 @@ show the full text in a tooltip.
 
 ## 2.0.x Nyxara crystal / sky / clocks (unreleased)
 
-One owner checklist for the unreleased 2.0.x work: the sky gallery and planet clocks (J, K), the Nyxara crystal (L),
-the sky upgrade (M) and planet sleeping (N). Run it before the 2.0.x release and record each part at the bottom of its
+One owner checklist for the 2.0 alpha work: the sky gallery and planet clocks (J, K), the Nyxara crystal (L),
+the sky upgrade (M) and planet sleeping (N). Run it before promoting 2.0 beyond alpha and record each part at the bottom of its
 section. The three checks the release must not skip:
 
 - **Every `/nerospace gallery sky` state on every planet**: J.2 (you land, the sky holds, weather arrives at its peak)

@@ -5,9 +5,9 @@
 worlds, survive their airless atmospheres with oxygen gear, found your own orbital stations, and
 eventually **terraform** a dead planet into livable, rained-on ground.
 
-> 🆕 **Nerospace 2.0** adds Luna, Mars and Nyxara, gives every world its own blocks, ores, sky, clock and weather,
+> 🆕 **Nerospace 2.0 is an alpha** and adds Luna, Mars and Nyxara, gives every world its own blocks, ores, sky, clock and weather,
 > and turns orbital stations into habitats with classes, members and modules. Coming from 1.x? Read
-> **[Upgrading to 2.0](Upgrading-to-2.0)** first: your worlds keep working.
+> **[Upgrading to 2.0](Upgrading-to-2.0)** first, and back up your world before testing.
 
 > 💬 Questions, builds, feedback? Join the [Discord](https://discord.gg/ArPXvYUzJG) or open a
 > [GitHub issue](https://github.com/Neroland/nerospace/issues).

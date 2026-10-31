@@ -125,7 +125,7 @@ public final class NeoForgePlanetSky implements net.neoforged.neoforge.client.Cu
         } catch (RuntimeException ex) {
             // Never crash a frame over the sky: fall back to the vanilla sky for the rest of the session.
             this.failed = true;
-            NerospaceCommon.LOGGER.warn("[Nerospace] planet sky disabled after a render error: {}", ex.toString());
+            NerospaceCommon.LOGGER.warn("[Nerospace] planet sky disabled after a render error", ex);
             try {
                 release();
             } catch (RuntimeException ignored) {
@@ -179,6 +179,7 @@ public final class NeoForgePlanetSky implements net.neoforged.neoforge.client.Cu
         build();
         // Buffer writes are not allowed inside a render pass: rewrite the aurora curtains first.
         int auroraSlots = uploadAurora(s);
+        prepareTextures(mc, s);
         RenderSystem.setShaderFog(skyFog);
         RenderTarget target = mc.gameRenderer.mainRenderTarget();
         GpuSampler repeat = RenderSystem.getSamplerCache().getRepeat(FilterMode.LINEAR);
@@ -230,6 +231,32 @@ public final class NeoForgePlanetSky implements net.neoforged.neoforge.client.Cu
                         s.hazeColor, s.hazeAlpha, mc);
             }
         }
+    }
+
+    private static void prepareTextures(Minecraft mc, SkyScene s) {
+        prepareTexture(mc, s.rampTexture);
+        prepareTexture(mc, s.starTexture);
+        s.galaxyTexture.ifPresent(texture -> prepareTexture(mc, texture));
+        for (SkyScene.AuroraLayer layer : s.auroraLayers) {
+            prepareTexture(mc, layer.texture());
+        }
+        prepareQuads(mc, s.fixedQuads);
+        prepareQuads(mc, s.quads);
+        prepareQuads(mc, s.shootingStars);
+        s.cloud.ifPresent(cloud -> prepareTexture(mc, cloud.texture()));
+        if (s.hazeAlpha > 0.01F) {
+            prepareTexture(mc, RAMP);
+        }
+    }
+
+    private static void prepareQuads(Minecraft mc, List<SkyScene.Quad> quads) {
+        for (SkyScene.Quad quad : quads) {
+            prepareTexture(mc, quad.texture());
+        }
+    }
+
+    private static void prepareTexture(Minecraft mc, Identifier texture) {
+        mc.getTextureManager().getTexture(texture).getTextureView();
     }
 
     // Indexed (no iterator per list per frame).

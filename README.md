@@ -12,12 +12,11 @@
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.21.1%20%7C%201.21.4%E2%80%931.21.11%20%7C%2026.1.2%20%7C%2026.2%20%7C%2026.3-62B47A">
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge%20%7C%20Forge%20%7C%20Fabric-F16436">
   <img alt="Java" src="https://img.shields.io/badge/Java-25-007396">
-  <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue">
+  <img alt="Version" src="https://img.shields.io/badge/version-2.0.0--alpha.1-orange">
 </p>
 
 <p align="center">
   <a href="https://www.curseforge.com/minecraft/mc-mods/nerospace">CurseForge</a> ·
-  <a href="https://modrinth.com/mod/nerospace">Modrinth</a> ·
   <a href="https://github.com/Neroland/nerospace/wiki">Wiki</a> ·
   <a href="https://discord.gg/ArPXvYUzJG">Discord</a> ·
   <a href="CHANGELOG.md">Changelog</a>
@@ -35,7 +34,7 @@ Two sibling Neroland mods are optional extras: **NeroEconomy** adds configurable
 
 ## What's new in 2.0
 
-Nerospace 2.0 is the planets and stations update. Existing 1.x worlds keep working: see
+Nerospace 2.0 is currently an **alpha**: the planets and stations update is available for testing, and performance and sky rendering still need work. Back up your world before trying it. For migration details, see
 [Upgrading to 2.0](https://github.com/Neroland/nerospace/wiki/Upgrading-to-2.0).
 
 | World | Rocket | What makes it different |
@@ -81,7 +80,7 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 ## Installing
 
 1. Install the matching **NeoForge**, **Forge**, or **Fabric** version for your Minecraft version.
-2. Download the Nerospace `.jar` from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace), [Modrinth](https://modrinth.com/mod/nerospace), or the [Releases page](https://github.com/Neroland/nerospace/releases).
+2. Download the Nerospace `.jar` from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace) or the [Releases page](https://github.com/Neroland/nerospace/releases).
 3. Drop the `.jar` into your `mods/` folder and launch.
 
 ## Building from source
@@ -138,7 +137,7 @@ Bug reports and suggestions are very welcome via the **Issues** tab — there ar
 Nerospace uses custom **source-available** terms — see [LICENSE](LICENSE). The short version:
 
 - ✅ **Play it anywhere**, including monetised servers, videos, and streams.
-- ✅ **Modpacks are allowed and encouraged** — any platform, no need to ask. Use the official files (CurseForge / [Modrinth](https://modrinth.com/mod/nerospace) / GitHub releases) and credit *Nerospace by Neroland* with links to [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace) and this repository.
+- ✅ **Modpacks are allowed and encouraged** — any platform, no need to ask. Use the official files (CurseForge / GitHub releases) and credit *Nerospace by Neroland* with links to [CurseForge](https://www.curseforge.com/minecraft/mc-mods/nerospace) and this repository.
 - ✅ **Read the source, fork on GitHub, and modify for private use**; pull requests welcome.
 - ❌ **No re-uploading builds** (original or modified) outside the official channels, and no publishing forked builds under any name.
 - ❌ **No reusing code/textures/models in other projects** without written permission.

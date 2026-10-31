@@ -9,12 +9,9 @@ maps every new Nyxara block / item id to a family + palette + frame spec.
 Three kinds of texture come out of here, and the kind decides the chunk render layer on every
 26.x line (the layer is taken from texture alpha):
 
-* ``opaque`` glassy crystal (every pixel alpha 255 -> SOLID layer): the bulk ground cover.  The
-  glass read comes from painted depth cues (lit core, dark rim, caustic streak, facet planes and
-  specular points), not from transparency, so the ground costs no translucent sorting.
-* ``translucent`` crystal (interior alpha below 255, facet edges 255 -> TRANSLUCENT layer): the
-  hero blocks only (spires, prisms, mirror lakes).  Real alpha is required.
-* ``cutout`` cross textures (alpha 0 or 255 only -> CUTOUT layer): the crystal clusters.
+* ``opaque`` surfaces remain solid, including the loose shard drift.
+* ``translucent`` crystals have partially transparent facets and brighter edges.
+* Cross-shaped clusters retain transparent gaps and translucent crystal facets.
 
 Entry points
 ------------
@@ -218,7 +215,7 @@ def glassy_block(pal, seed, *, alpha=255, facets=2, caustic=True, glow=None, glo
 
 def crazed_block(pal, seed, *, craze, shadow, cracks=4):
     """Clear glassy cube with a white craze network (thermal-shock lines), each line shadowed."""
-    img, _ = glassy_block(pal, seed, facets=1, caustic=True)
+    img, _ = glassy_block(pal, seed, alpha=165, facets=1, caustic=True)
     rng = random.Random(seed ^ 0xC2A2E)
     px = img.load()
     for _ in range(cracks):
@@ -414,7 +411,7 @@ def glow_pulse(img, mask, glow, *, frames=8, frametime=8, amp=0.25):
 
 def budding_block(pal, seed, *, buds):
     """Dark crystal matrix with 5-6 bright bud points (the nucleation sites)."""
-    img, _ = glassy_block(pal, seed, facets=2, caustic=False)
+    img, _ = glassy_block(pal, seed, alpha=175, facets=2, caustic=False)
     rng = random.Random(seed ^ 0xB0DD)
     px = img.load()
     pts = []
@@ -476,7 +473,7 @@ PRM = (VIOLET_DEEP, VIOLET, VIOLET_PALE, WHITE)
 
 
 def _f_sunglass(spec):
-    img, _ = glassy_block(SUN, spec["seed"], facets=3, streaks=GOLD, streak_count=4, alt_pal=CLR, alt_share=0.45)
+    img, _ = glassy_block(SUN, spec["seed"], alpha=170, facets=3, streaks=GOLD, streak_count=4, alt_pal=CLR, alt_share=0.45)
     return {"block/sunglass_crystal.png": img}
 
 
@@ -491,18 +488,18 @@ def _f_drift(spec):
 
 
 def _f_twilight(spec):
-    img, _ = glassy_block(TWI, spec["seed"], facets=3)
+    img, _ = glassy_block(TWI, spec["seed"], alpha=170, facets=3)
     return {"block/twilight_crystal.png": img}
 
 
 def _f_rose(spec):
-    img, _ = glassy_block(RSE, spec["seed"], facets=3)
-    lit, _ = glassy_block((ROSE, ROSE_LT, ROSE_PALE, WHITE), spec["seed"], facets=3)
+    img, _ = glassy_block(RSE, spec["seed"], alpha=170, facets=3)
+    lit, _ = glassy_block((ROSE, ROSE_LT, ROSE_PALE, WHITE), spec["seed"], alpha=170, facets=3)
     return {"block/rose_crystal.png": img, "block/rose_crystal_lit.png": lit}
 
 
 def _f_smoke(spec):
-    img, mask = glassy_block(SMK, spec["seed"], facets=3, glow=CYAN, glow_dots=3)
+    img, mask = glassy_block(SMK, spec["seed"], alpha=170, facets=3, glow=CYAN, glow_dots=3)
     return {"block/smoke_crystal.png": glow_pulse(img, mask, CYAN, frames=8, frametime=8, amp=0.35)}
 
 
@@ -525,6 +522,12 @@ def _f_cluster(spec):
                 for x in range(S):
                     if px[x, y] == (255, 255, 255, 255):
                         px[x, y] = CYAN
+        px = img.load()
+        for y in range(S):
+            for x in range(S):
+                r, g, b, a = px[x, y]
+                if a:
+                    px[x, y] = (r, g, b, 190)
         out["block/nyx_crystal_cluster_stage%d.png" % st] = img
     return out
 
@@ -552,15 +555,15 @@ FAMILIES = {
 
 # One row per id; `layer` documents the intended chunk layer (ChunkLayerTexturesTest pins it).
 NYXARA_CRYSTAL_TEXTURES = [
-    _row("sunglass_crystal", "sunglass", layer="solid"),
-    _row("crazed_crystal", "crazed", layer="solid"),
+    _row("sunglass_crystal", "sunglass", layer="translucent"),
+    _row("crazed_crystal", "crazed", layer="translucent"),
     _row("shard_drift", "drift", layer="solid"),
-    _row("twilight_crystal", "twilight", layer="solid"),
-    _row("rose_crystal", "rose", layer="solid"),
-    _row("smoke_crystal", "smoke", layer="solid"),
+    _row("twilight_crystal", "twilight", layer="translucent"),
+    _row("rose_crystal", "rose", layer="translucent"),
+    _row("smoke_crystal", "smoke", layer="translucent"),
     _row("mirror_crystal", "mirror", layer="translucent"),
-    _row("budding_nyx_crystal", "budding", layer="solid"),
-    _row("nyx_crystal_cluster", "cluster", layer="cutout"),
+    _row("budding_nyx_crystal", "budding", layer="translucent"),
+    _row("nyx_crystal_cluster", "cluster", layer="translucent"),
     _row("crystal_spire", "spire", layer="translucent"),
     _row("nyx_prism", "prism", layer="translucent"),
     _row("crystal_shard", "shard_item", layer="item"),

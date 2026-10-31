@@ -1,17 +1,18 @@
 # Upgrading to 2.0
 
+> **Alpha:** 2.0 is under active testing. Back up your save before upgrading; planet performance and some sky effects are still being investigated.
+
 Nerospace 2.0 adds three worlds ([Luna](Luna), [Mars](Mars) and [Nyxara](Nyxara)), gives every planet its own
 blocks, ores, sky, clock and weather, and turns orbital stations into habitats with classes, members and modules.
-It is a major version because the *content* changed a lot, not because anything breaks. **Every world made with
-Nerospace 1.x loads in 2.0.** This page says exactly what carries over, what looks different, and what to do before
-you update.
+The major version reflects the scale of the content changes. **1.x world compatibility is intended, but needs further
+runtime verification.** This page describes what is intended to carry over and what to do before updating.
 
 ## Before you update
 
 1. **Back up your world.** Copy the whole save folder (single-player: `saves/<world>`; server: the
    world directory). Nerospace never rewrites old terrain or deletes anything, but a backup is the
    only way back to 1.x (see *Going back* below).
-2. Update [Neroland Core](Neroland-Core) to **1.16.0 or newer**. Nerospace 2.0 will not start on an older Core.
+2. Update [Neroland Core](Neroland-Core) to **1.17.0 or newer**. Nerospace 2.0 will not start on an older Core.
 3. Update the server **and every client** together. 2.0 adds network messages and Rocket screen data that a 1.x
    client does not understand, so client and server must run the same Nerospace version.
 4. If you run other Neroland mods that talk to Nerospace (NeroColonies, NeroLogistics, NeroSecurity,

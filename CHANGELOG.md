@@ -7,14 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-alpha.1] - Unreleased
+
+The first 2.0 alpha combines the planets and stations rework with the subsequent compatibility and visual changes. It is a test build: planet performance and sky rendering still need work, and Nyxara auroras are not currently visible in the NeoForge 26.3 client. Back up worlds before testing.
+
 ### Added
 
-- **Richer planet skies** (full sky on NeoForge for Minecraft 26.3). Folding, drifting **aurora curtains** with
+- **Richer planet skies** (the NeoForge 26.3 renderer is still being verified). Folding, drifting **aurora curtains** with
   scrolling rays on Glacira (green to teal, with a rose fringe in diamond dust), over Nyxara's Nightside (violet and
   cyan) and, for about a minute after a dust storm clears, faintly over Mars; a pink spore shimmer round the
   Greenxertz horizon during a bloom. Set pieces: Earth on Luna with a blue rim, true phases and city lights on its
-  night side; Mars' **blue sunset** and Phobos and Deimos with phases; Cindara's eclipse **corona and diamond ring**
-  and a low ash cloud deck lit orange from below; Glacira's 22° halo and sun dogs; Nyxara's flare ray fans, a
+  night side; Mars' **blue sunset** and Phobos and Deimos with phases; Cindara's eclipse **corona and diamond ring**;
+  Glacira's 22° halo and sun dogs; Nyxara's flare ray fans, a
   crystal-refracted arc in the band and two nebulae; the station's homeworld below to the east, its night side dark
   with city lights that fade as it turns to day, the sun rising through its rim. Everywhere: natural-colour stars
   (smaller, twinkling where there is air), shooting stars, a softer horizon gradient, and weather that fades in and
@@ -38,7 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (one by hand), spires chime when struck, and a Nyx Prism blazes in a flare and casts a beam that doubles the flare's
   radiation bump. Recipes: 4 Crystal Shards make a Twilight Crystal; 8 shards around a Voidglass make a Nyx Prism; 2
   shards and a glass block make 2 Mirror Crystals. Crystal Shards carry the Neroland Core materials slot highlight.
-  Spires, prisms and mirror lakes are translucent; the ground is glassy but opaque. Ore rates, the Twilight Band,
+  Nyxara crystal blocks and clusters have translucent facets; Void Crystal pulses gently and Smoke and Mirror Crystal
+  highlights animate. Ore rates, the Twilight Band,
   Duskborn villages and Dawnband flares are unchanged. Italian and Chinese names are provisional.
 - **Sleep through a planet's night.** On Luna, Mars, Cindara and Glacira a bed works in the planet's own night; once
   enough players on that world are asleep (the `players_sleeping_percentage` game rule, counted per world) its clock
@@ -59,34 +64,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The wiki now says where open water freezes (Luna, Mars, Glacira, the Nyxara Nightside and the station) and what
   that does to sugar cane farms.
 
-## [2.0.1] - 2026-10-31
+### Compatibility and publishing updates
 
-### Changed
+#### Changed
 
 - Release uploads now target CurseForge and GitHub Releases only.
 - Removed automatic project description and gallery uploads.
 - Renamed the website overview source to `art/description.md` and refreshed public documentation links.
 
-### Fixed
+#### Fixed
 
 - **Minecraft 1.21.x**: the planets and the station now load on every 1.21.x build (their world data is converted to
   each version's format when the mod is built), and the radiation-lining upgrades for oxygen suits now load on 1.21.1
   and 1.21.4.
 - Planet skies on Minecraft 1.21.1 to 1.21.10 are simpler, because those versions can't show everything: each planet
   keeps its sky and fog colours and its fixed sun position, but sunrise colours, star brightness and cloud colours are
-  the game's defaults (clouds are white; on 1.21.6 and later they are hidden where the planet has dark clouds),
+  the game's defaults (clouds are white on 1.21.1–1.21.5 and disabled on 1.21.8 and later),
   Nyxara's moon sits opposite its sun, and the station's sky uses the game's default colour. On 1.21.11 only the
   faint Greenxertz ambient light tint is missing.
 
-## [2.0.0] - 2026-10-30
+### Planets and stations
 
 The planets and stations update: three new worlds (Luna, Mars and Nyxara), every world rebuilt with its own blocks,
 ores, biomes, sky, clock, weather and terraforming, and orbital stations that grow into habitats. See the wiki page
 *Upgrading to 2.0* before updating a 1.x world. Nerospace 2.0 also runs on Minecraft 1.21.x.
 
-### Compatibility
+#### Compatibility
 
-- **2.0.0 is a content release, not a breaking one: existing worlds keep working.** Every block, item,
+- **The alpha is intended to preserve existing worlds, but migration still needs runtime verification.** Every block, item,
   dimension and saved-data id from 1.6.0 keeps its id; saved stations, pads, rockets, terraformers,
   oxygen fields, routes, Star Guide progress and config files load unchanged. Back up your world before
   upgrading, as always.
@@ -130,7 +135,7 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
   gives the hazard at an exact spot. `StationInfo` keeps its 1.x constructor and gains `stationClass()`;
   `routeCapacity()` now follows the class (Waystation 9, Trade 10, Research and Industrial 8).
 
-### Added
+#### Added
 
 #### Minecraft 1.21.x builds
 
@@ -332,7 +337,7 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
 - **Luna, Mars and Nyxara Compasses**: creative-only travel compasses for the new worlds, like the Station,
   Greenxertz, Cindara and Glacira ones (no recipe). The Nyxara Compass sets you down in the twilight band.
 
-### Changed
+#### Changed
 
 - Now requires Neroland Core 1.17.0 or later.
 - **Rocket reach is cumulative.** A rocket reaches every destination of its own tier and the tiers below it, so Tier 2
@@ -366,7 +371,7 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
   weighting.
 - A pad you name-tag on a station keeps its name.
 
-### Fixed
+#### Fixed
 
 - A rocket no longer lands on top of a rocket parked on a pad whose area had not finished loading: it steers to the
   next spot during the descent, or sets down on a Landing Pod nearby.
@@ -393,7 +398,7 @@ ores, biomes, sky, clock, weather and terraforming, and orbital stations that gr
   (and logged a "far chunk" error for each lost block); cities are now centred on their chunk. Only newly generated
   cities change.
 
-### Privacy
+#### Privacy
 
 - **`/nerospace privacy export`**: any player can see everything Nerospace stores about them (planets reached,
   stations owned and station memberships, Village Cores, Cargo Pads, routes and cargo flights, oxygen, Star Guide
