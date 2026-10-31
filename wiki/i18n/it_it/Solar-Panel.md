@@ -52,10 +52,14 @@ Ogni livello include il **pannello precedente** nella ricetta, quindi il potenzi
 
   produzione × (10 − oscurità del cielo) / 10. Pioggia e tempeste scuriscono il cielo, quindi la produzione cala di conseguenza.
 
-- Le **dimensioni prive d'aria** (Stazione orbitale, Greenxertz, Cindara, Glacira, stazioni fondate) hanno un
+- **Nerospace planets** (Greenxertz, Cindara, Glacira, Luna, Mars and Nyxara) follow the planet's own day: a panel
 
-  sole permanente, quindi lì i pannelli funzionano al massimo **e ottengono un bonus ×2**. Lì inoltre **non** hanno bisogno della
-  vista sul cielo. Il solare è la fonte di energia naturale fuori dalla Terra.
+  peaks at that planet's noon, dips at night, on Cindara dims during the eclipse and on Mars falls during a dust storm.
+  Nyxara's sun never moves, so a panel there gives a steady ×2.04. Over a full planet day
+  every planet gives **at least the old ×2 rate on average** (the peaks are higher to make up for the
+  nights), so bases that run at night need a battery. The **Orbital Station** (and founded stations) stays
+  a constant ×2. Panels do **not** need a view of the sky on a planet. Server owners can restore the old
+  constant ×2 with `solar.clockDriven=false`. Il solare è la fonte di energia naturale fuori dalla Terra.
 
 - Produzione e accumulo scalano con il livello (tutti i valori × la configurazione `energyRateMultiplier`). La riserva
 
