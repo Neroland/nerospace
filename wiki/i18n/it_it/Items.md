@@ -55,17 +55,17 @@ Due **varianti anti-pericolo** della tuta di livello 2 ti proteggono dagli estre
 
 - **Razzi (livello 1 / 2 / 3 / 4)**: schierali su una [Rampa di lancio per razzi](Rocket-Launch-Pad.md), riforniscili,
 
-  sali a bordo, scegli una destinazione e lancia (le destinazioni sono cumulative):
+  board, pick a destination, and launch (every rocket can also fly home):
 
-  - **Livello 1** → la Stazione orbitale (e qualsiasi [stazione fondata](Station-Charter.md)).
+  - **Tier 1** → the Orbital Station (and any [founded station](Station-Charter)) and [Luna](Luna).
 
-  - **Livello 2** → + Greenxertz.
+  - **Tier 2** → the Orbital Station, Luna, Greenxertz and [Mars](Mars).
 
-  - **Livello 3** → + Cindara. (Richiede una rampa 3×3 circondata dalla [Parete della stazione](Station-Wall.md) **oppure** un
+  - **Tier 3** → the Orbital Station, Luna, Greenxertz, Mars and Cindara. (Richiede una rampa 3×3 circondata dalla [Parete della stazione](Station-Wall.md) **oppure** un
 
     [Complesso di lancio pesante](Launch-Gantry.md).)
 
-  - **Livello 4** → + Glacira. (Si schiera **solo** sul [Complesso di lancio pesante](Launch-Gantry.md);
+  - **Tier 4** → the Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira and [Nyxara](Nyxara) (Nyxara after Deep Space progress). (Si schiera **solo** sul [Complesso di lancio pesante](Launch-Gantry.md);
 
     serbatoio da 24.000 mB.)
     La schermata nel razzo mostra un indicatore del carburante in tempo reale, una traiettoria di destinazione selezionabile, un selettore
@@ -126,10 +126,12 @@ Due **varianti anti-pericolo** della tuta di livello 2 ti proteggono dagli estre
 
 ## Dispositivi di viaggio (creativa)
 
-- Il **Navigatore di Greenxertz** e le **Bussole della stazione / di Greenxertz / di Cindara / di Glacira** sono
+- **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira / Luna / Mars / Nyxara Compasses** are
 
-  aiuti al viaggio con un clic solo in creativa, per test e costruzioni (nessuna ricetta in sopravvivenza: i razzi sono la
-  strada in sopravvivenza).
+  creative-only one-click travel aids for testing and building (no survival recipe — rockets are the
+  survival route).
+  The Nyxara Compass always sets you down inside the twilight band, and every compass lays a small platform
+  under you if there is no ground below.
 
 ## Uova generatrici
 
