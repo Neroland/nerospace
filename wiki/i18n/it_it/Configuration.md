@@ -52,17 +52,44 @@ Questi numeri sono fissi nel codice. Sono elencati qui per aiutarti a pianificar
 | ----------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `terraformerForceLoadEnabled` | `false`     | Un [Terraformatore](Terraformer.md) in funzione tiene caricata una piccola finestra di chunk, così continua a lavorare mentre sei lontano. Disattivato per impostazione predefinita perché costa memoria e velocità del server. |
 
+### Stations
+
+Settings for [Orbital Stations](Orbital-Stations). Le decide tutte il server.
+
+| Chiave                    | Predefinito | Intervallo      | Significato                                                                                                                                                                                                    |
+| ------------------------- | ----------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stations.maxMembers`     | `16`        | 0–16            | Members a station owner may add.                                                                                                                                                               |
+| `stations.maxModules`     | `8`         | 0–8             | Modules a station may have.                                                                                                                                                                    |
+| `stations.minSpacing`     | `512`       | 128–4,096       | Blocks (on each axis) a station [placed where you stand](Orbital-Stations#placing-your-own-station) must keep from every other station and from the shared platform at 0,0. |
+| `stations.maxRadius`      | `30000`     | 1,024–1,000,000 | How far from 0,0 (on each axis) a station may be placed.                                                                                                                    |
+| `stations.freeDockRadius` | `2048`      | 0–8,192         | How close a [free dock](Orbital-Stations#free-docks) must be to where a rocket last stood in the station dimension to appear in its dock list. `0` turns free docks off.       |
+
+### Rockets
+
+| Chiave            | Predefinito | Intervallo | Significato                                                                                                                                                                                                                     |
+| ----------------- | ----------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rockets.maxCrew` | `4`         | 1–4        | Players one rocket seats. The first aboard is the pilot. `1` gives the old one-seat rocket. Cargo rockets never carry anyone. Decide il server. |
+
+### Mars rover
+
+| Chiave               | Predefinito | Intervallo      | Significato                                                                                                                                                                  |
+| -------------------- | ----------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rover.capacity`     | `40000`     | 1,000–1,000,000 | FE a [Mars Rover](Rover)'s battery holds. Decide il server.                                                                                  |
+| `rover.maxPerPlayer` | `4`         | 1–64            | Rovers one player may have out at once. Counted over the rovers in loaded chunks when placing a new one. The server decides. |
+| `rover.drainPerTick` | `5`         | 0–1,000         | FE a rover uses each tick while its driver holds the throttle. `0` makes driving free. The server decides.                   |
+| `rover.chargeRate`   | `200`       | 0–100,000       | FE per tick a parked rover draws from Neroland energy blocks next to it. `0` turns charging off. The server decides.         |
+
 ### NeroLink
 
-| Chiave              | Predefinito | Significato                                                                                                                                                                                                                                                                                                                                           |
-| ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `linkModuleEnabled` | `true`      | Condivide i dati di Nerospace con l'app complementare NeroLink: i tuoi razzi, stazioni, pianeti, supporto vitale e avanzamento della Guida stellare (mai quelli di un altro giocatore). Imposta `false` e l'app mostrerà Nerospace come assente. Decide il server. |
+| Chiave              | Predefinito | Significato                                                                                                                                                                                                                                                                                                                                             |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `linkModuleEnabled` | `true`      | Condivide i dati di Nerospace con l'app complementare NeroLink: i tuoi razzi, stazioni, pianeti, supporto vitale e avanzamento della Guida stellare (mai quelli di un altro giocatore). Imposta `false` e l'app mostrerà Nerospace come assente. The server decides. |
 
 ### Razzi cargo
 
 Impostazioni per le [Piattaforme cargo](Cargo-Pad.md) e i voli cargo. Le decide tutte il server.
 
-| Chiave                      | Predefinito | Intervallo                                   | Significato                                                                                                                                                       |
+| Chiave                      | Predefinito | Range                                        | Significato                                                                                                                                                       |
 | --------------------------- | ----------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `cargoPadSlots`             | `18`        | 1–27                                         | Slot della stiva utilizzabili su una Piattaforma cargo: il carico che trasporta un razzo cargo.                                   |
 | `cargoFuelCapacity`         | `16000`     | 1.000–64.000 | Carburante per razzi (mB) contenuto nella riserva alimentata da tubi di una Piattaforma cargo.                                 |
@@ -77,9 +104,9 @@ Impostazioni per le [Piattaforme cargo](Cargo-Pad.md) e i voli cargo. Le decide 
 
 ### Economia (facoltativa: richiede NeroEconomy)
 
-Ricompense e tariffe in crediti. Hanno effetto solo quando è installata la mod **NeroEconomy**. Ogni importo ha valore predefinito `0`, che disattiva quella funzione. Le decide tutte il server.
+Ricompense e tariffe in crediti. Hanno effetto solo quando è installata la mod **NeroEconomy**. Ogni importo ha valore predefinito `0`, che disattiva quella funzione. The server decides all of them.
 
-| Chiave                    | Predefinito | Intervallo                                  | Significato                                                                                                                                                                                                                                                                                        |
+| Chiave                    | Predefinito | Range                                       | Significato                                                                                                                                                                                                                                                                                        |
 | ------------------------- | ----------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `economyFirstVisitReward` | `0`         | 0–1.000.000 | Crediti pagati una volta, la prima volta che un giocatore raggiunge ciascun pianeta. Pagati dalla Riserva di NeroEconomy e limitati dai suoi tetti di pagamento giornalieri. Una ricompensa rifiutata non viene ritentata.                         |
 | `economyLaunchFee`        | `0`         | 0–1.000.000 | Crediti addebitati per ogni lancio con equipaggio o cargo, dopo che tutti gli altri controlli di lancio sono superati. Un giocatore che non può pagare non può lanciare (una Piattaforma cargo mostra _Impossibile pagare la tariffa di volo_). |
@@ -89,22 +116,22 @@ Le tariffe vanno alla Riserva di NeroEconomy. Senza NeroEconomy queste chiavi no
 
 ### Quarry
 
-| Chiave                  | Predefinito | Intervallo                | Significato                                                                                                                                                                                                                                                    |
-| ----------------------- | ----------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quarryMaxSide`         | `64`        | 4–64                      | Lato più lungo (in blocchi) dell'area dei segnaposto di una cava.                                                                                                                                                           |
-| `quarryFrameDecayTicks` | `600`       | 20–24.000 | Ritardo base prima che un blocco del telaio rimasto si sgretoli e lasci cadere il suo involucro. Ogni blocco aspetta `base + random(base × 7)` tick, quindi con il valore predefinito l'anello si disfa in circa 30 s – 4 min. |
+| Key                     | Default | Range                     | Meaning                                                                                                                                                                                                                                                        |
+| ----------------------- | ------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `quarryMaxSide`         | `64`    | 4–64                      | Lato più lungo (in blocchi) dell'area dei segnaposto di una cava.                                                                                                                                                           |
+| `quarryFrameDecayTicks` | `600`   | 20–24.000 | Ritardo base prima che un blocco del telaio rimasto si sgretoli e lasci cadere il suo involucro. Ogni blocco aspetta `base + random(base × 7)` tick, quindi con il valore predefinito l'anello si disfa in circa 30 s – 4 min. |
 
 ### Villaggi alieni
 
-| Chiave              | Predefinito | Significato                                                                                                                                                                                                           |
-| ------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `alienRaidsEnabled` | `true`      | Le creature ostili assaltano di notte i villaggi alieni rivendicati. Imposta `false` per disattivare le incursioni. Si applica al ricaricamento della configurazione. |
+| Key                 | Default | Meaning                                                                                                                                                                                                               |
+| ------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `alienRaidsEnabled` | `true`  | Le creature ostili assaltano di notte i villaggi alieni rivendicati. Imposta `false` per disattivare le incursioni. Si applica al ricaricamento della configurazione. |
 
 ### Chat
 
-| Chiave                  | Predefinito | Significato                                                                                                                                                                                                                                                                                                                                            |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `welcomeMessageEnabled` | `true`      | Invia il messaggio di benvenuto di Nerospace su due righe (l'invito al Libro della Guida stellare e il link per i commenti) quando un giocatore entra. Imposta `false` per entrare in silenzio. Si applica al ricaricamento della configurazione. Decide il server. |
+| Key                     | Default | Meaning                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `welcomeMessageEnabled` | `true`  | Invia il messaggio di benvenuto di Nerospace su due righe (l'invito al Libro della Guida stellare e il link per i commenti) quando un giocatore entra. Imposta `false` per entrare in silenzio. Si applica al ricaricamento della configurazione. The server decides. |
 
 ### Sky (client-side)
 
