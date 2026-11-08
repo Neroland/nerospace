@@ -28,9 +28,14 @@ W W W
 - **Found:** right-click the charter to open the **naming screen**, type a name, and press _Found
   Station_. One charter is consumed and the station is built remotely. A blank name auto-names
   "Station N".
+- **In the station dimension:** the station is founded **where you stand**, and you can untick **Build starter
+  structure** to get only your claim and a Docking Ring. A spot too close to another station (512 blocks) or too
+  far from 0,0 (30,000 blocks) is refused and the charter is kept. See
+  [Orbital Stations](Orbital-Stations#placing-your-own-station).
 - **建成的内容：**一个封闭的观景室（空间站墙壁柱、玻璃窗带、照明天花板），通过**气闸**通向一个 **2 级着陆台**——你飞往该处时火箭降落的位置。
 - **也可从火箭中操作：**火箭内的对接选择器包含一个**新空间站**选项——选择它并发射，即可一趟行程完成建站和抵达。
-- **参观：**驾驶火箭，选择**轨道空间站**，然后在对接选择器中切换到你想去的空间站。
+- **Visiting:** fly a rocket, choose **Orbital Station**, then pick the station you want in the
+  **Dock at** list. Your own station is picked for you by default (see [Landing Pads](Landing-Pads)).
 - **Capacity:** up to **64** stations per world. Founding grants the _founded station_ advancement and
   ticks the Star Guide.
 - **Ownership:** only you (the founder) can **rename** or **remove** your station; anyone may **fly**
