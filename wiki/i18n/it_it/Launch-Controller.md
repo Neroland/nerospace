@@ -42,7 +42,13 @@ L'interfaccia ha due modalità (si cambiano in alto a destra):
 **Modalità lancio**
 
 - Il controllore ha a bordo riserve di **carburante**, **ossigeno** ed **energia**: riempile con i [Tubi universali](Universal-Pipe.md) (livelli fluidi / gas / energia). Le pompa in un razzo attraccato sulla rampa.
-- Leggi carburante/ossigeno/energia del razzo attraccato, scegli la destinazione e premi **Lancia** direttamente dalla console (sali a bordo al decollo).
+- Read the docked rocket's fuel/oxygen/power, pick its destination, choose where it docks or lands
+  (**Dock at** / **Land at**, the same list as the rocket's own console; see [Landing Pads](Landing-Pads)),
+  and **Launch** straight from the console (you board as it lifts off). Crew take their seats from the
+  rocket's own console (**Take seat**), not from the controller.
+- With a crew aboard, only the **pilot** (the first player aboard) can change the destination, dock, pad,
+  or press Launch here; the readout beside **Oxygen** shows **CREW n/4 · O₂ FOR n**, how many seats the
+  rocket's oxygen covers for the flight. See [Rockets](Rockets#flying-with-friends-crew).
 
 ## Dettagli
 
