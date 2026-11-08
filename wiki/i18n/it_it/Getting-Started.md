@@ -56,6 +56,8 @@ Ogni ricetta del carburante richiede **polvere di blaze**, quindi prima vai nel 
 - **Razzo di livello 1:** 5 lingotti di Nerosteel + Blocco di Nerosteel + Tanica di carburante per razzi.
 - Un razzo di livello 1 richiede solo **un** blocco di rampa. I razzi più grandi richiedono rampe più grandi: vedi la [Guida alla costruzione della rampa di lancio](Launch-Pad-Build-Guide.md).
 - Riempi il razzo di carburante: fai clic destro su di esso con le taniche.
+- Flying with friends? Up to four players fit in one rocket: right-click it and press **Take seat** on the
+  console to board. The first aboard is the pilot and presses Launch. See [Rockets](Rockets#flying-with-friends-crew).
 - Un viaggio verso un altro mondo costa **2.500 mB** di carburante. **Porta almeno 2 taniche in più** per tornare a casa.
 
 ## Passo 7: preparati a respirare
@@ -68,14 +70,14 @@ Ogni luogo in cui puoi volare è **privo d'aria**. Senza tuta finisci l'aria in 
 
 ## Passo 8: vola nello spazio
 
-| Rocket    | Pad you need                                                                                 | Dove può andare   | Novità sul posto                                                                        |
-| --------- | -------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------- |
-| Livello 1 | 1 blocco di rampa                                                                            | Stazione orbitale | Una base sicura nello spazio                                                            |
-| Livello 2 | Rampa 3×3 completa                                                                           | + **Greenxertz**  | Tanto Nerosteel, **quarzo Xertz**, villaggi alieni                                      |
-| Livello 3 | Rampa 3×3 con un anello di Parete della stazione                                             | + **Cindara**     | **Cindrite** (caldissimo: porta una Tuta termica)    |
-| Livello 4 | Complesso di lancio pesante (con una [Torre di lancio](Launch-Gantry.md)) | + **Glacira**     | **Glacite** (freddissimo: porta una Tuta criogenica) |
+| Rocket    | Pad you need                                                                                 | Dove può andare                                                             | Novità sul posto                                                                                                                            |
+| --------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Livello 1 | 1 blocco di rampa                                                                            | Orbital Station, **[Luna](Luna)**                                           | A safe base in space; titanium (Ilmenite) on Luna                                                                        |
+| Livello 2 | Rampa 3×3 completa                                                                           | Station, Luna, **Greenxertz**, **[Mars](Mars)**                             | Lots of Nerosteel, **Xertz Quartz**, alien villages; Hematite on Mars (cold — a Tier 2 suit; Cryo Suit on the Polar Cap) |
+| Livello 3 | Rampa 3×3 con un anello di Parete della stazione                                             | Station, Luna, Greenxertz, Mars, **Cindara**                                | **Cindrite** (caldissimo: porta una Tuta termica)                                                        |
+| Livello 4 | Complesso di lancio pesante (con una [Torre di lancio](Launch-Gantry.md)) | Station, Luna, Greenxertz, Mars, Cindara, **Glacira**, **[Nyxara](Nyxara)** | **Glacite** (very cold — bring a Cryo Suit); Nyxara needs a Rad-Lined suit                                               |
 
-Ogni nuovo razzo si fabbrica a partire da quello precedente. La Stazione orbitale ha già una rampa 3×3, quindi da lì puoi lanciare un razzo di livello 2.
+Each new rocket is made from the one before it and still reaches everything the one before it did. La Stazione orbitale ha già una rampa 3×3, quindi da lì puoi lanciare un razzo di livello 2.
 
 ## Passo 9: equipaggiamento migliore
 
@@ -96,5 +98,6 @@ Ogni nuovo razzo si fabbrica a partire da quello precedente. La Stazione orbital
 - **Macchina allo 0% di energia** → [Alimentare le macchine](Powering-Machines.md).
 - **Hai ottenuto blocchi di minerale invece dei materiali grezzi** → il tuo piccone ha Tocco di velluto. Fondi il blocco o macinalo.
 - **Non trovi il Nerosteel** → scava più in basso, sotto y 16. È molto più comune su Greenxertz.
-- **Il razzo non parte** → carburante insufficiente, o la rampa è troppo piccola per quel livello di razzo.
+- **Il razzo non parte** → carburante insufficiente, o la rampa è troppo piccola per quel livello di razzo. With a crew,
+  it also needs oxygen for every seat ("NEEDS OXYGEN"), and only the pilot (first aboard) can launch.
 - Ancora bloccato? Chiedi su [Discord](https://discord.gg/ArPXvYUzJG).
