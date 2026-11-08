@@ -6,14 +6,15 @@ for the uncrewed freight hull see [Cargo Rocket](Cargo-Rocket).
 ## 概述
 
 将火箭物品部署到[发射台](Rocket-Launch-Pad.md)上，为其加注燃料，右键点击打开飞行控制台并按下**发射**。引擎点火时你会登舱，几秒钟后抵达目的地发射台。每个等级都仍然可以飞往所有更低等级的目的地。 You board as the engines light and arrive on the destination pad a few
-seconds later. Every tier can still fly to every lower tier's destinations.
+seconds later. Each tier reaches every destination of the tiers below it plus its own, so a Tier 3 or Tier 4
+rocket still flies to [Luna](Luna) and [Mars](Mars). Every rocket can fly home.
 
-| Tier    | Reaches      | Pad      | 外观                                                                            |
-| ------- | ------------ | -------- | ----------------------------------------------------------------------------- |
-| **1 级** | 轨道空间站        | 一个发射台方块  | Red livery, single bell, four raked fins, four landing legs, porthole cockpit |
-| **2 级** | + Greenxertz | 3×3      | Nerosium 紫色涂装、两个捆绑式助推器、旋转雷达天线、两片尾翼                                            |
-| **3 级** | + Cindara    | 围圈的 3×3  | 金／绿涂装、主喷口周围环绕四个游标发动机、可展开的太阳能翼、扫描天线支臂、全景舱盖、长鼻锥                                 |
-| **4 级** | + Glacira    | 重型发射综合设施 | 冰蓝色涂装、宽大的五引擎芯级、四个助推器、栅格翼、重型着陆腿、最高的鼻锥                                          |
+| Tier    | Reaches                                                                                                          | Pad      | 外观                                                                            |
+| ------- | ---------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| **1 级** | Orbital Station, Luna                                                                                            | 一个发射台方块  | Red livery, single bell, four raked fins, four landing legs, porthole cockpit |
+| **2 级** | Orbital Station, Luna, Greenxertz, Mars                                                                          | 3×3      | Nerosium 紫色涂装、两个捆绑式助推器、旋转雷达天线、两片尾翼                                            |
+| **3 级** | Orbital Station, Luna, Greenxertz, Mars, Cindara                                                                 | 围圈的 3×3  | 金／绿涂装、主喷口周围环绕四个游标发动机、可展开的太阳能翼、扫描天线支臂、全景舱盖、长鼻锥                                 |
+| **4 级** | Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira, Nyxara (after Deep Space progress) | 重型发射综合设施 | 冰蓝色涂装、宽大的五引擎芯级、四个助推器、栅格翼、重型着陆腿、最高的鼻锥                                          |
 
 每个等级在几何形状和尺寸上都比上一级更大，因此从基地的另一头就能看出进度。
 
@@ -26,6 +27,37 @@ band, so in first person you look out through the glass at the pad falling away;
 cabin glows through the windows at night.
 
 南侧的**舱门**在无人乘坐时保持打开，并有一架梯子通往发射台，在你发射的那一刻密封。舱门打开时，你可以透过门口直接看到驾驶舱内部。 While it is open you can see straight into the cockpit through the doorway.
+
+## Flying with friends (crew)
+
+Every rocket seats **up to four players** (a server can lower this with `rockets.maxCrew`). All four tiers
+have four seats; bigger tiers go further, not fuller.
+
+- **Boarding.** Right-click the rocket to open its console and press **Take seat**. Nobody can put you in a
+  rocket: you always board yourself. The button reads **Seated** once you are aboard and **Full** when every
+  seat is taken; hover it to see how many are aboard. To climb out again before launch, close the console
+  and sneak.
+- **The pilot** is the first player aboard. Only the pilot can press **Launch**, pick the destination, or
+  choose where to dock or land. Anyone else who tries is told so. Boarding later never takes the pilot's
+  seat. On an empty rocket, pressing **Launch** boards you as the pilot, as before.
+- **Everyone goes.** The whole crew travels together, rides the descent down, and steps out beside the
+  rocket when it lands. Each of you gets the arrival message, your own Star Guide progress and your own
+  first-visit record.
+- **Oxygen is shared.** With two or more aboard, the rocket needs enough onboard oxygen for every seat
+  for the flight. The consoles show **CREW n/4 · O₂ FOR n**: if the oxygen covers fewer seats than are
+  filled, the status reads **NEEDS OXYGEN**. Load more from an Oxygen Generator or fly with fewer crew.
+  On arrival the rocket's leftover oxygen is shared out between the crew as your reserve. A solo flight
+  needs no onboard oxygen, as before.
+- **Cooldown.** Each player has their own short launch cooldown, so riding along doesn't skip yours. If
+  someone aboard is still cooling down, the pilot is told "a crew member" is, and that player sees their
+  own wait.
+- **Fees.** If the server runs NeroEconomy, the launch fee is charged **once per flight, to the pilot**.
+- **Stations.** A members-only station is checked against the **pilot**. Crew who aren't members still
+  arrive and are visitors there.
+- **Disconnects.** If the pilot drops out mid-flight, the next player aboard takes over for the landing
+  (their Station Charter is never spent on a "New Station" they didn't pick). A crew member who drops out
+  mid-flight rejoins beside the rocket, not in the sky, as long as the server hasn't restarted.
+- The rocket keeps no record of who flew in it.
 
 ## 在发射台上
 
