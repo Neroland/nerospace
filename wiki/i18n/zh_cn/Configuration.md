@@ -59,6 +59,33 @@ These numbers are fixed in code. They are listed here so you can plan builds.
 | ----------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `terraformerForceLoadEnabled` | `false` | 运行中的[地形改造器](Terraformer.md)会保持一小片区块处于加载状态，使你离开时它也能继续工作。默认关闭，因为它会消耗服务器内存和性能。 Off by default because it costs server memory and speed. |
 
+### Stations
+
+Settings for [Orbital Stations](Orbital-Stations). The server decides all of them.
+
+| 键                         | 默认值     | 范围              | 含义                                                                                                                                                                                                             |
+| ------------------------- | ------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stations.maxMembers`     | `16`    | 0–16            | Members a station owner may add.                                                                                                                                                               |
+| `stations.maxModules`     | `8`     | 0–8             | Modules a station may have.                                                                                                                                                                    |
+| `stations.minSpacing`     | `512`   | 128–4,096       | Blocks (on each axis) a station [placed where you stand](Orbital-Stations#placing-your-own-station) must keep from every other station and from the shared platform at 0,0. |
+| `stations.maxRadius`      | `30000` | 1,024–1,000,000 | How far from 0,0 (on each axis) a station may be placed.                                                                                                                    |
+| `stations.freeDockRadius` | `2048`  | 0–8,192         | How close a [free dock](Orbital-Stations#free-docks) must be to where a rocket last stood in the station dimension to appear in its dock list. `0` turns free docks off.       |
+
+### Rockets
+
+| 键                 | 默认值 | 范围  | 含义                                                                                                                                                                                                                                |
+| ----------------- | --- | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rockets.maxCrew` | `4` | 1–4 | Players one rocket seats. The first aboard is the pilot. `1` gives the old one-seat rocket. Cargo rockets never carry anyone. The server decides. |
+
+### Mars rover
+
+| 键                    | 默认值     | 范围              | 含义                                                                                                                                                                           |
+| -------------------- | ------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rover.capacity`     | `40000` | 1,000–1,000,000 | FE a [Mars Rover](Rover)'s battery holds. The server decides.                                                                                |
+| `rover.maxPerPlayer` | `4`     | 1–64            | Rovers one player may have out at once. Counted over the rovers in loaded chunks when placing a new one. The server decides. |
+| `rover.drainPerTick` | `5`     | 0–1,000         | FE a rover uses each tick while its driver holds the throttle. `0` makes driving free. The server decides.                   |
+| `rover.chargeRate`   | `200`   | 0–100,000       | FE per tick a parked rover draws from Neroland energy blocks next to it. `0` turns charging off. The server decides.         |
+
 ### NeroLink
 
 | 键                   | 默认值    | 含义                                                                                                                                                                                                                   |
@@ -69,7 +96,7 @@ These numbers are fixed in code. They are listed here so you can plan builds.
 
 [货运平台](Cargo-Pad.md)和货运航班的设置。全部由服务器决定。 The server decides all of them.
 
-| 键                           | 默认值     | 范围                     | 含义                             |
+| 键                           | 默认值     | Range                  | 含义                             |
 | --------------------------- | ------- | ---------------------- | ------------------------------ |
 | `cargoPadSlots`             | `18`    | 1–27                   | 货运平台上可用的货舱槽位——一枚货运火箭的载荷。       |
 | `cargoFuelCapacity`         | `16000` | 1,000–64,000           | 货运平台的管道供给缓存可容纳的火箭燃料（mB）。       |
@@ -87,7 +114,7 @@ These numbers are fixed in code. They are listed here so you can plan builds.
 Credit rewards and fees. They only do something when the **NeroEconomy** mod is installed. Every
 amount defaults to `0`, which turns that feature off. The server decides all of them.
 
-| 键                         | 默认值 | 范围          | 含义                                                                                                                                                                                                                        |
+| 键                         | 默认值 | Range       | 含义                                                                                                                                                                                                                        |
 | ------------------------- | --- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `economyFirstVisitReward` | `0` | 0–1,000,000 | 玩家第一次抵达每颗行星时一次性支付的信用点。从 NeroEconomy 的储备金中支付，并受其每日支付上限限制。被拒绝的奖励不会再次尝试。 Paid from NeroEconomy's Reserve and limited by its daily payout limits. A refused reward is not tried again.        |
 | `economyLaunchFee`        | `0` | 0–1,000,000 | Credits charged per crewed or cargo launch, after all other launch checks pass. A player who cannot pay cannot launch (a Cargo Pad shows _Cannot pay the flight fee_). |
@@ -97,22 +124,22 @@ Fees go to NeroEconomy's Reserve. 费用进入 NeroEconomy 的储备金。没有
 
 ### 陨石
 
-| 键                       | 默认值   | 范围        | 含义                                                                                                                                                                                    |
-| ----------------------- | ----- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quarryMaxSide`         | `64`  | 4–64      | 采石场标记区域的最长边（格）。                                                                                                                                                                       |
-| `quarryFrameDecayTicks` | `600` | 20–24,000 | Base delay before a left-behind frame block crumbles and drops its casing. 遗留的框架方块崩解并掉落其外壳之前的基础延迟。每个方块等待 `base + random(base × 7)` 刻，因此在默认值下，框架环会在大约 30 秒到 4 分钟内逐渐瓦解。 |
+| Key                     | Default | Range     | Meaning                                                                                                                                                                               |
+| ----------------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `quarryMaxSide`         | `64`    | 4–64      | 采石场标记区域的最长边（格）。                                                                                                                                                                       |
+| `quarryFrameDecayTicks` | `600`   | 20–24,000 | Base delay before a left-behind frame block crumbles and drops its casing. 遗留的框架方块崩解并掉落其外壳之前的基础延迟。每个方块等待 `base + random(base × 7)` 刻，因此在默认值下，框架环会在大约 30 秒到 4 分钟内逐渐瓦解。 |
 
 ### 外星村庄
 
-| 键                   | 默认值    | 含义                                                                                                                                                          |
-| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `alienRaidsEnabled` | `true` | Hostile mobs raid claimed alien villages at night. Set `false` to turn raids off. Applies on config reload. |
+| Key                 | Default | Meaning                                                                                                                                                     |
+| ------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `alienRaidsEnabled` | `true`  | Hostile mobs raid claimed alien villages at night. Set `false` to turn raids off. Applies on config reload. |
 
 ### 聊天
 
-| 键                       | 默认值    | 含义                                                                                                                                                                                                    |
-| ----------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `welcomeMessageEnabled` | `true` | 玩家加入时发送两行 Nerospace 欢迎消息（星际指南书提示和反馈链接）。设为 `false` 即可静默加入。在配置重载时生效。由服务器决定。 Set `false` to join silently. Applies on config reload. The server decides. |
+| Key                     | Default | Meaning                                                                                                                                                                                               |
+| ----------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `welcomeMessageEnabled` | `true`  | 玩家加入时发送两行 Nerospace 欢迎消息（星际指南书提示和反馈链接）。设为 `false` 即可静默加入。在配置重载时生效。由服务器决定。 Set `false` to join silently. Applies on config reload. The server decides. |
 
 ### Sky (client-side)
 
