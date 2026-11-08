@@ -60,6 +60,8 @@ Place the generator **touching** your machine. It sends power by itself — no c
 - 1 级火箭只需要**一个**发射台方块。更大的火箭需要更大的发射台：参见[发射台建造指南](Launch-Pad-Build-Guide.md)。 Bigger rockets need bigger pads: see the
   [Launch Pad Build Guide](Launch-Pad-Build-Guide).
 - 为火箭加注燃料：手持燃料罐右键点击它。
+- Flying with friends? Up to four players fit in one rocket: right-click it and press **Take seat** on the
+  console to board. The first aboard is the pilot and presses Launch. See [Rockets](Rockets#flying-with-friends-crew).
 - 前往另一个世界的行程消耗 **2,500 mB** 燃料。**至少多带 2 个燃料罐**以便飞回家。 **Bring at least 2 extra canisters** to fly home.
 
 ## 第 7 步——为呼吸做好准备
@@ -73,14 +75,14 @@ Place the generator **touching** your machine. It sends power by itself — no c
 
 ## 第 8 步——飞向太空
 
-| 火箭  | 所需发射台                               | Where it can go  | 那里的新内容                        |
-| --- | ----------------------------------- | ---------------- | ----------------------------- |
-| 1 级 | 1 个发射台方块                            | 轨道空间站            | 太空中的安全基地                      |
-| 2 级 | 完整的 3×3 发射台                         | + **Greenxertz** | 大量 Nerosteel、**Xertz石英**、外星村庄 |
-| 3 级 | 由空间站墙壁围绕的 3×3 发射台                   | + **Cindara**    | **Cindrite**（非常炎热——请带上耐热服）    |
-| 4 级 | 重型发射综合设施（带[发射塔架](Launch-Gantry.md)） | + **Glacira**    | **Glacite**（非常寒冷——请带上低温服）     |
+| 火箭  | 所需发射台                               | Where it can go                                                             | 那里的新内容                                                                                                                                      |
+| --- | ----------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 级 | 1 个发射台方块                            | Orbital Station, **[Luna](Luna)**                                           | A safe base in space; titanium (Ilmenite) on Luna                                                                        |
+| 2 级 | 完整的 3×3 发射台                         | Station, Luna, **Greenxertz**, **[Mars](Mars)**                             | Lots of Nerosteel, **Xertz Quartz**, alien villages; Hematite on Mars (cold — a Tier 2 suit; Cryo Suit on the Polar Cap) |
+| 3 级 | 由空间站墙壁围绕的 3×3 发射台                   | Station, Luna, Greenxertz, Mars, **Cindara**                                | **Cindrite**（非常炎热——请带上耐热服）                                                                                                                  |
+| 4 级 | 重型发射综合设施（带[发射塔架](Launch-Gantry.md)） | Station, Luna, Greenxertz, Mars, Cindara, **Glacira**, **[Nyxara](Nyxara)** | **Glacite** (very cold — bring a Cryo Suit); Nyxara needs a Rad-Lined suit                                               |
 
-Each new rocket is made from the one before it. 每一枚新火箭都由上一级火箭制成。轨道空间站已经有一个 3×3 发射台，因此你可以从那里发射 2 级火箭。
+Each new rocket is made from the one before it and still reaches everything the one before it did. 每一枚新火箭都由上一级火箭制成。轨道空间站已经有一个 3×3 发射台，因此你可以从那里发射 2 级火箭。
 
 ## 第 9 步——更好的装备
 
@@ -103,5 +105,6 @@ Each new rocket is made from the one before it. 每一枚新火箭都由上一�
 - **机器电量为 0%** → [为机器供电](Powering-Machines.md)。
 - **得到的是矿石方块而不是粗矿** → 你的镐带有精准采集。冶炼该方块，或者研磨它。 Smelt the block, or grind it.
 - **找不到 Nerosteel** → 往更深处挖，到 y 16 以下。它在 Greenxertz 上要常见得多。 It is much more common on Greenxertz.
-- **火箭无法发射** → 燃料不足，或者发射台对该等级的火箭来说太小。
+- **火箭无法发射** → 燃料不足，或者发射台对该等级的火箭来说太小。 With a crew,
+  it also needs oxygen for every seat ("NEEDS OXYGEN"), and only the pilot (first aboard) can launch.
 - Still stuck? 还是卡住了？请在 [Discord](https://discord.gg/ArPXvYUzJG) 上提问。
