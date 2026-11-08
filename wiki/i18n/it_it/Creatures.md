@@ -78,6 +78,25 @@ Resistente al fuoco, come tutto ciò che sopravvive su Cindara. **Si alleva con 
 
 Un erbivoro simile a un cumulo di neve arruffato: un unico grande vello arrotondato, increspato da ciuffi compattati dal vento, su zampe tozze. Resistente al freddo (non accumula congelamento). **Si alleva con il grano; lascia cadere Vello di vagante** (si fabbrica in 4 fili).
 
+### Moon Hopper (Luna)
+
+A small, quick grazer that bounds along on big hind legs. It lives on the Lunar Meadow, Luna's terraformed Living
+ground; the Terraformer stocks a starter group. **Breeds with carrots; drops up to one Regolith.** 6 HP.
+
+### Dust Strider (Mars)
+
+A long-legged herd grazer of the Red Steppe, Mars' terraformed Living ground. Sturdier and a little slower than the
+others. **Breeds with wheat; drops up to two Rust Pigment.** 14 HP.
+
+### Dusk Moth (Nyxara)
+
+A fragile ambient flier with glowing eye-spot wings, found in the Twilight Grove (Nyxara's terraformed Living ground)
+wherever no lamp lights the ground (block light 7 or lower). It flutters away when hurt and does not breed. **Drops up
+to one Night Fibre.** 4 HP.
+
+The Moon Hopper, Dust Strider and Dusk Moth are native to their worlds: nothing on their home planet (vacuum, cold,
+radiation, weather) harms them. Each has a spawn egg in the creative tab.
+
 ---
 
 ## Note sui suoni
@@ -89,4 +108,7 @@ Poiché gli eventi sono registrati con i nostri id e ogni suono ha una chiave di
 
 ---
 
-**Uova generatrici:** tutte e otto le creature (le cinque native: Predatore Xertz, Strisciante di quarzo, Verdino, Predatore di cenere, Camminatore del gelo; e i tre animali da allevamento: Corridore dei prati, Pollo di brace, Vagante lanoso) hanno uova generatrici creative nella scheda di Nerospace, ognuna con un'icona colorata come la sua creatura. Per un rapido confronto A/B (attiva o immobile), usa il comando della galleria creativa **`/nerospace gallery`**, che genera ogni creatura due volte, una con IA e una con NoAI, accanto a un'esposizione di tutti i blocchi.
+**Uova generatrici:** tutte e otto le creature (le cinque native: Predatore Xertz, Strisciante di quarzo, Verdino, Predatore di cenere, Camminatore del gelo; e i tre animali da allevamento: Corridore dei prati, Pollo di brace, Vagante lanoso) hanno uova generatrici creative nella scheda di Nerospace, ognuna con un'icona colorata come la sua creatura. For a quick
+look at every creature, use the creative gallery command **`/nerospace gallery`**, which spawns each
+one frozen in place (no AI) under its name, sets the Mars natives beside the rover, and shows every
+block and item alongside.
