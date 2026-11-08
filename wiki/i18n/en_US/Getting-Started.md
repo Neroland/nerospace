@@ -64,6 +64,8 @@ Every fuel recipe needs **Blaze Powder**, so go to the Nether and get some blaze
 - A Tier 1 rocket only needs **one** launch pad block. Bigger rockets need bigger pads: see the
   [Launch Pad Build Guide](Launch-Pad-Build-Guide).
 - Fill the rocket with fuel: right-click it with canisters.
+- Flying with friends? Up to four players fit in one rocket: right-click it and press **Take seat** on the
+  console to board. The first aboard is the pilot and presses Launch. See [Rockets](Rockets#flying-with-friends-crew).
 - A trip to another world costs **2,500 mB** of fuel. **Bring at least 2 extra canisters** to fly home.
 
 ## Step 7 — Get ready to breathe
@@ -78,14 +80,14 @@ Every place you can fly to has **no air**. Without a suit you run out of air in 
 
 ## Step 8 — Fly to space
 
-| Rocket | Pad you need                                                                    | Where it can go  | New things there                                                  |
-| ------ | ------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------- |
-| Tier 1 | 1 pad block                                                                     | Orbital Station  | A safe base in space                                              |
-| Tier 2 | Full 3×3 pad                                                                    | + **Greenxertz** | Lots of Nerosteel, **Xertz Quartz**, alien villages               |
-| Tier 3 | 3×3 pad with a ring of Station Walls                                            | + **Cindara**    | **Cindrite** (very hot — bring a Thermal Suit) |
-| Tier 4 | Heavy Launch Complex (with a [Launch Gantry](Launch-Gantry)) | + **Glacira**    | **Glacite** (very cold — bring a Cryo Suit)    |
+| Rocket | Pad you need                                                                    | Where it can go                                                             | New things there                                                                                                                            |
+| ------ | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tier 1 | 1 pad block                                                                     | Orbital Station, **[Luna](Luna)**                                           | A safe base in space; titanium (Ilmenite) on Luna                                                                        |
+| Tier 2 | Full 3×3 pad                                                                    | Station, Luna, **Greenxertz**, **[Mars](Mars)**                             | Lots of Nerosteel, **Xertz Quartz**, alien villages; Hematite on Mars (cold — a Tier 2 suit; Cryo Suit on the Polar Cap) |
+| Tier 3 | 3×3 pad with a ring of Station Walls                                            | Station, Luna, Greenxertz, Mars, **Cindara**                                | **Cindrite** (very hot — bring a Thermal Suit)                                                                           |
+| Tier 4 | Heavy Launch Complex (with a [Launch Gantry](Launch-Gantry)) | Station, Luna, Greenxertz, Mars, Cindara, **Glacira**, **[Nyxara](Nyxara)** | **Glacite** (very cold — bring a Cryo Suit); Nyxara needs a Rad-Lined suit                                               |
 
-Each new rocket is made from the one before it. The Orbital Station already has a 3×3 pad, so you can
+Each new rocket is made from the one before it and still reaches everything the one before it did. The Orbital Station already has a 3×3 pad, so you can
 launch a Tier 2 rocket from there.
 
 ## Step 9 — Better gear
@@ -109,5 +111,6 @@ launch a Tier 2 rocket from there.
 - **Machine at 0% power** → [Powering Machines](Powering-Machines).
 - **Got ore blocks instead of raw items** → your pickaxe has Silk Touch. Smelt the block, or grind it.
 - **Can't find Nerosteel** → dig lower, below y 16. It is much more common on Greenxertz.
-- **Rocket won't launch** → not enough fuel, or the pad is too small for that rocket tier.
+- **Rocket won't launch** → not enough fuel, or the pad is too small for that rocket tier. With a crew,
+  it also needs oxygen for every seat ("NEEDS OXYGEN"), and only the pilot (first aboard) can launch.
 - Still stuck? Ask on [Discord](https://discord.gg/ArPXvYUzJG).
