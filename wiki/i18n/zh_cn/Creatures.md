@@ -104,6 +104,25 @@ A shaggy snowdrift of a grazer: one big rounded fleece ridged with wind-packed t
 legs. Cold-proof (no freeze build-up). **Breeds with wheat; drops Drift Fleece** (crafts into 4
 string).
 
+### Moon Hopper (Luna)
+
+A small, quick grazer that bounds along on big hind legs. It lives on the Lunar Meadow, Luna's terraformed Living
+ground; the Terraformer stocks a starter group. **Breeds with carrots; drops up to one Regolith.** 6 HP.
+
+### Dust Strider (Mars)
+
+A long-legged herd grazer of the Red Steppe, Mars' terraformed Living ground. Sturdier and a little slower than the
+others. **Breeds with wheat; drops up to two Rust Pigment.** 14 HP.
+
+### Dusk Moth (Nyxara)
+
+A fragile ambient flier with glowing eye-spot wings, found in the Twilight Grove (Nyxara's terraformed Living ground)
+wherever no lamp lights the ground (block light 7 or lower). It flutters away when hurt and does not breed. **Drops up
+to one Night Fibre.** 4 HP.
+
+The Moon Hopper, Dust Strider and Dusk Moth are native to their worlds: nothing on their home planet (vacuum, cold,
+radiation, weather) harms them. Each has a spawn egg in the creative tab.
+
 ---
 
 ## 音效说明
@@ -119,5 +138,6 @@ Crawler, panda for the Greenling, blaze for the Cinder Stalker).
 ---
 
 \*\*刷怪蛋：\*\*全部八种生物——五种原生生物（Xertz潜猎者、石英爬行者、绿灵、余烬潜猎者、霜行者）和三种牲畜（草原跃行兽、余烬阔步鸡、绒毛漂流兽）——在 Nerospace 标签页中都有创造模式刷怪蛋，每个图标的颜色都与其生物相匹配。若想快速对比（活动的与静止的），请使用创造模式展示命令 **`/nerospace gallery`**，它会将每种生物生成两次——一次带 AI，一次带 NoAI——并同时展示每一种方块。 For a quick
-A/B look (live vs frozen), use the creative gallery command **`/nerospace gallery`**, which spawns
-each creature twice — once with AI and once with NoAI — alongside a display of every block.
+look at every creature, use the creative gallery command **`/nerospace gallery`**, which spawns each
+one frozen in place (no AI) under its name, sets the Mars natives beside the rover, and shows every
+block and item alongside.
