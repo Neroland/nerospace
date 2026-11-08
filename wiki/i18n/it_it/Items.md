@@ -81,6 +81,11 @@ Due **varianti anti-pericolo** della tuta di livello 2 ti proteggono dagli estre
 
   Nerosteel) che si schiera solo su una **Piattaforma cargo** e trasporta la sua stiva a un'altra piattaforma o stazione.
 
+- **[Mars Rover](Rover)** — a two-seat electric buggy with a nine-slot cargo bay and a 40,000 FE battery.
+  Crafted from **Rover Parts** (Raw Hematite, iron and redstone), Hull Plating, a Chest and Perchlorate
+  Oxidiser, or more cheaply around a **Rover Chassis** salvaged from a Mars Rover Wreck. Right-click to get in,
+  sneak and right-click for the cargo bay, sneak and punch to pack it up.
+
 - **Cassa cargo**: non fabbricabile: il carico di un volo cargo che non è stato possibile consegnare in tempo,
 
   lasciato cadere a destinazione così non si perde nulla. Fai clic destro per disimballarla.
