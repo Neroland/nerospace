@@ -40,6 +40,17 @@ public final class ModNetwork {
             BiConsumer<T, ServerPlayer> handler) {
     }
 
+    /**
+     * Wire-format version of every Nerospace payload, announced to the loader's channel negotiation (NeoForge
+     * payload registrar version, Forge channel protocol version). <b>Bump it whenever any payload's encoding
+     * changes</b> (field added, removed, reordered or retyped). A client and server on different values are then
+     * refused at login with the loader's "channel version mismatch" screen instead of joining and failing to
+     * decode a packet mid-game. MC-NEROSPACE-13: a 2.1 client on a 2.0 server joined (both announced "1")
+     * and died decoding {@code nerospace:station_sync}, whose rows gained a relation byte in 2.1.
+     * 1 = up to 2.1.0-beta.1, 2 = from the release after it.
+     */
+    public static final int PROTOCOL_VERSION = 2;
+
     private static final List<Clientbound<?>> CLIENTBOUND = new ArrayList<>();
     private static final List<Serverbound<?>> SERVERBOUND = new ArrayList<>();
 

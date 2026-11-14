@@ -22,6 +22,8 @@ public final class ForgeNetwork implements NetworkPlatform {
     public static void register() {
         PayloadFlow<RegistryFriendlyByteBuf, CustomPacketPayload> play =
                 ChannelBuilder.named(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "main"))
+                        // Set before optional(): a peer on another wire format is refused at login (MC-NEROSPACE-13).
+                        .networkProtocolVersion(ModNetwork.PROTOCOL_VERSION)
                         .optional()
                         .payloadChannel()
                         .play()

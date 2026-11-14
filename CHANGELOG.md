@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1-beta.1] - 2026-11-14
+
+A fix release. **Client and server must both run 2.1.1:** this release cannot join a 2.1.0 server or host a 2.1.0
+client. On NeoForge and Forge the join is refused at login with a version message.
+
+### Fixed
+
+- **Mismatched client and server versions now get a clear message instead of a disconnect mid-game** (NeoForge and
+  Forge). A 2.1 client could join a 2.0 server, because both announced the same network version, and was then
+  kicked with "Failed to decode packet" as soon as the server sent its station list. Nerospace now announces a new
+  network version, so the loader refuses the join at login and names the mismatch. Client and server must run the
+  same Nerospace release; Fabric has no such check, so keep both sides on the same version there too.
+
 ## [2.1.0-beta.1] - 2026-11-08
 
 Fly with friends, put your station where you want it, and drive around Mars. This update answers player

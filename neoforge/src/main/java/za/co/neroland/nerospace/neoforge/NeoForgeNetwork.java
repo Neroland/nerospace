@@ -28,7 +28,9 @@ public final class NeoForgeNetwork implements NetworkPlatform {
     }
 
     private static void onRegister(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("1").optional();
+        // optional() only tolerates a peer WITHOUT Nerospace; both sides with it must announce the same version,
+        // so a mismatched client/server is refused at login instead of failing to decode mid-game (MC-NEROSPACE-13).
+        PayloadRegistrar registrar = event.registrar(Integer.toString(ModNetwork.PROTOCOL_VERSION)).optional();
         for (ModNetwork.Clientbound<?> cb : ModNetwork.clientbound()) {
             registerClientbound(registrar, cb);
         }
