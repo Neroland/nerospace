@@ -31,7 +31,7 @@ public class CombustionGeneratorMenu extends AbstractContainerMenu {
         this.container = container;
         this.data = data;
 
-        this.addSlot(new Slot(container, CombustionGeneratorBlockEntity.FUEL_SLOT, 80, 35) {
+        this.addSlot(new Slot(container, CombustionGeneratorBlockEntity.FUEL_SLOT, 80, 46) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return CombustionGeneratorBlockEntity.fuelValue(stack) > 0;

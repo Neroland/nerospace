@@ -30,7 +30,7 @@ public class PassiveGeneratorMenu extends AbstractContainerMenu {
         this.container = container;
         this.data = data;
 
-        this.addSlot(new Slot(container, PassiveGeneratorBlockEntity.CORE_SLOT, 80, 35) {
+        this.addSlot(new Slot(container, PassiveGeneratorBlockEntity.CORE_SLOT, 80, 46) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return PassiveGeneratorBlockEntity.isCore(stack);

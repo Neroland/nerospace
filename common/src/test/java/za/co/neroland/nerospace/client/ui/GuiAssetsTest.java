@@ -44,6 +44,7 @@ class GuiAssetsTest {
             { "star_guide.png", 256, 256, StarGuideLayout.PANEL_W, StarGuideLayout.PANEL_H },
             { "station_console.png", 256, 256, ConsoleLayout.PANEL_W, ConsoleLayout.PANEL_H },
             { "passive_generator.png", 256, 256, 176, 166 },
+            { "combustion_generator.png", 256, 256, 176, 166 },
             { "nerosium_grinder.png", 256, 256, 176, 166 },
             { "rocket.png", 256, 256, 0, 0 },
             { "hud_glyphs.png", Glyphs.SHEET_W, Glyphs.SHEET_H, 0, 0 },
@@ -72,6 +73,19 @@ class GuiAssetsTest {
         int c = console.getRGB(ConsoleLayout.PAGE_WELL[0] + 50, ConsoleLayout.PAGE_WELL[1] + 50);
         assertTrue(luma(c) < 40, "console page well");
     }
+
+    @Test
+    @DisplayName("Generator slot frames align with their input cells below the power gauge")
+    void generatorSlots() throws IOException {
+        for (String texture : List.of("passive_generator.png", "combustion_generator.png")) {
+            BufferedImage panel = png(texture);
+            assertEquals(0xFF141A24, panel.getRGB(80, 46), texture + " slot interior");
+            assertEquals(0xFF05080D, panel.getRGB(80, 45), texture + " top bevel");
+            assertEquals(0xFF2C384A, panel.getRGB(80, 62), texture + " bottom bevel");
+            assertEquals(panel.getRGB(78, 35), panel.getRGB(80, 35), texture + " old slot position");
+        }
+    }
+
 
     private static int luma(int argb) {
         return (((argb >> 16) & 0xFF) * 3 + ((argb >> 8) & 0xFF) * 6 + (argb & 0xFF)) / 10;
