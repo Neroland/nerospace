@@ -13,7 +13,7 @@
   },
   "display": {
     "announce_to_chat": false,
-    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "background": "minecraft:gui/advancements/backgrounds/stone",
     "description": "Mine nerosium and reach for the stars",
     "icon": {
       "id": "nerospace:nerosium_ingot"
