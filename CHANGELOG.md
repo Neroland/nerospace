@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-14
+
+### Fixed
+
+- **Fabric startup crash on Minecraft 1.21.11.** Nerospace now uses the fog renderer signature for each
+  Minecraft version, so the client can start and planets keep their custom fog colours.
+
 ## [2.1.1-beta.1] - 2026-11-14
 
 A fix release. **Client and server must both run 2.1.1:** this release cannot join a 2.1.0 server or host a 2.1.0
