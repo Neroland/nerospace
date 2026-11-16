@@ -139,8 +139,8 @@ dependencies {
 
     // Sentry: compile + dev runtime from this one library. Core's plain Maven jar carries no nested copy or
     // JarJar request (see the jar task above), so the dev run sees exactly one Sentry module.
-    implementation 'io.sentry:sentry:8.60.0'
-    jarJar(group: 'io.sentry', name: 'sentry', version: '8.60.0')
+    implementation 'io.sentry:sentry:8.64.0'
+    jarJar(group: 'io.sentry', name: 'sentry', version: '8.64.0')
 
     // JEI common API only; Forge 26.x loader artifacts are not yet published on the pinned JEI lines.
     if (jeiVersion) {
