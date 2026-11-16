@@ -12,6 +12,7 @@ integration surface, see [Public Integration API](Public-API).)
 | Fluid | **yes** | Nerospace offers and reads the platform's standard fluid handler on NeoForge, Forge and Fabric. |
 | Items | **yes** | The same, on the platform's standard item handler — plus vanilla containers as always. |
 | Gas | **Neroland mods only** | Through [Neroland Core](Neroland-Core)'s shared gas capability. There is no cross-mod standard for gas beyond that. |
+| Map markers | **Neroland maps** | Through [Neroland Core](Neroland-Core)'s map layers: your stations and cargo pads, public pads and parked rockets within 64 blocks of you, terraformed land near you, and the worlds you have visited. Never another player's things or name. |
 
 In practice a [Universal Pipe](Universal-Pipe) connects to, pulls from and pushes into another mod's
 tanks, machines and pipes — and another mod's pipes can drain or fill a Nerospace

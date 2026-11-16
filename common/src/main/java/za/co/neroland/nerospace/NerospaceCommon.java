@@ -59,6 +59,7 @@ public final class NerospaceCommon {
         // mod itself has finished reacting to it, and its own init swallows any failure — a broken link
         // module must never take rockets, stations or life support down with it.
         NerospaceLinkModule.init();
+        za.co.neroland.nerospace.map.NerospaceMapLayers.register(); // Core map layers (NeroMaps); additive, swallows failure
     }
 
     /**

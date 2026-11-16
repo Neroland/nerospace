@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-11-16
+
+### Added
+
+- Map layers for Neroland Core's map API (drawn by NeroMaps and the companion app): your own and member stations, the cargo pads you own or are on the access list of, public and unowned pads and landed empty rockets within 64 blocks of you, terraformed land near you as an area, and a badge on each world you have visited. Nothing shows another player's name, and nothing out of range is listed.
+
 ### Dependencies
 
-- Updated Neroland Core from 1.17.0 to 1.17.6.
+- Updated Neroland Core from 1.17.0 to 1.19.0 (map layer API).
 - Updated NeroEconomy from 0.5.0-beta.1 to 0.5.1-beta.1.
 - Updated Fabric Loader from 0.19.5 to 0.20.1.
 - Updated Fabric API (Minecraft 1.21.1) from 0.116.17+1.21.1 to 0.116.18+1.21.1.

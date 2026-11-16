@@ -1373,5 +1373,20 @@
   "command.nerospace.gallery.label.items_tools": "Tools, Gear & Upgrades",
   "command.nerospace.gallery.label.items_vehicles": "Rockets, Cargo & Rover",
   "command.nerospace.gallery.label.items_creative": "Creative Travel Devices",
-  "command.nerospace.gallery.label.items_spawn_eggs": "Spawn Eggs"
+  "command.nerospace.gallery.label.items_spawn_eggs": "Spawn Eggs",
+  "map.layer.nerospace.stations": "Stations",
+  "map.layer.nerospace.launch_pads": "Launch pads",
+  "map.layer.nerospace.pads_nearby": "Pads nearby",
+  "map.layer.nerospace.rockets": "Parked rockets",
+  "map.layer.nerospace.terraform_regions": "Terraformed land",
+  "map.badge.nerospace.visited": "Visited",
+  "map.marker.nerospace.station": "Station %s",
+  "map.marker.nerospace.cargo_pad": "Cargo pad",
+  "map.marker.nerospace.launch_pad": "Launch pad",
+  "map.marker.nerospace.rocket_parked": "Parked rocket",
+  "map.detail.nerospace.yours": "Yours",
+  "map.detail.nerospace.member": "Member",
+  "map.detail.nerospace.access": "On the access list",
+  "map.detail.nerospace.public_pad": "Public",
+  "map.area.nerospace.terraform_region": "Terraformed land"
 }
