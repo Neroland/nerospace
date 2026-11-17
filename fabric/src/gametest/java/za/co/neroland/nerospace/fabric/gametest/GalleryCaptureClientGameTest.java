@@ -106,6 +106,9 @@ public final class GalleryCaptureClientGameTest implements FabricClientGameTest 
 
     @Override
     public void runTest(ClientGameTestContext context) {
+        if ("demo".equals(System.getProperty("nerospace.gametest"))) {
+            return; // a captureDemo run: only DemoWorldClientGameTest acts
+        }
         // Creative + cheats: /nerospace gallery is player-only, so its commands are sent by the client player.
         try (TestSingleplayerContext world = context.worldBuilder()
                 .adjustSettings(settings -> {

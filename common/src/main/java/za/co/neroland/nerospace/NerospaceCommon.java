@@ -60,6 +60,7 @@ public final class NerospaceCommon {
         // module must never take rockets, stations or life support down with it.
         NerospaceLinkModule.init();
         za.co.neroland.nerospace.map.NerospaceMapLayers.register(); // Core map layers (NeroMaps); additive, swallows failure
+        za.co.neroland.nerospace.demo.NerospaceDemoModule.register(); // Core Nero Mods Demo exhibit; additive, swallows failure
     }
 
     /**

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- An exhibit for Neroland Core's Nero Mods Demo world (Minecraft 26.3): every rocket tier on the pad it needs, a small working machine line, and travel plates to a viewing outpost on each Nerospace world, held in that world's signature sky, with a plate back to the hub. It records nothing about the player.
+
+### Dependencies
+
+- Updated Neroland Core from 1.19.0 to 1.20.0 (demo worlds API).
+
 ## [2.3.0] - 2026-11-17
 
 ### Added

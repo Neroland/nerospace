@@ -69,6 +69,15 @@ Finally, Nerospace's signature materials and key items also appear in Core's sha
 tab, so a pack with several Neroland mods shows one organised tab — while Nerospace's full catalogue still
 lives in its own dedicated Nerospace tab.
 
+## Nero Mods Demo exhibit
+
+Neroland Core 1.20.0 can create a **Nero Mods Demo** world from the singleplayer world list (Minecraft 26.3).
+Nerospace adds its own exhibit there: every rocket tier standing on the launch pad it needs, a small working
+machine line (generator to grinder, a fuel refinery filling a Fuel Tank, solar power and an Oxygen Generator), and
+a row of travel plates. Step on a plate to visit a small outpost on Luna, Mars, Cindara, Glacira, Greenxertz,
+Nyxara or the Orbital Station, each held in that world's signature sky; step on the plate behind you to return to
+the hub. Nothing about you is stored.
+
 ---
 
 See also: [Configuration](Configuration), [Star Guide](Star-Guide), [Universal Pipe](Universal-Pipe),

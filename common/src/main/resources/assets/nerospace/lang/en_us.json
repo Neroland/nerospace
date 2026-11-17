@@ -1395,5 +1395,22 @@
   "map.detail.nerospace.member": "Member",
   "map.detail.nerospace.access": "On the access list",
   "map.detail.nerospace.public_pad": "Public",
-  "map.area.nerospace.terraform_region": "Terraformed land"
+  "map.area.nerospace.terraform_region": "Terraformed land",
+  "demo.nerospace.name": "Nerospace",
+  "demo.nerospace.guide.1": "Rockets, life support and seven worlds to visit",
+  "demo.nerospace.guide.2": "Every rocket tier stands on the pad it needs",
+  "demo.nerospace.guide.3": "Step on a travel plate to visit a world outpost",
+  "demo.nerospace.label.tier": "Tier %s rocket",
+  "demo.nerospace.label.power_line": "Power line: generator to grinder",
+  "demo.nerospace.label.fuel_line": "Fuel line: refinery to tank",
+  "demo.nerospace.label.life_support": "Life support: solar and oxygen",
+  "demo.nerospace.label.travel": "To %s",
+  "demo.nerospace.label.return": "Step on the plate to return to the hub",
+  "demo.nerospace.label.sky.sunrise": "Sunrise over the homeworld",
+  "demo.nerospace.label.sky.earthrise": "Earthrise",
+  "demo.nerospace.label.sky.blue_sunset": "The blue Martian sunset",
+  "demo.nerospace.label.sky.eclipse": "Eclipse corona",
+  "demo.nerospace.label.sky.aurora": "Aurora night",
+  "demo.nerospace.label.sky.twin_noon": "Twin suns at noon",
+  "demo.nerospace.label.sky.band": "The terminator band"
 }

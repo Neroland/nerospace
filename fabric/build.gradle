@@ -350,4 +350,21 @@ if (mc == '26.3') {
         description = 'Opens the game (Fabric 26.3) and captures the Nerospace gallery images into art/gallery/. Local only.'
         dependsOn prepareGalleryRun, 'runClientGameTest'
     }
+    // Nero Mods Demo walkthrough (DEV ONLY, LOCAL ONLY): the same client gametest run, with only
+    // DemoWorldClientGameTest acting. It opens the singleplayer world list, uses Neroland Core's demo button and
+    // picker, creates the demo world, rides every Nerospace travel pad and writes screenshots to build/demo-capture/.
+    //   ./gradlew :fabric:26.3:captureDemo
+    tasks.register('captureDemo') {
+        group = 'gallery'
+        description = 'Opens the game (Fabric 26.3) and walks through the Nero Mods Demo with screenshots. Local only.'
+        dependsOn prepareGalleryRun, 'runClientGameTest'
+    }
+    gradle.taskGraph.whenReady { graph ->
+        if (graph.hasTask("${project.path}:captureDemo")) {
+            tasks.named('runClientGameTest').configure {
+                systemProperty 'nerospace.gametest', 'demo'
+                systemProperty 'nerospace.demo.outDir', rootProject.file('build/demo-capture').absolutePath
+            }
+        }
+    }
 }
