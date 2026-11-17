@@ -24,6 +24,25 @@ life support.
 **Drain:** with a full suit you lose **3 air** per check (every 10 ticks). With no suit you lose
 **30 air** per check. An unshielded hazard (below) multiplies drain by **4**.
 
+## Under water
+
+Water is never breathable, on any world.
+
+- **Off Nerospace worlds** (Overworld, Nether, other mods' dimensions), a **full suit** works as a rebreather when
+  your head goes under water: you breathe from the suit tank at the suited rate (3 air per check), and the vanilla
+  air bubbles show how much is left — about two and a half minutes. When the tank is empty, normal drowning takes
+  over. Surface and the tank refills straight away. Without the full set you drown as normal. Server owners can turn
+  this off with `suit.underwaterRebreather`.
+- **On Nerospace worlds**, being under water counts as exposed even inside an oxygen bubble, so your tank drains as it
+  would in vacuum.
+
+## Status messages
+
+When your breathing changes, a short line shows above the hotbar: breathable air (tank refilling), on your suit
+tank, under water on your suit tank, no suit, an **incomplete suit** (it tells you how many of the four pieces you
+are wearing), low oxygen, and an empty tank. Each shows once when the state changes. Turn them off with
+`suit.statusMessages`.
+
 ## Hazard variants — Thermal & Cryo Suits
 
 Cindara (and Nyxara's Dayside) is **hot**; Glacira, Mars (and Nyxara's Nightside) are **cold**: unprotected, the planetary hazard makes your suit work

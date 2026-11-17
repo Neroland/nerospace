@@ -1,7 +1,9 @@
 package za.co.neroland.nerospace.world;
 
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -11,11 +13,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerospace.api.Hazard;
@@ -52,6 +57,15 @@ import za.co.neroland.nerospace.world.planet.RadiationRules;
  * breathability, and per-planet hazard shields (heat/cold) are now wired in; advancement criteria and the
  * gas-tank airlock refill remain deferred. Values are inlined (the config seam is deferred).</p>
  *
+ * <p><b>Water.</b> Water is never breathable. On an airless world a submerged player is exposed even inside an
+ * oxygen bubble. Off-world a full suit is an underwater rebreather (config {@code suit.underwaterRebreather}): it
+ * breathes from the suit tank, mirrored onto the vanilla bubbles, and hands back to vanilla drowning once the
+ * tank is empty. Without a full suit the mod leaves vanilla air alone off-world.</p>
+ *
+ * <p><b>Status cues.</b> State changes (breathable air, on the suit tank, holding breath, incomplete suit, low or
+ * empty tank) show once as an action-bar line (config {@code suit.statusMessages}), so the player can tell why
+ * the bar moves. Nothing is logged or stored beyond a per-session, in-memory latch.</p>
+ *
  * <p><b>Hazards (SUIT_HAZARD_DESIGN.md).</b> Cindara runs HOT and Glacira runs COLD: an uncountered
  * hazard multiplies oxygen drain ×{@link #HAZARD_DRAIN_MULTIPLIER} (no separate damage path — lethality
  * stays with zero-O₂ suffocation). A full set of the matching {@link HazardShield} suit variant negates
@@ -86,6 +100,11 @@ public final class OxygenManager {
     /** Gas (mB) consumed per air unit restored — the conversion rate from a tank's oxygen to suit air. */
     private static final int AIRLOCK_MB_PER_AIR = 2;
 
+    /** Tank fraction (percent) at or below which an exposed player gets the one-off "oxygen low" cue. */
+    private static final int LOW_PERCENT = 20;
+    /** Minimum ticks between two non-urgent status cues, so walking along a bubble edge cannot spam. */
+    private static final int STATUS_COOLDOWN_TICKS = 40;
+
     private OxygenManager() {
     }
 
@@ -114,7 +133,7 @@ public final class OxygenManager {
         // player's vanilla air supply — mirroring it every tick would clobber vanilla drowning /
         // suffocation. Top the internal tank so a later trip starts full, then leave vanilla alone.
         if (!isAirless(level.dimension())) {
-            Services.PLATFORM.setOxygen(player, max);
+            tickOffWorld(level, player, suited, max);
             return;
         }
 
@@ -131,6 +150,7 @@ public final class OxygenManager {
         if (!airless) {
             Services.PLATFORM.setOxygen(player, max);
             mirrorToAirSupply(player, max, max);
+            showStatus(player, Status.NONE);
             return;
         }
 
@@ -143,6 +163,7 @@ public final class OxygenManager {
             int kept = Math.max(Services.PLATFORM.getOxygen(player), max);
             Services.PLATFORM.setOxygen(player, kept);
             mirrorToAirSupply(player, Math.min(kept, max), max);
+            showStatus(player, Status.NONE);
             return;
         }
 
@@ -150,8 +171,11 @@ public final class OxygenManager {
         int oxygen = Services.PLATFORM.getOxygen(player);
 
         if (player.tickCount % CHECK_INTERVAL_TICKS == 0) {
-            if (isBreathable(level, player.blockPosition())) {
+            // Water is never breathable: a submerged player is exposed even inside an oxygen bubble.
+            boolean underwater = isUnderwater(player);
+            if (!underwater && isBreathable(level, player.blockPosition())) {
                 oxygen = Math.max(oxygen, max); // breathe ambient; a carried buffer is left untouched here
+                showStatus(player, Status.BREATHABLE);
             } else {
                 // Exposed: drain the tank — INCLUDING any rocket-carried arrival buffer (overfill above the
                 // normal tank) — at the normal rate. A worn suit drains far slower; an uncountered planet
@@ -170,6 +194,7 @@ public final class OxygenManager {
                 if (suited && oxygen < max) {
                     oxygen = Math.min(max, oxygen + airlockRefill(level, player, max - oxygen));
                 }
+                showStatus(player, exposedStatus(player, suited, underwater, oxygen, max));
             }
             Services.PLATFORM.setOxygen(player, oxygen);
             // NeroLink: push an owner-scoped oxygen_low event the first time this trip crosses into the
@@ -186,6 +211,142 @@ public final class OxygenManager {
                 player.sendSystemMessage(Component.translatable("message.nerospace.greenxertz.no_air"));
             }
         }
+    }
+
+    /**
+     * Off a Nerospace world the mod normally leaves vanilla air alone (it must not clobber vanilla drowning). The one
+     * exception is the suit's underwater rebreather: a full Oxygen Suit with its head under water breathes from the
+     * suit tank at the suited drain rate, mirrored onto the vanilla bubbles so the player sees how long it lasts.
+     * Once the tank is empty vanilla takes over from an empty breath, so drowning stays vanilla's. Surfacing (or
+     * taking the suit off) refills the tank, as before.
+     */
+    private static void tickOffWorld(ServerLevel level, ServerPlayer player, boolean suited, int max) {
+        boolean exposed = !player.getAbilities().instabuild && !player.isSpectator();
+        boolean submerged = exposed && isUnderwater(player);
+        boolean rebreather = submerged && suited && NerospaceConfig.suitUnderwaterRebreather()
+                && !MobEffectUtil.hasWaterBreathing(player);
+        if (!rebreather) {
+            Services.PLATFORM.setOxygen(player, max);
+            showStatus(player, submerged && !suited && suitPieceCount(player) > 0
+                    && NerospaceConfig.suitUnderwaterRebreather() ? Status.PARTIAL_SUIT : Status.NONE);
+            return;
+        }
+        int oxygen = Math.min(Services.PLATFORM.getOxygen(player), max);
+        if (oxygen > 0 && player.tickCount % CHECK_INTERVAL_TICKS == 0) {
+            int drain = NerospaceConfig.scale(SUIT_DRAIN_PER_CHECK, NerospaceConfig.oxygenDrainMultiplier());
+            oxygen = Math.max(0, oxygen - drain);
+            Services.PLATFORM.setOxygen(player, oxygen);
+        }
+        if (oxygen > 0) {
+            // Vanilla has already spent this tick's breath (our hook runs after the player tick): put it back.
+            mirrorToAirSupply(player, oxygen, max);
+            showStatus(player, oxygen * 100 <= max * LOW_PERCENT ? Status.LOW : Status.REBREATHER);
+        } else {
+            // Tank empty: stop mirroring. Vanilla air carries on from wherever it is and drowning is vanilla's.
+            showStatus(player, Status.EMPTY);
+        }
+    }
+
+    /** Whether the player's head is under water (a bubble column does not count, matching vanilla's breath rule). */
+    private static boolean isUnderwater(Player player) {
+        return player.isEyeInFluid(FluidTags.WATER)
+                && !player.level().getBlockState(BlockPos.containing(player.getX(), player.getEyeY(), player.getZ()))
+                        .is(Blocks.BUBBLE_COLUMN);
+    }
+
+    /** The cue for an exposed player on an airless world (not in a breathable zone, or under water). */
+    private static Status exposedStatus(Player player, boolean suited, boolean underwater, int oxygen, int max) {
+        if (oxygen <= 0) {
+            return Status.EMPTY;
+        }
+        if (Math.min(oxygen, max) * 100 <= max * LOW_PERCENT) {
+            return Status.LOW;
+        }
+        if (suited) {
+            return underwater ? Status.REBREATHER : Status.ON_SUIT;
+        }
+        return suitPieceCount(player) > 0 ? Status.PARTIAL_SUIT : Status.NO_SUIT;
+    }
+
+    // --- Status cues (action bar) -------------------------------------------
+
+    /** What the player's breathing is doing right now, shown once on the action bar when it changes. */
+    private enum Status {
+        /** Nothing worth saying (off-world, creative, riding a rocket): recorded silently. */
+        NONE(null, false),
+        BREATHABLE("message.nerospace.oxygen.breathable", false),
+        ON_SUIT("message.nerospace.oxygen.on_suit", false),
+        REBREATHER("message.nerospace.oxygen.rebreather", false),
+        NO_SUIT("message.nerospace.oxygen.no_suit", true),
+        PARTIAL_SUIT("message.nerospace.oxygen.partial_suit", true),
+        LOW("message.nerospace.oxygen.low", true),
+        EMPTY("message.nerospace.oxygen.empty", true);
+
+        final String key;
+        /** Urgent cues skip the cooldown. */
+        final boolean urgent;
+
+        Status(String key, boolean urgent) {
+            this.key = key;
+            this.urgent = urgent;
+        }
+    }
+
+    /** Last cue shown per online player (in memory only, weakly keyed: gone with the player object). */
+    private static final Map<ServerPlayer, Status> SHOWN = new WeakHashMap<>();
+    /** Game time each player's last cue was shown, for {@link #STATUS_COOLDOWN_TICKS}. */
+    private static final Map<ServerPlayer, Long> SHOWN_AT = new WeakHashMap<>();
+
+    /** Show {@code status} on the action bar if it differs from the last one shown (edge-latched, cooled down). */
+    private static void showStatus(ServerPlayer player, Status status) {
+        Status last = SHOWN.getOrDefault(player, Status.NONE);
+        if (status == last) {
+            return;
+        }
+        if (status == Status.NONE) {
+            SHOWN.put(player, Status.NONE); // silent: re-arms the next cue
+            return;
+        }
+        long now = player.level().getGameTime();
+        Long at = SHOWN_AT.get(player);
+        if (!status.urgent && at != null && now - at < STATUS_COOLDOWN_TICKS) {
+            return; // shown on a later check once the cooldown passes, if the state holds
+        }
+        SHOWN.put(player, status);
+        SHOWN_AT.put(player, now);
+        if (!NerospaceConfig.suitStatusMessages()) {
+            return;
+        }
+        Component message = status == Status.PARTIAL_SUIT
+                ? Component.translatable(status.key, suitPieceCount(player))
+                : Component.translatable(status.key);
+        player.sendOverlayMessage(message);
+    }
+
+    /** How many of the four armour slots hold an Oxygen Suit piece of any tier or variant (0..4). */
+    private static int suitPieceCount(Player player) {
+        int n = 0;
+        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.HEAD), ModItems.OXYGEN_SUIT_HELMET.get(),
+                ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_HEAT_HELMET.get(),
+                ModItems.OXYGEN_SUIT_COLD_HELMET.get())) {
+            n++;
+        }
+        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.CHEST), ModItems.OXYGEN_SUIT_CHESTPLATE.get(),
+                ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(),
+                ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())) {
+            n++;
+        }
+        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.LEGS), ModItems.OXYGEN_SUIT_LEGGINGS.get(),
+                ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(),
+                ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())) {
+            n++;
+        }
+        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.FEET), ModItems.OXYGEN_SUIT_BOOTS.get(),
+                ModItems.OXYGEN_SUIT_T2_BOOTS.get(), ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(),
+                ModItems.OXYGEN_SUIT_COLD_BOOTS.get())) {
+            n++;
+        }
+        return n;
     }
 
     /** The player's normal oxygen tank size (suit or bare lungs), config-scaled. */

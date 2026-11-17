@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-11-17
+
+### Added
+
+- A full Oxygen Suit now works under water in any dimension: it breathes from the suit tank, and the air bubbles show how much is left (about two and a half minutes). Normal drowning starts once the tank is empty. Turn it off with `suit.underwaterRebreather`.
+- Short messages above the hotbar tell you when your breathing changes: breathable air, on your suit tank, no suit, an incomplete suit (with how many pieces you are wearing), low oxygen and an empty tank. Turn them off with `suit.statusMessages`.
+
+### Fixed
+
+- On Nerospace worlds, standing under water inside an oxygen bubble no longer lets you breathe. Water now counts as exposed, so your tank drains.
+- The Star Guide no longer says the Tier 2 suit doubles your air. Every full suit holds the same amount.
+
 ## [2.2.1] - 2026-11-16
 
 ### Added

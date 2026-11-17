@@ -55,6 +55,13 @@ These numbers are fixed in code. They are listed here so you can plan builds.
 | --- | --- | --- |
 | `telemetryEnabled` | `true` | Anonymous, Nerospace-only crash reports (Sentry, EU servers, POPIA/GDPR-scrubbed — see `PRIVACY.md`). Set `false` to opt out. Applies on config reload. Each player decides this for their own client. |
 
+### Oxygen Suit
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `suit.underwaterRebreather` | `true` | A full [Oxygen Suit](Oxygen-Suit) breathes from its tank under water in any dimension. The vanilla air bubbles show the tank; drowning starts once it is empty. `false` = vanilla drowning off Nerospace worlds. |
+| `suit.statusMessages` | `true` | Show a short line above the hotbar when your breathing changes (breathable air, suit tank, no suit, incomplete suit, low or empty tank). `false` = no messages. |
+
 ### Terraformer
 
 | Key | Default | Meaning |

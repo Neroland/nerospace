@@ -121,6 +121,13 @@ public final class NerospaceConfig {
             64, 0, 64, true, "max Gravity Shard Blocks + Gravity Plates per chunk (0..64)");
     private static final ConfigValue<Integer> CAP_METHANE_CHAIN = SCHEMA.intRange("blocks.methaneChainCap",
             4, 0, 4, true, "max Methane Ice explosions per chunk per 5 seconds (0..4)");
+    // --- Oxygen suit (server-authoritative) ----------------------------------------------------------
+    private static final ConfigValue<Boolean> SUIT_UNDERWATER_REBREATHER = SCHEMA.bool("suit.underwaterRebreather",
+            true, true, "a full Oxygen Suit breathes from its tank under water in any dimension (the vanilla bubbles "
+            + "show the tank; drowning resumes once it is empty). false = vanilla drowning off Nerospace worlds");
+    private static final ConfigValue<Boolean> SUIT_STATUS_MESSAGES = SCHEMA.bool("suit.statusMessages", true, true,
+            "show a one-line action-bar cue when your breathing changes (breathable air, on the suit tank, holding "
+            + "your breath, incomplete suit, low or empty tank). false = no cues");
     private static final ConfigValue<Boolean> WEATHER_ENABLED = SCHEMA.bool("weather.enabled", true, true,
             "planet weather (dust storms, ash fall, diamond dust, spore blooms, flares). false = clear skies everywhere");
     private static final ConfigValue<Double> WEATHER_FREQUENCY = SCHEMA.doubleRange("weather.frequencyMultiplier",
@@ -420,6 +427,16 @@ public final class NerospaceConfig {
     /** Client-side: the HUD clock dial scale, 1 or 2. */
     public static int hudClockDialScale() {
         return HUD_CLOCK_DIAL_SCALE.get();
+    }
+
+    /** Whether a full Oxygen Suit works as an underwater rebreather in any dimension. */
+    public static boolean suitUnderwaterRebreather() {
+        return SUIT_UNDERWATER_REBREATHER.get();
+    }
+
+    /** Whether breathing-state changes show an action-bar cue. */
+    public static boolean suitStatusMessages() {
+        return SUIT_STATUS_MESSAGES.get();
     }
 
     /** Client-side: whether the HUD weather line shows. */

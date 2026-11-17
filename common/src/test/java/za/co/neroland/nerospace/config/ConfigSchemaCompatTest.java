@@ -76,6 +76,8 @@ class ConfigSchemaCompatTest {
         m.put("stations.maxMembers", "16");
         m.put("stations.maxModules", "8");
         m.put("nyxara.twilightBandWidth", "2048");
+        m.put("suit.underwaterRebreather", "true");
+        m.put("suit.statusMessages", "true");
         return m;
     }
 
