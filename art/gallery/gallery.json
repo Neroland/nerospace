@@ -1,0 +1,10 @@
+{
+  "shots": [
+    {
+      "raw": "raw/nerospace_rockets_hero.png",
+      "out": "nerospace_gallery_01.png",
+      "headline": "Build rockets. Leave the Overworld.",
+      "subline": "Four rocket tiers, each on its own launch pad formation"
+    }
+  ]
+}

@@ -302,3 +302,52 @@ tasks.register('ecjCheck', JavaExec) {
         ] + srcDirs
     }
 }
+
+// ------------------------------------------------------------------------------------------------------------
+// Gallery capture (DEV ONLY, LOCAL ONLY, Fabric 26.3 cell only). A Fabric client gametest in its own `gametest`
+// source set (fabric/src/gametest) opens the game, stages each gallery shot and writes 1920x1080 PNGs to art/gallery/.
+//   ./gradlew :fabric:26.3:captureGallery        (see art/gallery/README.md)
+// It opens a game window, so it is opt-in: nothing here is a dependency of build/check/assemble/publish, and the
+// gametest source set is never packed into `jar`.
+// ------------------------------------------------------------------------------------------------------------
+if (mc == '26.3') {
+    // (`fabricApi` is shadowed by the Fabric API version local above, so reach the extension by name.)
+    project.extensions.getByName('fabricApi').configureTests { t ->
+        t.createSourceSet.set(true)
+        t.modId.set('nerospace_gallery')
+        t.enableGameTests.set(false)
+        t.enableClientGameTests.set(true)
+        t.eula.set(true)
+        t.clearRunDirectory.set(false) // never let Loom delete a run dir; this one is runs/gallery (ignored)
+    }
+    sourceSets.gametest {
+        java.srcDirs = ["${branchDir}/src/gametest/java"]
+        resources.srcDirs = ["${branchDir}/src/gametest/resources"]
+    }
+    def galleryRunDir = 'runs/gallery'
+    loom.runs.matching { it.name == 'clientGameTest' }.configureEach {
+        runDir galleryRunDir
+        property 'nerospace.gallery.outDir', rootProject.file('art/gallery').absolutePath
+    }
+    // Capture runs must not report to Sentry: seed the run dir's mod configs with telemetry off.
+    def prepareGalleryRun = tasks.register('prepareGalleryRun') {
+        doLast {
+            def cfgDir = file("${galleryRunDir}/config")
+            cfgDir.mkdirs()
+            ['nerospace', 'nerolandcore'].each { id ->
+                def f = new File(cfgDir, "${id}.properties")
+                def text = f.exists() ? f.getText('UTF-8') : ''
+                text = text.contains('telemetryEnabled=')
+                        ? text.replaceAll(/(?m)^telemetryEnabled=.*$/, 'telemetryEnabled=false')
+                        : text + 'telemetryEnabled=false\n'
+                f.setText(text, 'UTF-8')
+            }
+        }
+    }
+    tasks.matching { it.name == 'runClientGameTest' }.configureEach { dependsOn prepareGalleryRun }
+    tasks.register('captureGallery') {
+        group = 'gallery'
+        description = 'Opens the game (Fabric 26.3) and captures the Nerospace gallery images into art/gallery/. Local only.'
+        dependsOn prepareGalleryRun, 'runClientGameTest'
+    }
+}

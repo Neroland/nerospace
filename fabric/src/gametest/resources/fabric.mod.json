@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "nerospace_gallery",
+  "version": "0.0.0",
+  "name": "Nerospace Gallery Capture (dev only)",
+  "description": "Dev-only client gametest that stages a Nerospace scene and captures a gallery screenshot. Lives in the Fabric 26.3 gametest source set and is never part of the release jar.",
+  "license": "All Rights Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": ["za.co.neroland.nerospace.fabric.gametest.GalleryCaptureClientGameTest"]
+  },
+  "depends": {
+    "nerospace": "*",
+    "fabric-client-gametest-api-v1": "*"
+  }
+}
