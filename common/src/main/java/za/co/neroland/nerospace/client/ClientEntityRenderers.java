@@ -60,6 +60,7 @@ public final class ClientEntityRenderers {
         za.co.neroland.nerospace.world.planet.mars.client.MarsEntityRenderers.registerAll(sink);
         za.co.neroland.nerospace.world.planet.luna.client.LunaEntityRenderers.registerAll(sink);
         za.co.neroland.nerospace.world.planet.nyxara.client.NyxaraEntityRenderers.registerAll(sink);
+        za.co.neroland.nerospace.world.planet.europa.client.EuropaEntityRenderers.registerAll(sink);
     }
 
     private static Identifier tex(String name) {

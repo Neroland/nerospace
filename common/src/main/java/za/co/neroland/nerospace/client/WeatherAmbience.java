@@ -137,6 +137,20 @@ public final class WeatherAmbience {
                         ModParticles.NEBULA_MOTE.isPresent() ? ModParticles.NEBULA_MOTE.get() : null, moteAcc, budget,
                         0.01, 0.0, 0.0);
             }
+            case "europa" -> {
+                // Plume fall: Glacira's ice-crystal particle, only while it falls, drifting down more slowly.
+                float plume = event == WeatherEvent.DIAMOND_DUST ? intensity : 0.0F;
+                diamondAcc += NerospaceConfig.particleRate("diamond_dust") * weatherScale(0.0F, plume);
+                diamondAcc = spawn(level, centre,
+                        ModParticles.DIAMOND_DUST.isPresent() ? ModParticles.DIAMOND_DUST.get() : null, diamondAcc,
+                        budget, 0.0, -0.004, 0.0);
+                // Radiation storm: sparse violet motes (Nyxara's nebula mote at under half its rate).
+                float storm = event == WeatherEvent.FLARE ? intensity : 0.0F;
+                moteAcc += NerospaceConfig.particleRate("nebula_mote") * 0.4F * weatherScale(0.0F, storm);
+                moteAcc = spawn(level, centre,
+                        ModParticles.NEBULA_MOTE.isPresent() ? ModParticles.NEBULA_MOTE.get() : null, moteAcc, budget,
+                        0.0, 0.005, 0.0);
+            }
             default -> {
                 // Luna and the stations: no ambient particles.
             }
@@ -197,9 +211,12 @@ public final class WeatherAmbience {
         RegistryEntry<SoundEvent> wanted = switch (event) {
             case DUST_STORM -> "mars".equals(planet) ? ModSounds.AMBIENT_MARS_STORM : null;
             case ASH_FALL -> "cindara".equals(planet) ? ModSounds.AMBIENT_CINDARA_ASHFALL : null;
-            case DIAMOND_DUST -> "glacira".equals(planet) ? ModSounds.AMBIENT_GLACIRA_DIAMOND_DUST : null;
+            // Europa's plume fall reuses Glacira's glitter; its radiation storm has its own crackle loop.
+            case DIAMOND_DUST -> "glacira".equals(planet) || "europa".equals(planet)
+                    ? ModSounds.AMBIENT_GLACIRA_DIAMOND_DUST : null;
             case SPORE_BLOOM -> "greenxertz".equals(planet) ? ModSounds.AMBIENT_GREENXERTZ_BLOOM : null;
-            case FLARE -> "nyxara".equals(planet) ? ModSounds.AMBIENT_NYXARA_FLARE : null;
+            case FLARE -> "nyxara".equals(planet) ? ModSounds.AMBIENT_NYXARA_FLARE
+                    : "europa".equals(planet) ? ModSounds.AMBIENT_EUROPA_STORM : null;
             case NONE -> null;
         };
         if (event == WeatherEvent.FLARE && lastEvent != WeatherEvent.FLARE && "nyxara".equals(planet)

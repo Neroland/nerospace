@@ -1538,6 +1538,9 @@ PLANET_BLOCK_TEXTURES = [
     _row("europa", "raw_europium", "item_gem", pal=(hexc("#C22A52"), hexc("#FF4A6A"), hexc("#FFB0C0"))),
     _row("europa", "brine_bucket", "item_bucket", pal=(hexc("#C8CDD2"), hexc("#8D949B"), hexc("#5A6168")),
          fill=(hexc("#3E6F5E"), hexc("#6FA08A"))),
+    _row("europa", "lantern_drifter_spawn_egg", "item_spawn_egg", pal=(hexc("#12202E"), hexc("#3DF2C0"), hexc("#0A141E"))),
+    _row("europa", "vent_ray_spawn_egg", "item_spawn_egg", pal=(hexc("#22262B"), hexc("#FF7A2E"), hexc("#15181C"))),
+    _row("europa", "shell_skater_spawn_egg", "item_spawn_egg", pal=(hexc("#E4EEF2"), hexc("#A8583A"), hexc("#5E9DBD"))),
     # ---------------------------------------------------------------- Station
     _row("station", "hull_plating", "plating", base=STATION_HULL, seam=STATION_SEAM, rivet=STATION_TEAL),
     _row("station", "hull_window", "hull_window", edge=STATION_HULL, pane=hexc("#C8D4DC"), sparkle=hexc("#FFFFFF"),

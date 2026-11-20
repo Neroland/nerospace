@@ -68,6 +68,12 @@ public final class TerraformFauna {
         if (!FAUNA_ENABLED) {
             return;
         }
+        // A table that opens an ocean seeds a water herd: only where the cell is the table liquid (F10). Other tables
+        // skip the read entirely.
+        if (table.has(TerraformTable.Rule.OPEN_OCEAN) && !TerraformFaunaRules.maySeed(true,
+                level.getBlockState(new BlockPos(x, surfaceY, z)).is(BuiltInRegistries.BLOCK.getValue(table.liquid())))) {
+            return;
+        }
         RandomSource rnd = level.getRandom();
         if (rnd.nextDouble() >= HERD_CHANCE) {
             return;

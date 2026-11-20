@@ -48,6 +48,13 @@ public final class ModEntityAttributes {
                 za.co.neroland.nerospace.world.planet.mars.entity.DustStrider.createAttributes());
         sink.accept(za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH.get(),
                 za.co.neroland.nerospace.world.planet.nyxara.entity.DuskMoth.createAttributes());
+        // Europa (2.4.0).
+        sink.accept(za.co.neroland.nerospace.world.planet.europa.EuropaContent.LANTERN_DRIFTER.get(),
+                za.co.neroland.nerospace.world.planet.europa.entity.LanternDrifter.createAttributes());
+        sink.accept(za.co.neroland.nerospace.world.planet.europa.EuropaContent.VENT_RAY.get(),
+                za.co.neroland.nerospace.world.planet.europa.entity.VentRay.createAttributes());
+        sink.accept(za.co.neroland.nerospace.world.planet.europa.EuropaContent.SHELL_SKATER.get(),
+                za.co.neroland.nerospace.world.planet.europa.entity.ShellSkater.createAttributes());
     }
 
     private ModEntityAttributes() {

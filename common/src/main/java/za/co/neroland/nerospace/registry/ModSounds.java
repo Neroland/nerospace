@@ -81,6 +81,11 @@ public final class ModSounds {
     public static final RegistryEntry<SoundEvent> ROVER_PLACE = register("entity.rover.place");
     public static final RegistryEntry<SoundEvent> ROVER_PICKUP = register("entity.rover.pickup");
 
+    // Europa (2.4.0): ambience reuses existing sound files (the Glacira wind loop, ice chimes, the Nyxara flare crackle).
+    public static final RegistryEntry<SoundEvent> AMBIENT_EUROPA_LOOP = register("ambient.europa.loop");
+    public static final RegistryEntry<SoundEvent> AMBIENT_EUROPA_ADDITIONS = register("ambient.europa.additions");
+    public static final RegistryEntry<SoundEvent> AMBIENT_EUROPA_STORM = register("ambient.europa.storm");
+
     private static RegistryEntry<SoundEvent> register(String path) {
         Identifier id = Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, path);
         return SOUND_EVENTS.register(path, key -> SoundEvent.createVariableRangeEvent(id));

@@ -34,7 +34,21 @@ class TerraformFaunaRegistrationTest {
                     "world/planet/mars/client/MarsEntityRenderers.java"},
             new String[] {"dusk_moth", "world/planet/nyxara/NyxaraContent.java",
                     "world/planet/nyxara/entity/DuskMoth.java", "DUSK_MOTH",
-                    "world/planet/nyxara/client/NyxaraEntityRenderers.java"});
+                    "world/planet/nyxara/client/NyxaraEntityRenderers.java"},
+            // Europa (2.4.0): English only (other languages come through Weblate); the drifter drops a vanilla item.
+            new String[] {"lantern_drifter", "world/planet/europa/EuropaContent.java",
+                    "world/planet/europa/entity/LanternDrifter.java", "LANTERN_DRIFTER",
+                    "world/planet/europa/client/EuropaEntityRenderers.java"},
+            new String[] {"vent_ray", "world/planet/europa/EuropaContent.java",
+                    "world/planet/europa/entity/VentRay.java", "VENT_RAY",
+                    "world/planet/europa/client/EuropaEntityRenderers.java"},
+            new String[] {"shell_skater", "world/planet/europa/EuropaContent.java",
+                    "world/planet/europa/entity/ShellSkater.java", "SHELL_SKATER",
+                    "world/planet/europa/client/EuropaEntityRenderers.java"});
+
+    /** Species added after the three shipped languages stopped being required (2.4.0): English lang only. */
+    private static final java.util.Set<String> ENGLISH_ONLY = java.util.Set.of("lantern_drifter", "vent_ray",
+            "shell_skater");
 
     static Path commonMain() {
         for (Path p = Path.of(System.getProperty("user.dir")).toAbsolutePath(); p != null; p = p.getParent()) {
@@ -99,9 +113,10 @@ class TerraformFaunaRegistrationTest {
                 assertTrue(pools.size() == 1, f[0] + " " + tree + " one pool");
                 String item = pools.get(0).getAsJsonObject().getAsJsonArray("entries").get(0).getAsJsonObject()
                         .get("name").getAsString();
-                assertTrue(item.startsWith("nerospace:"), f[0] + " drops an existing Nerospace item");
+                assertTrue(item.startsWith("nerospace:") || item.equals("minecraft:glow_ink_sac"),
+                        f[0] + " drops an existing Nerospace item (or the drifter's glow ink sac)");
             }
-            for (String lang : List.of("en_us", "it_it", "zh_cn")) {
+            for (String lang : ENGLISH_ONLY.contains(f[0]) ? List.of("en_us") : List.of("en_us", "it_it", "zh_cn")) {
                 JsonObject l = json("resources/assets/nerospace/lang/" + lang + ".json");
                 assertTrue(l.has("entity.nerospace." + f[0]), lang + " entity name " + f[0]);
                 assertTrue(l.has("item.nerospace." + f[0] + "_spawn_egg"), lang + " spawn egg " + f[0]);
@@ -142,5 +157,12 @@ class TerraformFaunaRegistrationTest {
         assertFalse(FaunaStats.hopperHopsNow(false, true, 0));
         assertFalse(FaunaStats.hopperHopsNow(true, false, 0));
         assertFalse(FaunaStats.hopperHopsNow(true, true, 1));
+        // Europa.
+        assertTrue(FaunaStats.DRIFTER_HEALTH > 0 && FaunaStats.DRIFTER_HEALTH <= 20);
+        assertTrue(FaunaStats.RAY_HEALTH > FaunaStats.DRIFTER_HEALTH && FaunaStats.RAY_HEALTH <= 40);
+        assertTrue(FaunaStats.SKATER_HEALTH > 0 && FaunaStats.SKATER_HEALTH <= 20);
+        for (double s : new double[] {FaunaStats.DRIFTER_SPEED, FaunaStats.RAY_SPEED, FaunaStats.SKATER_SPEED}) {
+            assertTrue(s > 0.0 && s <= 1.0, "speed " + s);
+        }
     }
 }

@@ -44,7 +44,9 @@ public final class GallerySkyStates {
         /** Ends any event, so the sky is clear. */
         CLEAR,
         /** Starts the planet's own event at full strength. */
-        START
+        START,
+        /** Starts the planet's second event at full strength (2.4.0: Europa's radiation storm). */
+        START_SECONDARY
     }
 
     /** Where {@code here} puts the player (only Nyxara's sides differ: everywhere else it is the current column). */
@@ -108,11 +110,12 @@ public final class GallerySkyStates {
                 place("nightside", View.NIGHTSIDE, -90.0F, -15.0F, "nightside"),
                 place("galaxy_side", View.NIGHTSIDE, -90.0F, -20.0F, "galaxy_side"),
                 new State("flare", KEEP_PHASE, Weather.START, View.BAND, 90.0F, -12.0F, "flare")));
-        // Europa: Jupiter is fixed high in the south; the sun passes behind it at noon. A weather start is the
-        // planet's primary event, the plume fall.
+        // Europa: Jupiter is fixed high in the south; the sun passes behind it at noon. "plume_fall" starts the
+        // primary event; "radiation_storm" the second one, in the magnetotail window under the eclipse.
         t.put("europa", with(day(),
                 face("eclipse", 0.25, Weather.CLEAR, 0.0F, -65.0F, "eclipse"),
-                face("plume_fall", NIGHT, Weather.START, 180.0F, -20.0F, "plume_fall")));
+                face("plume_fall", NIGHT, Weather.START, 180.0F, -20.0F, "plume_fall"),
+                face("radiation_storm", 0.25, Weather.START_SECONDARY, 0.0F, -65.0F, "radiation_storm")));
         TABLE = Collections.unmodifiableMap(t);
     }
 

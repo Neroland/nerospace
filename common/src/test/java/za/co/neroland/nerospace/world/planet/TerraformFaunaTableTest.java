@@ -43,7 +43,7 @@ class TerraformFaunaTableTest {
      * Fauna ids a table already names whose entity is registered by a later build step of the same release. Until
      * then the terraformer finds no species for that table and seeds no herd. Must be empty at release.
      */
-    private static final Set<String> PENDING = Set.of("lantern_drifter");
+    private static final Set<String> PENDING = Set.of();
 
     /** Every entity path registered through the shared ENTITY_TYPES provider, from the sources. */
     private static Set<String> registeredEntityIds() throws IOException {
@@ -80,12 +80,13 @@ class TerraformFaunaTableTest {
     }
 
     @Test
-    @DisplayName("Luna, Mars and Nyxara Living biomes spawn their species on both resource trees")
+    @DisplayName("Luna, Mars, Nyxara and Europa Living biomes spawn their species on both resource trees")
     void livingBiomesSpawnTheirFauna() throws IOException {
         for (TerraformTable t : new TerraformTable[] {
                 za.co.neroland.nerospace.world.planet.luna.LunaTerraform.TABLE,
                 za.co.neroland.nerospace.world.planet.mars.MarsTerraform.TABLE,
-                za.co.neroland.nerospace.world.planet.nyxara.NyxaraTerraform.TABLE}) {
+                za.co.neroland.nerospace.world.planet.nyxara.NyxaraTerraform.TABLE,
+                za.co.neroland.nerospace.world.planet.europa.EuropaTerraform.TABLE}) {
             String biome = t.living().identifier().getPath();
             String species = t.fauna().get(0).toString();
             for (String tree : new String[] {"resources", "resources-26.3"}) {

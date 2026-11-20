@@ -991,6 +991,7 @@
   "gui.nerospace.card.suit_thermal": "T2+Thermal",
   "gui.nerospace.card.suit_cryo": "T2+Cryo",
   "gui.nerospace.card.suit_rad": "T2+Rad",
+  "gui.nerospace.card.suit_cryo_rad": "Cryo+Rad",
   "block.nerospace.hull_plating": "Hull Plating",
   "item.nerospace.hull_plating": "Hull Plating",
   "block.nerospace.hull_window": "Hull Window",
@@ -1478,5 +1479,14 @@
   "gui.nerospace.terraform_monitor.next.europa.3": "Next: let the sea breathe",
   "gui.nerospace.terraform_monitor.next.europa.done": "Open water under a thin haze — never air to breathe",
   "message.nerospace.europa.breach_warning": "The ice cracks: liquid is close",
-  "item.nerospace.raw_europium.tooltip": "Named for the wrong Europa."
+  "item.nerospace.raw_europium.tooltip": "Named for the wrong Europa.",
+  "entity.nerospace.lantern_drifter": "Lantern Drifter",
+  "item.nerospace.lantern_drifter_spawn_egg": "Lantern Drifter Spawn Egg",
+  "entity.nerospace.vent_ray": "Vent Ray",
+  "item.nerospace.vent_ray_spawn_egg": "Vent Ray Spawn Egg",
+  "entity.nerospace.shell_skater": "Shell Skater",
+  "item.nerospace.shell_skater_spawn_egg": "Shell Skater Spawn Egg",
+  "subtitles.nerospace.ambient.europa.loop": "Wind over the ice",
+  "subtitles.nerospace.ambient.europa.additions": "Ice creaks",
+  "subtitles.nerospace.ambient.europa.storm": "Radiation crackles"
 }

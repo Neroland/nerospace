@@ -57,7 +57,7 @@ public final class EuropaPlanet extends PlanetDefinition {
                 .weather(PLUME_FALL)
                 .alsoWeather(RADIATION_STORM)
                 .mining(0.7, 3)
-                .terraform(TreeStyle.SPRUCE, null));
+                .terraform(TreeStyle.SPRUCE, () -> EuropaContent.LANTERN_DRIFTER.get()));
     }
 
     static double daylightAt(double phase) {

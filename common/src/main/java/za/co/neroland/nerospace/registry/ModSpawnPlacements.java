@@ -44,6 +44,31 @@ public final class ModSpawnPlacements {
         grass(sink, za.co.neroland.nerospace.world.planet.luna.LunaContent.MOON_HOPPER);
         grass(sink, za.co.neroland.nerospace.world.planet.mars.MarsContent.DUST_STRIDER);
         dim(sink, za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH);
+        // Europa (2.4.0): two sea creatures in water at any light (the ray on the deep floor only), the skater on ice.
+        water(sink, za.co.neroland.nerospace.world.planet.europa.EuropaContent.LANTERN_DRIFTER);
+        deepWater(sink, za.co.neroland.nerospace.world.planet.europa.EuropaContent.VENT_RAY);
+        ground(sink, za.co.neroland.nerospace.world.planet.europa.EuropaContent.SHELL_SKATER);
+    }
+
+    /** In water with water above, any light. */
+    private static <T extends Mob> void water(Sink sink, RegistryEntry<EntityType<T>> entry) {
+        sink.register(entry.get(), SpawnPlacementTypes.IN_WATER,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> inWater(level, pos));
+    }
+
+    /** {@link #water} below Y {@code EuropaFaunaRules.RAY_MAX_SPAWN_Y} only. */
+    private static <T extends Mob> void deepWater(Sink sink, RegistryEntry<EntityType<T>> entry) {
+        sink.register(entry.get(), SpawnPlacementTypes.IN_WATER,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> pos.getY()
+                        < za.co.neroland.nerospace.world.planet.europa.entity.EuropaFaunaRules.RAY_MAX_SPAWN_Y
+                        && inWater(level, pos));
+    }
+
+    private static boolean inWater(net.minecraft.world.level.LevelAccessor level, net.minecraft.core.BlockPos pos) {
+        return level.getFluidState(pos).is(net.minecraft.tags.FluidTags.WATER)
+                && level.getFluidState(pos.above()).is(net.minecraft.tags.FluidTags.WATER);
     }
 
     /**

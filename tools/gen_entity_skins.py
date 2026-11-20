@@ -27,6 +27,9 @@ Outputs (all under textures/entity/):
     dusk_moth.png (+ _glow)                 Nyxara ambient (GreenlingModel geometry + wing islands)
     salvage_drone.png (+ _glow)             Mars merchant (QuartzCrawlerModel geometry + hover islands)
     dust_devil.png                          Mars weather entity: 4-frame translucent vortex strip
+    lantern_drifter.png (+ _glow)           Europa ocean drifter (LanternDrifterModel)
+    vent_ray.png (+ _glow)                  Europa vent-field glider (VentRayModel)
+    shell_skater.png (+ _glow)              Europa ice strider (ShellSkaterModel)
 """
 import hashlib
 import math
@@ -669,6 +672,108 @@ def dust_devil():
     return img
 
 
+# Europa (design 9.1-9.3): ocean body #12202E, lantern glow #3DF2C0 -> #B8FFE8, basalt #22262B, ember #FF7A2E,
+# underside / joints #5E9DBD, shell ice #E4EEF2, rust saddle #A8583A
+EUR = dict(deep=hexc("#12202E"), deep_l=hexc("#1E3446"), deep_d=hexc("#0A141E"), glow=hexc("#3DF2C0"),
+           glow_l=hexc("#B8FFE8"), basalt=hexc("#22262B"), basalt_l=hexc("#343A41"), basalt_d=hexc("#15181C"),
+           ember=hexc("#FF7A2E"), ember_l=hexc("#FFD08A"), pale=hexc("#5E9DBD"), pale_l=hexc("#8FC4DA"),
+           ice=hexc("#E4EEF2"), ice_d=hexc("#C4D6DE"), ice_l=hexc("#F8FCFD"), rust=hexc("#A8583A"),
+           rust_d=hexc("#7A3E28"))
+
+
+def lantern_drifter():
+    """Europa Lantern Drifter on LanternDrifterModel: a dark translucent-looking bell with a ring of lantern dots
+    round its rim, a glowing core under it and four ribbons whose lower half glows.  Glow layer: rim dots, core,
+    ribbon tips.  Islands: bell (0,0) 8x6x8, core (0,16) 4x3x4, ribbons (32,0) 1x9x1."""
+    sh = Sheet(seed_of("lantern_drifter"))
+    P = EUR
+    body = [P["deep"], P["deep_l"], P["deep_d"]]
+    bell = sh.cube(0, 0, 8, 6, 8, body, grain=0.5, light=P["deep_l"], dark=P["deep_d"])
+    for name in ("front", "back", "left", "right"):
+        r = bell[name]
+        for dx in range(0, r[2], 2):
+            sh.dot(r, dx, r[3] - 1, P["glow"], glow=True)
+        sh.dot(r, r[2] // 2, 1, P["glow_l"], glow=True)
+    top = bell["top"]
+    sh.rect((top[0] + 3, top[1] + 3, 2, 2), P["deep_l"])
+    core = sh.cube(0, 16, 4, 3, 4, [P["glow"], P["glow_l"]], grain=0.4)
+    for r in core.values():
+        sh.rect(r, P["glow"], glow=True)
+        sh.dot(r, 1, 1, P["glow_l"], glow=True)
+    rib = sh.cube(32, 0, 1, 9, 1, body, grain=0.3)
+    for name in ("front", "back", "left", "right"):
+        r = rib[name]
+        for dy in range(r[3] // 2, r[3]):
+            sh.dot(r, 0, dy, P["glow"] if dy % 2 else P["glow_l"], glow=True)
+    sh.rect(rib["bottom"], P["glow_l"], glow=True)
+    return sh
+
+
+def vent_ray():
+    """Europa Vent Ray on VentRayModel: basalt-black back with faint pale speckle, ember gill lines across the
+    body and inner wings, a pale underside.  Glow layer: the gill lines and the eye spots on the head lobes.
+    Islands: body (0,0) 8x2x12, wings (0,16)/(32,16) 6x1x10, tips (0,28)/(24,28) 5x1x6, tail (0,36) 1x1x10,
+    lobes (40,0) 6x1x2."""
+    sh = Sheet(seed_of("vent_ray"))
+    P = EUR
+    back = [P["basalt"], P["basalt_d"], P["basalt_l"]]
+    under = [P["pale"], P["pale_l"]]
+
+    def slab(u, v, w, h, d, gills):
+        f = sh.cube(u, v, w, h, d, back, grain=0.45)
+        sh.noise(f["bottom"], under, grain=0.4)
+        if gills:
+            r = f["top"]
+            for dy in range(2, r[3] - 1, 3):
+                sh.hline(r, dy, P["ember"], glow=True, x0=1, x1=r[2] - 1)
+        return f
+
+    body = slab(0, 0, 8, 2, 12, True)
+    for name in ("front", "back", "left", "right"):
+        sh.hline(body[name], 0, P["basalt_l"])
+    slab(0, 16, 6, 1, 10, True)
+    slab(32, 16, 6, 1, 10, True)
+    slab(0, 28, 5, 1, 6, False)
+    slab(24, 28, 5, 1, 6, False)
+    slab(0, 36, 1, 1, 10, False)
+    lobes = slab(40, 0, 6, 1, 2, False)
+    f = lobes["front"]
+    sh.dot(f, 1, 0, P["ember_l"], glow=True)
+    sh.dot(f, f[2] - 2, 0, P["ember_l"], glow=True)
+    return sh
+
+
+def shell_skater():
+    """Europa Shell Skater on ShellSkaterModel: an ice-white shell with pale-blue plate seams, a rust saddle plate,
+    a small head with pale eyes, legs with blue joints and bright ice blade feet.  Glow layer: the eyes only.
+    Islands: body (0,0) 8x4x10, saddle (0,16) 6x1x6, head (28,16) 5x3x4, legs (0,26) 1x10x1."""
+    sh = Sheet(seed_of("shell_skater"))
+    P = EUR
+    shell = [P["ice"], P["ice_d"], P["ice_l"]]
+    body = sh.cube(0, 0, 8, 4, 10, shell, grain=0.4, light=P["ice_l"], dark=P["ice_d"])
+    r = body["top"]
+    for dy in range(2, r[3], 3):
+        sh.hline(r, dy, P["pale_l"])
+    for name in ("left", "right", "front", "back"):
+        sh.hline(body[name], body[name][3] - 1, P["pale"])
+    sad = sh.cube(0, 16, 6, 1, 6, [P["rust"], P["rust_d"]], grain=0.5)
+    sh.outline(sad["top"], P["rust_d"])
+    head = sh.cube(28, 16, 5, 3, 4, shell, grain=0.4, light=P["ice_l"], dark=P["ice_d"])
+    f = head["front"]
+    sh.dot(f, 1, 1, P["pale"], glow=True)
+    sh.dot(f, f[2] - 2, 1, P["pale"], glow=True)
+    sh.dot(f, 2, 2, P["ice_d"])
+    leg = sh.cube(0, 26, 1, 10, 1, shell, grain=0.3)
+    for name in ("front", "back", "left", "right"):
+        r = leg[name]
+        sh.dot(r, 0, 0, P["pale"])
+        sh.dot(r, 0, 4, P["pale"])
+        for dy in (r[3] - 2, r[3] - 1):
+            sh.dot(r, 0, dy, P["ice_l"])
+    sh.rect(leg["bottom"], P["ice_l"])
+    return sh
+
+
 SKINS = {
     "alien_villager_cindara": (ember_kin, True),
     "alien_villager_glacira": (frostbound, True),
@@ -677,6 +782,9 @@ SKINS = {
     "dust_strider": (dust_strider, False),
     "dusk_moth": (dusk_moth, True),
     "salvage_drone": (salvage_drone, True),
+    "lantern_drifter": (lantern_drifter, True),
+    "vent_ray": (vent_ray, True),
+    "shell_skater": (shell_skater, True),
 }
 
 

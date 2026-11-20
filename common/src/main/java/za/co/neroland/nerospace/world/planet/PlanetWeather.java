@@ -231,6 +231,25 @@ public final class PlanetWeather {
         return true;
     }
 
+    /**
+     * {@link #startAtPeak} for the planet's second event (Europa's radiation storm, the sky gallery only): the same
+     * state machine with the second event's own params. @return false when the planet has no second event.
+     */
+    public static boolean startSecondaryAtPeak(ServerLevel level) {
+        PlanetDefinition planet = Planets.get(level.dimension());
+        if (planet == null || !planet.secondaryWeather().hasWeather()) {
+            return false;
+        }
+        PlanetWeatherState state = state(level);
+        WeatherParams p = planet.secondaryWeather();
+        state.machine.forceStart(p, WeatherMachine.MAX_TARGET, p.maxDurationTicks(), level.getRandom().nextLong());
+        state.machine.reachPeak();
+        state.markChanged();
+        WeatherEffects.Registry.get(state.machine.event).onStart(level, state.machine);
+        syncLevel(level);
+        return true;
+    }
+
     /** Whether the server settings let this planet's weather run at all (a started event is cleared otherwise). */
     public static boolean enabledFor(PlanetDefinition planet) {
         return NerospaceConfig.weatherEnabled() && NerospaceConfig.planetWeatherEnabled(planet.weatherConfigKey());

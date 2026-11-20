@@ -47,7 +47,10 @@ class SkyAssetsTest {
     private static final List<String> ENTITY_TEXTURES = List.of("moon_hopper", "dust_strider", "dusk_moth",
             "dusk_moth_glow", "salvage_drone", "salvage_drone_glow", "dust_devil", "alien_villager_cindara",
             "alien_villager_cindara_glow", "alien_villager_glacira", "alien_villager_glacira_glow",
-            "alien_villager_duskborn", "alien_villager_duskborn_glow", "alien_villager_glow");
+            "alien_villager_duskborn", "alien_villager_duskborn_glow", "alien_villager_glow",
+            // Europa creatures (2.4.0).
+            "lantern_drifter", "lantern_drifter_glow", "vent_ray", "vent_ray_glow", "shell_skater",
+            "shell_skater_glow");
     /**
      * Vanilla sound events the ambience aliases, each checked present in the 26.1.2, 26.2 and 26.3 SoundEvents
      * registries. A new alias must be checked the same way and added here.
@@ -333,7 +336,8 @@ class SkyAssetsTest {
                 assertTrue(VANILLA_EVENTS.contains(name), e.getKey() + " aliases an unchecked event " + name);
             }
         }
-        assertEquals(22, ambient);
+        // 22 before 2.4.0, plus Europa's loop, additions and storm.
+        assertEquals(25, ambient);
         // Every nerospace:* sound named by a dimension type or biome attribute exists in sounds.json.
         Path data = repo().resolve("common/src/main/resources/data/nerospace");
         List<Path> files = new ArrayList<>();

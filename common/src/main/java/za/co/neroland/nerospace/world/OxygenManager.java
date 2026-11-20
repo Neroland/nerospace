@@ -386,12 +386,6 @@ public final class OxygenManager {
         player.setAirSupply(Math.min(airMax, Math.max(0, air)));
     }
 
-    /**
-     * A breathable zone: the diffusion {@link OxygenFieldManager} reads breathable at {@code center}
-     * (sealed rooms fill completely; an Oxygen Generator pressurises a bubble / its sealed room), or the
-     * player is within {@link #SAFE_RADIUS} of a Rocket Launch Pad — a permanent pressurised safe zone at
-     * the landing site (the pad is not a field source, so it stays a simple radius check).
-     */
     /** Whether this level's planet terraforms without ever becoming breathable. */
     private static boolean noAtmosphere(ServerLevel level) {
         var planet = za.co.neroland.nerospace.world.planet.Planets.get(level.dimension());
@@ -403,6 +397,12 @@ public final class OxygenManager {
                 && table.get().has(za.co.neroland.nerospace.world.planet.TerraformTable.Rule.NO_ATMOSPHERE);
     }
 
+    /**
+     * A breathable zone: the diffusion {@link OxygenFieldManager} reads breathable at {@code center}
+     * (sealed rooms fill completely; an Oxygen Generator pressurises a bubble / its sealed room), or the
+     * player is within {@link #SAFE_RADIUS} of a Rocket Launch Pad — a permanent pressurised safe zone at
+     * the landing site (the pad is not a field source, so it stays a simple radius check).
+     */
     private static boolean isBreathable(ServerLevel level, BlockPos center) {
         // Terraformed ground is permanently breathable (the Terraformer flags the chunk), except on a world whose
         // terraform table says it never gains an atmosphere (Europa).

@@ -446,7 +446,10 @@ public final class ModItems {
                         WOOLLY_DRIFT_SPAWN_EGG.get(),
                         za.co.neroland.nerospace.world.planet.luna.LunaContent.MOON_HOPPER_SPAWN_EGG.get(),
                         za.co.neroland.nerospace.world.planet.mars.MarsContent.DUST_STRIDER_SPAWN_EGG.get(),
-                        za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH_SPAWN_EGG.get()),
+                        za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH_SPAWN_EGG.get(),
+                        za.co.neroland.nerospace.world.planet.europa.EuropaContent.LANTERN_DRIFTER_SPAWN_EGG.get(),
+                        za.co.neroland.nerospace.world.planet.europa.EuropaContent.VENT_RAY_SPAWN_EGG.get(),
+                        za.co.neroland.nerospace.world.planet.europa.EuropaContent.SHELL_SKATER_SPAWN_EGG.get()),
                 CreativeModeTabs.COMBAT,
                 List.<ItemLike>of(
                         OXYGEN_SUIT_HELMET.get(), OXYGEN_SUIT_CHESTPLATE.get(), OXYGEN_SUIT_LEGGINGS.get(), OXYGEN_SUIT_BOOTS.get(),

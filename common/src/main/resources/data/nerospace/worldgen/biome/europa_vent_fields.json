@@ -1,5 +1,12 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.europa.loop",
+      "additions": {
+        "sound": "nerospace:ambient.europa.additions",
+        "tick_chance": 0.006
+      }
+    },
     "minecraft:visual/water_fog_color": "#03090a"
   },
   "carvers": [],
@@ -38,8 +45,22 @@
     "misc": [],
     "monster": [],
     "underground_water_creature": [],
-    "water_ambient": [],
-    "water_creature": []
+    "water_ambient": [
+      {
+        "type": "nerospace:lantern_drifter",
+        "maxCount": 8,
+        "minCount": 4,
+        "weight": 12
+      }
+    ],
+    "water_creature": [
+      {
+        "type": "nerospace:vent_ray",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 4
+      }
+    ]
   },
   "temperature": 0.0
 }

@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -17,7 +19,9 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
 import za.co.neroland.nerospace.block.rules.VentBloomRules;
+import za.co.neroland.nerospace.item.NerospaceSpawnEggItem;
 import za.co.neroland.nerospace.registry.ModBlocks;
+import za.co.neroland.nerospace.registry.ModEntities;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.world.planet.europa.block.BrineBlock;
@@ -37,6 +41,9 @@ import za.co.neroland.nerospace.world.planet.europa.block.SulfideOreBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.TubeMatBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.WarmBasaltBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.WetSeamOreBlock;
+import za.co.neroland.nerospace.world.planet.europa.entity.LanternDrifter;
+import za.co.neroland.nerospace.world.planet.europa.entity.ShellSkater;
+import za.co.neroland.nerospace.world.planet.europa.entity.VentRay;
 
 /**
  * Europa's blocks and items, registered through the shared providers. Nothing registers until {@link #init()} loads
@@ -171,6 +178,26 @@ public final class EuropaContent {
     /** Places one Brine block; crafting with it returns the empty bucket. */
     public static final RegistryEntry<BrineBucketItem> BRINE_BUCKET = ModItems.ITEMS.register("brine_bucket",
             key -> new BrineBucketItem(new Item.Properties().setId(key).stacksTo(1).craftRemainder(Items.BUCKET)));
+
+    // --- entities (design 9.1-9.3) --------------------------------------------------------------
+    /** Ocean drifter; natural spawns in the abyss, vent fields and terraformed sea, and the terraform herd. */
+    public static final RegistryEntry<EntityType<LanternDrifter>> LANTERN_DRIFTER = ModEntities.ENTITY_TYPES.register(
+            "lantern_drifter", key -> EntityType.Builder.<LanternDrifter>of(LanternDrifter::new,
+                    MobCategory.WATER_AMBIENT).sized(0.5F, 0.6F).eyeHeight(0.3F).clientTrackingRange(6).build(key));
+    public static final RegistryEntry<Item> LANTERN_DRIFTER_SPAWN_EGG = ModItems.ITEMS.register("lantern_drifter_spawn_egg",
+            key -> new NerospaceSpawnEggItem(new Item.Properties().setId(key), LANTERN_DRIFTER));
+    /** Ocean-floor glider of the vent fields. */
+    public static final RegistryEntry<EntityType<VentRay>> VENT_RAY = ModEntities.ENTITY_TYPES.register(
+            "vent_ray", key -> EntityType.Builder.<VentRay>of(VentRay::new, MobCategory.WATER_CREATURE)
+                    .sized(1.4F, 0.4F).eyeHeight(0.2F).clientTrackingRange(8).build(key));
+    public static final RegistryEntry<Item> VENT_RAY_SPAWN_EGG = ModItems.ITEMS.register("vent_ray_spawn_egg",
+            key -> new NerospaceSpawnEggItem(new Item.Properties().setId(key), VENT_RAY));
+    /** Ice-shell grazer of the surface and the shell. */
+    public static final RegistryEntry<EntityType<ShellSkater>> SHELL_SKATER = ModEntities.ENTITY_TYPES.register(
+            "shell_skater", key -> EntityType.Builder.<ShellSkater>of(ShellSkater::new, MobCategory.CREATURE)
+                    .sized(0.7F, 0.5F).eyeHeight(0.35F).clientTrackingRange(8).build(key));
+    public static final RegistryEntry<Item> SHELL_SKATER_SPAWN_EGG = ModItems.ITEMS.register("shell_skater_spawn_egg",
+            key -> new NerospaceSpawnEggItem(new Item.Properties().setId(key), SHELL_SKATER));
 
     private EuropaContent() {
     }

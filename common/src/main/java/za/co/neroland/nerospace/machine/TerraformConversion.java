@@ -34,6 +34,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.world.planet.PlanetDefinition;
 import za.co.neroland.nerospace.world.planet.Planets;
+import za.co.neroland.nerospace.world.planet.OpenOceanRules;
 import za.co.neroland.nerospace.world.planet.TerraformRefusal;
 import za.co.neroland.nerospace.world.planet.TerraformTable;
 import za.co.neroland.nerospace.world.planet.TerraformTables;
@@ -197,8 +198,14 @@ public final class TerraformConversion {
     public static void convertColumn(ServerLevel level, int x, int z, int surfaceY, int tier,
             Set<LevelChunk> biomeChanged) {
         TerraformTable table = tableFor(level);
-        if (table == null || !columnAllowed(level, table, x, surfaceY - 1, z)) {
-            return; // the station, or outside Nyxara's band: nothing roots here
+        if (table == null) {
+            return; // the station: nothing roots here
+        }
+        // OPEN_OCEAN worlds (Europa) read through loose cover (ice blades, snow layers); every other table: no change.
+        int coverTop = surfaceY;
+        surfaceY = lookThroughSurface(level, table, x, surfaceY, z);
+        if (!columnAllowed(level, table, x, surfaceY - 1, z)) {
+            return; // outside Nyxara's band: nothing roots here
         }
         BlockPos top = new BlockPos(x, surfaceY - 1, z);
         BlockState topState = level.getBlockState(top);
@@ -212,6 +219,7 @@ public final class TerraformConversion {
 
         if (!keepLivingTop && (topState.is(ModTags.Blocks.TERRAFORM_TO_GRASS) || isExtraSurface(table, topState))
                 && !topState.is(topBlock)) {
+            clearCover(level, x, surfaceY, coverTop, z);
             level.setBlock(top, topBlock.defaultBlockState(), Block.UPDATE_CLIENTS);
             for (int d = 1; d <= 3; d++) {
                 BlockPos below = new BlockPos(x, surfaceY - 1 - d, z);
@@ -431,8 +439,69 @@ public final class TerraformConversion {
         thawPermafrost(level, x, surfaceY, z);
         placeTree(level, table, topBlock, x, surfaceY, z);
         layLivingTop(level, table, topBlock, x, surfaceY, z);
-        TerraformFauna.seedHerd(level, table, x, surfaceY, z);
+        // OPEN_OCEAN runs before the herd; its herd is a water herd, seeded at the opened top cell (F10).
+        int herdY = table.has(TerraformTable.Rule.OPEN_OCEAN) ? openOcean(level, table, x, surfaceY, z) : surfaceY;
+        TerraformFauna.seedHerd(level, table, x, herdY, z);
         bumpStage(chunk, 3);
+    }
+
+    /**
+     * {@link TerraformTable.Rule#OPEN_OCEAN} on one stage-3 column: read through loose cover, and when the real top
+     * block is the table's surface top, turn it and up to {@link OpenOceanRules#DEPTH} convertible blocks under it
+     * ({@code surfaceTop}, {@code surfaceSub}, {@code extraSurface}) into liquid source blocks and remove the cover.
+     * Player builds, ores and machines are never eaten. Returns the Y the water herd seeds at: the top opened cell,
+     * or the air cell above the unopened top (where the water-herd guard then refuses).
+     */
+    private static int openOcean(ServerLevel level, TerraformTable table, int x, int surfaceY, int z) {
+        int top = lookThroughSurface(level, table, x, surfaceY, z);
+        Block topBlock = blockOr(table.surfaceTop(), Blocks.GRASS_BLOCK);
+        Block subBlock = blockOr(table.surfaceSub(), Blocks.DIRT);
+        boolean topIsSurface = level.getBlockState(new BlockPos(x, top - 1, z)).is(topBlock);
+        int run = 0;
+        for (int d = 1; d <= OpenOceanRules.DEPTH; d++) {
+            BlockState s = level.getBlockState(new BlockPos(x, top - 1 - d, z));
+            if (!(s.is(topBlock) || s.is(subBlock) || isExtraSurface(table, s))) {
+                break;
+            }
+            run++;
+        }
+        int cells = OpenOceanRules.cells(topIsSurface, run);
+        if (cells == 0) {
+            return top;
+        }
+        clearCover(level, x, top, surfaceY, z);
+        BlockState liquid = blockOr(table.liquid(), Blocks.WATER).defaultBlockState();
+        for (int i = 0; i < cells; i++) {
+            level.setBlock(new BlockPos(x, top - 1 - i, z), liquid, Block.UPDATE_CLIENTS);
+        }
+        return top - 1;
+    }
+
+    /**
+     * The surface Y ({@code y} of the cell above the top block) after reading through loose cover. Only an
+     * {@code OPEN_OCEAN} table looks through; every other table gets {@code surfaceY} back unread.
+     */
+    private static int lookThroughSurface(ServerLevel level, TerraformTable table, int x, int surfaceY, int z) {
+        if (!table.has(TerraformTable.Rule.OPEN_OCEAN)) {
+            return surfaceY;
+        }
+        java.util.List<String> column = new java.util.ArrayList<>();
+        for (int d = 0; d < OpenOceanRules.MAX_CELLS; d++) {
+            BlockState s = level.getBlockState(new BlockPos(x, surfaceY - 1 - d, z));
+            column.add(BuiltInRegistries.BLOCK.getKey(s.getBlock()).toString());
+        }
+        int i = OpenOceanRules.topIndex(column);
+        return i < 0 ? surfaceY : surfaceY - i;
+    }
+
+    /** Removes the loose cover between the real surface ({@code fromY}) and the old surface ({@code toY}). */
+    private static void clearCover(ServerLevel level, int x, int fromY, int toY, int z) {
+        for (int y = fromY; y < toY; y++) {
+            BlockPos p = new BlockPos(x, y, z);
+            if (OpenOceanRules.lookThrough(BuiltInRegistries.BLOCK.getKey(level.getBlockState(p).getBlock()).toString())) {
+                level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+            }
+        }
     }
 
     /**

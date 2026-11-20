@@ -36,7 +36,7 @@ class GallerySkyStatesTest {
             "greenxertz", List.of("spore_bloom", "twin_noon"),
             "nyxara", List.of("flare", "galaxy_side", "band", "dayside", "nightside"),
             "station", List.of("planet_night", "sunrise"),
-            "europa", List.of("eclipse", "plume_fall"));
+            "europa", List.of("eclipse", "plume_fall", "radiation_storm"));
 
     @Test
     @DisplayName("every world has a row, with dawn, noon, dusk, night and its own states, no duplicates")
@@ -106,6 +106,9 @@ class GallerySkyStatesTest {
                 if (s.weather() == Weather.START) {
                     assertTrue(p.weather().hasWeather(), p.langId() + " " + s.name());
                 }
+                if (s.weather() == Weather.START_SECONDARY) {
+                    assertTrue(p.secondaryWeather().hasWeather(), p.langId() + " " + s.name());
+                }
             }
         }
         assertEquals(Weather.START, state("mars", "dust_storm").weather());
@@ -114,6 +117,10 @@ class GallerySkyStatesTest {
         assertEquals(Weather.START, state("greenxertz", "spore_bloom").weather());
         assertEquals(Weather.START, state("nyxara", "flare").weather());
         assertEquals(Weather.START, state("europa", "plume_fall").weather());
+        // The radiation storm is Europa's second event and may start at its gallery phase (the tail window).
+        assertEquals(Weather.START_SECONDARY, state("europa", "radiation_storm").weather());
+        assertTrue(Planets.EUROPA.weatherMayStart(Planets.EUROPA.secondaryWeather().event(),
+                phase("europa", "radiation_storm")));
         assertEquals(Weather.CLEAR, state("mars", "noon").weather());
     }
 

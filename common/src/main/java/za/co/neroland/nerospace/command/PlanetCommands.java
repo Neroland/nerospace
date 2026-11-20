@@ -300,6 +300,12 @@ public final class PlanetCommands {
             } else {
                 weatherOff = true;
             }
+        } else if (s.weather() == GallerySkyStates.Weather.START_SECONDARY) {
+            if (PlanetWeather.enabledFor(planet)) {
+                PlanetWeather.startSecondaryAtPeak(level);
+            } else {
+                weatherOff = true;
+            }
         } else if (PlanetWeather.event(level) != WeatherEvent.NONE) {
             PlanetWeather.clear(level);
         }

@@ -1,5 +1,12 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "loop": "nerospace:ambient.europa.loop",
+      "additions": {
+        "sound": "nerospace:ambient.europa.additions",
+        "tick_chance": 0.006
+      }
+    },
     "minecraft:visual/water_fog_color": "#020810"
   },
   "carvers": [],
@@ -33,7 +40,14 @@
   "spawners": {
     "ambient": [],
     "axolotls": [],
-    "creature": [],
+    "creature": [
+      {
+        "type": "nerospace:shell_skater",
+        "maxCount": 3,
+        "minCount": 2,
+        "weight": 8
+      }
+    ],
     "misc": [],
     "monster": [],
     "underground_water_creature": [],

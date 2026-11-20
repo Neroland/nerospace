@@ -22,6 +22,18 @@ public final class FaunaStats {
     public static final double MOTH_FLYING_SPEED = 0.5D;
     public static final int MOTH_MAX_LIGHT = 7;
 
+    /** Lantern Drifter (Europa ocean): a small glowing bell, drifts in pulses. */
+    public static final double DRIFTER_HEALTH = 6.0D;
+    public static final double DRIFTER_SPEED = 0.6D;
+
+    /** Vent Ray (Europa ocean floor): a flat glider that circles the hydrothermal vents. */
+    public static final double RAY_HEALTH = 14.0D;
+    public static final double RAY_SPEED = 0.9D;
+
+    /** Shell Skater (Europa ice): a six-legged strider that glides on ice. */
+    public static final double SKATER_HEALTH = 8.0D;
+    public static final double SKATER_SPEED = 0.3D;
+
     private FaunaStats() {
     }
 

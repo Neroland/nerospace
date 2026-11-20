@@ -8,7 +8,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import za.co.neroland.nerospace.block.rules.VentWarmthRules;
-import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.world.planet.ColdShelterRules;
 import za.co.neroland.nerospace.world.planet.europa.block.HydrothermalVentBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.WarmBasaltBlock;
@@ -36,7 +35,47 @@ public final class EuropaWarmth {
 
     /** Server lookup, called through {@code ColdShelter} only when cold would otherwise bite. False off Europa. */
     public static boolean shieldedFromCold(ServerLevel level, BlockPos pos) {
-        return ModDimensions.EUROPA_LEVEL.equals(level.dimension()) && scan(level, pos);
+        return appliesTo(level.dimension().identifier()) && scan(level, pos);
+    }
+
+    /** Europa's dimension id ({@code ModDimensions.EUROPA_LEVEL}). */
+    public static final net.minecraft.resources.Identifier EUROPA_DIMENSION =
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("nerospace", "europa");
+
+    /** The Europa-only gate: the shield is looked for in Europa's dimension and nowhere else. */
+    public static boolean appliesTo(net.minecraft.resources.Identifier dimension) {
+        return EUROPA_DIMENSION.equals(dimension);
+    }
+
+    /** What a scanned cell is, for {@link #cellShields}. */
+    public enum Cell { VENT, BASALT, OTHER }
+
+    /**
+     * Pure scan predicate: does one cell shield the scan centre. A vent shields when active and within
+     * {@link VentWarmthRules#RADIUS}; vent basalt when warm ({@code DISTANCE} 3 or less) and within
+     * {@link #BASALT_RADIUS}; nothing else does.
+     *
+     * @param active          the vent's {@code ACTIVE} (ignored for other cells)
+     * @param basaltDistance  the basalt's {@code DISTANCE} (ignored for other cells)
+     * @param distanceSquared squared offset from the scan centre
+     */
+    public static boolean cellShields(Cell cell, boolean active, int basaltDistance, int distanceSquared) {
+        return switch (cell) {
+            case VENT -> VentWarmthRules.shielded(active, Math.sqrt(distanceSquared));
+            case BASALT -> basaltReaches(distanceSquared)
+                    && za.co.neroland.nerospace.block.rules.ConductRules.warm(basaltDistance);
+            case OTHER -> false;
+        };
+    }
+
+    /**
+     * Whether the client cache answers: same level object (by identity; a new or unloaded level never hits), same
+     * position, same 10-tick bucket.
+     */
+    public static boolean clientCacheHit(Object cachedLevel, Object level, long cachedPos, long cachedBucket,
+            long pos, long bucket) {
+        return ColdShelterRules.cacheHit(cachedLevel != null && cachedLevel == level, cachedPos, cachedBucket, pos,
+                bucket);
     }
 
     /**
@@ -44,12 +83,12 @@ public final class EuropaWarmth {
      * per position for {@link ColdShelterRules#bucket(long) one 10-tick bucket}.
      */
     public static boolean shieldedClient(Level level, BlockPos pos) {
-        if (!ModDimensions.EUROPA_LEVEL.equals(level.dimension())) {
+        if (!appliesTo(level.dimension().identifier())) {
             return false;
         }
         long key = pos.asLong();
         long bucket = ColdShelterRules.bucket(level.getGameTime());
-        if (ColdShelterRules.cacheHit(clientLevel.get() == level, clientPos, clientBucket, key, bucket)) {
+        if (clientCacheHit(clientLevel.get(), level, clientPos, clientBucket, key, bucket)) {
             return clientValue;
         }
         boolean value = scan(level, pos);
@@ -80,12 +119,12 @@ public final class EuropaWarmth {
                     }
                     BlockState s = level.getBlockState(cursor);
                     if (s.is(EuropaContent.HYDROTHERMAL_VENT.get())
-                            && VentWarmthRules.shielded(s.getValue(HydrothermalVentBlock.ACTIVE),
-                                    Math.sqrt(distanceSquared))) {
+                            && cellShields(Cell.VENT, s.getValue(HydrothermalVentBlock.ACTIVE), 0, distanceSquared)) {
                         return true;
                     }
-                    if (basaltReaches(distanceSquared) && s.is(EuropaContent.VENT_BASALT.get())
-                            && WarmBasaltBlock.warm(s)) {
+                    if (s.is(EuropaContent.VENT_BASALT.get()) && s.hasProperty(WarmBasaltBlock.DISTANCE)
+                            && cellShields(Cell.BASALT, false, s.getValue(WarmBasaltBlock.DISTANCE),
+                                    distanceSquared)) {
                         return true;
                     }
                 }

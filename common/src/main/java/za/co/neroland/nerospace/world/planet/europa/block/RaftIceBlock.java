@@ -74,6 +74,11 @@ public class RaftIceBlock extends Block {
             BlockPos p = group.get(i);
             keys[i] = p.asLong();
             ys[i] = p.getY();
+            if (!level.isLoaded(p.below())) {
+                // Never load a chunk for this check: an unread neighbour counts as support (verifier V07).
+                supported[i] = true;
+                continue;
+            }
             BlockState below = level.getBlockState(p.below());
             supported[i] = p.getY() <= level.getMinY() || (!below.is(this) && !FallingBlock.isFree(below));
         }
@@ -103,6 +108,10 @@ public class RaftIceBlock extends Block {
             BlockPos at = queue.poll();
             for (Direction d : Direction.values()) {
                 BlockPos n = at.relative(d);
+                if (!level.isLoaded(n)) {
+                    // Stop at an unloaded chunk: a truncated group never falls (verifier V07).
+                    return true;
+                }
                 if (out.contains(n) || !level.getBlockState(n).is(this)) {
                     continue;
                 }

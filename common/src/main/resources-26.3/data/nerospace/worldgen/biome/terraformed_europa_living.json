@@ -1,5 +1,12 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "additions": {
+        "sound": "nerospace:ambient.europa.additions",
+        "tick_chance": 0.006
+      },
+      "loop": "nerospace:ambient.europa.loop"
+    },
     "minecraft:gameplay/natural_mob_spawns": {
       "argument": {
         "spawn_costs": {},
@@ -10,8 +17,24 @@
           "misc": [],
           "monster": [],
           "underground_water_creature": [],
-          "water_ambient": [],
-          "water_creature": []
+          "water_ambient": [
+            {
+              "count": {
+                "max_inclusive": 6,
+                "min_inclusive": 3,
+                "type": "minecraft:uniform"
+              },
+              "type": "nerospace:lantern_drifter",
+              "weight": 12
+            }
+          ],
+          "water_creature": [
+            {
+              "count": 1,
+              "type": "nerospace:vent_ray",
+              "weight": 2
+            }
+          ]
         }
       },
       "modifier": "overlay"

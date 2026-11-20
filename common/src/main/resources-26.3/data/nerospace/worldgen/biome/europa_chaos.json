@@ -1,12 +1,29 @@
 {
   "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "additions": {
+        "sound": "nerospace:ambient.europa.additions",
+        "tick_chance": 0.006
+      },
+      "loop": "nerospace:ambient.europa.loop"
+    },
     "minecraft:gameplay/natural_mob_spawns": {
       "argument": {
         "spawn_costs": {},
         "spawns_by_category": {
           "ambient": [],
           "axolotls": [],
-          "creature": [],
+          "creature": [
+            {
+              "count": {
+                "max_inclusive": 3,
+                "min_inclusive": 2,
+                "type": "minecraft:uniform"
+              },
+              "type": "nerospace:shell_skater",
+              "weight": 8
+            }
+          ],
           "misc": [],
           "monster": [],
           "underground_water_creature": [],

@@ -69,14 +69,24 @@ public record PlanetCardData(ResourceKey<Level> dimension, Component name, doubl
 
     /** {@link #suitKey(boolean, Hazard, boolean, OxygenManager.SuitTier)} for a card with no Tier 2 requirement. */
     public static String suitKey(boolean airless, Hazard hazard, boolean needsRadLining) {
-        return suitKey(airless, hazard, needsRadLining, OxygenManager.SuitTier.TIER_1);
+        return baseSuitKey(airless, hazard, needsRadLining, OxygenManager.SuitTier.TIER_1);
     }
 
     /**
-     * The suit line key: T1 / T2 / T2+Thermal / T2+Cryo / T2+Rad, or none for a breathable world. A COLD world whose
+     * The suit line key: T1 / T2 / T2+Thermal / T2+Cryo / T2+Rad / Cryo+Rad, or none for a breathable world. A COLD world whose
      * card requires {@code TIER_2} reads plain T2 (any Tier 2 class suit keeps that cold out).
      */
     public static String suitKey(boolean airless, Hazard hazard, boolean needsRadLining,
+            OxygenManager.SuitTier requiredSuit) {
+        // 2.4.0: a frigid cold world (no Tier 2 requirement) that also needs the lining asks for both (Europa). No
+        // earlier world has a frigid cold together with harmful radiation, so their lines are unchanged.
+        if (hazard == Hazard.COLD && needsRadLining && requiredSuit != OxygenManager.SuitTier.TIER_2) {
+            return "gui.nerospace.card.suit_cryo_rad";
+        }
+        return baseSuitKey(airless, hazard, needsRadLining, requiredSuit);
+    }
+
+    private static String baseSuitKey(boolean airless, Hazard hazard, boolean needsRadLining,
             OxygenManager.SuitTier requiredSuit) {
         if (needsRadLining || hazard == Hazard.RADIATION) {
             return "gui.nerospace.card.suit_rad";

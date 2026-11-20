@@ -367,6 +367,10 @@ public final class NerospaceDemoModule implements DemoModule {
             if (PlanetWeather.enabledFor(planet)) {
                 PlanetWeather.startAtPeak(world);
             }
+        } else if (state.weather() == GallerySkyStates.Weather.START_SECONDARY) {
+            if (PlanetWeather.enabledFor(planet)) {
+                PlanetWeather.startSecondaryAtPeak(world);
+            }
         } else if (PlanetWeather.event(world) != WeatherEvent.NONE) {
             PlanetWeather.clear(world);
         }

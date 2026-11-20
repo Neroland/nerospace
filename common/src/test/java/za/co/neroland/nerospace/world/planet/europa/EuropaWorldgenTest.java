@@ -470,7 +470,9 @@ class EuropaWorldgenTest {
                         features(tree, b).contains("nerospace:europa_europium_ore_placed"), tree + " " + b);
             }
         }
-        // The vent scans start in always-open water and reach below the lowest possible floor.
+        // The vent scans start in always-open water and, from every start height, reach the top of the lowest
+        // possible floor (FLOOR_MIN - 1): the scan tests the start cell and max_steps more (max_steps is at most 32).
+        // Cost bound: at most 33 reads per try.
         for (String id : List.of("europa_hydrothermal_vent_placed", "europa_smoker_chimney_placed",
                 "europa_tube_mat_patch_placed")) {
             JsonArray p = placement("resources", id);
@@ -478,10 +480,23 @@ class EuropaWorldgenTest {
             assertTrue(start[0] > EuropaNumbers.FLOOR_MAX && start[1] < EuropaNumbers.ROOF_MIN, id);
             JsonObject scan = modifier(p, "minecraft:environment_scan");
             assertEquals("down", scan.get("direction_of_search").getAsString());
-            assertTrue(start[0] - scan.get("max_steps").getAsInt() < EuropaNumbers.FLOOR_MIN, id);
+            assertTrue(scan.get("max_steps").getAsInt() <= 32, id + " max_steps within the codec range");
+            assertTrue(start[1] - scan.get("max_steps").getAsInt() <= EuropaNumbers.FLOOR_MIN - 1,
+                    id + " the highest start still reaches the lowest floor top");
             assertTrue(scan.toString().contains("nerospace:vent_basalt") && scan.toString().contains("minecraft:water"));
             assertTrue(EuropaNumbers.depthAt(start[1]) >= 1.5625, id + " starts inside the vent-field band");
         }
+    }
+
+    /**
+     * A block-state provider as {@code tree} writes it. On 26.3 a bare string in a provider position is a reference
+     * into the {@code block_state_provider} registry, not a block, so it is rejected there (verifier V3-02).
+     */
+    private static String provider(String tree, JsonElement s) {
+        if (tree.equals("resources-26.3")) {
+            assertFalse(s.isJsonPrimitive(), "26.3 provider must be an object, not a registry reference: " + s);
+        }
+        return state(s);
     }
 
     /** A block state as either tree writes it: name and properties. */
@@ -516,21 +531,34 @@ class EuropaWorldgenTest {
         assertEquals("nerospace:oxidant_ice[charge=3]", state(cfg.apply("europa_oxidant_ice")
                 .getAsJsonArray("targets").get(0).getAsJsonObject().get("state")));
         assertEquals("nerospace:hydrothermal_vent[active=true]",
-                state(cfg.apply("europa_hydrothermal_vent").get("to_place")));
-        assertEquals("nerospace:cryovent[charged=true]", state(cfg.apply("europa_cryovent").get("to_place")));
-        assertEquals("nerospace:tube_mat[waterlogged=true]", state(cfg.apply("europa_tube_mat_patch").get("to_place")));
+                provider(tree, cfg.apply("europa_hydrothermal_vent").get("to_place")));
+        assertEquals("nerospace:cryovent[charged=true]", provider(tree, cfg.apply("europa_cryovent").get("to_place")));
+        assertEquals("nerospace:tube_mat[waterlogged=true]",
+                provider(tree, cfg.apply("europa_tube_mat_patch").get("to_place")));
+        assertEquals("nerospace:penitente_blade[]", provider(tree, cfg.apply("europa_penitente_patch").get("to_place")));
         JsonArray layers = cfg.apply("europa_smoker_chimney").getAsJsonArray("layers");
         assertEquals(2, layers.size());
         assertEquals("nerospace:smoker_chimney[capped=false, waterlogged=true]",
-                state(layers.get(0).getAsJsonObject().get("provider")));
+                provider(tree, layers.get(0).getAsJsonObject().get("provider")));
         assertEquals("nerospace:smoker_chimney[capped=true, waterlogged=true]",
-                state(layers.get(1).getAsJsonObject().get("provider")));
+                provider(tree, layers.get(1).getAsJsonObject().get("provider")));
         assertTrue(cfg.apply("europa_smoker_chimney").get("prioritize_tip").getAsBoolean(), "the capped tip is kept");
         // vent_basalt is never written by a feature (its natural DISTANCE stays the default 4).
         for (String id : CONFIGURED) {
             String text = Files.readString(EuropaFiles.data(tree, configuredDir(tree) + id + ".json"),
                     StandardCharsets.UTF_8);
             assertFalse(text.contains("\"distance\""), id);
+        }
+        // Every feature file of the 26.3 tree (all worlds): no bare-string to_place / provider (V3-02).
+        if (tree.equals("resources-26.3")) {
+            try (java.util.stream.Stream<java.nio.file.Path> files = Files.list(EuropaFiles.commonMain()
+                    .resolve("resources-26.3/data/nerospace/worldgen/feature"))) {
+                for (java.nio.file.Path f : (Iterable<java.nio.file.Path>) files::iterator) {
+                    String text = Files.readString(f, StandardCharsets.UTF_8);
+                    assertFalse(java.util.regex.Pattern.compile("\"(to_place|provider)\"\\s*:\\s*\"")
+                            .matcher(text).find(), f.getFileName() + " has a bare-string provider");
+                }
+            }
         }
     }
 }

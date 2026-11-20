@@ -2,6 +2,7 @@ package za.co.neroland.nerospace.world.planet.europa.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -28,9 +29,14 @@ public final class EuropaHeat {
         return !state.hasProperty(HydrothermalVentBlock.ACTIVE) || state.getValue(HydrothermalVentBlock.ACTIVE);
     }
 
-    /** Water (or any other fluid) or brine. */
+    /** Water or brine; lava and every other fluid are not (verifier V05). */
     public static boolean isLiquid(BlockState state) {
-        return !state.getFluidState().isEmpty() || state.is(EuropaContent.BRINE.get());
+        return liquid(state.getFluidState().is(FluidTags.WATER), isBrine(state));
+    }
+
+    /** Pure form of {@link #isLiquid}: water or brine. */
+    public static boolean liquid(boolean water, boolean brine) {
+        return water || brine;
     }
 
     public static boolean isBrine(BlockState state) {

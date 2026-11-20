@@ -21,9 +21,12 @@ class WetSeamRulesTest {
         assertEquals(6, WetSeamRules.count(3, 2));
         assertEquals(3, WetSeamRules.count(3, 1));
         assertEquals(8, WetSeamRules.count(5, 2));
-        assertEquals(8, WetSeamRules.count(12, 1));
+        assertEquals(12, WetSeamRules.count(12, 1));
         assertEquals(0, WetSeamRules.count(0, 2));
-        assertTrue(WetSeamRules.count(64, 2) <= WetSeamRules.CAP);
+        // A Fortune III stack above the cap is never cut by being wet (verifier V02).
+        assertEquals(12, WetSeamRules.count(12, 2));
+        assertTrue(WetSeamRules.count(9, 2) >= WetSeamRules.count(9, 1));
+        assertEquals(64, WetSeamRules.count(64, 2));
     }
 
     @Test

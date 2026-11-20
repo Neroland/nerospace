@@ -267,5 +267,24 @@
   "entity.rover.pickup": {
     "subtitle": "subtitles.nerospace.rover.pickup",
     "sounds": [{ "name": "block.metal.break", "type": "event" }]
+  },
+  "ambient.europa.loop": {
+    "subtitle": "subtitles.nerospace.ambient.europa.loop",
+    "sounds": [
+      { "name": "minecraft:ambient.soul_sand_valley.loop", "type": "event", "volume": 0.18, "pitch": 1.1, "stream": true }
+    ]
+  },
+  "ambient.europa.additions": {
+    "subtitle": "subtitles.nerospace.ambient.europa.additions",
+    "sounds": [
+      { "name": "minecraft:block.amethyst_block.chime", "type": "event", "volume": 0.3, "pitch": 0.9 },
+      { "name": "minecraft:block.powder_snow.step", "type": "event", "volume": 0.2, "pitch": 0.5 }
+    ]
+  },
+  "ambient.europa.storm": {
+    "subtitle": "subtitles.nerospace.ambient.europa.storm",
+    "sounds": [
+      { "name": "minecraft:block.beacon.ambient", "type": "event", "volume": 0.45, "pitch": 1.9, "stream": true }
+    ]
   }
 }
