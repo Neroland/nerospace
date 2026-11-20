@@ -64,7 +64,11 @@ public record TerraformTable(
         /** Luna: the Living edge glows — a shimmer-dome particle ring at the terraformer's radius (no block). */
         SHIMMER_DOME,
         /** Mars: stage 2 opens one spring per chunk at the chunk's lowest surface cell (first open water). */
-        OPEN_WATER_SPRING
+        OPEN_WATER_SPRING,
+        /** Europa: at stage 3 the top surface block and up to three convertible blocks under it become the liquid. */
+        OPEN_OCEAN,
+        /** Europa: terraformed ground is not breathable (only oxygen fields, pads and outside pressure count). */
+        NO_ATMOSPHERE
     }
 
     public TerraformTable {

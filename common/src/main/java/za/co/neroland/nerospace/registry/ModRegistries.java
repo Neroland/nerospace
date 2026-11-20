@@ -30,6 +30,7 @@ public final class ModRegistries {
         za.co.neroland.nerospace.world.planet.glacira.GlaciraContent.init();
         za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzContent.init();
         za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.init();
+        za.co.neroland.nerospace.world.planet.europa.EuropaContent.init();
         // Orbital station blocks (hull, truss, wings, plates, trays, telescope).
         za.co.neroland.nerospace.world.station.StationContent.init();
         // The Docking Ring (a DOCK landing node) — block + item.

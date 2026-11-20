@@ -54,6 +54,9 @@ public final class PlanetAccents {
         if (d.equals(ModDimensions.NYXARA_LEVEL)) {
             return new int[] { 0xFF9B5DE5, 0xFF5B2D8E };
         }
+        if (d.equals(ModDimensions.EUROPA_LEVEL)) {
+            return new int[] { 0xFFE4EEF2, 0xFFA8583A };
+        }
         return new int[] { HOME, HOME_DARK };
     }
 }

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "rocket_fuel_canister",
+  "ingredients": [
+    "minecraft:blaze_powder",
+    "nerospace:deuterium_cell",
+    "nerospace:deuterium_cell",
+    "#c:ingots/iron"
+  ],
+  "result": {
+    "count": 2,
+    "id": "nerospace:rocket_fuel_canister"
+  }
+}

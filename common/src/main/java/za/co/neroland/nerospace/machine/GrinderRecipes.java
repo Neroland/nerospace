@@ -3,6 +3,8 @@ package za.co.neroland.nerospace.machine;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -49,6 +51,13 @@ public final class GrinderRecipes {
                 recipes.add(new Grinding(input, output));
             }
         }
+        for (GrinderRows.Row row : GrinderRows.EUROPA) {
+            ItemStack input = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(row.input())));
+            ItemStack output = getResult(input);
+            if (!input.isEmpty() && !output.isEmpty()) {
+                recipes.add(new Grinding(input, output));
+            }
+        }
         return List.copyOf(recipes);
     }
 
@@ -75,6 +84,10 @@ public final class GrinderRecipes {
         }
         if (input.is(ModItems.XERTZ_QUARTZ_ORE_ITEM.get())) {
             return new ItemStack(ModItems.XERTZ_QUARTZ.get(), 2);
+        }
+        GrinderRows.Row row = GrinderRows.find(BuiltInRegistries.ITEM.getKey(input.getItem()).toString());
+        if (row != null) {
+            return new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(row.output())), row.count());
         }
         return ItemStack.EMPTY;
     }

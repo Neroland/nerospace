@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nerospace:block/hydrothermal_vent_top",
+    "side": "nerospace:block/hydrothermal_vent_side",
+    "bottom": "nerospace:block/hydrothermal_vent_side"
+  }
+}

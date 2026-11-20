@@ -32,6 +32,16 @@ public final class RadiationRules {
         if (NYXARA_BAND.equals(biomeId) || isTerraformedGrove(biomeId)) {
             return 1; // the terraformed twilight grove only roots in the band, so it keeps the band's level
         }
+        if (biomeId != null) {
+            // Europa: nothing reaches under the ice, and the terraformed haze takes the surface down to 1.
+            if (biomeId.startsWith("nerospace:europa_shell") || biomeId.startsWith("nerospace:europa_abyss")
+                    || biomeId.startsWith("nerospace:europa_vent")) {
+                return 0;
+            }
+            if (biomeId.startsWith("nerospace:terraformed_europa_")) {
+                return 1;
+            }
+        }
         return clamp(traitRadiation);
     }
 

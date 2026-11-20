@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "nerospace:europa_ice_bricks",
+    "nerospace:europa_ice_bricks",
+    "nerospace:europa_ice_bricks",
+    "nerospace:europa_ice_bricks"
+  ],
+  "result": {
+    "id": "minecraft:packed_ice"
+  }
+}

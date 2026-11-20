@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nerospace:brine_salt",
+    "nerospace:brine_salt",
+    "nerospace:brine_salt",
+    "nerospace:brine_salt",
+    "nerospace:sulfur"
+  ],
+  "result": {
+    "count": 2,
+    "id": "nerospace:perchlorate_oxidiser"
+  }
+}

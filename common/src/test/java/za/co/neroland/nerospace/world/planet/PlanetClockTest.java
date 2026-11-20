@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.world.planet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
@@ -107,6 +108,8 @@ class PlanetClockTest {
         assertEquals(48_000L, Planets.CINDARA.traits().dayLengthTicks());
         assertEquals(72_000L, Planets.GLACIRA.traits().dayLengthTicks());
         assertEquals(0L, Planets.NYXARA.traits().dayLengthTicks());
+        assertEquals(85_200L, Planets.EUROPA.traits().dayLengthTicks());
+        assertFalse(Planets.EUROPA.traits().fixedClock(), "Jupiter is fixed by the sky profile, not the clock");
         assertEquals(0.30, Planets.STATION.pinnedPhase(), EPS);
         assertEquals(0.25, Planets.NYXARA.pinnedPhase(), EPS);
     }

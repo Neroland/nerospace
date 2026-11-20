@@ -1,0 +1,83 @@
+{
+  "type": "minecraft:add",
+  "argument1": {
+    "type": "minecraft:add",
+    "argument1": {
+      "type": "minecraft:add",
+      "argument1": {
+        "type": "minecraft:y_clamped_gradient",
+        "from_y": 160,
+        "to_y": 224,
+        "from_value": 1.0,
+        "to_value": -1.0
+      },
+      "argument2": {
+        "type": "minecraft:mul",
+        "argument1": 0.375,
+        "argument2": {
+          "type": "minecraft:clamp",
+          "input": {
+            "type": "minecraft:noise",
+            "noise": "nerospace:europa/surface",
+            "xz_scale": 1.0,
+            "y_scale": 0.0
+          },
+          "min": -1.0,
+          "max": 1.0
+        }
+      }
+    },
+    "argument2": {
+      "type": "minecraft:mul",
+      "argument1": {
+        "type": "minecraft:mul",
+        "argument1": 0.4,
+        "argument2": {
+          "type": "minecraft:clamp",
+          "input": {
+            "type": "minecraft:add",
+            "argument1": "nerospace:europa/erosion",
+            "argument2": -0.35
+          },
+          "min": 0.0,
+          "max": 0.625
+        }
+      },
+      "argument2": {
+        "type": "minecraft:abs",
+        "argument": {
+          "type": "minecraft:clamp",
+          "input": {
+            "type": "minecraft:noise",
+            "noise": "nerospace:europa/rafts",
+            "xz_scale": 1.0,
+            "y_scale": 0.0
+          },
+          "min": -1.0,
+          "max": 1.0
+        }
+      }
+    }
+  },
+  "argument2": {
+    "type": "minecraft:mul",
+    "argument1": -0.125,
+    "argument2": {
+      "type": "minecraft:clamp",
+      "input": {
+        "type": "minecraft:add",
+        "argument1": 1.0,
+        "argument2": {
+          "type": "minecraft:mul",
+          "argument1": -20.0,
+          "argument2": {
+            "type": "minecraft:abs",
+            "argument": "nerospace:europa/ridges"
+          }
+        }
+      },
+      "min": 0.0,
+      "max": 1.0
+    }
+  }
+}

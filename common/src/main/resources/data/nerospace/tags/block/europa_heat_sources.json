@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:hydrothermal_vent",
+    "minecraft:lava",
+    "minecraft:magma_block",
+    "minecraft:campfire",
+    "minecraft:soul_campfire"
+  ]
+}

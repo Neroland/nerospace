@@ -17,12 +17,14 @@ class DestinationListTest {
     private static final int VISIBLE = 3;
 
     @Test
-    @DisplayName("Tier 4 from the overworld: every visible row maps to the card drawn in it, Nyxara included")
+    @DisplayName("Tier 4 from the overworld: every visible row maps to the card drawn in it, Nyxara and Europa included")
     void tier4RowsMapToTheirCards() {
         int mask = Destinations.availableMask(RocketTier.TIER_4, ModDimensions.OVERWORLD);
         List<Integer> entries = DestinationList.entries(mask, Destinations.HOME, Destinations.all().size(), List.of());
         assertEquals(List.of(Destinations.STATION, Destinations.GREENXERTZ, Destinations.CINDARA,
-                Destinations.GLACIRA, Destinations.LUNA, Destinations.MARS, Destinations.NYXARA), entries.subList(1, 8));
+                Destinations.GLACIRA, Destinations.LUNA, Destinations.MARS, Destinations.NYXARA, Destinations.EUROPA),
+                entries.subList(1, 9));
+        assertEquals(9, entries.size());
         assertEquals(Destinations.HOME, entries.get(0), "the you-are-here node leads the list");
         for (int scroll = 0; scroll <= entries.size() - VISIBLE; scroll++) {
             for (int row = 0; row < VISIBLE; row++) {
@@ -30,7 +32,7 @@ class DestinationListTest {
             }
         }
         int last = DestinationList.clampScroll(99, entries.size(), VISIBLE);
-        assertEquals(Destinations.NYXARA, DestinationList.indexAt(entries, last, VISIBLE - 1, VISIBLE));
+        assertEquals(Destinations.EUROPA, DestinationList.indexAt(entries, last, VISIBLE - 1, VISIBLE));
         assertEquals(-1, DestinationList.indexAt(entries, 0, VISIBLE, VISIBLE));
     }
 

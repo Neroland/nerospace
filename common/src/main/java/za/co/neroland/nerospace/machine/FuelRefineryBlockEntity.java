@@ -184,7 +184,8 @@ public class FuelRefineryBlockEntity extends BlockEntity
             case CARBON_SLOT -> stack.is(Items.COAL) || stack.is(Items.CHARCOAL);
             case CATALYST_SLOT -> stack.is(Items.BLAZE_POWDER);
             case OXIDISER_SLOT -> stack.is(za.co.neroland.nerospace.world.planet.mars.MarsContent.PERCHLORATE_OXIDISER.get());
-            case ILMENITE_SLOT -> stack.is(za.co.neroland.nerospace.world.planet.luna.LunaContent.RAW_ILMENITE.get());
+            case ILMENITE_SLOT -> stack.is(za.co.neroland.nerospace.world.planet.luna.LunaContent.RAW_ILMENITE.get())
+                    || isOxidantCrystal(stack);
             default -> false;
         };
     }
@@ -226,8 +227,17 @@ public class FuelRefineryBlockEntity extends BlockEntity
                 RefineryRules.boosted(this.oxidisedMb, !this.items.get(OXIDISER_SLOT).isEmpty()));
     }
 
+    private static boolean isOxidantCrystal(ItemStack stack) {
+        return stack.is(za.co.neroland.nerospace.world.planet.europa.EuropaContent.OXIDANT_CRYSTAL.get());
+    }
+
     /** Whether the ilmenite line can work this tick (input, room for the ingot, power). */
     public boolean canRefineIlmenite() {
+        if (isOxidantCrystal(this.items.get(ILMENITE_SLOT))) {
+            // Europa line: a crystal needs power and room for all of its oxygen, never the titanium slot.
+            return this.energy.getAmount() >= energyPerTick()
+                    && RefineryRules.canRefineOxidant(this.oxygen.getCapacity() - this.oxygen.getAmount());
+        }
         ItemStack out = this.items.get(TITANIUM_SLOT);
         return !this.items.get(ILMENITE_SLOT).isEmpty()
                 && this.energy.getAmount() >= energyPerTick()
@@ -291,6 +301,12 @@ public class FuelRefineryBlockEntity extends BlockEntity
         this.ilmeniteProgress++;
         if (this.ilmeniteProgress >= NerospaceConfig.scaleInterval(WORK_TICKS, NerospaceConfig.machineSpeedMultiplier())) {
             this.ilmeniteProgress = 0;
+            if (isOxidantCrystal(this.items.get(ILMENITE_SLOT))) {
+                this.items.get(ILMENITE_SLOT).shrink(1);
+                this.oxygen.fill(GasResource.OXYGEN, RefineryRules.oxygenFor(true), false);
+                setChanged();
+                return;
+            }
             this.items.get(ILMENITE_SLOT).shrink(1);
             ItemStack out = this.items.get(TITANIUM_SLOT);
             if (out.isEmpty()) {

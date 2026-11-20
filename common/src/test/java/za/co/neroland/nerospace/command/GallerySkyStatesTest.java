@@ -35,7 +35,8 @@ class GallerySkyStatesTest {
             "glacira", List.of("aurora", "diamond_dust", "twilight"),
             "greenxertz", List.of("spore_bloom", "twin_noon"),
             "nyxara", List.of("flare", "galaxy_side", "band", "dayside", "nightside"),
-            "station", List.of("planet_night", "sunrise"));
+            "station", List.of("planet_night", "sunrise"),
+            "europa", List.of("eclipse", "plume_fall"));
 
     @Test
     @DisplayName("every world has a row, with dawn, noon, dusk, night and its own states, no duplicates")
@@ -86,6 +87,8 @@ class GallerySkyStatesTest {
         double earthrise = phase("luna", "earthrise");
         assertTrue(earthrise >= LunaPlanet.EARTHRISE_START && earthrise <= LunaPlanet.EARTHRISE_END);
         assertTrue(CindaraPlanet.inEclipse(phase("cindara", "eclipse")));
+        assertTrue(za.co.neroland.nerospace.world.planet.europa.EuropaPlanet.inEclipse(phase("europa", "eclipse")));
+        assertTrue(Planets.EUROPA.weatherMayStart(Planets.EUROPA.weather().event(), phase("europa", "plume_fall")));
         assertTrue(Planets.GLACIRA.daylight().at(phase("glacira", "aurora")) <= 0.3, "the aurora needs Glacira's dark");
         // Diamond dust may only form in the dark, so its state sits where the weather could start on its own.
         assertTrue(Planets.GLACIRA.weatherMayStart(phase("glacira", "diamond_dust")));
@@ -110,6 +113,7 @@ class GallerySkyStatesTest {
         assertEquals(Weather.START, state("glacira", "diamond_dust").weather());
         assertEquals(Weather.START, state("greenxertz", "spore_bloom").weather());
         assertEquals(Weather.START, state("nyxara", "flare").weather());
+        assertEquals(Weather.START, state("europa", "plume_fall").weather());
         assertEquals(Weather.CLEAR, state("mars", "noon").weather());
     }
 

@@ -106,6 +106,24 @@
     "nerospace:mirror_crystal",
     "nerospace:budding_nyx_crystal",
     "nerospace:crystal_spire",
-    "nerospace:nyx_prism"
+    "nerospace:nyx_prism",
+    "nerospace:europa_ice",
+    "nerospace:chaos_ice",
+    "nerospace:cut_europa_ice",
+    "nerospace:europa_ice_bricks",
+    "nerospace:lineae_salt",
+    "nerospace:shell_ice",
+    "nerospace:cryovent",
+    "nerospace:hydrothermal_vent",
+    "nerospace:vent_basalt",
+    "nerospace:polished_vent_basalt",
+    "nerospace:vent_basalt_bricks",
+    "nerospace:smoker_chimney",
+    "nerospace:deuterium_ice",
+    "nerospace:oxidant_ice",
+    "nerospace:brine_salt_ore",
+    "nerospace:vent_sulfide_ore",
+    "nerospace:europium_ore",
+    "nerospace:europium_lamp"
   ]
 }

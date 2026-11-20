@@ -87,7 +87,30 @@ class BlockMatrixUniquenessTest {
             new Row("gravity_plate", "gravity", "presence", "1.0 in 1x6x1, beats shard", "BlockGravityRules"),
             new Row("hydroponics_tray", "crop-gate", "window above + oxygen", "crops grow in void", "HydroRules"),
             new Row("telescope", "reveal", "sightline", "reveals 1 + min(2, crystals)", "TelescopeSightline"),
-            new Row("cheese_wheel", "decor", "slice", "9 in, 9 out", "CheeseRules"));
+            new Row("cheese_wheel", "decor", "slice", "9 in, 9 out", "CheeseRules"),
+            // Europa
+            new Row("europa_ice", "water", "adjacent heat source", "melts to water, one-shot", "MeltRules"),
+            new Row("chaos_ice", "ground-change", "support removed", "raft falls, <= 6 connected", "RaftFallRules"),
+            new Row("cut_europa_ice", "contact", "walked on", "speed factor 1.15, no slide", "GripRules"),
+            new Row("lineae_salt", "reveal", "cavity or brine within 12 below", "seep mist particles", "SeepRules"),
+            new Row("penitente_blade", "contact", "fall onto, distance >= 2", "fall damage x1.5, blade breaks",
+                    "BladeRules"),
+            new Row("shell_ice", "sound", "mined within 6 of water or brine", "warning crack", "BreachWarnRules"),
+            new Row("brine", "fluid-like", "entity inside", "buoyant drag 0.7, never freezes", "BrineRules"),
+            new Row("cryovent", "yield", "use with empty bucket, charged", "gives 1 brine, recharges 600 t",
+                    "VentTapRules"),
+            new Row("hydrothermal_vent", "hazard-shield", "liquid above, within 5", "cold off", "VentWarmthRules"),
+            new Row("vent_basalt", "state", "touching vent or warm basalt, distance <= 3", "carries warmth",
+                    "ConductRules"),
+            new Row("tube_mat", "growth", "random tick, submerged, vent within 6", "spreads on vent basalt, cap 24",
+                    "VentBloomRules"),
+            new Row("smoker_chimney", "growth", "random tick, stack over a vent", "grows 1 up to 5", "ChimneyRules"),
+            new Row("deuterium_ice", "yield", "heat source within 4", "sublimates, drops nothing", "SublimeRules"),
+            new Row("oxidant_ice", "growth", "random tick, sky + radiation >= 2", "charge 0-3, yield 1 + charge",
+                    "RadiolysisRules"),
+            new Row("brine_salt_ore", "yield", "brine adjacent", "x2 salt", "WetSeamRules"),
+            new Row("vent_sulfide_ore", "yield", "mined dry", "oxidises: 1 sulfur instead of ore", "SulfideRules"),
+            new Row("europium_lamp", "light", "use (toggle)", "red 14 or 0", "PhosphorRules"));
 
     /** Helpers whose cases live in a shared test class (see each class's display names). */
     static final Map<String, String> TESTS = Map.ofEntries(

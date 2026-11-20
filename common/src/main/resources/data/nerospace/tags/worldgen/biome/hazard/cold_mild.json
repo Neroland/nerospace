@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:europa_shell",
+    "nerospace:europa_abyss",
+    "nerospace:europa_vent_fields",
+    "nerospace:terraformed_europa_rooted",
+    "nerospace:terraformed_europa_hydrated",
+    "nerospace:terraformed_europa_living"
+  ]
+}

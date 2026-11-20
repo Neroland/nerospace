@@ -79,6 +79,10 @@
     "nerospace:gravity_plate",
     "nerospace:hydroponics_tray",
     "nerospace:rover_parts",
-    "nerospace:rover_chassis"
+    "nerospace:rover_chassis",
+    "nerospace:deuterium_shard",
+    "nerospace:oxidant_crystal",
+    "nerospace:brine_salt",
+    "nerospace:raw_vent_sulfide"
   ]
 }

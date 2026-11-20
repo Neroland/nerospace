@@ -1,0 +1,230 @@
+{
+  "debug_functions": [
+    {
+      "function": "nerospace:europa/final_density",
+      "label": "N"
+    },
+    {
+      "function": "nerospace:europa/temperature",
+      "label": "T"
+    },
+    {
+      "function": "nerospace:europa/vegetation",
+      "label": "V"
+    },
+    {
+      "function": "nerospace:europa/continents",
+      "label": "C"
+    },
+    {
+      "function": "nerospace:europa/erosion",
+      "label": "E"
+    },
+    {
+      "function": "nerospace:europa/depth",
+      "label": "D"
+    }
+  ],
+  "default_block": "nerospace:shell_ice",
+  "default_fluid": "minecraft:water",
+  "disable_mob_generation": false,
+  "legacy_random_source": false,
+  "material_rule": {
+    "type": "minecraft:sequence",
+    "sequence": [
+      {
+        "type": "minecraft:condition",
+        "if_true": {
+          "type": "minecraft:vertical_gradient",
+          "random_name": "minecraft:bedrock_floor",
+          "true_at_and_below": {
+            "above_bottom": 0
+          },
+          "false_at_and_above": {
+            "above_bottom": 5
+          }
+        },
+        "then_run": {
+          "type": "minecraft:block",
+          "result_state": "minecraft:bedrock"
+        }
+      },
+      {
+        "type": "minecraft:condition",
+        "if_true": {
+          "type": "minecraft:vertical_gradient",
+          "random_name": "nerospace:europa_basalt",
+          "true_at_and_below": {
+            "absolute": -5
+          },
+          "false_at_and_above": {
+            "absolute": -4
+          }
+        },
+        "then_run": {
+          "type": "minecraft:block",
+          "result_state": "nerospace:vent_basalt"
+        }
+      },
+      {
+        "type": "minecraft:condition",
+        "if_true": {
+          "type": "minecraft:y_above",
+          "anchor": {
+            "absolute": 168
+          },
+          "surface_depth_multiplier": 0,
+          "add_stone_depth": false
+        },
+        "then_run": {
+          "type": "minecraft:sequence",
+          "sequence": [
+            {
+              "type": "minecraft:condition",
+              "if_true": {
+                "type": "minecraft:biome",
+                "biome_is": [
+                  "nerospace:europa_lineae"
+                ]
+              },
+              "then_run": {
+                "type": "minecraft:sequence",
+                "sequence": [
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:lineae_salt"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 2,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:lineae_salt"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "minecraft:condition",
+              "if_true": {
+                "type": "minecraft:biome",
+                "biome_is": [
+                  "nerospace:europa_chaos"
+                ]
+              },
+              "then_run": {
+                "type": "minecraft:sequence",
+                "sequence": [
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:chaos_ice"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 4,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:chaos_ice"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "minecraft:condition",
+              "if_true": {
+                "type": "minecraft:biome",
+                "biome_is": [
+                  "nerospace:europa_ice_plains",
+                  "nerospace:europa_penitentes"
+                ]
+              },
+              "then_run": {
+                "type": "minecraft:sequence",
+                "sequence": [
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 0,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:europa_ice"
+                    }
+                  },
+                  {
+                    "type": "minecraft:condition",
+                    "if_true": {
+                      "type": "minecraft:stone_depth",
+                      "add_surface_depth": false,
+                      "offset": 3,
+                      "secondary_depth_range": 0,
+                      "surface_type": "floor"
+                    },
+                    "then_run": {
+                      "type": "minecraft:block",
+                      "result_state": "nerospace:europa_ice"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "noise": {
+    "height": 384,
+    "min_y": -64
+  },
+  "noise_router": {
+    "chunk_surface_level": "nerospace:europa/chunk_surface_level",
+    "continents": "nerospace:europa/continents",
+    "depth": "nerospace:europa/depth",
+    "erosion": "nerospace:europa/erosion",
+    "final_density": "nerospace:europa/final_density",
+    "ridges": "nerospace:europa/ridges",
+    "temperature": "nerospace:europa/temperature",
+    "vegetation": "nerospace:europa/vegetation"
+  },
+  "sea_level": 88,
+  "spawn_target": []
+}

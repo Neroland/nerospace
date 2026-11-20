@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "nerospace:cut_europa_ice",
+  "result": {
+    "count": 1,
+    "id": "nerospace:europa_ice_bricks"
+  }
+}

@@ -67,6 +67,31 @@ class RefineryRulesTest {
     }
 
     @Test
+    @DisplayName("an oxidant crystal gives 400 mB and no ingot, and is refined only with 400 mB of buffer free")
+    void oxidantCrystal() {
+        assertEquals(400, RefineryRules.OXIDANT_OXYGEN_MB);
+        assertEquals(400, RefineryRules.oxygenFor(true));
+        assertEquals(0, RefineryRules.titaniumFor(true));
+        assertTrue(RefineryRules.canRefineOxidant(400));
+        assertTrue(RefineryRules.canRefineOxidant(FuelRefineryBlockEntity.OXYGEN_CAPACITY));
+        assertFalse(RefineryRules.canRefineOxidant(399));
+        assertFalse(RefineryRules.canRefineOxidant(0));
+        // Two crystals fit the buffer; the third waits for the gas to be drawn off rather than venting.
+        long free = FuelRefineryBlockEntity.OXYGEN_CAPACITY;
+        int refined = 0;
+        while (RefineryRules.canRefineOxidant(free)) {
+            free -= RefineryRules.oxygenFor(true);
+            refined++;
+        }
+        assertEquals(2, refined);
+        // The ilmenite line is what it was: 250 mB and one ingot, whatever the buffer holds.
+        assertEquals(250, RefineryRules.ILMENITE_OXYGEN_MB);
+        assertEquals(250, RefineryRules.oxygenFor(false));
+        assertEquals(1, RefineryRules.titaniumFor(false));
+        assertEquals(1, RefineryRules.TITANIUM_PER_ILMENITE);
+    }
+
+    @Test
     @DisplayName("the 2.0 slots are appended after the 1.x slots")
     void slotLayout() {
         assertEquals(0, FuelRefineryBlockEntity.CARBON_SLOT);

@@ -43,7 +43,7 @@ class HeightmapTagCoverageTest {
      * Intentional exclusions, following vanilla 26.3 precedent (vanilla lists solid blocks, glass, panes, fences,
      * chains, lanterns, pressure plates and amethyst clusters, but not fluids, plants, snow layers or carpets).
      */
-    private static final Map<String, String> EXCLUDED = Map.of(
+    private static final Map<String, String> EXCLUDED = merged(Map.of(
             // Greenxertz plants/carpet (no collision box, like vanilla plants and carpets)
             "spore_moss", "1/16 moss carpet that spreads - vanilla excludes carpets",
             "glowcap_fungus", "mushroom-like plant, no collision - vanilla excludes mushrooms",
@@ -54,7 +54,18 @@ class HeightmapTagCoverageTest {
             // Nyxara: glow-lichen-style multiface, noCollision - vanilla 26.3 excludes minecraft:glow_lichen
             "shadow_lichen", "multiface carpet (noCollision) - vanilla excludes minecraft:glow_lichen",
             "shard_drift", "snow-like crystal layer (forceSolidOff) - vanilla excludes minecraft:snow layers",
-            "nyx_crystal_cluster", "cross-model cluster with no collision (noCollision) - like a plant, not a solid");
+            "nyx_crystal_cluster", "cross-model cluster with no collision (noCollision) - like a plant, not a solid"),
+            Map.of(
+            // Europa
+            "brine", "fluid-like block (no collision, replaceable) - vanilla excludes water/lava",
+            "tube_mat", "carpet-height microbial mat - vanilla excludes carpets",
+            "penitente_blade", "thin ice blade (cross model, breaks underfoot) - like a plant, not a solid"));
+
+    private static Map<String, String> merged(Map<String, String> a, Map<String, String> b) {
+        Map<String, String> out = new java.util.TreeMap<>(a);
+        out.putAll(b);
+        return java.util.Collections.unmodifiableMap(out);
+    }
 
     private static final Pattern REGISTER = Pattern.compile("(?:BLOCKS\\.register|\\bblock)\\(\\s*\"([a-z0-9_]+)\"");
 

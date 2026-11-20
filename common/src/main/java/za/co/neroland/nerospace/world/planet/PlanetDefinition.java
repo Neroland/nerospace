@@ -37,6 +37,7 @@ public abstract class PlanetDefinition {
     private final DaylightCurve daylight;
     private final double planetSolar;
     private final WeatherParams weather;
+    private final WeatherParams secondaryWeather;
     private final long structureSalt;
     private final boolean meteorSurface;
     private final double miningSpeed;
@@ -56,6 +57,7 @@ public abstract class PlanetDefinition {
         this.daylight = spec.daylight;
         this.planetSolar = spec.planetSolar;
         this.weather = spec.weather;
+        this.secondaryWeather = spec.secondaryWeather;
         this.structureSalt = spec.structureSalt;
         this.meteorSurface = spec.meteorSurface;
         this.miningSpeed = spec.miningSpeed;
@@ -147,6 +149,19 @@ public abstract class PlanetDefinition {
         return true;
     }
 
+    /**
+     * A second weather event that shares the planet's one weather machine, or {@link WeatherParams#NONE} (every
+     * planet but Europa). It rolls its own start, before the primary; see {@link WeatherPickRules}.
+     */
+    public WeatherParams secondaryWeather() {
+        return this.secondaryWeather;
+    }
+
+    /** Per-event start gate. Default: the single-argument rule, whatever the event. */
+    public boolean weatherMayStart(WeatherEvent event, double phase) {
+        return weatherMayStart(phase);
+    }
+
     /** Per-planet structure placement salt; 0 for Greenxertz (the only 1.x world with structures) so its structure positions never move. */
     public long structureSalt() {
         return this.structureSalt;
@@ -236,6 +251,7 @@ public abstract class PlanetDefinition {
         DaylightCurve daylight = DaylightCurve.constant(1.0);
         double planetSolar = 2.0;
         WeatherParams weather = WeatherParams.NONE;
+        WeatherParams secondaryWeather = WeatherParams.NONE;
         long structureSalt;
         boolean meteorSurface = true;
         double miningSpeed = 1.0;
@@ -274,6 +290,12 @@ public abstract class PlanetDefinition {
 
         public Spec weather(WeatherParams params) {
             this.weather = params;
+            return this;
+        }
+
+        /** A second event on the same machine (see {@link PlanetDefinition#secondaryWeather()}). */
+        public Spec alsoWeather(WeatherParams params) {
+            this.secondaryWeather = params == null ? WeatherParams.NONE : params;
             return this;
         }
 

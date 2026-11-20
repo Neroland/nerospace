@@ -94,8 +94,10 @@ class DestinationGateSyncTest {
     void survivalHeldToGate() {
         int viewerMask = DestinationSelection.viewerGateMask(false, NYXARA_GATE);
         assertEquals(NYXARA_GATE, viewerMask);
-        assertEquals(Destinations.STATION, DestinationSelection.step(T4_FROM_OVERWORLD, viewerMask, Destinations.MARS,
+        assertEquals(Destinations.EUROPA, DestinationSelection.step(T4_FROM_OVERWORLD, viewerMask, Destinations.MARS,
                 1, Destinations.all().size()), "stepping skips the gated world");
+        assertEquals(Destinations.STATION, DestinationSelection.step(T4_FROM_OVERWORLD, viewerMask,
+                Destinations.EUROPA, 1, Destinations.all().size()), "and wraps after the last world");
         assertEquals(Outcome.OK, DestinationSelection.evaluate(Destinations.NYXARA, T4_FROM_OVERWORLD,
                 DestinationSelection.viewerGateMask(false, 0), T4_DEFAULT, false), "clearance granted");
         assertTrue(DestinationSelection.gateOpenFor(false, true));

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:interpolated",
+  "cell_size_xz": 16,
+  "cell_size_y": 1,
+  "input": {
+    "type": "minecraft:find_top_surface",
+    "cell_height": 8,
+    "lower_bound": -64,
+    "upper_bound": 224.0,
+    "density": {
+      "type": "minecraft:add",
+      "left": {
+        "type": "minecraft:add",
+        "left": 0.390625,
+        "right": "nerospace:europa/topside"
+      },
+      "right": -0.390625
+    }
+  }
+}

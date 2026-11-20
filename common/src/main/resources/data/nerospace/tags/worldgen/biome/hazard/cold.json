@@ -2,6 +2,10 @@
   "replace": false,
   "values": [
     "nerospace:mars_polar",
-    "nerospace:nyxara_nightside"
+    "nerospace:nyxara_nightside",
+    "nerospace:europa_ice_plains",
+    "nerospace:europa_chaos",
+    "nerospace:europa_lineae",
+    "nerospace:europa_penitentes"
   ]
 }

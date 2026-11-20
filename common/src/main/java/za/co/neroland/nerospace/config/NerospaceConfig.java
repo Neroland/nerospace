@@ -147,6 +147,7 @@ public final class NerospaceConfig {
         SCHEMA.bool("weather.cindara.enabled", true, true, "ash fall on Cindara");
         SCHEMA.bool("weather.glacira.enabled", true, true, "diamond dust on Glacira");
         SCHEMA.bool("weather.nyxara.enabled", true, true, "flares on Nyxara");
+        SCHEMA.bool("weather.europa.enabled", true, true, "plume fall and radiation storms on Europa");
     }
     private static final ConfigValue<Boolean> CLOCK_ENABLED = SCHEMA.bool("clock.enabled", true, true,
             "planet day/night clocks. false = every planet clock holds at noon (Greenxertz keeps its real day)");

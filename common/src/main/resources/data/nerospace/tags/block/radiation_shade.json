@@ -1,6 +1,11 @@
 {
   "replace": false,
   "values": [
-    "nerospace:sunglass_crystal"
+    "nerospace:sunglass_crystal",
+    "nerospace:europa_ice",
+    "nerospace:chaos_ice",
+    "nerospace:cut_europa_ice",
+    "nerospace:europa_ice_bricks",
+    "nerospace:shell_ice"
   ]
 }

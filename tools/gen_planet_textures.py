@@ -1266,6 +1266,63 @@ _EGG_ROWS = {
 }
 
 
+def _blade(spec):
+    """A single tall ice blade for a cross model (the full-grown cluster stage, one texture)."""
+    return {"block/%s.png" % spec["id"]: crystal_cluster(spec["pal"], spec["seed"], 3)}
+
+
+def _brine(spec):
+    """A dense translucent liquid: an unframed glass pane whose sparkles shimmer slowly."""
+    base = glass_facets(spec["edge"], spec["pane"], spec["sparkle"], spec["seed"], alpha=spec.get("alpha", 200), frame=0)
+    px = base.load()
+    mask = [(x, y) for y in range(S) for x in range(S) if px[x, y][:3] == spec["sparkle"][:3]]
+    alpha = spec.get("alpha", 200)
+    strip, meta, still = shimmer_anim(base, mask, spec["sparkle"][:3] + (alpha,), spec["seed"],
+                                      frames=spec.get("frames", 8), frametime=spec.get("frametime", 10),
+                                      amp=spec.get("amp", 0.15))
+    return {"block/%s.png" % spec["id"]: (strip, meta, still)}
+
+
+def _lamp(spec):
+    """A crystal block with an unlit twin (`<id>_off`): every colour at 35 % brightness."""
+    lit = crystal_facets(spec["pal"], spec["seed"], glint=spec.get("glint"))
+    off = crystal_facets(tuple(shade(c, 0.35) for c in spec["pal"]), spec["seed"])
+    return {"block/%s.png" % spec["id"]: lit, "block/%s_off.png" % spec["id"]: off}
+
+
+def _charge_ore(spec):
+    """An ore whose bleb count shows its charge: `<id>_0` .. `<id>_3` carry 1 to 4 blebs on the same host."""
+    out = {}
+    for charge in range(4):
+        base = noise_stone(spec["base"], spec["seed"], grain=0.35, chunk=0.6)
+        out["block/%s_%d.png" % (spec["id"], charge)] = ore_blebs(base, spec["ore"], spec["seed"], count=charge + 1,
+                                                                 size=spec.get("size", 2.6), glint=spec.get("glint"))
+    return out
+
+
+def _item_bucket(spec):
+    """A filled bucket: steel pail (`pal` = light, mid, dark) with the liquid (`fill` = dark, light) at the brim."""
+    light, mid, dark = spec["pal"]
+    f_dark, f_light = spec["fill"]
+    img = new_img()
+    px = img.load()
+    rows = {4: (3, 13), 5: (3, 13), 6: (3, 13), 7: (4, 12), 8: (4, 12), 9: (4, 12), 10: (5, 11), 11: (5, 11),
+            12: (5, 11), 13: (6, 10)}
+    for y, (x0, x1) in rows.items():
+        for x in range(x0, x1):
+            px[x, y] = light if x == x0 else (dark if x == x1 - 1 else mid)
+    for x in range(3, 13):
+        px[x, 3] = dark if x in (3, 12) else light
+    for x in range(4, 12):
+        px[x, 4] = f_light if (x % 3 == 0) else f_dark
+        px[x, 5] = f_dark
+    for x in range(6, 10):
+        px[x, 13] = dark
+    px[2, 4] = dark
+    px[13, 4] = dark
+    return {"item/%s.png" % spec["id"]: img}
+
+
 def _item_spawn_egg(spec):
     """Spawn egg in the 1.6.0 silhouette (gen_textures._EGG_ROWS): base egg, accent spots,
     dark outline, top-left highlight.  The planet-creature eggs live here so the
@@ -1321,6 +1378,7 @@ def _item_lining(spec):
 
 FAMILIES = {
     "item_spawn_egg": _item_spawn_egg, "item_lining": _item_lining,
+    "blade": _blade, "brine": _brine, "lamp": _lamp, "charge_ore": _charge_ore, "item_bucket": _item_bucket,
     "ore": _ore, "noise": _noise, "polished": _polished, "glass": _glass, "hull_window": _hull_window,
     "crystal_block": _crystal_block, "crystal_cluster": _crystal_cluster, "strata": _strata,
     "crust": _crust, "cheese_ore": _cheese_ore, "cheese_wheel": _cheese_wheel, "column": _column,
@@ -1350,6 +1408,12 @@ GLAC_PERMA = (hexc("#2D6F9E"), hexc("#1F4F73"), hexc("#6CC2EF"))
 XERTZ_SOIL = (hexc("#4A3B2F"), hexc("#3A2D24"), hexc("#5C4A3B"))  # third tone = base lightened; moss flecks #3FBF6F separately
 XERTZ_BARK = (hexc("#4A3B2F"), hexc("#6B5745"))
 NYX_STONE = (hexc("#2B2440"), hexc("#0D0A14"), hexc("#5B2D8E"))
+# Europa: near-white surface ice with rust, a greyer blue interior, a near-black sea floor with warm accents.
+EUROPA_ICE = (hexc("#E4EEF2"), hexc("#C4D6DE"), hexc("#F8FCFD"))
+EUROPA_CHAOS = (hexc("#C9D3D6"), hexc("#A7B6BC"), hexc("#E8EEF0"))
+EUROPA_SALT = (hexc("#A8583A"), hexc("#7E3F2A"), hexc("#C98A5E"))
+EUROPA_SHELL = (hexc("#5E9DBD"), hexc("#3F7799"), hexc("#8FC4DA"))
+EUROPA_BASALT = (hexc("#22262B"), hexc("#15181C"), hexc("#343A41"))
 STATION_HULL = hexc("#8D949B")
 STATION_SEAM = hexc("#5A6168")
 STATION_TEAL = hexc("#2EC4B6")
@@ -1441,6 +1505,39 @@ PLANET_BLOCK_TEXTURES = [
     _row("nyxara", "night_fibre", "item_fibre", pal=(hexc("#0D0A14"), hexc("#2B2440"), hexc("#5B2D8E"))),
     _row("nyxara", "void_shard", "item_gem", pal=(hexc("#5B2D8E"), hexc("#9B5DE5"), hexc("#C77DFF")), shard=True),
     _row("nyxara", "dusk_moth_spawn_egg", "item_spawn_egg", pal=(hexc("#2B2440"), hexc("#C77DFF"), hexc("#0D0A14"))),
+    # ---------------------------------------------------------------- Europa
+    _row("europa", "europa_ice", "noise", pal=EUROPA_ICE, grain=0.22, chunk=0.75),
+    _row("europa", "chaos_ice", "noise", pal=EUROPA_CHAOS, grain=0.4, chunk=0.45, veins=3, vein_colour=hexc("#9A5A3C")),
+    _row("europa", "cut_europa_ice", "polished", pal=(hexc("#D4E4EA"), hexc("#F8FCFD"))),
+    _row("europa", "europa_ice_bricks", "plating", base=hexc("#D4E4EA"), seam=hexc("#8FB0C0"), rivet=hexc("#F8FCFD")),
+    _row("europa", "lineae_salt", "noise", pal=EUROPA_SALT, grain=0.45, chunk=0.4, veins=3, vein_colour=hexc("#5E2C1E")),
+    _row("europa", "penitente_blade", "blade", pal=(hexc("#C4D6DE"), hexc("#E4EEF2"), hexc("#F8FCFD"))),
+    _row("europa", "shell_ice", "noise", pal=EUROPA_SHELL, grain=0.25, chunk=0.7, veins=2, vein_colour=hexc("#8FC4DA")),
+    _row("europa", "brine", "brine", edge=hexc("#2C5244"), pane=hexc("#3E6F5E"), sparkle=hexc("#6FA08A"), alpha=200,
+         frames=8, frametime=10, amp=0.15),
+    _row("europa", "cryovent", "vent", pal=(hexc("#C4D6DE"), hexc("#5E9DBD"), hexc("#F8FCFD"))),
+    _row("europa", "vent_basalt", "noise", pal=EUROPA_BASALT, grain=0.3, chunk=0.6),
+    _row("europa", "polished_vent_basalt", "polished", pal=(hexc("#22262B"), hexc("#343A41"))),
+    _row("europa", "vent_basalt_bricks", "plating", base=hexc("#22262B"), seam=hexc("#15181C"), rivet=hexc("#343A41")),
+    _row("europa", "hydrothermal_vent", "vent", pal=(hexc("#22262B"), hexc("#FF7A2E"), hexc("#FFD08A"))),
+    _row("europa", "smoker_chimney", "column", pal=(hexc("#2C2A26"), hexc("#15181C"), hexc("#5A4A2E")), capped=True),
+    _row("europa", "tube_mat", "glow_cracks", base=EUROPA_BASALT, glow=(hexc("#1E9E86"), hexc("#3DF2C0"), hexc("#B8FFE8")),
+         frames=8, frametime=4, amp=0.4, cracks=4),
+    _row("europa", "deuterium_ice", "he3", base=EUROPA_SHELL, ore=(hexc("#6F7BE8"), hexc("#B4BCFF")), sparkle=hexc("#FFFFFF"),
+         frames=8, frametime=5, amp=0.25),
+    _row("europa", "oxidant_ice", "charge_ore", base=EUROPA_ICE, ore=(hexc("#A7C94A"), hexc("#D8F27A"), hexc("#F4FFC0")), glint=hexc("#FFFFFF")),
+    _row("europa", "brine_salt_ore", "ore", base=EUROPA_SHELL, ore=(hexc("#D9A096"), hexc("#F1C9C0"), hexc("#FFF0EA")), glint=hexc("#FFFFFF")),
+    _row("europa", "vent_sulfide_ore", "ore", base=EUROPA_BASALT, ore=(hexc("#8C6E1E"), hexc("#C8A83A"), hexc("#EBD070")), glint=hexc("#FFF4B0")),
+    _row("europa", "europium_ore", "ore", base=EUROPA_BASALT, ore=(hexc("#C22A52"), hexc("#FF4A6A"), hexc("#FFB0C0")), glint=hexc("#FFFFFF"), count=3),
+    _row("europa", "europium_lamp", "lamp", pal=(hexc("#C22A52"), hexc("#FF4A6A"), hexc("#FFB0C0")), glint=hexc("#FFFFFF")),
+    _row("europa", "deuterium_shard", "item_gem", pal=(hexc("#4A52B8"), hexc("#6F7BE8"), hexc("#B4BCFF")), shard=True),
+    _row("europa", "oxidant_crystal", "item_gem", pal=(hexc("#A7C94A"), hexc("#D8F27A"), hexc("#F4FFC0")), shard=True),
+    _row("europa", "brine_salt", "item_dust", pal=(hexc("#D9A096"), hexc("#F1C9C0"), hexc("#F1C9C0"), hexc("#FFF0EA"))),
+    _row("europa", "raw_vent_sulfide", "item_lump", pal=(hexc("#8C6E1E"), hexc("#C8A83A"), hexc("#5A4A2E"), hexc("#EBD070"))),
+    _row("europa", "deuterium_cell", "item_canister", pal=(hexc("#8D949B"), hexc("#5A6168"), hexc("#6F7BE8"))),
+    _row("europa", "raw_europium", "item_gem", pal=(hexc("#C22A52"), hexc("#FF4A6A"), hexc("#FFB0C0"))),
+    _row("europa", "brine_bucket", "item_bucket", pal=(hexc("#C8CDD2"), hexc("#8D949B"), hexc("#5A6168")),
+         fill=(hexc("#3E6F5E"), hexc("#6FA08A"))),
     # ---------------------------------------------------------------- Station
     _row("station", "hull_plating", "plating", base=STATION_HULL, seam=STATION_SEAM, rivet=STATION_TEAL),
     _row("station", "hull_window", "hull_window", edge=STATION_HULL, pane=hexc("#C8D4DC"), sparkle=hexc("#FFFFFF"),

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:add",
+  "left": {
+    "type": "minecraft:gradient",
+    "axis": "y",
+    "from_coordinate": -56,
+    "from_value": 1.0,
+    "to_coordinate": -8,
+    "to_value": -1.0
+  },
+  "right": {
+    "type": "minecraft:mul",
+    "left": 0.5,
+    "right": {
+      "type": "minecraft:clamp",
+      "input": {
+        "type": "minecraft:noise",
+        "noise": "nerospace:europa/seabed",
+        "xz_scale": 1.0,
+        "y_scale": 0.0
+      },
+      "min": -1.0,
+      "max": 1.0
+    }
+  }
+}

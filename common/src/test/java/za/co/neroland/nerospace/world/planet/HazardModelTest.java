@@ -92,7 +92,8 @@ class HazardModelTest {
         boolean heat = tagged("heat", biome);
         boolean cold = tagged("cold", biome);
         Set<Hazard> present = HazardOrderRules.present(planet.traits().hazard(), rad, heat, cold, weatherRad);
-        boolean frigid = HazardOrderRules.frigidCold(planet.traits().temperatureBand(), cold);
+        boolean frigid = HazardOrderRules.frigidCold(planet.traits().temperatureBand(), cold,
+                tagged("cold_mild", biome));
         StringBuilder got = new StringBuilder();
         for (int i = 0; i < SUITS.length; i++) {
             got.append(code(HazardOrderRules.resolve(present, SUITS[i], LINED[i], frigid, dawnband)));
@@ -150,6 +151,17 @@ class HazardModelTest {
         row(Planets.NYXARA, "nerospace:nyxara_dayside", false, false, "RRRHR.RH");
         row(Planets.NYXARA, "nerospace:nyxara_nightside", false, false, "RRRCRCR.");
         row(Planets.NYXARA, "nerospace:nyxara_nightside", false, true, "RRR.R.R.");
+        // Europa: a cold world whose open surface is frigid and irradiated; mild cold under the ice.
+        for (String b : List.of("nerospace:europa_ice_plains", "nerospace:europa_chaos", "nerospace:europa_lineae",
+                "nerospace:europa_penitentes")) {
+            row(Planets.EUROPA, b, false, false, "RRRCRCR.");
+            row(Planets.EUROPA, b, true, false, "RRRCRCR."); // a radiation storm changes the level, not the hazard set
+        }
+        for (String b : List.of("nerospace:europa_shell", "nerospace:europa_abyss", "nerospace:europa_vent_fields",
+                "nerospace:terraformed_europa_living")) {
+            row(Planets.EUROPA, b, false, false, "CC......");
+        }
+        row(Planets.EUROPA, "nerospace:terraformed_europa_living", true, false, "RRR.R.R.");
     }
 
     @Test
@@ -163,6 +175,15 @@ class HazardModelTest {
         assertTrue(HazardOrderRules.frigidCold(TemperatureBand.FRIGID, false));
         assertTrue(HazardOrderRules.frigidCold(TemperatureBand.TEMPERATE, true));
         assertEquals(Set.of(), HazardOrderRules.shields(SuitClass.T1, false, false), "a Tier 1 suit shields nothing");
+        // The mild flag (2.4): a mild-tagged biome is never frigid; without it the two-argument rule is unchanged.
+        assertEquals(TemperatureBand.FRIGID, Planets.EUROPA.traits().temperatureBand());
+        assertFalse(HazardOrderRules.frigidCold(TemperatureBand.FRIGID, false, true));
+        assertFalse(HazardOrderRules.frigidCold(TemperatureBand.COLD, true, true));
+        for (TemperatureBand band : TemperatureBand.values()) {
+            for (boolean cold : new boolean[] {false, true}) {
+                assertEquals(HazardOrderRules.frigidCold(band, cold), HazardOrderRules.frigidCold(band, cold, false));
+            }
+        }
     }
 
     @Test

@@ -58,6 +58,8 @@ public final class ModCreativeTab {
                                 .forEach(s -> output.accept(s.get()));
                         za.co.neroland.nerospace.world.station.StationContent.creativeContents()
                                 .forEach(s -> output.accept(s.get()));
+                        za.co.neroland.nerospace.world.planet.europa.EuropaContent.creativeContents()
+                                .forEach(s -> output.accept(s.get()));
                     })
                     .build());
 

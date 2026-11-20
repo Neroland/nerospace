@@ -36,7 +36,7 @@ class PlanetAccentsTest {
     void everyWorldHasAPair() {
         List<ResourceKey<Level>> dims = List.of(ModDimensions.OVERWORLD, ModDimensions.STATION_LEVEL, ModDimensions.LUNA_LEVEL,
                 ModDimensions.GREENXERTZ_LEVEL, ModDimensions.MARS_LEVEL, ModDimensions.CINDARA_LEVEL,
-                ModDimensions.GLACIRA_LEVEL, ModDimensions.NYXARA_LEVEL);
+                ModDimensions.GLACIRA_LEVEL, ModDimensions.NYXARA_LEVEL, ModDimensions.EUROPA_LEVEL);
         for (ResourceKey<Level> d : dims) {
             int accent = PlanetAccents.of(d);
             int dark = PlanetAccents.dark(d);

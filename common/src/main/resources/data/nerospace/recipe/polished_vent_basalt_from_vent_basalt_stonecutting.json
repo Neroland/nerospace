@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "nerospace:vent_basalt",
+  "result": {
+    "count": 1,
+    "id": "nerospace:polished_vent_basalt"
+  }
+}

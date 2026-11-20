@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "nerospace:block/cryovent_top",
+    "side": "nerospace:block/cryovent_side",
+    "bottom": "nerospace:block/cryovent_side"
+  }
+}

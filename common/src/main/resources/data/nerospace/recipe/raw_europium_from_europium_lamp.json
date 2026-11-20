@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "nerospace:europium_lamp"
+  ],
+  "result": {
+    "count": 4,
+    "id": "nerospace:raw_europium"
+  }
+}

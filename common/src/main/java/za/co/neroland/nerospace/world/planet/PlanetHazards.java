@@ -59,14 +59,14 @@ public final class PlanetHazards {
                 return Hazard.HEAT;
             }
             if (biome.is(ModTags.Biomes.HAZARD_COLD)) {
-                // A flaring Dawnband Stone nearby keeps the cold away.
-                return za.co.neroland.nerospace.world.planet.nyxara.NyxaraWarmth.shieldedFromCold(level, pos)
+                // A flaring Dawnband Stone (Nyxara) or a warm vent (Europa) nearby keeps the cold away.
+                return ColdShelter.shielded(level, pos)
                         ? Hazard.NONE : Hazard.COLD;
             }
         }
         Hazard trait = planet.traits().hazard();
         return trait == Hazard.COLD
-                && za.co.neroland.nerospace.world.planet.nyxara.NyxaraWarmth.shieldedFromCold(level, pos)
+                && ColdShelter.shielded(level, pos)
                 ? Hazard.NONE : trait;
     }
 
@@ -107,8 +107,10 @@ public final class PlanetHazards {
         if (planet == null) {
             return false;
         }
-        boolean coldBiome = level.hasChunkAt(pos) && level.getBiome(pos).is(ModTags.Biomes.HAZARD_COLD);
-        return HazardOrderRules.frigidCold(planet.traits().temperatureBand(), coldBiome);
+        boolean loaded = level.hasChunkAt(pos);
+        boolean coldBiome = loaded && level.getBiome(pos).is(ModTags.Biomes.HAZARD_COLD);
+        boolean mildBiome = loaded && level.getBiome(pos).is(ModTags.Biomes.HAZARD_COLD_MILD);
+        return HazardOrderRules.frigidCold(planet.traits().temperatureBand(), coldBiome, mildBiome);
     }
 
     /**
@@ -137,7 +139,7 @@ public final class PlanetHazards {
         boolean frigid = frigidCold(level, pos);
         Hazard first = HazardOrderRules.resolve(present, suit, lined, frigid, false);
         if (first == Hazard.COLD
-                && za.co.neroland.nerospace.world.planet.nyxara.NyxaraWarmth.shieldedFromCold(level, pos)) {
+                && ColdShelter.shielded(level, pos)) {
             first = HazardOrderRules.resolve(present, suit, lined, frigid, true);
         }
         return first;

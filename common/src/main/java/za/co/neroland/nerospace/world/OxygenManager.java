@@ -392,9 +392,23 @@ public final class OxygenManager {
      * player is within {@link #SAFE_RADIUS} of a Rocket Launch Pad — a permanent pressurised safe zone at
      * the landing site (the pad is not a field source, so it stays a simple radius check).
      */
+    /** Whether this level's planet terraforms without ever becoming breathable. */
+    private static boolean noAtmosphere(ServerLevel level) {
+        var planet = za.co.neroland.nerospace.world.planet.Planets.get(level.dimension());
+        if (planet == null) {
+            return false;
+        }
+        var table = planet.terraform();
+        return table.isPresent()
+                && table.get().has(za.co.neroland.nerospace.world.planet.TerraformTable.Rule.NO_ATMOSPHERE);
+    }
+
     private static boolean isBreathable(ServerLevel level, BlockPos center) {
-        // Terraformed ground is permanently breathable (the Terraformer flags the chunk).
-        if (Services.PLATFORM.isTerraformed(level.getChunkAt(center))) {
+        // Terraformed ground is permanently breathable (the Terraformer flags the chunk), except on a world whose
+        // terraform table says it never gains an atmosphere (Europa).
+        boolean noAtmosphere = noAtmosphere(level);
+        if (za.co.neroland.nerospace.world.planet.AtmosphereRules.terraformBreathable(noAtmosphere,
+                Services.PLATFORM.isTerraformed(level.getChunkAt(center)))) {
             return true;
         }
         if (OxygenFieldManager.get(level).isBreathable(center)) {
@@ -404,7 +418,8 @@ public final class OxygenManager {
         // has to be checked separately from the physical isTerraformed flag above. Explicit branch to
         // keep an Optional map + Boolean box off this path.
         var overlay = NerospaceTerraforming.at(level, center);
-        if (overlay.isPresent() && overlay.get().stage() >= 1) {
+        if (za.co.neroland.nerospace.world.planet.AtmosphereRules.terraformBreathable(noAtmosphere,
+                overlay.isPresent() && overlay.get().stage() >= 1)) {
             return true;
         }
         // External contributions (a NeroAgriculture greenhouse, say) are pressure like any other.

@@ -101,12 +101,20 @@ class TerraformTablesTest {
         assertEquals(List.of(TerraformTable.Rule.BAND_ONLY), table("nyxara").rules());
         assertEquals(List.of(TerraformTable.Rule.SHIMMER_DOME), table("luna").rules());
         assertEquals(List.of(TerraformTable.Rule.OPEN_WATER_SPRING), table("mars").rules());
+        assertEquals(List.of(TerraformTable.Rule.OPEN_WATER_SPRING, TerraformTable.Rule.OPEN_OCEAN,
+                TerraformTable.Rule.NO_ATMOSPHERE), table("europa").rules());
+        // The rule enum is append-only (tables are data, but the order documents when each rule arrived).
+        assertEquals(List.of(TerraformTable.Rule.BAND_ONLY, TerraformTable.Rule.SHIMMER_DOME,
+                TerraformTable.Rule.OPEN_WATER_SPRING, TerraformTable.Rule.OPEN_OCEAN,
+                TerraformTable.Rule.NO_ATMOSPHERE), List.of(TerraformTable.Rule.values()));
+        assertEquals(7, TerraformTables.ORDER.indexOf(table("europa")), "Europa is appended at index 7");
         assertEquals("nerospace:xertz_soil", table("greenxertz").livingTop().orElseThrow().toString());
         assertEquals(0.0, table("mars").treeChance(), "the red steppe is treeless");
         for (TerraformTable t : TerraformTables.ORDER) {
             assertEquals("minecraft:water", t.liquid().toString(), t.langId());
             assertFalse(t.ores().isEmpty(), t.langId());
-            assertFalse(t.flora().isEmpty(), t.langId());
+            // Nothing green grows on an ice shell that opens into a sea: the open-ocean table has no ground cover.
+            assertEquals(t.has(TerraformTable.Rule.OPEN_OCEAN), t.flora().isEmpty(), t.langId());
             assertFalse(t.ores().toString().contains("cheese"), "terraforming never seeds cheese");
             if (!t.has(TerraformTable.Rule.SHIMMER_DOME)) {
                 assertFalse(t.langId().equals("luna"));

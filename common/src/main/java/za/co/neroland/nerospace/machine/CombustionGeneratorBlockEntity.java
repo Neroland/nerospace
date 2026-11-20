@@ -128,19 +128,22 @@ public class CombustionGeneratorBlockEntity extends BlockEntity
     /** Burn value (ticks) for a fuel item, or 0 if not accepted. */
     public static int fuelValue(ItemStack stack) {
         if (stack.is(Items.COAL) || stack.is(Items.CHARCOAL)) {
-            return 1_600;
+            return GeneratorFuels.COAL;
         }
         if (stack.is(Items.COAL_BLOCK)) {
-            return 16_000;
+            return GeneratorFuels.COAL_BLOCK;
         }
         if (stack.is(Items.BLAZE_ROD)) {
-            return 2_400;
+            return GeneratorFuels.BLAZE_ROD;
         }
         if (stack.is(ModItems.ROCKET_FUEL_CANISTER.get())) {
-            return 4_000;
+            return GeneratorFuels.ROCKET_FUEL_CANISTER;
         }
         if (stack.is(za.co.neroland.nerospace.world.planet.glacira.GlaciraContent.METHANE_CRYSTAL.get())) {
-            return 2_400; // 1.5x coal: methane is Glacira's fuel
+            return GeneratorFuels.METHANE_CRYSTAL; // 1.5x coal: methane is Glacira's fuel
+        }
+        if (stack.is(za.co.neroland.nerospace.world.planet.europa.EuropaContent.DEUTERIUM_CELL.get())) {
+            return GeneratorFuels.DEUTERIUM_CELL;
         }
         return 0;
     }
@@ -153,7 +156,8 @@ public class CombustionGeneratorBlockEntity extends BlockEntity
                 new ItemStack(Items.COAL_BLOCK),
                 new ItemStack(Items.BLAZE_ROD),
                 new ItemStack(ModItems.ROCKET_FUEL_CANISTER.get()),
-                new ItemStack(za.co.neroland.nerospace.world.planet.glacira.GlaciraContent.METHANE_CRYSTAL.get()));
+                new ItemStack(za.co.neroland.nerospace.world.planet.glacira.GlaciraContent.METHANE_CRYSTAL.get()),
+                new ItemStack(za.co.neroland.nerospace.world.planet.europa.EuropaContent.DEUTERIUM_CELL.get()));
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {

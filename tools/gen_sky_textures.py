@@ -283,6 +283,64 @@ def rocky_moon(name, size, radius, base_grey, crater_count, potato=0.0):
     return to_image(rgb, alpha)
 
 
+JUPITER_BANDS = ["#C9B08A", "#E8DCC4", "#B4875E", "#F0E6D2", "#A8704A", "#E2D2B4", "#8E6A50", "#D8C8A8", "#B89A78"]
+JUPITER_RADIUS = 0.92
+# The band drift loop covers one eighth of a turn, and the band turbulence repeats every eighth of a turn in
+# longitude, so frame `frames` equals frame 0 and neighbouring frames differ by a fraction of a pixel row.
+JUPITER_DRIFT_TURNS = 8
+JUPITER_SPOT_LAT = 0.38
+
+
+def gas_giant(name, size, frame=0, frames=32, bands=JUPITER_BANDS, spot="#B5502E"):
+    """A banded gas giant with one storm spot. ``frame`` of ``frames`` drifts the bands (alternating direction, every
+    third band still); the spot sits on a still band and does not move. Frame 0 is the still."""
+    radius = JUPITER_RADIUS
+    x, y, z, r = sphere(size, radius)
+    lat = np.arcsin(np.clip(y, -1, 1))
+    lon = np.arctan2(x, np.maximum(z, 1e-6))
+    sample = noise_space(name)
+    t = (frame % frames) / float(frames)
+    band_f = (lat / np.pi + 0.5) * (len(bands) - 1)
+    k = np.clip(np.round(band_f).astype(int), 0, len(bands) - 1)
+    spot_band = int(round((JUPITER_SPOT_LAT / np.pi + 0.5) * (len(bands) - 1)))
+    sign = np.select([k == spot_band, k % 3 == 0, k % 3 == 1], [0.0, 1.0, -1.0], 0.0)
+    angle = JUPITER_DRIFT_TURNS * (lon + sign * (2 * np.pi / JUPITER_DRIFT_TURNS) * t)
+    cx, cz = np.cos(angle), np.sin(angle)
+    warp = volume_fbm(sample, cx * 1.5 + 9, lat * 14, cz * 1.5 + 9, 5) - 0.5
+    bf = np.clip(band_f + warp * 1.1, 0, len(bands) - 1.001)
+    i0 = np.floor(bf).astype(int)
+    f = (bf - i0)[..., None]
+    pal = np.stack([hexc(c) for c in bands])
+    rgb = pal[i0] * (1 - f) + pal[i0 + 1] * f
+    rgb = rgb * (0.86 + 0.28 * volume_fbm(sample, cx * 4.5, lat * 40, cz * 4.5, 4)[..., None])
+    d_lon = lon + 0.6
+    d = np.sqrt((d_lon / 0.34) ** 2 + ((lat - JUPITER_SPOT_LAT) / 0.14) ** 2)
+    m = np.clip(1 - d, 0, 1)[..., None] ** 0.7
+    rgb = rgb * (1 - m) + hexc(spot) * m
+    rgb = rgb * (0.35 + 0.65 * np.clip(z, 0, 1) ** 0.6)[..., None]   # limb darkening
+    return to_image(rgb, np.clip((radius - r) * size / 2, 0, 1))
+
+
+def sulfur_moon(name, size, radius=0.8, base="#E8D36A", spots="#B8502A"):
+    """Io: a sulfur-yellow disc with dark red-brown volcanic spots and paler frost patches."""
+    rng = rng_of(name)
+    x, y, z, r = sphere(size, radius)
+    sample = noise_space(name)
+    mottled = volume_fbm(sample, x * 4, y * 4, z * 4, 5)
+    rgb = hexc(base) * (0.72 + 0.5 * mottled)[..., None]
+    pale = np.clip((volume_fbm(sample, x * 2 + 5, y * 2, z * 2 + 3, 4) - 0.52) * 5, 0, 1)[..., None]
+    rgb = rgb * (1 - pale * 0.5) + hexc("#F6F0C8") * pale * 0.5
+    for _ in range(9):
+        centre = rng.normal(size=3)
+        centre /= np.linalg.norm(centre)
+        reach = rng.uniform(0.08, 0.2)
+        distance = np.sqrt((x - centre[0]) ** 2 + (y - centre[1]) ** 2 + (z - centre[2]) ** 2) / reach
+        core = np.clip(1 - distance, 0, 1)[..., None] ** 0.8
+        rgb = rgb * (1 - core) + hexc(spots) * core
+    rgb = rgb * (0.55 + 0.45 * np.clip(z, 0, 1) ** 0.6)[..., None]
+    return to_image(rgb, np.clip((radius - r) * size / 2, 0, 1))
+
+
 def earth(name, size):
     rgb, a, _ = earth_parts(name, size)
     return to_image(rgb, a)
@@ -831,6 +889,8 @@ AURORA_GRADIENTS = {
     "nyxara": [(0.0, "#6B2FB8"), (0.3, "#9B5DE5"), (0.65, "#5FB8E8"), (1.0, "#4DD0E1")],
     "mars": [(0.0, "#3E9A66"), (0.5, "#60A080"), (1.0, "#C85A6A")],
     "greenxertz": [(0.0, "#FF7AC8"), (0.6, "#FFA6DC"), (1.0, "#FFD6EC")],
+    # Europa: oxygen red over violet, faint (only shown during a radiation storm).
+    "europa": [(0.0, "#6B4AA3"), (0.55, "#FF6A9A"), (1.0, "#FFD0E0")],
 }
 
 # ======================================================================================= table
@@ -891,6 +951,12 @@ def sky_textures():
         "clouds_ash": lambda: clouds_ash(),
         "sun_aureole": lambda: sun_aureole(),
         "horizon_ramp_soft": lambda: horizon_ramp_soft(),
+        # ---- Europa ----
+        "jupiter": lambda: gas_giant("jupiter", 256),
+        "io": lambda: sulfur_moon("io", 64),
+        "ganymede": lambda: rocky_moon("ganymede", 64, 0.8, 0.62, 5),
+        "aurora_europa_0": lambda: gradient_curtain("aurora_europa_0", 512, 128, AURORA_GRADIENTS["europa"], ray_base=14, ray_gain=0.7, glow=0.4),
+        "plume_veil": lambda: nebula_patch("plume_veil", 256, ("#E4EEF2", "#C4D6DE", "#F8FCFD"), 0.7),
     }
 
 
@@ -921,6 +987,7 @@ SQUARE_BODIES = {
     "sun_white": 0.34, "sun_small": 0.42, "sun_pale": 0.26, "sun_amber": 0.36, "red_giant": 0.72, "dark_moon": 0.82,
     "earth": 0.86, "earth_disk": 0.86, "earth_globe": 0.86, "earth_disk_globe": 0.86, "earth_lights": 0.86,
     "earth_disk_lights": 0.86, "phobos": 0.7, "deimos": 0.62, "rime": 0.8, "hoar": 0.8, "moon_small": 0.8,
+    "jupiter": 0.92, "io": 0.8, "ganymede": 0.8,
 }
 SQUARE_CELLS = 16   # flat colour cells across a square body, like the vanilla sun and moon
 SQUARE_SIZE = 128   # output texture size

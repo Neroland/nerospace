@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "capped=false": {
+      "model": "nerospace:block/smoker_chimney"
+    },
+    "capped=true": {
+      "model": "nerospace:block/smoker_chimney_capped"
+    }
+  }
+}

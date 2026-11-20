@@ -13,6 +13,9 @@ functions that read no noise (``minecraft:y`` and the like) stay shared. Surface
 
 Glacira and Greenxertz keep the shared router on purpose (their terrain continues across old chunks).
 
+Europa is different: its terrain is **authored** here (``europa_tree``), not copied. One abstract density tree is
+emitted in both trees' spellings, with its own noises, and its noise settings get their router from it.
+
 Usage (from anywhere; needs the Loom cache jars, i.e. one Fabric build per line):
     python tools/gen_planet_noise.py           # write the copies and repoint the routers
     python tools/gen_planet_noise.py --check   # exit 1 if anything is missing or stale (writes nothing)
@@ -30,6 +33,11 @@ MAIN = REPO / "common" / "src" / "main"
 TREES = {"resources": "26.2", "resources-26.3": "26.3"}
 VERIFY = {"resources": ["26.1.2", "26.2"], "resources-26.3": ["26.3"]}
 PLANETS = ["luna", "mars", "nyxara", "cindara"]
+# Planets whose terrain is authored here rather than copied from vanilla (see europa_tree()).
+AUTHORED = ["europa"]
+# The vanilla climate noises an authored planet's biome source reads, copied under the planet's id.
+AUTHORED_CLIMATE = {"continents": "continentalness", "erosion": "erosion", "ridges": "ridge",
+                    "temperature": "temperature", "vegetation": "vegetation"}
 SHIFT_TYPES = {"minecraft:shift_a", "minecraft:shift_b", "minecraft:shift"}
 DF = "data/minecraft/worldgen/density_function/"
 NOISE = "data/minecraft/worldgen/noise/"
@@ -192,6 +200,142 @@ def types_in(node, acc):
     return acc
 
 
+# --- authored terrain ------------------------------------------------------------------------------------------------
+# An authored planet's density functions are written once as an abstract tree and emitted in each tree's spelling:
+#   number                      a constant
+#   ("ref", name)               another density function of the same planet
+#   ("noise", name, xz_scale)   a 2D noise of the same planet (y_scale 0)
+#   ("ramp", y0, v0, y1, v1)    the clamped Y gradient
+#   ("add"|"mul"|"min"|"max", a, b), ("abs", x), ("clamp", x, lo, hi), ("interp", x)
+
+def _n(name):
+    """A 2D noise clamped to [-1, 1] before it is scaled, so every layer boundary has an exact Y interval."""
+    return ("clamp", ("noise", name, 1.0), -1.0, 1.0)
+
+
+def europa_tree():
+    """Europa: a sea floor, an ocean, an ice shell with an underside and a top. Three linear Y ramps, each offset by
+    clamped 2D noise. Returns ({density function name: tree}, {noise name: parameters})."""
+    topside = ("add",
+               ("add",
+                ("add", ("ramp", 160, 1.0, 224, -1.0), ("mul", 0.375, _n("surface"))),
+                # chaos rafts: 0 .. +0.25 where erosion is above the chaos threshold
+                ("mul", ("mul", 0.4, ("clamp", ("add", ("ref", "erosion"), -0.35), 0.0, 0.625)),
+                 ("abs", _n("rafts")))),
+               # lineae trough: -0.125 .. 0 along the ridges zero line
+               ("mul", -0.125, ("clamp", ("add", 1.0, ("mul", -20.0, ("abs", ("ref", "ridges")))), 0.0, 1.0)))
+    underside = ("add", ("ramp", 72, -1.0, 112, 1.0), ("mul", 0.4, _n("underside")))
+    seabed = ("add", ("ramp", -56, 1.0, -8, -1.0), ("mul", 0.5, _n("seabed")))
+    dfs = {
+        "topside": topside,
+        "underside": underside,
+        "seabed": seabed,
+        "final_density": ("interp", ("max", ("ref", "seabed"), ("min", ("ref", "underside"), ("ref", "topside")))),
+        "depth": ("ramp", -64, 2.0, 320, -1.0),
+    }
+    for df, noise in AUTHORED_CLIMATE.items():
+        dfs[df] = ("noise", noise, 0.25)
+    noises = {
+        "surface": {"firstOctave": -7, "amplitudes": [1.0, 1.0, 0.5]},
+        "rafts": {"firstOctave": -5, "amplitudes": [1.0, 0.5]},
+        "underside": {"firstOctave": -6, "amplitudes": [1.0, 1.0]},
+        "seabed": {"firstOctave": -7, "amplitudes": [1.0, 1.0, 1.0]},
+    }
+    return dfs, noises
+
+
+AUTHORED_TREES = {"europa": europa_tree}
+
+
+def emit(node, dialect, planet):
+    """One abstract node in a tree's spelling: dialect "resources" (26.1/26.2 and older) or "resources-26.3"."""
+    new = dialect == "resources-26.3"
+    if isinstance(node, (int, float)):
+        return float(node)
+    op = node[0]
+    if op == "ref":
+        return "nerospace:" + planet + "/" + node[1]
+    if op == "noise":
+        return {"type": "minecraft:noise", "noise": "nerospace:" + planet + "/" + node[1],
+                "xz_scale": float(node[2]), "y_scale": 0.0}
+    if op == "ramp":
+        if new:
+            return {"type": "minecraft:gradient", "axis": "y", "from_coordinate": node[1],
+                    "from_value": float(node[2]), "to_coordinate": node[3], "to_value": float(node[4])}
+        return {"type": "minecraft:y_clamped_gradient", "from_y": node[1], "to_y": node[3],
+                "from_value": float(node[2]), "to_value": float(node[4])}
+    if op in ("add", "mul", "min", "max"):
+        a, b = ("left", "right") if new else ("argument1", "argument2")
+        return {"type": "minecraft:" + op, a: emit(node[1], dialect, planet), b: emit(node[2], dialect, planet)}
+    if op == "abs":
+        return {"type": "minecraft:abs", ("input" if new else "argument"): emit(node[1], dialect, planet)}
+    if op == "clamp":
+        return {"type": "minecraft:clamp", "input": emit(node[1], dialect, planet),
+                "min": float(node[2]), "max": float(node[3])}
+    if op == "interp":
+        if new:
+            return {"type": "minecraft:interpolated", "cell_size_xz": 4, "cell_size_y": 8,
+                    "input": emit(node[1], dialect, planet)}
+        return {"type": "minecraft:interpolated", "argument": emit(node[1], dialect, planet)}
+    sys.exit("unknown authored node " + str(op))
+
+
+def surface_level(planet, dialect):
+    """The top-surface search over the planet's topside function. The +/-0.390625 pair is the shape the build's
+    1.21.x rewrite recognises (it turns the inner sum into the old engine's initial density)."""
+    top = "nerospace:" + planet + "/topside"
+    if dialect == "resources-26.3":
+        return {"type": "minecraft:interpolated", "cell_size_xz": 16, "cell_size_y": 1,
+                "input": {"type": "minecraft:find_top_surface", "cell_height": 8, "lower_bound": -64,
+                          "upper_bound": 224.0,
+                          "density": {"type": "minecraft:add",
+                                      "left": {"type": "minecraft:add", "left": 0.390625, "right": top},
+                                      "right": -0.390625}}}
+    return {"type": "minecraft:find_top_surface", "cell_height": 8, "lower_bound": -64, "upper_bound": 224.0,
+            "density": {"type": "minecraft:add", "argument1": -0.390625,
+                        "argument2": {"type": "minecraft:add", "argument1": 0.390625, "argument2": top}}}
+
+
+def write_authored(planet, tree, vanilla, writes):
+    """Adds an authored planet's noise, density-function and noise-settings files for one resource tree to
+    ``writes``. Returns the used types (checked against the vanilla jars by the caller)."""
+    dfs, noises = AUTHORED_TREES[planet]()
+    base = MAIN / tree / "data" / "nerospace" / "worldgen"
+    own = "nerospace:" + planet + "/"
+    used = set()
+    for name, node in dfs.items():
+        body = emit(node, tree, planet)
+        types_in(body, used)
+        writes[base / "density_function" / planet / (name + ".json")] = dump(body)
+    for name, params in noises.items():
+        writes[base / "noise" / planet / (name + ".json")] = dump(params)
+    for noise in AUTHORED_CLIMATE.values():
+        writes[base / "noise" / planet / (noise + ".json")] = dump(vanilla.noise(noise))
+    ns_path = base / "noise_settings" / (planet + ".json")
+    settings = json.loads(ns_path.read_text(encoding="utf-8"))
+    climate = {k: own + k for k in ("continents", "depth", "erosion", "final_density", "ridges", "temperature",
+                                    "vegetation")}
+    if tree == "resources-26.3":
+        level = surface_level(planet, tree)
+        types_in(level, used)
+        writes[base / "density_function" / planet / "chunk_surface_level.json"] = dump(level)
+        router = dict(climate)
+        router["chunk_surface_level"] = own + "chunk_surface_level"
+        settings["debug_functions"] = [{"function": own + f, "label": label} for label, f in (
+            ("N", "final_density"), ("T", "temperature"), ("V", "vegetation"), ("C", "continents"),
+            ("E", "erosion"), ("D", "depth"))]
+    else:
+        router = dict(climate)
+        for k in ("barrier", "fluid_level_floodedness", "fluid_level_spread", "lava", "vein_toggle", "vein_ridged",
+                  "vein_gap"):
+            router[k] = 0.0
+        router["preliminary_surface_level"] = surface_level(planet, tree)
+        types_in(router["preliminary_surface_level"], used)
+    settings["noise_router"] = dict(sorted(router.items()))
+    writes[ns_path] = dump(settings)
+    return used
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true")
@@ -229,6 +373,12 @@ def main():
             used = types_in(settings["noise_router"], set())
             for body in rw.out_dfs.values():
                 types_in(body, used)
+            for v in verify[tree]:
+                missing = sorted(t for t in used if t not in v.types)
+                if missing:
+                    problems.append(tree + " " + planet + ": types not in vanilla jar: " + str(missing))
+        for planet in AUTHORED:
+            used = write_authored(planet, tree, vanilla, writes)
             for v in verify[tree]:
                 missing = sorted(t for t in used if t not in v.types)
                 if missing:

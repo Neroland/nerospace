@@ -81,10 +81,11 @@ class PlanetTraitsCompatTest {
     }
 
     @Test
-    @DisplayName("all() keeps the 1.x order as a prefix and appends Luna, Mars, Nyxara")
+    @DisplayName("all() keeps the 1.x order as a prefix and appends Luna, Mars, Nyxara, then Europa")
     void allOrder() {
         assertEquals(List.of(NerospacePlanets.GREENXERTZ, NerospacePlanets.CINDARA, NerospacePlanets.GLACIRA,
-                NerospacePlanets.STATION, NerospacePlanets.LUNA, NerospacePlanets.MARS, NerospacePlanets.NYXARA),
+                NerospacePlanets.STATION, NerospacePlanets.LUNA, NerospacePlanets.MARS, NerospacePlanets.NYXARA,
+                NerospacePlanets.EUROPA),
                 NerospacePlanets.all());
     }
 

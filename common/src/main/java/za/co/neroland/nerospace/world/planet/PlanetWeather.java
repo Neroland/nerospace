@@ -56,6 +56,12 @@ public final class PlanetWeather {
                 NerospaceConfig.weatherDurationMultiplier());
     }
 
+    /** Any weather parameters scaled by the config multipliers (the secondary event uses the same two). */
+    private static WeatherParams scaled(WeatherParams params) {
+        return params.scaled(NerospaceConfig.weatherFrequencyMultiplier(),
+                NerospaceConfig.weatherDurationMultiplier());
+    }
+
     /**
      * Per-server tick. The state machine steps once per second on every loaded planet level, players or not (so
      * a storm never freezes at PEAK over unattended machinery); the payload resend and player effects only run
@@ -92,8 +98,14 @@ public final class PlanetWeather {
         WeatherMachine m = state.machine;
         WeatherEvent before = m.event;
         boolean enabled = NerospaceConfig.weatherEnabled() && NerospaceConfig.planetWeatherEnabled(planet.weatherConfigKey());
-        boolean mayStart = planet.weatherMayStart(PlanetClock.phase(level));
-        WeatherMachine.Change change = m.step(params(planet), enabled, mayStart, () -> level.getRandom().nextDouble());
+        WeatherParams secondary = planet.secondaryWeather();
+        double phase = PlanetClock.phase(level);
+        // A planet without a secondary event keeps the single-argument start rule and makes exactly the calls it
+        // always made (see WeatherPickRules.step).
+        WeatherMachine.Change change = WeatherPickRules.step(m, params(planet), scaled(secondary), enabled,
+                secondary.hasWeather() ? event -> planet.weatherMayStart(event, phase)
+                        : event -> planet.weatherMayStart(phase),
+                () -> level.getRandom().nextDouble());
         if (change == WeatherMachine.Change.NONE) {
             if (m.active()) {
                 WeatherEffects.Registry.get(m.event).onSecond(level, m);

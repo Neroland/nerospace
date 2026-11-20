@@ -47,7 +47,7 @@ public enum RocketTier {
     TIER_4(4, 24_000, 8_000, 16_000, 30_000, ModDimensions.GLACIRA_LEVEL, List.of(
             ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
             ModDimensions.GLACIRA_LEVEL, ModDimensions.NYXARA_LEVEL, ModDimensions.LUNA_LEVEL,
-            ModDimensions.MARS_LEVEL));
+            ModDimensions.MARS_LEVEL, ModDimensions.EUROPA_LEVEL));
 
     private final int level;
     private final int fuelCapacity;

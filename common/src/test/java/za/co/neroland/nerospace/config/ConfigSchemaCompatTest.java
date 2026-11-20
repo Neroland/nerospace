@@ -145,5 +145,8 @@ class ConfigSchemaCompatTest {
                 assertNotNull(NerospaceConfig.schema().value(p.weatherConfigKey()), p.weatherConfigKey());
             }
         }
+        // 2.4: one switch for both of Europa's events.
+        assertNotNull(NerospaceConfig.schema().value("weather.europa.enabled"));
+        assertEquals("weather.europa.enabled", za.co.neroland.nerospace.world.planet.Planets.EUROPA.weatherConfigKey());
     }
 }

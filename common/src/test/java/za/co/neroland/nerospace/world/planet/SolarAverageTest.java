@@ -46,6 +46,10 @@ class SolarAverageTest {
         assertEquals(4.8, Planets.GLACIRA.planetSolar());
         assertEquals(3.8, Planets.GREENXERTZ.planetSolar());
         assertEquals(3.4, Planets.NYXARA.planetSolar());
+        assertEquals(8.5, Planets.EUROPA.planetSolar());
+        // Europa's constant is computed, not chosen: the smallest 0.1 step that lifts its eclipsed day to the 2.0 floor.
+        double europaCurve = SolarMath.dayAverage(Planets.EUROPA, 1.0, 20_000) / Planets.EUROPA.planetSolar();
+        assertEquals(Math.ceil(SolarMath.LEGACY_FLAT / europaCurve * 10) / 10, 8.5, 1.0E-9);
     }
 
     @Test

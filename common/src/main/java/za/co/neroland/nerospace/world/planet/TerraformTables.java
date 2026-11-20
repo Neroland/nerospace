@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import za.co.neroland.nerospace.world.planet.cindara.CindaraTerraform;
+import za.co.neroland.nerospace.world.planet.europa.EuropaTerraform;
 import za.co.neroland.nerospace.world.planet.glacira.GlaciraTerraform;
 import za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzTerraform;
 import za.co.neroland.nerospace.world.planet.luna.LunaTerraform;
@@ -33,7 +34,7 @@ public final class TerraformTables {
     /** Synced index order (Monitor data slot). Append only. */
     public static final List<TerraformTable> ORDER = List.of(LEGACY, GreenxertzTerraform.TABLE,
             CindaraTerraform.TABLE, GlaciraTerraform.TABLE, LunaTerraform.TABLE, MarsTerraform.TABLE,
-            NyxaraTerraform.TABLE);
+            NyxaraTerraform.TABLE, EuropaTerraform.TABLE);
 
     private TerraformTables() {
     }

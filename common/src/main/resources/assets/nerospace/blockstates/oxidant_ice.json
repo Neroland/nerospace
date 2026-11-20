@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "charge=0": {
+      "model": "nerospace:block/oxidant_ice_0"
+    },
+    "charge=1": {
+      "model": "nerospace:block/oxidant_ice_1"
+    },
+    "charge=2": {
+      "model": "nerospace:block/oxidant_ice_2"
+    },
+    "charge=3": {
+      "model": "nerospace:block/oxidant_ice_3"
+    }
+  }
+}

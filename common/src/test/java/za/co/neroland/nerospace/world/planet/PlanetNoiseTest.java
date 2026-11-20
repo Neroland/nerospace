@@ -69,6 +69,25 @@ class PlanetNoiseTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"europa"})
+    @DisplayName("an authored planet's router reads only its own functions and noises, in both trees")
+    void ownNoiseAuthored(String planet) throws IOException {
+        Assumptions.assumeTrue(main() != null, "common sources not found");
+        for (String tree : TREES) {
+            String router = json(worldgen(tree, "noise_settings/" + planet + ".json")).get("noise_router").toString();
+            for (String key : new String[] {"continents", "erosion", "ridges", "depth", "final_density"}) {
+                assertTrue(router.contains("\"" + key + "\":\"nerospace:" + planet + "/" + key + "\""),
+                        tree + " " + planet + " " + key);
+            }
+            assertFalse(router.contains("minecraft:"+ "overworld/"), tree + " " + planet);
+            Set<String> seen = new TreeSet<>();
+            walk(tree, planet, router, seen);
+            assertTrue(seen.stream().anyMatch(s -> s.endsWith("/continentalness")), tree + " " + planet + " " + seen);
+            assertTrue(seen.stream().anyMatch(s -> s.endsWith("/topside")), tree + " " + planet + " " + seen);
+        }
+    }
+
     private void walk(String tree, String planet, String json, Set<String> seen) throws IOException {
         Matcher m = REF.matcher(json);
         while (m.find()) {

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "ingredient": "nerospace:vent_basalt_bricks",
+  "result": {
+    "id": "minecraft:smooth_basalt"
+  }
+}

@@ -14,9 +14,10 @@ tags load before recipes and advancements, so if the tag were missing the recipe
 Machine recipe types (``<modid>:<machine>``) are skipped: the recipe book never shows them, and recipe
 viewers list them through the mod's own plugin.
 
-Recipes in ``SKIP`` are skipped on purpose: the Luna easter-egg recipe must not gain an unlock advancement (that
-would spread its name into ``advancement/recipes/`` and spoil the hidden one). It still loads and still shows in the
-recipe book once the player holds the ingredient through vanilla's own unlock-on-pickup.
+Recipes in ``SKIP`` are skipped on purpose: the Luna easter-egg recipe and Europa's three europium recipes must not
+gain an unlock advancement (that would spread their names into ``advancement/recipes/`` and spoil the hidden ones).
+They still load and still show in the recipe book once the player holds the ingredient through vanilla's own
+unlock-on-pickup.
 
 The advancements carry only the ``inventory_changed`` criterion: an advancement that is already granted never
 checks again, so a ``recipe_unlocked`` criterion adds nothing (and its field name differs across the Minecraft
@@ -42,7 +43,13 @@ BOOK_TYPES = {
 }
 
 # Recipe ids ("<namespace>:<path>") that never get an unlock advancement (see the module docstring).
-SKIP = {"nerospace:cheese_wheel"}
+SKIP = {
+    "nerospace:cheese_wheel",
+    # Europa's three decorative recipes: the same reasoning, kept out of advancement/recipes/.
+    "nerospace:europium_lamp",
+    "nerospace:raw_europium_from_europium_lamp",
+    "nerospace:raw_europium_from_smelting_europium_ore",
+}
 
 
 def flatten(value):

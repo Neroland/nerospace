@@ -34,7 +34,15 @@ public final class HazardOrderRules {
      * cold of a cold world (Mars) is kept out by any Tier 2 class suit.
      */
     public static boolean frigidCold(TemperatureBand band, boolean coldBiome) {
-        return coldBiome || band == TemperatureBand.FRIGID;
+        return frigidCold(band, coldBiome, false);
+    }
+
+    /**
+     * As {@link #frigidCold(TemperatureBand, boolean)}, with the mild flag: a biome tagged {@code hazard/cold_mild}
+     * (under Europa's ice) is never frigid, even on a frigid world.
+     */
+    public static boolean frigidCold(TemperatureBand band, boolean coldBiome, boolean mildBiome) {
+        return !mildBiome && (coldBiome || band == TemperatureBand.FRIGID);
     }
 
     /** Every hazard present: weather radiation, each matching biome hazard tag and the planet's trait hazard. */

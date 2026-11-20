@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "nerospace:block/smoker_chimney_top",
+    "side": "nerospace:block/smoker_chimney_side"
+  }
+}

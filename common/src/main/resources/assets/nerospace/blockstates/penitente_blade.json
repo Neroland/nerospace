@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "nerospace:block/penitente_blade"
+    },
+    "axis=z": {
+      "model": "nerospace:block/penitente_blade",
+      "y": 90
+    }
+  }
+}

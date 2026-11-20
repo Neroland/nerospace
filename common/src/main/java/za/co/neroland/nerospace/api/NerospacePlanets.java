@@ -43,9 +43,12 @@ public final class NerospacePlanets {
     public static final PlanetId MARS = of("mars");
     /** Nyxara ({@code nerospace:nyxara}) — added in 2.0. Its dimension may not exist on every server yet. */
     public static final PlanetId NYXARA = of("nyxara");
+    /** Europa ({@code nerospace:europa}) — added in 2.4. Its dimension may not exist on every server yet. */
+    public static final PlanetId EUROPA = of("europa");
 
     /** 1.x order first, 2.0 planets appended. */
-    private static final List<PlanetId> ALL = List.of(GREENXERTZ, CINDARA, GLACIRA, STATION, LUNA, MARS, NYXARA);
+    private static final List<PlanetId> ALL = List.of(GREENXERTZ, CINDARA, GLACIRA, STATION, LUNA, MARS, NYXARA,
+            EUROPA);
 
     private NerospacePlanets() {
     }

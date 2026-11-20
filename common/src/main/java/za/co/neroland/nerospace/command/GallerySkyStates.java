@@ -108,6 +108,11 @@ public final class GallerySkyStates {
                 place("nightside", View.NIGHTSIDE, -90.0F, -15.0F, "nightside"),
                 place("galaxy_side", View.NIGHTSIDE, -90.0F, -20.0F, "galaxy_side"),
                 new State("flare", KEEP_PHASE, Weather.START, View.BAND, 90.0F, -12.0F, "flare")));
+        // Europa: Jupiter is fixed high in the south; the sun passes behind it at noon. A weather start is the
+        // planet's primary event, the plume fall.
+        t.put("europa", with(day(),
+                face("eclipse", 0.25, Weather.CLEAR, 0.0F, -65.0F, "eclipse"),
+                face("plume_fall", NIGHT, Weather.START, 180.0F, -20.0F, "plume_fall")));
         TABLE = Collections.unmodifiableMap(t);
     }
 

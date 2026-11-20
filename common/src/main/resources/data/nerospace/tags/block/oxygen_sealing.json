@@ -8,6 +8,14 @@
     "nerospace:cindrite_block",
     "nerospace:glacite_block",
     {"id": "nerospace:hull_plating", "required": false},
-    {"id": "nerospace:hull_window", "required": false}
+    {"id": "nerospace:hull_window", "required": false},
+    "nerospace:europa_ice",
+    "nerospace:chaos_ice",
+    "nerospace:cut_europa_ice",
+    "nerospace:europa_ice_bricks",
+    "nerospace:shell_ice",
+    "nerospace:vent_basalt",
+    "nerospace:polished_vent_basalt",
+    "nerospace:vent_basalt_bricks"
   ]
 }

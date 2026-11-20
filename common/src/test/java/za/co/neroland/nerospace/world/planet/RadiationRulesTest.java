@@ -21,6 +21,27 @@ class RadiationRulesTest {
     }
 
     @Test
+    @DisplayName("Europa: 2 on the open surface, 0 under the ice, 1 on terraformed ground; a storm adds 1 outside")
+    void europa() {
+        assertEquals(2, Planets.EUROPA.traits().radiation());
+        assertEquals(0, RadiationRules.base(2, "nerospace:europa_shell"));
+        assertEquals(0, RadiationRules.base(2, "nerospace:europa_abyss"));
+        assertEquals(0, RadiationRules.base(2, "nerospace:europa_vent_fields"));
+        assertEquals(1, RadiationRules.base(2, "nerospace:terraformed_europa_living"));
+        assertEquals(1, RadiationRules.base(2, "nerospace:terraformed_europa_rooted"));
+        for (String b : new String[] {"europa_chaos", "europa_ice_plains", "europa_lineae", "europa_penitentes"}) {
+            assertEquals(2, RadiationRules.base(2, "nerospace:" + b), b);
+        }
+        assertEquals(3, RadiationRules.effective(2, WeatherEvent.FLARE, "nerospace:europa_chaos", true));
+        assertEquals(2, RadiationRules.effective(2, WeatherEvent.FLARE, "nerospace:europa_chaos", false));
+        assertEquals(0, RadiationRules.effective(0, WeatherEvent.FLARE, "nerospace:europa_shell", false));
+        assertEquals(2, RadiationRules.effective(1, WeatherEvent.FLARE, "nerospace:terraformed_europa_living", true));
+        // Unchanged: ids that merely resemble Europa's do not match, and other planets keep their trait.
+        assertEquals(1, RadiationRules.base(1, "nerospace:mars_dunes"));
+        assertEquals(3, RadiationRules.base(3, "nerospace:europa"));
+    }
+
+    @Test
     @DisplayName("A flare adds +1 on the dayside and in the band, exposed and unsealed only")
     void flarePlusOne() {
         assertEquals(2, RadiationRules.effective(1, WeatherEvent.FLARE, RadiationRules.NYXARA_BAND, true));

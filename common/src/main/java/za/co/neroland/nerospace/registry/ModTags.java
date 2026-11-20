@@ -66,6 +66,10 @@ public final class ModTags {
         public static final TagKey<Biome> HAZARD_RADIATION = biomeTag("nerospace", "hazard/radiation");
         public static final TagKey<Biome> HAZARD_HEAT = biomeTag("nerospace", "hazard/heat");
         public static final TagKey<Biome> HAZARD_COLD = biomeTag("nerospace", "hazard/cold");
+        /** Biomes whose cold is mild even on a frigid world (under Europa's ice): any Tier 2 class suit is enough. */
+        public static final TagKey<Biome> HAZARD_COLD_MILD = biomeTag("nerospace", "hazard/cold_mild");
+        /** Europa's four open-surface biomes (weather ambience, gallery). */
+        public static final TagKey<Biome> EUROPA_SURFACE = biomeTag("nerospace", "europa_surface");
     }
 
     public static final class Blocks {
@@ -110,6 +114,11 @@ public final class ModTags {
         public static final TagKey<Block> BEAM_REFRACTORS = blockTag("nerospace", "beam_refractors");
         /** Overhead blocks that shade a player from ambient radiation (Sunglass Crystal). */
         public static final TagKey<Block> RADIATION_SHADE = blockTag("nerospace", "radiation_shade");
+        /** Heat sources Europa's ices react to (an active vent, lava, magma, campfires). */
+        public static final TagKey<Block> EUROPA_HEAT_SOURCES = blockTag("nerospace", "europa_heat_sources");
+        /** Shell blocks an ice fracture cuts through. */
+        public static final TagKey<Block> EUROPA_FRACTURE_REPLACEABLE =
+                blockTag("nerospace", "europa_fracture_replaceable");
         /** Blocks custom lava interactions must never replace (Magma Glass). */
         public static final TagKey<Block> LAVA_IMMUNE = blockTag("nerospace", "lava_immune");
         /** Blocks that act as oxygen sources for the field (generators; later: alien flora). */

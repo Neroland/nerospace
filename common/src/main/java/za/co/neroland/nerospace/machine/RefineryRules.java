@@ -10,6 +10,8 @@ import za.co.neroland.nerospace.block.rules.OxidiserRules;
  * base output; while covered, a batch yields {@link OxidiserRules#MULTIPLIER} times the base amount.</p>
  *
  * <p>Ilmenite: one Raw Ilmenite becomes one Titanium Ingot plus {@link #ILMENITE_OXYGEN_MB} mB of oxygen.</p>
+ *
+ * <p>Oxidant Crystal (Europa), in the same slot: {@link #OXIDANT_OXYGEN_MB} mB of oxygen and no ingot.</p>
  */
 public final class RefineryRules {
 
@@ -19,6 +21,8 @@ public final class RefineryRules {
     public static final int ILMENITE_OXYGEN_MB = 250;
     /** Titanium ingots per raw ilmenite. */
     public static final int TITANIUM_PER_ILMENITE = 1;
+    /** Oxygen released per Oxidant Crystal refined (Europa); a crystal makes no ingot. */
+    public static final int OXIDANT_OXYGEN_MB = za.co.neroland.nerospace.world.planet.europa.EuropaNumbers.OXIDANT_OXYGEN_MB;
 
     private RefineryRules() {
     }
@@ -41,6 +45,24 @@ public final class RefineryRules {
     /** Coverage left after a boosted batch of {@code baseBatchMb} base output. */
     public static int coverageAfterBatch(int coverageMb, int baseBatchMb) {
         return Math.max(0, coverageMb - baseBatchMb);
+    }
+
+    /**
+     * Whether an Oxidant Crystal may be refined: only when the oxygen buffer has room for all of its oxygen, so a
+     * crystal is never spent on gas that would vent. It needs no room in the titanium slot.
+     */
+    public static boolean canRefineOxidant(long bufferFreeMb) {
+        return bufferFreeMb >= OXIDANT_OXYGEN_MB;
+    }
+
+    /** Oxygen one refined input gives: a crystal's 400 mB or ilmenite's 250 mB. */
+    public static int oxygenFor(boolean oxidantCrystal) {
+        return oxidantCrystal ? OXIDANT_OXYGEN_MB : ILMENITE_OXYGEN_MB;
+    }
+
+    /** Titanium ingots one refined input gives: none for a crystal. */
+    public static int titaniumFor(boolean oxidantCrystal) {
+        return oxidantCrystal ? 0 : TITANIUM_PER_ILMENITE;
     }
 
     /** Whether the titanium output slot can take one more refined ingot. */

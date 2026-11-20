@@ -28,7 +28,7 @@ class RocketTierDefaultsTest {
                     ModDimensions.GLACIRA_LEVEL));
 
     @Test
-    @DisplayName("Destinations: 1.x indices frozen, Luna/Mars/Nyxara appended as 5/6/7")
+    @DisplayName("Destinations: 1.x indices frozen, Luna/Mars/Nyxara appended as 5/6/7, Europa as 8")
     void destinationsAppend() {
         assertEquals(0, Destinations.HOME);
         assertEquals(1, Destinations.STATION);
@@ -38,7 +38,9 @@ class RocketTierDefaultsTest {
         assertEquals(5, Destinations.LUNA);
         assertEquals(6, Destinations.MARS);
         assertEquals(7, Destinations.NYXARA);
-        assertEquals(8, Destinations.all().size());
+        assertEquals(8, Destinations.EUROPA);
+        assertEquals(9, Destinations.all().size());
+        assertEquals(ModDimensions.EUROPA_LEVEL, Destinations.byIndex(Destinations.EUROPA));
         assertEquals(ModDimensions.OVERWORLD, Destinations.byIndex(Destinations.HOME));
         assertEquals(ModDimensions.LUNA_LEVEL, Destinations.byIndex(Destinations.LUNA));
         assertEquals(ModDimensions.NYXARA_LEVEL, Destinations.byIndex(Destinations.NYXARA));
@@ -100,7 +102,47 @@ class RocketTierDefaultsTest {
         assertTrue(RocketTier.TIER_3.destinations().contains(ModDimensions.LUNA_LEVEL));
         assertTrue(RocketTier.TIER_3.destinations().contains(ModDimensions.MARS_LEVEL));
         assertFalse(RocketTier.TIER_3.destinations().contains(ModDimensions.GLACIRA_LEVEL));
-        assertEquals(7, RocketTier.TIER_4.destinations().size()); // every off-world destination
+        assertEquals(8, RocketTier.TIER_4.destinations().size()); // every off-world destination
+        assertFalse(RocketTier.TIER_3.destinations().contains(ModDimensions.EUROPA_LEVEL));
+        assertEquals(ModDimensions.EUROPA_LEVEL, RocketTier.TIER_4.destinations().get(7), "Europa is appended last");
+    }
+
+    @Test
+    @DisplayName("append-only: a 2.3.1 save's destination indices, global and per tier, still mean the same worlds")
+    void savedIndicesKeepTheirWorlds() {
+        // The 2.3.1 global order (a rocket's saved destination index).
+        List<ResourceKey<Level>> global231 = List.of(ModDimensions.OVERWORLD, ModDimensions.STATION_LEVEL,
+                ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL, ModDimensions.GLACIRA_LEVEL,
+                ModDimensions.LUNA_LEVEL, ModDimensions.MARS_LEVEL, ModDimensions.NYXARA_LEVEL);
+        assertEquals(global231, Destinations.all().subList(0, global231.size()));
+        for (int i = 0; i < global231.size(); i++) {
+            assertEquals(global231.get(i), Destinations.byIndex(i), "index " + i);
+        }
+        // The 2.3.1 per-tier lists (older saves store an index into the tier's own list).
+        List<List<ResourceKey<Level>>> tiers231 = List.of(
+                List.of(ModDimensions.STATION_LEVEL, ModDimensions.LUNA_LEVEL),
+                List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.MARS_LEVEL,
+                        ModDimensions.LUNA_LEVEL),
+                List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
+                        ModDimensions.LUNA_LEVEL, ModDimensions.MARS_LEVEL),
+                List.of(ModDimensions.STATION_LEVEL, ModDimensions.GREENXERTZ_LEVEL, ModDimensions.CINDARA_LEVEL,
+                        ModDimensions.GLACIRA_LEVEL, ModDimensions.NYXARA_LEVEL, ModDimensions.LUNA_LEVEL,
+                        ModDimensions.MARS_LEVEL));
+        RocketTier[] tiers = RocketTier.values();
+        assertEquals(4, tiers.length);
+        for (int t = 0; t < tiers.length; t++) {
+            List<ResourceKey<Level>> old = tiers231.get(t);
+            assertEquals(old, tiers[t].destinations().subList(0, old.size()), tiers[t] + " keeps its 2.3.1 prefix");
+            for (int i = 0; i < old.size(); i++) {
+                assertEquals(old.get(i), tiers[t].destination(i), tiers[t] + " slot " + i);
+                assertEquals(global231.indexOf(old.get(i)), Destinations.legacyIndex(tiers[t], i),
+                        tiers[t] + " legacy slot " + i);
+            }
+        }
+        // A Tier 4 rocket saved on Mars (global 6) or Nyxara (global 7) in 2.3.1 still points there.
+        assertEquals(ModDimensions.MARS_LEVEL, Destinations.byIndex(6));
+        assertEquals(ModDimensions.NYXARA_LEVEL, Destinations.byIndex(7));
+        assertEquals(RocketTier.TIER_3.destinations().size(), tiers231.get(2).size(), "only Tier 4 reaches Europa");
     }
 
     @Test

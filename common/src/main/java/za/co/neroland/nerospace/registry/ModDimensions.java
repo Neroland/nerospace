@@ -42,6 +42,8 @@ public final class ModDimensions {
     public static final ResourceKey<Level> LUNA_LEVEL = level("luna");
     public static final ResourceKey<Level> MARS_LEVEL = level("mars");
     public static final ResourceKey<Level> NYXARA_LEVEL = level("nyxara");
+    /** 2.4 world. Same rule: hidden wherever its dimension is absent. */
+    public static final ResourceKey<Level> EUROPA_LEVEL = level("europa");
 
     private static ResourceKey<LevelStem> stem(String name) {
         return ResourceKey.create(Registries.LEVEL_STEM, Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, name));

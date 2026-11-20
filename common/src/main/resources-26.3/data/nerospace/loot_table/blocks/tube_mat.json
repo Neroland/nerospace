@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "condition": "minecraft:tool/can_silk_touch",
+              "name": "nerospace:tube_mat"
+            },
+            {
+              "type": "minecraft:item",
+              "condition": "minecraft:tool/can_shear",
+              "name": "nerospace:tube_mat"
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "nerospace:blocks/tube_mat"
+}

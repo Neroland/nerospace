@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import za.co.neroland.nerospace.api.PlanetId;
 import za.co.neroland.nerospace.registry.ModDimensions;
 import za.co.neroland.nerospace.world.planet.cindara.CindaraPlanet;
+import za.co.neroland.nerospace.world.planet.europa.EuropaPlanet;
 import za.co.neroland.nerospace.world.planet.glacira.GlaciraPlanet;
 import za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzPlanet;
 import za.co.neroland.nerospace.world.planet.luna.LunaPlanet;
@@ -24,7 +25,7 @@ import za.co.neroland.nerospace.world.planet.station.StationPlanet;
 
 /**
  * The registry of Nerospace worlds. Order is the public 1.x order first (Greenxertz, Cindara, Glacira, Station)
- * with the 2.0 worlds appended (Luna, Mars, Nyxara) — sibling mods iterate it, so it is append-only.
+ * with the 2.0 worlds appended (Luna, Mars, Nyxara) and then Europa (2.4) — sibling mods iterate it, so it is append-only.
  *
  * <p>{@code nerospace:capture} (the gallery backdrop dimension) is deliberately <b>not</b> a planet.</p>
  */
@@ -37,9 +38,11 @@ public final class Planets {
     public static final PlanetDefinition LUNA = LunaPlanet.INSTANCE;
     public static final PlanetDefinition MARS = MarsPlanet.INSTANCE;
     public static final PlanetDefinition NYXARA = NyxaraPlanet.INSTANCE;
+    public static final PlanetDefinition EUROPA = EuropaPlanet.INSTANCE;
 
     /** Every planet, in the stable public order. */
-    public static final List<PlanetDefinition> ALL = List.of(GREENXERTZ, CINDARA, GLACIRA, STATION, LUNA, MARS, NYXARA);
+    public static final List<PlanetDefinition> ALL = List.of(GREENXERTZ, CINDARA, GLACIRA, STATION, LUNA, MARS, NYXARA,
+            EUROPA);
 
     private static final Map<ResourceKey<Level>, PlanetDefinition> BY_DIMENSION = new HashMap<>();
     private static final Map<Identifier, PlanetDefinition> BY_ID = new HashMap<>();

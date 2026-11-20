@@ -48,6 +48,11 @@
     "nerospace:solar_wing",
     "nerospace:gravity_plate",
     "nerospace:telescope",
-    "nerospace:nyx_prism"
+    "nerospace:nyx_prism",
+    "nerospace:cryovent",
+    "nerospace:deuterium_ice",
+    "nerospace:oxidant_ice",
+    "nerospace:vent_sulfide_ore",
+    "nerospace:europium_ore"
   ]
 }

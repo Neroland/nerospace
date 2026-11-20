@@ -1,0 +1,210 @@
+{
+  "shaderDimension": "end",
+  "background": {
+    "zenith": "#000000",
+    "horizon": "#03060A",
+    "nightZenith": "#000000",
+    "nightHorizon": "#03060A",
+    "blend": "constant",
+    "rampTopDeg": 40.0,
+    "rampTexture": "nerospace:textures/sky/horizon_ramp_soft.png"
+  },
+  "fog": {
+    "color": "#000000",
+    "start": 0.7,
+    "end": 1.0
+  },
+  "stars": {
+    "count": 3200,
+    "brightness": 0.95,
+    "alwaysVisible": true,
+    "tint": "#FFFFFF",
+    "palette": "natural",
+    "twinkle": 0.0,
+    "sizeScale": 0.75
+  },
+  "sun": [
+    {
+      "id": "sol",
+      "texture": "nerospace:textures/sky/sun_small.png",
+      "size": 2.4,
+      "color": "#FFFFFF",
+      "glow": 2.0,
+      "orbitPeriodDays": 1.0,
+      "phaseOffset": 0.0,
+      "inclination": 25.0
+    }
+  ],
+  "bodies": [
+    {
+      "id": "jupiter",
+      "texture": "nerospace:textures/sky/jupiter.png",
+      "size": 24.0,
+      "color": "#FFFFFF",
+      "glow": 0.0,
+      "fixedAngle": {
+        "yaw": 0.0,
+        "pitch": 65.0
+      },
+      "phases": true,
+      "limbGlow": {
+        "texture": "nerospace:textures/sky/limb_glow.png",
+        "color": "#E8B98A",
+        "scale": 1.06,
+        "strength": 0.25
+      },
+      "nightShade": {
+        "texture": "nerospace:textures/sky/terminator.png",
+        "strength": 0.94,
+        "softness": 0.3
+      },
+      "earthshine": 0.0
+    }
+  ],
+  "moons": [
+    {
+      "id": "io",
+      "texture": "nerospace:textures/sky/io.png",
+      "size": 1.6,
+      "color": "#FFFFFF",
+      "orbitPeriodDays": 0.99,
+      "phaseOffset": 0.37,
+      "inclination": 25.0,
+      "phases": true
+    },
+    {
+      "id": "ganymede",
+      "texture": "nerospace:textures/sky/ganymede.png",
+      "size": 2.0,
+      "color": "#FFFFFF",
+      "orbitPeriodDays": 1.985,
+      "phaseOffset": 0.8,
+      "inclination": 25.0,
+      "phases": true
+    }
+  ],
+  "eclipse": {
+    "body": "jupiter",
+    "phaseStart": 0.186,
+    "phaseEnd": 0.314,
+    "minLight": 0.08
+  },
+  "aurora": {
+    "opacity": 0.55,
+    "speed": 0.6,
+    "nightOnly": false,
+    "textures": [
+      "nerospace:textures/sky/aurora_europa_0.png"
+    ],
+    "layers": 2,
+    "yaw": 0.0,
+    "arcDeg": 200.0,
+    "baseDeg": 8.0,
+    "topDeg": 38.0,
+    "weather": {
+      "event": "FLARE",
+      "active": true,
+      "recovery": true
+    }
+  },
+  "galaxy": {
+    "texture": "nerospace:textures/sky/galaxy.png",
+    "opacity": 0.26,
+    "yaw": 150,
+    "pitch": 30
+  },
+  "clouds": "none",
+  "weatherTints": {
+    "DIAMOND_DUST": {
+      "sky": "#0A1016",
+      "fog": "#1A242C",
+      "strengthAtPeak": 0.5,
+      "bodyFade": 0.25,
+      "starFade": 0.6,
+      "hazeBoost": 0.4,
+      "hazeColor": "#C4D6DE"
+    },
+    "FLARE": {
+      "sky": "#0C0614",
+      "fog": "#0C0614",
+      "strengthAtPeak": 0.35,
+      "bodyFade": 0.0,
+      "starFade": 0.3,
+      "hazeBoost": 0.25,
+      "hazeColor": "#6B4AA3"
+    }
+  },
+  "horizonHaze": {
+    "color": "#C4D6DE",
+    "strength": 0.05
+  },
+  "gradient": [
+    {
+      "phase": 0.0,
+      "zenith": "#000000",
+      "horizon": "#03060A",
+      "fog": "#000000"
+    },
+    {
+      "phase": 0.5,
+      "zenith": "#000000",
+      "horizon": "#03060A",
+      "fog": "#000000"
+    }
+  ],
+  "shootingStars": {
+    "ratePerMinute": 2.0,
+    "maxConcurrent": 2,
+    "texture": "nerospace:textures/sky/meteor_streak.png",
+    "color": "#FFFFFF",
+    "lengthDeg": 10.0,
+    "durationTicks": 12,
+    "nightOnly": false,
+    "minPitch": 12.0
+  },
+  "decals": [
+    {
+      "id": "eclipse_ring",
+      "texture": "nerospace:textures/sky/limb_glow.png",
+      "anchor": "body",
+      "bodyId": "jupiter",
+      "size": 25.5,
+      "color": "#FF9A5A",
+      "opacity": 0.9,
+      "additive": true,
+      "visibility": {
+        "eclipse": true
+      }
+    },
+    {
+      "id": "plume_veil",
+      "texture": "nerospace:textures/sky/plume_veil.png",
+      "anchor": "fixed",
+      "yaw": 180.0,
+      "pitch": 20.0,
+      "size": 50.0,
+      "aspect": 2.0,
+      "color": "#E4EEF2",
+      "opacity": 0.5,
+      "additive": true,
+      "visibility": {
+        "weather": {
+          "event": "DIAMOND_DUST",
+          "active": true,
+          "recovery": false
+        }
+      }
+    },
+    {
+      "id": "nebula",
+      "texture": "nerospace:textures/sky/nebula_a.png",
+      "anchor": "fixed",
+      "yaw": 250.0,
+      "pitch": 35.0,
+      "size": 34.0,
+      "color": "#8FA8FF",
+      "opacity": 0.3,
+      "additive": true
+    }
+  ]
+}

@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 class SkyAssetsTest {
 
     private static final List<String> SKIES = List.of("luna", "mars", "cindara", "glacira", "greenxertz", "nyxara",
-            "station");
+            "station", "europa");
     private static final List<String> PARTICLES = List.of("dust", "ash", "spore", "diamond_dust", "ember",
             "nebula_mote");
     /** Textures the 26.3 sky renderer binds itself (not named in a profile). */
@@ -108,7 +108,8 @@ class SkyAssetsTest {
     void planetDimensionCloudsAreTransparent() throws IOException {
         Path root = repo();
         Assumptions.assumeTrue(root != null, "repo not found");
-        for (String dimension : List.of("space", "luna", "mars", "cindara", "glacira", "greenxertz", "nyxara")) {
+        for (String dimension : List.of("space", "luna", "mars", "cindara", "glacira", "greenxertz", "nyxara",
+                "europa")) {
             Path file = root.resolve("common/src/main/resources/data/nerospace/dimension_type/" + dimension + ".json");
             assertEquals("#00000000", read(file).getAsJsonObject("attributes")
                     .get("minecraft:visual/cloud_color").getAsString(), dimension);
@@ -385,7 +386,7 @@ class SkyAssetsTest {
         try (Stream<Path> s = Files.list(base)) {
             s.filter(p -> p.toString().endsWith(".json")).sorted().forEach(types::add);
         }
-        assertEquals(7, types.size());
+        assertEquals(8, types.size());
         for (Path t : types) {
             for (Path f : new Path[] {t, shared263.resolve(t.getFileName())}) {
                 if (!Files.isRegularFile(f)) {

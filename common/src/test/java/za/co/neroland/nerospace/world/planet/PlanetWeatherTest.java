@@ -95,6 +95,25 @@ class PlanetWeatherTest {
         assertEquals(WeatherEvent.FLARE, Planets.NYXARA.weather().event());
         assertFalse(Planets.LUNA.weather().hasWeather());
         assertFalse(Planets.STATION.weather().hasWeather());
+        // Europa has two events on the one machine: plume fall (primary) and the radiation storm (secondary).
+        assertEquals(WeatherEvent.DIAMOND_DUST, Planets.EUROPA.weather().event());
+        assertEquals(WeatherEvent.FLARE, Planets.EUROPA.secondaryWeather().event());
+        assertTrue(Planets.EUROPA.weather().hasWeather() && Planets.EUROPA.secondaryWeather().hasWeather());
+        assertEquals(new WeatherParams(WeatherEvent.DIAMOND_DUST, 60_000L, 3_000, 9_000), Planets.EUROPA.weather());
+        assertEquals(new WeatherParams(WeatherEvent.FLARE, 68_160L, 1_800, 3_600), Planets.EUROPA.secondaryWeather());
+        assertTrue(Planets.EUROPA.weatherMayStart(WeatherEvent.FLARE, 0.25));
+        assertFalse(Planets.EUROPA.weatherMayStart(WeatherEvent.FLARE, 0.75));
+        assertTrue(Planets.EUROPA.weatherMayStart(WeatherEvent.DIAMOND_DUST, 0.75));
+        // Every other planet: no secondary, and the per-event gate is the old single-argument gate.
+        for (PlanetDefinition p : Planets.ALL) {
+            if (p == Planets.EUROPA) {
+                continue;
+            }
+            assertEquals(WeatherParams.NONE, p.secondaryWeather(), p.langId());
+            for (double phase = 0.0; phase < 1.0; phase += 0.05) {
+                assertEquals(p.weatherMayStart(phase), p.weatherMayStart(p.weather().event(), phase), p.langId());
+            }
+        }
         WeatherParams scaled = STORM.scaled(2.0, 0.5);
         assertEquals(1_000L, scaled.meanIntervalTicks());
         assertEquals(100, scaled.minDurationTicks());

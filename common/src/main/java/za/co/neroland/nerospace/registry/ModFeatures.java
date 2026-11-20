@@ -9,6 +9,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
 import za.co.neroland.nerospace.world.HamletFeature;
+import za.co.neroland.nerospace.world.IceFractureFeature;
 import za.co.neroland.nerospace.world.MegaCityFeature;
 import za.co.neroland.nerospace.world.RuinFeature;
 import za.co.neroland.nerospace.world.planet.mars.worldgen.DerelictHabitatFeature;
@@ -43,6 +44,9 @@ public final class ModFeatures {
     public static final RegistryEntry<com.mojang.serialization.MapCodec<DerelictHabitatFeature>> DERELICT_HABITAT =
             FEATURE_TYPES.register("derelict_habitat", key -> DerelictHabitatFeature.CODEC);
 
+    public static final RegistryEntry<com.mojang.serialization.MapCodec<IceFractureFeature>> ICE_FRACTURE =
+            FEATURE_TYPES.register("ice_fracture", key -> IceFractureFeature.CODEC);
+
     *///?} else {
     public static final RegistrationProvider<Feature<?>> FEATURES =
             RegistrationProvider.get(Registries.FEATURE, NerospaceCommon.MOD_ID);
@@ -61,6 +65,9 @@ public final class ModFeatures {
 
     public static final RegistryEntry<DerelictHabitatFeature> DERELICT_HABITAT =
             FEATURES.register("derelict_habitat", key -> new DerelictHabitatFeature(NoneFeatureConfiguration.CODEC));
+
+    public static final RegistryEntry<IceFractureFeature> ICE_FRACTURE =
+            FEATURES.register("ice_fracture", key -> new IceFractureFeature(NoneFeatureConfiguration.CODEC));
     //?}
 
     private ModFeatures() {

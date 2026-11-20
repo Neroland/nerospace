@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.2,
+  "ingredient": "nerospace:europium_ore",
+  "result": {
+    "id": "nerospace:raw_europium"
+  }
+}

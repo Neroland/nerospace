@@ -18,7 +18,7 @@ import za.co.neroland.nerospace.world.planet.Planets;
  *
  * <p><b>Indices are persisted</b> (rocket NBT, synced menu data, availability bitmask) and are append-only:
  * {@code HOME=0, STATION=1, GREENXERTZ=2, CINDARA=3, GLACIRA=4} are frozen since 1.x; 2.0 appended
- * {@code LUNA=5, MARS=6, NYXARA=7}. A destination whose dimension is absent on the server is never offered.</p>
+ * {@code LUNA=5, MARS=6, NYXARA=7}; 2.4 appended {@code EUROPA=8}. A destination whose dimension is absent on the server is never offered.</p>
  */
 public final class Destinations {
 
@@ -30,6 +30,7 @@ public final class Destinations {
     public static final int LUNA = 5;
     public static final int MARS = 6;
     public static final int NYXARA = 7;
+    public static final int EUROPA = 8;
 
     private static final List<ResourceKey<Level>> ORDER = List.of(
             ModDimensions.OVERWORLD,
@@ -39,7 +40,8 @@ public final class Destinations {
             ModDimensions.GLACIRA_LEVEL,
             ModDimensions.LUNA_LEVEL,
             ModDimensions.MARS_LEVEL,
-            ModDimensions.NYXARA_LEVEL);
+            ModDimensions.NYXARA_LEVEL,
+            ModDimensions.EUROPA_LEVEL);
 
     private Destinations() {
     }
