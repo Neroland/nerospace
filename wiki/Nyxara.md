@@ -129,7 +129,7 @@ western horizon in the band, and everything washes gold (on the ground, the Nyx 
 way, east). The aurora shows only over the Nightside: from the band you see the rainbow arc and the nebulae, not the
 curtains.
 
-The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Nyxara shows its colours with the vanilla sky shapes, and the world fog still follows the weather and where you stand.
+The full sky is drawn on Minecraft 26.1.2, 26.2 and 26.3 (NeoForge, Fabric and Forge). On the 1.21 versions Nyxara shows its colours with the vanilla sky shapes, and the world fog still follows the weather and where you stand.
 
 ## The Duskborn
 

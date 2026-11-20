@@ -85,6 +85,7 @@ Settings for [Orbital Stations](Orbital-Stations). The server decides all of the
 | Key | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `rockets.maxCrew` | `4` | 1–4 | Players one rocket seats. The first aboard is the pilot. `1` gives the old one-seat rocket. Cargo rockets never carry anyone. The server decides. |
+| `rockets.ascentHeight` | `96` | 24–256 | Blocks a rocket climbs before it leaves for its destination. `24` is the short climb from before 2.4.0. Higher climbs take a little longer (about 8 seconds at 96, 11 at 256). Low-gravity worlds add a little height on top. The server decides, and a climb already under way keeps the height it started with. |
 
 ### Mars rover
 
@@ -153,13 +154,26 @@ Fees go to NeroEconomy's Reserve. Without NeroEconomy these keys do nothing.
 ### Sky (client-side)
 
 Each player sets these for themselves; a server never overrides them. They only change what the full planet sky
-draws (NeoForge for Minecraft 26.3).
+draws (Minecraft 26.1.2, 26.2 and 26.3 on NeoForge, Fabric and Forge; the 1.21 versions show each world's sky colours
+only).
 
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `sky.aurora` | `true` | Aurora curtains (Glacira, Nyxara's Nightside, Mars after a dust storm, the Greenxertz spore shimmer). `false` hides them. |
 | `sky.shootingStars` | `true` | Shooting stars. `false` hides them. |
 | `sky.quality` | `full` | `lite` halves the aurora layers and their detail and draws slightly smaller stars, for low-end graphics cards. |
+| `sky.bodyStyle` | `globe` | `globe` draws suns, moons and planets as shaded spheres. `square` draws them as flat squares in the vanilla style, with no glow around the edge and blocky phases. Applies straight away; no restart. |
+
+### Shader packs (client-side)
+
+These only matter with a shader mod and a shader pack active. See [Shaders](Shaders).
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `shaders.dimensionCompat` | `auto` | `auto` asks the pack for its End look on the airless worlds (the station, Luna, Mars, Nyxara), so they do not get a blue sky and the pack's clouds. `off` leaves the pack's own choice. A pack that supports a Nerospace world itself always wins. |
+| `shaders.drawPlanetSky` | `true` | Draw the Nerospace planets, moons and stars through the pack's sky. `false` leaves the sky to the pack. |
+
+Both apply straight away; no restart.
 
 ## Removed keys (for modpack authors)
 

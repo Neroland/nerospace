@@ -172,6 +172,9 @@ public final class NerospaceConfig {
     private static final ConfigValue<Integer> ROCKETS_MAX_CREW = SCHEMA.intRange("rockets.maxCrew",
             4, 1, 4, true, "players a crewed rocket seats: the first aboard is the pilot, the rest are crew (1..4; "
             + "cargo rockets stay uncrewed)");
+    private static final ConfigValue<Integer> ROCKETS_ASCENT_HEIGHT = SCHEMA.intRange("rockets.ascentHeight",
+            96, 24, 256, true, "blocks a rocket climbs before it leaves for its destination; 24 is the climb "
+            + "before 2.4.0, and low-gravity worlds add a little on top (24..256)");
     private static final ConfigValue<Integer> ROVER_CAPACITY = SCHEMA.intRange("rover.capacity",
             40000, 1000, 1000000, true, "FE a Mars rover's battery holds (1000..1000000)");
     private static final ConfigValue<Integer> ROVER_MAX_PER_PLAYER = SCHEMA.intRange("rover.maxPerPlayer",
@@ -218,6 +221,16 @@ public final class NerospaceConfig {
     private static final ConfigValue<String> SKY_QUALITY = SCHEMA.string("sky.quality", "full", false,
             "planet sky detail: full, or lite (half the aurora layers and segments, no cloud deck, slightly smaller "
             + "stars) for low-end GPUs. Client-side only");
+    private static final ConfigValue<String> SKY_BODY_STYLE = SCHEMA.string("sky.bodyStyle", "globe", false,
+            "how suns, moons and planets are drawn in planet skies: globe (shaded spheres), or square (flat "
+            + "vanilla-style squares). Client-side only; applies straight away");
+    private static final ConfigValue<String> SHADERS_DIMENSION_COMPAT = SCHEMA.string("shaders.dimensionCompat",
+            "auto", false, "with a shader pack: auto asks the pack for its End look on airless Nerospace worlds, so "
+            + "they do not get a blue sky and the pack's clouds; off leaves the pack's own choice. A pack that "
+            + "supports a Nerospace world itself always wins. Client-side only");
+    private static final ConfigValue<Boolean> SHADERS_DRAW_PLANET_SKY = SCHEMA.bool("shaders.drawPlanetSky",
+            true, false, "with a shader pack: draw the Nerospace planets, moons and stars through the pack's sky; "
+            + "false leaves the sky to the pack. Client-side only");
 
     private static ConfigValue<Double> particleRate(String type, double def, String what) {
         return SCHEMA.doubleRange("particles." + type + ".perPlayerPerTick", def, 0.0D, 8.0D, false,
@@ -386,6 +399,11 @@ public final class NerospaceConfig {
         return STATIONS_FREE_DOCK_RADIUS.get();
     }
 
+    /** Nominal blocks a rocket climbs before the transfer ({@code rockets.ascentHeight}, 24..256). */
+    public static int rocketsAscentHeight() {
+        return ROCKETS_ASCENT_HEIGHT.get();
+    }
+
     /** Seats in a crewed rocket ({@code rockets.maxCrew}, 1..4); read through {@code rocket.Crew#maxCrew}. */
     public static int rocketsMaxCrew() {
         return ROCKETS_MAX_CREW.get();
@@ -452,6 +470,21 @@ public final class NerospaceConfig {
     /** Client-side: whether planet skies draw shooting stars. */
     public static boolean skyShootingStars() {
         return SKY_SHOOTING_STARS.get();
+    }
+
+    /** Client-side {@code sky.bodyStyle}: {@code globe} or {@code square} (read live; see {@code SkyBodyStyle}). */
+    public static String skyBodyStyle() {
+        return SKY_BODY_STYLE.get();
+    }
+
+    /** Client-side {@code shaders.dimensionCompat}: {@code auto} or {@code off} (read live). */
+    public static String shadersDimensionCompat() {
+        return SHADERS_DIMENSION_COMPAT.get();
+    }
+
+    /** Client-side {@code shaders.drawPlanetSky}: draw the planet sky while a shader pack is active (read live). */
+    public static boolean shadersDrawPlanetSky() {
+        return SHADERS_DRAW_PLANET_SKY.get();
     }
 
     /** Client-side: whether the sky runs at {@code lite} quality ({@code sky.quality=lite}; anything else is full). */

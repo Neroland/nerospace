@@ -14,6 +14,14 @@ Nerospace - multiloader build (NeoForge).
 [[mixins]]
 config = "nerospace-common.mixins.json"
 
+# Client sky hook on the vanilla sky pass (Minecraft 26.1+; declares no mixins below that).
+[[mixins]]
+config = "nerospace-sky.mixins.json"
+
+# Optional shader-mod compatibility; contributes nothing unless a compatible shader mod is installed.
+[[mixins]]
+config = "nerospace-shaders.mixins.json"
+
 [[dependencies.${mod_id}]]
 modId = "neoforge"
 type = "required"

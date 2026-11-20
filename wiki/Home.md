@@ -102,6 +102,7 @@ land centred on a pad, or on an automatic Landing Pod: see **[Landing Pads](Land
   [Gas Tank](Gas-Tank), [Item Store](Item-Store), [Trash Can](Trash-Can)) that moved into Core.
 - **[Configuration](Configuration)** — server and modpack tuning; the planet clock, weather, particle and HUD keys
   are listed in **[Planet Clock and Weather](Planet-Clock-and-Weather)**.
+- **[Shaders](Shaders)** — what Nerospace does with a shader pack, the two settings, and the known limits.
 - **[Saved-Data Backups](Saved-Data-Backups)** — automatic last-known-good backups and crash-proof
   recovery of Nerospace's world data.
 - **[Roadmap](Roadmap)** — what shipped in 1.0 and what's next.
@@ -120,7 +121,7 @@ land centred on a pad, or on an automatic Landing Pod: see **[Landing Pads](Land
 | **[Greenxertz](Greenxertz)** | Tier 2+ rocket | twin suns, real day/night | `~0.6×` | Green jungle world; Nerosteel + Xertz Quartz, the Xertz villagers. Spore blooms. |
 | **[Nyxara](Nyxara)** | Tier 4 rocket (Deep Space progress) | fixed sun in the west, galaxy in the east, flares | `~0.9×` | Tidally locked; Dayside, Twilight Band and Nightside by longitude; Voidglass, Void Crystal, Gravity Shards. **Radiation** everywhere ([Rad Lining](Oxygen-Suit#rad-lining-radiation)). |
 
-Full skies are drawn on NeoForge for Minecraft 26.3; every other version shows each world's sky colours.
+Full skies are drawn on Minecraft 26.1.2, 26.2 and 26.3 (NeoForge, Fabric and Forge); the 1.21 versions show each world's sky colours.
 
 All Nerospace dimensions are **airless** — without a breathable zone (an Oxygen Generator, a Launch
 Pad, terraformed ground, or a full Oxygen Suit) you will run out of oxygen and suffocate. They also

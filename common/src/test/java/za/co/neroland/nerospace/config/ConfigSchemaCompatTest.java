@@ -78,6 +78,7 @@ class ConfigSchemaCompatTest {
         m.put("nyxara.twilightBandWidth", "2048");
         m.put("suit.underwaterRebreather", "true");
         m.put("suit.statusMessages", "true");
+        m.put("rockets.ascentHeight", "96");
         return m;
     }
 
@@ -125,6 +126,9 @@ class ConfigSchemaCompatTest {
         m.put("sky.aurora", "true");
         m.put("sky.shootingStars", "true");
         m.put("sky.quality", "full");
+        m.put("sky.bodyStyle", "globe");
+        m.put("shaders.dimensionCompat", "auto");
+        m.put("shaders.drawPlanetSky", "true");
         for (Map.Entry<String, String> e : m.entrySet()) {
             ConfigValue<?> v = NerospaceConfig.schema().value(e.getKey());
             assertNotNull(v, "missing key " + e.getKey());

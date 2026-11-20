@@ -74,7 +74,7 @@ horizon with a blue atmospheric rim, a real day and night side, and city lights 
 clock phase 0.78 (Earthrise) and its light brightens the horizon haze. Meteoroid flashes streak across the sky a few
 times a minute, day and night.
 
-The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Luna shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
+The full sky is drawn on Minecraft 26.1.2, 26.2 and 26.3 (NeoForge, Fabric and Forge). On the 1.21 versions Luna shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
 
 ## Villagers and structures
 

@@ -1,4 +1,5 @@
 {
+  "shaderDimension": "end",
   "background": {
     "zenith": "#8F6A4F",
     "horizon": "#D9A066",
@@ -189,6 +190,19 @@
     "pitch": 38
   },
   "decals": [
+    {
+      "id": "earth_star",
+      "texture": "nerospace:textures/sky/sun_small.png",
+      "anchor": "sun",
+      "offsetPitch": 22.0,
+      "size": 1.2,
+      "color": "#CFE2FF",
+      "opacity": 0.95,
+      "additive": true,
+      "visibility": {
+        "night": true
+      }
+    },
     {
       "id": "mineral_filaments",
       "texture": "nerospace:textures/sky/dust_copper.png",

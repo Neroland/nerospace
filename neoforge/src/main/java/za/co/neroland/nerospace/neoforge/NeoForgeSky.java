@@ -14,6 +14,8 @@ import za.co.neroland.nerospace.client.sky.SkyProfiles;
  * {@code CustomSkyboxRenderer} ({@code NeoForgePlanetSky}) registered as {@code nerospace:planet}. Every Nerospace
  * dimension type selects it through the {@code neoforge:custom_skybox} attribute in the NeoForge-only 26.3 resource
  * overlay ({@code tools/gen_sky_overlays.py}); it falls back to the vanilla sky for a level without a planet profile.
+ * Registering it claims the sky hook, so the shared sky mixin (which draws the sky on 26.1 and 26.2) stays out on
+ * 26.3 and the sky is never drawn twice.
  */
 public final class NeoForgeSky {
 
@@ -33,8 +35,10 @@ public final class NeoForgeSky {
                 event.registerReloadListener(SkyProfiles.INSTANCE));
         *///?}
         //? if >=26.3 {
-        /*modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent event) ->
-                event.registerSkyboxRenderer(SKY_ID, new NeoForgePlanetSky()));
+        /*modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent event) -> {
+            event.registerSkyboxRenderer(SKY_ID, new NeoForgePlanetSky());
+            za.co.neroland.nerospace.client.sky.PlanetSkyDraw.claimLoaderHook();
+        });
         *///?}
     }
 }

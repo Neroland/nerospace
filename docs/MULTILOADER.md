@@ -86,7 +86,7 @@ a loader or move a hook, update all three.
 | Planet sleeping: bed gate (after vanilla has set the respawn point) | `world.planet.PlanetSleep.refusal(player, pos)` / `allowsTime(player, pos)` | `NerospaceFabric`: `EntitySleepEvents.ALLOW_SLEEPING` (fired from `Player.startSleepInBed`, after `ServerPlayer`'s checks) | `NerospaceNeoForge`: `CanPlayerSleepEvent` (only when vanilla found no problem, or only monsters) | `NerospaceForge`: `SleepingTimeCheckEvent` → `Result.DENY` (also asked every tick while asleep; the action-bar line is sent only on the click) |
 | Planet sleeping: end-of-night skip / rest wake-up, before any level ticks | `world.planet.PlanetSleep.serverTickStart(server)` | `NerospaceFabric`: `ServerTickEvents.START_SERVER_TICK` | `NerospaceNeoForge`: `ServerTickEvent.Pre` | `NerospaceForge`: `TickEvent.ServerTickEvent.Pre` |
 | Sky profile loading | `client.sky.SkyProfiles.INSTANCE` (reload listener) | `NerospaceFabricClient`: `ResourceLoader.get(CLIENT_RESOURCES).registerReloadListener` | `NeoForgeSky`: `AddClientReloadListenersEvent` | `ForgeClientSetup`: `RegisterClientReloadListenersEvent` |
-| Sky drawing | `client.sky.PlanetSkyRenderer.frame` + `scene` (pure `SkyScene` maths) | none yet (no Fabric API sky hook on 26.x) | `NeoForgePlanetSky` (`CustomSkyboxRenderer` `nerospace:planet`, 26.3 only) | none yet |
+| Sky drawing (26.x only) | `client.sky.PlanetSkyRenderer.frame` + `scene` (pure `SkyScene` maths), drawn by `client.sky.PlanetSkyDraw` (one draw path, GPU seam per 26.x line) | shared client mixin `mixin.sky.SkyRendererPlanetMixin` on the vanilla sky pass (`nerospace-sky.mixins.json`) | 26.3: `NeoForgePlanetSky` (`CustomSkyboxRenderer` `nerospace:planet`, an adapter over `PlanetSkyDraw`); 26.1.2 and 26.2: the shared mixin | the shared mixin |
 | Weather smoothing for sky and particles | `client.ClientPlanetWeather.clientTick(level)` | via `WeatherAmbience.tick()` | via `WeatherAmbience.tick()` | via `WeatherAmbience.tick()` |
 | World fog colour (sky profile fog by phase, position, weather, eclipse) | `client.sky.PlanetSkyRenderer.fogRgb(camera, partialTick)` | `fabric/.../mixin/FogColorPlanetMixin` (client, `@Pseudo`, `require = 0`, TAIL of `FogRenderer.computeFogColor`; no Fabric API fog event on 26.x) | `NeoForgeClientSetup`: `ViewportEvent.ComputeFogColor` | `ForgeClientSetup`: `ViewportEvent.ComputeFogColor.BUS` |
 | Ambient particle providers | `client.particle.ClientParticles.registerAll(sink)` | `NerospaceFabricClient`: `ParticleProviderRegistry` | `NeoForgeClientSetup`: `RegisterParticleProvidersEvent` | `ForgeClientSetup`: `RegisterParticleProvidersEvent` |
@@ -107,10 +107,25 @@ fixed-time world there, so vanilla lets the attempt through to the planet gate.
 
 Sky colours are carried by the dimension types themselves (`minecraft:visual/*` attributes: sky, fog, cloud and
 sunrise colours, a fixed sun/moon angle, star brightness), so a cell without a sky hook still shows the planet's
-palette. On NeoForge 26.3 every Nerospace dimension type also sets `neoforge:custom_skybox: nerospace:planet`, which
-hands the sky to `NeoForgePlanetSky`: gradient by clock phase, stars, galaxy band, aurora, haze, suns, moons and
-planets from `assets/nerospace/sky/<planet>.json`. A level without a profile (or with `vanillaSkybox: true`) gets the
-vanilla sky.
+palette. On every 26.x cell the shared `PlanetSkyDraw` draws the full sky: gradient by clock phase, stars, galaxy
+band, aurora, haze, suns, moons and planets from `assets/nerospace/sky/<planet>.json`. A level without a profile (or
+with `vanillaSkybox: true`) gets the vanilla sky. Two hooks reach it:
+
+- NeoForge 26.3: every Nerospace dimension type also sets `neoforge:custom_skybox: nerospace:planet`
+  (`tools/gen_sky_overlays.py`), which hands the sky to `NeoForgePlanetSky`. Registering it claims the hook
+  (`PlanetSkyDraw.claimLoaderHook()`), so the mixin stays out and the sky is never drawn twice.
+- Every other 26.x cell: `SkyRendererPlanetMixin` (client, `@Pseudo`, every injection `require = 0`), listed in
+  `nerospace-sky.mixins.json` from the `common/src/main/resources-26.1.2` overlay (the base file lists nothing, so
+  the 1.21 cells apply no sky mixin). 26.3: `@Inject` at the head of `SkyRenderer.render(GpuBufferSlice,
+  SkyRenderState)`, cancelled when the planet sky drew. 26.1.2 and 26.2: the pass calls `renderSkyDisc` or
+  `renderEndSky` first; that call draws the planet sky and records whether it did, and `renderSunriseAndSunset`,
+  `renderSunMoonAndStars`, `renderDarkDisc` and `renderEndFlash` are cancelled for that pass while it did. NeoForge
+  26.1.2 / 26.2 carry no `custom_skybox` overlay, so their sky pass takes the same vanilla calls.
+
+The method descriptors were read from each loader's sources or bytecode; none of the mixin cells has been seen in a
+render client yet. The 1.21 cells stay on the colour floor: their GPU APIs differ per line (immediate mode up to
+1.21.4, `RenderPass` without `DynamicUniforms` on 1.21.5, a different `RenderPass` again on 1.21.8 to 1.21.11), and
+`PlanetSkyDraw` does not exist there.
 
 Attribute formats (all three lines): `cloud_color` and `sunrise_sunset_color` are ARGB (`#AARRGGBB`), the other
 colours RGB (`#RRGGBB`); `moon_phase` is a name such as `full_moon`; `fog_start_distance` / `fog_end_distance` are in
@@ -128,16 +143,19 @@ Nyxara's band width comes from the world's bound value carried on the clock payl
 
 | Cell | Sky | World fog colour |
 | --- | --- | --- |
-| NeoForge 26.3 | the full planet sky (`NeoForgePlanetSky`): gradient, natural-colour stars with twinkle, galaxy, aurora curtains, decals (halo, corona, diamond ring, flare rays, refraction bow, nebulae, limb sunrise), bodies with limb glow, night shade and city lights, cloud deck with underglow, shooting stars, haze | the profile fog via `ViewportEvent.ComputeFogColor`; the sky disc fades into the same colour |
-| NeoForge 26.1.2, 26.2 | the colour floor: the dimension type's `minecraft:visual/*` attributes and vanilla sun/moon at the fixed angles | the profile fog via `ViewportEvent.ComputeFogColor` |
-| Forge 26.1.2, 26.2, 26.3 | the colour floor | the profile fog via `ViewportEvent.ComputeFogColor.BUS` |
-| Fabric 26.1.2, 26.2, 26.3 | the colour floor | the profile fog via `FogColorPlanetMixin`; if a line moves `computeFogColor` the injection is skipped and the attribute fog stays |
+| NeoForge 26.3 | the full planet sky (`PlanetSkyDraw` through `NeoForgePlanetSky`): gradient, natural-colour stars with twinkle, galaxy, aurora curtains, decals (halo, corona, diamond ring, flare rays, refraction bow, nebulae, limb sunrise), bodies with limb glow, night shade and city lights, cloud deck with underglow, shooting stars, haze | the profile fog via `ViewportEvent.ComputeFogColor`; the sky disc fades into the same colour |
+| NeoForge 26.1.2, 26.2 | the full planet sky (`PlanetSkyDraw` through `SkyRendererPlanetMixin`) | the profile fog via `ViewportEvent.ComputeFogColor` |
+| Forge 26.1.2, 26.2, 26.3 | the full planet sky (`PlanetSkyDraw` through `SkyRendererPlanetMixin`) | the profile fog via `ViewportEvent.ComputeFogColor.BUS` |
+| Fabric 26.1.2, 26.2, 26.3 | the full planet sky (`PlanetSkyDraw` through `SkyRendererPlanetMixin`) | the profile fog via `FogColorPlanetMixin`; if a line moves `computeFogColor` the injection is skipped and the attribute fog stays |
+| Every 1.21 cell | the colour floor: the dimension type's `minecraft:visual/*` attributes and vanilla sun/moon at the fixed angles | as above per loader |
 
-On every floor cell the bodies, aurora, eclipse, galaxy, decals and shooting stars do not exist; the planet's identity
+If a sky injection does not apply, or the planet sky disables itself after a render error, that cell falls back to
+the colour floor. On every floor cell the bodies, aurora, eclipse, galaxy, decals and shooting stars do not exist; the planet's identity
 is its colours. The fog push leaves water, lava and powder-snow fog and blindness / darkness / night vision alone. Weather on the sky
 (tints, fades, aurora gates, cloud opacity) and the ambient particles read `ClientPlanetWeather.smoothedIntensity`
 (0.6 s ease, ticked from `WeatherAmbience.tick`), so a forced or cleared event never pops. The client switches
-`sky.aurora`, `sky.shootingStars` and `sky.quality` (`full` / `lite`) only affect the 26.3 renderer.
+`sky.aurora`, `sky.shootingStars`, `sky.quality` (`full` / `lite`) and `sky.bodyStyle` (`globe` / `square`; square
+variants in `textures/sky/square/`, `tools/gen_sky_textures.py`) only affect the 26.x planet sky.
 
 The sky path allocates nothing per frame. `PlanetSkyRenderer` keeps one `SkyScene` (recomputed in place from pooled
 quads and scratch arrays, reused when the fog hook and the sky pass ask for the same instant and camera position), one

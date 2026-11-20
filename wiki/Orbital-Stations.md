@@ -155,8 +155,9 @@ telescope shows one more world, up to three.
 The station's clock is fixed in permanent daylight and it has no weather. The homeworld fills the lower sky to the
 east, turning slowly, with a blue rim, a day side and a night side sprinkled with city lights; the sun stands high
 in a black, star-filled sky with the galaxy and two nebulae behind it, and an operator can show the sunrise through
-the homeworld's rim with `/nerospace gallery sky station sunrise` (the full sky is drawn on NeoForge for Minecraft
-26.3; elsewhere the station shows its colours with the vanilla sky shapes). Station gravity is about
+the homeworld's rim with `/nerospace gallery sky station sunrise` (the full sky is drawn on Minecraft 26.1.2,
+26.2 and 26.3; the 1.21 versions show the station's colours with the vanilla sky shapes). The Moon crosses the same
+sky, small and with its own phases. Station gravity is about
 a tenth of the Overworld's, except above Gravity Plates. See [Planet Clock and Weather](Planet-Clock-and-Weather).
 
 **Beds** never let you sleep on the station ("The station's lights never dim"), but a bed there still sets your

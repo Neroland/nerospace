@@ -68,7 +68,7 @@ nights three layers of green-to-teal **aurora curtains** fold, ripple and drift 
 the days; during diamond dust they brighten and a rose fringe rides their upper edge. Shooting stars cross the night
 sky.
 
-The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Glacira shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
+The full sky is drawn on Minecraft 26.1.2, 26.2 and 26.3 (NeoForge, Fabric and Forge). On the 1.21 versions Glacira shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
 
 ## The Frostbound
 

@@ -15,6 +15,7 @@
 - [Nyxara](Nyxara)
 - [Orbital Stations](Orbital-Stations)
 - [Landing Pads](Landing-Pads)
+- [Shaders](Shaders)
 - [Neroland Core](Neroland-Core)
 
 **Blocks — Ores**

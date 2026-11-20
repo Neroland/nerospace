@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+This is 2.4.0-beta.1 (not yet released). Client and server must run the same version. Europa is planned but is not in this build.
+
+### Added
+
+- The planet sky (Earth over the Moon, the Moon and Earth from the station, Phobos, Deimos and Earth as a bright star over Mars, and each Nero world's own sky) now draws on Fabric, Forge and NeoForge for Minecraft 26.1.2, 26.2 and 26.3. Before, only NeoForge 26.3 drew it. The 1.21.x versions keep the plain sky colours.
+- Shader pack support through Iris (Fabric and NeoForge). With a shader pack on, the station, Luna, Mars and Nyxara ask the pack for its End look, so space no longer gets a blue sky and the pack's clouds no longer appear over the Moon. A pack that supports a Nerospace world itself always wins. Some packs hide what mods draw in the End sky; see the new Shaders wiki page.
+- New client settings `shaders.dimensionCompat` (`auto` or `off`) and `shaders.drawPlanetSky` (`true` or `false`). Both apply straight away.
+- New client setting `sky.bodyStyle` (`globe` or `square`): `square` draws the sun, moons and planets as flat, vanilla-style squares.
+- A burst of flame and smoke at the engine bells at the moment of lift-off, bigger on higher tiers. It follows your Particles video setting.
+- New server setting `rockets.ascentHeight` (default 96, range 24 to 256): how many blocks a rocket climbs before it leaves for its destination.
+
+### Changed
+
+- Rockets now climb about 96 blocks before the transfer, four times the old 24, and the climb takes a little longer (about 8 seconds). The trip is still a transfer, not a flight through thousands of blocks. Keep the sky above the pad clear for the whole climb.
+
 ## [2.3.1] - 2026-11-17
 
 ### Added

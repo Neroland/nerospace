@@ -15,6 +15,11 @@ sheets for the six custom particle types, into the resource tree:
                        terminator.png, terminator_00..15.png (night-shade phase sheet), earth_globe.png, earth_disk_globe.png, earth_lights.png, earth_disk_lights.png, corona.png, diamond_ring.png,
                        halo_22.png, rainbow_arc.png, flare_rays.png, caustic_band.png, nebula_a.png, nebula_b.png,
                        clouds_ash.png, sun_aureole.png, horizon_ramp_soft.png
+    textures/sky/square/  -- body style "square" (2.4.0) --
+                       a flat vanilla-style square variant of every sun, moon and planet texture (same file name as
+                       the globe texture, same palette, no halo), square night-shade frames terminator_00..15.png
+                       and a transparent limb_glow.png. The renderer swaps a globe texture for the file of the same
+                       name in this folder when the client's sky.bodyStyle is "square".
     textures/particle/ dust_0..3, ash_0..3, spore_0..3, diamond_dust_0..3, ember_0..3, nebula_mote_0..3 (8x8)
 
 Everything is deterministic: each output seeds its own ``numpy`` generator from the md5 of its name (same rule as
@@ -908,6 +913,75 @@ def horizon_ramp_soft(name="horizon_ramp_soft", w=4, h=64):
     return to_image(rgb, alpha)
 
 
+# ======================================================================================= square body style
+
+# Disc radius (fraction of the quad's half-size) of every body texture that has a square variant. The square keeps
+# the disc's half-size, so a body covers the same angle in both styles.
+SQUARE_BODIES = {
+    "sun_white": 0.34, "sun_small": 0.42, "sun_pale": 0.26, "sun_amber": 0.36, "red_giant": 0.72, "dark_moon": 0.82,
+    "earth": 0.86, "earth_disk": 0.86, "earth_globe": 0.86, "earth_disk_globe": 0.86, "earth_lights": 0.86,
+    "earth_disk_lights": 0.86, "phobos": 0.7, "deimos": 0.62, "rime": 0.8, "hoar": 0.8, "moon_small": 0.8,
+}
+SQUARE_CELLS = 16   # flat colour cells across a square body, like the vanilla sun and moon
+SQUARE_SIZE = 128   # output texture size
+SQUARE_SHADE_RADIUS = 0.86  # night-shade frames cover the largest body disc
+
+
+def _square_canvas(cells_rgba, radius):
+    """Draws a ``SQUARE_CELLS`` x ``SQUARE_CELLS`` RGBA cell grid as hard-edged cells centred in a transparent
+    ``SQUARE_SIZE`` texture, with the half-size ``radius`` (fraction of the quad's half-size)."""
+    half = max(1, int(round(radius * SQUARE_SIZE / 2.0)))
+    cells = Image.fromarray(cells_rgba, "RGBA").resize((half * 2, half * 2), Image.NEAREST)
+    out = Image.new("RGBA", (SQUARE_SIZE, SQUARE_SIZE), (0, 0, 0, 0))
+    out.paste(cells, (SQUARE_SIZE // 2 - half, SQUARE_SIZE // 2 - half))
+    return out
+
+
+def square_body(img, radius, keep_alpha=False):
+    """Flat vanilla-style square of a globe texture: the square inscribed in the globe's disc, averaged into
+    ``SQUARE_CELLS`` x ``SQUARE_CELLS`` flat cells (so the palette and the large surface features carry over), drawn
+    opaque at the disc's half-size. No halo, no limb, no anti-aliased edge. ``keep_alpha`` is for additive overlays
+    whose alpha is their mask (city lights): each cell keeps its averaged alpha instead of becoming opaque."""
+    size = img.width
+    inscribed = radius * size / 2.0 / math.sqrt(2.0)
+    lo = int(round(size / 2.0 - inscribed))
+    hi = int(round(size / 2.0 + inscribed))
+    crop = img.convert("RGB").crop((lo, lo, hi, hi)).resize((SQUARE_CELLS, SQUARE_CELLS), Image.BOX)
+    if keep_alpha:
+        mask = img.getchannel("A").crop((lo, lo, hi, hi)).resize((SQUARE_CELLS, SQUARE_CELLS), Image.BOX)
+        alpha = np.asarray(mask, dtype=np.uint8)[..., None]
+    else:
+        alpha = np.full((SQUARE_CELLS, SQUARE_CELLS, 1), 255, dtype=np.uint8)
+    rgba = np.concatenate([np.asarray(crop, dtype=np.uint8), alpha], axis=-1)
+    return _square_canvas(rgba, radius)
+
+
+def square_shade(img):
+    """Vanilla-style night-shade mask of a ``terminator_NN`` frame: the frame's dark side as hard on/off cells on the
+    same grid as the square bodies (alpha 255 where the frame is more than half dark), black, no soft edge."""
+    size = img.width
+    half = SQUARE_SHADE_RADIUS * size / 2.0
+    lo = int(round(size / 2.0 - half))
+    hi = int(round(size / 2.0 + half))
+    alpha = np.asarray(img.getchannel("A").crop((lo, lo, hi, hi)).resize((SQUARE_CELLS, SQUARE_CELLS), Image.BOX))
+    rgba = np.zeros((SQUARE_CELLS, SQUARE_CELLS, 4), dtype=np.uint8)
+    rgba[..., 3] = np.where(alpha > 127, 255, 0)
+    return _square_canvas(rgba, SQUARE_SHADE_RADIUS)
+
+
+def square_variant(name, img):
+    """The ``textures/sky/square/<name>.png`` variant of sky texture ``name`` (``img`` is its globe render), or None
+    when the texture has none and keeps its globe texture in the square body style."""
+    if name in SQUARE_BODIES:
+        return square_body(img, SQUARE_BODIES[name], keep_alpha=name.endswith("_lights"))
+    if name.startswith("terminator_"):
+        return square_shade(img)
+    if name == "limb_glow":
+        # No atmospheric limb on a square body: a transparent texture, so the scene needs no special case.
+        return Image.new("RGBA", (8, 8), (0, 0, 0, 0))
+    return None
+
+
 PARTICLE_TYPES = ["dust", "ash", "spore", "diamond_dust", "ember", "nebula_mote"]
 
 
@@ -920,6 +994,11 @@ def write_all(root, force=False, preview=None):
         if save(img, os.path.join(base, "sky", name + ".png"), force):
             written += 1
         sheet.append((name, img))
+        square = square_variant(name, img)
+        if square is not None:
+            if save(square, os.path.join(base, "sky", "square", name + ".png"), force):
+                written += 1
+            sheet.append(("square/" + name, square))
     for kind in PARTICLE_TYPES:
         for i, img in enumerate(particle_frames(kind)):
             fname = "%s_%d" % (kind, i)

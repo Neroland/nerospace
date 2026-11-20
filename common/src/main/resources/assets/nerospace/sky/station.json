@@ -1,4 +1,5 @@
 {
+  "shaderDimension": "end",
   "background": {
     "zenith": "#000000",
     "horizon": "#000000",
@@ -36,7 +37,24 @@
       "glowTexture": "nerospace:textures/sky/sun_aureole.png"
     }
   ],
-  "moons": [],
+  "moons": [
+    {
+      "id": "luna",
+      "texture": "nerospace:textures/sky/moon_small.png",
+      "size": 3.0,
+      "color": "#E6E4DE",
+      "glow": 0.0,
+      "orbitPeriodDays": 4.0,
+      "phaseOffset": 0.4,
+      "inclination": 5.0,
+      "phases": true,
+      "nightShade": {
+        "texture": "nerospace:textures/sky/terminator.png",
+        "strength": 0.9,
+        "softness": 0.3
+      }
+    }
+  ],
   "bodies": [
     {
       "id": "homeworld",

@@ -73,9 +73,10 @@ A butterscotch sky by day with a small, cool-white sun. At sunset the sky turns 
 clearly **blue glow** around it, the real Martian effect of fine dust scattering the light. Phobos races across
 several times a sol and slow little Deimos follows, both showing phases. A dust storm turns the sky rust and brown,
 hides the stars and dims the moons; for about a minute after it clears, a faint green aurora hangs over the north.
-Shooting stars cross the night sky.
+Shooting stars cross the night sky. Just after sunset and just before sunrise, Earth is the bright pale-blue star
+above the place where the sun went down or is about to rise.
 
-The full sky is drawn on NeoForge for Minecraft 26.3. On every other version Mars shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
+The full sky is drawn on Minecraft 26.1.2, 26.2 and 26.3 (NeoForge, Fabric and Forge). On the 1.21 versions Mars shows its colours with the vanilla sky shapes, and the world fog still follows the time of day and the weather.
 
 ## Rover Wrecks, the Salvage Drone and Derelict Habitats
 

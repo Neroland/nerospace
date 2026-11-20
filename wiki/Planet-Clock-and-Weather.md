@@ -178,5 +178,5 @@ The horizon gradients blend smoothly into the lower sky, without a speckled stri
 Each world has its own sky: Earth hanging over Luna, the butterscotch Martian day with Phobos racing across it,
 Cindara's red giant and its eclipse, Glacira's pale sun, two moons and auroras, Greenxertz's twin suns, Nyxara's pinned
 sunset on one side and a galaxy on the other, and the homeworld turning below your station. The full skies are drawn on
-NeoForge for Minecraft 26.3. On every other loader and version each world still shows its own sky, fog and sunrise
-colours with the vanilla sky shapes.
+Minecraft 26.1.2, 26.2 and 26.3 on NeoForge, Fabric and Forge. On the 1.21 versions each world still shows its own
+sky, fog and sunrise colours with the vanilla sky shapes.

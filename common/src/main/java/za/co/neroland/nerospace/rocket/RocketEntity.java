@@ -95,15 +95,26 @@ public class RocketEntity extends Entity implements MenuProvider {
     /** Ticks spent in the current phase. */
     private static final EntityDataAccessor<Integer> DATA_PHASE_TICK =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    /** Ticks this rocket's ascent lasts ({@link AscentMath#duration}); appended in 2.4.0, never reorder. */
+    private static final EntityDataAccessor<Integer> DATA_ASCENT_TICKS =
+            SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
 
-    /** Ticks of ascent before the rider is transported. */
-    public static final int LAUNCH_DURATION = 100;
+    /**
+     * Ticks of the 24-block baseline ascent. The real length of a climb is {@link #ascentDuration()}, which
+     * follows {@code rockets.ascentHeight}; this stays as the baseline and the fixed flight-time budget.
+     */
+    public static final int LAUNCH_DURATION = AscentMath.BASE_DURATION;
     /** One fuel canister is worth this many millibuckets. */
     public static final int CANISTER_MB = 1_000;
     /** Y level of the shared Orbital Station origin platform (the founded-station system is deferred). */
     public static final int PLATFORM_Y = 64;
 
     private int launchTicks;
+    /**
+     * The nominal height this ascent climbs, fixed when it starts so a config change never bends a climb
+     * already under way. A rocket saved before 2.4.0 has no value and finishes on the 24-block baseline.
+     */
+    private int ascentHeight = AscentMath.BASE_HEIGHT;
 
     // --- Client-side presentation state (never saved or synced) ---------------
 
@@ -354,7 +365,12 @@ public class RocketEntity extends Entity implements MenuProvider {
 
     /** Ascent progress 0..1 as this client has seen it (the server's counter is not synced). */
     public float launchProgress(float partialTick) {
-        return Mth.clamp(Mth.lerp(partialTick, this.launchAnimPrev, this.launchAnim) / LAUNCH_DURATION, 0.0F, 1.0F);
+        return Mth.clamp(Mth.lerp(partialTick, this.launchAnimPrev, this.launchAnim) / ascentDuration(), 0.0F, 1.0F);
+    }
+
+    /** Ticks this rocket's ascent lasts, as the server set it at lift-off (synced); never below the baseline. */
+    public int ascentDuration() {
+        return AscentMath.sanitizeDuration(this.entityData.get(DATA_ASCENT_TICKS));
     }
 
     /** Ignition ramp 0..1 over the first {@link #IGNITION_TICKS} of the ascent. */
@@ -378,9 +394,12 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (isDescending()) {
             // The ascent animation played in reverse over the 48-block drop.
             double height = Math.max(0.0D, DescentMath.DESCENT_HEIGHT - getPhaseTick() * DescentMath.DESCENT_SPEED);
-            this.launchAnim = DescentMath.reversedLaunchAnim(LAUNCH_DURATION, height);
+            this.launchAnim = DescentMath.reversedLaunchAnim(ascentDuration(), height);
         } else {
-            this.launchAnim = isLaunching() ? Math.min(LAUNCH_DURATION, this.launchAnim + 1.0F) : 0.0F;
+            if (isLaunching() && this.launchAnim == 0.0F) {
+                spawnIgnitionBurst();
+            }
+            this.launchAnim = isLaunching() ? Math.min(ascentDuration(), this.launchAnim + 1.0F) : 0.0F;
         }
         this.hatchAnimPrev = this.hatchAnim;
         float target = !isLaunching() && hatchOpens() && getPassengers().isEmpty() ? 1.0F : 0.0F;
@@ -417,6 +436,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         builder.define(DATA_POWER, 0);
         builder.define(DATA_PHASE, DescentMath.Phase.IDLE.ordinal());
         builder.define(DATA_PHASE_TICK, 0);
+        builder.define(DATA_ASCENT_TICKS, AscentMath.BASE_DURATION);
     }
 
     // --- Descent phase --------------------------------------------------------------------------
@@ -1259,14 +1279,21 @@ public class RocketEntity extends Entity implements MenuProvider {
      * recorded the flight. Server-side.
      */
     protected void beginAscent() {
+        setAscentHeight(za.co.neroland.nerospace.config.NerospaceConfig.rocketsAscentHeight());
         setLaunching(true);
         this.launchTicks = 0;
         level().playSound(null, this.getX(), this.getY(), this.getZ(),
                 SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.NEUTRAL, 3.0F, 0.6F);
     }
 
+    /** Fixes the height of the coming climb and publishes its duration to clients, which animate against it. */
+    private void setAscentHeight(int height) {
+        this.ascentHeight = AscentMath.clampHeight(height);
+        this.entityData.set(DATA_ASCENT_TICKS, AscentMath.duration(this.ascentHeight));
+    }
+
     /**
-     * Called once the ascent counter reaches {@link #LAUNCH_DURATION}. The crewed rocket transports its
+     * Called once the ascent counter reaches {@link #ascentDuration()}. The crewed rocket transports its
      * rider and lands a fresh rocket at the destination; the cargo rocket overrides this to simply vanish,
      * because its flight is a server-side record that materialises a rocket on arrival.
      */
@@ -1302,17 +1329,16 @@ public class RocketEntity extends Entity implements MenuProvider {
             if (level().isClientSide()) {
                 spawnLaunchParticles();
             } else {
-                double t = (double) this.launchTicks / LAUNCH_DURATION;
-                double speed = 0.08D + 0.5D * (t * t);
+                int duration = ascentDuration();
+                double speed = AscentMath.speed(this.launchTicks, duration, this.ascentHeight);
                 // Cosmetic gravity feel (GRAVITY_DESIGN.md §5b): lower local gravity → a slightly faster
-                // climb. Bounded; the launch still completes on the fixed LAUNCH_DURATION counter (the
-                // arrival is a teleport), so this only changes how high the rocket visually rises.
-                double factor = Math.min(1.5D, GravityManager.factorAt((ServerLevel) level(), blockPosition()));
-                speed *= 1.5D - 0.5D * factor;
+                // climb. Bounded; the launch still completes on the ascent counter (the arrival is a
+                // teleport), so this only changes how high the rocket visually rises.
+                speed *= AscentMath.gravityBonus(GravityManager.factorAt((ServerLevel) level(), blockPosition()));
                 this.setDeltaMovement(0.0D, speed, 0.0D);
                 this.move(net.minecraft.world.entity.MoverType.SELF, this.getDeltaMovement());
                 this.launchTicks++;
-                if (this.launchTicks >= LAUNCH_DURATION) {
+                if (this.launchTicks >= duration) {
                     finishAscent();
                 }
             }
@@ -1393,6 +1419,37 @@ public class RocketEntity extends Entity implements MenuProvider {
                     0.0D, -0.25D - 0.2D * this.random.nextDouble(), 0.0D);
             level().addParticle(ParticleTypes.LARGE_SMOKE, bx + ox * 2.0D, by - 0.6D * s * ign, bz + oz * 2.0D,
                     0.0D, -0.08D, 0.0D);
+        }
+    }
+
+    /**
+     * Client-side: the one-off burst of flame and smoke at the bells on the lift-off tick. Bounded by
+     * {@link IgnitionBurst}; the vanilla particle setting thins it like any other particle.
+     */
+    private void spawnIgnitionBurst() {
+        int tier = getTier().level();
+        double s = visualScale();
+        double spread = IgnitionBurst.spread(tier) * s;
+        double bx = this.getX();
+        double by = this.getY() + 0.1D * s;
+        double bz = this.getZ();
+        int flames = IgnitionBurst.flames(tier);
+        for (int i = 0; i < flames; i++) {
+            double angle = this.random.nextDouble() * Math.PI * 2.0D;
+            double speed = spread * (0.35D + 0.65D * this.random.nextDouble());
+            double dx = Math.cos(angle);
+            double dz = Math.sin(angle);
+            level().addParticle(ParticleTypes.FLAME, bx + dx * 0.25D * s, by, bz + dz * 0.25D * s,
+                    dx * speed, -0.04D - 0.1D * this.random.nextDouble(), dz * speed);
+        }
+        int smoke = IgnitionBurst.smoke(tier);
+        for (int i = 0; i < smoke; i++) {
+            double angle = this.random.nextDouble() * Math.PI * 2.0D;
+            double speed = spread * (0.5D + 0.5D * this.random.nextDouble());
+            double dx = Math.cos(angle);
+            double dz = Math.sin(angle);
+            level().addParticle(ParticleTypes.LARGE_SMOKE, bx + dx * 0.4D * s, by + 0.1D, bz + dz * 0.4D * s,
+                    dx * speed * 0.8D, 0.02D + 0.04D * this.random.nextDouble(), dz * speed * 0.8D);
         }
     }
 
@@ -2067,6 +2124,8 @@ public class RocketEntity extends Entity implements MenuProvider {
         syncFuel();
         setLaunching(input.getBooleanOr("Launching", false));
         this.launchTicks = input.getIntOr("LaunchTicks", 0);
+        // Optional since 2.4.0: a rocket saved mid-ascent by an older version finishes on the 24-block baseline.
+        setAscentHeight(input.getIntOr("AscentHeight", AscentMath.BASE_HEIGHT));
         // 2.0 fields — all optional, so a 1.6.0 rocket loads as before ([COMPAT] 4).
         // A parked 1.6.0 rocket follows the 2.0 charter rule; only one already in flight is honoured once.
         // The field is absent exactly when the two defaults disagree.
@@ -2138,6 +2197,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.store("FuelInput", ItemStack.OPTIONAL_CODEC, this.fuelInput.getItem(0));
         output.putBoolean("Launching", isLaunching());
         output.putInt("LaunchTicks", this.launchTicks);
+        output.putInt("AscentHeight", this.ascentHeight);
         output.putBoolean("CharterRule", true);
         output.putBoolean("Visitor", this.visitor);
         net.minecraft.resources.ResourceKey<Level> originDim = this.launchOriginDim;

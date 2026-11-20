@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "za.co.neroland.nerospace.mixin.shader",
+  "compatibilityLevel": "JAVA_21",
+  "plugin": "za.co.neroland.nerospace.mixin.shader.ShaderCompatMixinPlugin",
+  "mixins": [],
+  "client": [
+    "IrisDimensionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

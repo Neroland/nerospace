@@ -35,7 +35,11 @@ public record SkyProfile(boolean vanillaSkybox, Background background, Fog fog, 
         List<Body> moons, List<Body> bodies, Optional<Galaxy> galaxy, Optional<Aurora> aurora,
         Optional<Eclipse> eclipse, String clouds, Optional<Haze> horizonHaze, Map<String, WeatherTint> weatherTints,
         List<GradientKey> gradient, Optional<PositionBlend> positionBlend, Optional<TerminatorScroll> terminatorScroll,
-        List<Decal> decals, Optional<CloudLayer> cloudLayer, Optional<ShootingStars> shootingStars) {
+        List<Decal> decals, Optional<CloudLayer> cloudLayer, Optional<ShootingStars> shootingStars,
+        String shaderDimension) {
+
+    /** The {@code shaderDimension} of a profile that names none: a shader pack keeps its own default. */
+    public static final String DEFAULT_SHADER_DIMENSION = "overworld";
 
     /** "Keep the vanilla sky": the profile used for any planet without a file. */
     public static final SkyProfile VANILLA = new SkyProfile(true, Background.DEFAULT, Fog.DEFAULT, Stars.DEFAULT,
@@ -49,7 +53,8 @@ public record SkyProfile(boolean vanillaSkybox, Background background, Fog fog, 
             List<GradientKey> gradient, Optional<PositionBlend> positionBlend,
             Optional<TerminatorScroll> terminatorScroll) {
         this(vanillaSkybox, background, fog, stars, sun, moons, bodies, galaxy, aurora, eclipse, clouds, horizonHaze,
-                weatherTints, gradient, positionBlend, terminatorScroll, List.of(), Optional.empty(), Optional.empty());
+                weatherTints, gradient, positionBlend, terminatorScroll, List.of(), Optional.empty(), Optional.empty(),
+                DEFAULT_SHADER_DIMENSION);
     }
 
     /** The default horizon-ramp texture (the 2.0.0 ramp). */
@@ -452,7 +457,8 @@ public record SkyProfile(boolean vanillaSkybox, Background background, Fog fog, 
     }
 
     /** The sky-upgrade top-level fields, decoded beside the 16 original ones. */
-    private record Extras(List<Decal> decals, Optional<CloudLayer> cloudLayer, Optional<ShootingStars> shootingStars) {
+    private record Extras(List<Decal> decals, Optional<CloudLayer> cloudLayer, Optional<ShootingStars> shootingStars,
+            String shaderDimension) {
     }
 
     /** The 16 original top-level fields (decodes to a profile whose sky-upgrade fields are still defaults). */
@@ -479,19 +485,22 @@ public record SkyProfile(boolean vanillaSkybox, Background background, Fog fog, 
     private static final MapCodec<Extras> EXTRAS = RecordCodecBuilder.mapCodec(i -> i.group(
             Decal.CODEC.listOf().optionalFieldOf("decals", List.of()).forGetter(Extras::decals),
             CloudLayer.CODEC.optionalFieldOf("cloudLayer").forGetter(Extras::cloudLayer),
-            ShootingStars.CODEC.optionalFieldOf("shootingStars").forGetter(Extras::shootingStars)
+            ShootingStars.CODEC.optionalFieldOf("shootingStars").forGetter(Extras::shootingStars),
+            // 2.4.0: which vanilla program set a shader pack is asked for on this world (overworld | nether | end).
+            Codec.STRING.optionalFieldOf("shaderDimension", DEFAULT_SHADER_DIMENSION).forGetter(Extras::shaderDimension)
     ).apply(i, Extras::new));
 
     public static final Codec<SkyProfile> CODEC = Codec.mapPair(CORE, EXTRAS).xmap(
             pair -> pair.getFirst().withExtras(pair.getSecond()),
-            profile -> Pair.of(profile, new Extras(profile.decals(), profile.cloudLayer(), profile.shootingStars())))
+            profile -> Pair.of(profile, new Extras(profile.decals(), profile.cloudLayer(), profile.shootingStars(),
+                    profile.shaderDimension())))
             .codec();
 
     private SkyProfile withExtras(Extras e) {
         return new SkyProfile(this.vanillaSkybox, this.background, this.fog, this.stars, this.sun, this.moons,
                 this.bodies, this.galaxy, this.aurora, this.eclipse, this.clouds, this.horizonHaze, this.weatherTints,
                 this.gradient, this.positionBlend, this.terminatorScroll, e.decals(), e.cloudLayer(),
-                e.shootingStars());
+                e.shootingStars(), e.shaderDimension());
     }
 
     // Parsed colours by string: profiles hold a few dozen distinct strings, and the sky reads them every frame, so

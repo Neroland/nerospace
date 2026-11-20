@@ -16,7 +16,9 @@
   },
   "mixins": [
     "nerospace-common.mixins.json",
-    "nerospace.mixins.json"
+    "nerospace.mixins.json",
+    "nerospace-sky.mixins.json",
+    "nerospace-shaders.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",

@@ -73,12 +73,27 @@ have four seats; bigger tiers go further, not fuller.
 ## Launch sequence
 
 1. **Ignition** — the hatch seals, exhaust plumes bloom and flicker under every bell (white-hot core,
-   tier-coloured fringe), the hull shudders, and a cloud rolls outward across the pad. Solar wings and
+   tier-coloured fringe), the hull shudders, and a cloud rolls outward across the pad. A burst of flame
+   and smoke kicks out from the bells at the moment of lift-off, bigger on higher tiers. Solar wings and
    the dish boom fold in.
 2. **Climb** — the landing legs sweep out and up along the hull, the engine bells gimbal, and on Tier 4
-   the grid fins deploy.
+   the grid fins deploy. The rocket climbs about 96 blocks before it leaves for its destination (see
+   [Ascent height](#ascent-height)).
 3. **Staging** — past two-thirds of the climb, Tier 2 and Tier 4 boosters go dark and fall away.
 4. **Arrival** — the rocket re-appears on the destination pad, legs down and hatch opening.
+
+### Ascent height
+
+A rocket climbs about **96 blocks** over roughly 8 seconds before the transfer to its destination. Before
+2.4.0 the climb was 24 blocks. Server owners can set it with `rockets.ascentHeight` (24 to 256 blocks) in
+[Configuration](Configuration); taller climbs take a little longer, up to about 11 seconds. Low-gravity
+worlds add a little extra height. The trip itself is still a transfer, not a flight through thousands of
+blocks: Minecraft worlds are only a few hundred blocks tall, so the climb is the visible part of the launch.
+
+Fuel, launch cooldown, crew rules and the landing are the same at every height. Keep the sky above the pad
+clear for the whole climb, since the hull still collides with blocks on the way up.
+
+The burst at lift-off follows your **Particles** video setting like any other particle.
 
 The hull and its glass are lit by the world; only the lamps, beacons and exhaust are full-bright, so a
 rocket parked at night is a dark silhouette with glowing windows.
