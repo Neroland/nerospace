@@ -22,6 +22,7 @@ import za.co.neroland.nerospace.world.planet.HazardOrderRules;
 import za.co.neroland.nerospace.world.planet.PlanetHazards;
 import za.co.neroland.nerospace.world.planet.RadiationRules;
 import za.co.neroland.nerospace.world.planet.WeatherEvent;
+import za.co.neroland.nerospace.world.planet.europa.EuropaWarmth;
 import za.co.neroland.nerospace.world.OxygenFieldEvents;
 import za.co.neroland.nerospace.world.OxygenManager;
 
@@ -241,8 +242,17 @@ public final class OxygenHud {
                 ? player.level().getBiome(pos).unwrapKey().map(k -> k.identifier().toString()).orElse("") : "";
         boolean weatherRad = open && (event == WeatherEvent.DUST_STORM
                 || RadiationRules.flareApplies(event, biome, true));
-        return HazardOrderRules.firstUnshielded(PlanetHazards.present(player.level(), pos, weatherRad),
-                PlanetHazards.suitShields(player.level(), pos, player));
+        java.util.Set<Hazard> present = PlanetHazards.present(player.level(), pos, weatherRad);
+        java.util.Set<Hazard> shields = PlanetHazards.suitShields(player.level(), pos, player);
+        Hazard first = HazardOrderRules.firstUnshielded(present, shields);
+        // Europa only (the call returns false at once elsewhere): an active vent or warm basalt nearby keeps the cold away.
+        if (first == Hazard.COLD && EuropaWarmth.shieldedClient(player.level(), pos)) {
+            java.util.Set<Hazard> warm = java.util.EnumSet.noneOf(Hazard.class);
+            warm.addAll(shields);
+            warm.add(Hazard.COLD);
+            first = HazardOrderRules.firstUnshielded(present, warm);
+        }
+        return first;
     }
 
     // --- F1 / hide-GUI detection --------------------------------------------

@@ -9,7 +9,26 @@
     "grass_color": "#c4d6de",
     "water_color": "#0b1a1c"
   },
-  "features": [],
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nerospace:europa_vent_sulfide_ore_placed",
+      "nerospace:europa_europium_ore_placed"
+    ],
+    [],
+    [],
+    [
+      "nerospace:europa_hydrothermal_vent_placed",
+      "nerospace:europa_smoker_chimney_placed",
+      "nerospace:europa_tube_mat_patch_placed"
+    ],
+    []
+  ],
   "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {

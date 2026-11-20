@@ -50,4 +50,19 @@ class PlanetCardStateTest {
         assertEquals("gui.nerospace.card.suit_t2", PlanetCardData.suitKey(true, Hazard.COLD, false,
                 za.co.neroland.nerospace.world.OxygenManager.SuitTier.TIER_2));
     }
+
+    @Test
+    void europaSuitLine() {
+        // Europa's open surface is frigid and irradiated: the card never offers the plain Tier 2 line, it asks for the
+        // Rad Lining (radiation 2), and without the radiation it would ask for the Cryo suit.
+        za.co.neroland.nerospace.api.PlanetTraits t = za.co.neroland.nerospace.world.planet.Planets.EUROPA.traits();
+        za.co.neroland.nerospace.world.OxygenManager.SuitTier required =
+                PlanetCardData.requiredSuit(t.airless(), t.hazard(), t.temperatureBand());
+        assertEquals(za.co.neroland.nerospace.world.OxygenManager.SuitTier.TIER_1, required);
+        boolean rad = PlanetCardData.needsRadLining(t.radiation(), t.hazard(),
+                za.co.neroland.nerospace.world.planet.Planets.EUROPA.weather().event());
+        assertEquals(true, rad);
+        assertEquals("gui.nerospace.card.suit_rad", PlanetCardData.suitKey(true, t.hazard(), rad, required));
+        assertEquals("gui.nerospace.card.suit_cryo", PlanetCardData.suitKey(true, t.hazard(), false, required));
+    }
 }

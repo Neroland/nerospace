@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:ore",
+  "discard_chance_on_air_exposure": 0.0,
+  "size": 6,
+  "targets": [
+    {
+      "state": "nerospace:brine_salt_ore",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:europa_ice"
+      }
+    },
+    {
+      "state": "nerospace:brine_salt_ore",
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:lineae_salt"
+      }
+    }
+  ]
+}

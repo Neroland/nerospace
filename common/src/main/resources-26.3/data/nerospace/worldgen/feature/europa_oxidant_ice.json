@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:ore",
+  "discard_chance_on_air_exposure": 0.0,
+  "size": 6,
+  "targets": [
+    {
+      "state": {
+        "id": "nerospace:oxidant_ice",
+        "properties": {
+          "charge": "3"
+        }
+      },
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:europa_ice"
+      }
+    },
+    {
+      "state": {
+        "id": "nerospace:oxidant_ice",
+        "properties": {
+          "charge": "3"
+        }
+      },
+      "target": {
+        "predicate_type": "minecraft:block_match",
+        "block": "nerospace:chaos_ice"
+      }
+    }
+  ]
+}

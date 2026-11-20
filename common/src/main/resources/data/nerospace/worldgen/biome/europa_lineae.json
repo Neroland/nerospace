@@ -9,7 +9,26 @@
     "grass_color": "#c4d6de",
     "water_color": "#0a1e30"
   },
-  "features": [],
+  "features": [
+    [],
+    [],
+    [
+      "nerospace:europa_ice_fracture_placed"
+    ],
+    [],
+    [],
+    [],
+    [
+      "nerospace:europa_oxidant_ice_placed",
+      "nerospace:europa_brine_salt_ore_lineae_placed"
+    ],
+    [],
+    [],
+    [
+      "nerospace:europa_cryovent_placed"
+    ],
+    []
+  ],
   "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {

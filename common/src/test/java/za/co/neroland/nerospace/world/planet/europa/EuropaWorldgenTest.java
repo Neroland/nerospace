@@ -277,4 +277,260 @@ class EuropaWorldgenTest {
         }
         assertTrue(scanned >= 60, "scanned " + scanned);
     }
+
+    // --- Features (WP3) ---------------------------------------------------------------------------------------------
+
+    /** The 13 configured features, present in both trees (`configured_feature` in R, `feature` in R263). */
+    static final List<String> CONFIGURED = List.of("europa_brine_pocket", "europa_ice_fracture", "europa_oxidant_ice",
+            "europa_brine_salt_ore_lineae", "europa_deuterium_ice", "europa_brine_salt_ore", "europa_vent_sulfide_ore",
+            "europa_europium_ore", "europa_cryovent", "europa_penitente_patch", "europa_hydrothermal_vent",
+            "europa_smoker_chimney", "europa_tube_mat_patch");
+    /** The 14 placed features (the habitat places the existing hamlet). */
+    static final List<String> PLACED = List.of("europa_brine_pocket_placed", "europa_ice_fracture_placed",
+            "europa_habitat_placed", "europa_oxidant_ice_placed", "europa_brine_salt_ore_lineae_placed",
+            "europa_deuterium_ice_placed", "europa_brine_salt_ore_placed", "europa_vent_sulfide_ore_placed",
+            "europa_europium_ore_placed", "europa_cryovent_placed", "europa_penitente_patch_placed",
+            "europa_hydrothermal_vent_placed", "europa_smoker_chimney_placed", "europa_tube_mat_patch_placed");
+    /** The placed features that need a 26.3 copy (a modifier is spelled differently there). */
+    static final Set<String> PLACED_263 = Set.of("europa_oxidant_ice_placed", "europa_brine_salt_ore_lineae_placed",
+            "europa_cryovent_placed", "europa_penitente_patch_placed", "europa_smoker_chimney_placed",
+            "europa_tube_mat_patch_placed");
+
+    private static String configuredDir(String tree) {
+        return tree.equals("resources") ? "worldgen/configured_feature/" : "worldgen/feature/";
+    }
+
+    /** The placed feature a tree loads: its own copy if it has one, else the shared file. */
+    private static Path placed(String tree, String id) {
+        Path own = EuropaFiles.data(tree, "worldgen/placed_feature/" + id + ".json");
+        return Files.isRegularFile(own) ? own : EuropaFiles.data("resources", "worldgen/placed_feature/" + id + ".json");
+    }
+
+    private static JsonArray placement(String tree, String id) throws IOException {
+        return EuropaFiles.json(placed(tree, id)).getAsJsonArray("placement");
+    }
+
+    private static List<String> features(String tree, String biome) throws IOException {
+        List<String> out = new ArrayList<>();
+        for (JsonElement step : EuropaFiles.json(EuropaFiles.data(tree, "worldgen/biome/" + biome + ".json"))
+                .getAsJsonArray("features")) {
+            step.getAsJsonArray().forEach(e -> out.add(e.getAsString()));
+        }
+        return out;
+    }
+
+    private static JsonObject modifier(JsonArray placement, String type) {
+        for (JsonElement e : placement) {
+            if (e.getAsJsonObject().get("type").getAsString().equals(type)) {
+                return e.getAsJsonObject();
+            }
+        }
+        throw new AssertionError("no " + type + " in " + placement);
+    }
+
+    private static int[] uniformRange(JsonArray placement) {
+        JsonObject h = modifier(placement, "minecraft:height_range").getAsJsonObject("height");
+        assertEquals("minecraft:uniform", h.get("type").getAsString());
+        return new int[] {h.getAsJsonObject("min_inclusive").get("absolute").getAsInt(),
+                h.getAsJsonObject("max_inclusive").get("absolute").getAsInt()};
+    }
+
+    @Test
+    @DisplayName("habitat: the depth at Y 88 resolves to europa_shell, which lists the habitat placed at constant Y 88")
+    void habitatBiomeListsHabitat() throws IOException {
+        Assumptions.assumeTrue(EuropaFiles.commonMain() != null, "common sources not found");
+        double depth = EuropaNumbers.depthAt(EuropaNumbers.SEA_LEVEL);
+        for (double c : new double[] {-1.0, 0.0, 1.0}) {
+            for (double e : new double[] {-1.0, 0.0, 1.0}) {
+                assertEquals("nerospace:europa_shell", biomeAt(depth, c, e, 0.0));
+            }
+        }
+        for (String tree : EuropaFiles.TREES) {
+            assertTrue(features(tree, "europa_shell").contains("nerospace:europa_habitat_placed"), tree);
+            JsonObject p = EuropaFiles.json(placed(tree, "europa_habitat_placed"));
+            assertEquals("nerospace:hamlet", p.get("feature").getAsString());
+            JsonObject h = modifier(p.getAsJsonArray("placement"), "minecraft:height_range").getAsJsonObject("height");
+            assertEquals("minecraft:constant", h.get("type").getAsString());
+            assertEquals(EuropaNumbers.SEA_LEVEL, h.getAsJsonObject("value").get("absolute").getAsInt());
+            for (String b : EuropaFiles.NATURAL_BIOMES) {
+                if (!b.equals("europa_shell")) {
+                    assertFalse(features(tree, b).contains("nerospace:europa_habitat_placed"), tree + " " + b);
+                }
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"resources", "resources-26.3"})
+    @DisplayName("every Europa placed feature ends with a biome filter")
+    void everyPlacedFeatureHasBiomeFilter(String tree) throws IOException {
+        Assumptions.assumeTrue(EuropaFiles.commonMain() != null, "common sources not found");
+        for (String id : PLACED) {
+            JsonArray p = placement(tree, id);
+            assertEquals("minecraft:biome", p.get(p.size() - 1).getAsJsonObject().get("type").getAsString(),
+                    tree + " " + id);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"resources", "resources-26.3"})
+    @DisplayName("every placed feature a Europa biome lists exists, and so does the configured feature it places")
+    void featuresResolve(String tree) throws IOException {
+        Assumptions.assumeTrue(EuropaFiles.commonMain() != null, "common sources not found");
+        for (String id : CONFIGURED) {
+            for (String t : EuropaFiles.TREES) {
+                assertTrue(Files.isRegularFile(EuropaFiles.data(t, configuredDir(t) + id + ".json")), t + " " + id);
+            }
+        }
+        Set<String> listed = new TreeSet<>();
+        for (String b : EuropaFiles.NATURAL_BIOMES) {
+            listed.addAll(features(tree, b));
+        }
+        assertEquals(new TreeSet<>(PLACED.stream().map(p -> "nerospace:" + p).toList()), listed, tree);
+        for (String id : listed) {
+            Path file = placed(tree, id.substring("nerospace:".length()));
+            assertTrue(Files.isRegularFile(file), tree + " " + id);
+            String feature = EuropaFiles.json(file).get("feature").getAsString();
+            assertTrue(Files.isRegularFile(EuropaFiles.data(tree,
+                    configuredDir(tree) + feature.substring("nerospace:".length()) + ".json")), tree + " " + feature);
+        }
+        assertEquals(List.of(), features(tree, "europa_abyss"));
+    }
+
+    @Test
+    @DisplayName("trees agree: a placed feature without a 26.3 copy uses no random_offset; each copy matches its base")
+    void treesAgree() throws IOException {
+        Assumptions.assumeTrue(EuropaFiles.commonMain() != null, "common sources not found");
+        for (String id : PLACED) {
+            Path own = EuropaFiles.data("resources-26.3", "worldgen/placed_feature/" + id + ".json");
+            String base = Files.readString(placed("resources", id), StandardCharsets.UTF_8);
+            assertEquals(PLACED_263.contains(id), Files.isRegularFile(own), id);
+            if (!Files.isRegularFile(own)) {
+                assertFalse(base.contains("minecraft:random_offset"), id);
+                continue;
+            }
+            String copy = Files.readString(own, StandardCharsets.UTF_8);
+            assertFalse(copy.contains("minecraft:random_offset"), id);
+            JsonObject a = EuropaFiles.json(placed("resources", id));
+            JsonObject b = EuropaFiles.json(own);
+            assertEquals(a.get("feature"), b.get("feature"), id);
+            JsonArray pa = a.getAsJsonArray("placement");
+            JsonArray pb = b.getAsJsonArray("placement");
+            assertEquals(pa.size(), pb.size(), id);
+            for (int i = 0; i < pa.size(); i++) {
+                String ta = pa.get(i).getAsJsonObject().get("type").getAsString();
+                String tb = pb.get(i).getAsJsonObject().get("type").getAsString();
+                assertEquals(ta.equals("minecraft:random_offset") ? "minecraft:offset" : ta, tb, id + " #" + i);
+                if (!ta.equals("minecraft:random_offset")) {
+                    assertEquals(pa.get(i), pb.get(i), id + " #" + i);
+                }
+            }
+        }
+        // No 1.21.x-incompatible spellings anywhere in the shared tree (the build rewrites none of these files).
+        for (String id : PLACED) {
+            String base = Files.readString(placed("resources", id), StandardCharsets.UTF_8);
+            assertFalse(base.contains("minecraft:trapezoid"), id);
+        }
+        for (String id : CONFIGURED) {
+            String text = Files.readString(EuropaFiles.data("resources", configuredDir("resources") + id + ".json"),
+                    StandardCharsets.UTF_8);
+            assertFalse(text.contains("minecraft:random_patch"), id);
+        }
+    }
+
+    @Test
+    @DisplayName("heights: shell ores inside the always-solid shell, europium inside the always-solid floor, vent scans land")
+    void heights() throws IOException {
+        Assumptions.assumeTrue(EuropaFiles.commonMain() != null, "common sources not found");
+        for (String id : List.of("europa_brine_pocket_placed", "europa_deuterium_ice_placed",
+                "europa_brine_salt_ore_placed")) {
+            int[] r = uniformRange(placement("resources", id));
+            assertTrue(r[0] >= EuropaNumbers.ROOF_MAX + 1 && r[1] <= EuropaNumbers.SURFACE_MIN - 1, id);
+        }
+        assertEquals(List.of(104, 160), List.of(uniformRange(placement("resources", "europa_brine_pocket_placed"))[0],
+                uniformRange(placement("resources", "europa_brine_pocket_placed"))[1]));
+        assertEquals(166, uniformRange(placement("resources", "europa_deuterium_ice_placed"))[1]);
+        int[] eu = uniformRange(placement("resources", "europa_europium_ore_placed"));
+        assertTrue(eu[0] >= EuropaNumbers.MIN_Y && eu[1] <= EuropaNumbers.FLOOR_MIN - 1, "europium band");
+        assertEquals(List.of(-60, -46), List.of(eu[0], eu[1]));
+        assertEquals(6, modifier(placement("resources", "europa_europium_ore_placed"), "minecraft:rarity_filter")
+                .get("chance").getAsInt());
+        assertEquals(16, modifier(placement("resources", "europa_ice_fracture_placed"), "minecraft:rarity_filter")
+                .get("chance").getAsInt());
+        assertEquals(24, modifier(placement("resources", "europa_cryovent_placed"), "minecraft:rarity_filter")
+                .get("chance").getAsInt());
+        int[] sulfide = uniformRange(placement("resources", "europa_vent_sulfide_ore_placed"));
+        assertEquals(List.of(-60, -24), List.of(sulfide[0], sulfide[1]));
+        for (String tree : EuropaFiles.TREES) {
+            JsonObject ore = EuropaFiles.json(EuropaFiles.data(tree, configuredDir(tree) + "europa_europium_ore.json"));
+            JsonObject cfg = ore.has("config") ? ore.getAsJsonObject("config") : ore;
+            assertEquals(3, cfg.get("size").getAsInt(), tree);
+            for (String b : EuropaFiles.NATURAL_BIOMES) {
+                assertEquals(b.equals("europa_vent_fields"),
+                        features(tree, b).contains("nerospace:europa_europium_ore_placed"), tree + " " + b);
+            }
+        }
+        // The vent scans start in always-open water and reach below the lowest possible floor.
+        for (String id : List.of("europa_hydrothermal_vent_placed", "europa_smoker_chimney_placed",
+                "europa_tube_mat_patch_placed")) {
+            JsonArray p = placement("resources", id);
+            int[] start = uniformRange(p);
+            assertTrue(start[0] > EuropaNumbers.FLOOR_MAX && start[1] < EuropaNumbers.ROOF_MIN, id);
+            JsonObject scan = modifier(p, "minecraft:environment_scan");
+            assertEquals("down", scan.get("direction_of_search").getAsString());
+            assertTrue(start[0] - scan.get("max_steps").getAsInt() < EuropaNumbers.FLOOR_MIN, id);
+            assertTrue(scan.toString().contains("nerospace:vent_basalt") && scan.toString().contains("minecraft:water"));
+            assertTrue(EuropaNumbers.depthAt(start[1]) >= 1.5625, id + " starts inside the vent-field band");
+        }
+    }
+
+    /** A block state as either tree writes it: name and properties. */
+    private static String state(JsonElement s) {
+        if (s.isJsonPrimitive()) {
+            return s.getAsString();
+        }
+        JsonObject o = s.getAsJsonObject();
+        if (o.has("type") && o.has("state")) {
+            return state(o.get("state"));
+        }
+        String name = o.has("Name") ? o.get("Name").getAsString() : o.get("id").getAsString();
+        JsonObject props = o.has("Properties") ? o.getAsJsonObject("Properties")
+                : o.has("properties") ? o.getAsJsonObject("properties") : new JsonObject();
+        return name + new TreeSet<>(props.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue().getAsString())
+                .toList());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"resources", "resources-26.3"})
+    @DisplayName("generated states: charged ore, active vents, capped waterlogged chimneys, waterlogged mats")
+    void generatedStates(String tree) throws IOException {
+        Assumptions.assumeTrue(EuropaFiles.commonMain() != null, "common sources not found");
+        java.util.function.Function<String, JsonObject> cfg = id -> {
+            try {
+                JsonObject j = EuropaFiles.json(EuropaFiles.data(tree, configuredDir(tree) + id + ".json"));
+                return j.has("config") ? j.getAsJsonObject("config") : j;
+            } catch (IOException e) {
+                throw new java.io.UncheckedIOException(e);
+            }
+        };
+        assertEquals("nerospace:oxidant_ice[charge=3]", state(cfg.apply("europa_oxidant_ice")
+                .getAsJsonArray("targets").get(0).getAsJsonObject().get("state")));
+        assertEquals("nerospace:hydrothermal_vent[active=true]",
+                state(cfg.apply("europa_hydrothermal_vent").get("to_place")));
+        assertEquals("nerospace:cryovent[charged=true]", state(cfg.apply("europa_cryovent").get("to_place")));
+        assertEquals("nerospace:tube_mat[waterlogged=true]", state(cfg.apply("europa_tube_mat_patch").get("to_place")));
+        JsonArray layers = cfg.apply("europa_smoker_chimney").getAsJsonArray("layers");
+        assertEquals(2, layers.size());
+        assertEquals("nerospace:smoker_chimney[capped=false, waterlogged=true]",
+                state(layers.get(0).getAsJsonObject().get("provider")));
+        assertEquals("nerospace:smoker_chimney[capped=true, waterlogged=true]",
+                state(layers.get(1).getAsJsonObject().get("provider")));
+        assertTrue(cfg.apply("europa_smoker_chimney").get("prioritize_tip").getAsBoolean(), "the capped tip is kept");
+        // vent_basalt is never written by a feature (its natural DISTANCE stays the default 4).
+        for (String id : CONFIGURED) {
+            String text = Files.readString(EuropaFiles.data(tree, configuredDir(tree) + id + ".json"),
+                    StandardCharsets.UTF_8);
+            assertFalse(text.contains("\"distance\""), id);
+        }
+    }
 }
