@@ -2,9 +2,9 @@ package za.co.neroland.nerospace.client.sky;
 
 /**
  * When the planet sky steps aside. With the camera inside water, lava or powder snow, vanilla keeps the sky behind a
- * short, thick fog; the planet sky's stars, bodies and galaxy ignore that fog, so they would show through the water
- * and through the terrain the fog hides. In those cases the planet sky draws nothing and vanilla's own sky renders,
- * which the fog then covers as players expect.
+ * short, thick fog; the planet sky's stars, bodies and galaxy ignore that fog, and so do vanilla's stars (the planets
+ * use the overworld sky type with bright stars), so either would show through the water. In those cases no sky draws
+ * at all on a planet and only the fog colour shows.
  *
  * <p>Takes the vanilla {@code FogType} constant's name so the rule stays pure and works on every Minecraft line.</p>
  */

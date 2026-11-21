@@ -173,11 +173,6 @@ public final class PlanetSkyDraw {
             return false;
         }
         Minecraft mc = Minecraft.getInstance();
-        // Under water, lava or powder snow the fog hides the sky; the planet sky ignores that fog, so step aside and
-        // let vanilla's sky (which the fog covers) render instead.
-        if (SkyFluidRules.hidesPlanetSky(levelState(mc).cameraRenderState.fogType.name())) {
-            return false;
-        }
         // Meshes keyed on profile values are stale after a resource reload: drop them, build() recreates lazily.
         int generation = SkyProfiles.generation();
         if (generation != this.profileGeneration) {
@@ -187,6 +182,12 @@ public final class PlanetSkyDraw {
         PlanetSkyRenderer.Frame frame = PlanetSkyRenderer.frame(mc.level, partialTick);
         if (frame == null) {
             return false;
+        }
+        // Under water, lava or powder snow the fog hides the sky. Neither the planet sky nor vanilla's (whose stars
+        // ignore the fog and would show through the water) may draw: report the sky handled and draw nothing, so
+        // only the fog colour the frame was cleared to shows.
+        if (SkyFluidRules.hidesPlanetSky(levelState(mc).cameraRenderState.fogType.name())) {
+            return true;
         }
         SkyBodyStyle wanted = SkyBodyStyle.byName(NerospaceConfig.skyBodyStyle());
         if (wanted != this.style) {

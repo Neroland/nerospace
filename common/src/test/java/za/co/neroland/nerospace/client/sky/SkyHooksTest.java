@@ -197,9 +197,14 @@ class SkyHooksTest {
         // The other two reasons to leave the sky to vanilla are checked before anything else.
         int gate = render.indexOf("if (this.failed || !ShaderCompat.drawPlanetSky()) {\n            return false;");
         assertTrue(gate > 0 && gate < noFrame);
-        // true is returned in exactly one place: after the draw.
-        assertEquals(1, render.split("return true;", -1).length - 1);
-        assertTrue(render.indexOf("return true;") > render.indexOf("draw(mc,"));
+        // true is returned in exactly two places: the fog-hidden sky on a planet (after the no-profile return, so a
+        // vanilla level never has its sky swallowed) and after the draw.
+        assertEquals(2, render.split("return true;", -1).length - 1);
+        int fog = render.indexOf("if (SkyFluidRules.hidesPlanetSky(");
+        assertTrue(fog > noFrame, "the fog check must come after the no-profile return");
+        assertTrue(render.indexOf("return true;") > fog && render.indexOf("return true;") < render.indexOf("build();"),
+                "the fog case returns before any mesh is built");
+        assertTrue(render.lastIndexOf("return true;") > render.indexOf("draw(mc,"));
     }
 
     @Test

@@ -37,7 +37,7 @@ Client and server must run the same version.
 
 ### Fixed
 
-- Under water, in lava or in powder snow, the planet sky's stars, sun, moons and planets no longer show through the water and the terrain around you. The planet sky steps aside while the fog is up and returns when you surface.
+- Under water, in lava or in powder snow on a planet, stars, the sun, moons and planets no longer show through the water. No sky draws while the fog is up, so you see only the fog, and the sky returns when you surface.
 
 ## [2.3.1] - 2026-11-17
 
