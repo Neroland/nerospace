@@ -754,6 +754,8 @@
   "command.nerospace.gallery.label.rocket_oxygen": "Rocket O2 Fuelling",
   "command.nerospace.gallery.label.travel_node": "Travel Node — Name-Tag a pad to register",
   "command.nerospace.gallery.label.miner": "Miner T%s - %sx%s",
+  "command.nerospace.gallery.label.launch_demo": "Launch Demo — use the rocket to watch a lift-off (it returns to the pad)",
+  "command.nerospace.gallery.label.sea_tank": "Europa sea creatures",
   "command.nerospace.gallery.label.launch_controller": "Launch Controller — pad builder + launch hub (hologram on)",
   "command.nerospace.gallery.label.cargo_pad_a": "Cargo Pad A — loaded + fuelled; open it and press Launch",
   "command.nerospace.gallery.label.cargo_pad_b": "Cargo Pad B — destination; pipe pulls the delivery into the chest",

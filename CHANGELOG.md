@@ -29,6 +29,7 @@ Client and server must run the same version.
 - New client setting `sky.bodyStyle`: set it to `square` to draw the sun, moons and planets as flat, vanilla-style squares with the same detailed surfaces as the round globes (the default).
 - A burst of flame and smoke at the engine bells at the moment of lift-off, bigger on higher tiers. It follows your Particles video setting.
 - New server setting `rockets.ascentHeight` (default 96, range 24 to 256): how many blocks a rocket climbs before it leaves for its destination.
+- `/nerospace gallery` now has a launch demo (use the rocket to watch the lift-off flames and the full climb; it lands back on its pad and flies nowhere) and a glass sea tank with Europa's Lantern Drifter and Vent Ray. The Brine Bucket now sits with the tools on the item wall.
 
 ### Changed
 

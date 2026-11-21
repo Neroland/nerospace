@@ -547,6 +547,11 @@ public final class NerospaceCommands {
         spawnLabelStand(level, new BlockPos(tnx, fy + 3, tnz),
                 Component.translatable("command.nerospace.gallery.label.travel_node"));
 
+        // LAUNCH DEMO (2.4.0): a Tier 2 rocket on its own 3x3 pad, west of the rocket row. Using it launches it
+        // uncrewed: the ignition burst at the engine bells, then the climb to the configured ascent height
+        // (rockets.ascentHeight), after which it settles back on the pad, ready to go again. It flies nowhere.
+        buildLaunchDemo(level, floor, origin.getX() - 23, origin.getZ() - 47, fy);
+
         // FREIGHT (cargo rockets, 1.3.0): two Cargo Pads on 3x3 footprints, one strip north of the rocket
         // row. Pad A carries a docked, fuelled Cargo Rocket with a loaded hold, an adjacent Fuel Tank and a
         // rocket-fuel pipe into the pad's own buffer; pad B is the destination. Both are registered to the
@@ -581,6 +586,10 @@ public final class NerospaceCommands {
             spawnShowcase(level, creatures.get(i), new BlockPos(mx + i * 4, fy + 1, mz + 1), true);
             spawnLabelStand(level, new BlockPos(mx + i * 4, fy + 3, mz + 1), creatures.get(i).getDescription());
         }
+
+        // SEA TANK (2.4.0): Europa's two sea creatures, which would strand on the dry creature row, held in a glass
+        // water tank just south of it.
+        buildSeaTank(level, floor, origin.getX() + 18, origin.getZ() + 40, fy);
 
         // METEOR SITE (meteor-events-design.md): a small crater of meteor_rock around a loot-bearing
         // meteor_core, with a frozen meteor hovering above it (spins + trails for the shot). SW spoke.
@@ -706,7 +715,8 @@ public final class NerospaceCommands {
         }
 
         // Remove the spawned entities (rockets, armour stands, creatures) — everything but players.
-        AABB box = new AABB(minX, oy - 1, minZ, maxX + 1, topY + 4, maxZ + 1);
+        // Tall enough to catch a launch demo rocket caught mid-climb (rockets.ascentHeight is at most 256).
+        AABB box = new AABB(minX, oy - 1, minZ, maxX + 1, oy + 300, maxZ + 1);
         int removed = 0;
         for (Entity entity : level.getEntitiesOfClass(Entity.class, box, e -> !(e instanceof Player))) {
             entity.discard();
@@ -779,6 +789,68 @@ public final class NerospaceCommands {
      * stands are forced aboard: a rocket only admits players, and Crew counts players, so the console reads an
      * empty crew and nobody can launch it. {@code (x, z)} is the pad's north-west corner.
      */
+    /**
+     * The launch demo: a 3x3 pad centred on {@code (x, z)} carrying a fuelled Tier 2 rocket marked as a gallery demo,
+     * with a label above. The rocket launches on use and returns to the pad (see {@code RocketEntity#demoLaunch}).
+     */
+    private static void buildLaunchDemo(ServerLevel level, BlockState floor, int x, int z, int fy) {
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                level.setBlockAndUpdate(new BlockPos(x + dx, fy, z + dz), floor);
+            }
+        }
+        fillPad(level, new BlockPos(x - 1, fy + 1, z - 1), 3,
+                ModBlocks.ROCKET_LAUNCH_PAD.get().defaultBlockState());
+        RocketEntity rocket = new RocketEntity(level,
+                x + 0.5D, fy + 1 + RocketLaunchPadBlock.SURFACE_HEIGHT, z + 0.5D, RocketTier.TIER_2);
+        rocket.addFuel(RocketTier.TIER_2.fuelCapacity());
+        rocket.addOxygen(RocketTier.TIER_2.oxygenCapacity());
+        rocket.markGalleryDemo();
+        level.addFreshEntity(rocket);
+        spawnLabelStand(level, new BlockPos(x, fy + 7, z),
+                Component.translatable("command.nerospace.gallery.label.launch_demo"));
+    }
+
+    /**
+     * A glass water tank (interior 11 x 3, three deep) holding Europa's Lantern Drifter and Vent Ray, frozen
+     * (NoAI) and floating mid-water, each with its name on a label above the tank.
+     */
+    private static void buildSeaTank(ServerLevel level, BlockState floor, int x, int z, int fy) {
+        int length = 11;
+        int width = 3;
+        int depth = 3;
+        for (int dx = -2; dx <= length + 1; dx++) {
+            for (int dz = -2; dz <= width + 1; dz++) {
+                level.setBlockAndUpdate(new BlockPos(x + dx, fy, z + dz), floor);
+            }
+        }
+        BlockState glass = Blocks.GLASS.defaultBlockState();
+        BlockState water = Blocks.WATER.defaultBlockState();
+        for (int dx = -1; dx <= length; dx++) {
+            for (int dz = -1; dz <= width; dz++) {
+                boolean rim = dx == -1 || dx == length || dz == -1 || dz == width;
+                for (int dy = 1; dy <= depth; dy++) {
+                    level.setBlockAndUpdate(new BlockPos(x + dx, fy + dy, z + dz), rim ? glass : water);
+                }
+            }
+        }
+        List<EntityType<? extends Mob>> sea = List.of(
+                za.co.neroland.nerospace.world.planet.europa.EuropaContent.LANTERN_DRIFTER.get(),
+                za.co.neroland.nerospace.world.planet.europa.EuropaContent.VENT_RAY.get());
+        for (int i = 0; i < sea.size(); i++) {
+            int cx = x + 2 + i * 6;
+            Mob mob = sea.get(i).spawn(level, new BlockPos(cx, fy + 2, z + 1), EntitySpawnReason.COMMAND);
+            if (mob != null) {
+                mob.setNoAi(true);
+                mob.setNoGravity(true);
+                mob.setPersistenceRequired();
+            }
+            spawnLabelStand(level, new BlockPos(cx, fy + depth + 2, z + 1), sea.get(i).getDescription());
+        }
+        spawnLabelStand(level, new BlockPos(x + length / 2, fy + depth + 3, z + 1),
+                Component.translatable("command.nerospace.gallery.label.sea_tank"));
+    }
+
     private static void buildCrewAndDock(ServerLevel level, BlockState floor, int x, int z, int fy) {
         for (int dx = -3; dx <= 13; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
@@ -849,7 +921,8 @@ public final class NerospaceCommands {
                 ModItems.SPEED_MODULE.get(), ModItems.EFFICIENCY_MODULE.get(), ModItems.FORTUNE_MODULE.get(),
                 ModItems.SILK_TOUCH_MODULE.get(), ModItems.EVAPORATOR_MODULE.get(), ModItems.STAR_GUIDE_BOOK.get(),
                 ModItems.STATION_CHARTER.get(), ModItems.METEOR_TRACKER.get(), ModItems.RAD_LINING.get(),
-                za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzContent.SPORE_BOMB.get());
+                za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzContent.SPORE_BOMB.get(),
+                za.co.neroland.nerospace.world.planet.europa.EuropaContent.BRINE_BUCKET.get());
         java.util.Set<Item> vehicles = java.util.Set.of(ModItems.ROCKET_TIER_1.get(), ModItems.ROCKET_TIER_2.get(),
                 ModItems.ROCKET_TIER_3.get(), ModItems.ROCKET_TIER_4.get(), ModItems.CARGO_ROCKET.get(),
                 ModItems.CARGO_CRATE.get(), za.co.neroland.nerospace.world.planet.mars.MarsContent.ROVER.get());

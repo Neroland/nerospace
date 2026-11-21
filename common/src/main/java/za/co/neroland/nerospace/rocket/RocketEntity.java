@@ -115,6 +115,14 @@ public class RocketEntity extends Entity implements MenuProvider {
      * already under way. A rocket saved before 2.4.0 has no value and finishes on the 24-block baseline.
      */
     private int ascentHeight = AscentMath.BASE_HEIGHT;
+    /**
+     * A {@code /nerospace gallery} launch demo (2.4.0): any player's use launches it with no crew, it climbs the
+     * configured ascent height with the ignition burst, then settles back on its pad, fuel untouched. It never
+     * leaves the dimension and never carries anyone. Saved, so a demo stays a demo across a reload.
+     */
+    private boolean galleryDemo;
+    @Nullable
+    private Vec3 galleryDemoPad;
 
     // --- Client-side presentation state (never saved or synced) ---------------
 
@@ -1298,7 +1306,44 @@ public class RocketEntity extends Entity implements MenuProvider {
      * because its flight is a server-side record that materialises a rocket on arrival.
      */
     protected void finishAscent() {
+        if (this.galleryDemo) {
+            returnToDemoPad();
+            return;
+        }
         completeLaunch();
+    }
+
+    /** Marks this rocket as a gallery launch demo (see {@link #galleryDemo}). Server-side, before it is added. */
+    public void markGalleryDemo() {
+        this.galleryDemo = true;
+    }
+
+    public boolean isGalleryDemo() {
+        return this.galleryDemo;
+    }
+
+    /**
+     * Launches a gallery demo rocket: no crew, no pad or fuel checks, no fee, no destination. Returns whether a
+     * climb started (false for a normal rocket, or one already climbing). Server-side.
+     */
+    public boolean demoLaunch() {
+        if (!this.galleryDemo || level().isClientSide() || isLaunching() || isDescending()) {
+            return false;
+        }
+        this.galleryDemoPad = position();
+        beginAscent();
+        return true;
+    }
+
+    /** The end of a demo climb: back on the pad it lifted from, idle and ready to launch again. */
+    private void returnToDemoPad() {
+        Vec3 pad = this.galleryDemoPad;
+        setLaunching(false);
+        this.launchTicks = 0;
+        this.setDeltaMovement(Vec3.ZERO);
+        if (pad != null) {
+            this.setPos(pad.x, pad.y, pad.z);
+        }
     }
 
     @Override
@@ -1960,6 +2005,13 @@ public class RocketEntity extends Entity implements MenuProvider {
         if (isLaunching() || isDescending()) {
             return InteractionResult.PASS;
         }
+        if (this.galleryDemo) {
+            // A gallery launch demo: a use launches it uncrewed; it opens no console and takes no rider.
+            if (!level().isClientSide()) {
+                demoLaunch();
+            }
+            return InteractionResult.SUCCESS;
+        }
 
         ItemStack held = player.getItemInHand(hand);
         if (held.is(ModItems.ROCKET_FUEL_BUCKET.get())) {
@@ -2126,6 +2178,12 @@ public class RocketEntity extends Entity implements MenuProvider {
         this.launchTicks = input.getIntOr("LaunchTicks", 0);
         // Optional since 2.4.0: a rocket saved mid-ascent by an older version finishes on the 24-block baseline.
         setAscentHeight(input.getIntOr("AscentHeight", AscentMath.BASE_HEIGHT));
+        // Optional since 2.4.0: absent on every ordinary rocket.
+        this.galleryDemo = input.getBooleanOr("GalleryDemo", false);
+        this.galleryDemoPad = this.galleryDemo && input.getBooleanOr("HasDemoPad", false)
+                ? new Vec3(input.getDoubleOr("DemoPadX", getX()), input.getDoubleOr("DemoPadY", getY()),
+                        input.getDoubleOr("DemoPadZ", getZ()))
+                : null;
         // 2.0 fields — all optional, so a 1.6.0 rocket loads as before ([COMPAT] 4).
         // A parked 1.6.0 rocket follows the 2.0 charter rule; only one already in flight is honoured once.
         // The field is absent exactly when the two defaults disagree.
@@ -2198,6 +2256,16 @@ public class RocketEntity extends Entity implements MenuProvider {
         output.putBoolean("Launching", isLaunching());
         output.putInt("LaunchTicks", this.launchTicks);
         output.putInt("AscentHeight", this.ascentHeight);
+        if (this.galleryDemo) {
+            output.putBoolean("GalleryDemo", true);
+            Vec3 demoPad = this.galleryDemoPad;
+            output.putBoolean("HasDemoPad", demoPad != null);
+            if (demoPad != null) {
+                output.putDouble("DemoPadX", demoPad.x);
+                output.putDouble("DemoPadY", demoPad.y);
+                output.putDouble("DemoPadZ", demoPad.z);
+            }
+        }
         output.putBoolean("CharterRule", true);
         output.putBoolean("Visitor", this.visitor);
         net.minecraft.resources.ResourceKey<Level> originDim = this.launchOriginDim;
