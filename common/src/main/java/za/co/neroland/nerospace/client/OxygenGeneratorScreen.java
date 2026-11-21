@@ -21,6 +21,8 @@ public class OxygenGeneratorScreen extends TexturedContainerScreen<OxygenGenerat
     private static final int OXYGEN = 0xFF54D46A; // gas-layer green
 
     private ScreenSideConfig sideConfig;
+    private final GaugeMath.RateWindow energyWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow oxygenWindow = new GaugeMath.RateWindow();
 
     public OxygenGeneratorScreen(OxygenGeneratorMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
@@ -46,12 +48,18 @@ public class OxygenGeneratorScreen extends TexturedContainerScreen<OxygenGenerat
         float energyFrac = maxEnergy == 0 ? 0f : (float) energy / maxEnergy;
         label(g, Component.translatable("gui.nerospace.oxygen_generator.power", pct), 8, 20, 0xFFCFE7FF);
         segGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
+        long stored = this.menu.energyStored();
+        this.energyWindow.sample(gameTick(), stored);
+        gaugeTooltip(8, 31, 160, 6, lines -> GaugeTooltips.energy(lines, stored, za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity.ENERGY_CAPACITY, this.energyWindow.perTick(), -1, -1));
 
         int oxygen = this.menu.getOxygen();
         int maxOxygen = this.menu.getMaxOxygen();
         float o2Frac = maxOxygen == 0 ? 0f : (float) oxygen / maxOxygen;
         label(g, Component.translatable("gui.nerospace.oxygen_generator.oxygen", oxygen, maxOxygen), 8, 46, 0xFFC8F0D2);
         fluidGauge(g, 8, 57, 160, 6, o2Frac, OXYGEN);
+        this.oxygenWindow.sample(gameTick(), oxygen);
+        gaugeTooltip(8, 57, 160, 6, lines -> GaugeTooltips.tank(lines, GaugeTooltips.tr("oxygen_tank"),
+                Component.translatable("gas.nerospace.oxygen"), oxygen, maxOxygen, this.oxygenWindow.perTick()));
     }
 
     //? if >=1.21.9 {

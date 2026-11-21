@@ -17,6 +17,7 @@ public class CombustionGeneratorScreen extends TexturedContainerScreen<Combustio
     private static final int ACCENT = 0xFFF0A83C; // amber (combustion)
 
     private ScreenSideConfig sideConfig;
+    private final GaugeMath.RateWindow energyWindow = new GaugeMath.RateWindow();
 
     public CombustionGeneratorScreen(CombustionGeneratorMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
@@ -42,6 +43,9 @@ public class CombustionGeneratorScreen extends TexturedContainerScreen<Combustio
         float frac = max == 0 ? 0f : (float) energy / max;
         label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 20, 0xFFFFE0B0);
         segGauge(g, 8, 31, 160, 6, frac, ACCENT);
+        long stored = this.menu.energyStored();
+        this.energyWindow.sample(gameTick(), stored);
+        gaugeTooltip(8, 31, 160, 6, lines -> GaugeTooltips.energy(lines, stored, za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity.CAPACITY, this.energyWindow.perTick(), -1, -1));
     }
 
     //? if >=1.21.9 {

@@ -122,6 +122,21 @@ public class FuelRefineryMenu extends AbstractContainerMenu {
         return this.data.get(3);
     }
 
+    /** Exact stored FE (synced as two 15-bit halves; ContainerData syncs shorts). */
+    public int energyStored() {
+        return (this.data.get(6) << 15) | (this.data.get(7) & 0x7FFF);
+    }
+
+    /** Refining progress in permille (0 when idle). */
+    public int progressPermille() {
+        return getScaledProgress(1000);
+    }
+
+    /** True while a batch is in progress. */
+    public boolean isRefining() {
+        return this.data.get(4) > 0;
+    }
+
     public int getScaledProgress(int pixels) {
         int max = this.data.get(5);
         int cur = this.data.get(4);

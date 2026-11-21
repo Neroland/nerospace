@@ -93,6 +93,11 @@ public class TerraformerMenu extends AbstractContainerMenu {
         return this.data.get(1);
     }
 
+    /** Exact stored FE (synced as two 15-bit halves; ContainerData syncs shorts). */
+    public int energyStored() {
+        return (this.data.get(10) << 15) | (this.data.get(11) & 0x7FFF);
+    }
+
     public int getTier() {
         return this.data.get(2);
     }

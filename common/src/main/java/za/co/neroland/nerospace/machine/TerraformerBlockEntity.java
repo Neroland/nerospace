@@ -55,7 +55,7 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
 
     public static final int UPGRADE_SLOT = 0;
     public static final int SIZE = 1;
-    public static final int DATA_COUNT = 10;
+    public static final int DATA_COUNT = 12;
 
     // --- Inlined Tuning/Config base values (config seam deferred) ---
     public static final int ENERGY_BUFFER = 100_000;
@@ -122,6 +122,8 @@ public class TerraformerBlockEntity extends BlockEntity implements WorldlyContai
                 case 7 -> lifeRadius;
                 case 8 -> hydrationStalled ? 1 : 0;
                 case 9 -> refusal.ordinal();
+                case 10 -> (energy.getRaw() >> 15) & 0x7FFF; // exact FE, high 15 bits
+                case 11 -> energy.getRaw() & 0x7FFF;         // exact FE, low 15 bits
                 default -> 0;
             };
         }

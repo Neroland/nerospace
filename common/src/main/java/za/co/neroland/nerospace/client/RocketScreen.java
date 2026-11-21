@@ -102,6 +102,9 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
     private SpaceButton padCycleButton;
     /** The "Dock at" / "Land at" list; {@link #pickerDock} says which one is open. */
     private final LandingPicker picker = new LandingPicker();
+    private final GaugeMath.RateWindow fuelWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow oxygenWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow powerWindow = new GaugeMath.RateWindow();
     private boolean pickerDock;
     /** Optimistic dock / pad picks ({@link DockSelection#encode} / {@link PadSelection#encode} values). */
     private final PendingSelection dockPending = new PendingSelection();
@@ -255,6 +258,25 @@ public class RocketScreen extends TexturedContainerScreen<RocketMenu> {
         int ppct = this.menu.getPowerPercent();
         label(g, Component.translatable("gui.nerospace.rocket.power_line", ppct), RX + 2, 66, 0xFFF6DC8A);
         segGauge(g, RX + 2, 75, GW, 6, ppct / 100f, POWER);
+        long tick = gameTick();
+        int fuel = this.menu.getFuel();
+        int oxygen = this.menu.getOxygen();
+        int power = this.menu.getPower();
+        this.fuelWindow.sample(tick, fuel);
+        this.oxygenWindow.sample(tick, oxygen);
+        this.powerWindow.sample(tick, power);
+        gaugeTooltip(RX + 2, 31, GW, 6, lines -> {
+            GaugeTooltips.tank(lines, GaugeTooltips.tr("rocket_fuel"), Component.translatable("block.nerospace.rocket_fuel"),
+                    fuel, this.menu.getCapacity(), this.fuelWindow.perTick());
+            if (this.menu.getFuelCost() > 0) {
+                lines.add(GaugeTooltips.tr("trip_cost", GaugeMath.grouped(this.menu.getFuelCost())));
+            }
+        });
+        gaugeTooltip(RX + 2, 53, GW, 6, lines -> GaugeTooltips.tank(lines, GaugeTooltips.tr("rocket_oxygen"),
+                Component.translatable("gas.nerospace.oxygen"), oxygen, this.menu.getOxygenCapacity(),
+                this.oxygenWindow.perTick()));
+        gaugeTooltip(RX + 2, 75, GW, 6, lines -> GaugeTooltips.energy(lines, GaugeTooltips.tr("rocket_power"), power,
+                this.menu.getPowerCapacity(), this.powerWindow.perTick(), -1, -1));
 
         boolean padValid = this.menu.isPadValid();
         boolean ready = this.menu.isLaunchable();

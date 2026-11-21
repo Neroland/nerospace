@@ -44,6 +44,8 @@ public class CargoPadScreen extends TexturedContainerScreen<CargoPadMenu> {
     private SpaceButton returnButton;
     private SpaceButton publicButton;
     private SpaceButton launchButton;
+    private final GaugeMath.RateWindow bufferWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow rocketFuelWindow = new GaugeMath.RateWindow();
 
     public CargoPadScreen(CargoPadMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, W, H);
@@ -145,9 +147,25 @@ public class CargoPadScreen extends TexturedContainerScreen<CargoPadMenu> {
         // --- Fuel row --------------------------------------------------------------------
         label(g, Component.translatable("gui.nerospace.cargo_pad.buffer"), 8, ROW_FUEL, 0xFFFFC9B0);
         hGauge(g, 44, ROW_FUEL, 40, 6, this.menu.fuelFrac(), FUEL);
+        long tick = gameTick();
+        int buffer = this.menu.fuel();
+        this.bufferWindow.sample(tick, buffer);
+        gaugeTooltip(44, ROW_FUEL, 40, 6, lines -> GaugeTooltips.tank(lines, GaugeTooltips.tr("pad_fuel"),
+                Component.translatable("block.nerospace.rocket_fuel"), buffer, this.menu.fuelCapacity(),
+                this.bufferWindow.perTick()));
         if (this.menu.rocketPresent()) {
             label(g, Component.translatable("gui.nerospace.cargo_pad.rocket"), 90, ROW_FUEL, 0xFFFFC9B0);
             hGauge(g, 128, ROW_FUEL, W - 136, 6, this.menu.rocketFuelFrac(), FUEL);
+            int rocketFuel = this.menu.rocketFuel();
+            this.rocketFuelWindow.sample(tick, rocketFuel);
+            gaugeTooltip(128, ROW_FUEL, W - 136, 6, lines -> {
+                GaugeTooltips.tank(lines, GaugeTooltips.tr("rocket_fuel"),
+                        Component.translatable("block.nerospace.rocket_fuel"), rocketFuel,
+                        this.menu.rocketFuelCapacity(), this.rocketFuelWindow.perTick());
+                if (this.menu.destinationIndex() >= 0 && this.menu.quoteFuel() > 0) {
+                    lines.add(GaugeTooltips.tr("trip_cost", GaugeMath.grouped(this.menu.quoteFuel())));
+                }
+            });
         } else {
             label(g, Component.translatable("gui.nerospace.cargo_pad.no_rocket"), 90, ROW_FUEL, SUBTLE);
         }

@@ -17,6 +17,8 @@ public class NerosiumGrinderScreen extends TexturedContainerScreen<NerosiumGrind
     private static final int ACCENT = 0xFFD23A8C; // nerosium magenta
 
     private ScreenSideConfig sideConfig;
+    private final GaugeMath.RateWindow energyWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow progressWindow = new GaugeMath.RateWindow(300);
 
     public NerosiumGrinderScreen(NerosiumGrinderMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
@@ -57,10 +59,17 @@ public class NerosiumGrinderScreen extends TexturedContainerScreen<NerosiumGrind
         float frac = max == 0 ? 0f : (float) energy / max;
         label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 18, 0xFFE9C2DC);
         segGauge(g, 8, 28, 160, 4, frac, ACCENT);
+        this.energyWindow.sample(gameTick(), energy);
+        gaugeTooltip(8, 28, 160, 4, lines -> GaugeTooltips.energy(lines, energy, max, this.energyWindow.perTick(), -1, -1));
 
         int maxProg = this.menu.maxProgress();
         float pf = maxProg == 0 ? 0f : (float) this.menu.progress() / maxProg;
         hGauge(g, 78, 40, 22, 6, pf, 0xFF9CF06A);
+        int permille = Math.round(pf * 1000F);
+        boolean working = this.menu.progress() > 0;
+        this.progressWindow.sample(gameTick(), permille);
+        gaugeTooltip(78, 40, 22, 6, lines -> GaugeTooltips.progress(lines, working, permille,
+                this.progressWindow.perTick(), null, 0));
     }
 
     //? if >=1.21.9 {

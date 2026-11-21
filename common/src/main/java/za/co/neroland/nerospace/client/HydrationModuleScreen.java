@@ -18,6 +18,8 @@ public class HydrationModuleScreen extends TexturedContainerScreen<HydrationModu
             Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/hydration_module.png");
     private static final int ACCENT = 0xFF78D2F0;     // glacite cyan (water stage)
 
+    private final GaugeMath.RateWindow hydrationWindow = new GaugeMath.RateWindow();
+
     public HydrationModuleScreen(HydrationModuleMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
@@ -35,6 +37,13 @@ public class HydrationModuleScreen extends TexturedContainerScreen<HydrationModu
         fluidGauge(g, 8, 31, 160, 6, frac, ACCENT);
 
         boolean linked = this.menu.isLinked();
+        this.hydrationWindow.sample(gameTick(), hydration);
+        gaugeTooltip(8, 31, 160, 6, lines -> {
+            GaugeTooltips.level(lines, GaugeTooltips.tr("hydration"), hydration, cap, this.hydrationWindow.perSecond());
+            if (!linked) {
+                lines.add(Component.translatable("gui.nerospace.hydration_module.no_link"));
+            }
+        });
         label(g, Component.translatable(linked
                 ? "gui.nerospace.hydration_module.linked"
                 : "gui.nerospace.hydration_module.no_link"), 8, 48, linked ? 0xFF9CF0C0 : 0xFFFF6A5E);

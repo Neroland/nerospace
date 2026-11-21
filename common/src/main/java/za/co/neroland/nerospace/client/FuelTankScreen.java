@@ -20,6 +20,7 @@ public class FuelTankScreen extends TexturedContainerScreen<FuelTankMenu> {
     private static final int ACCENT = 0xFFF0A030;     // fuel orange
 
     private ScreenSideConfig sideConfig;
+    private final GaugeMath.RateWindow fuelWindow = new GaugeMath.RateWindow();
 
     public FuelTankScreen(FuelTankMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
@@ -44,6 +45,11 @@ public class FuelTankScreen extends TexturedContainerScreen<FuelTankMenu> {
 
         label(g, Component.translatable("gui.nerospace.fuel_tank.fuel", pct), 8, 20, 0xFFFFD9A0);
         fluidGauge(g, 8, 31, 160, 12, frac, ACCENT);
+        int fuel = this.menu.getFuel();
+        int capacity = this.menu.getCapacity();
+        this.fuelWindow.sample(gameTick(), fuel);
+        gaugeTooltip(8, 31, 160, 12, lines -> GaugeTooltips.tank(lines, GaugeTooltips.tr("fuel_tank"),
+                Component.translatable("block.nerospace.rocket_fuel"), fuel, capacity, this.fuelWindow.perTick()));
         label(g, Component.literal(this.menu.getFuel() + " / " + this.menu.getCapacity() + " mB"), 8, 50, 0xFFB9C6D4);
     }
 

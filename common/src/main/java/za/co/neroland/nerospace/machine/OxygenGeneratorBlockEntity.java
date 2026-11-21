@@ -93,7 +93,8 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
         return this.sideConfig;
     }
 
-    /** Synced gauge values for the screen: [0]=energy, [1]=energy cap, [2]=oxygen mB, [3]=oxygen cap. */
+    /** Synced gauge values for the screen: [0]=energy, [1]=energy cap, [2]=oxygen mB, [3]=oxygen cap,
+     * [4..5]=exact FE as two 15-bit halves. */
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
@@ -102,6 +103,8 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
                 case 1 -> 1000;
                 case 2 -> gas.getRawAmount();
                 case 3 -> GAS_CAPACITY;
+                case 4 -> (energy.getRaw() >> 15) & 0x7FFF; // exact FE, high 15 bits
+                case 5 -> energy.getRaw() & 0x7FFF;         // exact FE, low 15 bits
                 default -> 0;
             };
         }
@@ -113,7 +116,7 @@ public class OxygenGeneratorBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public int getCount() {
-            return 4;
+            return 6;
         }
     };
 

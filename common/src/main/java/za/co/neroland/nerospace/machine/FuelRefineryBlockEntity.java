@@ -76,7 +76,7 @@ public class FuelRefineryBlockEntity extends BlockEntity
     /** Luna: Titanium Ingot output. */
     public static final int TITANIUM_SLOT = 4;
     public static final int SIZE = 5;
-    public static final int DATA_COUNT = 6;
+    public static final int DATA_COUNT = 8;
 
     /** Inlined Tuning base values. */
     public static final int ENERGY_BUFFER = 40_000;
@@ -154,6 +154,8 @@ public class FuelRefineryBlockEntity extends BlockEntity
                 case 3 -> (int) tank.getCapacity();
                 case 4 -> progress;
                 case 5 -> NerospaceConfig.scaleInterval(WORK_TICKS, NerospaceConfig.machineSpeedMultiplier());
+                case 6 -> (energy.getRaw() >> 15) & 0x7FFF; // exact FE, high 15 bits
+                case 7 -> energy.getRaw() & 0x7FFF;         // exact FE, low 15 bits
                 default -> 0;
             };
         }

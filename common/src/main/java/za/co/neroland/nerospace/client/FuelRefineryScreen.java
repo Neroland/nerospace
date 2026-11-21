@@ -21,6 +21,9 @@ public class FuelRefineryScreen extends TexturedContainerScreen<FuelRefineryMenu
     private static final int FLAME = 0xFFF0703C;      // refining heat
 
     private ScreenSideConfig sideConfig;
+    private final GaugeMath.RateWindow energyWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow progressWindow = new GaugeMath.RateWindow(300);
+    private final GaugeMath.RateWindow fuelWindow = new GaugeMath.RateWindow();
 
     public FuelRefineryScreen(FuelRefineryMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
@@ -47,13 +50,25 @@ public class FuelRefineryScreen extends TexturedContainerScreen<FuelRefineryMenu
 
         label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 20, 0xFFFFE0B0);
         segGauge(g, 8, 31, 160, 6, frac, ACCENT);
+        long stored = this.menu.energyStored();
+        this.energyWindow.sample(gameTick(), stored);
+        gaugeTooltip(8, 31, 160, 6, lines -> GaugeTooltips.energy(lines, stored, za.co.neroland.nerospace.machine.FuelRefineryBlockEntity.ENERGY_BUFFER, this.energyWindow.perTick(), -1, -1));
 
         // Refining-progress arrow between the two input slots.
         hGauge(g, 78, 40, 22, 4, this.menu.getScaledProgress(1000) / 1000f, FLAME);
+        int permille = this.menu.progressPermille();
+        boolean working = this.menu.isRefining();
+        this.progressWindow.sample(gameTick(), permille);
+        gaugeTooltip(78, 40, 22, 4, lines -> GaugeTooltips.progress(lines, working, permille,
+                this.progressWindow.perTick(), null, 0));
 
         int cap = this.menu.getFuelCapacity();
         float fuelFrac = cap == 0 ? 0f : (float) this.menu.getFuel() / cap;
         fluidGauge(g, 8, 56, 160, 10, fuelFrac, ACCENT);
+        int fuel = this.menu.getFuel();
+        this.fuelWindow.sample(gameTick(), fuel);
+        gaugeTooltip(8, 56, 160, 10, lines -> GaugeTooltips.tank(lines, GaugeTooltips.tr("fuel_tank"),
+                Component.translatable("block.nerospace.rocket_fuel"), fuel, cap, this.fuelWindow.perTick()));
         label(g, Component.literal(this.menu.getFuel() + " / " + cap + " mB"), 8, 68, 0xFFB9C6D4);
     }
 

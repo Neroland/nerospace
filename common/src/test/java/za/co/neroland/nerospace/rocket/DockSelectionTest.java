@@ -214,7 +214,7 @@ class DockSelectionTest {
         // 2.1 Stage 2: the cached dock value is the station slot or a free-dock value (DockSelection.isFree).
         assertTrue(refresh.contains("this.rocketStation = rocket.getDockValue();"));
         assertTrue(refresh.contains("this.rocketPad = rocket.getPadIndex();"));
-        assertEquals(27, LaunchControllerBlockEntity.DATA_COUNT); // 2.1 Stage 3: [24..26] crew
+        assertEquals(30, LaunchControllerBlockEntity.DATA_COUNT); // 2.1 Stage 3: [24..26] crew; [27..29] exact rocket levels
         assertEquals(22, LaunchControllerBlockEntity.DATA_STATION);
         assertEquals(23, LaunchControllerBlockEntity.DATA_PAD);
     }

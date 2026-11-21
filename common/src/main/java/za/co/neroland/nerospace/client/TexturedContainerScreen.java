@@ -1,5 +1,10 @@
 package za.co.neroland.nerospace.client;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -27,6 +32,10 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
     private final Identifier background;
     /** Machine accent colour (ARGB). */
     protected final int accent;
+    /** The hovered gauge's tooltip lines for this frame (filled by {@link #gaugeTooltip}). */
+    private final List<Component> gaugeLines = new ArrayList<>();
+    private int gaugeMouseX = Integer.MIN_VALUE;
+    private int gaugeMouseY = Integer.MIN_VALUE;
 
     protected TexturedContainerScreen(T menu, Inventory playerInventory, Component title, Identifier background,
                                       int accent, int width, int height) {
@@ -46,7 +55,9 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
     public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
         drawPanel(extractor);
         super.extractContents(extractor, mouseX, mouseY, partialTick);
+        beginGauges(mouseX, mouseY);
         extractForeground(extractor);
+        emitGaugeTooltip(extractor);
     }
     //?} else {
     /*// Before 26.1: the panel is the container background (renderBg) and render() does not draw the hovered-slot
@@ -60,7 +71,9 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
 
     public void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
         super.render(extractor, mouseX, mouseY, partialTick);
+        beginGauges(mouseX, mouseY);
         extractForeground(extractor);
+        emitGaugeTooltip(extractor);
     }
 
     @Override
@@ -81,6 +94,46 @@ public abstract class TexturedContainerScreen<T extends AbstractContainerMenu> e
 
     /** Subclass hook: draw gauges + readouts on top of the panel (absolute coords via leftPos/topPos). */
     protected void extractForeground(GuiGraphicsExtractor extractor) {
+    }
+
+    // --- Gauge hover tooltips ----------------------------------------------
+
+    private void beginGauges(int mouseX, int mouseY) {
+        this.gaugeMouseX = mouseX;
+        this.gaugeMouseY = mouseY;
+        this.gaugeLines.clear();
+    }
+
+    private void emitGaugeTooltip(GuiGraphicsExtractor extractor) {
+        if (!this.gaugeLines.isEmpty()) {
+            GaugeTooltips.show(extractor, this.font,
+                    GaugeTooltips.wrap(this.font, this.gaugeLines, GaugeTooltips.wrapWidth(this.width)),
+                    this.gaugeMouseX, this.gaugeMouseY);
+            this.gaugeLines.clear();
+        }
+    }
+
+    /** True when the mouse is over the panel-relative gauge rect (its 1px border included). */
+    protected final boolean gaugeHovered(int dx, int dy, int w, int h) {
+        int mx = this.gaugeMouseX - this.leftPos;
+        int my = this.gaugeMouseY - this.topPos;
+        return mx >= dx - 1 && mx < dx + w + 1 && my >= dy - 1 && my < dy + h + 1;
+    }
+
+    /**
+     * Registers a hover tooltip for a gauge drawn this frame at a panel-relative rect; {@code builder}
+     * runs only when the mouse is over it (first hovered gauge wins). Call from {@link #extractForeground}.
+     */
+    protected final void gaugeTooltip(int dx, int dy, int w, int h, Consumer<List<Component>> builder) {
+        if (this.gaugeLines.isEmpty() && gaugeHovered(dx, dy, w, h)) {
+            builder.accept(this.gaugeLines);
+        }
+    }
+
+    /** The client game tick for gauge rate windows (0 without a level). */
+    protected final long gameTick() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.level == null ? 0L : mc.level.getGameTime();
     }
 
     @Override

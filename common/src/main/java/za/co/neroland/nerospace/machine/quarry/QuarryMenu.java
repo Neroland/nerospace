@@ -123,6 +123,11 @@ public class QuarryMenu extends AbstractContainerMenu {
         return this.data.get(1);
     }
 
+    /** Exact stored FE (synced as two 15-bit halves; ContainerData syncs shorts). */
+    public int energyStored() {
+        return (this.data.get(8) << 15) | (this.data.get(9) & 0x7FFF);
+    }
+
     public QuarryControllerBlockEntity.State getState() {
         return QuarryControllerBlockEntity.State.values()[
                 Math.floorMod(this.data.get(2), QuarryControllerBlockEntity.State.values().length)];

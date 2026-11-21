@@ -261,6 +261,33 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
         return frac(10, 11);
     }
 
+    /** Hub fuel (mB). */
+    public int hubFuel() {
+        return this.data.get(6);
+    }
+
+    public int hubFuelCapacity() {
+        return this.data.get(7);
+    }
+
+    /** Hub oxygen (mB). */
+    public int hubOxygen() {
+        return this.data.get(8);
+    }
+
+    public int hubOxygenCapacity() {
+        return this.data.get(9);
+    }
+
+    /** Hub power (FE). */
+    public int hubPower() {
+        return this.data.get(10);
+    }
+
+    public int hubPowerCapacity() {
+        return this.data.get(11);
+    }
+
     private float frac(int amount, int cap) {
         int c = this.data.get(cap);
         return c <= 0 ? 0f : Math.min(1f, this.data.get(amount) / (float) c);
@@ -290,6 +317,26 @@ public class LaunchControllerMenu extends AbstractContainerMenu {
 
     public float rocketPowerFrac() {
         return this.data.get(17) / 100f;
+    }
+
+    /** The docked rocket's exact fuel (mB). */
+    public int rocketFuel() {
+        return this.data.get(LaunchControllerBlockEntity.DATA_ROCKET_FUEL);
+    }
+
+    /** The docked rocket's exact oxygen (mB). */
+    public int rocketOxygen() {
+        return this.data.get(LaunchControllerBlockEntity.DATA_ROCKET_OXYGEN);
+    }
+
+    /** The docked rocket's exact power (FE). */
+    public int rocketPower() {
+        return this.data.get(LaunchControllerBlockEntity.DATA_ROCKET_POWER);
+    }
+
+    /** The docked rocket's tier (for its tank capacities). */
+    public za.co.neroland.nerospace.rocket.RocketTier rocketTierEnum() {
+        return za.co.neroland.nerospace.rocket.RocketTier.byOrdinal(this.data.get(14));
     }
 
     public boolean rocketLaunchable() {

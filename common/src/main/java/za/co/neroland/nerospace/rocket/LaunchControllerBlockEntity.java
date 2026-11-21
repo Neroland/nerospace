@@ -78,7 +78,7 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
      * Synced data slots (0..23): [22] the docked rocket's {@code StationSlot}, [23] its pad index (append-only). The
      * menu sizes its client-side mirror from this — keep them in lockstep.
      */
-    public static final int DATA_COUNT = 27;
+    public static final int DATA_COUNT = 30;
     /** Data index of the docked rocket's docking slot ({@link DockSelection}). */
     public static final int DATA_STATION = 22;
     /** Data index of the docked rocket's landing-pad index ({@link PadSelection}). */
@@ -89,6 +89,10 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     public static final int DATA_OXYGEN_FOR = 25;
     /** 2.1: data index of the server's seats per rocket ({@code rockets.maxCrew}). */
     public static final int DATA_MAX_CREW = 26;
+    /** Data indices of the docked rocket's exact fuel (mB), oxygen (mB) and power (FE); tier caps fit a short. */
+    public static final int DATA_ROCKET_FUEL = 27;
+    public static final int DATA_ROCKET_OXYGEN = 28;
+    public static final int DATA_ROCKET_POWER = 29;
     private boolean hologram;
     private int mode; // 0 = pad build, 1 = launch
     private final SimpleContainer inputs = new SimpleContainer(SLOTS);
@@ -99,6 +103,9 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
     private int rocketFuelPct;
     private int rocketO2Pct;
     private int rocketPowerPct;
+    private int rocketFuel;
+    private int rocketOxygen;
+    private int rocketPower;
     private int rocketDest;
     private int rocketStation = DockSelection.ORIGIN;
     private int rocketPad = PadSelection.AUTO;
@@ -148,6 +155,9 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
                 case DATA_CREW -> rocketCrew;
                 case DATA_OXYGEN_FOR -> rocketOxygenFor;
                 case DATA_MAX_CREW -> Crew.maxCrew();
+                case DATA_ROCKET_FUEL -> rocketFuel;
+                case DATA_ROCKET_OXYGEN -> rocketOxygen;
+                case DATA_ROCKET_POWER -> rocketPower;
                 default -> 0;
             };
         }
@@ -324,6 +334,9 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
             this.rocketFuelPct = rocket.getFuelPercent();
             this.rocketO2Pct = rocket.getOxygenPercent();
             this.rocketPowerPct = rocket.getPowerPercent();
+            this.rocketFuel = Math.min(Short.MAX_VALUE, rocket.getFuel());
+            this.rocketOxygen = Math.min(Short.MAX_VALUE, rocket.getOxygen());
+            this.rocketPower = Math.min(Short.MAX_VALUE, rocket.getPower());
             this.rocketDest = rocket.getDestinationIndex();
             this.rocketMask = rocket.destinationMask();
             this.rocketLaunchable = rocket.isLaunchReady();
@@ -332,6 +345,9 @@ public class LaunchControllerBlockEntity extends BlockEntity implements MenuProv
             this.rocketCrew = Crew.count(rocket);
             this.rocketOxygenFor = rocket.oxygenForSeats();
         } else {
+            this.rocketFuel = 0;
+            this.rocketOxygen = 0;
+            this.rocketPower = 0;
             this.rocketCrew = 0;
             this.rocketOxygenFor = 0;
             this.rocketLaunchable = false;

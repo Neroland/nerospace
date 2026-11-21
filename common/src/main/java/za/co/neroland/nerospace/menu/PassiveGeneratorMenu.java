@@ -21,7 +21,7 @@ public class PassiveGeneratorMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public PassiveGeneratorMenu(int id, Inventory playerInventory) {
-        this(id, playerInventory, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(4));
+        this(id, playerInventory, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(6));
     }
 
     public PassiveGeneratorMenu(int id, Inventory playerInventory, Container container, ContainerData data) {
@@ -53,6 +53,11 @@ public class PassiveGeneratorMenu extends AbstractContainerMenu {
 
     public int capacity() {
         return this.data.get(1);
+    }
+
+    /** Exact stored FE (synced as two 15-bit halves; ContainerData syncs shorts). */
+    public int energyStored() {
+        return (this.data.get(4) << 15) | (this.data.get(5) & 0x7FFF);
     }
 
     @Override

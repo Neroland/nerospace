@@ -18,6 +18,8 @@ public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> 
             Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "textures/gui/terraformer.png");
     private static final int ACCENT = 0xFF54D46A;     // green (terraform)
 
+    private final GaugeMath.RateWindow energyWindow = new GaugeMath.RateWindow();
+
     public TerraformerScreen(TerraformerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
         this.titleLabelX = 10;
@@ -33,6 +35,9 @@ public class TerraformerScreen extends TexturedContainerScreen<TerraformerMenu> 
 
         label(g, Component.translatable("gui.nerospace.terraformer.power", pct), 8, 20, 0xFFCFE7FF);
         segGauge(g, 8, 31, 160, 6, energyFrac, ACCENT);
+        long stored = this.menu.energyStored();
+        this.energyWindow.sample(gameTick(), stored);
+        gaugeTooltip(8, 31, 160, 6, lines -> GaugeTooltips.energy(lines, stored, za.co.neroland.nerospace.machine.TerraformerBlockEntity.ENERGY_BUFFER, this.energyWindow.perTick(), -1, -1));
 
         label(g, Component.translatable("gui.nerospace.terraformer.tier", this.menu.getTier()), 8, 48, ACCENT);
         za.co.neroland.nerospace.world.planet.TerraformRefusal refusal = this.menu.getRefusal();

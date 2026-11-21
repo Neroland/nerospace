@@ -78,7 +78,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     public static final int FRAME_SLOT = 0;
     private static final int OUTPUT_START = FRAME_SLOTS;
     public static final int ENERGY_MAX_INSERT = 10_000;
-    public static final int DATA_COUNT = 8;
+    public static final int DATA_COUNT = 10;
     private static final int SCAN_BUDGET_PER_TICK = 4096;
     /**
      * Max liquid source blocks cleared in one {@code mine()} call. Liquid cells cost no energy and do
@@ -88,7 +88,7 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
     private static final int LIQUID_PER_CALL = 64;
 
     // Inlined Tuning base values.
-    private static final int ENERGY_BUFFER = 200_000;
+    public static final int ENERGY_BUFFER = 200_000;
     private static final int FLUID_CAPACITY = 16_000;
     private static final int ENERGY_PER_BLOCK = 40;
     private static final int MINE_INTERVAL = 10;
@@ -157,6 +157,8 @@ public class QuarryControllerBlockEntity extends BlockEntity implements WorldlyC
                     yield rg == null ? 0 : rg.refY();
                 }
                 case 7 -> pauseReasonCode();
+                case 8 -> (energy.getRaw() >> 15) & 0x7FFF; // exact FE, high 15 bits
+                case 9 -> energy.getRaw() & 0x7FFF;         // exact FE, low 15 bits
                 default -> 0;
             };
         }

@@ -86,6 +86,8 @@ public class PassiveGeneratorBlockEntity extends BlockEntity
                 case 1 -> 1000;
                 case 2 -> coreTicks;
                 case 3 -> CORE_TICKS;
+                case 4 -> (energy.getRaw() >> 15) & 0x7FFF; // exact FE, high 15 bits
+                case 5 -> energy.getRaw() & 0x7FFF;         // exact FE, low 15 bits
                 default -> 0;
             };
         }
@@ -99,7 +101,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity
 
         @Override
         public int getCount() {
-            return 4;
+            return 6;
         }
     };
 

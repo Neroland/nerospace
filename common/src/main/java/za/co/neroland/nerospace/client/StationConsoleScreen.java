@@ -583,9 +583,25 @@ public class StationConsoleScreen extends TexturedContainerScreen<StationConsole
                 SUBTLE);
         label(g, tr("power"), 114, 64, POWER);
         segGauge(g, 114, 73, 116, 6, this.menu.get(StationConsoleMenu.D_POWER_PCT) / 100.0F, POWER);
+        int powerPct = this.menu.get(StationConsoleMenu.D_POWER_PCT);
+        int powerFe = s.powerFe();
+        int wings = s.solarWings();
+        gaugeTooltip(114, 73, 116, 6, lines -> {
+            lines.add(GaugeTooltips.tr("station_power"));
+            lines.add(GaugeTooltips.tr("station_power.rate", GaugeMath.grouped(powerFe)));
+            lines.add(GaugeTooltips.tr("station_power.peak", powerPct));
+            lines.add(GaugeTooltips.tr("station_power.wings", wings));
+        });
         fitLabel(g, tr("power_value", s.powerFe()), 114, 82, 116, POWER);
         label(g, tr("oxygen"), 114, 94, O2);
         hGauge(g, 114, 103, 116, 6, this.menu.get(StationConsoleMenu.D_OXYGEN_PCT) / 100.0F, O2);
+        int sealed = s.sealed();
+        int airtight = s.airtight();
+        gaugeTooltip(114, 103, 116, 6, lines -> {
+            lines.add(GaugeTooltips.tr("station_oxygen"));
+            lines.add(GaugeTooltips.tr("station_oxygen.amount", GaugeMath.grouped(sealed), GaugeMath.grouped(airtight),
+                    GaugeMath.percent(sealed, airtight)));
+        });
         fitLabel(g, tr("pressurised", s.sealed(), s.airtight()), 114, 112, 116, O2);
         glyph(g, Glyphs.Glyph.MEMBER, 114, 124, VALUE);
         fitLabel(g, tr("members_count", this.menu.get(StationConsoleMenu.D_MEMBER_COUNT), StationAccess.MAX_MEMBERS),

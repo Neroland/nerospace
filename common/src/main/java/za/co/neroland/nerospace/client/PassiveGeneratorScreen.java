@@ -17,6 +17,7 @@ public class PassiveGeneratorScreen extends TexturedContainerScreen<PassiveGener
     private static final int ACCENT = 0xFFB327A0; // nerosium magenta
 
     private ScreenSideConfig sideConfig;
+    private final GaugeMath.RateWindow energyWindow = new GaugeMath.RateWindow();
 
     public PassiveGeneratorScreen(PassiveGeneratorMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 166);
@@ -42,6 +43,9 @@ public class PassiveGeneratorScreen extends TexturedContainerScreen<PassiveGener
         float frac = max == 0 ? 0f : (float) energy / max;
         label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 20, 0xFFF0CFEA);
         segGauge(g, 8, 31, 160, 6, frac, ACCENT);
+        long stored = this.menu.energyStored();
+        this.energyWindow.sample(gameTick(), stored);
+        gaugeTooltip(8, 31, 160, 6, lines -> GaugeTooltips.energy(lines, stored, za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity.CAPACITY, this.energyWindow.perTick(), -1, -1));
     }
 
     //? if >=1.21.9 {

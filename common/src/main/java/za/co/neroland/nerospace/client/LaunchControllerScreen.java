@@ -74,6 +74,12 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
     private SpaceButton landingButton;
     private SpaceButton landingCycleButton;
     private final LandingPicker picker = new LandingPicker();
+    /** Rate windows for the hub fuel / oxygen / power rows and the docked rocket's three gauges. */
+    private final GaugeMath.RateWindow[] hubWindows = {
+            new GaugeMath.RateWindow(), new GaugeMath.RateWindow(), new GaugeMath.RateWindow() };
+    private final GaugeMath.RateWindow rocketFuelWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow rocketOxygenWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow rocketPowerWindow = new GaugeMath.RateWindow();
     private boolean pickerDock;
     /** Optimistic dock / pad picks ({@link DockSelection#encode} / {@link PadSelection#encode} values). */
     private final PendingSelection dockPending = new PendingSelection();
@@ -249,6 +255,26 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         hubRow(g, 0, Glyphs.Glyph.FUEL, this.menu.fuelFrac(), FUEL);
         hubRow(g, 1, Glyphs.Glyph.O2, this.menu.oxygenFrac(), O2);
         hubRow(g, 2, Glyphs.Glyph.POWER, this.menu.powerFrac(), POWER);
+        long tick = gameTick();
+        this.hubWindows[0].sample(tick, this.menu.hubFuel());
+        this.hubWindows[1].sample(tick, this.menu.hubOxygen());
+        this.hubWindows[2].sample(tick, this.menu.hubPower());
+    }
+
+    /** Gauge tooltip for hub row {@code k} (0 fuel, 1 oxygen, 2 power). */
+    private List<Component> hubTooltip(int k) {
+        List<Component> lines = new ArrayList<>();
+        if (k == 0) {
+            GaugeTooltips.tank(lines, GaugeTooltips.tr("hub_fuel"), Component.translatable("block.nerospace.rocket_fuel"),
+                    this.menu.hubFuel(), this.menu.hubFuelCapacity(), this.hubWindows[0].perTick());
+        } else if (k == 1) {
+            GaugeTooltips.tank(lines, GaugeTooltips.tr("hub_oxygen"), Component.translatable("gas.nerospace.oxygen"),
+                    this.menu.hubOxygen(), this.menu.hubOxygenCapacity(), this.hubWindows[1].perTick());
+        } else {
+            GaugeTooltips.energy(lines, GaugeTooltips.tr("hub_power"), this.menu.hubPower(), this.menu.hubPowerCapacity(),
+                    this.hubWindows[2].perTick(), -1, -1);
+        }
+        return lines;
     }
 
     private void hubRow(GuiGraphicsExtractor g, int k, Glyphs.Glyph glyph, float frac, int colour) {
@@ -287,14 +313,17 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
         if (mx >= 8 && mx < 168 && my >= 64 && my < 73) {
             tip = neededText();
         }
-        String[] hub = { "fuel", "oxygen", "power" };
+        List<Component> hubLines = null;
         for (int k = 0; k < 3; k++) {
             int y = 86 + 10 * k;
             if (mx >= 8 && mx < 168 && my >= y && my < y + 9) {
-                tip = Component.translatable("gui.nerospace.launch_controller.hub." + hub[k]);
+                hubLines = hubTooltip(k);
             }
         }
-        if (tip != null) {
+        if (hubLines != null) {
+            GaugeTooltips.show(g, this.font, GaugeTooltips.wrap(this.font, hubLines, GaugeTooltips.wrapWidth(this.width)),
+                    mouseX, mouseY);
+        } else if (tip != null) {
             g.setTooltipForNextFrame(this.font.split(tip, 200), mouseX, mouseY);
         }
     }
@@ -324,6 +353,22 @@ public class LaunchControllerScreen extends TexturedContainerScreen<LaunchContro
                 crewAboard >= 2 && this.menu.rocketOxygenFor() < crewAboard ? 0xFFF0A83C : 0xFFBFEFFF);
         label(g, Component.translatable("gui.nerospace.rocket.power_label"), 10, 63, 0xFFF6DC8A);
         hGauge(g, 10, 72, 156, 5, this.menu.rocketPowerFrac(), POWER);
+        za.co.neroland.nerospace.rocket.RocketTier tier = this.menu.rocketTierEnum();
+        long tick = gameTick();
+        int fuel = this.menu.rocketFuel();
+        int oxygen = this.menu.rocketOxygen();
+        int power = this.menu.rocketPower();
+        this.rocketFuelWindow.sample(tick, fuel);
+        this.rocketOxygenWindow.sample(tick, oxygen);
+        this.rocketPowerWindow.sample(tick, power);
+        gaugeTooltip(10, 40, 156, 5, lines -> GaugeTooltips.tank(lines, GaugeTooltips.tr("rocket_fuel"),
+                Component.translatable("block.nerospace.rocket_fuel"), fuel, tier.fuelCapacity(),
+                this.rocketFuelWindow.perTick()));
+        gaugeTooltip(10, 56, 156, 5, lines -> GaugeTooltips.tank(lines, GaugeTooltips.tr("rocket_oxygen"),
+                Component.translatable("gas.nerospace.oxygen"), oxygen, tier.oxygenCapacity(),
+                this.rocketOxygenWindow.perTick()));
+        gaugeTooltip(10, 72, 156, 5, lines -> GaugeTooltips.energy(lines, GaugeTooltips.tr("rocket_power"), power,
+                tier.powerCapacity(), this.rocketPowerWindow.perTick(), -1, -1));
 
         long now = System.currentTimeMillis();
         int synced = this.menu.rocketDestIndex();

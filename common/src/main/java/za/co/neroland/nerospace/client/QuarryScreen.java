@@ -21,6 +21,9 @@ public class QuarryScreen extends TexturedContainerScreen<QuarryMenu> {
     private static final int ACCENT = MinerTier.TIER_1.accentColor();
     private static final int FLUID = 0xFF4FA8FF;
 
+    private final GaugeMath.RateWindow energyWindow = new GaugeMath.RateWindow();
+    private final GaugeMath.RateWindow fluidWindow = new GaugeMath.RateWindow();
+
     public QuarryScreen(QuarryMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, TEXTURE, ACCENT, 176, 210);
         this.titleLabelX = 8;
@@ -37,6 +40,9 @@ public class QuarryScreen extends TexturedContainerScreen<QuarryMenu> {
 
         label(g, Component.translatable("gui.nerospace.machine.power", pct), 8, 80, TITLE);
         segGauge(g, 8, 90, 160, 3, energyFrac, ACCENT);
+        long stored = this.menu.energyStored();
+        this.energyWindow.sample(gameTick(), stored);
+        gaugeTooltip(8, 90, 160, 3, lines -> GaugeTooltips.energy(lines, stored, QuarryControllerBlockEntity.ENERGY_BUFFER, this.energyWindow.perTick(), -1, -1));
 
         QuarryControllerBlockEntity.State state = this.menu.getState();
         String pauseReason = this.menu.getPauseReason();
@@ -60,5 +66,8 @@ public class QuarryScreen extends TexturedContainerScreen<QuarryMenu> {
         float fluidFrac = maxFluid == 0 ? 0f : (float) fluid / maxFluid;
         label(g, Component.translatable("gui.nerospace.quarry.fluid", fluid), 8, 106, 0xFFB9D7FF);
         fluidGauge(g, 96, 107, 72, 3, fluidFrac, FLUID);
+        this.fluidWindow.sample(gameTick(), fluid);
+        gaugeTooltip(96, 107, 72, 3, lines -> GaugeTooltips.tank(lines, GaugeTooltips.tr("quarry_fluid"), null,
+                fluid, maxFluid, this.fluidWindow.perTick()));
     }
 }

@@ -22,7 +22,7 @@ public class CombustionGeneratorMenu extends AbstractContainerMenu {
 
     /** Client constructor (dummy container/data; slots + data sync from the server). */
     public CombustionGeneratorMenu(int id, Inventory playerInventory) {
-        this(id, playerInventory, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(4));
+        this(id, playerInventory, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(6));
     }
 
     public CombustionGeneratorMenu(int id, Inventory playerInventory, Container container, ContainerData data) {
@@ -54,6 +54,11 @@ public class CombustionGeneratorMenu extends AbstractContainerMenu {
 
     public int capacity() {
         return this.data.get(1);
+    }
+
+    /** Exact stored FE (synced as two 15-bit halves; ContainerData syncs shorts). */
+    public int energyStored() {
+        return (this.data.get(4) << 15) | (this.data.get(5) & 0x7FFF);
     }
 
     @Override

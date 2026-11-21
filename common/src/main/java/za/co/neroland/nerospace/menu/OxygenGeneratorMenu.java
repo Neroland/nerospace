@@ -24,7 +24,7 @@ public class OxygenGeneratorMenu extends AbstractContainerMenu {
 
     /** Client constructor (referenced by the {@code MenuType}); dummy data syncs from the server. */
     public OxygenGeneratorMenu(int id, Inventory playerInventory) {
-        this(id, playerInventory, new SimpleContainerData(4), ContainerLevelAccess.NULL);
+        this(id, playerInventory, new SimpleContainerData(6), ContainerLevelAccess.NULL);
     }
 
     public OxygenGeneratorMenu(int id, Inventory playerInventory, ContainerData data, ContainerLevelAccess access) {
@@ -57,6 +57,11 @@ public class OxygenGeneratorMenu extends AbstractContainerMenu {
 
     public int getMaxOxygen() {
         return this.data.get(3);
+    }
+
+    /** Exact stored FE (synced as two 15-bit halves; ContainerData syncs shorts). */
+    public int energyStored() {
+        return (this.data.get(4) << 15) | (this.data.get(5) & 0x7FFF);
     }
 
     @Override
