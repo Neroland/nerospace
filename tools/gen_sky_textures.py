@@ -12,12 +12,13 @@ sheets for the six custom particle types, into the resource tree:
                        stars_natural.png (temperature-coloured star sheet), aurora_glacira_0..2, aurora_nyxara_0..1,
                        aurora_mars_0, aurora_greenxertz_0 (gradient curtains: RGB = the colour gradient bottom->top,
                        alpha = the ray mask), aurora_fringe_rose.png, meteor_streak.png, limb_glow.png,
-                       terminator.png, terminator_00..15.png (night-shade phase sheet), earth_globe.png, earth_disk_globe.png, earth_lights.png, earth_disk_lights.png, corona.png, diamond_ring.png,
+                       terminator.png, terminator_00..15.png (night-shade phase sheet), jupiter_00..31.png (Europa's Jupiter drift sheet), earth_globe.png, earth_disk_globe.png, earth_lights.png, earth_disk_lights.png, corona.png, diamond_ring.png,
                        halo_22.png, rainbow_arc.png, flare_rays.png, caustic_band.png, nebula_a.png, nebula_b.png,
                        clouds_ash.png, sun_aureole.png, horizon_ramp_soft.png
     textures/sky/square/  -- body style "square" (2.4.0) --
-                       a flat vanilla-style square variant of every sun, moon and planet texture (same file name as
-                       the globe texture, same palette, no halo), square night-shade frames terminator_00..15.png
+                       a flat square variant of every sun, moon and planet texture at the globe texture's own
+                       resolution (same file name, same palette and surface detail filling a hard-edged square, no
+                       halo, limb darkening or limb glow), hard-edged square night-shade frames terminator_00..15.png
                        and a transparent limb_glow.png. The renderer swaps a globe texture for the file of the same
                        name in this folder when the client's sky.bodyStyle is "square".
     textures/particle/ dust_0..3, ash_0..3, spore_0..3, diamond_dust_0..3, ember_0..3, nebula_mote_0..3 (8x8)
@@ -53,6 +54,7 @@ Usage (from anywhere; the default root is the parent of this ``tools`` folder, s
     python tools/gen_sky_textures.py --force
     python tools/gen_sky_textures.py --root <dir>    # another resource root
     python tools/gen_sky_textures.py --preview <dir> # also write a contact sheet of every texture
+    python tools/gen_sky_textures.py --force --square-only  # rewrite only textures/sky/square/
     python tools/gen_sky_textures.py --check         # re-render to a temp dir; exit 1 if a committed texture drifted
 """
 import argparse
@@ -175,6 +177,32 @@ def sphere(size, radius):
     return x, y, z, r
 
 
+# Arc (radians from the centre of the visible face) a flat square body's edge midpoints reach on the globe's sphere.
+SQUARE_REACH = 0.85
+
+
+def flat_square(size, radius):
+    """Surface coordinates of a flat square body: the square of half-size ``radius`` (fraction of the quad's half-size,
+    the same number as the globe's disc radius) centred in a ``size`` x ``size`` texture, mapped onto the visible face
+    of the unit sphere the globe samples by a gnomonic (cube-face) projection whose edge midpoints sit
+    ``SQUARE_REACH`` radians from the centre, so the surface keeps a near-even scale out to the edge instead of
+    crowding towards a limb, with no seam or pinch. The square shows the globe's own surface at full resolution, but nothing here is a lighting term: a generator
+    in flat mode drops its limb darkening and limb glow. Returns ``(x, y, z, inside)``; ``inside`` is 1 on the square
+    and 0 off it (a hard edge, whole pixels)."""
+    half = max(1, int(round(radius * size / 2.0)))
+    lo, hi = size // 2 - half, size // 2 + half
+    s = np.clip((np.arange(size, dtype=np.float32) + 0.5 - lo) / half - 1.0, -1.0, 1.0)
+    sx = np.broadcast_to(s[None, :], (size, size))
+    sy = np.broadcast_to(s[:, None], (size, size))
+    reach = math.tan(SQUARE_REACH)
+    px, py = sx * reach, sy * reach
+    n = np.sqrt(px * px + py * py + 1.0)
+    x, y, z = px / n, py / n, 1.0 / n
+    inside = np.zeros((size, size), dtype=np.float32)
+    inside[lo:hi, lo:hi] = 1.0
+    return x, y, z, inside
+
+
 def to_image(rgb, alpha):
     rgb = np.clip(rgb, 0.0, 1.0)
     alpha = np.clip(alpha, 0.0, 1.0)
@@ -192,8 +220,14 @@ def save(img, path, force):
 
 # ======================================================================================= suns
 
-def sun_disc(name, size, radius, glow, rays=0, rim=None):
+def sun_disc(name, size, radius, glow, rays=0, rim=None, flat=False):
     rng = rng_of(name)
+    if flat:
+        # the square: the granulated surface, no halo, rays, rim or limb darkening
+        sx, sy, sz, inside = flat_square(size, radius)
+        granules = volume_fbm(noise_space(name), sx * 18, sy * 18, sz * 18, 4)
+        rgb = np.stack([1.0 - (0.03 + 0.12 * granules)] * 3, axis=-1)
+        return to_image(rgb, inside)
     dx, dy, r = radial(size)
     disc = np.clip((radius - r) / 0.04, 0, 1)
     halo = np.exp(-(np.maximum(r - radius, 0.0) / glow) ** 2)
@@ -217,23 +251,26 @@ def sun_disc(name, size, radius, glow, rays=0, rim=None):
     return to_image(rgb, a)
 
 
-def red_giant(name="red_giant", size=256):
+def red_giant(name="red_giant", size=256, flat=False):
     rng = rng_of(name)
     dx, dy, r = radial(size)
     radius = 0.72
-    sx, sy, sz, _ = sphere(size, radius)
+    sx, sy, sz, inside = flat_square(size, radius) if flat else sphere(size, radius)
     gran = volume_fbm(noise_space(name), sx * 24, sy * 24, sz * 24, 6)
     cells = fbm(rng, size, size, base=5, octaves=2)
     spots = (fbm(rng, size, size, base=4, octaves=3) > 0.66).astype(np.float32)
     spots = np.array(Image.fromarray((spots * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2))) / 255.0
-    limb = 1.0 - 0.55 * np.clip(r / radius, 0, 1) ** 1.6
+    limb = 1.0 if flat else 1.0 - 0.55 * np.clip(r / radius, 0, 1) ** 1.6
     lum = (0.78 + 0.22 * gran) * (0.85 + 0.15 * cells) * limb
     lum *= (1.0 - 0.6 * spots)
-    # surface colour: white-yellow core to orange limb; Body.color (#FF6B35) multiplies this
+    # surface colour: white-yellow core to orange limb; Body.color (#FF6B35) multiplies this. The flat square has
+    # no limb, so the granulation mixes the two instead.
     core = hexc("#FFF1C2")
     edge = hexc("#FFB070")
-    t = np.clip(r / radius, 0, 1)[..., None]
+    t = (np.clip(0.6 * (1.0 - gran), 0, 1) if flat else np.clip(r / radius, 0, 1))[..., None]
     rgb = (core * (1 - t) + edge * t) * lum[..., None]
+    if flat:
+        return to_image(rgb, inside)
     disc = np.clip((radius - r) / 0.012, 0, 1)
     corona = np.exp(-(np.abs(r - radius) / 0.16) ** 1.4) * (r > radius)
     wisps = fbm(rng, size, size, base=16, octaves=3)
@@ -243,12 +280,14 @@ def red_giant(name="red_giant", size=256):
     return to_image(rgb, a)
 
 
-def dark_moon(name="dark_moon", size=256):
+def dark_moon(name="dark_moon", size=256, flat=False):
     rng = rng_of(name)
     dx, dy, r = radial(size)
     radius = 0.82
     n = fbm(rng, size, size, base=8, octaves=4)
     lum = 0.10 + 0.08 * n
+    if flat:
+        return to_image(np.stack([lum] * 3, axis=-1), flat_square(size, radius)[3])
     # a thin lit rim so the silhouette reads against the red giant during totality
     rim = np.exp(-((radius - r) / 0.025) ** 2) * (r < radius)
     rgb = np.stack([lum] * 3, axis=-1)
@@ -259,9 +298,9 @@ def dark_moon(name="dark_moon", size=256):
 
 # ======================================================================================= moons / planets
 
-def rocky_moon(name, size, radius, base_grey, crater_count, potato=0.0):
+def rocky_moon(name, size, radius, base_grey, crater_count, potato=0.0, flat=False):
     rng = rng_of(name)
-    x, y, z, r = sphere(size, radius)
+    x, y, z, r = flat_square(size, radius) if flat else sphere(size, radius)
     sample = noise_space(name)
     height = volume_fbm(sample, x * 5, y * 5, z * 5, 5)
     for _ in range(crater_count * 5):
@@ -272,12 +311,14 @@ def rocky_moon(name, size, radius, base_grey, crater_count, potato=0.0):
         height += 0.24 * np.exp(-((distance - 1) / 0.15) ** 2) - 0.22 * np.clip(1 - distance ** 2, 0, 1)
     gy, gx = np.gradient(height)
     relief = np.clip(1 + (gy - gx) * size * 0.08, 0.45, 1.35)
-    lum = base_grey * (0.4 + height * 0.8) * relief * (0.65 + 0.35 * z)
+    lum = base_grey * (0.4 + height * 0.8) * relief * (1.0 if flat else 0.65 + 0.35 * z)
     if name.startswith('rime') or name.startswith('hoar'):
         cracks = np.exp(-((height - 0.5) / 0.015) ** 2)
         rgb = lum[..., None] * hexc('#B9D6DD') + cracks[..., None] * hexc('#468B9B') * 0.3
     else:
         rgb = np.repeat(lum[..., None], 3, axis=-1)
+    if flat:
+        return to_image(rgb, r)   # r is the square's inside mask in flat mode
     outline = radius * (1 + potato * (np.sin(np.arctan2(y, x) * 3 + 0.7) * 0.18))
     alpha = np.clip((outline - r) * size / 2, 0, 1)
     return to_image(rgb, alpha)
@@ -289,17 +330,21 @@ JUPITER_RADIUS = 0.92
 # longitude, so frame `frames` equals frame 0 and neighbouring frames differ by a fraction of a pixel row.
 JUPITER_DRIFT_TURNS = 8
 JUPITER_SPOT_LAT = 0.38
+# The drift sheet ``jupiter_00..31`` (``Body.rotation`` in sky/europa.json): 32 frames of 128 px over one loop.
+JUPITER_FRAMES = 32
+JUPITER_FRAME_SIZE = 128
 
 
-def gas_giant(name, size, frame=0, frames=32, bands=JUPITER_BANDS, spot="#B5502E"):
+def gas_giant(name, size, frame=0, frames=32, bands=JUPITER_BANDS, spot="#B5502E", flat=False):
     """A banded gas giant with one storm spot. ``frame`` of ``frames`` drifts the bands (alternating direction, every
-    third band still); the spot sits on a still band and does not move. Frame 0 is the still."""
+    third band still); the spot sits on a still band and does not move. Frame 0 is the still. ``frame`` is not
+    wrapped, so ``frame == frames`` renders the closing frame of the loop (equal to frame 0 by construction)."""
     radius = JUPITER_RADIUS
-    x, y, z, r = sphere(size, radius)
+    x, y, z, r = flat_square(size, radius) if flat else sphere(size, radius)
     lat = np.arcsin(np.clip(y, -1, 1))
     lon = np.arctan2(x, np.maximum(z, 1e-6))
     sample = noise_space(name)
-    t = (frame % frames) / float(frames)
+    t = frame / float(frames)
     band_f = (lat / np.pi + 0.5) * (len(bands) - 1)
     k = np.clip(np.round(band_f).astype(int), 0, len(bands) - 1)
     spot_band = int(round((JUPITER_SPOT_LAT / np.pi + 0.5) * (len(bands) - 1)))
@@ -317,14 +362,16 @@ def gas_giant(name, size, frame=0, frames=32, bands=JUPITER_BANDS, spot="#B5502E
     d = np.sqrt((d_lon / 0.34) ** 2 + ((lat - JUPITER_SPOT_LAT) / 0.14) ** 2)
     m = np.clip(1 - d, 0, 1)[..., None] ** 0.7
     rgb = rgb * (1 - m) + hexc(spot) * m
+    if flat:
+        return to_image(rgb, r)   # the square's inside mask
     rgb = rgb * (0.35 + 0.65 * np.clip(z, 0, 1) ** 0.6)[..., None]   # limb darkening
     return to_image(rgb, np.clip((radius - r) * size / 2, 0, 1))
 
 
-def sulfur_moon(name, size, radius=0.8, base="#E8D36A", spots="#B8502A"):
+def sulfur_moon(name, size, radius=0.8, base="#E8D36A", spots="#B8502A", flat=False):
     """Io: a sulfur-yellow disc with dark red-brown volcanic spots and paler frost patches."""
     rng = rng_of(name)
-    x, y, z, r = sphere(size, radius)
+    x, y, z, r = flat_square(size, radius) if flat else sphere(size, radius)
     sample = noise_space(name)
     mottled = volume_fbm(sample, x * 4, y * 4, z * 4, 5)
     rgb = hexc(base) * (0.72 + 0.5 * mottled)[..., None]
@@ -337,24 +384,28 @@ def sulfur_moon(name, size, radius=0.8, base="#E8D36A", spots="#B8502A"):
         distance = np.sqrt((x - centre[0]) ** 2 + (y - centre[1]) ** 2 + (z - centre[2]) ** 2) / reach
         core = np.clip(1 - distance, 0, 1)[..., None] ** 0.8
         rgb = rgb * (1 - core) + hexc(spots) * core
+    if flat:
+        return to_image(rgb, r)   # the square's inside mask
     rgb = rgb * (0.55 + 0.45 * np.clip(z, 0, 1) ** 0.6)[..., None]
     return to_image(rgb, np.clip((radius - r) * size / 2, 0, 1))
 
 
-def earth(name, size):
-    rgb, a, _ = earth_parts(name, size)
+def earth(name, size, flat=False):
+    rgb, a, _ = earth_parts(name, size, flat=flat)
     return to_image(rgb, a)
 
 
-def earth_globe(name, size, source):
+def earth_globe(name, size, source, flat=False):
     """``earth`` without the baked upper-left daylight: a flat-lit globe for bodies that carry a ``nightShade`` (the
     renderer's terminator supplies the light direction, so a baked one would fight it). Same land as ``source``."""
-    rgb, a, _ = earth_parts(source, size, baked_light=False)
+    rgb, a, _ = earth_parts(source, size, baked_light=False, flat=flat)
     return to_image(rgb, a)
 
 
-def earth_parts(name, size, baked_light=True):
-    x, y, z, r = sphere(size, 0.86)
+def earth_parts(name, size, baked_light=True, flat=False):
+    """(rgb, alpha, land mask) of an Earth disc; ``flat`` gives the flat square instead (no baked light, no limb
+    darkening, no atmospheric rim or glow, a hard square edge)."""
+    x, y, z, r = flat_square(size, 0.86) if flat else sphere(size, 0.86)
     sample = noise_space(name)
     warp = volume_fbm(sample, x * 2 + 11, y * 2, z * 2, 3) - 0.5
     land = volume_fbm(sample, x * 3.8 + warp, y * 3.8, z * 3.8, 6)
@@ -374,6 +425,8 @@ def earth_parts(name, size, baked_light=True):
     cloud = smoothstep(np.clip((cloud - 0.50) / 0.22, 0, 1)) * 0.9
     rgb *= 1 - cloud[..., None] * 0.3
     rgb = rgb * (1 - cloud[..., None]) + hexc('#EDF0E7') * cloud[..., None]
+    if flat:
+        return rgb, r, landmask * r * (1 - cloud)   # r is the square's inside mask
     light = np.clip(0.75 - 0.3 * (x + y), 0.2, 1) if baked_light else np.ones_like(z)
     rgb *= (light * (0.55 + 0.45 * z ** 0.4))[..., None]
     rim = (1 - z) ** 4 * (r < 0.86)
@@ -675,10 +728,11 @@ def terminator_phase(name, k, size=256, softness=0.3):
 TERMINATOR_FRAMES = 16
 
 
-def city_lights(name, size, source):
-    """Warm light specks on the land of ``source`` (``earth`` or ``earth_disk``), denser near coasts. Additive."""
+def city_lights(name, size, source, flat=False):
+    """Warm light specks on the land of ``source`` (``earth`` or ``earth_disk``), denser near coasts. Additive.
+    ``flat`` lights the land of the flat square Earth instead (the alpha stays the lights' mask)."""
     rng = rng_of(name)
-    _, _, land = earth_parts(source, size)
+    _, _, land = earth_parts(source, size, flat=flat)
     land_img = Image.fromarray((land * 255).astype(np.uint8))
     coast = np.array(land_img.filter(ImageFilter.GaussianBlur(size / 64.0)), dtype=np.float32) / 255.0
     coast = coast * (1 - coast) * 4.0  # peaks on the land/sea boundary
@@ -689,8 +743,9 @@ def city_lights(name, size, source):
     bloom = np.array(Image.fromarray((np.clip(specks, 0, 1) * 255).astype(np.uint8)).filter(
         ImageFilter.GaussianBlur(max(0.6, size / 200.0))), dtype=np.float32) / 255.0
     a = np.clip(specks * 0.9 + bloom * 2.2, 0, 1) * land
-    dx, dy, r = radial(size)
-    a *= (r < 0.86)
+    if not flat:
+        dx, dy, r = radial(size)
+        a *= (r < 0.86)
     rgb = np.ones((size, size, 3), dtype=np.float32) * hexc("#FFD9A0")[None, None, :]
     return to_image(rgb, a)
 
@@ -895,21 +950,23 @@ AURORA_GRADIENTS = {
 
 # ======================================================================================= table
 
-def sky_textures():
+def sky_textures(flat=False):
+    """Every sky texture by name. ``flat`` renders the bodies (``SQUARE_BODIES``) as their flat square variants at
+    the same size; the other entries ignore it."""
     return {
-        "sun_white": lambda: sun_disc("sun_white", 256, 0.34, 0.16, rays=4),
-        "sun_small": lambda: sun_disc("sun_small", 128, 0.42, 0.18),
-        "sun_pale": lambda: sun_disc("sun_pale", 256, 0.26, 0.28),
-        "sun_amber": lambda: sun_disc("sun_amber", 256, 0.36, 0.2, rim="#FFD27A"),
-        "red_giant": lambda: red_giant(size=512),
-        "dark_moon": lambda: dark_moon(),
-        "earth": lambda: earth("earth", 128),
-        "earth_disk": lambda: earth("earth_disk", 512),
-        "phobos": lambda: rocky_moon("phobos", 128, 0.7, 0.58, 4, potato=0.35),
-        "deimos": lambda: rocky_moon("deimos", 128, 0.62, 0.66, 2, potato=0.25),
-        "rime": lambda: rocky_moon("rime", 256, 0.8, 0.95, 7),
-        "hoar": lambda: rocky_moon("hoar", 256, 0.8, 0.8, 12),
-        "moon_small": lambda: rocky_moon("moon_small", 128, 0.8, 0.85, 5),
+        "sun_white": lambda: sun_disc("sun_white", 256, 0.34, 0.16, rays=4, flat=flat),
+        "sun_small": lambda: sun_disc("sun_small", 128, 0.42, 0.18, flat=flat),
+        "sun_pale": lambda: sun_disc("sun_pale", 256, 0.26, 0.28, flat=flat),
+        "sun_amber": lambda: sun_disc("sun_amber", 256, 0.36, 0.2, rim="#FFD27A", flat=flat),
+        "red_giant": lambda: red_giant(size=512, flat=flat),
+        "dark_moon": lambda: dark_moon(flat=flat),
+        "earth": lambda: earth("earth", 128, flat=flat),
+        "earth_disk": lambda: earth("earth_disk", 512, flat=flat),
+        "phobos": lambda: rocky_moon("phobos", 128, 0.7, 0.58, 4, potato=0.35, flat=flat),
+        "deimos": lambda: rocky_moon("deimos", 128, 0.62, 0.66, 2, potato=0.25, flat=flat),
+        "rime": lambda: rocky_moon("rime", 256, 0.8, 0.95, 7, flat=flat),
+        "hoar": lambda: rocky_moon("hoar", 256, 0.8, 0.8, 12, flat=flat),
+        "moon_small": lambda: rocky_moon("moon_small", 128, 0.8, 0.85, 5, flat=flat),
         "galaxy": lambda: galaxy_band("galaxy", 2048, 512, "#FFD0EF", "#697CFF", "#170E35", "#E8F5FF",
                                       nebula=("#E95ABD", "#3DE4E1")),
         "galaxy_nyx": lambda: galaxy_band("galaxy_nyx", 2048, 512, "#FFC0EC", "#7E3FE0", "#180A2E", "#FFF0FF",
@@ -933,10 +990,10 @@ def sky_textures():
         "terminator": lambda: terminator(),
         **{"terminator_%02d" % i: (lambda i=i: terminator_phase("terminator_%02d" % i, i / (TERMINATOR_FRAMES - 1.0)))
            for i in range(TERMINATOR_FRAMES)},
-        "earth_globe": lambda: earth_globe("earth_globe", 512, "earth"),
-        "earth_disk_globe": lambda: earth_globe("earth_disk_globe", 1024, "earth_disk"),
-        "earth_lights": lambda: city_lights("earth_lights", 512, "earth"),
-        "earth_disk_lights": lambda: city_lights("earth_disk_lights", 1024, "earth_disk"),
+        "earth_globe": lambda: earth_globe("earth_globe", 512, "earth", flat=flat),
+        "earth_disk_globe": lambda: earth_globe("earth_disk_globe", 1024, "earth_disk", flat=flat),
+        "earth_lights": lambda: city_lights("earth_lights", 512, "earth", flat=flat),
+        "earth_disk_lights": lambda: city_lights("earth_disk_lights", 1024, "earth_disk", flat=flat),
         "corona": lambda: corona(),
         "diamond_ring": lambda: diamond_ring(),
         "halo_22": lambda: halo_22(),
@@ -952,9 +1009,12 @@ def sky_textures():
         "sun_aureole": lambda: sun_aureole(),
         "horizon_ramp_soft": lambda: horizon_ramp_soft(),
         # ---- Europa ----
-        "jupiter": lambda: gas_giant("jupiter", 256),
-        "io": lambda: sulfur_moon("io", 64),
-        "ganymede": lambda: rocky_moon("ganymede", 64, 0.8, 0.62, 5),
+        "jupiter": lambda: gas_giant("jupiter", 256, flat=flat),
+        **{"jupiter_%02d" % i: (lambda i=i: gas_giant("jupiter", JUPITER_FRAME_SIZE, frame=i, frames=JUPITER_FRAMES,
+                                                      flat=flat))
+           for i in range(JUPITER_FRAMES)},
+        "io": lambda: sulfur_moon("io", 64, flat=flat),
+        "ganymede": lambda: rocky_moon("ganymede", 64, 0.8, 0.62, 5, flat=flat),
         "aurora_europa_0": lambda: gradient_curtain("aurora_europa_0", 512, 128, AURORA_GRADIENTS["europa"], ray_base=14, ray_gain=0.7, glow=0.4),
         "plume_veil": lambda: nebula_patch("plume_veil", 256, ("#E4EEF2", "#C4D6DE", "#F8FCFD"), 0.7),
     }
@@ -981,66 +1041,41 @@ def horizon_ramp_soft(name="horizon_ramp_soft", w=4, h=64):
 
 # ======================================================================================= square body style
 
-# Disc radius (fraction of the quad's half-size) of every body texture that has a square variant. The square keeps
-# the disc's half-size, so a body covers the same angle in both styles.
+# Disc radius (fraction of the quad's half-size) of every body texture that has a square variant (it must match the
+# radius its generator uses). The square keeps the disc's half-size, so a body covers the same angle in both styles.
+# The square variant is rendered by the same generator in flat mode, at the globe texture's own size.
 SQUARE_BODIES = {
     "sun_white": 0.34, "sun_small": 0.42, "sun_pale": 0.26, "sun_amber": 0.36, "red_giant": 0.72, "dark_moon": 0.82,
     "earth": 0.86, "earth_disk": 0.86, "earth_globe": 0.86, "earth_disk_globe": 0.86, "earth_lights": 0.86,
     "earth_disk_lights": 0.86, "phobos": 0.7, "deimos": 0.62, "rime": 0.8, "hoar": 0.8, "moon_small": 0.8,
     "jupiter": 0.92, "io": 0.8, "ganymede": 0.8,
+    # the Jupiter drift frames keep the drift in the square style too (same disc as the still)
+    **{"jupiter_%02d" % i: 0.92 for i in range(JUPITER_FRAMES)},
 }
-SQUARE_CELLS = 16   # flat colour cells across a square body, like the vanilla sun and moon
-SQUARE_SIZE = 128   # output texture size
 SQUARE_SHADE_RADIUS = 0.86  # night-shade frames cover the largest body disc
 
 
-def _square_canvas(cells_rgba, radius):
-    """Draws a ``SQUARE_CELLS`` x ``SQUARE_CELLS`` RGBA cell grid as hard-edged cells centred in a transparent
-    ``SQUARE_SIZE`` texture, with the half-size ``radius`` (fraction of the quad's half-size)."""
-    half = max(1, int(round(radius * SQUARE_SIZE / 2.0)))
-    cells = Image.fromarray(cells_rgba, "RGBA").resize((half * 2, half * 2), Image.NEAREST)
-    out = Image.new("RGBA", (SQUARE_SIZE, SQUARE_SIZE), (0, 0, 0, 0))
-    out.paste(cells, (SQUARE_SIZE // 2 - half, SQUARE_SIZE // 2 - half))
-    return out
-
-
-def square_body(img, radius, keep_alpha=False):
-    """Flat vanilla-style square of a globe texture: the square inscribed in the globe's disc, averaged into
-    ``SQUARE_CELLS`` x ``SQUARE_CELLS`` flat cells (so the palette and the large surface features carry over), drawn
-    opaque at the disc's half-size. No halo, no limb, no anti-aliased edge. ``keep_alpha`` is for additive overlays
-    whose alpha is their mask (city lights): each cell keeps its averaged alpha instead of becoming opaque."""
-    size = img.width
-    inscribed = radius * size / 2.0 / math.sqrt(2.0)
-    lo = int(round(size / 2.0 - inscribed))
-    hi = int(round(size / 2.0 + inscribed))
-    crop = img.convert("RGB").crop((lo, lo, hi, hi)).resize((SQUARE_CELLS, SQUARE_CELLS), Image.BOX)
-    if keep_alpha:
-        mask = img.getchannel("A").crop((lo, lo, hi, hi)).resize((SQUARE_CELLS, SQUARE_CELLS), Image.BOX)
-        alpha = np.asarray(mask, dtype=np.uint8)[..., None]
-    else:
-        alpha = np.full((SQUARE_CELLS, SQUARE_CELLS, 1), 255, dtype=np.uint8)
-    rgba = np.concatenate([np.asarray(crop, dtype=np.uint8), alpha], axis=-1)
-    return _square_canvas(rgba, radius)
-
-
 def square_shade(img):
-    """Vanilla-style night-shade mask of a ``terminator_NN`` frame: the frame's dark side as hard on/off cells on the
-    same grid as the square bodies (alpha 255 where the frame is more than half dark), black, no soft edge."""
+    """Hard-edged night-shade mask of a ``terminator_NN`` frame at the frame's own resolution: the frame's dark side
+    (alpha 255 where the frame is more than half dark, else 0) inside the square of half-size
+    ``SQUARE_SHADE_RADIUS``, black, no soft edge."""
     size = img.width
-    half = SQUARE_SHADE_RADIUS * size / 2.0
-    lo = int(round(size / 2.0 - half))
-    hi = int(round(size / 2.0 + half))
-    alpha = np.asarray(img.getchannel("A").crop((lo, lo, hi, hi)).resize((SQUARE_CELLS, SQUARE_CELLS), Image.BOX))
-    rgba = np.zeros((SQUARE_CELLS, SQUARE_CELLS, 4), dtype=np.uint8)
-    rgba[..., 3] = np.where(alpha > 127, 255, 0)
-    return _square_canvas(rgba, SQUARE_SHADE_RADIUS)
+    half = max(1, int(round(SQUARE_SHADE_RADIUS * size / 2.0)))
+    lo, hi = size // 2 - half, size // 2 + half
+    alpha = np.asarray(img.getchannel("A"))
+    rgba = np.zeros((size, size, 4), dtype=np.uint8)
+    rgba[lo:hi, lo:hi, 3] = np.where(alpha[lo:hi, lo:hi] > 127, 255, 0)
+    return Image.fromarray(rgba, "RGBA")
 
 
-def square_variant(name, img):
-    """The ``textures/sky/square/<name>.png`` variant of sky texture ``name`` (``img`` is its globe render), or None
-    when the texture has none and keeps its globe texture in the square body style."""
+def square_variant(name, img, flat_table=None):
+    """The ``textures/sky/square/<name>.png`` variant of sky texture ``name`` (``img`` is its globe render; only
+    the night-shade frames read it), or None when the texture has none and keeps its globe texture in the square
+    body style. A body's square is its generator's flat render (``flat_table``, ``sky_textures(flat=True)``) at the
+    globe texture's size: the same palette and surface detail filling a hard-edged square, with no limb darkening
+    or limb glow; city lights keep their alpha mask."""
     if name in SQUARE_BODIES:
-        return square_body(img, SQUARE_BODIES[name], keep_alpha=name.endswith("_lights"))
+        return (flat_table or sky_textures(flat=True))[name]()
     if name.startswith("terminator_"):
         return square_shade(img)
     if name == "limb_glow":
@@ -1052,21 +1087,27 @@ def square_variant(name, img):
 PARTICLE_TYPES = ["dust", "ash", "spore", "diamond_dust", "ember", "nebula_mote"]
 
 
-def write_all(root, force=False, preview=None):
+def write_all(root, force=False, preview=None, square_only=False):
+    """Writes every texture under ``root``; ``square_only`` writes only the ``sky/square/`` variants (the globe
+    textures and particles are left as they are, and only the night-shade frames are rendered to derive theirs)."""
     base = os.path.join(root, ASSET_DIR)
     written = 0
     sheet = []
+    flat_table = sky_textures(flat=True)
     for name, fn in sky_textures().items():
-        img = fn()
-        if save(img, os.path.join(base, "sky", name + ".png"), force):
-            written += 1
-        sheet.append((name, img))
-        square = square_variant(name, img)
+        if square_only and name not in SQUARE_BODIES and not name.startswith("terminator_") and name != "limb_glow":
+            continue
+        img = fn() if not square_only or name.startswith("terminator_") else None
+        if not square_only:
+            if save(img, os.path.join(base, "sky", name + ".png"), force):
+                written += 1
+            sheet.append((name, img))
+        square = square_variant(name, img, flat_table)
         if square is not None:
             if save(square, os.path.join(base, "sky", "square", name + ".png"), force):
                 written += 1
             sheet.append(("square/" + name, square))
-    for kind in PARTICLE_TYPES:
+    for kind in ([] if square_only else PARTICLE_TYPES):
         for i, img in enumerate(particle_frames(kind)):
             fname = "%s_%d" % (kind, i)
             if save(img, os.path.join(base, "particle", fname + ".png"), force):
@@ -1110,10 +1151,12 @@ def main(argv=None):
     ap.add_argument("--force", action="store_true", help="overwrite existing files")
     ap.add_argument("--preview", default=None, help="also write a contact sheet into this folder")
     ap.add_argument("--check", action="store_true", help="compare a fresh render with the committed files (writes nothing)")
+    ap.add_argument("--square-only", action="store_true",
+                    help="write only the textures/sky/square/ variants (globe textures and particles untouched)")
     args = ap.parse_args(argv)
     if args.check:
         sys.exit(check(args.root))
-    write_all(args.root, args.force, args.preview)
+    write_all(args.root, args.force, args.preview, args.square_only)
 
 
 def check(root):

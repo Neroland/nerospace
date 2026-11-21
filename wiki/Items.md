@@ -14,6 +14,12 @@ A reference for Nerospace's non-block items. (Blocks have their own pages — se
 | **Xertz Quartz** | Gem dropped by [Xertz Quartz Ore](Xertz-Quartz-Ore); used in upgrades and the Terraform Monitor. |
 | **Cindrite** | Gem from [Cindrite Ore](Cindrite-Ore) on Cindara; Tier-3 Terraformer upgrade, Tier 2 + [Thermal Suit](Oxygen-Suit) pieces, Tier 4 rocket. |
 | **Glacite** | Gem from [Glacite Ore](Glacite-Ore) on Glacira; [Cryo Suit](Oxygen-Suit) pieces and the [Hydration Module](Hydration-Module)'s water cycle. |
+| **Deuterium Shard** | From Deuterium Ice in [Europa](Europa)'s ice shell; four around a Titanium Ingot craft two **Deuterium Cells**. |
+| **Deuterium Cell** | Strong fuel: 8 000 ticks in the [Combustion Generator](Combustion-Generator); also crafts Rocket Fuel Canisters (2 cells + blaze powder + an iron ingot → 2). |
+| **Oxidant Crystal** | From Oxidant Ice on Europa's surface; the [Fuel Refinery](Fuel-Refinery) turns one into 400 mB of oxygen. |
+| **Brine Salt** | From Brine Salt Ore, Lineae Salt, a Brine Bucket and Europa's creatures; 4 + 1 Sulfur → 2 Perchlorate Oxidiser. |
+| **Raw Vent Sulfide** | From Vent Sulfide Ore mined wet and from Smoker Chimneys; smelts into copper, grinds into Sulfur. |
+| **Brine Bucket** | Picks up and places Brine (a block, not a fluid: pipes and dispensers do not move it); crafts into 3 Brine Salt. |
 | **Alien Fragment** | Common loot from a [Meteor Core](Meteor-Core); future scanner feedstock. |
 | **Alien Tech Scrap** | Uncommon meteor loot; future upgrade crafting. |
 | **Alien Core** | Rare meteor loot; high-value scanner/upgrade gate. |
@@ -71,7 +77,7 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
     [Heavy Launch Complex](Launch-Gantry).)
 
-  - **Tier 4** → the Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira and [Nyxara](Nyxara) (Nyxara after Deep Space progress). (Deploys **only** on the [Heavy Launch Complex](Launch-Gantry);
+  - **Tier 4** → the Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira, [Nyxara](Nyxara) (after Deep Space progress) and [Europa](Europa). (Deploys **only** on the [Heavy Launch Complex](Launch-Gantry);
 
     24,000 mB tank.)
   The in-rocket screen shows a live fuel gauge, a selectable destination trajectory, a station
@@ -137,7 +143,7 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 ## Travel devices (creative)
 
-- **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira / Luna / Mars / Nyxara Compasses** are
+- **Greenxertz Navigator** and the **Station / Greenxertz / Cindara / Glacira / Luna / Mars / Nyxara / Europa Compasses** are
 
   creative-only one-click travel aids for testing and building (no survival recipe — rockets are the
   survival route).
@@ -146,4 +152,4 @@ engage. See **[Oxygen Suit](Oxygen-Suit)** for the full page.
 
 ## Spawn eggs
 
-Creative spawn eggs exist for all eight creatures — see **[Creatures](Creatures)**.
+Creative spawn eggs exist for every creature — see **[Creatures](Creatures)**.

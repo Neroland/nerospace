@@ -266,9 +266,18 @@ class CrewRocketTest {
     @DisplayName("O₂ readiness is crew × the flight's oxygen per seat; a solo flight needs none (2.0)")
     void oxygenReadiness() throws Exception {
         assertEquals(168, Crew.FLIGHT_TICKS, "ascent 100 + descent 60 + settle 8");
-        int perSeat = Crew.perSeatMb(true, 10, 2);
+        // rockets.ascentHeight = 24: exactly the 2.3.1 budget.
+        assertEquals(168, Crew.flightTicks(AscentMath.duration(24)));
+        int perSeat = Crew.perSeatMb(true, 10, 2, AscentMath.duration(24));
         assertEquals(34, perSeat);
-        assertEquals(0, Crew.perSeatMb(false, 10, 2), "between two breathable worlds nothing is drawn");
+        assertEquals(0, Crew.perSeatMb(false, 10, 2, AscentMath.duration(24)),
+                "between two breathable worlds nothing is drawn");
+        // The default 96-block climb (159 ticks) and the 256-block maximum (220 ticks) reserve the longer flight.
+        assertEquals(227, Crew.flightTicks(AscentMath.duration(96)));
+        assertEquals(46, Crew.perSeatMb(true, 10, 2, AscentMath.duration(96)));
+        assertEquals(288, Crew.flightTicks(AscentMath.duration(256)));
+        assertEquals(58, Crew.perSeatMb(true, 10, 2, AscentMath.duration(256)));
+        assertEquals(0, Crew.perSeatMb(false, 10, 2, AscentMath.duration(256)));
         assertEquals(0, Crew.oxygenNeeded(0, perSeat));
         assertEquals(0, Crew.oxygenNeeded(1, perSeat), "solo: the 2.0 rule");
         assertEquals(68, Crew.oxygenNeeded(2, perSeat));

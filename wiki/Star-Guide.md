@@ -56,10 +56,15 @@ S S S
 
 ## Worlds chapters (2.0)
 
-Each world has its own chapter after Freight: **Worlds: Luna, Mars, Cindara, Glacira, Greenxertz and Nyxara**.
+Each world has its own chapter after Freight: **Worlds: Luna, Mars, Cindara, Glacira, Greenxertz, Nyxara and
+Europa**.
 Every one has five steps: land there, mine its ore, build with a block only that world gives you, weather its
 storm (on the Moon, its night) for two minutes under open sky, and root your first terraformed ground. Your
 progress in the older chapters is untouched.
+
+**Worlds: Europa** (2.4.0) is the last chapter: land on Europa, mine Deuterium Ice for a shard, place Cut Europa
+Ice, last two minutes under the open sky through a **plume fall or a radiation storm** (either one counts; under
+the ice shell there is no weather), and stand on ice your Terraformer has softened. See [Europa](Europa).
 
 With NeroQuests installed, the **Worlds Apart** quest chapter follows the same journey with a four-quest line
 for each world.

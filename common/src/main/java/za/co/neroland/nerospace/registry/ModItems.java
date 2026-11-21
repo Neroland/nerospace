@@ -348,6 +348,9 @@ public final class ModItems {
     public static final RegistryEntry<Item> OXYGEN_SUIT_COLD_BOOTS = armor("oxygen_suit_cold_boots", OXYGEN_SUIT_COLD_MATERIAL, ArmorType.BOOTS);
     /** Smithing upgrade: lines a T2 / heat / cryo suit piece against radiation (adds {@code nerospace:rad_lining}). */
     public static final RegistryEntry<Item> RAD_LINING = item("rad_lining");
+    /** 2.4.0: Europa's creative compass, appended after the last ModItems registration. No recipe. */
+    public static final RegistryEntry<Item> EUROPA_COMPASS = ITEMS.register("europa_compass",
+            key -> new DestinationCompassItem(new Item.Properties().stacksTo(1).setId(key), ModDimensions.EUROPA_LEVEL));
 
     // --- helpers ------------------------------------------------------------
     private static RegistryEntry<Item> item(String name) {
@@ -435,6 +438,7 @@ public final class ModItems {
                         CARGO_ROCKET.get(),
                         STATION_COMPASS.get(), GREENXERTZ_COMPASS.get(), CINDARA_COMPASS.get(),
                         GLACIRA_COMPASS.get(), LUNA_COMPASS.get(), MARS_COMPASS.get(), NYXARA_COMPASS.get(),
+                        EUROPA_COMPASS.get(),
                         METEOR_CALLER.get(), METEOR_TRACKER.get(),
                         CONFIGURATOR.get(), PIPE_FILTER.get(), ADVANCED_PIPE_FILTER.get(),
                         SPEED_UPGRADE.get(), CAPACITY_UPGRADE.get(),

@@ -28,6 +28,8 @@ public final class AlienTrades {
     public static final String EMBER_KIN = "nerospace:ember_kin";
     public static final String FROSTBOUND = "nerospace:frostbound";
     public static final String DUSKBORN = "nerospace:duskborn";
+    /** Europa's under-ice people (2.4.0). */
+    public static final String BRINEKIN = "nerospace:brinekin";
     /** The Mars salvage drone's stock (not a culture). */
     public static final String SALVAGE = "nerospace:salvage_drone";
 
@@ -119,6 +121,30 @@ public final class AlienTrades {
             .buy2("nerospace:alien_core", 1, EMERALD, 24, "nerospace:void_shard", 2, 2, 20)
             .build();
 
+    /**
+     * Europa: brine, deuterium, vent goods and the cold helmet; buys brine salt. The tier-4 vent is the only way to
+     * get a hydrothermal vent without Silk Touch.
+     */
+    public static final TradeTable BRINEKIN_TABLE = new TradeTable.Builder()
+            .tier(1)
+            .buy("nerospace:brine_salt", 12, EMERALD, 1, 16, 1)
+            .buy(EMERALD, 1, "nerospace:europa_ice_bricks", 4, 16, 1)
+            .buy(EMERALD, 2, "nerospace:brine_bucket", 1, 8, 1)
+            .tier(2)
+            .buy(EMERALD, 3, "nerospace:deuterium_shard", 2, 12, 5)
+            .buy(EMERALD, 3, "nerospace:polished_vent_basalt", 4, 12, 5)
+            .buy("nerospace:alien_fragment", 4, EMERALD, 1, 12, 2)
+            .tier(3)
+            .buy(EMERALD, 10, "nerospace:oxygen_suit_cold_helmet", 1, 4, 10)
+            .buy(EMERALD, 4, "nerospace:oxidant_crystal", 4, 8, 8)
+            .tier(4)
+            .buy(EMERALD, 6, "nerospace:tube_mat", 4, 6, 12)
+            .buy(EMERALD, 14, "nerospace:hydrothermal_vent", 1, 2, 15)
+            .tier(5)
+            .buy(EMERALD, 18, "nerospace:deuterium_cell", 2, 4, 20)
+            .buy2("nerospace:alien_core", 1, EMERALD, 20, "nerospace:rad_lining", 1, 2, 20)
+            .build();
+
     /** The Mars salvage drone: rover parts for raw hematite. One tier, no reputation. */
     public static final TradeTable SALVAGE_TABLE = new TradeTable.Builder()
             .tier(1)
@@ -131,13 +157,14 @@ public final class AlienTrades {
             .buy("nerospace:raw_hematite", 20, "nerospace:alien_tech_scrap", 1, 1, 10)
             .build();
 
-    /** Every table by id (four cultures + the salvage drone). */
+    /** Every table by id (five cultures + the salvage drone). */
     public static final Map<String, TradeTable> TABLES = Map.of(
             XERTZ, XERTZ_TABLE,
             EMBER_KIN, EMBER_KIN_TABLE,
             FROSTBOUND, FROSTBOUND_TABLE,
             DUSKBORN, DUSKBORN_TABLE,
-            SALVAGE, SALVAGE_TABLE);
+            SALVAGE, SALVAGE_TABLE,
+            BRINEKIN, BRINEKIN_TABLE);
 
     private AlienTrades() {
     }

@@ -93,11 +93,11 @@ class EuropaTerraformTest {
     }
 
     @Test
-    @DisplayName("the sea stays open: hydrated/living 0.2 (no freeze), rooted 0.0, no precipitation, both trees")
+    @DisplayName("the sea stays open: hydrated/living 0.35 (no freeze, also by vanilla height rule), rooted 0.0, no precipitation, both trees")
     void seaStaysOpen() throws IOException {
         Assumptions.assumeTrue(EuropaFiles.commonMain() != null, "common sources not found");
-        Map<String, Double> temps = Map.of("terraformed_europa_rooted", 0.0D, "terraformed_europa_hydrated", 0.2D,
-                "terraformed_europa_living", 0.2D);
+        Map<String, Double> temps = Map.of("terraformed_europa_rooted", 0.0D, "terraformed_europa_hydrated", 0.35D,
+                "terraformed_europa_living", 0.35D);
         for (String tree : EuropaFiles.TREES) {
             for (Map.Entry<String, Double> e : temps.entrySet()) {
                 JsonObject b = EuropaFiles.json(EuropaFiles.data(tree, "worldgen/biome/" + e.getKey() + ".json"));
@@ -106,6 +106,14 @@ class EuropaTerraformTest {
                 assertFalse(b.get("has_precipitation").getAsBoolean(), tree + " " + e.getKey());
                 assertEquals(e.getKey().equals("terraformed_europa_rooted"), FreezeGuardRules.biomeFreezes(t),
                         tree + " " + e.getKey());
+                if (!e.getKey().equals("terraformed_europa_rooted")) {
+                    for (int y : new int[] {EuropaNumbers.SURFACE_MIN, EuropaNumbers.SURFACE_MAX}) {
+                        for (boolean legacy : new boolean[] {true, false}) {
+                            assertFalse(FreezeGuardRules.vanillaFreezes(t, y, EuropaNumbers.SEA_LEVEL, legacy),
+                                    tree + " " + e.getKey() + " y " + y + (legacy ? " 1.21.x" : " 26.x"));
+                        }
+                    }
+                }
             }
         }
         // Natural Europa water does skin over.

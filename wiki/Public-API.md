@@ -16,7 +16,7 @@ Nerospace is absent.
 
 Nerospace publishes all six loader cells to GitHub Packages:
 
-```
+```text
 za.co.neroland.nerospace:nerospace-<loader>-<mc>:<version>
 ```
 
@@ -62,7 +62,7 @@ fuelMb      = (1000 + 100 × massUnits) × max(0.1, gOrigin)      (+ the same fo
 `NerospaceEnvironment.at(ServerLevel, BlockPos)` returns an immutable `EnvironmentSnapshot`:
 
 | Field | Meaning |
-|---|---|
+| --- | --- |
 | `loaded` | `false` when the chunk is not loaded — every other field is then a fail-closed default, not a reading |
 | `planet` | the Nerospace planet, or empty on Earth and any non-Nerospace dimension |
 | `atmosphere` | `VACUUM`, `PRESSURIZED`, `TERRAFORMING` or `BREATHABLE` |
@@ -77,7 +77,9 @@ Two behaviours worth knowing:
 - **It never forces chunk loading.** The unloaded check runs before any chunk-backed lookup, so a probe
   at an arbitrary position cannot make the server generate terrain.
 - **Stage 1 already means breathable.** That is when the Terraformer flags the chunk, so `TERRAFORMING`
-  describes a region that is under way but has not got there yet.
+  describes a region that is under way but has not got there yet. **Except on Europa** (2.4.0): terraforming
+  there ends in open ocean with no air, so a terraformed Europa chunk reports `breathable = false` at every stage
+  (the `gravity` field still reads `1.0` there).
 
 ## Planet visits
 

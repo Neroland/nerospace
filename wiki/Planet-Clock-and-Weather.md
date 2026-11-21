@@ -14,11 +14,12 @@ with nobody there, so unattended machines see the same day and storms as visitor
 | [Glacira](Glacira) | 72 000 ticks | 1 h (three Overworld days) | long twilights at dawn and dusk |
 | [Greenxertz](Greenxertz) | 24 000 ticks | 20 min | the Overworld's own day: beds, raids and `/time` work as usual |
 | [Nyxara](Nyxara) | fixed | — | the sun never moves; day and night are places, not times |
+| [Europa](Europa) | 85 200 ticks | 71 min (about 3.5 Overworld days) | the sun passes behind Jupiter at noon: a short *Eclipse* |
 | [Orbital Station](Orbital-Stations) | fixed | — | permanent daylight |
 
 **What a clock drives:** the sky (sun, moons, stars, colours), the HUD clock dial, [solar panel](Solar-Panel) output,
 when weather may start (Glacira's diamond dust only forms at night or in twilight; Cindara's ash fall never starts near
-the eclipse), Aurora Stone (it glows only during Glacira's night), the Star Guide's lunar-night step and when you can
+the eclipse; Europa's radiation storms only start around noon), Aurora Stone (it glows only during Glacira's night), the Star Guide's lunar-night step and when you can
 [sleep](#sleeping).
 
 **What it never changes:** block light and sky light. It is as bright underfoot at a planet's "night" as it was in
@@ -29,9 +30,9 @@ Overworld day, as it always has.
 
 On every world with a day cycle a small dial sits above the oxygen gauge: sunrise is on the right, noon at the top,
 and the face is lit by how bright that planet's day is at the moment. Special stretches of the day are marked on the
-rim: Cindara's eclipse as a dotted red window, Luna's Earthrise and Glacira's two twilights as solid windows. When
+rim: Cindara's and Europa's eclipses as dotted red windows, Luna's Earthrise and Glacira's two twilights as solid windows. When
 the phase changes the dial shows its name for two seconds: *Sunrise*, *Day*, *Sunset* or *Night*, or the name of
-the window you are in: *Eclipse* (Cindara), *Earthrise* (Luna) or *Twilight* (Glacira, in place of Sunrise and
+the window you are in: *Eclipse* (Cindara, Europa), *Earthrise* (Luna) or *Twilight* (Glacira, in place of Sunrise and
 Sunset). Nyxara and the orbital station have fixed clocks, so they show no dial.
 Client options: `hud.clockDial` (on/off), `hud.clockDialScale` (1 = 16 px, 2 = 32 px).
 
@@ -48,7 +49,7 @@ Vanilla time stands still on the worlds with their own clock, so a bed there fol
 
 | World | When you can sleep | What a full night's sleep does |
 | --- | --- | --- |
-| Luna, Mars, Cindara, Glacira | in the planet's night: from just after sunset until shortly before sunrise | once enough players on that planet are asleep, the clock jumps to sunrise and the day count (Mars: the sol) goes up by one, as if you had waited the night out |
+| Luna, Mars, Cindara, Glacira, Europa | in the planet's night: from just after sunset until shortly before sunrise | once enough players on that planet are asleep, the clock jumps to sunrise and the day count (Mars: the sol) goes up by one, as if you had waited the night out |
 | Greenxertz | at night, as in the Overworld | the Overworld's own night skip: Greenxertz shares the Overworld's day |
 | Nyxara | in a bed on the **Nightside**, at any time | you rest and get up on your own a few seconds later; nothing is skipped, the sun never moves. In the Twilight Band and on the Dayside: "The sun never sets here" |
 | Orbital Station | never: "The station's lights never dim" | — |
@@ -70,7 +71,7 @@ Vanilla time stands still on the worlds with their own clock, so a bed there fol
 
 ## Weather
 
-Each world has one weather event (none on Luna or the station). An event builds up over up to about 50 seconds,
+Each world has one weather event (none on Luna or the station); Europa has two. An event builds up over up to about 50 seconds,
 holds at its peak for the time below, then fades. Each event rolls its own strength, from 40 % to full.
 
 | World | Event | How often (average) | Peak lasts | What it does |
@@ -81,6 +82,8 @@ holds at its peak for the time below, then fades. Each event rolls its own stren
 | [Glacira](Glacira) | **Diamond dust** | about every 40 min (two Overworld days), night or twilight only | about 3–10 min | Open water under the sky freezes over; auroras brighten; Frost Crystal Clusters that see the sky grow one stage when it ends |
 | [Greenxertz](Greenxertz) | **Spore bloom** | about every hour (three Overworld days) | 2–5 min | Spores fill the air; Spore Moss spreads three times as fast; Nausea for anyone outside a sealed suit or an oxygen field |
 | [Nyxara](Nyxara) | **Solar flare** | about every 80 min (four Overworld days) | 1–2 min | Gold sky; Dawnband Stone lights up and keeps the cold away within four blocks; Shadow Lichen withers; radiation +1 outdoors on the Dayside and in the Twilight Band |
+| [Europa](Europa) | **Plume fall** | up to about three times a Europa day (about every 25 min) | 2.5–7.5 min | Slow glittering ice flakes and a pale veil in the sky; open water under the sky skins over. Harmless. The HUD weather line calls it *Diamond dust* |
+| [Europa](Europa) | **Radiation storm** | about one every two Europa days, and it can only begin around noon | 1.5–3 min | Violet motes, a crackle and aurora curtains; radiation +1 on the open surface (level 3). The HUD weather line calls it *Solar flare* |
 | Orbital Station | — | — | — | No weather |
 
 "Outdoors" means at or above the surface of the ground below you and not inside a breathable zone (an oxygen field,
@@ -100,7 +103,7 @@ chime as a flare begins. With `hud.weatherLine` on, the HUD shows the current we
 | `/nerospace clock <planet> set <phase>` | Jumps the clock to a phase from 0 to 1 |
 | `/nerospace clock <planet> freeze` / `thaw` | Stops or restarts the clock |
 | `/nerospace weather <planet>` or `... get` | Shows the current event, its phase and intensity |
-| `/nerospace weather <planet> start [intensity]` | Starts the planet's event now (intensity 0.4 to 1.0, default full) |
+| `/nerospace weather <planet> start [intensity]` | Starts the planet's event now (intensity 0.4 to 1.0, default full). On Europa this starts the plume fall; use the `radiation_storm` gallery state below for a radiation storm |
 | `/nerospace weather <planet> clear` | Ends the current event |
 
 Greenxertz follows the normal day, so use `/time` there. Nyxara and the station have fixed clocks that cannot be set
@@ -129,8 +132,9 @@ Tab completion only offers the states the chosen world has:
 | Luna | `dawn`, `noon`, `dusk`, `night`, `earthrise` |
 | Mars | `dawn`, `noon`, `dusk`, `night`, `blue_sunset`, `dust_storm` |
 | Nyxara | `dayside`, `band`, `nightside`, `galaxy_side`, `flare`; `noon`, `dawn`/`dusk` and `night` mean the dayside, the band and the nightside |
+| Europa | `dawn`, `noon`, `dusk`, `night`, `eclipse`, `plume_fall`, `radiation_storm` |
 
-- Weather states (`spore_bloom`, `ash_fall`, `diamond_dust`, `dust_storm`, `flare`) start the event at its peak; it
+- Weather states (`spore_bloom`, `ash_fall`, `diamond_dust`, `dust_storm`, `flare`, `plume_fall`, `radiation_storm`) start the event at its peak; it
   then lasts its normal time and fades. Run the state again to restart it. If a world's weather is switched off in the
   server settings, the clock still changes but no weather starts.
 - Nyxara's sun never moves, so its states are places: without `here` the command tells you roughly which X to stand at.
@@ -148,7 +152,7 @@ Server settings (in `config/nerospace.properties`, see [Configuration](Configura
 | `clock.enabled` | `true` | | `false` holds every planet clock at noon (Greenxertz keeps its real day) |
 | `solar.clockDriven` | `true` | | `false` = the 1.x flat double solar rate everywhere |
 | `weather.enabled` | `true` | | `false` = clear skies everywhere |
-| `weather.<planet>.enabled` | `true` | | per world: `mars`, `cindara`, `glacira`, `greenxertz`, `nyxara` |
+| `weather.<planet>.enabled` | `true` | | per world: `mars`, `cindara`, `glacira`, `greenxertz`, `nyxara`, `europa` (one switch for both Europa events) |
 | `weather.frequencyMultiplier` | `1.0` | 0.1–10 | higher = weather starts more often |
 | `weather.durationMultiplier` | `1.0` | 0.1–10 | higher = weather lasts longer |
 | `weather.emberStrikeIntervalTicks` | `100` | 40–12 000 | ticks between Cindara ember strikes near each player |
@@ -177,6 +181,6 @@ The horizon gradients blend smoothly into the lower sky, without a speckled stri
 
 Each world has its own sky: Earth hanging over Luna, the butterscotch Martian day with Phobos racing across it,
 Cindara's red giant and its eclipse, Glacira's pale sun, two moons and auroras, Greenxertz's twin suns, Nyxara's pinned
-sunset on one side and a galaxy on the other, and the homeworld turning below your station. The full skies are drawn on
+sunset on one side and a galaxy on the other, Europa's fixed Jupiter with its slowly drifting cloud bands and noon eclipse, and the homeworld turning below your station. The full skies are drawn on
 Minecraft 26.1.2, 26.2 and 26.3 on NeoForge, Fabric and Forge. On the 1.21 versions each world still shows its own
 sky, fog and sunrise colours with the vanilla sky shapes.

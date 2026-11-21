@@ -99,5 +99,5 @@ dock at the shared origin platform and the arrival message tells you why.
   pads does not load chunks all over the planet.
 - Server owners can shorten the Landing Pod search with `landing.podSearchRadius` (default 24, range 6–24 blocks).
 - Rocket tiers and their destinations: Tier 1 reaches the Orbital Station and [Luna](Luna); Tier 2 adds
-  [Greenxertz](Greenxertz) and [Mars](Mars); Tier 3 adds [Cindara](Cindara); Tier 4 adds [Glacira](Glacira) and
-  [Nyxara](Nyxara). Each tier keeps every destination of the tiers below it, and every tier can fly home.
+  [Greenxertz](Greenxertz) and [Mars](Mars); Tier 3 adds [Cindara](Cindara); Tier 4 adds [Glacira](Glacira),
+  [Nyxara](Nyxara) and [Europa](Europa). Each tier keeps every destination of the tiers below it, and every tier can fly home.

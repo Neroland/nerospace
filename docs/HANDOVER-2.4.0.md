@@ -1,40 +1,59 @@
 # Nerospace 2.4.0-beta.1 — handover
 
-State on 2026-11-20. **Nothing is committed, tagged or published.** `mod_version` is `2.4.0-beta.1`; the
-changelog entry sits under `[Unreleased]`. Five of the six asks are built and gated. **Europa is not in
-this build**: it is designed and independently reviewed, and the review says the design must change before
-it can be built.
+State on 2026-11-21. **All six asks are built and gated.** `mod_version` is `2.4.0-beta.1`; the changelog
+entry sits under `[Unreleased]`. No agent committed, tagged or published anything; every change since
+2.3.1 is yours to review and commit.
 
-Companion documents: `docs/decisions/2.4.0-survey.md` (Stage 0), `docs/decisions/2.4.0-seams.md`,
-`docs/decisions/2.4.0-stage1-status.md`, `docs/decisions/2.4.0-compliance.md` (Stage 6),
-`docs/SMOKE-2.4.0.md` (Stage 7 record and your in-game checklist), `docs/decisions/2.4.0-europa.md` and
-`docs/decisions/2.4.0-europa-review.md`.
+Companion documents:
+
+- `docs/SMOKE-2.4.0.md` — what was tested headlessly, and your in-game checklist.
+- `docs/decisions/2.4.0-compliance.md` — the POPIA/GDPR review.
+- `docs/decisions/2.4.0-survey.md`, `2.4.0-seams.md`, `2.4.0-stage1-status.md` — stages 0 to 3.
+- `docs/decisions/2.4.0-europa.md` (design), `2.4.0-europa-review.md` (design review),
+  `2.4.0-europa-amendments.md` (the fixes that made it buildable; authoritative where they differ).
+- `docs/decisions/2.4.0-europa-build-status.md` — what each of the six Europa work packages built, with
+  every deviation.
+- `docs/decisions/2.4.0-europa-verify-*.md` — one independent verification per package.
 
 ## Where each ask stands
 
 | Ask | Decision | State |
 | --- | --- | --- |
-| 1. Space looks like Earth with shaders | D5 to D8 | Built, compiled on all 27 cells, unit-tested. Not run with a shader mod. |
-| 2. Earth, Moon, Mars visible in space; square bodies | D1 to D4 | Built for the nine 26.x cells, compiled, unit-tested. Not seen in a render client. 1.21.x keeps the colour floor. |
+| 1. Space looks like Earth with shaders | D5 to D8 | Built and unit-tested. Not run with a shader mod. |
+| 2. Earth, Moon, Mars visible in space; square bodies | D1 to D4 | Built for the nine 26.x cells. Not seen in a render client. 1.21.x keeps the colour floor. |
 | 3. Shader clouds on the Moon | D6 | Same code as ask 1. |
 | 4. Space higher up | D11 to D14 | Built and tested: `rockets.ascentHeight`, default 96, range 24 to 256. |
-| 5. Launch flames | D15, D16 | Ignition burst built and tested. No render-type change (see below). |
-| 6. Europa | D17 to D25 | Design: `docs/decisions/2.4.0-europa.md`. Independent review: `docs/decisions/2.4.0-europa-review.md`, **8 open MAJOR**. Not built. |
+| 5. Launch flames | D15, D16 | Ignition burst built and tested. No render-type change (decision 6 below). |
+| 6. Europa | D17 to D25 | Built in six work packages, each verified by a separate agent. Not run in game. |
 
 ## Gate results
 
-Final gate, run 2026-11-20 on the tree as handed over:
+Final gate, run 2026-11-21 after the last change (WP6):
 
-- All 27 `:<loader>:<mc>:build` tasks green with `--rerun-tasks` (three batches of nine, every task
-  executed), including the unit tests on all nine NeoForge nodes.
-- `ecjCheck`: 0 errors on the nine 26.x nodes and the three 1.21.1 nodes; no warnings in the new files.
-- `ecjCheck` was **not** run on the fifteen 1.21.4 to 1.21.11 nodes in the final gate. An earlier run there
-  failed with unresolved EMI imports in `compat/emi/*`. Those lines have no EMI at all and none of that
-  code was touched, so this looks older than 2.4.0, but it was not run on a clean 2.3.1 tree to prove it.
-- Every touched JSON parses. `tools/gen_sky_overlays.py --check` passes.
+- All 27 `:<loader>:<mc>:build` tasks green with `--rerun-tasks`, with 884 unit tests in 211 classes on
+  each of the nine NeoForge nodes, 0 failed.
+- `ecjCheck`: 0 errors on the five nodes checked (`:neoforge:26.3`, `:fabric:26.3`, `:forge:26.3`,
+  `:neoforge:26.2`, `:neoforge:1.21.1`). A bare `ecjCheck` over every node fails on the fifteen 1.21.4 to
+  1.21.11 nodes with unresolved EMI imports in `compat/emi/*`, which no 2.4.0 work touched.
+- `:fabric:26.3:compileGametestJava` passes.
+- All 2,436 JSON files parse. Every generator `--check` is clean except `sky/earth_disk_globe.png`, which a
+  Linux shell has always reported stale.
+- `markdown_check` clean on every wiki page touched.
 - No dedicated server or render client was started. See `docs/SMOKE-2.4.0.md`.
 
-What the definition of done still lacks: Europa (ask 6), and the recorded runtime checks.
+## How the work was checked
+
+Each Europa work package was built by one agent and then read by a second agent that had not written it.
+Their findings, all fixed before the next package unless marked accepted:
+
+| Package | Blocker | Major | Notable fixes |
+| --- | --- | --- | --- |
+| Design | 0 | 8 | Resolved in `2.4.0-europa-amendments.md` before any code. |
+| WP1 + WP2 | 0 | 0 | Registration order, a salt-yield cap, lava counted as liquid, a chunk-edge load. |
+| WP3 | 1 | 0 | A 26.3 feature file that would have stopped every world loading on 26.3; the test that missed it; the Cryo + Rad card line. |
+| WP4 | 0 | 2 | The terraformed sea would have frozen through vanilla's height-adjusted freeze; the Vent Ray lost its vent. |
+| WP5 | 0 | 0 | The villager-planet fallback; Star Guide chapters 10 to 16 now frozen step by step. |
+| WP6 + release scan | 0 | 0 | Sky codec unchanged for every existing profile; 21 wiki claims checked against code; no hidden-content leak on the wiki. |
 
 ## Sky coverage (D2)
 
@@ -58,13 +77,17 @@ custom skybox could not be confirmed on those versions and a wrong id breaks the
    pack's clouds. The mainstream packs read at source level flatten or hide textured sky geometry in their
    End programs, so Earth, the Moon and Jupiter may not show under them. Shipped as designed and
    documented in `wiki/Shaders.md`. Alternatives are in `docs/decisions/2.4.0-survey.md`, section 3.5.
-2. **Cindara and Glacira** stay on the pack's overworld look. They could not be viewed under a pack.
-3. **`sky.bodyStyle` default** is `globe`. In `square` style the sun's aureole glow still draws; only the
-   limb glow is blanked.
+2. **Cindara and Glacira** use the pack's End look too: the owner chose it for both on 2026-11-21. They could
+   not be viewed under a pack. Greenxertz is the only world left on the Overworld look.
+3. **`sky.bodyStyle` default** is `globe` (owner's choice, 2026-11-21); `square` is the opt-in. In `square` style the sun's aureole glow still draws; only the
+   limb glow is blanked. Since 2026-11-21 the square variants are flat renders at each globe texture's own
+   resolution (same palette and surface, no limb darkening, hard square edge) instead of 16×16-cell squares.
 4. **Ascent default** is 96 blocks, about 8 seconds.
-5. **Oxygen for a launch.** `Crew.FLIGHT_TICKS` still budgets a 100-tick ascent. A 96-block climb lasts
-   159 ticks, so the per-seat oxygen requirement is slightly short of the real flight. Crew rules were
-   left unchanged as the brief says.
+5. **Oxygen for a launch.** Resolved 2026-11-21: the per-seat oxygen budget now uses the real ascent,
+   `AscentMath.duration(rockets.ascentHeight)` plus the descent and settle (`Crew.flightTicks`). At
+   `rockets.ascentHeight = 24` it is the 2.3.1 figure exactly (168 ticks, 34 mB a seat at the ride drain);
+   at the default 96 it is 227 ticks (46 mB), at 256 it is 288 ticks (58 mB). `Crew.FLIGHT_TICKS` stays as
+   the 24-block baseline.
 6. **Launch flames under shaders (D15).** The plume and lamps already use render types that Iris routes
    as emissive entity geometry on every supported version, so nothing was changed. If the plume is
    missing under a specific pack in your check, that is the case to fix.
@@ -72,11 +95,20 @@ custom skybox could not be confirmed on those versions and a wrong id breaks the
    guard keeps NeoForge 26.3 from drawing twice. The 26.1.2 resource overlay now also carries a mixin
    config, which is a new use of that overlay.
 8. **Mars shows Earth as a night-gated decal**, not a body, because bodies have no night gate.
-9. **Europa.** The design cannot be built as written. The review's eight MAJOR findings need design
-   changes first, and three of them are your call: the temperature band (`FRIGID` with a milder biome tag,
-   instead of `COLD`), whether terraformed Europa is breathable, and whether every block must have a
-   crafting recipe. The world generation also needs tuning in a dev client, which the build agent does
-   not have.
+9. **Europa's decisions taken during the build** (all in the amendments and the build status):
+   - Surface band `FRIGID` (Rad-Lined Cryo Suit) with a milder band under the ice (any Tier 2 suit).
+   - Terraforming ends in an open sea on top of the ice; the air never becomes breathable.
+   - Every Europa block has a survival source and a recipe use. The europium easter egg stays decorative.
+   - Two weather events on one world through a small additive `secondaryWeather` change; no new
+     `WeatherEvent` constant (the plume fall reuses Diamond Dust, the radiation storm reuses Flare, so the
+     HUD shows those names).
+   - Ice fractures are their own worldgen feature, so the layer bounds are exact and testable.
+   - The map layer is a proximity "Habitats" layer (village cores within 64 blocks; nothing stored).
+   - Jupiter drifts through 32 baked frames. Removing the `rotation` object from `sky/europa.json` brings
+     back a still Jupiter.
+   - Smaller deviations a player would notice are on `wiki/Europa.md`; the full list is in the build status.
+10. **Europa terrain was never tuned in a client.** The layer bounds are exact by construction, but how the
+    surface, shell and ocean look and how often features appear needs your eye.
 
 ## Not verified (needs a render client)
 
@@ -88,58 +120,51 @@ custom skybox could not be confirmed on those versions and a wrong id breaks the
 - Anything with a shader mod installed: that the game starts on each supported Iris version, the End
   mapping, and the plume.
 - The ascent at 24, 96 and 256 blocks on a dedicated server, and the ignition burst.
+- **Europa, all of it in play:** that the dimension loads on each cell, how the terrain and features look
+  and how often they appear, hazards by layer, the two weather events, the creatures' behaviour, the
+  Brinekin habitats and trades, terraforming to an open sea, Jupiter's drift and the noon eclipse, the
+  Star Guide chapter, advancements, quests, the compass and the Habitats map layer. Everything that can be
+  checked without a game is covered by unit tests and data checks.
 
 ## Residual risks
 
 - The shader support hooks one internal Iris method. If it moves, the support switches itself off and logs
   one line; the game still starts.
 - Packs that hide sky geometry by design (see decision 1).
+- Worldgen errors only show when a world loads. The verifiers cross-checked every Europa worldgen, loot,
+  advancement and quest file against vanilla or existing files of the same type and caught one such error;
+  a first load on each Minecraft line is still the real test.
 - `tools/gen_sky_textures.py --check` reports `sky/earth_disk_globe.png` stale in a Linux shell. The file
   was not touched by this work.
 
 ## Privacy
 
-No new personal data. The new log lines carry fixed strings only: no player names, UUIDs, positions,
-shader-pack names or file paths. No new saved player record, no change to the link module or to
-`PRIVACY.md`. The written review is `docs/decisions/2.4.0-compliance.md` (no open MAJOR); a scrub test
-pins the log lines.
-
-## Europa: what exists and what it needs
-
-- `docs/decisions/2.4.0-europa.md`: the full design (planet model, 17-row block matrix, ores, biomes,
-  hazards, weather, sky profile, creatures, culture, terraform table, easter egg, wiring).
-- `docs/decisions/2.4.0-europa-review.md`: independent review. **8 MAJOR, 24 MINOR, 7 NOTE.** Every change
-  it proposes outside the Europa package is additive, and a 2.3.1 save would load unchanged.
-- The MAJOR findings, in short: the 26.3 world-generation files are not specified and need tuning in a dev
-  client; the under-ice habitat would never generate at its planned height; the terraformed sea would
-  freeze over; three ores would drop nothing through the quarry; the radiation storm would be far too
-  rare; the eclipse window is wrong by about two times; the `COLD` band makes the rocket card ask for the
-  wrong suit; ten blocks have no recipe use.
-- The review gives a 15-slice build order and says which slices could be left out of a first beta.
-- Lists the siblings may want later (trophies, a colony type, more map layers) are in the design,
-  section 12.
-
-Europa is its own piece of work. The brief's Stage 4 gate ("no open MAJOR") is not met, so Stage 5 was
-not started.
+No new store and no new per-player record. Europa adds values to records that already exist (planet visits,
+advancements, gates, Star Guide steps, reputation with the Brinekin). The new Habitats map layer shows only
+village cores within 64 blocks of the viewer and stores nothing; `PRIVACY.md` gained one paragraph saying
+so. Log lines added in 2.4.0 carry fixed strings only; a scrub test pins them. The review is
+`docs/decisions/2.4.0-compliance.md`.
 
 ## Owner to-dos
 
-- Answer decision 9 so the Europa design can be corrected and built, or move Europa to a later release.
-- Run the in-game checklist in `docs/SMOKE-2.4.0.md`, including the shader pack matrix.
+- Run the in-game checklist in `docs/SMOKE-2.4.0.md`, including the shader pack matrix and the Europa
+  section.
 - Move the changelog entry from `[Unreleased]` to a dated `2.4.0-beta.1` heading when you release.
-- The wiki does not mention Europa anywhere. Add it to `wiki/Shaders.md` and `wiki/Configuration.md` when
-  it ships.
-- Delete the leftover scratch file `build/skyjavap.init.gradle` (ignored by git).
+- Delete by hand (the agents' mount cannot delete): `temp/europa_wp1_preview.png` and
+  `build/skyjavap.init.gradle`. Optionally the older helpers in `build/`: `checkLang`, `gitconflicts`,
+  `javapKeys`, `javapSky`, `javapSleep` (`.init.gradle`) and `maxerrs.gradle`.
 - Commit, tag and publish when ready.
 
-## Draft reply to the commenter (covers asks 1 to 5; add Europa when it ships)
+## Draft reply to the commenter
 
 > Thanks for coming back with more detail, it helped a lot. In the next beta:
 >
-> - With shaders on, the Moon, Mars, the station and Nyxara now ask your shader pack for its dark "End"
->   look, so space is no longer blue and the pack's clouds are gone from the Moon. This works through Iris.
+> - With shaders on, the Moon, Mars, the station, Nyxara and Europa now ask your shader pack for its dark
+>   "End" look, so space is no longer blue and the pack's clouds are gone from the Moon. This works through
+>   Iris.
 > - Earth, the Moon and the other bodies now show in the sky on Fabric, Forge and NeoForge for 26.1.2,
->   26.2 and 26.3. If you prefer square, vanilla-style suns and planets, set `sky.bodyStyle = square`.
+>   26.2 and 26.3. If you prefer square, vanilla-style suns and planets, set `sky.bodyStyle = square`:
+>   they keep the same detail as the round globes.
 >   One honest limit: some shader packs replace the whole End sky with their own effect and hide what
 >   mods draw there. The new Shaders wiki page explains the settings to try.
 > - Rockets now climb four times higher before the jump to space, and server owners can raise it further
@@ -147,4 +172,6 @@ not started.
 >   worlds are only a few hundred blocks tall, so the climb is the part you see and the rest is the
 >   transfer.
 > - Launches now kick out a burst of flame and smoke at lift-off, on top of the exhaust plume.
-> - Europa is designed and on its way.
+> - Europa is in: a Tier 4 ice moon under a giant Jupiter, with a cracked ice surface, a thick ice shell
+>   and a dark ocean with hydrothermal vents underneath. It has its own creatures, the Brinekin villagers,
+>   new materials for your tech, and terraforming that opens a sea on the ice.

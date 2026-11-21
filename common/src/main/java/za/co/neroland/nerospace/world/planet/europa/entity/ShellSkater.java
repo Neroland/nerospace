@@ -47,7 +47,7 @@ public class ShellSkater extends TerraformLivestock {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        // Between tempting (3) and following a parent (4): a lick only when nothing more pressing is going on.
+        // Priority 4, the same as following a parent; the goal skips babies, so the two never compete.
         this.goalSelector.addGoal(4, new LickSaltGoal(this));
     }
 
@@ -80,11 +80,15 @@ public class ShellSkater extends TerraformLivestock {
 
     @Override
     public float getWalkTargetValue(BlockPos pos, LevelReader level) {
-        if (level.getBlockState(pos).is(EuropaContent.PENITENTE_BLADE.get())
-                || level.getBlockState(pos.below()).is(EuropaContent.PENITENTE_BLADE.get())) {
+        BlockState below = level.getBlockState(pos.below());
+        boolean blade = level.getBlockState(pos).is(EuropaContent.PENITENTE_BLADE.get())
+                || below.is(EuropaContent.PENITENTE_BLADE.get());
+        if (blade) {
             return EuropaFaunaRules.BLADE_AVOIDANCE;
         }
-        return super.getWalkTargetValue(pos, level);
+        // V4-03: over ice the value is never negative, so the dark shell interior can spawn skaters (natural
+        // spawning needs a walk-target value of at least 0; the inherited one is light-dependent).
+        return EuropaFaunaRules.skaterWalkValue(false, isIce(below), super.getWalkTargetValue(pos, level));
     }
 
     @Override

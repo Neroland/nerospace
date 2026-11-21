@@ -1,0 +1,8 @@
+{
+  "item": "nerospace:deuterium_shard",
+  "tier": "rare",
+  "min_gate": null,
+  "planet": "nerospace:europa",
+  "weight_override": null,
+  "enabled": true
+}

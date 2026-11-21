@@ -92,6 +92,10 @@ class GuiAssetsTest {
     }
 
     /** Every key the reworked screens and the HUD use. */
+    /** Keys added in 2.4.0 (Europa), English only by the translation workflow. */
+    static final java.util.Set<String> ENGLISH_ONLY = java.util.Set.of(
+            "gui.nerospace.star_guide.chapter.worlds_europa", "gui.nerospace.star_guide.rail.worlds_europa");
+
     static List<String> usedKeys() {
         List<String> keys = new ArrayList<>(List.of(
                 "gui.nerospace.star_guide.progress", "gui.nerospace.star_guide.progress.tooltip",
@@ -137,6 +141,9 @@ class GuiAssetsTest {
                 assertNotNull(in, locale);
                 JsonObject o = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
                 for (String k : keys) {
+                    if (!locale.equals("en_us") && ENGLISH_ONLY.contains(k)) {
+                        continue; // 2.4.0 text ships English only; Weblate fills the rest (the game falls back)
+                    }
                     assertTrue(o.has(k) && !o.get(k).getAsString().isBlank(), locale + " missing " + k);
                 }
             }

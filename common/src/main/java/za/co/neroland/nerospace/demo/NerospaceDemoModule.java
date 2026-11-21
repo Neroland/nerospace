@@ -92,7 +92,9 @@ public final class NerospaceDemoModule implements DemoModule {
             new Outpost("cindara", "eclipse", 0, 0, Float.NaN),
             new Outpost("glacira", "aurora", 0, 0, Float.NaN),
             new Outpost("greenxertz", "twin_noon", 0, 0, Float.NaN),
-            new Outpost("nyxara", "band", 0, 0, Float.NaN));
+            new Outpost("nyxara", "band", 0, 0, Float.NaN),
+            // 2.4.0: Europa under the eclipse (the sun behind Jupiter), appended last.
+            new Outpost("europa", "eclipse", 0, 0, Float.NaN));
 
     /** Registers the module with Core; additive, never fails Nerospace's init. */
     public static void register() {

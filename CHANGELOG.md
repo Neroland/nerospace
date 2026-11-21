@@ -7,20 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-This is 2.4.0-beta.1 (not yet released). Client and server must run the same version. Europa is planned but is not in this build.
+## [2.4.0-beta.1] - 2026-11-21
+
+Client and server must run the same version.
 
 ### Added
 
+- Europa, a new Tier 4 world: an ice moon under a giant Jupiter that never moves, with an eclipse every noon. Fly there with a Tier 4 rocket from the Heavy Launch Complex.
+- Europa has three layers: a cracked ice surface (ice plains, chaos terrain, rust-red lineae and penitente fields), a thick ice shell with brine pockets, and a dark hidden ocean with hydrothermal vent fields on its floor.
+- Europa's hazards change by layer: the open surface is frigid and irradiated (a Rad-Lined Cryo Suit), the cold under the ice is milder (any Tier 2 suit), and an active vent keeps the cold away. Shading ice over your head blocks the surface radiation.
+- Two kinds of Europa weather: plume falls of slow glittering ice, and radiation storms around noon that raise the surface radiation. The server setting `weather.europa.enabled` switches both.
+- New Europa blocks and items that feed the tech chain: Deuterium Cells for the Combustion Generator and rocket fuel, Oxidant Crystals for oxygen in the Fuel Refinery, Brine Salt for Perchlorate Oxidiser, and Vent Sulfide for copper and sulfur, plus melting ice, grippy cut ice, bricks and vent basalt for building.
+- Three Europa creatures: the glowing Lantern Drifter in the ocean, the Vent Ray circling the vents, and the Shell Skater gliding over the ice.
+- The Brinekin, Europa's villagers, who trade from under-ice habitats at sea level.
+- Terraforming Europa opens a shallow sea on top of the ice instead of making the air breathable: you still need oxygen, but no longer a Cryo Suit.
+- Jupiter's cloud bands drift slowly in Europa's sky (a still picture on `sky.quality = lite`). Shader packs get their End look on Europa too.
+- A Star Guide chapter, advancements and NeroQuests quests for Europa, and a Habitats map layer that shows alien village cores near you.
 - The planet sky (Earth over the Moon, the Moon and Earth from the station, Phobos, Deimos and Earth as a bright star over Mars, and each Nero world's own sky) now draws on Fabric, Forge and NeoForge for Minecraft 26.1.2, 26.2 and 26.3. Before, only NeoForge 26.3 drew it. The 1.21.x versions keep the plain sky colours.
-- Shader pack support through Iris (Fabric and NeoForge). With a shader pack on, the station, Luna, Mars and Nyxara ask the pack for its End look, so space no longer gets a blue sky and the pack's clouds no longer appear over the Moon. A pack that supports a Nerospace world itself always wins. Some packs hide what mods draw in the End sky; see the new Shaders wiki page.
+- Shader pack support through Iris (Fabric and NeoForge). With a shader pack on, the station, Luna, Mars, Nyxara, Cindara and Glacira ask the pack for its End look, so space no longer gets a blue sky and the pack's clouds no longer appear over the Moon. A pack that supports a Nerospace world itself always wins. Some packs hide what mods draw in the End sky; see the new Shaders wiki page.
 - New client settings `shaders.dimensionCompat` (`auto` or `off`) and `shaders.drawPlanetSky` (`true` or `false`). Both apply straight away.
-- New client setting `sky.bodyStyle` (`globe` or `square`): `square` draws the sun, moons and planets as flat, vanilla-style squares.
+- New client setting `sky.bodyStyle`: set it to `square` to draw the sun, moons and planets as flat, vanilla-style squares with the same detailed surfaces as the round globes (the default).
 - A burst of flame and smoke at the engine bells at the moment of lift-off, bigger on higher tiers. It follows your Particles video setting.
 - New server setting `rockets.ascentHeight` (default 96, range 24 to 256): how many blocks a rocket climbs before it leaves for its destination.
 
 ### Changed
 
 - Rockets now climb about 96 blocks before the transfer, four times the old 24, and the climb takes a little longer (about 8 seconds). The trip is still a transfer, not a flight through thousands of blocks. Keep the sky above the pad clear for the whole climb.
+- A crewed launch now reserves oxygen for the whole, longer climb.
+
+### Fixed
+
+- Under water, in lava or in powder snow, the planet sky's stars, sun, moons and planets no longer show through the water and the terrain around you. The planet sky steps aside while the fog is up and returns when you surface.
 
 ## [2.3.1] - 2026-11-17
 

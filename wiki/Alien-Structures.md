@@ -10,8 +10,10 @@ with a futuristic look: tile podiums, brick walls with **glowing crystal window 
 corner pillars**, **tapered roofs** and **crystal spires**. Each holds a **[Village Core](Village-Core)**.
 
 Hamlets and Ruins appear on every world with **[villagers](Alien-Villagers)**: Greenxertz, Cindara, Glacira and
-the Nyxara Twilight Band. Mega-Cities appear only on **Greenxertz** and in **Nyxara's Twilight Band**. Each
-culture builds the same shapes in its own materials:
+the Nyxara Twilight Band. On **[Europa](Europa)** the Brinekin build Hamlets only, as under-ice habitats at sea
+level inside the ice shell (a lamp-lit platform in an air dome, or a chamber carved into the ice). Mega-Cities
+appear only on **Greenxertz** and in **Nyxara's Twilight Band**. Each culture builds the same shapes in its own
+materials:
 
 | Planet | Walls | Floors and pillars | Windows and lights |
 | --- | --- | --- | --- |
@@ -19,6 +21,7 @@ culture builds the same shapes in its own materials:
 | Cindara | Block of Cindrite | polished basalt, Basalt Spire | Magma Glass, shroomlights |
 | Glacira | Block of Glacite | packed ice, Permafrost | blue ice, sea lanterns |
 | Nyxara | Nyx Stone | polished blackstone, purpur pillars | tinted glass, Void Crystal |
+| Europa | Europa Ice Bricks, Chaos Ice | Polished Vent Basalt, Cut Europa Ice | tinted glass, sea lanterns |
 
 Structures only appear in newly generated land.
 

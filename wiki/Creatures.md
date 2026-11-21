@@ -75,6 +75,30 @@ row of ice-shard back spines. Freeze-immune; slightly faster but more fragile th
 **Sounds:** creaks while idle, splinters when hurt, shatters on death. *(Placeholder aliases vanilla
 stray sounds.)*
 
+## Europa
+
+All three are passive and native to [Europa](Europa): nothing there (vacuum, cold, radiation, weather) harms them.
+
+### Lantern Drifter (ocean)
+
+A small glowing bell trailing four ribbons, drifting through Europa's hidden ocean in slow pulses. It rises toward
+light and active Hydrothermal Vents, sinks otherwise, and gathers in loose schools. Stranded out of water it
+lasts about ten seconds before it starts to suffocate. It is also the herd a Terraformer stocks in Europa's
+terraformed sea. **Drops up to one glow ink sac.** 6 HP.
+
+### Vent Ray (vent fields)
+
+A flat basalt-black manta with glowing ember gill lines, found deep in the Vent Fields (below Y 0). It circles an
+active vent, keeps to it, and now and then settles on the floor beside it; when you come within three blocks it
+flicks away. It spawns in Europa's terraformed sea only once that ground is Living. **Drops up to two Brine
+Salt.** 14 HP.
+
+### Shell Skater (ice)
+
+A low six-legged ice strider with blade feet and a rust saddle. It glides across any ice, licks Lineae Salt and
+keeps off Penitente Blades. It lives on the surface and in the dark ice shell. **Breeds with Brine Salt; drops up
+to one Brine Salt.** 8 HP.
+
 ## Bosses
 
 ### Ruin Warden
@@ -145,9 +169,9 @@ entry from an `event` alias to a `sound` file. No code changes are needed.
 
 ---
 
-**Spawn eggs:** all eight creatures — the five natives (Xertz Stalker, Quartz Crawler, Greenling,
-Cinder Stalker, Frost Strider) and the three livestock (Meadow Loper, Ember Strutter, Woolly Drift) —
-have creative spawn eggs in the Nerospace tab, each icon coloured to match its creature. For a quick
+**Spawn eggs:** the five natives (Xertz Stalker, Quartz Crawler, Greenling, Cinder Stalker, Frost
+Strider), the three livestock (Meadow Loper, Ember Strutter, Woolly Drift), the Moon Hopper, Dust Strider and
+Dusk Moth, and Europa's Lantern Drifter, Vent Ray and Shell Skater all have creative spawn eggs in the Nerospace tab, each icon coloured to match its creature. For a quick
 look at every creature, use the creative gallery command **`/nerospace gallery`**, which spawns each
 one frozen in place (no AI) under its name, sets the Mars natives beside the rover, and shows every
 block and item alongside.

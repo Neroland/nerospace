@@ -34,6 +34,9 @@ public class AlienVillagerRenderer
     private static final Identifier CINDARA_GLOW = tex("alien_villager_cindara_glow");
     private static final Identifier GLACIRA_GLOW = tex("alien_villager_glacira_glow");
     private static final Identifier DUSKBORN_GLOW = tex("alien_villager_duskborn_glow");
+    /** Brinekin (Europa): pale blue-grey skin with rust-salt markings and a glowing cyan throat. */
+    private static final Identifier BRINEKIN = tex("alien_villager_brinekin");
+    private static final Identifier BRINEKIN_GLOW = tex("alien_villager_brinekin_glow");
 
     @SuppressWarnings("this-escape")
     public AlienVillagerRenderer(EntityRendererProvider.Context context) {
@@ -47,6 +50,7 @@ public class AlienVillagerRenderer
             case CINDARA -> CINDARA_GLOW;
             case GLACIRA -> GLACIRA_GLOW;
             case NYXARA -> DUSKBORN_GLOW;
+            case EUROPA -> BRINEKIN_GLOW;
             case GREENXERTZ -> GLOW;
         };
     }
@@ -71,6 +75,7 @@ public class AlienVillagerRenderer
             case CINDARA -> CINDARA;
             case GLACIRA -> GLACIRA;
             case NYXARA -> DUSKBORN;
+            case EUROPA -> BRINEKIN;
             case GREENXERTZ -> (state.biomeId != null && state.biomeId.contains("meadow")) ? MEADOW : BASE;
         };
     }
@@ -91,6 +96,7 @@ public class AlienVillagerRenderer
             case CINDARA -> new float[] {1.15F, 0.88F};
             case GLACIRA -> new float[] {1.08F, 1.04F};
             case NYXARA -> new float[] {0.9F, 1.14F};
+            case EUROPA -> new float[] {0.96F, 1.06F};
             case GREENXERTZ -> new float[] {1.0F, 1.0F};
         };
     }

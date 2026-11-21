@@ -32,6 +32,9 @@ C C C
   - Nerosium Ingot → **1 Nerosium Dust**
   - Nerosteel Ore → **2 Raw Nerosteel**
   - Cindrite Ore → **2 Cindrite** · Glacite Ore → **2 Glacite** · Xertz Quartz Ore → **2 Xertz Quartz**
+  - [Europa](Europa): Deuterium Ice → **1 Deuterium Shard** · Oxidant Ice → **1 Oxidant Crystal** ·
+    Brine Salt Ore → **2 Brine Salt** · Vent Sulfide Ore → **1 Raw Vent Sulfide** · Smoker Chimney →
+    **1 Raw Vent Sulfide** · Raw Vent Sulfide → **2 Sulfur**
 
   The ore-block recipes mean **silk-touched ore** (hand-mined or from the quarry's Silk Touch Module)
   is never a dead end — grind it back into its raw material or gem.

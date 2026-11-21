@@ -65,8 +65,52 @@ class StarGuideLayoutFreezeTest {
             "freight/cargo_rocket=guide/cargo_rocket",
             "freight/first_freight=guide/first_freight");
 
+    /**
+     * {@code chapter/step=advancement} for chapters 10-16, in order, a trailing {@code !} marking a hidden step: the
+     * 2.x Worlds chapters as released and Europa (2.4.0). The per-chapter bit of a step is its position, so a reorder
+     * here would move saved progress. Never edit; append new chapters only.
+     */
+    private static final List<String> FROZEN_WORLDS = List.of(
+            "worlds_luna/worlds_luna_arrive=luna",
+            "worlds_luna/worlds_luna_ore=worlds/luna/ore",
+            "worlds_luna/worlds_luna_block=worlds/luna/block",
+            "worlds_luna/worlds_luna_weather=worlds/luna/weather",
+            "worlds_luna/worlds_luna_terraform=worlds/luna/terraform",
+            "worlds_luna/big_cheese=luna/the_big_cheese!",
+            "worlds_mars/worlds_mars_arrive=mars",
+            "worlds_mars/worlds_mars_ore=worlds/mars/ore",
+            "worlds_mars/worlds_mars_block=worlds/mars/block",
+            "worlds_mars/worlds_mars_weather=worlds/mars/weather",
+            "worlds_mars/worlds_mars_terraform=worlds/mars/terraform",
+            "worlds_cindara/worlds_cindara_arrive=cindara",
+            "worlds_cindara/worlds_cindara_ore=worlds/cindara/ore",
+            "worlds_cindara/worlds_cindara_block=worlds/cindara/block",
+            "worlds_cindara/worlds_cindara_weather=worlds/cindara/weather",
+            "worlds_cindara/worlds_cindara_terraform=worlds/cindara/terraform",
+            "worlds_glacira/worlds_glacira_arrive=glacira",
+            "worlds_glacira/worlds_glacira_ore=worlds/glacira/ore",
+            "worlds_glacira/worlds_glacira_block=worlds/glacira/block",
+            "worlds_glacira/worlds_glacira_weather=worlds/glacira/weather",
+            "worlds_glacira/worlds_glacira_terraform=worlds/glacira/terraform",
+            "worlds_greenxertz/worlds_greenxertz_arrive=greenxertz",
+            "worlds_greenxertz/worlds_greenxertz_ore=worlds/greenxertz/ore",
+            "worlds_greenxertz/worlds_greenxertz_block=worlds/greenxertz/block",
+            "worlds_greenxertz/worlds_greenxertz_weather=worlds/greenxertz/weather",
+            "worlds_greenxertz/worlds_greenxertz_terraform=worlds/greenxertz/terraform",
+            "worlds_nyxara/worlds_nyxara_arrive=nyxara",
+            "worlds_nyxara/worlds_nyxara_ore=worlds/nyxara/ore",
+            "worlds_nyxara/worlds_nyxara_block=worlds/nyxara/block",
+            "worlds_nyxara/worlds_nyxara_weather=worlds/nyxara/weather",
+            "worlds_nyxara/worlds_nyxara_terraform=worlds/nyxara/terraform",
+            "worlds_europa/worlds_europa_arrive=europa",
+            "worlds_europa/worlds_europa_ore=worlds/europa/ore",
+            "worlds_europa/worlds_europa_block=worlds/europa/block",
+            "worlds_europa/worlds_europa_weather=worlds/europa/weather",
+            "worlds_europa/worlds_europa_terraform=worlds/europa/terraform",
+            "worlds_europa/rare_earth=europa/rare_earth!");
+
     private static final List<String> WORLDS_ORDER = List.of("worlds_luna", "worlds_mars", "worlds_cindara",
-            "worlds_glacira", "worlds_greenxertz", "worlds_nyxara");
+            "worlds_glacira", "worlds_greenxertz", "worlds_nyxara", "worlds_europa");
 
     @Test
     @DisplayName("chapters 0-9: ids, step positions and advancements are the 1.6.0 layout")
@@ -83,9 +127,25 @@ class StarGuideLayoutFreezeTest {
     }
 
     @Test
-    @DisplayName("Worlds chapters are appended from index 10; the mask fits a data slot")
+    @DisplayName("chapters 10-16: the Worlds chapters' step ids, positions, advancements and hidden flags are frozen")
+    void frozenWorldsChapters() {
+        List<String> actual = new ArrayList<>();
+        for (int c = 10; c < 17; c++) {
+            StarGuide.Chapter chapter = StarGuide.CHAPTERS.get(c);
+            for (StarGuide.Step step : chapter.steps()) {
+                actual.add(chapter.id() + "/" + step.id() + "=" + step.advancement().getPath()
+                        + (step.hidden() ? "!" : ""));
+            }
+        }
+        assertEquals(FROZEN_WORLDS, actual);
+    }
+
+    @Test
+    @DisplayName("Worlds chapters are appended from index 10; each chapter's mask fits a data slot")
     void worldsAppended() {
-        assertTrue(StarGuide.CHAPTER_COUNT <= 16, "CHAPTER_COUNT " + StarGuide.CHAPTER_COUNT);
+        // 2.4.0: Europa is chapter 16, so there are 17. The per-chapter mask (<= 16 steps) is what must fit a
+        // 16-bit data slot; the chapter count only sizes the data array and the varint button id (chapter * 16 + step).
+        assertEquals(17, StarGuide.CHAPTER_COUNT);
         for (int i = 0; i < WORLDS_ORDER.size(); i++) {
             assertEquals(WORLDS_ORDER.get(i), StarGuide.CHAPTERS.get(10 + i).id());
         }
@@ -109,6 +169,27 @@ class StarGuideLayoutFreezeTest {
             assertFalse(steps.get(i).hidden(), steps.get(i).id());
         }
         assertFalse(luna.isShown(steps.size() - 1, 0), "the cheese step is never hinted");
+    }
+
+    @Test
+    @DisplayName("worlds_europa: chapter 16, arrival first, the hidden rare_earth step last and the only hidden one")
+    void europaChapter() {
+        StarGuide.Chapter europa = StarGuide.CHAPTERS.get(16);
+        assertEquals("worlds_europa", europa.id());
+        List<StarGuide.Step> steps = europa.steps();
+        assertEquals(6, steps.size());
+        assertEquals("worlds_europa_arrive", steps.get(0).id());
+        StarGuide.Step last = steps.get(steps.size() - 1);
+        assertEquals("rare_earth", last.id());
+        assertEquals("europa/rare_earth", last.advancement().getPath());
+        assertTrue(last.hidden());
+        for (int i = 0; i < steps.size() - 1; i++) {
+            assertFalse(steps.get(i).hidden(), steps.get(i).id());
+        }
+        assertFalse(europa.isShown(steps.size() - 1, 0), "the hidden step is never hinted");
+        assertEquals(List.of("worlds_europa_arrive", "worlds_europa_ore", "worlds_europa_block",
+                "worlds_europa_weather", "worlds_europa_terraform", "rare_earth"),
+                steps.stream().map(StarGuide.Step::id).toList());
     }
 
     @Test

@@ -1,0 +1,36 @@
+{
+  "parent": "nerospace:europa",
+  "criteria": {
+    "has_europium": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:raw_europium"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.nerospace.europa.rare_earth.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "id": "nerospace:raw_europium"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.nerospace.europa.rare_earth.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_europium"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

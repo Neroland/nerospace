@@ -16,7 +16,7 @@ rocket still flies to [Luna](Luna) and [Mars](Mars). Every rocket can fly home.
 | **Tier 1** | Orbital Station, Luna | one pad block | Red livery, single bell, four raked fins, four landing legs, porthole cockpit |
 | **Tier 2** | Orbital Station, Luna, Greenxertz, Mars | 3×3 | Nerosium-purple livery, twin strap-on boosters, spinning radar dish, two fins |
 | **Tier 3** | Orbital Station, Luna, Greenxertz, Mars, Cindara | ringed 3×3 | Gold / green livery, main bell ringed by four verniers, fold-out solar wings, scanning dish boom, panoramic canopy, long nose |
-| **Tier 4** | Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira, Nyxara (after Deep Space progress) | Heavy Launch Complex | Ice-blue livery, wide five-engine core, four boosters, grid fins, heavy legs, the tallest nose |
+| **Tier 4** | Orbital Station, Luna, Greenxertz, Mars, Cindara, Glacira, Nyxara (after Deep Space progress), [Europa](Europa) | Heavy Launch Complex | Ice-blue livery, wide five-engine core, four boosters, grid fins, heavy legs, the tallest nose |
 
 Each tier is bigger than the last, both in geometry and in scale, so the progression reads from across
 the base.
@@ -48,9 +48,10 @@ have four seats; bigger tiers go further, not fuller.
   rocket when it lands. Each of you gets the arrival message, your own Star Guide progress and your own
   first-visit record.
 - **Oxygen is shared.** With two or more aboard, the rocket needs enough onboard oxygen for every seat
-  for the flight. The consoles show **CREW n/4 · O₂ FOR n**: if the oxygen covers fewer seats than are
-  filled, the status reads **NEEDS OXYGEN**. Load more from an Oxygen Generator or fly with fewer crew.
-  On arrival the rocket's leftover oxygen is shared out between the crew as your reserve. A solo flight
+  for the whole flight: the climb, the descent and the landing. A taller climb (see
+  [Ascent height](#ascent-height)) needs a little more per seat. The consoles show **CREW n/4 · O₂ FOR n**:
+  if the oxygen covers fewer seats than are filled, the status reads **NEEDS OXYGEN**. Load more from an
+  Oxygen Generator or fly with fewer crew. On arrival the rocket's leftover oxygen is shared out between the crew as your reserve. A solo flight
   needs no onboard oxygen, as before.
 - **Cooldown.** Each player has their own short launch cooldown, so riding along doesn't skip yours. If
   someone aboard is still cooling down, the pilot is told "a crew member" is, and that player sees their
@@ -90,8 +91,9 @@ A rocket climbs about **96 blocks** over roughly 8 seconds before the transfer t
 worlds add a little extra height. The trip itself is still a transfer, not a flight through thousands of
 blocks: Minecraft worlds are only a few hundred blocks tall, so the climb is the visible part of the launch.
 
-Fuel, launch cooldown, crew rules and the landing are the same at every height. Keep the sky above the pad
-clear for the whole climb, since the hull still collides with blocks on the way up.
+Fuel, launch cooldown, crew rules and the landing are the same at every height. A crewed launch reserves
+oxygen for the whole climb, so a taller climb needs a little more onboard oxygen per seat. Keep the sky above
+the pad clear for the whole climb, since the hull still collides with blocks on the way up.
 
 The burst at lift-off follows your **Particles** video setting like any other particle.
 

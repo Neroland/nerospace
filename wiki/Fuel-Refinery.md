@@ -42,6 +42,9 @@ N R N
   **2,000 mB** of rocket fuel — the same fuel two hand-crafted canisters give, without the iron or the
   clicking.
 
+- **Oxygen line:** a third slot takes [Luna](Luna)'s Raw Ilmenite (a Titanium Ingot plus oxygen) or an
+  **Oxidant Crystal** from [Europa](Europa): one crystal gives **400 mB of oxygen** and no ingot. A crystal is only
+  used while the refinery's 1,000 mB oxygen store has 400 mB free, so none is wasted.
 - **Output:** the internal **8,000 mB** tank exposes the fluid capability, so pipes carry the fuel away.
 - **Auto-push:** it pushes up to **200 mB/t** of fuel into any tank or pipe that touches it, by itself.
 - **Comparator:** emits a redstone signal scaled to its fuel level.

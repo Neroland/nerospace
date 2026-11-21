@@ -18,7 +18,7 @@ import za.co.neroland.nerospace.world.planet.PlanetDefinition;
 import za.co.neroland.nerospace.world.planet.Planets;
 
 /**
- * The four villager cultures. Luna, Mars and the station have none: silence on the Moon, wrecks and a
+ * The five villager cultures. Luna, Mars and the station have none: silence on the Moon, wrecks and a
  * salvage drone on Mars. A planet names its culture through {@code PlanetTraits.villagerCulture()}.
  */
 public final class VillagerCultures {
@@ -31,9 +31,12 @@ public final class VillagerCultures {
             AlienVillager.Planet.GLACIRA, false, false, "nerospace:frost_shard");
     public static final VillagerCulture DUSKBORN = new VillagerCulture(AlienTrades.DUSKBORN,
             AlienVillager.Planet.NYXARA, true, true, "nerospace:shadow_lichen");
+    /** Europa (2.4.0): under-ice habitats, no Mega City, no band rule. */
+    public static final VillagerCulture BRINEKIN = new VillagerCulture(AlienTrades.BRINEKIN,
+            AlienVillager.Planet.EUROPA, false, false, "nerospace:brine_salt");
 
     /** In {@link AlienVillager.Planet} ordinal order. */
-    public static final List<VillagerCulture> ALL = List.of(XERTZ, EMBER_KIN, FROSTBOUND, DUSKBORN);
+    public static final List<VillagerCulture> ALL = List.of(XERTZ, EMBER_KIN, FROSTBOUND, DUSKBORN, BRINEKIN);
 
     /** The Nyxara twilight band, where the Duskborn live. */
     public static final TagKey<Biome> NYXARA_BAND = TagKey.create(Registries.BIOME,

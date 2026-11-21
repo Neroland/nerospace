@@ -19,9 +19,11 @@ import za.co.neroland.nerospace.world.planet.europa.block.HydrothermalVentBlock;
 
 /**
  * Vent Ray (design 9.2): a flat manta of the ocean floor. Every {@link EuropaFaunaRules#RETARGET_TICKS} ticks it
- * looks for the nearest active hydrothermal vent with one bounded search (at most
- * {@link EuropaFaunaRules#SCAN_MAX_READS} block reads, nearest first, loaded chunks only) and keeps that position;
- * it then glides in wide circles around it. Near the vent it sometimes settles on the floor for 100-300 ticks.
+ * keeps its vent if that is still loaded, active and within {@link EuropaFaunaRules#LEASH}; otherwise it looks for
+ * the nearest active hydrothermal vent with one bounded search (at most {@link EuropaFaunaRules#SCAN_MAX_READS}
+ * block reads on a lattice spanning the 25 x 9 x 25 box, shifted every search, loaded chunks only) and keeps that
+ * position; it then glides in wide circles around it. On or inside its circle it sometimes settles on the floor for
+ * 100-300 ticks.
  * A player within 3 blocks makes it flick 6 blocks away. With no vent it wanders. Never hostile; stores nothing
  * about any player (the vent position is not saved). Sounds reuse the vanilla tropical fish.
  */
@@ -29,6 +31,8 @@ public class VentRay extends EuropaSwimmer {
 
     private BlockPos vent;
     private int retargetIn;
+    /** Which lattice the next search reads (memory only). */
+    private int scanPass;
     private int settleTicks;
     private double angle;
     private Vec3 fleeTarget;
@@ -66,7 +70,9 @@ public class VentRay extends EuropaSwimmer {
         }
         if (--this.retargetIn <= 0) {
             this.retargetIn = EuropaFaunaRules.RETARGET_TICKS;
-            this.vent = this.findVent();
+            if (!this.ventStillHolds()) {
+                this.vent = this.findVent();
+            }
         }
         if (this.vent != null) {
             double dx = this.vent.getX() + 0.5D - this.getX();
@@ -115,12 +121,31 @@ public class VentRay extends EuropaSwimmer {
         this.fleeTarget = this.position().add(away.normalize().scale(EuropaFaunaRules.FLEE_DISTANCE));
     }
 
-    /** Nearest active vent in the bounded search box, reading loaded positions only; null when none. */
+    /** The cached vent is kept while it is loaded, still active and within the leash (one block read). */
+    private boolean ventStillHolds() {
+        if (this.vent == null) {
+            return false;
+        }
+        Level level = this.level();
+        boolean loaded = level.isLoaded(this.vent);
+        boolean active = false;
+        if (loaded) {
+            BlockState s = level.getBlockState(this.vent);
+            active = s.is(EuropaContent.HYDROTHERMAL_VENT.get()) && s.getValue(HydrothermalVentBlock.ACTIVE);
+        }
+        return EuropaFaunaRules.keepVent(loaded, active,
+                this.distanceToSqr(this.vent.getX() + 0.5D, this.vent.getY() + 0.5D, this.vent.getZ() + 0.5D));
+    }
+
+    /**
+     * Nearest active vent among this search's lattice of the box (the lattice shifts every search), reading loaded
+     * positions only; null when none.
+     */
     private BlockPos findVent() {
         BlockPos origin = this.blockPosition();
         Level level = this.level();
         BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
-        for (int[] o : EuropaFaunaRules.scanOffsets()) {
+        for (int[] o : EuropaFaunaRules.scanOffsets(this.scanPass++)) {
             at.set(origin.getX() + o[0], origin.getY() + o[1], origin.getZ() + o[2]);
             if (!level.isLoaded(at)) {
                 continue;

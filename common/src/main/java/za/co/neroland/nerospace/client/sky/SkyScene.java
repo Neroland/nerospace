@@ -30,6 +30,10 @@ import net.minecraft.resources.Identifier;
  * {@code yaw / pitch}, {@code size} degrees tall, turned by {@code roll} and slid along its own x by {@code offsetX}
  * half-sizes; additive quads use the celestial (src-alpha additive) blend, the others the translucent one.</p>
  *
+ * <p><b>Rotation</b> (2.4.0): a planet or moon with a {@code rotation} draws frame {@code floor(f)} of its baked sheet
+ * opaque and frame {@code (floor(f) + 1) % frames} over it at alpha {@code frac(f)}, where
+ * {@code f = frac(timeTicks / periodTicks) * frames}; without one, or in lite quality, it draws its still texture.</p>
+ *
  * <p><b>Night shade</b>: a body with a {@code nightShade} gets one frame of a 16-frame phase sheet
  * ({@code <texture>_00 … _15}), frame {@code round(k · 15)} for the lit fraction {@code k = (1 − cos)/2}, centred on
  * the body and turned so its local +x faces the first sun; each frame bakes the elliptical terminator for its
@@ -451,6 +455,8 @@ public final class SkyScene {
     private static final Identifier[] DEFAULT_SHADE_SHEET = shadeSheet(DEFAULT_SHADE);
     // Phase sheets of resource-pack shade textures, resolved once per texture.
     private static final ConcurrentHashMap<Identifier, Identifier[]> SHADE_SHEETS = new ConcurrentHashMap<>();
+    // Rotation sheets (Body.rotation), resolved once per base texture.
+    private static final ConcurrentHashMap<Identifier, Identifier[]> ROTATION_SHEETS = new ConcurrentHashMap<>();
 
     public int zenith;
     public int horizon;
@@ -713,8 +719,8 @@ public final class SkyScene {
             }
         }
         float earthshine = 0.0F;
-        earthshine += addSolid(p.bodies(), in.days, haveSun, roll, bodyAlpha);
-        earthshine += addSolid(p.moons(), in.days, haveSun, roll, bodyAlpha);
+        earthshine += addSolid(p.bodies(), in.days, haveSun, roll, bodyAlpha, in.timeTicks, cfg.lite());
+        earthshine += addSolid(p.moons(), in.days, haveSun, roll, bodyAlpha, in.timeTicks, cfg.lite());
 
         // Decals: fixed ones go behind the bodies; anchored ones after them.
         List<SkyProfile.Decal> decals = p.decals();
@@ -951,7 +957,8 @@ public final class SkyScene {
     }
 
     /** Adds planets or moons (disc, limb glow, night shade, lights); returns their earthshine sum. */
-    private float addSolid(List<SkyProfile.Body> list, double days, boolean haveSun, float roll, float alpha) {
+    private float addSolid(List<SkyProfile.Body> list, double days, boolean haveSun, float roll, float alpha,
+            double timeTicks, boolean lite) {
         float earthshine = 0.0F;
         for (int i = 0; i < list.size(); i++) {
             SkyProfile.Body b = list.get(i);
@@ -974,7 +981,19 @@ public final class SkyScene {
                 this.quads.add(quad(g.texture(), yaw, pitch, b.size() * g.scale(), 1.0F, 0.0F, 0.0F,
                         SkyProfile.rgb(g.color()), clamp01(g.strength() * alpha), true));
             }
-            if (b.texture().isPresent()) {
+            if (rotates(b, lite)) {
+                // Baked rotation: frame floor(f) opaque, the next frame over it at frac(f) (translucent blend).
+                SkyProfile.Rotation r = b.rotation().get();
+                double f = rotationPosition(timeTicks, r.frames(), r.periodTicks());
+                int a = rotationFrameA(f, r.frames());
+                this.quads.add(quad(rotationTexture(r.texture(), a, r.frames()), yaw, pitch, b.size(), 1.0F, bodyRoll,
+                        0.0F, rgb, alpha, false));
+                float blend = rotationBlend(f);
+                if (blend > 0.0F) {
+                    this.quads.add(quad(rotationTexture(r.texture(), rotationFrameB(f, r.frames()), r.frames()), yaw,
+                            pitch, b.size(), 1.0F, bodyRoll, 0.0F, rgb, clamp01(blend * alpha), false));
+                }
+            } else if (b.texture().isPresent()) {
                 this.quads.add(quad(b.texture().get(), yaw, pitch, b.size(), 1.0F, bodyRoll, 0.0F, rgb, alpha, false));
             }
             if (b.nightShade().isPresent() && haveSun) {
@@ -1016,6 +1035,67 @@ public final class SkyScene {
         double sy = dot(sunDir, ey);
         out[0] = (float) Math.toDegrees(Math.atan2(sy, sx));
         out[1] = (float) clamp01(k);
+    }
+
+    /**
+     * Whether {@code b} draws its baked rotation frames instead of its still texture: it has a {@code rotation} with
+     * more than one frame and a positive period, and the sky quality is not lite (lite draws the still).
+     */
+    public static boolean rotates(SkyProfile.Body b, boolean lite) {
+        if (lite || b.rotation().isEmpty()) {
+            return false;
+        }
+        SkyProfile.Rotation r = b.rotation().get();
+        return r.frames() > 1 && r.periodTicks() > 0;
+    }
+
+    /** Position in a rotation loop at {@code timeTicks}: {@code frac(timeTicks / periodTicks) * frames}, in [0, frames). */
+    public static double rotationPosition(double timeTicks, int frames, int periodTicks) {
+        if (frames <= 1 || periodTicks <= 0) {
+            return 0.0;
+        }
+        double f = frac(timeTicks / periodTicks) * frames;
+        return f >= frames ? 0.0 : f;
+    }
+
+    /** The opaque frame at loop position {@code f}: {@code floor(f)}, clamped to [0, frames - 1]. */
+    public static int rotationFrameA(double f, int frames) {
+        return Math.max(0, Math.min(Math.max(1, frames) - 1, (int) Math.floor(f)));
+    }
+
+    /** The frame cross-faded over it: {@code (floor(f) + 1) % frames} (the loop closes on frame 0). */
+    public static int rotationFrameB(double f, int frames) {
+        return (rotationFrameA(f, frames) + 1) % Math.max(1, frames);
+    }
+
+    /** Alpha of the cross-faded frame: {@code frac(f)}, 0..1. */
+    public static float rotationBlend(double f) {
+        return (float) clamp01(frac(f));
+    }
+
+    /** Frame {@code frame} of the rotation sheet whose base is {@code base}: {@code <base>_NN.png}. */
+    public static Identifier rotationTexture(Identifier base, int frame, int frames) {
+        Identifier[] sheet = ROTATION_SHEETS.get(base);
+        if (sheet == null || sheet.length != Math.max(1, frames)) {
+            sheet = frameSheet(base, Math.max(1, frames));
+            ROTATION_SHEETS.put(base, sheet);
+        }
+        return sheet[Math.max(0, Math.min(sheet.length - 1, frame))];
+    }
+
+    /** The file name of frame {@code i} of a sheet whose base is {@code base}: {@code <base>_NN.png}, two digits at least. */
+    public static Identifier frameTexture(Identifier base, int i) {
+        String path = base.getPath();
+        String stem = path.endsWith(".png") ? path.substring(0, path.length() - 4) : path;
+        return Identifier.fromNamespaceAndPath(base.getNamespace(), stem + (i < 10 ? "_0" : "_") + i + ".png");
+    }
+
+    private static Identifier[] frameSheet(Identifier base, int frames) {
+        Identifier[] sheet = new Identifier[frames];
+        for (int i = 0; i < frames; i++) {
+            sheet[i] = frameTexture(base, i);
+        }
+        return sheet;
     }
 
     /** The phase-sheet frame for lit fraction {@code k}: {@code round(k · 15)}, 0 beside the sun, 15 opposite it. */

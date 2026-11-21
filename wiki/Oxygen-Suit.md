@@ -51,13 +51,13 @@ the danger).
 
 Cold comes in two strengths. **Mars** is cold but not frigid: any full set of Tier 2 class pieces (Tier 2, Thermal
 or Cryo, even mixed) keeps its cold out, so a Tier 1 suit is the only one that struggles there. **Glacira**, the
-**Martian Polar Cap** and **Nyxara's Nightside** are **frigid**: only a full Cryo Suit (or, on Nyxara, a flaring
+**Martian Polar Cap**, **Nyxara's Nightside** and **Europa's surface** are **frigid**: only a full Cryo Suit (or, on Nyxara, a flaring
 Dawnband Stone within four blocks) keeps that cold out. The HUD badge warns with a red **HEAT!** / **COLD!** while you're exposed, with ember
 puffs (Cindara) or a creeping frost vignette (Glacira) as feedback.
 
 | | **Thermal Suit** | **Cryo Suit** |
 | --- | --- | --- |
-| Shields against | Cindara heat, Nyxara Dayside heat (and Mars cold, like any Tier 2 suit) | all cold: Glacira, the Martian Polar Cap, Nyxara Nightside, and Mars |
+| Shields against | Cindara heat, Nyxara Dayside heat (and Mars cold, like any Tier 2 suit) | all cold: Glacira, the Martian Polar Cap, Nyxara Nightside, Europa, and Mars |
 | Craft (per piece) | Tier 2 piece + 4 **Cindrite** | Tier 2 piece + 4 **Glacite** |
 | Repair material | Cindrite | Glacite |
 | Class | Tier 2 (tank 900) | Tier 2 (tank 900) |
@@ -69,7 +69,7 @@ keeps Mars' milder cold out).
 
 ## Rad Lining (radiation)
 
-Mars dust storms and Nyxara's Dayside and Nightside are **irradiated**. Without protection, radiation makes your
+Mars dust storms, Nyxara's Dayside and Nightside and Europa's open surface are **irradiated**. Without protection, radiation makes your
 suit drain at 4× and, from radiation level 2 upwards, hurts you while you stand outside a sealed oxygen field: one
 point of damage every two seconds at level 2 (a dust storm, the Dayside), two at level 3 (the Nightside, or the
 Dayside during a flare). The Moon and the orbital station never need it.
@@ -82,7 +82,9 @@ four** worn pieces are lined; the HUD then shows **RAD LINING**.
 Where several hazards meet, you need every matching protection: the Nyxara Nightside is irradiated **and** cold
 (a Rad-Lined Cryo Suit, or Rad Lining beside a flaring Dawnband Stone), the Dayside irradiated **and** hot
 (a Rad-Lined Thermal Suit), and Mars in a dust storm is irradiated **and** cold (any Rad-Lined Tier 2 suit; a
-Rad-Lined Cryo Suit on the Polar Cap). The HUD warns about the hazard that would hurt you next.
+Rad-Lined Cryo Suit on the Polar Cap). Europa's open surface is irradiated **and** frigid (a Rad-Lined Cryo Suit;
+the rocket screen's planet card reads *Cryo+Rad*), while under its ice shell any Tier 2 class suit is enough and
+no lining is needed. See [Europa](Europa). The HUD warns about the hazard that would hurt you next.
 
 ## Progression note
 

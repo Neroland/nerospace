@@ -241,7 +241,7 @@ public final class PlanetWeather {
             return false;
         }
         PlanetWeatherState state = state(level);
-        WeatherParams p = planet.secondaryWeather();
+        WeatherParams p = scaled(planet.secondaryWeather()); // the config multipliers apply, as for the primary
         state.machine.forceStart(p, WeatherMachine.MAX_TARGET, p.maxDurationTicks(), level.getRandom().nextLong());
         state.machine.reachPeak();
         state.markChanged();

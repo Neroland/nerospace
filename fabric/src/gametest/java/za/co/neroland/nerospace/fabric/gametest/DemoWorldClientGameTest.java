@@ -44,7 +44,8 @@ public final class DemoWorldClientGameTest implements FabricClientGameTest {
     private static final int FLOOR_Y = 64;
 
     /** Outposts in travel-pad order (Nerospace's NerospaceDemoModule.OUTPOSTS). */
-    private static final String[] WORLDS = {"station", "luna", "mars", "cindara", "glacira", "greenxertz", "nyxara"};
+    private static final String[] WORLDS = {"station", "luna", "mars", "cindara", "glacira", "greenxertz", "nyxara",
+        "europa"};
 
     @Override
     public void runTest(ClientGameTestContext context) {

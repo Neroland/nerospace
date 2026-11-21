@@ -48,11 +48,23 @@ public interface NerospaceMapSource {
     /** The worlds {@code player} has reached (their own visit record). */
     Set<PlanetId> visited(@Nullable MinecraftServer server, UUID player);
 
+    /**
+     * Village cores (2.4.0 {@code habitats} layer) in the block entities of the chunks already loaded within
+     * {@code radius} blocks of {@code centre} in {@code dimension}: position and culture id only. Never loads a
+     * chunk and keeps no index.
+     */
+    Collection<Habitat> habitatsNear(@Nullable MinecraftServer server, ResourceKey<Level> dimension, BlockPos centre,
+            int radius);
+
     /** A landed, empty rocket: the entity's own id (world content, not a person) and where it stands. */
     record ParkedRocket(UUID entityId, BlockPos pos) {
     }
 
     /** One terraformer's reach. Used only to draw an area; the centre is never drawn as a marker. */
     record Terraformed(BlockPos centre, int radius) {
+    }
+
+    /** A village core: where it stands and its culture id ({@code nerospace:<culture>}). No owner, no reputation. */
+    record Habitat(BlockPos pos, String culture) {
     }
 }

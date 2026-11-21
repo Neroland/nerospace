@@ -114,6 +114,12 @@ sent to your client for these lists.
 The salvage drones at Mars Rover Wrecks keep no reputation and no record of who traded with
 them, so there is nothing of yours to erase there.
 
+Europa (2.4.0) adds **no new store**. The existing records above simply gain Europa values: the planet
+visits, advancements, the two Europa progression gates, Star Guide steps and your reputation with Brinekin
+villagers and their Village Cores, all covered by the same erasure hook. The map layer of village cores
+("Habitats", for NeroMaps and the companion app) shows only cores within 64 blocks of you, in the world you
+are standing in, with their position and culture and never an owner, and it stores nothing.
+
 If the **NeroLink companion bridge** is installed, Nerospace exposes a read-only view of
 your own data to your paired companion client: your rockets and the launch pads around you
 (with how many players are aboard each rocket — a number, never who), the Mars rovers **you**

@@ -66,7 +66,9 @@ public class AlienVillager extends PathfinderMob implements Merchant {
     /** Which planet's species this villager belongs to (drives palette + silhouette later). */
     public enum Planet {
         // Persisted by ORDINAL ("Planet" NBT + synced data): append only, never reorder.
-        GREENXERTZ("xertz"), CINDARA("ember_kin"), GLACIRA("frostbound"), NYXARA("duskborn");
+        GREENXERTZ("xertz"), CINDARA("ember_kin"), GLACIRA("frostbound"), NYXARA("duskborn"),
+        // 2.4.0
+        EUROPA("brinekin");
 
         private final String culture;
 
@@ -89,9 +91,13 @@ public class AlienVillager extends PathfinderMob implements Merchant {
             return GREENXERTZ;
         }
 
+        /**
+         * The species stored as ordinal {@code i}. An out-of-range value (negative, or one a newer version wrote)
+         * reads as {@link #GREENXERTZ}, the read default, so the fallback stays the same when a species is appended.
+         */
         public static Planet byOrdinal(int i) {
             Planet[] values = values();
-            return values[Math.floorMod(i, values.length)];
+            return i >= 0 && i < values.length ? values[i] : GREENXERTZ;
         }
     }
 

@@ -30,6 +30,7 @@ Outputs (all under textures/entity/):
     lantern_drifter.png (+ _glow)           Europa ocean drifter (LanternDrifterModel)
     vent_ray.png (+ _glow)                  Europa vent-field glider (VentRayModel)
     shell_skater.png (+ _glow)              Europa ice strider (ShellSkaterModel)
+    alien_villager_brinekin.png (+ _glow)   Brinekin (Europa villager culture, renderer scales 0.96 x 1.06)
 """
 import hashlib
 import math
@@ -774,6 +775,57 @@ def shell_skater():
     return sh
 
 
+def brinekin():
+    """Europa Brinekin: under-ice people (renderer scales 0.96 x 1.06). Pale blue-grey skin with rust-salt
+    markings on the brow, cheeks and forearms, a bioluminescent cyan throat, a deep-ocean robe with a salt-white
+    hem and rust belt, basalt boots, and pale ice shoulder shards.  Glow layer: eyes, throat, shard tips."""
+    sh = Sheet(seed_of("alien_villager_brinekin"))
+    P = EUR
+    head, body, arm, leg = villager_base(sh, P["pale_l"], P["pale"], P["deep_l"], P["deep"], P["pale"])
+    f = head["front"]
+    # rust-salt brow band and cheek streaks
+    sh.hline(f, 1, P["rust"], x0=1, x1=7)
+    for (dx, dy) in ((1, 5), (1, 6), (6, 5), (6, 6)):
+        sh.dot(f, dx, dy, P["rust_d"])
+    sh.eyes(f, y=3, inset=1, size=2, eye=P["glow"], socket=P["deep_d"], glint=P["glow_l"])
+    sh.hline(f, 6, P["deep"], x0=3, x1=5)  # mouth
+    # cyan throat: the bottom row of the head front and the top two body-front rows
+    sh.hline(f, 7, P["glow"], glow=True, x0=2, x1=6)
+    r = body["front"]
+    sh.hline(r, 0, P["glow"], glow=True, x0=2, x1=6)
+    sh.hline(r, 1, P["glow_l"], glow=True, x0=3, x1=5)
+    # salt crust flecks on the crown
+    for name in ("top", "left", "right", "back"):
+        hr = head[name]
+        for _ in range(4):
+            sh.dot(hr, sh.rng.randrange(hr[2]), sh.rng.randrange(hr[3]), P["ice"])
+    for name in ("left", "right"):
+        sh.vline(head[name], 4, P["rust"], y0=2, y1=6)
+    # robe: salt-white hem, rust belt
+    for name in ("front", "back", "left", "right"):
+        br = body[name]
+        sh.hline(br, br[3] - 1, P["ice"])
+        sh.hline(br, br[3] - 2, P["ice_d"])
+        sh.hline(br, 7, P["rust"])
+        sh.hline(br, 8, P["rust_d"])
+    # forearm markings
+    for name in ("left", "right"):
+        ar = arm[name]
+        for dy in (5, 7):
+            sh.hline(ar, dy, P["rust"], x0=1, x1=3)
+    # boots: vent basalt
+    for name in ("front", "back", "left", "right"):
+        lr = leg[name]
+        sh.rect((lr[0], lr[1] + lr[3] - 3, lr[2], 3), P["basalt"])
+        sh.hline(lr, lr[3] - 3, P["basalt_l"])
+    # shoulder shards: shell ice with a lit tip
+    cr = sh.cube(*VILLAGER["crystal"], [P["ice"], P["ice_d"], P["ice_l"]], grain=0.5)
+    for name in ("front", "back", "left", "right"):
+        sh.dot(cr[name], 0, 0, P["glow_l"], glow=True)
+    sh.rect(cr["top"], P["glow"], glow=True)
+    return sh
+
+
 SKINS = {
     "alien_villager_cindara": (ember_kin, True),
     "alien_villager_glacira": (frostbound, True),
@@ -785,6 +837,7 @@ SKINS = {
     "lantern_drifter": (lantern_drifter, True),
     "vent_ray": (vent_ray, True),
     "shell_skater": (shell_skater, True),
+    "alien_villager_brinekin": (brinekin, True),
 }
 
 

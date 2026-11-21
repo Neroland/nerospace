@@ -223,10 +223,10 @@ public final class NerospaceConfig {
             "planet sky detail: full, or lite (half the aurora layers and segments, no cloud deck, slightly smaller "
             + "stars) for low-end GPUs. Client-side only");
     private static final ConfigValue<String> SKY_BODY_STYLE = SCHEMA.string("sky.bodyStyle", "globe", false,
-            "how suns, moons and planets are drawn in planet skies: globe (shaded spheres), or square (flat "
-            + "vanilla-style squares). Client-side only; applies straight away");
+            "how suns, moons and planets are drawn in planet skies: globe (shaded spheres), or square (flat, "
+            + "detailed squares in the vanilla style). Client-side only; applies straight away");
     private static final ConfigValue<String> SHADERS_DIMENSION_COMPAT = SCHEMA.string("shaders.dimensionCompat",
-            "auto", false, "with a shader pack: auto asks the pack for its End look on airless Nerospace worlds, so "
+            "auto", false, "with a shader pack: auto asks the pack for its End look on every Nerospace world but Greenxertz, so "
             + "they do not get a blue sky and the pack's clouds; off leaves the pack's own choice. A pack that "
             + "supports a Nerospace world itself always wins. Client-side only");
     private static final ConfigValue<Boolean> SHADERS_DRAW_PLANET_SKY = SCHEMA.bool("shaders.drawPlanetSky",

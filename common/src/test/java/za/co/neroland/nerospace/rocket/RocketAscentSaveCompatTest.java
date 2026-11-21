@@ -74,7 +74,9 @@ class RocketAscentSaveCompatTest {
         int define231 = rocket.indexOf("builder.define(DATA_PHASE_TICK");
         int defineAdded = rocket.indexOf("builder.define(DATA_ASCENT_TICKS");
         assertTrue(define231 > 0 && defineAdded > define231);
-        assertEquals(100, RocketEntity.LAUNCH_DURATION, "the baseline and the flight-time budget are unchanged");
+        assertEquals(100, RocketEntity.LAUNCH_DURATION, "the baseline is unchanged");
+        // The oxygen budget follows the real climb; at the 24-block baseline it is the 2.3.1 figure.
         assertEquals(168, Crew.FLIGHT_TICKS);
+        assertEquals(Crew.FLIGHT_TICKS, Crew.flightTicks(AscentMath.duration(AscentMath.BASE_HEIGHT)));
     }
 }

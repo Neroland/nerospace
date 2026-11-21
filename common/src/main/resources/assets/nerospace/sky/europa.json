@@ -39,6 +39,11 @@
     {
       "id": "jupiter",
       "texture": "nerospace:textures/sky/jupiter.png",
+      "rotation": {
+        "texture": "nerospace:textures/sky/jupiter",
+        "frames": 32,
+        "periodTicks": 24000
+      },
       "size": 24.0,
       "color": "#FFFFFF",
       "glow": 0.0,

@@ -1,0 +1,22 @@
+{
+  "parent": "nerospace:europa",
+  "criteria": {
+    "placed": {
+      "conditions": {
+        "location": [
+          {
+            "block": "nerospace:cut_europa_ice",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "requirements": [
+    [
+      "placed"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

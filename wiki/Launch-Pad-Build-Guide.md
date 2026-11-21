@@ -17,7 +17,7 @@ Each rocket tier needs a bigger pad. A bigger pad always works for a smaller roc
 | **1** | One Launch Pad block | Tier 1 rockets | The Orbital Station |
 | **2** | A full 3×3 of Launch Pads | Tier 1–2 rockets, Cargo Rockets | Greenxertz |
 | **3** | A 3×3 of Launch Pads, ringed with 16 Station Walls | Tier 1–3 rockets | Cindara |
-| **4** | A 5×5 of Launch Pads plus a Launch Gantry (the **Heavy Launch Complex**) | Every rocket | Glacira |
+| **4** | A 5×5 of Launch Pads plus a Launch Gantry (the **Heavy Launch Complex**) | Every rocket | Glacira, Nyxara, Europa |
 
 1. Craft the parts for the tier you want.
 2. Lay them out on flat ground, **all at the same height**.

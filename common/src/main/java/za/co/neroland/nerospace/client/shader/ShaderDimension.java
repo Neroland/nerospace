@@ -4,8 +4,8 @@ import java.util.Locale;
 
 /**
  * Which of a shader pack's three vanilla program sets a world asks for. A sky profile names one with its
- * optional {@code shaderDimension} field; airless worlds use {@link #END} so a pack does not paint a blue
- * sky and its own clouds over them.
+ * optional {@code shaderDimension} field; every Nerospace world but Greenxertz uses {@link #END} so a pack does
+ * not paint a blue sky and its own clouds over it.
  */
 public enum ShaderDimension {
     OVERWORLD, NETHER, END;

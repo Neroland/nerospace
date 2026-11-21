@@ -98,5 +98,10 @@ what grows depends on the world: a lunar meadow on the Moon, red steppe and the 
 savanna on Cindara, tundra on Glacira, a xertz garden on Greenxertz and a twilight grove on Nyxara. Outside the
 Nerospace worlds it works as it always did.
 
+[Europa](Europa) is the exception to "breathable": its Living stage opens a shallow **sea** (the top four blocks
+become open water) and never brings air, so you still need oxygen and a suit there, though no longer a Cryo
+Suit. Plain Europa Ice in reach is converted, and the biomes under the terraformed column change all the way
+down through the ice shell and the ocean.
+
 The Terraformer **refuses** on an orbital station (there is no ground) and on Nyxara outside the Twilight Band.
 A refusing Terraformer shows the reason in place of its stage radii and spends no energy.

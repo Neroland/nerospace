@@ -193,7 +193,17 @@ public final class StarGuide {
             worlds("cindara", "cindara", "cindrite", "magma_glass", "ash_layer"),
             worlds("glacira", "glacira", "glacite", "aurora_stone", "frost_crystal_cluster"),
             worlds("greenxertz", "greenxertz", "amber_sap", "bio_bark_log", "spore_moss"),
-            worlds("nyxara", "nyxara", "voidglass", "dawnband_stone", "void_crystal"));
+            worlds("nyxara", "nyxara", "voidglass", "dawnband_stone", "void_crystal"),
+            // ---- 2.4 Europa (chapter 16). Written out like worlds_luna because of the hidden step, which stays last.
+            new Chapter("worlds_europa", List.of(
+                    step("worlds_europa_arrive", item("cut_europa_ice"), "europa"),
+                    step("worlds_europa_ore", item("deuterium_shard"), "worlds/europa/ore"),
+                    step("worlds_europa_block", item("cut_europa_ice"), "worlds/europa/block"),
+                    step("worlds_europa_weather", item("oxidant_crystal"), "worlds/europa/weather"),
+                    step("worlds_europa_terraform", () -> ModBlocks.TERRAFORMER.get(), "worlds/europa/terraform"),
+                    hiddenStep("rare_earth",
+                            () -> za.co.neroland.nerospace.world.planet.europa.EuropaContent.RAW_EUROPIUM.get(),
+                            "europa/rare_earth"))));
 
     public static final int CHAPTER_COUNT = CHAPTERS.size();
 

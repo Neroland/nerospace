@@ -3111,6 +3111,8 @@ if __name__ == "__main__":
     gen_destination_compass("luna_compass", (201, 201, 194, 255))
     gen_destination_compass("mars_compass", (217, 160, 102, 255))
     gen_destination_compass("nyxara_compass", (155, 93, 229, 255))
+    # Europa (2.4.0): the ice accent would vanish against the white south half, so the needle takes the rust one.
+    gen_destination_compass("europa_compass", (168, 88, 58, 255))
     # Cargo rockets (docs/CARGO-ROCKETS.md): pad plate + hull/rocket/crate icons.
     gen_cargo_pad()
     gen_cargo_hull()

@@ -14,6 +14,7 @@ import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.village.AlienTrades;
 import za.co.neroland.nerospace.village.VillagerCulture;
 import za.co.neroland.nerospace.world.planet.cindara.CindaraContent;
+import za.co.neroland.nerospace.world.planet.europa.EuropaContent;
 import za.co.neroland.nerospace.world.planet.glacira.GlaciraContent;
 import za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent;
 
@@ -69,6 +70,19 @@ public final class AlienBuild {
             () -> NyxaraContent.VOID_CRYSTAL.get().defaultBlockState(),
             () -> Blocks.TINTED_GLASS.defaultBlockState());
 
+    /**
+     * Brinekin (Europa, 2.4.0): ice bricks, polished vent basalt, cut-ice pillars. No plain Europa ice (it melts
+     * beside a heat source) and no vanilla ice (it melts by light); chaos ice only as the cracked role, where the
+     * wall below supports it.
+     */
+    public static final Palette BRINEKIN = new Palette(
+            () -> EuropaContent.EUROPA_ICE_BRICKS.get().defaultBlockState(),
+            () -> EuropaContent.CHAOS_ICE.get().defaultBlockState(),
+            () -> EuropaContent.POLISHED_VENT_BASALT.get().defaultBlockState(),
+            () -> EuropaContent.CUT_EUROPA_ICE.get().defaultBlockState(),
+            () -> Blocks.SEA_LANTERN.defaultBlockState(),
+            () -> Blocks.TINTED_GLASS.defaultBlockState());
+
     private AlienBuild() {
     }
 
@@ -81,6 +95,7 @@ public final class AlienBuild {
             case AlienTrades.EMBER_KIN -> EMBER_KIN;
             case AlienTrades.FROSTBOUND -> FROSTBOUND;
             case AlienTrades.DUSKBORN -> DUSKBORN;
+            case AlienTrades.BRINEKIN -> BRINEKIN;
             default -> XERTZ;
         };
     }

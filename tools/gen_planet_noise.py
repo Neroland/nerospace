@@ -24,6 +24,7 @@ Usage (from anywhere; needs the Loom cache jars, i.e. one Fabric build per line)
 import argparse
 import glob
 import json
+import math
 import sys
 import zipfile
 from pathlib import Path
@@ -247,6 +248,40 @@ def europa_tree():
 AUTHORED_TREES = {"europa": europa_tree}
 
 
+def _parity_octaves(amplitudes):
+    """26.3 NormalNoise.buildOctaves at base amplitude 1 with normalisation: the absolute octave amplitudes."""
+    n = len(amplitudes)
+    amp = math.pow(0.5, -(n - 1)) / (math.pow(0.5, -n) - 1.0)
+    out = []
+    for m in amplitudes:
+        if m != 0.0:
+            out.append(abs(amp * m))
+        amp *= 0.5
+    return out
+
+
+def noise_263(params):
+    """A noise in the old spelling ({firstOctave, amplitudes}) in the 26.3 spelling, the way vanilla 26.3's
+    NormalNoise.createParity converts it, so the noise is unchanged: base_octave, octave_count,
+    amplitude_modifiers and the parity base_amplitude. Verified against every converted noise in this repo."""
+    first, amps = params["firstOctave"], [float(a) for a in params["amplitudes"]]
+    octaves = _parity_octaves(amps)
+    deviation = math.sqrt(sum((0.2702247831245211 * a) ** 2 for a in octaves))
+    base = 1.0
+    if deviation != 0.0:
+        new_factor = (sum(octaves) * 0.3333333333333333) / (deviation * math.sqrt(2.0))
+        live = [i for i, a in enumerate(amps) if a != 0.0]
+        old_factor = 0.5 * 0.3333333333333333 / (0.1 * (1.0 + 1.0 / ((max(live) - min(live)) + 1)))
+        if new_factor != 0.0:
+            base = old_factor / new_factor
+    out = {"base_amplitude": base, "base_octave": first}
+    if len(amps) != 1:
+        out["octave_count"] = len(amps)
+    if any(a != 1.0 for a in amps):
+        out["amplitude_modifiers"] = amps
+    return out
+
+
 def emit(node, dialect, planet):
     """One abstract node in a tree's spelling: dialect "resources" (26.1/26.2 and older) or "resources-26.3"."""
     new = dialect == "resources-26.3"
@@ -308,7 +343,8 @@ def write_authored(planet, tree, vanilla, writes):
         types_in(body, used)
         writes[base / "density_function" / planet / (name + ".json")] = dump(body)
     for name, params in noises.items():
-        writes[base / "noise" / planet / (name + ".json")] = dump(params)
+        body = noise_263(params) if tree == "resources-26.3" else params
+        writes[base / "noise" / planet / (name + ".json")] = dump(body)
     for noise in AUTHORED_CLIMATE.values():
         writes[base / "noise" / planet / (noise + ".json")] = dump(vanilla.noise(noise))
     ns_path = base / "noise_settings" / (planet + ".json")

@@ -172,13 +172,18 @@ public final class PlanetSkyDraw {
         if (this.failed || !ShaderCompat.drawPlanetSky()) {
             return false;
         }
+        Minecraft mc = Minecraft.getInstance();
+        // Under water, lava or powder snow the fog hides the sky; the planet sky ignores that fog, so step aside and
+        // let vanilla's sky (which the fog covers) render instead.
+        if (SkyFluidRules.hidesPlanetSky(levelState(mc).cameraRenderState.fogType.name())) {
+            return false;
+        }
         // Meshes keyed on profile values are stale after a resource reload: drop them, build() recreates lazily.
         int generation = SkyProfiles.generation();
         if (generation != this.profileGeneration) {
             release();
             this.profileGeneration = generation;
         }
-        Minecraft mc = Minecraft.getInstance();
         PlanetSkyRenderer.Frame frame = PlanetSkyRenderer.frame(mc.level, partialTick);
         if (frame == null) {
             return false;

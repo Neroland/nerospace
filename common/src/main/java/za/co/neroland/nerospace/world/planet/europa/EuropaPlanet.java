@@ -49,7 +49,7 @@ public final class EuropaPlanet extends PlanetDefinition {
     private EuropaPlanet() {
         super(new Spec(new PlanetTraits(planet("europa"), 0.13, true, Hazard.COLD,
                 PlanetArchetype.FROZEN, TemperatureBand.FRIGID, 2, 85_200L, id("europa"),
-                Optional.of(biome("terraformed_europa_living")), Optional.empty(), id("ice_shell_habitat")),
+                Optional.of(biome("terraformed_europa_living")), Optional.of(id("brinekin")), id("ice_shell_habitat")),
                 "europa", "Europa")
                 .unlockTier(4)
                 .salt(0x4555524FL)

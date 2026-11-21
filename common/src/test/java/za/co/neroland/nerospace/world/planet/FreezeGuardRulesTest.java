@@ -34,7 +34,33 @@ class FreezeGuardRulesTest {
         assertTrue(FreezeGuardRules.biomeFreezes(0.149F));
         assertFalse(FreezeGuardRules.biomeFreezes(0.15F));
         assertFalse(FreezeGuardRules.biomeFreezes(0.2F));
+        assertFalse(FreezeGuardRules.biomeFreezes(0.35F));
         assertEquals(0.15F, FreezeGuardRules.FREEZE_BELOW);
+    }
+
+    /**
+     * Mirrors vanilla's height-adjusted temperature (read from the 1.21.1 and 26.3 {@code Biome} sources):
+     * 1.21.x drops {@code (noise*8 + y - 80) * 0.05/40} above Y 80; 26.x the same above {@code seaLevel + 17};
+     * freezing below 0.15. Europa's sea level is 88, its surface Y 176..212.
+     */
+    @Test
+    @DisplayName("vanilla height rule: 0.35 stays open at Y 176 and 212 on both formulas; the old 0.2 froze")
+    void vanillaHeightRule() {
+        assertEquals(0.35F, FreezeGuardRules.vanillaTemperature(0.35F, 80, 88, true, 1.0F), 1e-6);
+        assertEquals(0.35F, FreezeGuardRules.vanillaTemperature(0.35F, 105, 88, false, 1.0F), 1e-6);
+        assertEquals(0.35F - (8 + 212 - 80) * 0.05F / 40.0F,
+                FreezeGuardRules.vanillaTemperature(0.35F, 212, 88, true, 1.0F), 1e-6);
+        assertEquals(0.35F - (8 + 212 - 105) * 0.05F / 40.0F,
+                FreezeGuardRules.vanillaTemperature(0.35F, 212, 88, false, 1.0F), 1e-6);
+        for (int y : new int[] {176, 212}) {
+            for (boolean legacy : new boolean[] {true, false}) {
+                assertFalse(FreezeGuardRules.vanillaFreezes(0.35F, y, 88, legacy), "0.35 y " + y + " " + legacy);
+                assertTrue(FreezeGuardRules.vanillaFreezes(0.2F, y, 88, legacy), "0.2 y " + y + " " + legacy);
+            }
+        }
+        // Minimum bases: 0.325 (1.21.x) and 0.29375 (26.x) at Y 212.
+        assertFalse(FreezeGuardRules.vanillaFreezes(0.33F, 212, 88, true));
+        assertTrue(FreezeGuardRules.vanillaFreezes(0.32F, 212, 88, true));
     }
 
     @Test

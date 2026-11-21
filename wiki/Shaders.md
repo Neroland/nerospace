@@ -14,8 +14,8 @@ Nerospace now tells the pack which of its three looks fits each world:
 
 | World | Pack look used |
 | --- | --- |
-| Orbital Station, Luna, Mars, Nyxara | End (dark sky, no pack clouds) |
-| Greenxertz, Cindara, Glacira | Overworld (these worlds have air and weather of their own) |
+| Orbital Station, Luna, Mars, Nyxara, Europa, Cindara, Glacira | End (dark sky, no pack clouds) |
+| Greenxertz | Overworld (it has air and weather of its own) |
 
 If a shader pack supports a Nerospace world by name, the pack's own choice always wins.
 
@@ -32,12 +32,14 @@ See [Configuration](Configuration) for the other keys.
 
 ## What to expect
 
-- **Sky colour and clouds.** With `shaders.dimensionCompat = auto`, the airless worlds get a dark sky and
-  no pack clouds.
+- **Sky colour and clouds.** With `shaders.dimensionCompat = auto`, every world but Greenxertz gets a dark
+  sky and no pack clouds.
 - **Planets and moons in the sky.** Many popular packs replace everything in the End sky with their own
   effect, and hide or flatten whatever a mod draws there. Under those packs you get the dark sky, but
   Earth or the Moon may not appear, or may appear as plain squares. This is the pack's design and
   Nerospace does not change or patch any shader pack.
+- **Europa's Jupiter.** Its cloud bands drift slowly by cross-fading a series of pictures through the normal
+  sky drawing; there is no extra shader. On `sky.quality = lite` Jupiter is a still picture.
 - **Rocket flames.** The exhaust plume and hull lamps are drawn the way glowing parts of mobs are, which
   shader packs support. The burst of flame and smoke at lift-off is made of ordinary particles.
 - **Forge.** There is no complete shader mod for Forge on the supported Minecraft versions. Nerospace's
@@ -55,8 +57,9 @@ See [Configuration](Configuration) for the other keys.
 
 ## Square planets
 
-Unrelated to shaders: if you would rather have flat, square, vanilla-style suns, moons and planets, set
-`sky.bodyStyle = square` (see [Configuration](Configuration)).
+Unrelated to shaders: if you would rather have flat, vanilla-style square suns, moons and planets, set
+`sky.bodyStyle = square` (see [Configuration](Configuration)). The squares keep the globes' detailed
+surfaces at the same resolution, with no shading towards the edge and no glow around it.
 
 ## If something goes wrong
 

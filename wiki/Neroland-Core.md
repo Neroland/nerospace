@@ -75,7 +75,7 @@ Neroland Core 1.20.0 can create a **Nero Mods Demo** world from the singleplayer
 Nerospace adds its own exhibit there: every rocket tier standing on the launch pad it needs, a small working
 machine line (generator to grinder, a fuel refinery filling a Fuel Tank, solar power and an Oxygen Generator), and
 a row of travel plates. Step on a plate to visit a small outpost on Luna, Mars, Cindara, Glacira, Greenxertz,
-Nyxara or the Orbital Station, each held in that world's signature sky; step on the plate behind you to return to
+Nyxara, Europa (held under its noon eclipse) or the Orbital Station, each held in that world's signature sky; step on the plate behind you to return to
 the hub. Nothing about you is stored.
 
 ---

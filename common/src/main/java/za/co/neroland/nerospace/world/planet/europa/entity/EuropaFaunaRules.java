@@ -37,6 +37,11 @@ public final class EuropaFaunaRules {
     public static final int SCAN_XZ = 12;
     public static final int SCAN_Y = 4;
     public static final int SCAN_MAX_READS = 400;
+    /**
+     * A search reads a lattice of the box (every 2nd x and z, every 3rd y), so 400 reads span the whole 25 x 9 x 25
+     * box; successive searches shift the lattice, and {@code SCAN_PASSES} of them cover every cell (V4-02).
+     */
+    public static final int SCAN_PASSES = 12;
     /** The ray circles its vent at this radius, and never strays further than {@link #LEASH} while it has one. */
     public static final double CIRCLE_RADIUS = 7.0D;
     public static final double LEASH = 12.0D;
@@ -53,8 +58,8 @@ public final class EuropaFaunaRules {
     public static final int SETTLE_MIN = 100;
     public static final int SETTLE_MAX = 300;
     public static final double SETTLE_CHANCE = 1.0D / 400.0D;
-    /** The ray settles only this close to its vent (blocks). */
-    public static final double SETTLE_REACH = 4.0D;
+    /** The ray settles only this close to its vent (blocks): anywhere on or just inside its circle (V4-02). */
+    public static final double SETTLE_REACH = CIRCLE_RADIUS + 1.0D;
     /** Natural spawns only below this Y. */
     public static final int RAY_MAX_SPAWN_Y = 0;
 
@@ -71,7 +76,18 @@ public final class EuropaFaunaRules {
     /** Walk-target value of a cell holding (or standing on) a penitente blade: strongly avoided. */
     public static final float BLADE_AVOIDANCE = -10.0F;
 
-    private static final List<int[]> SCAN = buildScan();
+    /**
+     * The skater's walk-target value: blades strongly avoided; over ice at least 0 (so it spawns in the dark shell);
+     * elsewhere the inherited (light-dependent) value.
+     */
+    public static float skaterWalkValue(boolean blade, boolean overIce, float inherited) {
+        if (blade) {
+            return BLADE_AVOIDANCE;
+        }
+        return overIce ? Math.max(0.0F, inherited) : inherited;
+    }
+
+    private static final List<List<int[]>> SCAN = buildScans();
 
     private EuropaFaunaRules() {
     }
@@ -115,20 +131,46 @@ public final class EuropaFaunaRules {
         return Math.min(air, DRY_GRACE_TICKS);
     }
 
-    /**
-     * The vent search order: offsets {dx, dy, dz} inside the 25 x 9 x 25 box, nearest first, the first
-     * {@link #SCAN_MAX_READS} only. Shared and unmodifiable.
-     */
+    /** The first search's offsets ({@code scanOffsets(0)}). */
     public static List<int[]> scanOffsets() {
-        return SCAN;
+        return SCAN.get(0);
     }
 
-    private static List<int[]> buildScan() {
+    /**
+     * The vent search order for search number {@code pass} (any int; taken modulo {@link #SCAN_PASSES}): the
+     * lattice offsets {dx, dy, dz} of the 25 x 9 x 25 box for that pass's shift, nearest first, at most
+     * {@link #SCAN_MAX_READS}. Every cell within 12 blocks horizontally is in exactly one pass. Shared and
+     * unmodifiable.
+     */
+    public static List<int[]> scanOffsets(int pass) {
+        return SCAN.get(Math.floorMod(pass, SCAN_PASSES));
+    }
+
+    /**
+     * Keep the cached vent at a retarget (one block read instead of a search): it is loaded, still active and
+     * within {@link #LEASH} (squared distance in blocks).
+     */
+    public static boolean keepVent(boolean loaded, boolean active, double distanceSq) {
+        return loaded && active && distanceSq <= LEASH * LEASH;
+    }
+
+    private static List<List<int[]>> buildScans() {
+        List<List<int[]>> out = new ArrayList<>();
+        for (int pass = 0; pass < SCAN_PASSES; pass++) {
+            out.add(buildScan(pass & 1, pass >> 2, (pass >> 1) & 1));
+        }
+        return Collections.unmodifiableList(out);
+    }
+
+    private static List<int[]> buildScan(int sx, int sy, int sz) {
         List<int[]> all = new ArrayList<>();
         for (int dx = -SCAN_XZ; dx <= SCAN_XZ; dx++) {
             for (int dy = -SCAN_Y; dy <= SCAN_Y; dy++) {
                 for (int dz = -SCAN_XZ; dz <= SCAN_XZ; dz++) {
-                    all.add(new int[] {dx, dy, dz});
+                    if (Math.floorMod(dx - sx, 2) == 0 && Math.floorMod(dz - sz, 2) == 0
+                            && Math.floorMod(dy - sy, 3) == 0) {
+                        all.add(new int[] {dx, dy, dz});
+                    }
                 }
             }
         }
@@ -145,7 +187,7 @@ public final class EuropaFaunaRules {
             d = Integer.compare(a[0], b[0]);
             return d != 0 ? d : Integer.compare(a[2], b[2]);
         });
-        return Collections.unmodifiableList(new ArrayList<>(all.subList(0, SCAN_MAX_READS)));
+        return Collections.unmodifiableList(new ArrayList<>(all.subList(0, Math.min(SCAN_MAX_READS, all.size()))));
     }
 
     /** Whether a player this far away (squared blocks) sends the ray off. */

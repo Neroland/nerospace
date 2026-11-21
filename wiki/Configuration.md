@@ -25,7 +25,7 @@ All six default to `1.0`. Each one can be set from **0.1 to 10.0**. Every scaled
 | `oxygenCapacityMultiplier` | How much air the player and suits hold. | No suit 300 · any full suit 900 |
 | `fuelCostMultiplier` | Fuel and energy costs: fuel per rocket launch (never more than the tank), oxygen per air at an airlock, and machine energy costs. Also cargo fuel. | Launch: 2,500 mB to another dimension, or 500 mB + 60 mB per 100 blocks in the same dimension · airlock 2 mB per air · Grinder 20 FE/t · O₂ Generator 20 FE per mB |
 | `machineSpeedMultiplier` | How fast machines work. Higher = faster (shorter work time). | Grinder 200 ticks per item |
-| `gravityMultiplier` | A global scale on every world's [gravity](Planet-Gravity): players, mobs, items, projectiles and falling meteors. Below 1 = floatier, above 1 = heavier. | Station ~0.1× · Glacira ~0.4× · Greenxertz ~0.6× · Cindara ~0.8× · Overworld and terraformed ground 1.0× |
+| `gravityMultiplier` | A global scale on every world's [gravity](Planet-Gravity): players, mobs, items, projectiles and falling meteors. Below 1 = floatier, above 1 = heavier. | Station ~0.1× · Europa ~0.13× · Glacira ~0.4× · Greenxertz ~0.6× · Cindara ~0.8× · Overworld and terraformed ground 1.0× |
 
 Examples: `oxygenDrainMultiplier = 2.0` makes air last half as long. `machineSpeedMultiplier = 2.0`
 makes the grinder finish an item in 100 ticks. `energyRateMultiplier = 0.5` halves generator output.
@@ -151,6 +151,12 @@ Fees go to NeroEconomy's Reserve. Without NeroEconomy these keys do nothing.
 | --- | --- | --- |
 | `welcomeMessageEnabled` | `true` | Send the two-line Nerospace welcome (the Star Guide Book prompt and the feedback link) when a player joins. Set `false` to join silently. Applies on config reload. The server decides. |
 
+### Planet clock and weather
+
+The clock, weather, particle and HUD keys are listed on [Planet Clock and Weather](Planet-Clock-and-Weather#configuration).
+Each world with weather has its own switch, `weather.<planet>.enabled`; on [Europa](Europa) one switch,
+`weather.europa.enabled` (default `true`), turns both the plume fall and the radiation storm on or off.
+
 ### Sky (client-side)
 
 Each player sets these for themselves; a server never overrides them. They only change what the full planet sky
@@ -159,10 +165,10 @@ only).
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `sky.aurora` | `true` | Aurora curtains (Glacira, Nyxara's Nightside, Mars after a dust storm, the Greenxertz spore shimmer). `false` hides them. |
+| `sky.aurora` | `true` | Aurora curtains (Glacira, Nyxara's Nightside, Mars after a dust storm, the Greenxertz spore shimmer, Europa's radiation storms). `false` hides them. |
 | `sky.shootingStars` | `true` | Shooting stars. `false` hides them. |
-| `sky.quality` | `full` | `lite` halves the aurora layers and their detail and draws slightly smaller stars, for low-end graphics cards. |
-| `sky.bodyStyle` | `globe` | `globe` draws suns, moons and planets as shaded spheres. `square` draws them as flat squares in the vanilla style, with no glow around the edge and blocky phases. Applies straight away; no restart. |
+| `sky.quality` | `full` | `lite` halves the aurora layers and their detail and draws slightly smaller stars, for low-end graphics cards. Europa's Jupiter is drawn as a still picture, without its drifting cloud bands. |
+| `sky.bodyStyle` | `globe` | `globe` draws suns, moons and planets as shaded spheres. `square` draws them as flat squares in the vanilla style, with the same detailed surfaces as the globes, at the same resolution, but no shading towards the edge, no glow around it and hard-edged phases. Applies straight away; no restart. |
 
 ### Shader packs (client-side)
 
@@ -170,7 +176,7 @@ These only matter with a shader mod and a shader pack active. See [Shaders](Shad
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `shaders.dimensionCompat` | `auto` | `auto` asks the pack for its End look on the airless worlds (the station, Luna, Mars, Nyxara), so they do not get a blue sky and the pack's clouds. `off` leaves the pack's own choice. A pack that supports a Nerospace world itself always wins. |
+| `shaders.dimensionCompat` | `auto` | `auto` asks the pack for its End look on every world but Greenxertz (the station, Luna, Mars, Nyxara, Europa, Cindara and Glacira), so they do not get a blue sky and the pack's clouds. `off` leaves the pack's own choice. A pack that supports a Nerospace world itself always wins. |
 | `shaders.drawPlanetSky` | `true` | Draw the Nerospace planets, moons and stars through the pack's sky. `false` leaves the sky to the pack. |
 
 Both apply straight away; no restart.

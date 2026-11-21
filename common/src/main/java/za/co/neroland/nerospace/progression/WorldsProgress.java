@@ -58,8 +58,13 @@ public final class WorldsProgress {
     /** Mod hook: a quest reward that briefs the player on the next Worlds step (a hint; awards nothing). */
     public static final Identifier WORLDS_BRIEFING = ns("hook/worlds_briefing");
 
-    /** The planets with a Worlds chapter, in Star Guide order (the roster: luna, mars, cindara, glacira, greenxertz, nyxara). */
-    public static final List<String> WORLDS = List.of("luna", "mars", "cindara", "glacira", "greenxertz", "nyxara");
+    /**
+     * The planets with a Worlds chapter, in Star Guide order (the roster: luna, mars, cindara, glacira, greenxertz,
+     * nyxara, europa). Europa's weather trial is the generic rule: either of its two events (plume fall or radiation
+     * storm) counts while the player stands under the open sky.
+     */
+    public static final List<String> WORLDS = List.of("luna", "mars", "cindara", "glacira", "greenxertz", "nyxara",
+            "europa");
 
     private record Exposure(ResourceKey<Level> dimension, long since) {
     }

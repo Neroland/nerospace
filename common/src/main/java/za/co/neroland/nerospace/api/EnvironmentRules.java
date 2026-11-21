@@ -36,6 +36,18 @@ final class EnvironmentRules {
     static EnvironmentSnapshot resolve(boolean loaded, Optional<PlanetId> planet, Hazard hazard,
             double gravity, int oxygen, int terraformStage, boolean terraformingUnderway,
             boolean fieldBreathable) {
+        return resolve(loaded, planet, hazard, gravity, oxygen, terraformStage, terraformingUnderway,
+                fieldBreathable, false);
+    }
+
+    /**
+     * As above, for a planet whose terraform table may carry {@code NO_ATMOSPHERE} (2.4.0, Europa): there a
+     * terraform stage never makes the air breathable, matching {@code OxygenManager}. {@code noAtmosphere} false
+     * is the 8-argument behaviour exactly.
+     */
+    static EnvironmentSnapshot resolve(boolean loaded, Optional<PlanetId> planet, Hazard hazard,
+            double gravity, int oxygen, int terraformStage, boolean terraformingUnderway,
+            boolean fieldBreathable, boolean noAtmosphere) {
         if (!loaded) {
             return new EnvironmentSnapshot(false, planet, Atmosphere.VACUUM, hazard, gravity, 0, 0, false);
         }
@@ -43,7 +55,8 @@ final class EnvironmentRules {
         int boundedStage = Math.clamp(terraformStage, 0, MAX_STAGE);
         boolean breathable = fieldBreathable
                 || boundedOxygen >= NerospaceOxygen.BREATHABLE_PRESSURE
-                || boundedStage >= 1;
+                || za.co.neroland.nerospace.world.planet.AtmosphereRules.terraformBreathable(noAtmosphere,
+                        boundedStage >= 1);
         Atmosphere atmosphere = breathable ? Atmosphere.BREATHABLE
                 : terraformingUnderway ? Atmosphere.TERRAFORMING
                 : boundedOxygen > 0 ? Atmosphere.PRESSURIZED

@@ -61,6 +61,88 @@ class SkyTextureTest(unittest.TestCase):
         self.assertEqual(0, image[:, -1, 3].max())
         self.assertGreater(image[..., 3].max(), 40)
 
+    def _jupiter(self, frame):
+        return np.asarray(sky.gas_giant('jupiter', sky.JUPITER_FRAME_SIZE, frame=frame, frames=sky.JUPITER_FRAMES),
+                          dtype=np.float32)
+
+    def test_jupiter_drift_loop_closes(self):
+        # frame `frames` is rendered without wrapping: the 45-degree drift and the 45-degree periodic turbulence
+        # bring it back to frame 0 (up to one level of rounding).
+        first = self._jupiter(0)
+        closing = self._jupiter(sky.JUPITER_FRAMES)
+        self.assertLessEqual(np.max(np.abs(first - closing)), 1.0)
+
+    def test_jupiter_neighbouring_frames_differ_slightly(self):
+        frames = [self._jupiter(i) for i in range(sky.JUPITER_FRAMES)] + [self._jupiter(0)]
+        moved = 0.0
+        for a, b in zip(frames, frames[1:]):
+            diff = np.mean(np.abs(a - b))
+            self.assertLess(diff, 6.0)
+            moved += diff
+        self.assertGreater(moved, 0.0)
+
+    def test_jupiter_frames_are_shipped_with_square_variants(self):
+        root = Path(__file__).resolve().parent.parent / sky.ASSET_DIR / 'sky'
+        for i in range(sky.JUPITER_FRAMES):
+            name = 'jupiter_%02d.png' % i
+            self.assertTrue((root / name).is_file(), name)
+            self.assertTrue((root / 'square' / name).is_file(), 'square/' + name)
+        self.assertTrue((root / 'jupiter.png').is_file())
+
+    # ---- square body style: flat, hard-edged squares at the globe's resolution ----
+
+    def _alpha(self, image):
+        return np.array(image.convert('RGBA'))[..., 3]
+
+    def test_square_variants_are_shipped_at_the_globe_resolution(self):
+        root = Path(__file__).resolve().parent.parent / sky.ASSET_DIR / 'sky'
+        names = list(sky.SQUARE_BODIES) + ['terminator_%02d' % i for i in range(sky.TERMINATOR_FRAMES)]
+        for name in names:
+            with Image.open(root / (name + '.png')) as globe, Image.open(root / 'square' / (name + '.png')) as square:
+                self.assertEqual(globe.size, square.size, name)
+                self.assertGreaterEqual(square.width, 64, name)
+
+    def test_square_body_is_an_opaque_hard_edged_square_of_the_disc_half_size(self):
+        for name, radius in [('moon_small', 0.8), ('phobos', 0.7), ('sun_small', 0.42)]:
+            image = sky.sky_textures(flat=True)[name]()
+            alpha = self._alpha(image)
+            size = image.width
+            half = int(round(radius * size / 2.0))
+            lo, hi = size // 2 - half, size // 2 + half
+            self.assertTrue(set(np.unique(alpha)) <= {0, 255}, name)
+            self.assertEqual(255, alpha[lo:hi, lo:hi].min(), name)
+            alpha[lo:hi, lo:hi] = 0
+            self.assertEqual(0, alpha.max(), name + ' draws outside its square')
+
+    def test_square_body_has_no_limb_darkening(self):
+        for flat in (True, False):
+            rgb = np.asarray(sky.gas_giant('jupiter', 128, flat=flat).convert('RGB'), dtype=np.float32).mean(axis=2)
+            half = int(round(sky.JUPITER_RADIUS * 64))
+            lo, hi = 64 - half, 64 + half
+            edge = np.concatenate([rgb[lo:hi, lo:lo + 6].ravel(), rgb[lo:hi, hi - 6:hi].ravel()]).mean()
+            centre = rgb[54:74, 54:74].mean()
+            if flat:
+                self.assertGreater(edge / centre, 0.8)
+            else:
+                self.assertLess(edge / centre, 0.6, 'the globe keeps its limb darkening')
+
+    def test_square_jupiter_drift_loop_closes(self):
+        first = np.asarray(sky.gas_giant('jupiter', sky.JUPITER_FRAME_SIZE, frame=0, frames=sky.JUPITER_FRAMES,
+                                         flat=True), dtype=np.float32)
+        closing = np.asarray(sky.gas_giant('jupiter', sky.JUPITER_FRAME_SIZE, frame=sky.JUPITER_FRAMES,
+                                           frames=sky.JUPITER_FRAMES, flat=True), dtype=np.float32)
+        self.assertLessEqual(np.max(np.abs(first - closing)), 1.0)
+
+    def test_square_night_shade_is_hard_edged_and_square_lights_keep_their_mask(self):
+        frame = sky.terminator_phase('terminator_07', 7 / 15.0)
+        shade = self._alpha(sky.square_shade(frame))
+        self.assertEqual(frame.size, (shade.shape[1], shade.shape[0]))
+        self.assertTrue(set(np.unique(shade)) <= {0, 255})
+        self.assertGreater(np.count_nonzero(shade), 0)
+        lights = self._alpha(sky.city_lights('lights', 96, 'earth', flat=True))
+        self.assertGreater(lights.max(), 0)
+        self.assertGreater(np.count_nonzero((lights > 0) & (lights < 255)), 0, 'the lights keep a soft alpha mask')
+
 
 if __name__ == '__main__':
     unittest.main()

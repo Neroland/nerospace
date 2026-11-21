@@ -46,6 +46,9 @@ import za.co.neroland.nerospace.route.PadRecord;
  *       crewed, launching or descending rocket is a player position and is never drawn.</li>
  *   <li>{@code terraform_regions} (PROXIMITY, 64): the reach of a terraformer as a chunk area. The machine
  *       centre is never drawn as a marker.</li>
+ *   <li>{@code habitats} (PROXIMITY, 64; 2.4.0): alien village cores in the loaded chunks near the online viewer,
+ *       in the viewer's dimension (so Europa's under-ice habitats appear once the player is actually there).
+ *       Position and culture only; no owner, no reputation, nothing stored.</li>
  * </ul>
  * Dimension badges: one per world the viewer has visited (their own visit record), for the star chart.
  *
@@ -59,6 +62,8 @@ public final class NerospaceMapLayers implements MapLayerProvider {
     public static final Identifier PADS_NEARBY = id("pads_nearby");
     public static final Identifier ROCKETS = id("rockets");
     public static final Identifier TERRAFORM_REGIONS = id("terraform_regions");
+    /** 2.4.0: village cores near the viewer. */
+    public static final Identifier HABITATS = id("habitats");
 
     /** Proximity radius for player-built things (rule G4). */
     static final int NEAR = MapLayerInfo.BUILT_PROXIMITY;
@@ -72,7 +77,8 @@ public final class NerospaceMapLayers implements MapLayerProvider {
             MapLayerInfo.proximityBuilt(PADS_NEARBY, "map.layer.nerospace.pads_nearby", id("launch_pad")),
             MapLayerInfo.proximityBuilt(ROCKETS, "map.layer.nerospace.rockets", id("rocket")),
             MapLayerInfo.proximityBuilt(TERRAFORM_REGIONS, "map.layer.nerospace.terraform_regions",
-                    id("terraform_region")));
+                    id("terraform_region")),
+            MapLayerInfo.proximityBuilt(HABITATS, "map.layer.nerospace.habitats", id("habitat")));
 
     private final NerospaceMapSource source;
 
@@ -116,6 +122,7 @@ public final class NerospaceMapLayers implements MapLayerProvider {
         padsNearby(server, viewer, dimension, sink);
         rockets(server, viewer, dimension, sink);
         terraform(server, viewer, dimension, sink);
+        habitats(server, viewer, dimension, sink);
     }
 
     @Override
@@ -249,6 +256,34 @@ public final class NerospaceMapLayers implements MapLayerProvider {
                 sink.area(area);
             }
         }
+    }
+
+    private void habitats(@Nullable MinecraftServer server, MapViewer viewer, ResourceKey<Level> dimension,
+            MapLayerSink sink) {
+        BlockPos at = viewer.position().orElse(null);
+        if (at == null) {
+            return;
+        }
+        for (NerospaceMapSource.Habitat habitat : this.source.habitatsNear(server, dimension, at, NEAR)) {
+            if (sink.isFull(HABITATS)) {
+                return;
+            }
+            BlockPos pos = habitat.pos();
+            if (!viewer.within(dimension, pos.getX(), pos.getZ(), NEAR)) {
+                continue;
+            }
+            sink.marker(MapMarker.builder("habitat." + pos.getX() + "." + pos.getY() + "." + pos.getZ(), HABITATS,
+                    dimension, pos)
+                    .label(MapLabel.translatable("map.marker.nerospace.habitat"))
+                    .detail(MapLabel.translatable("map.detail.nerospace.culture." + cultureName(habitat.culture())))
+                    .build());
+        }
+    }
+
+    /** The path of a culture id ({@code nerospace:brinekin} -> {@code brinekin}). */
+    static String cultureName(String cultureId) {
+        int colon = cultureId.indexOf(':');
+        return colon < 0 ? cultureId : cultureId.substring(colon + 1);
     }
 
     /**

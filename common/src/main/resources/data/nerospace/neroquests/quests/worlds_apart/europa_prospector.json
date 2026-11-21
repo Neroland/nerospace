@@ -1,0 +1,22 @@
+{
+  "title": "quest.nerospace.worlds_apart.europa_prospector.title",
+  "description": "quest.nerospace.worlds_apart.europa_prospector.desc",
+  "icon": "nerospace:deuterium_shard",
+  "prerequisites": [
+    "nerospace:worlds_apart/europa_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:collect_item",
+      "item": "nerospace:deuterium_shard",
+      "count": 8
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    }
+  ],
+  "scope": "player"
+}

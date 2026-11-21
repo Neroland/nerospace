@@ -616,6 +616,12 @@ public final class GalleryCaptureHarness {
                 0, 110, 0, "nerospace:glacite_block", "nerospace:glacite_ore", "minecraft:blue_ice",
                 List.of("nerospace:frost_strider", "nerospace:woolly_drift")));
 
+        // Europa (2.4.0, fixed clock, frozen): a cut-ice deck above the highest surface (Y 212), deuterium ice ore,
+        // ice-brick pillars and the Shell Skater (the drifter and ray are sea creatures and would strand on a deck).
+        shots.add(planetScene("europa_shell", "nerospace:europa", false, time,
+                0, 220, 0, "nerospace:cut_europa_ice", "nerospace:deuterium_ice", "nerospace:europa_ice_bricks",
+                List.of("nerospace:shell_skater")));
+
         // Orbital Station (space-type → starfield): a station floor pad with two walls + a Station Core.
         shots.add(stationScene("orbital_station", time));
 

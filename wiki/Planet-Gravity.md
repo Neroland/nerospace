@@ -16,6 +16,10 @@ adjustable with the [`gravityMultiplier`](Configuration) config option.
 | **Greenxertz** | `~0.6×` | Light — noticeably higher jumps, softer landings. |
 | **Cindara** | `~0.8×` | Slightly low — a touch floatier than home. |
 | **Glacira** | `~0.4×` | Low — big, slow bounds across the ice. |
+| **Luna** | `~0.17×` | Very low — long, slow lunar hops. |
+| **Mars** | `~0.38×` | Low — a little lighter than Glacira. |
+| **Nyxara** | `~0.9×` | Nearly normal. |
+| **[Europa](Europa)** | `~0.13×` | The lowest of any planet — huge, drifting leaps over the ice and slow falls down fractures. |
 
 Lower gravity means a **higher jump** and a **slower fall**, so you also take **less fall damage** —
 a long drop on Glacira that would hurt on the Overworld is survivable.
@@ -47,6 +51,9 @@ Reclaimed ground pulls its weight. As a [Terraformer](Terraformer) converts a de
 planet into living land, that **terraformed ground returns to normal, Earth-like gravity** — so a
 fully terraformed base feels like home even on a moon that started out floaty. (An explicit biome
 gravity tag, if a pack sets one, takes priority over this.)
+
+On Europa this applies to the whole terraformed column: once a chunk is terraformed, gravity there is normal at
+every height, down through the ice shell and the ocean below, not only on the new sea.
 
 ## Configuration
 

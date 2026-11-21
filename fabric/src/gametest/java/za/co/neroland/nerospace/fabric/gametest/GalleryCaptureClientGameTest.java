@@ -102,7 +102,9 @@ public final class GalleryCaptureClientGameTest implements FabricClientGameTest 
                     "setblock ~-4 ~ ~7 nerospace:alien_lamp",
                     "setblock ~6 ~ ~7 nerospace:alien_lamp",
                     "fill ~-3 ~ ~7 ~4 ~ ~7 nerospace:solar_panel"),
-                    new Vec3(0.5, 0.8, 1.5), 0.0F, 12.0F));
+                    new Vec3(0.5, 0.8, 1.5), 0.0F, 12.0F),
+            // 9. Europa (2.4.0) at the eclipse phase: the ice plains under Jupiter, looking east. Pose not yet swept.
+            new Shot("europa_eclipse", "europa", "eclipse", List.of(), new Vec3(0, 2.0, 0), -90.0F, 4.0F));
 
     @Override
     public void runTest(ClientGameTestContext context) {

@@ -12,7 +12,8 @@ import za.co.neroland.nerospace.world.planet.europa.EuropaContent;
 
 /**
  * What counts as heat or liquid for Europa's blocks. A heat source is a block in {@code #nerospace:europa_heat_sources}
- * that is actually hot: a campfire must be lit and a hydrothermal vent must be active. Liquid is any fluid or brine.
+ * that is actually hot: a campfire must be lit and a hydrothermal vent must be active. Liquid is water (the
+ * {@code minecraft:water} fluid tag) or brine; lava and every other fluid are not.
  */
 public final class EuropaHeat {
 

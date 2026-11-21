@@ -52,6 +52,7 @@ class NerospaceMapLayersTest {
         final List<PadRegistry.PadNode> nodes = new ArrayList<>();
         final List<ParkedRocket> rockets = new ArrayList<>();
         final List<Terraformed> terraformed = new ArrayList<>();
+        final List<Habitat> habitats = new ArrayList<>();
         Set<PlanetId> visited = Set.of();
 
         @Override
@@ -84,6 +85,12 @@ class NerospaceMapLayersTest {
         public Set<PlanetId> visited(@Nullable MinecraftServer server, UUID player) {
             return OWNER.equals(player) ? visited : Set.of();
         }
+
+        @Override
+        public Collection<Habitat> habitatsNear(@Nullable MinecraftServer server, ResourceKey<Level> dim,
+                BlockPos centre, int radius) {
+            return STATION.equals(dim) ? habitats : List.of(); // deliberately unfiltered: the provider must filter
+        }
     }
 
     static Seeded seeded() {
@@ -110,6 +117,8 @@ class NerospaceMapLayersTest {
                 new BlockPos(900, 64, 0)));
         s.terraformed.add(new NerospaceMapSource.Terraformed(new BlockPos(40, 64, 0), 48));
         s.terraformed.add(new NerospaceMapSource.Terraformed(new BlockPos(5_000, 64, 0), 32));
+        s.habitats.add(new NerospaceMapSource.Habitat(new BlockPos(-10, 88, 12), "nerospace:brinekin"));
+        s.habitats.add(new NerospaceMapSource.Habitat(new BlockPos(700, 88, 0), "nerospace:brinekin"));
         s.visited = Set.of(new PlanetId(Identifier.fromNamespaceAndPath("nerospace", "luna")));
         return s;
     }
@@ -136,6 +145,7 @@ class NerospaceMapLayersTest {
                 .expectEntitledSees(NerospaceMapLayers.PADS_NEARBY, 3)
                 .expectEntitledSees(NerospaceMapLayers.ROCKETS, 1)
                 .expectEntitledSees(NerospaceMapLayers.TERRAFORM_REGIONS, 1)
+                .expectEntitledSees(NerospaceMapLayers.HABITATS, 1)
                 .verify();
     }
 
@@ -147,6 +157,7 @@ class NerospaceMapLayersTest {
                 .expectEntitledSees(NerospaceMapLayers.PADS_NEARBY, 3)
                 .expectEntitledSees(NerospaceMapLayers.ROCKETS, 1)
                 .expectEntitledSees(NerospaceMapLayers.TERRAFORM_REGIONS, 1)
+                .expectEntitledSees(NerospaceMapLayers.HABITATS, 1)
                 .verify();
     }
 
@@ -167,6 +178,45 @@ class NerospaceMapLayersTest {
         assertTrue(result.markers().stream().noneMatch(m -> m.layer().equals(NerospaceMapLayers.STATIONS)));
         assertTrue(result.markers().stream().noneMatch(m -> m.layer().equals(NerospaceMapLayers.LAUNCH_PADS)));
         assertEquals(1, result.markers().stream().filter(m -> m.layer().equals(NerospaceMapLayers.ROCKETS)).count());
+    }
+
+    /** 2.4.0 F25: six layers, the five old ids and scopes unchanged, habitats PROXIMITY. */
+    @Test
+    void layerRosterIsAppendOnly() {
+        NerospaceMapLayers layers = new NerospaceMapLayers(seeded());
+        List<za.co.neroland.nerolandcore.map.MapLayerInfo> infos = layers.layers();
+        assertEquals(6, infos.size());
+        assertEquals(List.of(NerospaceMapLayers.STATIONS, NerospaceMapLayers.LAUNCH_PADS, NerospaceMapLayers.PADS_NEARBY,
+                NerospaceMapLayers.ROCKETS, NerospaceMapLayers.TERRAFORM_REGIONS, NerospaceMapLayers.HABITATS),
+                infos.stream().map(za.co.neroland.nerolandcore.map.MapLayerInfo::id).toList());
+        List<za.co.neroland.nerolandcore.map.MapScope> scopes = infos.stream()
+                .map(za.co.neroland.nerolandcore.map.MapLayerInfo::scope).toList();
+        assertEquals(List.of(za.co.neroland.nerolandcore.map.MapScope.MEMBERS,
+                za.co.neroland.nerolandcore.map.MapScope.MEMBERS, za.co.neroland.nerolandcore.map.MapScope.PROXIMITY,
+                za.co.neroland.nerolandcore.map.MapScope.PROXIMITY, za.co.neroland.nerolandcore.map.MapScope.PROXIMITY,
+                za.co.neroland.nerolandcore.map.MapScope.PROXIMITY), scopes);
+        assertEquals("habitats", NerospaceMapLayers.HABITATS.getPath());
+        assertEquals("brinekin", NerospaceMapLayers.cultureName("nerospace:brinekin"));
+    }
+
+    @Test
+    void habitatsOnlyNearTheOnlineViewerInTheirDimension() {
+        NerospaceMapLayers layers = new NerospaceMapLayers(seeded());
+        za.co.neroland.nerolandcore.map.MapLayerRegistry.register(layers);
+        var near = za.co.neroland.nerolandcore.map.MapLayerRegistry.query("nerospace", at(STRANGER, 0, 0),
+                STATION, MapBounds.around(0, 0, 4_096));
+        List<String> ids = near.markers().stream().filter(m -> m.layer().equals(NerospaceMapLayers.HABITATS))
+                .map(m -> m.id()).toList();
+        assertEquals(List.of("habitat.-10.88.12"), ids, "the core 700 blocks away is not drawn");
+        var offline = za.co.neroland.nerolandcore.map.MapLayerRegistry.query("nerospace",
+                MapViewer.forTest(STRANGER, null, null, null), STATION, MapBounds.around(0, 0, 4_096));
+        assertTrue(offline.markers().stream().noneMatch(m -> m.layer().equals(NerospaceMapLayers.HABITATS)),
+                "nothing for an offline viewer");
+        var elsewhere = za.co.neroland.nerolandcore.map.MapLayerRegistry.query("nerospace",
+                MapViewer.forTest(STRANGER, null, ELSEWHERE, new BlockPos(0, 64, 0)), STATION,
+                MapBounds.around(0, 0, 4_096));
+        assertTrue(elsewhere.markers().stream().noneMatch(m -> m.layer().equals(NerospaceMapLayers.HABITATS)),
+                "nothing for a viewer in another dimension");
     }
 
     @Test

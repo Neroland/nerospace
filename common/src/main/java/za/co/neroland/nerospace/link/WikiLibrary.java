@@ -46,7 +46,7 @@ public final class WikiLibrary {
     private static final List<String> FALLBACK_SLUGS = List.of(
             "Home", "Getting-Started", "Rockets", "Launch-Pad-Build-Guide", "Landing-Pads", "Launch-Controller",
             "Orbital-Stations", "Oxygen-Suit", "Items", "Greenxertz", "Cindara", "Glacira", "Luna", "Mars",
-            "Nyxara", "Star-Guide", "Configuration", "Upgrading-to-2.0");
+            "Nyxara", "Star-Guide", "Configuration", "Upgrading-to-2.0", "Europa");
 
     private static volatile List<Page> cachedIndex;
 

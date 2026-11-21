@@ -1,0 +1,25 @@
+{
+  "title": "quest.nerospace.worlds_apart.europa_weathered.title",
+  "description": "quest.nerospace.worlds_apart.europa_weathered.desc",
+  "icon": "nerospace:oxidant_crystal",
+  "prerequisites": [
+    "nerospace:worlds_apart/europa_landfall"
+  ],
+  "objectives": [
+    {
+      "type": "neroquests:gate_open",
+      "gate": "nerospace:worlds/europa/weather"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "neroquests:xp",
+      "amount": 250
+    },
+    {
+      "type": "neroquests:currency",
+      "amount": 100
+    }
+  ],
+  "scope": "player"
+}

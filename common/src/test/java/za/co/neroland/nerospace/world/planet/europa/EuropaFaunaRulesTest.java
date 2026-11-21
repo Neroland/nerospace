@@ -63,6 +63,57 @@ class EuropaFaunaRulesTest {
         assertEquals(200, EuropaFaunaRules.RETARGET_TICKS);
     }
 
+    /** V4-03: over ice a skater may spawn in the dark (value >= 0); blades stay avoided; elsewhere unchanged. */
+    @Test
+    @DisplayName("skater: walk value never negative over ice, blades -10, other ground inherited")
+    void skaterWalkValue() {
+        assertEquals(0.0F, EuropaFaunaRules.skaterWalkValue(false, true, -0.5F));
+        assertEquals(10.0F, EuropaFaunaRules.skaterWalkValue(false, true, 10.0F));
+        assertEquals(-0.5F, EuropaFaunaRules.skaterWalkValue(false, false, -0.5F));
+        assertEquals(EuropaFaunaRules.BLADE_AVOIDANCE, EuropaFaunaRules.skaterWalkValue(true, true, 10.0F));
+    }
+
+    /** V4-02: the search reaches the circle and beyond (7-12 blocks), and a cached vent survives a retarget. */
+    @Test
+    @DisplayName("ray: the lattice search reaches a vent 7-12 blocks away; the cached vent is kept within the leash")
+    void raySearchReach() {
+        // One pass already reaches 12 blocks out along an axis and the full circle radius in every direction.
+        int farthest = 0;
+        for (int[] o : EuropaFaunaRules.scanOffsets(0)) {
+            farthest = Math.max(farthest, o[0] * o[0] + o[2] * o[2]);
+        }
+        assertTrue(farthest >= 144, "one search reaches 12 blocks horizontally");
+        // Every cell within 12 blocks horizontally (|dy| <= 4) is read by exactly one of the passes.
+        for (int dx = -12; dx <= 12; dx++) {
+            for (int dz = -12; dz <= 12; dz++) {
+                if (dx * dx + dz * dz > 144) {
+                    continue;
+                }
+                for (int dy = -4; dy <= 4; dy++) {
+                    int hits = 0;
+                    for (int pass = 0; pass < EuropaFaunaRules.SCAN_PASSES; pass++) {
+                        for (int[] o : EuropaFaunaRules.scanOffsets(pass)) {
+                            if (o[0] == dx && o[1] == dy && o[2] == dz) {
+                                hits++;
+                            }
+                        }
+                    }
+                    assertEquals(1, hits, dx + "," + dy + "," + dz);
+                }
+            }
+        }
+        for (int pass = 0; pass < EuropaFaunaRules.SCAN_PASSES; pass++) {
+            assertTrue(EuropaFaunaRules.scanOffsets(pass).size() <= EuropaFaunaRules.SCAN_MAX_READS);
+        }
+        // A ray on its circle (7.4 blocks from the vent) keeps it; past the leash, unloaded or inactive it does not.
+        assertTrue(EuropaFaunaRules.keepVent(true, true, 7.4D * 7.4D));
+        assertTrue(EuropaFaunaRules.keepVent(true, true, 144.0D));
+        assertFalse(EuropaFaunaRules.keepVent(true, true, 144.1D));
+        assertFalse(EuropaFaunaRules.keepVent(false, true, 1.0D));
+        assertFalse(EuropaFaunaRules.keepVent(true, false, 1.0D));
+        assertTrue(EuropaFaunaRules.SETTLE_REACH >= EuropaFaunaRules.CIRCLE_RADIUS + 1.0D, "settles on its circle");
+    }
+
     @Test
     @DisplayName("ray: circles inside 12 of its vent, settles 100-300 ticks, flees a player within 3 for 6 blocks")
     void rayBehaviour() {

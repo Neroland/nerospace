@@ -31,9 +31,15 @@ public final class Crew {
     /** {@code rockets.maxCrew} default. */
     public static final int DEFAULT_MAX = 4;
 
-    /** Ticks a rider spends in a sealed hull per flight: the ascent plus the 48-block descent and its settle. */
-    public static final int FLIGHT_TICKS = RocketEntity.LAUNCH_DURATION
-            + (int) Math.ceil(DescentMath.DESCENT_HEIGHT / DescentMath.DESCENT_SPEED) + DescentMath.SETTLE_TICKS;
+    /** Ticks of every flight after the ascent: the 48-block descent and its settle. */
+    public static final int DESCENT_AND_SETTLE_TICKS =
+            (int) Math.ceil(DescentMath.DESCENT_HEIGHT / DescentMath.DESCENT_SPEED) + DescentMath.SETTLE_TICKS;
+    /**
+     * Ticks a rider spends in a sealed hull on a flight with the baseline 24-block climb (the 2.3.1 budget, 168):
+     * the {@link RocketEntity#LAUNCH_DURATION 100-tick} ascent plus {@link #DESCENT_AND_SETTLE_TICKS}. A taller
+     * configured climb lasts longer; see {@link #flightTicks(int)}.
+     */
+    public static final int FLIGHT_TICKS = RocketEntity.LAUNCH_DURATION + DESCENT_AND_SETTLE_TICKS;
 
     private Crew() {
     }
@@ -55,15 +61,38 @@ public final class Crew {
         return seated < cap(configured);
     }
 
+    /** Ticks in a sealed hull for an ascent of {@code ascentTicks}: the ascent plus the descent and its settle. */
+    public static int flightTicks(int ascentTicks) {
+        return Math.max(0, ascentTicks) + DESCENT_AND_SETTLE_TICKS;
+    }
+
     /**
-     * Oxygen (mB) one seat draws over {@link #FLIGHT_TICKS} when the flight touches an airless world: the rocket's
-     * ride drain ({@code ridePerCheck} mB every {@code checkTicks}). 0 for a flight between two breathable worlds.
+     * Ticks in a sealed hull for this server's climb: {@link AscentMath#duration} of {@code rockets.ascentHeight}
+     * plus the descent and its settle ({@link #FLIGHT_TICKS} at the 24-block baseline).
+     */
+    public static int flightTicks() {
+        return flightTicks(AscentMath.duration(NerospaceConfig.rocketsAscentHeight()));
+    }
+
+    /**
+     * Oxygen (mB) one seat draws over a flight of this server's climb ({@link #flightTicks()}) when the flight
+     * touches an airless world. See {@link #perSeatMb(boolean, int, int, int)}.
      */
     public static int perSeatMb(boolean airlessLeg, int checkTicks, int ridePerCheck) {
+        return perSeatMb(airlessLeg, checkTicks, ridePerCheck,
+                AscentMath.duration(NerospaceConfig.rocketsAscentHeight()));
+    }
+
+    /**
+     * Oxygen (mB) one seat draws over {@link #flightTicks(int) a flight} with an ascent of {@code ascentTicks} when
+     * the flight touches an airless world: the rocket's ride drain ({@code ridePerCheck} mB every
+     * {@code checkTicks}). 0 for a flight between two breathable worlds. Pure.
+     */
+    public static int perSeatMb(boolean airlessLeg, int checkTicks, int ridePerCheck, int ascentTicks) {
         if (!airlessLeg || checkTicks <= 0) {
             return 0;
         }
-        return Math.ceilDiv(FLIGHT_TICKS, checkTicks) * Math.max(0, ridePerCheck);
+        return Math.ceilDiv(flightTicks(ascentTicks), checkTicks) * Math.max(0, ridePerCheck);
     }
 
     /**

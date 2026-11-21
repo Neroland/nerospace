@@ -21,6 +21,26 @@ class EnvironmentRulesTest {
                 underway, fieldBreathable);
     }
 
+    /** V4-04: on a NO_ATMOSPHERE world (terraformed Europa) a stage alone is not air; everything else unchanged. */
+    @Test
+    @DisplayName("no-atmosphere world: terraformed ground is not breathable, oxygen and fields still are")
+    void noAtmosphereWorld() {
+        for (int stage = 1; stage <= EnvironmentRules.MAX_STAGE; stage++) {
+            EnvironmentSnapshot europa = EnvironmentRules.resolve(true, Optional.empty(), Hazard.COLD, 1.0D, 0, stage,
+                    false, false, true);
+            assertFalse(europa.breathable(), "stage " + stage);
+            assertEquals(Atmosphere.VACUUM, europa.atmosphere());
+            EnvironmentSnapshot other = EnvironmentRules.resolve(true, Optional.empty(), Hazard.NONE, 1.0D, 0, stage,
+                    false, false, false);
+            assertTrue(other.breathable(), "other worlds: stage " + stage + " is air");
+            assertEquals(resolve(true, 0, stage, false, false), other, "8-argument form unchanged");
+        }
+        assertTrue(EnvironmentRules.resolve(true, Optional.empty(), Hazard.COLD, 1.0D,
+                NerospaceOxygen.BREATHABLE_PRESSURE, 2, false, false, true).breathable());
+        assertTrue(EnvironmentRules.resolve(true, Optional.empty(), Hazard.COLD, 1.0D, 0, 2, false, true, true)
+                .breathable());
+    }
+
     @Test
     @DisplayName("an unloaded position fails closed to vacuum and ignores every other reading")
     void unloadedFailsClosed() {

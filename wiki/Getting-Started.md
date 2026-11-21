@@ -85,7 +85,7 @@ Every place you can fly to has **no air**. Without a suit you run out of air in 
 | Tier 1 | 1 pad block | Orbital Station, **[Luna](Luna)** | A safe base in space; titanium (Ilmenite) on Luna |
 | Tier 2 | Full 3×3 pad | Station, Luna, **Greenxertz**, **[Mars](Mars)** | Lots of Nerosteel, **Xertz Quartz**, alien villages; Hematite on Mars (cold — a Tier 2 suit; Cryo Suit on the Polar Cap) |
 | Tier 3 | 3×3 pad with a ring of Station Walls | Station, Luna, Greenxertz, Mars, **Cindara** | **Cindrite** (very hot — bring a Thermal Suit) |
-| Tier 4 | Heavy Launch Complex (with a [Launch Gantry](Launch-Gantry)) | Station, Luna, Greenxertz, Mars, Cindara, **Glacira**, **[Nyxara](Nyxara)** | **Glacite** (very cold — bring a Cryo Suit); Nyxara needs a Rad-Lined suit |
+| Tier 4 | Heavy Launch Complex (with a [Launch Gantry](Launch-Gantry)) | Station, Luna, Greenxertz, Mars, Cindara, **Glacira**, **[Nyxara](Nyxara)**, **[Europa](Europa)** | **Glacite** (very cold — bring a Cryo Suit); Nyxara needs a Rad-Lined suit; Europa's surface needs both |
 
 Each new rocket is made from the one before it and still reaches everything the one before it did. The Orbital Station already has a 3×3 pad, so you can
 launch a Tier 2 rocket from there.

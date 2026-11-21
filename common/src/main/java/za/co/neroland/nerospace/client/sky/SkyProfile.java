@@ -156,7 +156,8 @@ public record SkyProfile(boolean vanillaSkybox, Background background, Fog fog, 
     public record Body(String id, Optional<Identifier> texture, float size, String color, float glow,
             float orbitPeriodDays, float phaseOffset, float inclination, Optional<FixedAngle> fixedAngle,
             boolean phases, Optional<Identifier> glowTexture, Optional<Glow> limbGlow,
-            Optional<HorizonGlow> horizonGlow, Optional<NightShade> nightShade, float earthshine) {
+            Optional<HorizonGlow> horizonGlow, Optional<NightShade> nightShade, float earthshine,
+            Optional<Rotation> rotation) {
 
         /** A body without the sky-upgrade fields. */
         public Body(String id, Optional<Identifier> texture, float size, String color, float glow,
@@ -164,6 +165,15 @@ public record SkyProfile(boolean vanillaSkybox, Background background, Fog fog, 
                 boolean phases) {
             this(id, texture, size, color, glow, orbitPeriodDays, phaseOffset, inclination, fixedAngle, phases,
                     Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), 0.0F);
+        }
+
+        /** A body without a baked rotation (the 2.3 shape; {@code rotation} is empty). */
+        public Body(String id, Optional<Identifier> texture, float size, String color, float glow,
+                float orbitPeriodDays, float phaseOffset, float inclination, Optional<FixedAngle> fixedAngle,
+                boolean phases, Optional<Identifier> glowTexture, Optional<Glow> limbGlow,
+                Optional<HorizonGlow> horizonGlow, Optional<NightShade> nightShade, float earthshine) {
+            this(id, texture, size, color, glow, orbitPeriodDays, phaseOffset, inclination, fixedAngle, phases,
+                    glowTexture, limbGlow, horizonGlow, nightShade, earthshine, Optional.empty());
         }
 
         static final Codec<Body> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -181,8 +191,28 @@ public record SkyProfile(boolean vanillaSkybox, Background background, Fog fog, 
                 Glow.CODEC.optionalFieldOf("limbGlow").forGetter(Body::limbGlow),
                 HorizonGlow.CODEC.optionalFieldOf("horizonGlow").forGetter(Body::horizonGlow),
                 NightShade.CODEC.optionalFieldOf("nightShade").forGetter(Body::nightShade),
-                Codec.FLOAT.optionalFieldOf("earthshine", 0.0F).forGetter(Body::earthshine)
+                Codec.FLOAT.optionalFieldOf("earthshine", 0.0F).forGetter(Body::earthshine),
+                Rotation.CODEC.optionalFieldOf("rotation").forGetter(Body::rotation)
         ).apply(i, Body::new));
+    }
+
+    /**
+     * A baked rotation sheet for a body (2.4.0, optional; a body without it draws its still {@code texture} as
+     * before). {@code texture} names the sheet's base: the renderer draws {@code <texture>_00.png …} (two digits at
+     * least), one full loop of {@code frames} frames every {@code periodTicks} game ticks, neighbouring frames
+     * cross-faded. The still {@code Body.texture} stays the fallback: it is drawn when {@code frames <= 1},
+     * {@code periodTicks <= 0} or the client's sky quality is lite.
+     */
+    public record Rotation(Identifier texture, int frames, int periodTicks) {
+        /** Defaults of the two optional fields. */
+        public static final int DEFAULT_FRAMES = 1;
+        public static final int DEFAULT_PERIOD_TICKS = 24_000;
+
+        static final Codec<Rotation> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Identifier.CODEC.fieldOf("texture").forGetter(Rotation::texture),
+                Codec.INT.optionalFieldOf("frames", DEFAULT_FRAMES).forGetter(Rotation::frames),
+                Codec.INT.optionalFieldOf("periodTicks", DEFAULT_PERIOD_TICKS).forGetter(Rotation::periodTicks)
+        ).apply(i, Rotation::new));
     }
 
     public record Galaxy(Optional<Identifier> texture, float opacity, float yaw, float pitch) {

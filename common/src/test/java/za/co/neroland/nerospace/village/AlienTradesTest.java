@@ -43,7 +43,7 @@ class AlienTradesTest {
     @Test
     void everyCultureHasItsOwnTable() {
         List<String> cultures = List.of(AlienTrades.XERTZ, AlienTrades.EMBER_KIN, AlienTrades.FROSTBOUND,
-                AlienTrades.DUSKBORN);
+                AlienTrades.DUSKBORN, AlienTrades.BRINEKIN);
         List<TradeTable> seen = new ArrayList<>();
         for (String id : cultures) {
             TradeTable t = AlienTrades.table(id);
@@ -74,6 +74,7 @@ class AlienTradesTest {
         assertBuys(AlienTrades.EMBER_KIN_TABLE, "nerospace:ash_dust");
         assertBuys(AlienTrades.FROSTBOUND_TABLE, "nerospace:frost_shard");
         assertBuys(AlienTrades.DUSKBORN_TABLE, "nerospace:shadow_lichen");
+        assertBuys(AlienTrades.BRINEKIN_TABLE, "nerospace:brine_salt");
         for (VillagerCulture c : VillagerCultures.ALL) {
             assertBuys(c.trades(), c.giftItem());
         }

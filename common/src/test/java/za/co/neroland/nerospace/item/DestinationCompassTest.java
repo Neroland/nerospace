@@ -28,7 +28,9 @@ import za.co.neroland.nerospace.world.planet.nyxara.worldgen.FixedXBands;
 class DestinationCompassTest {
 
     private static final String[] COMPASSES = { "station_compass", "greenxertz_compass", "cindara_compass",
-        "glacira_compass", "luna_compass", "mars_compass", "nyxara_compass" };
+        "glacira_compass", "luna_compass", "mars_compass", "nyxara_compass", "europa_compass" };
+    /** Compasses added after 1.x ship English only (community translations come later). */
+    private static final java.util.Set<String> ENGLISH_ONLY = java.util.Set.of("europa_compass");
     private static final String[] LANGS = { "en_us", "it_it", "zh_cn" };
 
     private static JsonObject json(String path) throws IOException {
@@ -54,6 +56,9 @@ class DestinationCompassTest {
                 assertEquals(16, img.getHeight());
             }
             for (String lang : LANGS) {
+                if (ENGLISH_ONLY.contains(id) && !lang.equals("en_us")) {
+                    continue;
+                }
                 JsonObject l = json("/assets/nerospace/lang/" + lang + ".json");
                 assertTrue(l.has("item.nerospace." + id), lang + " lacks " + id);
             }

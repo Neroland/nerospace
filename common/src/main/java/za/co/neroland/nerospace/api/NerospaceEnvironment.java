@@ -58,6 +58,6 @@ public final class NerospaceEnvironment {
         // An overlay that exists but has not yet reached stage 1 is work in progress, not yet air.
         boolean underway = overlay.isPresent() && stage < 1;
         return EnvironmentRules.resolve(true, planet, hazard, gravity, oxygen, stage, underway,
-                field.isBreathable(pos));
+                field.isBreathable(pos), za.co.neroland.nerospace.world.OxygenManager.noAtmosphere(level));
     }
 }

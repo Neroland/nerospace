@@ -23,10 +23,12 @@ Each world with villagers has its own **culture**, with its own look, trades and
 | **Cindara** | **Ember-kin** | stocky and broad, ember-red skin | cindrite, basalt and magma glass | no |
 | **Glacira** | **Frostbound** | bulky fur wraps, frost-pale skin | glacite, packed ice, packed cryo-ice and blue ice | no |
 | **Nyxara** (Twilight Band only) | **Duskborn** | tall and slender | nyx stone, void crystal and tinted glass | yes |
+| **[Europa](Europa)** (under-ice habitats at sea level) | **Brinekin** | pale blue-grey, rust-salt markings, a glowing cyan throat | Europa ice bricks, chaos ice, polished vent basalt and cut ice, with sea lanterns and tinted glass | no |
 
 The **Moon** has no villagers at all, and **Mars** has none either: it has wrecked rovers, a salvage drone and
 abandoned habitats instead (see **[Mars](Mars)**). A villager's culture is fixed when it first appears and
 is kept with it, so villagers from earlier versions keep theirs.
+
 - Creative: the **Alien Villager Spawn Egg** (Nerospace tab).
 
 ## How they look
@@ -72,7 +74,7 @@ Reputation rises through:
 
   welcomes its own favourite: **Ash Dust** (Ember-kin), **Frost Shard** (Frostbound), **Shadow Lichen**
 
-  (Duskborn).
+  (Duskborn), **Brine Salt** (Brinekin).
 
 - **Trade volume** — every completed trade nudges trust up.
 - **Quests** — handing a village task in to a **[Village Core](Village-Core)** bumps the trust of every
@@ -104,9 +106,11 @@ the same tiers and reputation:
 | **Ember-kin** | Ash Dust, Alien Fragments | Cindrite, Sulfur, Block of Cindrite, Magma Glass, the heat-protection suit helmet, diamonds, the rest of the heat-protection suit, Alien Tech Scrap |
 | **Frostbound** | Frost Shards, Alien Fragments | Glacite, Methane Ice, Block of Glacite, Packed Cryo Ice, the cold-protection suit helmet, diamonds, the rest of the cold-protection suit, Helium-3 Canisters |
 | **Duskborn** | Shadow Lichen, Alien Fragments | Voidglass, Night Fibre, Void Crystal, Voidglass Lens, the Tier 2 suit helmet, Gravity Shards, the rest of the Tier 2 suit, Void Shards |
+| **Brinekin** | Brine Salt, Alien Fragments | Europa Ice Bricks, Brine Buckets, Deuterium Shards, Polished Vent Basalt, the cold-protection suit helmet, Oxidant Crystals, Tube Mats, a Hydrothermal Vent (the only way to get one without Silk Touch), Deuterium Cells, Rad Lining |
 
 A village sells only the helmet of its world's protective suit until you reach its highest trust tier; the full
-suit is for its most trusted friends.
+suit is for its most trusted friends. The Brinekin are the exception: they only ever sell the helmet, and offer
+Rad Lining at their highest tier instead.
 
 The top tiers are the only trade source of the exclusive **[Artificer gear](Alien-Gear)**.
 

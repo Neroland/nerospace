@@ -28,4 +28,23 @@ class StarGuideSnapshotCountTest {
         assertEquals(1, NerospaceLinkSnapshots.requiredStepsComplete(chapter, 0b011), "a + bonus = one required step");
         assertEquals(0, NerospaceLinkSnapshots.requiredStepsComplete(chapter, 0b010));
     }
+
+    /** 2.4.0: Europa adds one chapter with five required steps (its hidden step does not count). */
+    @Test
+    void totalsIncludeEuropa() {
+        assertEquals(17, StarGuide.CHAPTER_COUNT);
+        assertEquals(80, StarGuide.totalSteps());
+    }
+
+    /**
+     * The planets section iterates {@code NerospacePlanets.all()}, so Europa appears with no schema change: eight
+     * entries (the station and seven worlds), Europa last, schema still 4.
+     */
+    @Test
+    void planetsSectionPicksUpEuropa() {
+        assertEquals(8, za.co.neroland.nerospace.api.NerospacePlanets.all().size());
+        assertEquals(za.co.neroland.nerospace.api.NerospacePlanets.EUROPA,
+                za.co.neroland.nerospace.api.NerospacePlanets.all().get(7));
+        assertEquals(4, NerospaceLinkModule.SCHEMA_VERSION);
+    }
 }

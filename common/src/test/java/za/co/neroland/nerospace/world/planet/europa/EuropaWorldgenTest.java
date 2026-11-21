@@ -225,7 +225,7 @@ class EuropaWorldgenTest {
             assertEquals(0, j.getAsJsonArray("carvers").size(), tree + " " + b);
             assertFalse(j.get("has_precipitation").getAsBoolean(), tree + " " + b);
             boolean open = b.equals("terraformed_europa_hydrated") || b.equals("terraformed_europa_living");
-            assertEquals(open ? 0.2F : 0.0F, j.get("temperature").getAsFloat(), tree + " " + b);
+            assertEquals(open ? 0.35F : 0.0F, j.get("temperature").getAsFloat(), tree + " " + b);
         }
         Set<String> found = new HashSet<>();
         try (Stream<Path> files = Files.list(EuropaFiles.data(tree, "worldgen/biome"))) {

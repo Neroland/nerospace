@@ -121,6 +121,26 @@
       "quest": "nerospace:worlds_apart/nyxara_rooted",
       "x": 3,
       "y": 5
+    },
+    {
+      "quest": "nerospace:worlds_apart/europa_landfall",
+      "x": 0,
+      "y": 6
+    },
+    {
+      "quest": "nerospace:worlds_apart/europa_prospector",
+      "x": 1,
+      "y": 6
+    },
+    {
+      "quest": "nerospace:worlds_apart/europa_weathered",
+      "x": 2,
+      "y": 6
+    },
+    {
+      "quest": "nerospace:worlds_apart/europa_rooted",
+      "x": 3,
+      "y": 6
     }
   ]
 }

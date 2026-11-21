@@ -17,7 +17,8 @@ import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
  * exposes each rule (entity type + placement type + heightmap + predicate) through a {@link Sink}
  * and lets each loader register it its own way.
  *
- * <p>Every creature spawns on solid ground with open space above. The Xertz Stalker (hostile)
+ * <p>Every land creature spawns on solid ground with open space above; Europa's two sea creatures spawn in water
+ * (2.4.0). The Xertz Stalker (hostile)
  * deliberately keeps a light-independent rule so Greenxertz is dangerous day and night; the
  * terraform livestock graze only on grassed (matured) ground. The Ruin Warden has no natural rule
  * — it is a structure/event boss only.

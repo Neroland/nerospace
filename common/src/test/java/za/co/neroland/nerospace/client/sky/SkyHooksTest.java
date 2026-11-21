@@ -146,10 +146,11 @@ class SkyHooksTest {
         // The field is the only difference, and it survives a round trip.
         assertEquals(absent.stars(), present.stars());
         assertEquals(present, decode(SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, present).getOrThrow()));
-        Set<String> airless = Set.of("station", "luna", "mars", "nyxara");
+        // Every world but Greenxertz asks the pack for its End look (Cindara and Glacira since 2026-11-21).
+        Set<String> endLook = Set.of("station", "luna", "mars", "nyxara", "cindara", "glacira");
         for (String s : SKIES) {
             SkyProfile p = profile(s);
-            assertEquals(airless.contains(s) ? "end" : SkyProfile.DEFAULT_SHADER_DIMENSION, p.shaderDimension(), s);
+            assertEquals(endLook.contains(s) ? "end" : SkyProfile.DEFAULT_SHADER_DIMENSION, p.shaderDimension(), s);
         }
     }
 

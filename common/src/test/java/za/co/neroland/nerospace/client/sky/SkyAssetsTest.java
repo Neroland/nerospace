@@ -50,7 +50,9 @@ class SkyAssetsTest {
             "alien_villager_duskborn", "alien_villager_duskborn_glow", "alien_villager_glow",
             // Europa creatures (2.4.0).
             "lantern_drifter", "lantern_drifter_glow", "vent_ray", "vent_ray_glow", "shell_skater",
-            "shell_skater_glow");
+            "shell_skater_glow",
+            // Europa's Brinekin villagers (2.4.0).
+            "alien_villager_brinekin", "alien_villager_brinekin_glow");
     /**
      * Vanilla sound events the ambience aliases, each checked present in the 26.1.2, 26.2 and 26.3 SoundEvents
      * registries. A new alias must be checked the same way and added here.

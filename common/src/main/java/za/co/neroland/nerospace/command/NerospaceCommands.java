@@ -568,7 +568,9 @@ public final class NerospaceCommands {
                 // Megacity guardian (summon-only) and the 2.0 world natives.
                 ModEntities.RUIN_WARDEN.get(),
                 za.co.neroland.nerospace.world.planet.luna.LunaContent.MOON_HOPPER.get(),
-                za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH.get());
+                za.co.neroland.nerospace.world.planet.nyxara.NyxaraContent.DUSK_MOTH.get(),
+                // 2.4.0 Europa: the land creature only (the drifter and ray are sea creatures and strand on a floor).
+                za.co.neroland.nerospace.world.planet.europa.EuropaContent.SHELL_SKATER.get());
         for (int dx = -1; dx <= creatures.size() * 4; dx++) {
             for (int dz = -1; dz <= 3; dz++) {
                 level.setBlockAndUpdate(new BlockPos(mx + dx, fy, mz + dz), floor);
@@ -853,7 +855,8 @@ public final class NerospaceCommands {
                 ModItems.CARGO_CRATE.get(), za.co.neroland.nerospace.world.planet.mars.MarsContent.ROVER.get());
         java.util.Set<Item> creative = java.util.Set.of(ModItems.STATION_COMPASS.get(), ModItems.GREENXERTZ_COMPASS.get(),
                 ModItems.CINDARA_COMPASS.get(), ModItems.GLACIRA_COMPASS.get(), ModItems.LUNA_COMPASS.get(),
-                ModItems.MARS_COMPASS.get(), ModItems.NYXARA_COMPASS.get(), ModItems.METEOR_CALLER.get());
+                ModItems.MARS_COMPASS.get(), ModItems.NYXARA_COMPASS.get(), ModItems.EUROPA_COMPASS.get(),
+                ModItems.METEOR_CALLER.get());
 
         List<Item> materialsGroup = new ArrayList<>();
         List<Item> foodGroup = new ArrayList<>();

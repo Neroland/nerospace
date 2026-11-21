@@ -386,8 +386,11 @@ public final class OxygenManager {
         player.setAirSupply(Math.min(airMax, Math.max(0, air)));
     }
 
-    /** Whether this level's planet terraforms without ever becoming breathable. */
-    private static boolean noAtmosphere(ServerLevel level) {
+    /**
+     * Whether this level's planet terraforms without ever becoming breathable (Europa). Also read by the public
+     * {@code NerospaceEnvironment} so the API agrees with breathing.
+     */
+    public static boolean noAtmosphere(ServerLevel level) {
         var planet = za.co.neroland.nerospace.world.planet.Planets.get(level.dimension());
         if (planet == null) {
             return false;

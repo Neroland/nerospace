@@ -20,9 +20,9 @@ N R N
 
 ## How it works
 
-- **Fuel slot** (GUI, hand or hopper/pipe fed): coal, charcoal, coal blocks, blaze rods, or Rocket
+- **Fuel slot** (GUI, hand or hopper/pipe fed): coal, charcoal, coal blocks, blaze rods, Rocket
 
-  Fuel Canisters.
+  Fuel Canisters, or Deuterium Cells from [Europa](Europa).
 
 - Burning makes **20 FE/t** into a **100,000 FE** buffer. It only burns fuel while the buffer is not
 
@@ -30,7 +30,7 @@ N R N
 
 - Burn times: coal or charcoal **1,600 ticks**, coal block **16,000 ticks**, blaze rod **2,400 ticks**,
 
-  Rocket Fuel Canister **4,000 ticks**.
+  Rocket Fuel Canister **4,000 ticks**, Deuterium Cell **8,000 ticks**.
 
 - **Auto-push:** it pushes power into any machine or Battery that touches it. No cable is needed.
 - A Universal Pipe (energy layer) can also pull power out. Total output is up to **1,280 FE/t**.

@@ -9,6 +9,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 > and turns orbital stations into habitats with classes, members and modules. Coming from 1.x? Read
 > **[Upgrading to 2.0](Upgrading-to-2.0)** first, and back up your world before testing.
 
+<!-- -->
+
 > 💬 Questions, builds, feedback? Join the [Discord](https://discord.gg/ArPXvYUzJG) or open a
 > [GitHub issue](https://github.com/Neroland/nerospace/issues).
 
@@ -19,7 +21,7 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 
 1. Mine **Nerosium Ore** in the Overworld — and craft a **[Star Guide Book](Star-Guide)**
 
-   (Book + Raw Nerosium) right away: it's the in-game version of this wiki, a live 16-chapter
+   (Book + Raw Nerosium) right away: it's the in-game version of this wiki, a live 17-chapter
    progression tree that always shows your next step.
 
 2. Mine **Nerosteel Ore** deep in the Overworld (below y 16) and build a **generator** — every machine
@@ -54,6 +56,7 @@ In the order you usually reach them:
 - **[Glacira](Glacira)**: ice plains, methane shores and spires; Glacite, diamond dust, auroras, the Frostbound. Tier 4.
 - **[Greenxertz](Greenxertz)**: bioluminescent jungle under twin suns; Nerosteel, Xertz Quartz, spore blooms, the Xertz. Tier 2.
 - **[Nyxara](Nyxara)**: tidally locked; Dayside, Twilight Band and Nightside; Voidglass, Void Crystal, flares, the Duskborn. Tier 4 after Deep Space progress.
+- **[Europa](Europa)**: an ice shell over a hidden ocean under a fixed Jupiter; Deuterium, Brine, hydrothermal vents, plume falls and radiation storms, the Brinekin. Tier 4.
 - **[Orbital Stations](Orbital-Stations)**: your own habitats in orbit, with classes, members and modules. Found one
   [where you stand](Orbital-Stations#placing-your-own-station), or land on a hand-placed
   [free dock](Orbital-Stations#free-docks).
@@ -73,7 +76,8 @@ land centred on a pad, or on an automatic Landing Pod: see **[Landing Pads](Land
 
 - **[Creatures](Creatures)** — the native mobs of Greenxertz, Cindara and Glacira, the terraform
 
-  livestock, and the Moon Hopper, Dust Strider and Dusk Moth of terraformed Luna, Mars and Nyxara.
+  livestock, and the Moon Hopper, Dust Strider and Dusk Moth of terraformed Luna, Mars and Nyxara, and Europa's
+  Lantern Drifter, Vent Ray and Shell Skater.
 
 - **[Alien Villagers](Alien-Villagers)** — wary alien NPCs you befriend to trade and grow villages,
 
@@ -120,10 +124,11 @@ land centred on a pad, or on an automatic Landing Pod: see **[Landing Pads](Land
 | **[Glacira](Glacira)** | Tier 4 rocket | pale sun, two moons, auroras | `~0.4×` | Frozen world; Glacite, Methane Ice. **Cold** (×4 O₂ drain without a [Cryo Suit](Oxygen-Suit)). |
 | **[Greenxertz](Greenxertz)** | Tier 2+ rocket | twin suns, real day/night | `~0.6×` | Green jungle world; Nerosteel + Xertz Quartz, the Xertz villagers. Spore blooms. |
 | **[Nyxara](Nyxara)** | Tier 4 rocket (Deep Space progress) | fixed sun in the west, galaxy in the east, flares | `~0.9×` | Tidally locked; Dayside, Twilight Band and Nightside by longitude; Voidglass, Void Crystal, Gravity Shards. **Radiation** everywhere ([Rad Lining](Oxygen-Suit#rad-lining-radiation)). |
+| **[Europa](Europa)** | Tier 4 rocket | black, a fixed Jupiter with drifting bands, a daily eclipse | `~0.13×` | Ice shell over a hidden ocean; Deuterium, Brine Salt, Oxidant Ice, hydrothermal vents. **Cold** (Cryo Suit on the surface, any Tier 2 suit under the ice) + **radiation** on the open surface (Rad Lining). |
 
 Full skies are drawn on Minecraft 26.1.2, 26.2 and 26.3 (NeoForge, Fabric and Forge); the 1.21 versions show each world's sky colours.
 
 All Nerospace dimensions are **airless** — without a breathable zone (an Oxygen Generator, a Launch
-Pad, terraformed ground, or a full Oxygen Suit) you will run out of oxygen and suffocate. They also
+Pad, terraformed ground (except on Europa), or a full Oxygen Suit) you will run out of oxygen and suffocate. They also
 each have their **own [gravity](Planet-Gravity)** — lighter than home out on the moons, near-weightless
 in orbit — which [terraforming](Terraformer) restores to normal as you reclaim the ground.
