@@ -180,25 +180,13 @@ public class SolarPanelRenderer
         poseStack.popPose();
     }
 
-    /** Once a world's data-driven clock markers are found missing, stop calling the throwing path. */
-    private static boolean clockAvailable = true;
-
     /**
-     * Real day-of-time (0..23999) for sun tracking. Prefers the 26.x data-driven clock
-     * ({@code getDefaultClockTime()}), which is sun-accurate and matches the standalone — but that throws
-     * when a world's clock time-markers aren't loaded (seen in some dev/data setups: "Time marker ...
-     * does not exist for clock minecraft:overworld"). We try it once and fall back permanently to the
-     * free-running game clock if it's unavailable, so the deck still animates without erroring.
+     * Real day-of-time (0..23999) for sun tracking. {@link za.co.neroland.nerospace.world.planet.SafeClockTime}
+     * prefers the 26.x data-driven clock and, once that throws because its time markers are missing, stays on
+     * the free-running game clock so the deck still animates.
      */
     private static long dayOfTime(Level level) {
-        if (clockAvailable) {
-            try {
-                return level.getDefaultClockTime() % 24000L;
-            } catch (RuntimeException ex) {
-                clockAvailable = false;
-            }
-        }
-        return level.getGameTime() % 24000L;
+        return za.co.neroland.nerospace.world.planet.SafeClockTime.of(level) % 24000L;
     }
 
     /** Texture suffix per tier: T1 reuses the base "solar_panel" sprite, T2/T3 use "_t2"/"_t3". */

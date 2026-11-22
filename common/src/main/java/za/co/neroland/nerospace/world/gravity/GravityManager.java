@@ -1,11 +1,17 @@
 package za.co.neroland.nerospace.world.gravity;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongSet;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -13,10 +19,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import za.co.neroland.nerospace.block.rules.BlockGravityRules;
@@ -138,8 +146,10 @@ public final class GravityManager {
      *       (the {@code GRAVITY} attribute modifier persists between checks; scanning all levels lets a
      *       factor of 1.0 strip the modifier off entities that returned to a normal dimension).</li>
      *   <li><b>Non-living entities</b> — gravity dimensions only, <em>every</em> tick (vanilla applies their
-     *       hardcoded gravity every tick, so the correction must too). Skips entities with no gravity (the
-     *       rocket / meteor self-manage), the grounded, and those in fluid.</li>
+     *       hardcoded gravity every tick, so the correction must too), but only inside the columns that still
+     *       entity-tick: simulation distance around each player, plus force-loaded chunks. Skips entities with
+     *       no gravity (the rocket / meteor self-manage), the grounded, and those in water. A block position's
+     *       factor is computed once per tick and reused, so a pile of items costs one biome lookup.</li>
      * </ul>
      */
     public static void tick(MinecraftServer server) {
@@ -161,11 +171,55 @@ public final class GravityManager {
                 }
             }
             if (Planets.isPlanet(level.dimension())) {
-                for (Entity entity : level.getEntities(EntityTypeTest.forClass(Entity.class),
-                        e -> !(e instanceof LivingEntity))) {
-                    applyMotionCorrection(level, entity);
-                }
+                correctNonLiving(level);
             }
+        }
+    }
+
+    /**
+     * Non-living correction over the entities vanilla is actually moving. A full-level query also walked entities
+     * in lazy chunks, which are not ticked, and allocated a list of every item on the ground. Each entity is
+     * corrected at most once even when two players' columns overlap.
+     */
+    private static void correctNonLiving(ServerLevel level) {
+        int reach = GravityScanRules.horizontalReach(level.getServer().getPlayerList().getSimulationDistance());
+        IntOpenHashSet seen = new IntOpenHashSet();
+        Long2DoubleOpenHashMap factors = new Long2DoubleOpenHashMap();
+        factors.defaultReturnValue(Double.NaN);
+        int minY = level.getMinY();
+        int maxY = level.getMaxY();
+        for (ServerPlayer player : level.players()) {
+            correctBox(level, new AABB(player.getX() - reach, minY, player.getZ() - reach,
+                    player.getX() + reach, maxY, player.getZ() + reach), seen, factors);
+        }
+        LongSet forced = level.getChunkSource().getForceLoadedChunks();
+        LongIterator it = forced.iterator();
+        while (it.hasNext()) {
+            long key = it.nextLong();
+            int cx = ChunkPos.getX(key);
+            int cz = ChunkPos.getZ(key);
+            correctBox(level, new AABB(cx << 4, minY, cz << 4, (cx << 4) + 16, maxY, (cz << 4) + 16), seen, factors);
+        }
+    }
+
+    private static void correctBox(ServerLevel level, AABB box, IntOpenHashSet seen, Long2DoubleOpenHashMap factors) {
+        for (Entity entity : level.getEntities(EntityTypeTest.forClass(Entity.class), box,
+                e -> !(e instanceof LivingEntity)
+                        && !GravityScanRules.skipMotion(e.isNoGravity(), e.onGround(), e.isInWater()))) {
+            if (!seen.add(entity.getId())) {
+                continue;
+            }
+            BlockPos pos = entity.blockPosition();
+            if (!level.hasChunkAt(pos)) {
+                continue;
+            }
+            long key = pos.asLong();
+            double factor = factors.get(key);
+            if (Double.isNaN(factor)) {
+                factor = factorAt(level, pos);
+                factors.put(key, factor);
+            }
+            applyCorrection(entity, factor);
         }
     }
 
@@ -203,33 +257,16 @@ public final class GravityManager {
     }
 
     /**
-     * Non-living gravity (GRAVITY_DESIGN.md §5c). These entities don't read the {@code GRAVITY} attribute —
-     * vanilla applied their hardcoded gravity this tick, so we add back the unwanted share to leave a net of
-     * {@code factor × gravity}. Uses the public {@link Entity#getGravity()} (javap-verified public on 26.1.2
-     * and 26.2) — no mixin. Skips no-gravity entities (rocket/meteor self-manage; their gravity is 0 anyway),
-     * the grounded (correction would jitter them), and the in-fluid (vanilla buoyancy already overrides).
+     * Applies an already-resolved factor. Vanilla already subtracted {@code getGravity()} this tick; the rules
+     * put back the share that does not belong, including the Gravity Shard drift. {@code 1.0} and zero gravity
+     * leave the velocity alone.
      */
-    private static void applyMotionCorrection(ServerLevel level, Entity entity) {
-        if (entity.isNoGravity() || entity.onGround() || entity.isInWater()) {
-            return;
-        }
-        if (!level.hasChunkAt(entity.blockPosition())) {
-            return;
-        }
-        double factor = factorAt(level, entity.blockPosition());
-        if (factor == 1.0) {
-            return;
-        }
+    private static void applyCorrection(Entity entity, double factor) {
         double gravity = entity.getGravity();
-        if (gravity == 0.0) {
-            return;
-        }
+        double dy = GravityScanRules.correctedDy(entity.getDeltaMovement().y, gravity, factor);
         Vec3 dm = entity.getDeltaMovement();
-        if (factor < 0.0) {
-            // Gravity Shard: cancel this tick's gravity and drift up no faster than levitation I.
-            entity.setDeltaMovement(dm.x, BlockGravityRules.shardDrift(dm.y + gravity), dm.z);
-            return;
+        if (dy != dm.y) {
+            entity.setDeltaMovement(dm.x, dy, dm.z);
         }
-        entity.setDeltaMovement(dm.x, dm.y + gravity * (1.0 - factor), dm.z);
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.world.level.Level;
 
 import za.co.neroland.nerospace.network.PlanetClockPayload;
 import za.co.neroland.nerospace.world.planet.ClockMath;
+import za.co.neroland.nerospace.world.planet.SafeClockTime;
 
 /**
  * Client-side copy of the current level's planet clock, filled by {@link PlanetClockPayload}. A pure data
@@ -38,7 +39,7 @@ public final class ClientPlanetClock {
             return ClockMath.NOON;
         }
         if (c.mirrorVanilla()) {
-            return ClockMath.mirrorPhase(level.getDefaultClockTime());
+            return ClockMath.mirrorPhase(SafeClockTime.of(level));
         }
         return ClockMath.phase(level.getGameTime(), c.epochTicks(), c.offsetTicks(), c.dayLength(),
                 c.pinnedPhase(), c.frozen(), c.frozenAt());
@@ -54,7 +55,7 @@ public final class ClientPlanetClock {
             return ClockMath.NOON;
         }
         if (c.mirrorVanilla()) {
-            return ClockMath.mirrorDays(level.getDefaultClockTime());
+            return ClockMath.mirrorDays(SafeClockTime.of(level));
         }
         return ClockMath.days(level.getGameTime(), c.epochTicks(), c.offsetTicks(), c.dayLength(), c.pinnedPhase(),
                 c.frozen(), c.frozenAt());

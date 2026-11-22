@@ -962,6 +962,7 @@
   "entity.nerospace.rocket.descending": "Landing…",
   "entity.nerospace.rocket.station_members_only": "That station only accepts its members' rockets",
   "entity.nerospace.rocket.launch_cooldown": "Launch systems are cooling down — try again in a few seconds",
+  "entity.nerospace.rocket.destination_missing": "That destination isn't available. The launch was aborted — your rocket and fuel are unchanged.",
   "item.nerospace.station_charter.needed": "A new station needs a Station Charter in your inventory",
   "gui.nerospace.card.no_pad": "No pad: a pod will be placed",
   "gui.nerospace.card.pad": "Pad: %s",
