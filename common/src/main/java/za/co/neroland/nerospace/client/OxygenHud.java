@@ -204,7 +204,12 @@ public final class OxygenHud {
      */
     private static void hover(GuiGraphicsExtractor g, Minecraft mc, int anchorX, int anchorY, int air, int max,
             WeatherEvent event, float intensity, int weatherLine, int weatherCellX) {
-        if (mc.screen != null) {
+        // The open screen lives on Gui from 26.2 and on Minecraft before that.
+        //? if >=26.2 {
+        if (mc.gui.screen() != null) {
+        //?} else {
+        /*if (mc.screen != null) {
+        *///?}
             return;
         }
         double mx = GuiPointer.guiX(mc);
