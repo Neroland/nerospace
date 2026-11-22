@@ -61,7 +61,36 @@ public final class NerospacePrivacyExport {
 
     /** Gathers the requester's data from the live server. */
     public static JsonObject collect(MinecraftServer server, ServerPlayer player) {
-        UUID me = player.getUUID();
+        return collect(server, player.getUUID(), player);
+    }
+
+    /**
+     * Neroland Core's per-player export ({@code /neroland data exportme}, Core 1.20.1+): the same document for a
+     * player who may be offline. The two attachments (oxygen, Star Guide) are only reachable through a live player,
+     * so they are omitted while offline. {@code null} when Nerospace stores nothing for the player.
+     */
+    @Nullable
+    public static JsonObject exportFor(MinecraftServer server, UUID me) {
+        ServerPlayer online = server.getPlayerList().getPlayer(me);
+        JsonObject doc = collect(server, me, online);
+        return storesNothing(doc) ? null : doc;
+    }
+
+    /** True when every list in the document is empty and no attachment value is present. Pure. */
+    static boolean storesNothing(JsonObject doc) {
+        for (String key : doc.keySet()) {
+            com.google.gson.JsonElement value = doc.get(key);
+            if (value.isJsonArray() && !value.getAsJsonArray().isEmpty()) {
+                return false;
+            }
+        }
+        if (doc.has("oxygen") || doc.has("star_guide_seen")) {
+            return false;
+        }
+        return !doc.has("cargo_pads_shared_with_you") || doc.get("cargo_pads_shared_with_you").getAsInt() == 0;
+    }
+
+    private static JsonObject collect(MinecraftServer server, UUID me, @Nullable ServerPlayer player) {
         VillageCoreBlockEntity.syncLedger(server);
         Set<VillageCoreLedger.CoreLoc> cores = new LinkedHashSet<>(VillageCoreBlockEntity.loadedOwnedBy(me));
         cores.addAll(VillageCoreLedger.get(server).ownedBy(me));
@@ -71,7 +100,7 @@ public final class NerospacePrivacyExport {
             List<AlienVillager> villagers = new ArrayList<>();
             level.getEntities(EntityTypeTest.forClass(AlienVillager.class), v -> v.remembers(me), villagers);
             for (AlienVillager v : villagers) {
-                reputation.add(new Reputation(level.dimension().identifier().toString(), v.getReputation(player)));
+                reputation.add(new Reputation(level.dimension().identifier().toString(), v.getReputation(me)));
             }
         }
         List<Rover> rovers = new ArrayList<>();
@@ -84,8 +113,9 @@ public final class NerospacePrivacyExport {
         }
         JsonObject doc = build(me, PlanetVisitState.get(server).export(me), StationRegistry.get(server).all(),
                 ModDimensions.STATION_LEVEL.identifier().toString(), cores, routes.allPads(),
-                routes.routesOwnedBy(me), routes.flightsOwnedBy(me), Services.PLATFORM.getOxygen(player),
-                Services.PLATFORM.getStarGuideSeen(player), reputation);
+                routes.routesOwnedBy(me), routes.flightsOwnedBy(me),
+                player == null ? null : Services.PLATFORM.getOxygen(player),
+                player == null ? null : Services.PLATFORM.getStarGuideSeen(player), reputation);
         doc.add("rovers_owned_loaded", rovers(rovers));
         return doc;
     }

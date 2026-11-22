@@ -269,6 +269,11 @@ public class AlienVillager extends PathfinderMob implements Merchant {
         return this.reputation.getOrDefault(player.getUUID(), 0);
     }
 
+    /** The stored score for {@code playerId} (0 when none); read-only, for the privacy export of an offline player. */
+    public int getReputation(UUID playerId) {
+        return this.reputation.getOrDefault(playerId, 0);
+    }
+
     public int getTier(Player player) {
         return Reputation.tier(getReputation(player));
     }

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.2] - 2026-11-26
+
+### Added
+
+- **Data export through Neroland Core:** `/neroland data exportme` (Core 1.20.1+) now includes the same document
+  as `/nerospace privacy export`, for online and offline players (offline: without oxygen and Star Guide).
+
+### Changed
+
+- Requires Neroland Core **1.20.1**.
+
+### Fixed
+
+- **Crash reports from Nerospace were silently dropped** whenever another mod (Nero or not) initialised Sentry
+  after it: every mod shares one bundled Sentry hub and each `Sentry.init` replaced the last. Nerospace now reports
+  through its own isolated Sentry client and scopes and never touches the global hub. Same opt-out, filtering,
+  scrubbing, sampling and handled-exception fingerprints as before.
+
 ## [2.4.1] - 2026-11-26
 
 ### Added

@@ -10,10 +10,15 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 
 import io.sentry.Breadcrumb;
+import io.sentry.IScopes;
 import io.sentry.ITransaction;
-import io.sentry.Sentry;
+import io.sentry.Scope;
+import io.sentry.Scopes;
+import io.sentry.SentryClient;
 import io.sentry.SentryEvent;
 import io.sentry.SentryLevel;
+import io.sentry.SentryOptions;
+import io.sentry.UncaughtExceptionHandlerIntegration;
 import io.sentry.SpanStatus;
 import io.sentry.protocol.Message;
 import io.sentry.protocol.SentryException;
@@ -67,6 +72,14 @@ public final class NerospaceTelemetry {
             Pattern.compile("(?i)(?:[A-Z]:)?[/\\\\](?:Users|home)[/\\\\][^/\\\\\\s:;,'\"]+");
 
     private static volatile boolean active;
+    /**
+     * Nerospace's own scopes; {@code null} until {@link #start()} succeeds. Every Nero mod bundles the same
+     * un-relocated Sentry jar, so the static {@code Sentry} API is one shared hub that each global init replaces;
+     * Nerospace never touches it and reports only through these isolated scopes.
+     */
+    private static volatile IScopes scopes;
+    /** Process lifetime, never closed (a field so ecj sees it is not leaked). */
+    private static UncaughtExceptionHandlerIntegration uncaughtHandler;
     private static final AtomicInteger eventsSent = new AtomicInteger();
     private static final Set<String> seenFingerprints = ConcurrentHashMap.newKeySet();
     private static SentryLogAppender appender;
@@ -113,26 +126,12 @@ public final class NerospaceTelemetry {
         }
         String modVersion = Services.PLATFORM.getModVersion();
         boolean dev = Services.PLATFORM.isDevelopmentEnvironment();
-        Sentry.init(options -> {
-            options.setDsn(DSN);
-            options.setRelease("nerospace@" + modVersion);
-            // Dev/IDE runs report under a dedicated environment so they never mix with real releases.
-            options.setEnvironment(dev ? "development" : environmentOf(modVersion));
-            // POPIA/GDPR: never store the sender's IP address or identity.
-            options.setSendDefaultPii(false);
-            // The machine's hostname is identifying; never attach it.
-            options.setAttachServerName(false);
-            options.setEnableUncaughtExceptionHandler(true);
-            // Release health: we manage the session lifecycle manually (started below, ended on JVM
-            // shutdown) so it works outside the Android/servlet integrations. The session id is random
-            // per launch and is NOT linked across sessions; no user/IP is attached.
-            options.setEnableAutoSessionTracking(false);
-            // Performance: sample a small fraction of traced operations (launch, pipe rebuild,
-            // terraform work). Timing data only — no personal data in a transaction.
-            options.setTracesSampleRate(0.05D);
-            options.setBeforeSend((event, hint) -> ForeignMixinFailure.matches(event) ? null : filterAndScrub(event));
-        });
-        Sentry.configureScope(scope -> {
+        // Dev/IDE runs report under a dedicated environment so they never mix with real releases.
+        SentryOptions options = baseOptions(modVersion, dev ? "development" : environmentOf(modVersion));
+        options.setBeforeSend((event, hint) -> ForeignMixinFailure.matches(event) ? null : filterAndScrub(event));
+        IScopes own = isolatedScopes(options, "nerospace");
+        scopes = own;
+        own.configureScope(scope -> {
             scope.setTag("loader", Services.PLATFORM.getPlatformName().toLowerCase(Locale.ROOT));
             scope.setTag("dist", Services.PLATFORM.isClient() ? "client" : "dedicated_server");
             scope.setTag("runtime", dev ? "development" : "production");
@@ -161,11 +160,11 @@ public final class NerospaceTelemetry {
             }
         });
         // Manual release-health session for this play session; closed on a clean JVM shutdown.
-        Sentry.startSession();
+        own.startSession();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                Sentry.endSession();
-                Sentry.flush(2000L);
+                own.endSession();
+                own.flush(2000L);
             } catch (RuntimeException ignored) {
                 // best-effort flush on shutdown
             }
@@ -181,6 +180,44 @@ public final class NerospaceTelemetry {
                         + "telemetryEnabled=false in config/nerospace.properties).");
     }
 
+    /** Options for Nerospace's own client: the same privacy settings as before, never the global hub's. */
+    static SentryOptions baseOptions(String modVersion, String environment) {
+        SentryOptions options = new SentryOptions();
+        options.setDsn(DSN);
+        options.setRelease("nerospace@" + modVersion);
+        options.setEnvironment(environment);
+        // POPIA/GDPR: never store the sender's IP address or identity.
+        options.setSendDefaultPii(false);
+        // The machine's hostname is identifying; never attach it.
+        options.setAttachServerName(false);
+        options.setEnableUncaughtExceptionHandler(true);
+        // Flushed by Nerospace's own hook; never close the global hub (it may belong to another mod).
+        options.setEnableShutdownHook(false);
+        // Release health: we manage the session lifecycle manually (started in start(), ended on JVM
+        // shutdown). The session id is random per launch and is NOT linked across sessions; no user/IP.
+        options.setEnableAutoSessionTracking(false);
+        // Performance: sample a small fraction of traced operations (launch, pipe rebuild,
+        // terraform work). Timing data only — no personal data in a transaction.
+        options.setTracesSampleRate(0.05D);
+        return options;
+    }
+
+    /**
+     * Isolated scopes bound to a client of Nerospace's own: what the global init does, minus the global hub, so
+     * another mod's init cannot replace or silence Nerospace. The uncaught-exception handler chains to the previous
+     * one, so every mod still sees crashes and keeps only its own through {@code beforeSend}.
+     */
+    static IScopes isolatedScopes(SentryOptions options, String creator) {
+        options.activate();                        // start Sentry's executors, as the global init would
+        Scopes own = new Scopes(new Scope(options), new Scope(options), new Scope(options), creator);
+        own.bindClient(new SentryClient(options));
+        if (options.isEnableUncaughtExceptionHandler()) {
+            uncaughtHandler = new UncaughtExceptionHandlerIntegration();
+            uncaughtHandler.register(own, options);
+        }
+        return own;
+    }
+
     /**
      * Drops a lightweight, non-identifying breadcrumb onto the current scope — a trail of what the mod
      * was doing (entered a dimension, launched a rocket, founded a station) that rides along with the
@@ -188,7 +225,8 @@ public final class NerospaceTelemetry {
      * The message is scrubbed of OS-account paths exactly like every other payload.
      */
     public static void breadcrumb(String category, String message) {
-        if (!active) {
+        IScopes s = scopes;
+        if (!active || s == null) {
             return;
         }
         Breadcrumb crumb = new Breadcrumb();
@@ -196,7 +234,7 @@ public final class NerospaceTelemetry {
         crumb.setCategory(category);
         crumb.setLevel(SentryLevel.INFO);
         crumb.setMessage(scrub(message));
-        Sentry.addBreadcrumb(crumb);
+        s.addBreadcrumb(crumb);
     }
 
     /**
@@ -205,10 +243,11 @@ public final class NerospaceTelemetry {
      * timing + operation name are recorded — never personal data.
      */
     public static <T> T trace(String operation, String name, java.util.function.Supplier<T> body) {
-        if (!active) {
+        IScopes s = scopes;
+        if (!active || s == null) {
             return body.get();
         }
-        ITransaction tx = Sentry.startTransaction(name, operation);
+        ITransaction tx = s.startTransaction(name, operation);
         try {
             return body.get();
         } catch (RuntimeException | Error e) {
@@ -287,10 +326,11 @@ public final class NerospaceTelemetry {
 
     /** Capture an exception already known to touch Nerospace code. */
     static void capture(Throwable t) {
-        if (!active || t == null) {
+        IScopes s = scopes;
+        if (!active || s == null || t == null) {
             return;
         }
-        Sentry.captureException(t);
+        s.captureException(t);
     }
 
     /** Capture a handled exception if it is still clearly from Nerospace code. */
@@ -327,11 +367,12 @@ public final class NerospaceTelemetry {
      * never carry player identity. Callers pass a fixed guard name and a menu/operation name only.</p>
      */
     public static void captureHandledException(Throwable t, String source, String operation) {
-        if (!active || t == null || !touchesNerospace(t)) {
+        IScopes s = scopes;
+        if (!active || s == null || t == null || !touchesNerospace(t)) {
             return;
         }
         String label = operation == null ? "unknown" : scrub(operation);
-        Sentry.captureException(t, scope -> {
+        s.captureException(t, scope -> {
             scope.setLevel(SentryLevel.WARNING);
             scope.setTag("handled", "true");
             scope.setTag("source", source);
@@ -342,7 +383,8 @@ public final class NerospaceTelemetry {
 
     /** Capture a (scrubbed, truncated) FATAL log line that names Nerospace without a throwable. */
     static void captureMessage(String message) {
-        if (!active) {
+        IScopes s = scopes;
+        if (!active || s == null) {
             return;
         }
         String scrubbed = scrub(message);
@@ -354,7 +396,7 @@ public final class NerospaceTelemetry {
         Message msg = new Message();
         msg.setFormatted(scrubbed);
         event.setMessage(msg);
-        Sentry.captureEvent(event);
+        s.captureEvent(event);
     }
 
     /**

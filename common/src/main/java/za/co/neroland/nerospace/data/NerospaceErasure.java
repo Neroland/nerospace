@@ -127,6 +127,10 @@ public final class NerospaceErasure {
     /** Registers the eraser with Core. Called once from {@code NerospaceCommon.init()}, ahead of the stores. */
     public static void init() {
         PlayerDataErasure.register(NerospaceErasure::erasePlayer);
+        // The read-side twin (POPIA s23 / GDPR Art. 15 and 20): Core's `/neroland data exportme` includes the same
+        // document as `/nerospace privacy export`, for online and offline players alike.
+        za.co.neroland.nerolandcore.data.PlayerDataExport.register(NerospaceCommon.MOD_ID,
+                NerospacePrivacyExport::exportFor);
     }
 
     /** Core's {@code PlayerDataEraser} body: purge one player from every Nerospace store. */

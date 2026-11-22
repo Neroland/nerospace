@@ -219,7 +219,7 @@ class Compliance21Test {
         assertEquals(80, row.get("charge_percent").getAsInt());
         assertEquals(Set.of("dimension", "pos", "charge_percent"), row.keySet(), "no rider or owner field");
         String collect = body(source("data/NerospacePrivacyExport.java"),
-                "public static JsonObject collect(MinecraftServer server, ServerPlayer player)");
+                "private static JsonObject collect(MinecraftServer server, UUID me, @Nullable ServerPlayer player)");
         assertTrue(collect.contains("r -> r.isOwnedBy(me)"), "only the requester's rovers");
         assertTrue(collect.contains("\"rovers_owned_loaded\""));
     }

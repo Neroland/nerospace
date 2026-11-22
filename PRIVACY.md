@@ -106,6 +106,11 @@ Guide markers, your reputation with loaded Alien Villagers, and the loaded Mars 
 things are included; nothing about another player is (a station you own shows how many members it
 has, never who they are).
 
+The same document is part of Neroland Core's ecosystem-wide export (`/neroland data exportme`, Core 1.20.1 or
+later; operators: `/neroland data export <uuid>`), so one request returns your data from every Nero mod. When you
+are offline at the time, the oxygen and Star Guide values are left out (they live in your player file and are only
+reachable while you are online). Nothing about you is written to disk or logged by either command.
+
 In game, a rocket's **Dock at** list shows other players' stations by name only (plus whether
 they are yours, shared with you or public), and free docks by their name — or, for an unnamed
 ring, just "Free dock N" — with a distance rounded to 10 blocks. No station or ring position is
