@@ -95,6 +95,9 @@ Fuel, launch cooldown, crew rules and the landing are the same at every height. 
 oxygen for the whole climb, so a taller climb needs a little more onboard oxygen per seat. Keep the sky above
 the pad clear for the whole climb, since the hull still collides with blocks on the way up.
 
+If the destination dimension is not loaded on the server, the climb aborts instead of spending the rocket.
+The hull goes back to the pad with its fuel, the crew stays seated, and chat says the destination isn't available.
+
 The burst at lift-off follows your **Particles** video setting like any other particle.
 
 The hull and its glass are lit by the world; only the lamps, beacons and exhaust are full-bright, so a

@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -17,6 +18,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,6 +61,15 @@ public final class OxygenFieldManager extends SavedData {
 
     /** Live concentration field: world-packed BlockPos → concentration byte (absent = 0 = vacuum). */
     private final Long2ByteOpenHashMap field = new Long2ByteOpenHashMap();
+    /**
+     * Same cells bucketed by chunk column, so a player's snapshot reads a few chunks instead of the whole field.
+     * Rebuilt only when {@link #revision} changes. Not persisted.
+     */
+    private final transient Long2ObjectOpenHashMap<Long2ByteOpenHashMap> byChunk = new Long2ObjectOpenHashMap<>();
+    /** Bumps when a simulation pass actually changes a cell. Not persisted. */
+    private transient int revision;
+    /** {@link #revision} that {@link #byChunk} was built from, or -1 when stale. */
+    private transient int indexedRevision = -1;
     /** Active oxygen-source cells (world-packed), forced to MAX each step. Persisted. */
     private final LongOpenHashSet sources = new LongOpenHashSet();
 
@@ -181,6 +192,7 @@ public final class OxygenFieldManager extends SavedData {
         cells.addAll(target.keySet());
         Long2ByteOpenHashMap next = new Long2ByteOpenHashMap();
         next.defaultReturnValue((byte) 0);
+        boolean changed = false;
         LongIterator ci = cells.iterator();
         while (ci.hasNext()) {
             long c = ci.nextLong();
@@ -194,12 +206,27 @@ public final class OxygenFieldManager extends SavedData {
             } else {
                 val = old;
             }
+            if (val != old) {
+                changed = true;
+            }
             if (val > 0) {
                 next.put(c, (byte) val);
             }
         }
+        if (next.size() != this.field.size()) {
+            changed = true;
+        }
         this.field.clear();
         this.field.putAll(next);
+        if (changed) {
+            this.revision++;
+            this.indexedRevision = -1;
+        }
+    }
+
+    /** How many simulation passes have actually changed the field since this level was loaded. */
+    public int revision() {
+        return this.revision;
     }
 
     /**
@@ -293,16 +320,49 @@ public final class OxygenFieldManager extends SavedData {
         return false;
     }
 
-    /** Snapshot of cells within {@code radius} of {@code center} for the (deferred) client sync packet. */
+    /** Snapshot of cells within {@code radius} of {@code center} for the client sync packet. */
     public Long2ByteMap snapshotAround(BlockPos center, int radius) {
+        ensureIndex();
         Long2ByteOpenHashMap out = new Long2ByteOpenHashMap();
         long rSq = (long) radius * radius;
-        for (Long2ByteMap.Entry e : this.field.long2ByteEntrySet()) {
-            BlockPos p = BlockPos.of(e.getLongKey());
-            if (center.distSqr(p) <= rSq) {
-                out.put(e.getLongKey(), e.getByteValue());
+        int cx0 = (center.getX() - radius) >> 4;
+        int cx1 = (center.getX() + radius) >> 4;
+        int cz0 = (center.getZ() - radius) >> 4;
+        int cz1 = (center.getZ() + radius) >> 4;
+        for (int cx = cx0; cx <= cx1; cx++) {
+            for (int cz = cz0; cz <= cz1; cz++) {
+                Long2ByteOpenHashMap column = this.byChunk.get(ChunkPos.pack(cx, cz));
+                if (column == null) {
+                    continue;
+                }
+                for (Long2ByteMap.Entry e : column.long2ByteEntrySet()) {
+                    BlockPos p = BlockPos.of(e.getLongKey());
+                    if (center.distSqr(p) <= rSq) {
+                        out.put(e.getLongKey(), e.getByteValue());
+                    }
+                }
             }
         }
         return out;
+    }
+
+    /** Groups {@link #field} by chunk column. Cheap on the steady state, where revision does not move. */
+    private void ensureIndex() {
+        if (this.indexedRevision == this.revision) {
+            return;
+        }
+        this.byChunk.clear();
+        for (Long2ByteMap.Entry e : this.field.long2ByteEntrySet()) {
+            long key = e.getLongKey();
+            long columnKey = ChunkPos.pack(BlockPos.getX(key) >> 4, BlockPos.getZ(key) >> 4);
+            Long2ByteOpenHashMap column = this.byChunk.get(columnKey);
+            if (column == null) {
+                column = new Long2ByteOpenHashMap();
+                column.defaultReturnValue((byte) 0);
+                this.byChunk.put(columnKey, column);
+            }
+            column.put(key, e.getByteValue());
+        }
+        this.indexedRevision = this.revision;
     }
 }

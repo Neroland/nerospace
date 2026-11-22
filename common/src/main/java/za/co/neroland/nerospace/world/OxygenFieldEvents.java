@@ -1,5 +1,11 @@
 package za.co.neroland.nerospace.world;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import it.unimi.dsi.fastutil.longs.Long2ByteMap;
+
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +41,19 @@ public final class OxygenFieldEvents {
     /** Blocks around a player the field snapshot covers (inlined from Config.OXYGEN_SYNC_RADIUS). */
     private static final int SYNC_RADIUS = 32;
 
+    /** Last snapshot each player was sent. Weak keys: a logged-out player is dropped with no erasure work. */
+    private static final Map<ServerPlayer, SyncState> SENT = Collections.synchronizedMap(new WeakHashMap<>());
+
     private OxygenFieldEvents() {
+    }
+
+    /** Per-player memory of the view already on the client. Dimension is part of identity: one player object changes levels. */
+    private static final class SyncState {
+        boolean known;
+        int revision;
+        long pos;
+        long hash;
+        ResourceKey<Level> dimension;
     }
 
     /** Runs one throttled field pass per eligible dimension, and syncs the nearby field to clients. */
@@ -50,11 +68,37 @@ public final class OxygenFieldEvents {
                 manager.simulate(level);
             }
             if (time % SYNC_INTERVAL_TICKS == 0) {
+                int revision = manager.revision();
                 for (ServerPlayer player : level.players()) {
-                    ModNetwork.sendToPlayer(player,
-                            OxygenFieldSyncPayload.of(manager.snapshotAround(player.blockPosition(), SYNC_RADIUS)));
+                    syncPlayer(level, manager, player, revision);
                 }
             }
         }
+    }
+
+    /**
+     * Sends the player's radius-32 view only when it can differ from what they already have: the field revision
+     * moved, they moved, or this is their first view in this dimension. A move through an unchanged region still
+     * builds the snapshot (the window slid) but skips the packet when the cells match.
+     */
+    private static void syncPlayer(ServerLevel level, OxygenFieldManager manager, ServerPlayer player, int revision) {
+        long pos = player.blockPosition().asLong();
+        SyncState state = SENT.computeIfAbsent(player, p -> new SyncState());
+        boolean known = state.known && level.dimension().equals(state.dimension);
+        if (OxygenSyncRules.skipBuild(known, state.revision, state.pos, revision, pos)) {
+            return;
+        }
+        Long2ByteMap snap = manager.snapshotAround(player.blockPosition(), SYNC_RADIUS);
+        long hash = OxygenSyncRules.fingerprint(snap);
+        state.revision = revision;
+        state.pos = pos;
+        state.dimension = level.dimension();
+        state.known = true;
+        if (OxygenSyncRules.skipSend(known, state.hash, hash)) {
+            state.hash = hash;
+            return;
+        }
+        state.hash = hash;
+        ModNetwork.sendToPlayer(player, OxygenFieldSyncPayload.of(snap));
     }
 }

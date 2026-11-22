@@ -50,7 +50,7 @@ public final class PlanetClock {
             return ClockMath.NOON;
         }
         if (planet.clockSource() == ClockSource.LEVEL_TIME) {
-            return ClockMath.mirrorPhase(level.getDefaultClockTime());
+            return ClockMath.mirrorPhase(SafeClockTime.of(level));
         }
         if (!NerospaceConfig.clockEnabled()) {
             return ClockMath.NOON;
@@ -87,7 +87,7 @@ public final class PlanetClock {
     public static long dayNumber(ServerLevel level) {
         PlanetDefinition planet = Planets.get(level.dimension());
         if (planet == null || planet.clockSource() == ClockSource.LEVEL_TIME) {
-            return 1L + Math.floorDiv(level.getDefaultClockTime(), ClockMath.VANILLA_DAY);
+            return 1L + Math.floorDiv(SafeClockTime.of(level), ClockMath.VANILLA_DAY);
         }
         return PlanetClockState.get(level).readDay(level.getGameTime(), planet.traits().dayLengthTicks());
     }
@@ -141,7 +141,7 @@ public final class PlanetClock {
             if (clock.isEmpty()) {
                 return false;
             }
-            long dayStart = Math.floorDiv(level.getDefaultClockTime(), ClockMath.VANILLA_DAY) * ClockMath.VANILLA_DAY;
+            long dayStart = Math.floorDiv(SafeClockTime.of(level), ClockMath.VANILLA_DAY) * ClockMath.VANILLA_DAY;
             long ticks = dayStart + Math.round(wrapped * ClockMath.VANILLA_DAY);
             level.getServer().clockManager().setTotalTicks(clock.get(), ticks);
             //?} else {

@@ -1510,6 +1510,17 @@ public class RocketEntity extends Entity implements MenuProvider {
             setLaunching(false);
             return;
         }
+        if (!(level() instanceof ServerLevel current)) {
+            return;
+        }
+        MinecraftServer server = current.getServer();
+        ServerLevel destination = server.getLevel(targetKey);
+        // The dimension is not loaded (disabled datapack, failed worldgen, partial install). Spending the
+        // hull here used to drop the crew at the top of the climb with the fuel already burned.
+        if (LaunchFailureRules.abort(destination != null)) {
+            abortMissingDestination(current);
+            return;
+        }
 
         int outboundFuel = currentFuelCost();
         int carriedFuel = Math.max(0, getFuel() - outboundFuel);
@@ -1522,10 +1533,7 @@ public class RocketEntity extends Entity implements MenuProvider {
         rememberLeftBehind(crew);
 
         ServerPlayer player = Crew.pilotOf(crew);
-        if (player != null && level() instanceof ServerLevel current) {
-            MinecraftServer server = current.getServer();
-            ServerLevel destination = server.getLevel(targetKey);
-            if (destination != null) {
+        if (player != null) {
                 // A rocket reloaded mid-ascent keeps its saved origin; a 1.6.0 in-flight one (no saved origin)
                 // falls back to where it is now, so the arriving rocket always has a way back.
                 net.minecraft.resources.ResourceKey<Level> savedDim = this.launchOriginDim;
@@ -1587,12 +1595,39 @@ public class RocketEntity extends Entity implements MenuProvider {
                     rider.sendOverlayMessage(Component.translatable("entity.nerospace.rocket.descending"));
                     za.co.neroland.nerospace.world.OxygenManager.grantArrivalReserve(rider, reserve[i]);
                 }
-            }
         }
 
         // The in-flight rocket is expended; the arriving rocket carries the fuel left over.
         dropFuelInput();
         this.discard();
+    }
+
+    /**
+     * The destination level does not exist. Put the rocket back on the pad it left, with its fuel and intake
+     * untouched, and keep the crew in their seats. Hovering at the top of the climb is not safe on an airless world.
+     */
+    private void abortMissingDestination(ServerLevel level) {
+        setLaunching(false);
+        this.launchTicks = 0;
+        this.setDeltaMovement(Vec3.ZERO);
+        java.util.List<ServerPlayer> crew = Crew.seatedServer(this);
+        BlockPos pad = this.launchOriginPad;
+        boolean home = pad != null && (this.launchOriginDim == null || this.launchOriginDim.equals(level.dimension()));
+        if (home) {
+            Vec3 stand = LaunchFailureRules.padStand(pad.getX(), pad.getY(), pad.getZ());
+            this.setPos(stand.x, stand.y, stand.z);
+            this.setDeltaMovement(Vec3.ZERO);
+            for (ServerPlayer rider : crew) {
+                rider.teleportTo(level, stand.x, stand.y, stand.z, Set.of(), rider.getYRot(), rider.getXRot(), false);
+                if (rider.getVehicle() != this) {
+                    rider.startRiding(this);
+                }
+            }
+        }
+        Component message = Component.translatable(LaunchFailureRules.DESTINATION_MISSING);
+        for (ServerPlayer rider : crew) {
+            rider.sendSystemMessage(message);
+        }
     }
 
     /** The integer landing step for telemetry (1–4 pad rules, 5 pod, 6 station dock). No names. */

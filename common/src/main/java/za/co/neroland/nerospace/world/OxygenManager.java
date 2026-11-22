@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import za.co.neroland.nerospace.api.Hazard;
 import za.co.neroland.nerospace.api.NerospaceOxygen;
@@ -410,8 +411,12 @@ public final class OxygenManager {
         // Terraformed ground is permanently breathable (the Terraformer flags the chunk), except on a world whose
         // terraform table says it never gains an atmosphere (Europa).
         boolean noAtmosphere = noAtmosphere(level);
+        // getChunkNow, not getChunkAt: the latter blocks and generates the chunk, and a breath check on a
+        // chunk edge can re-enter the chunk manager mid-tick (the same failure GravityManager avoids).
+        // An unloaded chunk reads as not terraformed, which is what a player standing there already is.
+        LevelChunk home = level.getChunkSource().getChunkNow(center.getX() >> 4, center.getZ() >> 4);
         if (za.co.neroland.nerospace.world.planet.AtmosphereRules.terraformBreathable(noAtmosphere,
-                Services.PLATFORM.isTerraformed(level.getChunkAt(center)))) {
+                home != null && Services.PLATFORM.isTerraformed(home))) {
             return true;
         }
         if (OxygenFieldManager.get(level).isBreathable(center)) {
@@ -429,14 +434,45 @@ public final class OxygenManager {
         if (NerospaceOxygen.pressureAt(level, center) >= NerospaceOxygen.BREATHABLE_PRESSURE) {
             return true;
         }
-        for (BlockPos pos : BlockPos.betweenClosed(
-                center.offset(-SAFE_RADIUS, -SAFE_RADIUS, -SAFE_RADIUS),
-                center.offset(SAFE_RADIUS, SAFE_RADIUS, SAFE_RADIUS))) {
-            BlockState state = level.getBlockState(pos);
-            if (state.is(ModBlocks.ROCKET_LAUNCH_PAD.get())
-                    || state.is(ModBlocks.LANDING_POD.get())
-                    || state.is(ModBlocks.DOCKING_PORT.get())) {
-                return true;
+        return shelterNearby(level, center);
+    }
+
+    /**
+     * A launch pad, pod or dock within {@link #SAFE_RADIUS}, read only from chunks that are already loaded.
+     * {@code getBlockState} on a missing neighbour would sync-load it; skipping that neighbour matches the
+     * terraformed-flag read above and still sees every pad in a chunk the player is actually ticking in.
+     */
+    private static boolean shelterNearby(ServerLevel level, BlockPos center) {
+        int r = SAFE_RADIUS;
+        int minCx = (center.getX() - r) >> 4;
+        int maxCx = (center.getX() + r) >> 4;
+        int minCz = (center.getZ() - r) >> 4;
+        int maxCz = (center.getZ() + r) >> 4;
+        int y0 = center.getY() - r;
+        int y1 = center.getY() + r;
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        for (int cx = minCx; cx <= maxCx; cx++) {
+            for (int cz = minCz; cz <= maxCz; cz++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+                if (chunk == null) {
+                    continue;
+                }
+                int x0 = Math.max(center.getX() - r, cx << 4);
+                int x1 = Math.min(center.getX() + r, (cx << 4) + 15);
+                int z0 = Math.max(center.getZ() - r, cz << 4);
+                int z1 = Math.min(center.getZ() + r, (cz << 4) + 15);
+                for (int y = y0; y <= y1; y++) {
+                    for (int z = z0; z <= z1; z++) {
+                        for (int x = x0; x <= x1; x++) {
+                            BlockState state = chunk.getBlockState(cursor.set(x, y, z));
+                            if (state.is(ModBlocks.ROCKET_LAUNCH_PAD.get())
+                                    || state.is(ModBlocks.LANDING_POD.get())
+                                    || state.is(ModBlocks.DOCKING_PORT.get())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
         }
         return false;
