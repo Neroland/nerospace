@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.3] - 2026-11-22
+
+### Fixed
+
+- **A launch whose destination is not loaded no longer destroys the rocket.** The climb stops, the hull returns to the pad with its fuel, the crew stays seated, and chat says the destination is not available.
+- **Missing world-clock markers no longer crash the sky or the solar panels.** On 26.x, Greenxertz and the other vanilla-time worlds fall back to the game clock after the first failure, and stay there.
+- **Planets do less work each tick, with the same result.** Gravity corrections cover only entities that are actually ticking. Oxygen-field updates are sent when that player's view changes. Checking whether you can breathe no longer loads chunks.
+
 ## [2.4.2] - 2026-11-26
 
 ### Added
