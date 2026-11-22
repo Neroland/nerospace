@@ -225,7 +225,7 @@ For verifying a **release jar** end-to-end, the mod also registers a hidden diag
 only way to obtain it is the command `/give @s nerospace:sentry_test`. Placing it sends a
 single synthetic, clearly-labelled test event ("safe to ignore") through the exact same
 pipeline — and therefore the same scrubbing, opt-out gate, and session cap — as a real error
-report. If telemetry is disabled it sends nothing and says so in chat. Regular gameplay can
+report. The event text does not include the block's coordinates. If telemetry is disabled it sends nothing and says so in chat. Regular gameplay can
 never trigger it.
 
 ---

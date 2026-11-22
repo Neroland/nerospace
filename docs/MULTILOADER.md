@@ -274,7 +274,10 @@ Jars land in `<loader>/versions/<mc>/build/libs/`.
 
 Publishing (`.github/workflows/publish.yml`) builds all 27 cells (the 26.x cells above plus Minecraft 1.21.1,
 1.21.4, 1.21.5, 1.21.8, 1.21.10 and 1.21.11 on each loader) and tags each upload with its loader and game
-versions (the 1.21.8 jar also lists 1.21.7, the 1.21.10 jar also lists 1.21.9).
+versions (the 1.21.8 jar also lists 1.21.7, the 1.21.10 jar also lists 1.21.9). It does not upload to
+Modrinth. A Modrinth file needs Neroland Core published there and declared as a required dependency
+first — see [MODRINTH.md](MODRINTH.md). Pull requests compile one 26.2 cell per loader and run the
+NeoForge tests (`.github/workflows/pr-build.yml`) and do not publish.
 
 ## IDE
 

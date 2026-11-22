@@ -4,6 +4,8 @@ import java.util.Locale;
 
 import com.mojang.serialization.Codec;
 
+import za.co.neroland.nerospace.data.LenientDecode;
+
 /**
  * A station's class — its one trait. Persisted <b>by name</b> (never ordinal); an unknown or
  * missing name reads as {@link #WAYSTATION}, so every 1.x station loads as a Waystation.
@@ -41,14 +43,16 @@ public enum StationClass {
 
     /** Lenient parse: {@code null}, blank or unknown → {@link #WAYSTATION}. */
     public static StationClass parse(String name) {
-        if (name == null) {
+        if (name == null || name.isBlank()) {
             return WAYSTATION;
         }
+        String trimmed = name.trim();
         for (StationClass c : values()) {
-            if (c.name().equalsIgnoreCase(name.trim())) {
+            if (c.name().equalsIgnoreCase(trimmed)) {
                 return c;
             }
         }
+        LenientDecode.warnOnce("station class");
         return WAYSTATION;
     }
 

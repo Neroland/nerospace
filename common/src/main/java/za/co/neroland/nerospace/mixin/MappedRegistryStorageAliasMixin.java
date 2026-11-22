@@ -33,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  *
  * <p>{@code require = 0}: if a signature ever fails to match, the injector is simply
  * skipped (no crash) and behaviour falls back to the default (re-place the block).
+ * {@link StorageAliasMixinPlugin} logs that miss. It does not change the lookup.
  */
 @Mixin(MappedRegistry.class)
 public abstract class MappedRegistryStorageAliasMixin<T> implements Registry<T> {

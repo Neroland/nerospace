@@ -13,7 +13,7 @@
   progression. Author: **Neroland** (Dario). Repo: github.com/Neroland/nerospace.
 - Mod id: **`nerospace`** (matches the registry namespace + every loader manifest). Package root:
   `za.co.neroland.nerospace`.
-- Targets **MC 26.1.2, 26.2 AND 26.3** on **NeoForge, MinecraftForge/Forge, and Fabric** → the **"9 cells"**. **Java 25.**
+- Targets **27 cells**: NeoForge, MinecraftForge/Forge, and Fabric, each on Minecraft **1.21.1, 1.21.4, 1.21.5, 1.21.8, 1.21.10, 1.21.11, 26.1.2, 26.2 and 26.3**. **Java 21** for the 1.21.x cells, **Java 25** for 26.x. The IDE checkout (`stonecutter.active`, `vcsVersion`, `minecraft_version`) stays **26.2**, the committed source state.
   Mappings = official Mojang names (26.x ships de-obfuscated; no Parchment).
 
 ## Working with Dario (the developer)
@@ -56,7 +56,7 @@
   `tools/ecj.prefs`). **Baseline: 0 errors, ~25 pre-existing warnings** (nullness on Mojang codec/cap
   generics, redundant `(Fluid)`/`(int)` casts, 4 dead pipe-relay methods, 1 unused import). The task only
   FAILS on errors.
-- **ALWAYS verify all 9 cells BUILD SUCCESSFUL + ecjCheck 0 errors before marking a task done.** Never
+- **ALWAYS verify all 27 cells BUILD SUCCESSFUL + ecjCheck 0 errors before marking a task done.** Never
   sign off on an uncompiled change. The build does NOT validate lang/JSON — validate resource edits with
   `python json.load`.
 - Resolving exact 26.x signatures when an `@Override` won't resolve: don't guess — register a temporary
@@ -168,7 +168,7 @@
 ## Status & open follow-ups
 
 - **Cross-loader port: COMPLETE + signed off** (5-agent parity audit; gaps ported — recipes, loot, lang,
-  tags, ore-gen, comparators, etc.). The current support matrix is 9 cells including Forge. See
+  tags, ore-gen, comparators, etc.). The current support matrix is 27 cells (3 loaders × 9 Minecraft versions) including Forge. See
   `post_port.md` + `docs/MULTILOADER.md`.
 - **post_port.md Phase 1** (retire standalone root → `legacy/`) + **Phase 2** (flatten the multiloader to
   the repo root + fix path refs/CI/IDE) are **DONE and STAGED (not committed)** on

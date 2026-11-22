@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "za.co.neroland.nerospace.mixin",
+  "plugin": "za.co.neroland.nerospace.mixin.StorageAliasMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BlockLightEngineNyxMixin",

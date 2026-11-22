@@ -30,13 +30,12 @@ rootProject.name = 'nerospace'
 // the flat include 'common'/'fabric'/'neoforge').
 //
 //   branch  -> loader   (fabric, neoforge, forge) : its own dir + build.gradle
-//   version -> MC build (26.1.2, 26.2, 26.3)       : a real subproject per cell
+//   version -> MC build (the nine versions below) : a real subproject per cell
 //
-// Produces the nine cells as DISTINCT Gradle projects, each with its own
-// resolved classpath:
-//   :fabric:26.1.2   :fabric:26.2
-//   :neoforge:26.1.2 :neoforge:26.2
-//   :forge:26.1.2    :forge:26.2
+// Produces 27 cells (3 loaders x 9 versions) as DISTINCT Gradle projects, each
+// with its own resolved classpath:
+//   1.21.1, 1.21.4, 1.21.5, 1.21.8, 1.21.10, 1.21.11, 26.1.2, 26.2, 26.3
+//   on fabric, neoforge and forge.
 // That per-node classpath is what lets VS Code switch versions on selection
 // (one .classpath per node) instead of every config sharing one pinned classpath.
 //

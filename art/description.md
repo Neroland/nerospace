@@ -37,7 +37,7 @@ Want to see everything at once? In a creative world, run **`/nerospace gallery`*
 
 ## Compatibility & modpacks
 
-- **Standalone** — requires only NeoForge. No other mod needed.
+- **Requires Neroland Core**, which must load before Nerospace. NeoForge, Forge or Fabric. Core has to be published on Modrinth and declared as a required dependency of a Nerospace file before that file is a complete install.
 - Plays well with others: conventional `c:` tags on every material and NeoForge capabilities on every machine face, so hoppers, pipes, and recipe viewers Just Work as the 26.1 ecosystem fills in.
 - **Modpacks are allowed and encouraged** — any platform, no need to ask. Just use the official files and credit *Nerospace by Neroland* with links to the [CurseForge page](https://www.curseforge.com/minecraft/mc-mods/nerospace) and the [GitHub repository](https://github.com/Neroland/nerospace). Full terms: [LICENSE](https://github.com/Neroland/nerospace/blob/main/LICENSE).
 - Five clamped config multipliers (oxygen drain/capacity, energy rate, fuel cost, machine speed) make pack-tuning painless.

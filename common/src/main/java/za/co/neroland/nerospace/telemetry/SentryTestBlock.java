@@ -36,7 +36,8 @@ public class SentryTestBlock extends Block {
         if (level.isClientSide()) {
             return;
         }
-        boolean dispatched = NerospaceTelemetry.sendTestEvent("placed at " + pos.toShortString());
+        // The message is the event text. No coordinates: PRIVACY.md excludes them, and a block position is one.
+        boolean dispatched = NerospaceTelemetry.sendTestEvent("sentry_test block placed");
         if (placer instanceof Player player) {
             player.sendSystemMessage(Component.translatable(dispatched
                     ? "message.nerospace.sentry_test.sent"
