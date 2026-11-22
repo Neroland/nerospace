@@ -188,7 +188,7 @@ too-low tier on a gated planet pauses with "wrong planet".
   (any side). Only the output slots can be extracted, so automation can never pull your modules or
   casings back out
 
-- Config: scales with the standard `energyRateMultiplier`, `fuelCostMultiplier`, and
-
-  `machineSpeedMultiplier`; `quarryFrameDecayTicks` tunes how slowly an orphaned frame crumbles
+- Config: mining speed scales with `machineSpeedMultiplier` and the quarry's own speed module.
+  Energy per block scales with the quarry's efficiency module. `energyRateMultiplier` and
+  `fuelCostMultiplier` do not apply. `quarryFrameDecayTicks` tunes how slowly an orphaned frame crumbles
   (see [Configuration](Configuration))

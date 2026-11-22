@@ -1,5 +1,7 @@
 package za.co.neroland.nerospace.client;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import za.co.neroland.nerospace.NerospaceCommon;
 import za.co.neroland.nerospace.api.Hazard;
 import za.co.neroland.nerospace.client.ui.Glyphs;
+import za.co.neroland.nerospace.client.ui.HudHover;
 import za.co.neroland.nerospace.client.ui.HudLayout;
 import za.co.neroland.nerospace.config.NerospaceConfig;
 import za.co.neroland.nerospace.world.planet.Planets;
@@ -158,16 +161,22 @@ public final class OxygenHud {
 
         // Weather: glyph, name and a 4-cell intensity bar (lit cells = intensity, so colour is never alone).
         WeatherEvent event = ClientPlanetWeather.event(player.level());
+        float intensity = 0.0F;
+        int weatherLine = -1;
+        int weatherCellX = -1;
         if (NerospaceConfig.hudWeatherLine() && event != WeatherEvent.NONE) {
+            intensity = ClientPlanetWeather.intensity(player.level());
             line = HudLayout.lineY(y, k++);
+            weatherLine = line;
             int tint = weatherTint(event);
             Glyphs.draw(g, Glyphs.weather(event), barX - HudLayout.GLYPH_LEFT, line, tint);
             Component name = Component.translatable("hud.nerospace.weather." + event.name().toLowerCase(Locale.ROOT));
             int room = g.guiWidth() - 2 - WEATHER_BAR_W - barX;
             name = ellipsis(mc, name, room);
             g.text(mc.font, name, barX, line, tint, true);
-            int lit = Math.round(Math.max(0.0F, Math.min(1.0F, ClientPlanetWeather.intensity(player.level()))) * 4.0F);
+            int lit = Math.round(Math.max(0.0F, Math.min(1.0F, intensity)) * 4.0F);
             int cx0 = barX + mc.font.width(name) + 4;
+            weatherCellX = cx0;
             for (int i = 0; i < 4; i++) {
                 int cx = cx0 + i * 5;
                 g.fill(cx, line + 2, cx + 4, line + 6, i < lit ? tint : TROUGH);
@@ -185,6 +194,62 @@ public final class OxygenHud {
             };
             Glyphs.draw(g, Glyphs.hazard(hazardNow), barX - HudLayout.GLYPH_LEFT, line, LOW);
             g.text(mc.font, Component.translatable(hazardKey), barX, line, LOW, true);
+        }
+        hover(g, mc, x, y, air, max, event, intensity, weatherLine, weatherCellX);
+    }
+
+    /**
+     * The oxygen readout and the weather-intensity cells name themselves on hover: what it is, and how much.
+     * Drawn into the HUD pass so it does not depend on a screen flushing the tooltip queue. No coordinates.
+     */
+    private static void hover(GuiGraphicsExtractor g, Minecraft mc, int anchorX, int anchorY, int air, int max,
+            WeatherEvent event, float intensity, int weatherLine, int weatherCellX) {
+        // The open screen lives on Gui from 26.2 and on Minecraft before that.
+        //? if >=26.2 {
+        if (mc.gui.screen() != null) {
+        //?} else {
+        /*if (mc.screen != null) {
+        *///?}
+            return;
+        }
+        double mx = GuiPointer.guiX(mc);
+        double my = GuiPointer.guiY(mc);
+        if (!Double.isFinite(mx) || !Double.isFinite(my)) {
+            return;
+        }
+        List<Component> lines = null;
+        if (weatherLine >= 0 && HudHover.contains(HudHover.weatherCells(weatherCellX, weatherLine), mx, my)) {
+            lines = new ArrayList<>(2);
+            lines.add(Component.translatable("hud.nerospace.weather." + event.name().toLowerCase(Locale.ROOT)));
+            lines.add(Component.translatable("hud.nerospace.weather.intensity", HudHover.weatherPercent(intensity)));
+        } else if (HudHover.contains(HudHover.oxygenReadout(anchorX, anchorY), mx, my)) {
+            lines = new ArrayList<>(2);
+            lines.add(Component.translatable("hud.nerospace.oxygen.name"));
+            lines.add(Component.translatable("hud.nerospace.oxygen.amount", air, max, HudHover.percent(air, max)));
+        }
+        if (lines != null) {
+            drawTooltip(g, mc, lines, (int) mx, (int) my);
+        }
+    }
+
+    private static void drawTooltip(GuiGraphicsExtractor g, Minecraft mc, List<Component> lines, int mouseX, int mouseY) {
+        int width = 0;
+        for (Component line : lines) {
+            width = Math.max(width, mc.font.width(line));
+        }
+        int height = lines.size() * 10;
+        int x = mouseX + 12;
+        int y = mouseY - 12;
+        if (x + width + 6 > g.guiWidth()) {
+            x = Math.max(2, mouseX - width - 16);
+        }
+        if (y < 2) {
+            y = 2;
+        }
+        g.fill(x - 3, y - 3, x + width + 3, y + height + 1, 0xF0100010);
+        g.fill(x - 2, y - 2, x + width + 2, y + height, 0xFF100010);
+        for (int i = 0; i < lines.size(); i++) {
+            g.text(mc.font, lines.get(i), x, y + i * 10, 0xFFFFFFFF, true);
         }
     }
 

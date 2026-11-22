@@ -10,10 +10,11 @@ plugins {
     id 'dev.kikugie.stonecutter'
 }
 
-// The version checked out in the IDE / used by a plain `build`. Switch with the
-// generated `stonecutterSwitchTo26_1_2` / `...26_2` tasks (or the IDE button).
-// A string LITERAL — Stonecutter rewrites it in place on switch. Groovy needs the
-// dot form (`stonecutter.active`, not the Kotlin infix `stonecutter active`).
+// The version checked out in the IDE / used by a plain `build`. This is the committed
+// source state: it matches vcsVersion in settings.gradle and minecraft_version in
+// gradle.properties. The full matrix is 27 cells (see settings.gradle); switching the
+// IDE does not change that. A string LITERAL — Stonecutter rewrites it in place on
+// switch. Groovy needs the dot form (`stonecutter.active`, not the Kotlin infix).
 stonecutter.active '26.2'
 
 allprojects {

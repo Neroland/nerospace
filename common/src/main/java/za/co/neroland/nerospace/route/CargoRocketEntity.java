@@ -3,6 +3,7 @@ package za.co.neroland.nerospace.route;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -114,7 +115,11 @@ public class CargoRocketEntity extends RocketEntity {
         }
         if (!level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             CargoPadBlockEntity pad = padBelow();
-            return pad == null ? InteractionResult.CONSUME : MenuOpener.openOrConsume(serverPlayer, pad);
+            if (pad == null) {
+                serverPlayer.sendSystemMessage(Component.translatable("entity.nerospace.cargo_rocket.no_pad"));
+                return InteractionResult.CONSUME;
+            }
+            return MenuOpener.openOrConsume(serverPlayer, pad);
         }
         return InteractionResult.SUCCESS;
     }

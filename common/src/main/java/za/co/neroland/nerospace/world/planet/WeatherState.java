@@ -1,5 +1,7 @@
 package za.co.neroland.nerospace.world.planet;
 
+import za.co.neroland.nerospace.data.LenientDecode;
+
 /** Phase of the weather state machine. Persisted <b>by name</b>; unknown names load as {@link #CLEAR}. */
 public enum WeatherState {
     CLEAR,
@@ -14,6 +16,9 @@ public enum WeatherState {
                     return s;
                 }
             }
+        }
+        if (LenientDecode.unknownSaved(name, false)) {
+            LenientDecode.warnOnce("weather state");
         }
         return CLEAR;
     }

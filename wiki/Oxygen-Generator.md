@@ -59,6 +59,8 @@ N N N
   collapses.
 
 - **HUD:** a cyan **O₂ bar** appears above the hotbar in airless dimensions (it turns red when low).
+  Hover the bar to see that it is oxygen and how full it is. The weather line's intensity cells do the
+  same for the current weather.
 - **Airlock:** a player wearing a full [Oxygen Suit](Oxygen-Suit) within **4 blocks**
 
   refills the suit's air directly from the machine's tank, draining the gas — handy at a base door

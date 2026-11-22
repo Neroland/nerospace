@@ -166,7 +166,7 @@ Client settings (each player's own, never forced by the server):
 | `particles.<type>.perPlayerPerTick` | dust 0.6, ash 0.5, spore 0.4, diamond_dust 0.8, ember 0.2, nebula_mote 0.3 | particles per tick around you at full weather (0–8) |
 | `hud.clockDial` | `true` | show the clock dial |
 | `hud.clockDialScale` | `1` | 1 = 16 px, 2 = 32 px |
-| `hud.weatherLine` | `true` | show the weather line |
+| `hud.weatherLine` | `true` | show the weather line. Hover its intensity cells for the weather name and a percent. The rocket screen's planet card tooltip includes the same percent |
 
 ## Skies
 

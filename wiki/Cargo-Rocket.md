@@ -24,7 +24,8 @@ Greenxertz.
    buffer, or a bucket/canister in hand all work.
 3. Load the hold, pick a destination in the pad GUI and press **Launch** — or set a schedule and walk away.
 
-Right-clicking the rocket with an empty hand opens the pad's GUI. Hitting it returns the Cargo Rocket
+Right-clicking the rocket with an empty hand opens the pad's GUI. If the rocket is not standing on a
+Cargo Pad, that click tells you there is no hold to open. Hitting it returns the Cargo Rocket
 item. The pad must form a complete 3×3 (Tier 2) for lift-off, exactly as for a Tier 2 crewed rocket.
 
 ## What happens to the rocket

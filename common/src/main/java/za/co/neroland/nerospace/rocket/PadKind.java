@@ -2,6 +2,8 @@ package za.co.neroland.nerospace.rocket;
 
 import java.util.Locale;
 
+import za.co.neroland.nerospace.data.LenientDecode;
+
 /**
  * What a {@link PadRegistry} node is. Persisted <b>by name</b>; an absent or
  * unknown name loads as {@link #LAUNCH_PAD}, so every 1.6.0 node keeps its meaning.
@@ -22,6 +24,9 @@ public enum PadKind {
         try {
             return valueOf(name.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
+            if (LenientDecode.unknownSaved(name, false)) {
+                LenientDecode.warnOnce("pad kind");
+            }
             return LAUNCH_PAD;
         }
     }

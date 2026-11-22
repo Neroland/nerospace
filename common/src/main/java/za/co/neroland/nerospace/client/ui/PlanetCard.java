@@ -164,8 +164,10 @@ public final class PlanetCard {
         lines.add(Component.literal(String.format(Locale.ROOT, "%.2f g  ", d.gravity()))
                 .append(Component.translatable(PlanetCardData.suitKey(true, d.hazard(), d.needsRadLining(),
                         d.requiredSuit()))));
-        lines.add(d.weatherNow() == WeatherEvent.NONE ? Component.translatable("weather.nerospace.none")
-                : weatherName(d.weatherNow()));
+        lines.add(Component.translatable("gui.nerospace.card.weather",
+                d.weatherNow() == WeatherEvent.NONE ? Component.translatable("weather.nerospace.none")
+                        : weatherName(d.weatherNow()),
+                HudHover.weatherPercent(d.weatherIntensity())));
         lines.add(d.chosenPad().orElse(Component.translatable("gui.nerospace.card.no_pad")));
         return lines;
     }

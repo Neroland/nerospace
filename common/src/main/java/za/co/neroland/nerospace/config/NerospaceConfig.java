@@ -35,13 +35,17 @@ public final class NerospaceConfig {
             + "actions, anonymous stability/timing; no IP, username, UUID, world data or chat; file paths "
             + "scrubbed of your account name. false = opt out of all of it. See PRIVACY.md");
     private static final ConfigValue<Double> ENERGY_RATE = SCHEMA.doubleRange("energyRateMultiplier",
-            1.0D, MULT_MIN, MULT_MAX, true, "scales FE/tick of all generators (combustion, passive, solar)");
+            1.0D, MULT_MIN, MULT_MAX, true, "scales FE/tick of the Combustion Generator, Passive Generator, "
+            + "Solar Panels and station Solar Wings, and each Solar Panel's energy buffer. "
+            + "Does not scale other machine buffers or the Quarry");
     private static final ConfigValue<Double> OXYGEN_DRAIN = SCHEMA.doubleRange("oxygenDrainMultiplier",
             1.0D, MULT_MIN, MULT_MAX, true, "scales how fast air drains off a safe zone");
     private static final ConfigValue<Double> OXYGEN_CAPACITY = SCHEMA.doubleRange("oxygenCapacityMultiplier",
             1.0D, MULT_MIN, MULT_MAX, true, "scales player + suit air capacity");
     private static final ConfigValue<Double> FUEL_COST = SCHEMA.doubleRange("fuelCostMultiplier",
-            1.0D, MULT_MIN, MULT_MAX, true, "scales fuel burned per rocket launch (clamped to the tank)");
+            1.0D, MULT_MIN, MULT_MAX, true, "scales rocket launch fuel (the distance cost, never above the tank), "
+            + "cargo-rocket fuel, oxygen spent per air at an airlock, and the energy used by the Grinder, "
+            + "the Oxygen Generator, the Fuel Refinery and the Terraformer");
     private static final ConfigValue<Double> MACHINE_SPEED = SCHEMA.doubleRange("machineSpeedMultiplier",
             1.0D, MULT_MIN, MULT_MAX, true, "scales machine work speed (higher = faster)");
     private static final ConfigValue<Double> GRAVITY = SCHEMA.doubleRange("gravityMultiplier",

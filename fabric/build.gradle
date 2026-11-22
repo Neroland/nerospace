@@ -274,7 +274,7 @@ configurations {
     ecj
 }
 dependencies {
-    ecj 'org.eclipse.jdt:ecj:+'
+    ecj 'org.eclipse.jdt:ecj:3.46.100'
 }
 tasks.register('ecjCheck', JavaExec) {
     group = 'verification'

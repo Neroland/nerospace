@@ -20,10 +20,10 @@ All six default to `1.0`. Each one can be set from **0.1 to 10.0**. Every scaled
 
 | Key | What it scales | Base values (at 1.0) |
 | --- | --- | --- |
-| `energyRateMultiplier` | The FE/t that generators make: Combustion Generator, Passive Generator and Solar Panels. It also scales solar panel buffers. It does **not** change the Fuel Tank or the Grinder buffer. | Combustion 20 FE/t · Passive 8 FE/t · Solar 20 / 100 / 400 FE/t (Tier 1 / 2 / 3) |
+| `energyRateMultiplier` | The FE/t from the Combustion Generator, Passive Generator, Solar Panels and station Solar Wings. It also scales each Solar Panel's energy buffer. It does **not** change other machine buffers or the Quarry. | Combustion 20 FE/t · Passive 8 FE/t · Solar 20 / 100 / 400 FE/t (Tier 1 / 2 / 3) |
 | `oxygenDrainMultiplier` | How fast air drains when you are not in a safe zone. Higher = harsher. | Bare lungs 30 air per check · full suit 3 air per check (one check = 10 ticks) · ×4 in an unshielded hazard |
 | `oxygenCapacityMultiplier` | How much air the player and suits hold. | No suit 300 · any full suit 900 |
-| `fuelCostMultiplier` | Fuel and energy costs: fuel per rocket launch (never more than the tank), oxygen per air at an airlock, and machine energy costs. Also cargo fuel. | Launch: 2,500 mB to another dimension, or 500 mB + 60 mB per 100 blocks in the same dimension · airlock 2 mB per air · Grinder 20 FE/t · O₂ Generator 20 FE per mB |
+| `fuelCostMultiplier` | Rocket launch fuel (the distance cost, never more than the tank), cargo-rocket fuel, oxygen per air at an airlock, and the energy used by the Grinder, Oxygen Generator, Fuel Refinery and Terraformer. | Launch: 2,500 mB to another dimension, or 500 mB + 60 mB per 100 blocks in the same dimension · airlock 2 mB per air · Grinder 20 FE/t · O₂ Generator 20 FE per mB · Fuel Refinery 40 FE/t |
 | `machineSpeedMultiplier` | How fast machines work. Higher = faster (shorter work time). | Grinder 200 ticks per item |
 | `gravityMultiplier` | A global scale on every world's [gravity](Planet-Gravity): players, mobs, items, projectiles and falling meteors. Below 1 = floatier, above 1 = heavier. | Station ~0.1× · Europa ~0.13× · Glacira ~0.4× · Greenxertz ~0.6× · Cindara ~0.8× · Overworld and terraformed ground 1.0× |
 

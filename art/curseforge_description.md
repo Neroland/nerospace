@@ -41,7 +41,7 @@ Want to see everything at once? In a creative world, run **`/nerospace gallery`*
 
 ## Compatibility & modpacks
 
-* **Standalone** — requires only NeoForge. No other mod needed.
+* **Requires Neroland Core**, which must load before Nerospace. NeoForge, Forge or Fabric.
 * Plays well with others: conventional `c:` tags on every material and NeoForge capabilities on every machine face, so hoppers, pipes, and recipe viewers Just Work as the 26.1 ecosystem fills in.
 * **Modpacks are allowed and encouraged** — any platform, no need to ask. Just use the official files and credit _Nerospace by Neroland_ with links to this page and the [GitHub repository](https://github.com/Neroland/nerospace). Full terms: [LICENSE](https://github.com/Neroland/nerospace/blob/main/LICENSE).
 * Five clamped config multipliers (oxygen drain/capacity, energy rate, fuel cost, machine speed) make pack-tuning painless.
@@ -52,7 +52,7 @@ Want to see everything at once? In a creative world, run **`/nerospace gallery`*
 * 💬 **[Discord](https://discord.gg/ArPXvYUzJG)** — chat, help, and sneak peeks.
 * 🐞 **[Issues](https://github.com/Neroland/nerospace/issues)** — bug reports and feature requests.
 * 🗒️ **[Changelog](https://github.com/Neroland/nerospace/blob/main/CHANGELOG.md)**
-* 🟢 **[Also on Modrinth](https://modrinth.com/mod/nerospace)**
+* 🟢 **[Also on Modrinth](https://modrinth.com/mod/nerospace)** — install Neroland Core as well. A file on Modrinth is only a complete download once Core is published there and listed as a required dependency.
 
 > **Telemetry notice:** Nerospace sends anonymous error reports (stack trace + mod/game versions only — never IPs, usernames, UUIDs, or world data) to the developers via Sentry (EU servers) so crashes can be fixed. Opt out any time by setting `telemetryEnabled = false` in `config/nerospace-common.toml`. Full details: [PRIVACY.md](https://github.com/Neroland/nerospace/blob/main/PRIVACY.md).
 
