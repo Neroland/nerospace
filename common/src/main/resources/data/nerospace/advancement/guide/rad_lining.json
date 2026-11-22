@@ -1,0 +1,25 @@
+{
+  "parent": "nerospace:guide/suit_fabricator",
+  "criteria": {
+    "has_rad_lining": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:rad_lining"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Craft a Rad Lining and install it on every Pathfinder piece",
+    "frame": "task",
+    "icon": {
+      "id": "nerospace:rad_lining"
+    },
+    "title": "Lined"
+  },
+  "requirements": [["has_rad_lining"]],
+  "sends_telemetry_event": true
+}

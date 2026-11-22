@@ -5,16 +5,16 @@
       "conditions": {
         "items": [
           {
-            "items": "nerospace:oxygen_suit_helmet"
+            "items": "#nerospace:suits/helmet"
           },
           {
-            "items": "nerospace:oxygen_suit_chestplate"
+            "items": "#nerospace:suits/chestplate"
           },
           {
-            "items": "nerospace:oxygen_suit_leggings"
+            "items": "#nerospace:suits/leggings"
           },
           {
-            "items": "nerospace:oxygen_suit_boots"
+            "items": "#nerospace:suits/boots"
           }
         ]
       },
@@ -22,10 +22,10 @@
     }
   },
   "display": {
-    "description": "Assemble a full Oxygen Suit",
+    "description": "Assemble a full Pathfinder Suit",
     "frame": "goal",
     "icon": {
-      "id": "nerospace:oxygen_suit_helmet"
+      "id": "nerospace:suit_helmet"
     },
     "title": "Suit Up"
   },

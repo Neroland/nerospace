@@ -23,7 +23,7 @@ public final class HazardOrderRules {
      * The suit a player wears, as far as hazards care: nothing, a full Tier 1 set, a full set of Tier 2 class pieces
      * (Tier 2, Thermal or Cryo, mixed), or a full matching Thermal or Cryo set.
      */
-    public enum SuitClass { NONE, T1, T2, THERMAL, CRYO }
+    public enum SuitClass { NONE, T1, T2, THERMAL, CRYO, ADAPTIVE }
 
     private HazardOrderRules() {
     }
@@ -72,13 +72,14 @@ public final class HazardOrderRules {
      */
     public static Set<Hazard> shields(SuitClass suit, boolean radLined, boolean frigidCold) {
         Set<Hazard> out = EnumSet.noneOf(Hazard.class);
-        if (suit == SuitClass.THERMAL) {
+        if (suit == SuitClass.THERMAL || suit == SuitClass.ADAPTIVE) {
             out.add(Hazard.HEAT);
         }
-        if (suit == SuitClass.CRYO) {
+        if (suit == SuitClass.CRYO || suit == SuitClass.ADAPTIVE) {
             out.add(Hazard.COLD);
         }
-        boolean tier2Class = suit == SuitClass.T2 || suit == SuitClass.THERMAL || suit == SuitClass.CRYO;
+        boolean tier2Class = suit == SuitClass.T2 || suit == SuitClass.THERMAL || suit == SuitClass.CRYO
+                || suit == SuitClass.ADAPTIVE;
         if (tier2Class && !frigidCold) {
             out.add(Hazard.COLD);
         }

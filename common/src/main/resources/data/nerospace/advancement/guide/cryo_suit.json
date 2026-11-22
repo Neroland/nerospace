@@ -19,19 +19,32 @@
         ]
       },
       "trigger": "minecraft:inventory_changed"
+    },
+    "has_cryo_weave": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:cryo_weave"
+          }
+        ]
+      }
     }
   },
   "display": {
-    "description": "Assemble a full Cryo Suit — Glacira's cold stops draining your air",
+    "description": "Weave cryo cloth into the Pathfinder Suit",
     "frame": "goal",
     "icon": {
-      "id": "nerospace:oxygen_suit_cold_helmet"
+      "id": "nerospace:cryo_weave"
     },
-    "title": "Dressed for the Deep Cold"
+    "title": "Built for the Cold"
   },
   "requirements": [
     [
       "has_cryo_suit"
+    ],
+    [
+      "has_cryo_weave"
     ]
   ],
   "sends_telemetry_event": true

@@ -388,6 +388,27 @@ public final class NerospaceLinkSnapshots implements LinkSnapshotProvider {
         root.addProperty("oxygen_percent", max <= 0 ? 0 : Math.min(100, oxygen * 100 / max));
         root.addProperty("suit_tier", OxygenManager.suitTier(player).name());
         root.addProperty("hazard_shield", OxygenManager.hazardShield(player).name());
+        // Additive Pathfinder fields. No schema bump: older readers ignore them.
+        za.co.neroland.nerospace.suit.SuitProtection.Reading worn =
+                za.co.neroland.nerospace.suit.SuitView.worn(player);
+        if (worn.effective() != null) {
+            root.addProperty("suit_frame", worn.effective().name());
+        }
+        net.minecraft.world.item.ItemStack chest = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST);
+        za.co.neroland.nerospace.suit.SuitCoreState core = za.co.neroland.nerospace.suit.SuitStacks.core(chest);
+        int cap = worn.effective() == null ? 0 : za.co.neroland.nerospace.suit.SuitEnergyMath.capacity(
+                worn.effective(), za.co.neroland.nerospace.suit.SuitView.chestModules(player,
+                        za.co.neroland.nerospace.suit.SuitIds.POWER_CELL),
+                za.co.neroland.nerospace.config.NerospaceConfig.suitEnergyCapacityMultiplier());
+        root.addProperty("suit_energy", core.energy());
+        root.addProperty("suit_energy_percent", cap <= 0 ? 0 : Math.min(100, core.energy() * 100 / cap));
+        if (za.co.neroland.nerospace.suit.SuitView.slot(chest).loadout() != null) {
+            com.google.gson.JsonArray modules = new com.google.gson.JsonArray();
+            for (String module : za.co.neroland.nerospace.suit.SuitView.slot(chest).loadout().modules()) {
+                modules.add(module);
+            }
+            root.add("suit_modules", modules);
+        }
 
         ResourceKey<Level> dimension = player.level().dimension();
         root.addProperty("dimension", dimension.identifier().toString());

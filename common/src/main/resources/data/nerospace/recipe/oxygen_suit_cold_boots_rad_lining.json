@@ -1,7 +1,7 @@
 {
   "type": "minecraft:smithing_transform",
   "addition": "nerospace:titanium_ingot",
-  "base": "nerospace:oxygen_suit_cold_boots",
+  "base": "nerospace:suit_boots",
   "result": {
     "components": {
       "minecraft:lore": [
@@ -13,7 +13,7 @@
       ],
       "nerospace:rad_lining": {}
     },
-    "id": "nerospace:oxygen_suit_cold_boots"
+    "id": "nerospace:suit_boots"
   },
   "template": "nerospace:rad_lining"
 }

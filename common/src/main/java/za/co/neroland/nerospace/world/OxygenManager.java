@@ -17,7 +17,6 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -34,7 +33,6 @@ import za.co.neroland.nerospace.platform.GasLookup;
 import za.co.neroland.nerospace.platform.Services;
 import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModDataComponents;
-import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.rocket.RocketEntity;
 import za.co.neroland.nerospace.world.planet.HazardOrderRules;
 import za.co.neroland.nerospace.world.planet.PlanetDefinition;
@@ -182,8 +180,10 @@ public final class OxygenManager {
                 // hazard (Cindara heat / Glacira cold / Nyxara radiation) multiplies it. At zero the player
                 // suffocates. The hazard is resolved per player: the first one here they are not shielded from.
                 HazardShield hazard = HazardShield.of(PlanetHazards.at(level, player.blockPosition(), player));
-                int drain = NerospaceConfig.scale(suited ? SUIT_DRAIN_PER_CHECK : BARE_DRAIN_PER_CHECK,
-                        NerospaceConfig.oxygenDrainMultiplier()) * (hazard == HazardShield.NONE ? 1 : HAZARD_DRAIN_MULTIPLIER);
+                int reclaimers = za.co.neroland.nerospace.suit.SuitView.chestModules(player,
+                        za.co.neroland.nerospace.suit.SuitIds.O2_RECLAIMER);
+                int drain = za.co.neroland.nerospace.suit.SuitOxygenMath.drain(suited, reclaimers,
+                        hazard != HazardShield.NONE, NerospaceConfig.oxygenDrainMultiplier());
                 oxygen = Math.max(0, oxygen - drain);
                 hazardFeedback(level, player, hazard);
                 if (hazard == HazardShield.RADIATION && player.tickCount % DAMAGE_INTERVAL_TICKS == 0) {
@@ -323,35 +323,16 @@ public final class OxygenManager {
         player.sendOverlayMessage(message);
     }
 
-    /** How many of the four armour slots hold an Oxygen Suit piece of any tier or variant (0..4). */
-    private static int suitPieceCount(Player player) {
-        int n = 0;
-        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.HEAD), ModItems.OXYGEN_SUIT_HELMET.get(),
-                ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_HEAT_HELMET.get(),
-                ModItems.OXYGEN_SUIT_COLD_HELMET.get())) {
-            n++;
-        }
-        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.CHEST), ModItems.OXYGEN_SUIT_CHESTPLATE.get(),
-                ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(),
-                ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())) {
-            n++;
-        }
-        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.LEGS), ModItems.OXYGEN_SUIT_LEGGINGS.get(),
-                ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(),
-                ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())) {
-            n++;
-        }
-        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.FEET), ModItems.OXYGEN_SUIT_BOOTS.get(),
-                ModItems.OXYGEN_SUIT_T2_BOOTS.get(), ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(),
-                ModItems.OXYGEN_SUIT_COLD_BOOTS.get())) {
-            n++;
-        }
-        return n;
+    /** How many of the four armour slots hold a suit piece that is not breached (0..4). */
+    public static int suitPieceCount(Player player) {
+        return za.co.neroland.nerospace.suit.SuitView.pieceCount(player);
     }
 
-    /** The player's normal oxygen tank size (suit or bare lungs), config-scaled. */
+    /** The player's normal oxygen tank size (suit or bare lungs), config-scaled, plus life-support tanks. */
     public static int maxOxygenFor(Player player) {
-        return NerospaceConfig.scale(isFullSuit(player) ? OXYGEN_SUIT_MAX : OXYGEN_MAX,
+        int tanks = za.co.neroland.nerospace.suit.SuitView.chestModules(player,
+                za.co.neroland.nerospace.suit.SuitIds.LIFE_SUPPORT_TANK);
+        return za.co.neroland.nerospace.suit.SuitOxygenMath.capacity(isFullSuit(player), tanks,
                 NerospaceConfig.oxygenCapacityMultiplier());
     }
 
@@ -514,29 +495,9 @@ public final class OxygenManager {
         return level.hasChunkAt(pos) && isBreathable(level, pos);
     }
 
-    /** Whether the player wears a full set of Oxygen Suit pieces (any tier / hazard variant counts). */
+    /** Whether the player wears a full set of suit pieces (any frame, legacy or new) that are not breached. */
     private static boolean isFullSuit(Player player) {
-        return isSuitPiece(player.getItemBySlot(EquipmentSlot.HEAD),
-                        ModItems.OXYGEN_SUIT_HELMET.get(), ModItems.OXYGEN_SUIT_T2_HELMET.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_COLD_HELMET.get())
-                && isSuitPiece(player.getItemBySlot(EquipmentSlot.CHEST),
-                        ModItems.OXYGEN_SUIT_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())
-                && isSuitPiece(player.getItemBySlot(EquipmentSlot.LEGS),
-                        ModItems.OXYGEN_SUIT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())
-                && isSuitPiece(player.getItemBySlot(EquipmentSlot.FEET),
-                        ModItems.OXYGEN_SUIT_BOOTS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(), ModItems.OXYGEN_SUIT_COLD_BOOTS.get());
-    }
-
-    private static boolean isSuitPiece(ItemStack worn, Item... options) {
-        for (Item option : options) {
-            if (worn.is(option)) {
-                return true;
-            }
-        }
-        return false;
+        return za.co.neroland.nerospace.suit.SuitView.fullSuit(player);
     }
 
     // --- Hazard shields (SUIT_HAZARD_DESIGN.md) -----------------------------
@@ -566,19 +527,18 @@ public final class OxygenManager {
      * Oxygen Suit set (base / heat / cold) reads TIER_1, otherwise NONE. Client-safe (armour slots only).
      */
     public static SuitTier suitTier(Player player) {
-        if (isFullSet(player, ModItems.OXYGEN_SUIT_T2_HELMET.get(), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
-                ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(), ModItems.OXYGEN_SUIT_T2_BOOTS.get())) {
+        za.co.neroland.nerospace.suit.SuitProtection.Reading reading =
+                za.co.neroland.nerospace.suit.SuitView.worn(player);
+        if (reading.suit() == za.co.neroland.nerospace.world.planet.HazardOrderRules.SuitClass.NONE) {
+            return SuitTier.NONE;
+        }
+        // Mk I (and a legacy Tier 1 set) stays TIER_1. Mk II and above, including a converted Thermal or Cryo
+        // set, reads TIER_2. The link module keeps this field.
+        if (reading.effective() != null
+                && reading.effective().ordinal() >= za.co.neroland.nerospace.suit.SuitFrame.MK2.ordinal()) {
             return SuitTier.TIER_2;
         }
-        return isFullSuit(player) ? SuitTier.TIER_1 : SuitTier.NONE;
-    }
-
-    /** Whether all four armour slots hold exactly the given pieces. */
-    private static boolean isFullSet(Player player, Item head, Item chest, Item legs, Item feet) {
-        return player.getItemBySlot(EquipmentSlot.HEAD).is(head)
-                && player.getItemBySlot(EquipmentSlot.CHEST).is(chest)
-                && player.getItemBySlot(EquipmentSlot.LEGS).is(legs)
-                && player.getItemBySlot(EquipmentSlot.FEET).is(feet);
+        return SuitTier.TIER_1;
     }
 
     /**
@@ -617,24 +577,7 @@ public final class OxygenManager {
      * only).
      */
     public static HazardOrderRules.SuitClass suitClass(Player player) {
-        HazardShield variant = hazardShield(player);
-        if (variant == HazardShield.HEAT) {
-            return HazardOrderRules.SuitClass.THERMAL;
-        }
-        if (variant == HazardShield.COLD) {
-            return HazardOrderRules.SuitClass.CRYO;
-        }
-        if (isSuitPiece(player.getItemBySlot(EquipmentSlot.HEAD), ModItems.OXYGEN_SUIT_T2_HELMET.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), ModItems.OXYGEN_SUIT_COLD_HELMET.get())
-                && isSuitPiece(player.getItemBySlot(EquipmentSlot.CHEST), ModItems.OXYGEN_SUIT_T2_CHESTPLATE.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get(), ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())
-                && isSuitPiece(player.getItemBySlot(EquipmentSlot.LEGS), ModItems.OXYGEN_SUIT_T2_LEGGINGS.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get(), ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())
-                && isSuitPiece(player.getItemBySlot(EquipmentSlot.FEET), ModItems.OXYGEN_SUIT_T2_BOOTS.get(),
-                        ModItems.OXYGEN_SUIT_HEAT_BOOTS.get(), ModItems.OXYGEN_SUIT_COLD_BOOTS.get())) {
-            return HazardOrderRules.SuitClass.T2;
-        }
-        return isFullSuit(player) ? HazardOrderRules.SuitClass.T1 : HazardOrderRules.SuitClass.NONE;
+        return za.co.neroland.nerospace.suit.SuitView.worn(player).suit();
     }
 
     /**
@@ -644,17 +587,10 @@ public final class OxygenManager {
      * {@link PlanetHazards#suitShields(Level, BlockPos, Player)} for that. A fresh mutable set. Client-safe.
      */
     public static Set<Hazard> shields(Player player) {
-        Set<Hazard> out = EnumSet.noneOf(Hazard.class);
-        HazardShield variant = hazardShield(player);
-        if (variant == HazardShield.HEAT) {
-            out.add(Hazard.HEAT);
-        } else if (variant == HazardShield.COLD) {
-            out.add(Hazard.COLD);
-        }
-        if (radLined(player)) {
-            out.add(Hazard.RADIATION);
-        }
-        return out;
+        za.co.neroland.nerospace.suit.SuitProtection.Reading reading =
+                za.co.neroland.nerospace.suit.SuitView.worn(player);
+        // frigid=true so this set is the variant itself (heat / cryo / adaptive / rad), not mild cold.
+        return HazardOrderRules.shields(reading.suit(), reading.radLined(), true);
     }
 
     /**
@@ -662,16 +598,19 @@ public final class OxygenManager {
      * upgrade (applied at a smithing table to a T2, heat or cryo piece; the item id is unchanged).
      */
     public static boolean radLined(Player player) {
-        return isFullSuit(player)
-                && isRadLined(player.getItemBySlot(EquipmentSlot.HEAD))
-                && isRadLined(player.getItemBySlot(EquipmentSlot.CHEST))
-                && isRadLined(player.getItemBySlot(EquipmentSlot.LEGS))
-                && isRadLined(player.getItemBySlot(EquipmentSlot.FEET));
+        return za.co.neroland.nerospace.suit.SuitView.worn(player).radLined();
     }
 
-    /** Whether one stack carries the Rad Lining upgrade. */
+    /** Whether one stack carries the Rad Lining upgrade (the component, or the lining in a new loadout). */
     public static boolean isRadLined(ItemStack stack) {
-        return !stack.isEmpty() && stack.has(ModDataComponents.RAD_LINING.get());
+        if (stack == null || stack.isEmpty()) {
+            return false;
+        }
+        if (stack.has(ModDataComponents.RAD_LINING.get())) {
+            return true;
+        }
+        return za.co.neroland.nerospace.suit.SuitStacks.loadout(stack).linings()
+                .contains(za.co.neroland.nerospace.suit.SuitIds.RAD_LINING);
     }
 
     /**
@@ -679,33 +618,11 @@ public final class OxygenManager {
      * suit grants the suit's air tank but no shield), orthogonal to the base oxygen-suit set.
      */
     public static HazardShield hazardShield(Player player) {
-        HazardShield head = pieceVariant(player.getItemBySlot(EquipmentSlot.HEAD));
-        if (head == HazardShield.NONE) {
-            return HazardShield.NONE;
-        }
-        if (pieceVariant(player.getItemBySlot(EquipmentSlot.CHEST)) == head
-                && pieceVariant(player.getItemBySlot(EquipmentSlot.LEGS)) == head
-                && pieceVariant(player.getItemBySlot(EquipmentSlot.FEET)) == head) {
-            return head;
-        }
-        return HazardShield.NONE;
-    }
-
-    /** Which hazard variant a single worn piece belongs to (NONE for plain/T2/non-suit items). */
-    private static HazardShield pieceVariant(ItemStack worn) {
-        if (worn.is(ModItems.OXYGEN_SUIT_HEAT_HELMET.get())
-                || worn.is(ModItems.OXYGEN_SUIT_HEAT_CHESTPLATE.get())
-                || worn.is(ModItems.OXYGEN_SUIT_HEAT_LEGGINGS.get())
-                || worn.is(ModItems.OXYGEN_SUIT_HEAT_BOOTS.get())) {
-            return HazardShield.HEAT;
-        }
-        if (worn.is(ModItems.OXYGEN_SUIT_COLD_HELMET.get())
-                || worn.is(ModItems.OXYGEN_SUIT_COLD_CHESTPLATE.get())
-                || worn.is(ModItems.OXYGEN_SUIT_COLD_LEGGINGS.get())
-                || worn.is(ModItems.OXYGEN_SUIT_COLD_BOOTS.get())) {
-            return HazardShield.COLD;
-        }
-        return HazardShield.NONE;
+        return switch (suitClass(player)) {
+            case THERMAL, ADAPTIVE -> HazardShield.HEAT;
+            case CRYO -> HazardShield.COLD;
+            default -> HazardShield.NONE;
+        };
     }
 
     /**

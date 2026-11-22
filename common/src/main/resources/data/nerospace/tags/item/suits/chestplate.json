@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:suit_chestplate",
+    "nerospace:oxygen_suit_chestplate",
+    "nerospace:oxygen_suit_t2_chestplate",
+    "nerospace:oxygen_suit_heat_chestplate",
+    "nerospace:oxygen_suit_cold_chestplate"
+  ]
+}

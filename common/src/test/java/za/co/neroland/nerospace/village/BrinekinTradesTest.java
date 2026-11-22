@@ -24,7 +24,7 @@ class BrinekinTradesTest {
             new TradeTable.Row(2, E, 3, null, 0, "nerospace:deuterium_shard", 2, 12, 5),
             new TradeTable.Row(2, E, 3, null, 0, "nerospace:polished_vent_basalt", 4, 12, 5),
             new TradeTable.Row(2, "nerospace:alien_fragment", 4, null, 0, E, 1, 12, 2),
-            new TradeTable.Row(3, E, 10, null, 0, "nerospace:oxygen_suit_cold_helmet", 1, 4, 10),
+            new TradeTable.Row(3, E, 10, null, 0, "nerospace:suit_helmet", 1, 4, 10),
             new TradeTable.Row(3, E, 4, null, 0, "nerospace:oxidant_crystal", 4, 8, 8),
             new TradeTable.Row(4, E, 6, null, 0, "nerospace:tube_mat", 4, 6, 12),
             new TradeTable.Row(4, E, 14, null, 0, "nerospace:hydrothermal_vent", 1, 2, 15),
@@ -58,7 +58,7 @@ class BrinekinTradesTest {
 
     @Test
     void oneSuitPieceOnly() {
-        long suits = AlienTrades.BRINEKIN_TABLE.rows().stream().filter(r -> r.result().contains("oxygen_suit")).count();
+        long suits = AlienTrades.BRINEKIN_TABLE.rows().stream().filter(r -> r.result().startsWith("nerospace:suit_")).count();
         assertEquals(1, suits, "the Brinekin sell the cold helmet only");
     }
 

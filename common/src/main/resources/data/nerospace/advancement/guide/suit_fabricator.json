@@ -1,0 +1,25 @@
+{
+  "parent": "nerospace:guide/cryo_suit",
+  "criteria": {
+    "has_suit_fabricator": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:suit_fabricator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Build a Suit Fabricator and fit the Pathfinder Suit",
+    "frame": "task",
+    "icon": {
+      "id": "nerospace:suit_fabricator"
+    },
+    "title": "Fitting Bay"
+  },
+  "requirements": [["has_suit_fabricator"]],
+  "sends_telemetry_event": true
+}

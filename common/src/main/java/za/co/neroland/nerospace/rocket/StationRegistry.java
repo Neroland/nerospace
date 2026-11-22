@@ -90,7 +90,7 @@ public final class StationRegistry extends SavedData {
      */
     public record StationEntry(int slot, String name, BlockPos center, String owner, StationClass stationClass,
             List<String> members, List<ModuleEntry> modules, long foundedAt, long classChangedAt,
-            DockingPolicy docking) {
+            DockingPolicy docking, boolean suitFlightDenied) {
 
         public static final Codec<StationEntry> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Codec.INT.fieldOf("slot").forGetter(StationEntry::slot),
@@ -103,7 +103,8 @@ public final class StationRegistry extends SavedData {
                 ModuleEntry.LIST_CODEC.optionalFieldOf("modules", List.of()).forGetter(StationEntry::modules),
                 Codec.LONG.optionalFieldOf("founded_at", -1L).forGetter(StationEntry::foundedAt),
                 Codec.LONG.optionalFieldOf("class_changed_at", -1L).forGetter(StationEntry::classChangedAt),
-                DockingPolicy.CODEC.optionalFieldOf("docking", DockingPolicy.OPEN).forGetter(StationEntry::docking)
+                DockingPolicy.CODEC.optionalFieldOf("docking", DockingPolicy.OPEN).forGetter(StationEntry::docking),
+                Codec.BOOL.optionalFieldOf("suit_flight_denied", false).forGetter(StationEntry::suitFlightDenied)
         ).apply(inst, StationEntry::of));
 
         public StationEntry {
@@ -117,7 +118,7 @@ public final class StationRegistry extends SavedData {
         /** The 1.x four-field shape; every 2.0 field takes its default. Kept public ([COMPAT]). */
         public StationEntry(int slot, String name, BlockPos center, String owner) {
             this(slot, name, center, owner, StationClass.WAYSTATION, List.of(), List.of(), -1L, -1L,
-                    DockingPolicy.OPEN);
+                    DockingPolicy.OPEN, false);
         }
 
         /** Factory for the 1.x shape with 2.0 defaults. */
@@ -128,45 +129,51 @@ public final class StationRegistry extends SavedData {
         /** Boxed-parameter factory for the codec (avoids the ECJ unboxing null-safety warning). */
         private static StationEntry of(Integer slot, String name, BlockPos center, String owner, StationClass cls,
                 List<String> members, List<ModuleEntry> modules, Long foundedAt, Long classChangedAt,
-                DockingPolicy docking) {
+                DockingPolicy docking, Boolean suitFlightDenied) {
             return new StationEntry(slot.intValue(), name, center, owner, cls, members, modules,
-                    foundedAt.longValue(), classChangedAt.longValue(), docking);
+                    foundedAt.longValue(), classChangedAt.longValue(), docking,
+                    suitFlightDenied != null && suitFlightDenied);
         }
 
         public StationEntry withName(String newName) {
             return new StationEntry(this.slot, newName, this.center, this.owner, this.stationClass, this.members,
-                    this.modules, this.foundedAt, this.classChangedAt, this.docking);
+                    this.modules, this.foundedAt, this.classChangedAt, this.docking, this.suitFlightDenied);
         }
 
         public StationEntry withOwner(String newOwner) {
             return new StationEntry(this.slot, this.name, this.center, newOwner, this.stationClass, this.members,
-                    this.modules, this.foundedAt, this.classChangedAt, this.docking);
+                    this.modules, this.foundedAt, this.classChangedAt, this.docking, this.suitFlightDenied);
         }
 
         /** A class change stamped with the overworld game time it happened at (the cooldown source). */
         public StationEntry withClass(StationClass cls, long gameTime) {
             return new StationEntry(this.slot, this.name, this.center, this.owner, cls, this.members, this.modules,
-                    this.foundedAt, gameTime, this.docking);
+                    this.foundedAt, gameTime, this.docking, this.suitFlightDenied);
         }
 
         public StationEntry withMembers(List<String> newMembers) {
             return new StationEntry(this.slot, this.name, this.center, this.owner, this.stationClass, newMembers,
-                    this.modules, this.foundedAt, this.classChangedAt, this.docking);
+                    this.modules, this.foundedAt, this.classChangedAt, this.docking, this.suitFlightDenied);
         }
 
         public StationEntry withModules(List<ModuleEntry> newModules) {
             return new StationEntry(this.slot, this.name, this.center, this.owner, this.stationClass, this.members,
-                    newModules, this.foundedAt, this.classChangedAt, this.docking);
+                    newModules, this.foundedAt, this.classChangedAt, this.docking, this.suitFlightDenied);
         }
 
         public StationEntry withDocking(DockingPolicy policy) {
             return new StationEntry(this.slot, this.name, this.center, this.owner, this.stationClass, this.members,
-                    this.modules, this.foundedAt, this.classChangedAt, policy);
+                    this.modules, this.foundedAt, this.classChangedAt, policy, this.suitFlightDenied);
+        }
+
+        public StationEntry withSuitFlightDenied(boolean denied) {
+            return new StationEntry(this.slot, this.name, this.center, this.owner, this.stationClass, this.members,
+                    this.modules, this.foundedAt, this.classChangedAt, this.docking, denied);
         }
 
         public StationEntry withFoundedAt(long epochDay) {
             return new StationEntry(this.slot, this.name, this.center, this.owner, this.stationClass, this.members,
-                    this.modules, epochDay, this.classChangedAt, this.docking);
+                    this.modules, epochDay, this.classChangedAt, this.docking, this.suitFlightDenied);
         }
 
         public boolean isOwned() {

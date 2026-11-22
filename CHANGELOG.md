@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0-beta.1] - 2026-11-22
+
+Client and server must run the same version.
+
+### Added
+
+- **One Pathfinder Suit** replaces the Tier 1, Tier 2, Thermal and Cryo suits. Four pieces (`suit_helmet`, `suit_chestplate`, `suit_leggings`, `suit_boots`) upgrade by frame (Mk I to Mk IV) and take weaves, linings and modules.
+- Frames: Mk I (Nerosteel, today's Tier 1 armour, 50,000 FE), Mk II (Cindrite, today's Tier 2, one weave and one lining, 100,000 FE), Mk III (titanium, +1 toughness, two linings, 250,000 FE), Mk IV (voidglass, +2 toughness, flight, 500,000 FE). The whole set uses the lowest frame you are wearing.
+- Weaves and linings shield only when all four pieces carry them. Thermal Weave keeps out heat, Cryo Weave keeps out cold including frigid cold, Adaptive Weave (Mk IV) keeps out both, and the existing Rad Lining keeps out radiation.
+- Modules include a life-support tank, an oxygen reclaimer, a power cell, a solar skin, a kinetic shield, a jump-jet, a flight harness, a night visor, a survey scanner, a spore filter, stride and leap servos, shock absorbers and glide fins. Breathing and hazard shielding never use energy.
+- The **Suit Fabricator** installs modules, applies frame plating, converts an old piece and charges the chest from a Core energy input (all faces set to input). The **Suit Dock** is a pad that charges the suit of a player standing on it.
+- Flight: the Jump-Jet hovers in short bursts from Mk III. The Flight Harness (Mk IV, after you have reached deep space) flies. Cost scales with local gravity and never drops below a quarter of Earth. The last 3% of the battery is a controlled descent. A server can limit dimensions, and a station can refuse flight inside its box.
+- An old suit still protects exactly as it did. The first time you hold or wear it, it becomes the matching Pathfinder piece and keeps its enchantments, name, trim and remaining durability. It starts with an empty battery. Pieces breach instead of breaking.
+- New server settings under `suit.*` (legacy conversion, battery and energy use, flight, scanner, solar skin, fabricator and dock charge rates, enchanting) and client settings `particles.jet.perPlayerPerTick`, `hud.suitEnergyBar`, `hud.suitModuleIcons`, `hud.suitScale`.
+
+### Changed
+
+- The sixteen old `oxygen_suit_*` items stay in the game so old worlds load. They leave the creative tab. Their recipes now make or upgrade the Pathfinder Suit. Guide steps keep their ids.
+
 ## [2.4.2] - 2026-11-26
 
 ### Added

@@ -38,5 +38,6 @@ public final class ModRegistries {
         za.co.neroland.nerospace.world.planet.europa.EuropaContent.init();
         ModCreativeTab.init();
         za.co.neroland.nerospace.network.ModNetwork.init();
+        za.co.neroland.nerospace.suit.SuitItems.init();
     }
 }

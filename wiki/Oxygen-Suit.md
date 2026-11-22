@@ -1,131 +1,62 @@
-# Oxygen Suit
+# Pathfinder Suit
 
-Four-piece armour that doubles as personal life support on airless worlds. Two tiers, plus two
-Tier-2-class **hazard variants** for the extreme worlds.
+One four-piece suit replaces the old Tier 1, Tier 2, Thermal and Cryo suits. You upgrade it by **frame** and fit it with **weaves**, **linings** and **modules**. It breathes Nerospace oxygen. Powered modules use Neroland Core energy (FE). Breathing and hazard shielding never use energy, so a flat battery cannot kill you.
 
-## Overview
+## Pieces
 
-Wearing the **full set** (all four pieces) keeps you breathing off-world by draining a finite air
-tank instead of suffocating. The tank refills instantly in any breathable zone (oxygen field,
-terraformed ground, launch-pad safe zone) — and, since the suit-and-station integration, also at
-**airlocks** (below).
+| Piece | Id |
+|---|---|
+| Helmet | `nerospace:suit_helmet` |
+| Chestplate | `nerospace:suit_chestplate` |
+| Leggings | `nerospace:suit_leggings` |
+| Boots | `nerospace:suit_boots` |
 
-| | Tier 1 Oxygen Suit | Tier 2 Oxygen Suit |
-| --- | --- | --- |
-| Air tank | 900 | 900 |
-| Airlock refill | 90 air / 10 ticks | 90 air / 10 ticks |
-| Protection | diamond-class | slightly tougher, +toughness |
-| Repair material | Nerosteel Ingot | Cindrite |
+Life support needs all four pieces, and none of them breached. The set's frame is the **lowest** frame you are wearing.
 
-Every full suit (Tier 1, Tier 2, Thermal or Cryo) holds **900 air**. Without a suit you have only
-**300 air** (your own lungs). A **mixed** set still works as life support. Any missing piece = no
-life support.
+## Frames
 
-**Drain:** with a full suit you lose **3 air** per check (every 10 ticks). With no suit you lose
-**30 air** per check. An unshielded hazard (below) multiplies drain by **4**.
+| Frame | Armour | Slots | Battery |
+|---|---|---|---|
+| Mk I — Pressure | today's Tier 1 | 1 module | 50,000 FE |
+| Mk II — Cindrite | today's Tier 2 | 1 weave, 1 lining, 2 modules | 100,000 FE |
+| Mk III — Titanium | Tier 2, +1 toughness | 1 weave, 2 linings, 2 modules (chest 3) | 250,000 FE |
+| Mk IV — Voidglass | Tier 2, +2 toughness | 1 weave, 2 linings, 3 modules | 500,000 FE |
 
-## Under water
+Craft **Frame Plating** and apply it at the [Suit Fabricator](Suit-Fabricator). The upgrade keeps everything already installed.
 
-Water is never breathable, on any world.
+A full Mk II or higher set keeps out Mars-strength cold, the same as a Tier 2 suit did.
 
-- **Off Nerospace worlds** (Overworld, Nether, other mods' dimensions), a **full suit** works as a rebreather when
-  your head goes under water: you breathe from the suit tank at the suited rate (3 air per check), and the vanilla
-  air bubbles show how much is left — about two and a half minutes. When the tank is empty, normal drowning takes
-  over. Surface and the tank refills straight away. Without the full set you drown as normal. Server owners can turn
-  this off with `suit.underwaterRebreather`.
-- **On Nerospace worlds**, being under water counts as exposed even inside an oxygen bubble, so your tank drains as it
-  would in vacuum.
+## Weaves and linings
 
-## Status messages
+A weave or lining shields you only when **all four** worn pieces carry it.
 
-When your breathing changes, a short line shows above the hotbar: breathable air (tank refilling), on your suit
-tank, under water on your suit tank, no suit, an **incomplete suit** (it tells you how many of the four pieces you
-are wearing), low oxygen, and an empty tank. Each shows once when the state changes. Turn them off with
-`suit.statusMessages`.
+- **Thermal Weave** — heat. Made from Cindrite.
+- **Cryo Weave** — all cold, including frigid worlds. Made from Glacite.
+- **Adaptive Weave** — heat and cold together. Mk IV.
+- **Rad Lining** — the existing item. Radiation, and it still sets `nerospace:rad_lining` so other mods that look for that component keep working.
 
-## Hazard variants — Thermal & Cryo Suits
+See [Suit Modules](Suit-Modules) for the rest.
 
-Cindara (and Nyxara's Dayside) is **hot**; Glacira, Mars (and Nyxara's Nightside) are **cold**: unprotected, the planetary hazard makes your suit work
-overtime — oxygen drains at **4×** the normal rate (there's no separate damage; running dry is still
-the danger).
+## Oxygen
 
-Cold comes in two strengths. **Mars** is cold but not frigid: any full set of Tier 2 class pieces (Tier 2, Thermal
-or Cryo, even mixed) keeps its cold out, so a Tier 1 suit is the only one that struggles there. **Glacira**, the
-**Martian Polar Cap**, **Nyxara's Nightside** and **Europa's surface** are **frigid**: only a full Cryo Suit (or, on Nyxara, a flaring
-Dawnband Stone within four blocks) keeps that cold out. The HUD badge warns with a red **HEAT!** / **COLD!** while you're exposed, with ember
-puffs (Cindara) or a creeping frost vignette (Glacira) as feedback.
+A full suit holds 900 air, the same as before. Each Life Support Tank adds 450, up to 1,800. Each O₂ Reclaimer multiplies the suited drain by 0.67, and two of them never go below half. An unshielded hazard still multiplies drain by 4. The underwater rebreather is unchanged.
 
-| | **Thermal Suit** | **Cryo Suit** |
-| --- | --- | --- |
-| Shields against | Cindara heat, Nyxara Dayside heat (and Mars cold, like any Tier 2 suit) | all cold: Glacira, the Martian Polar Cap, Nyxara Nightside, Europa, and Mars |
-| Craft (per piece) | Tier 2 piece + 4 **Cindrite** | Tier 2 piece + 4 **Glacite** |
-| Repair material | Cindrite | Glacite |
-| Class | Tier 2 (tank 900) | Tier 2 (tank 900) |
+## Durability
 
-The shield engages only when **all four pieces match** the hazard; the HUD badge then shows
-**SUIT HEAT** / **SUIT COLD** and oxygen drains at the normal 1× rate. Mixing variant pieces with
-other pieces keeps life support — you just lose the heat and frigid-cold shield (a mix of Tier 2 class pieces still
-keeps Mars' milder cold out).
+A piece never breaks. At its last point of durability it is **Breached**: no armour, no modules, and it does not count toward the seal until you repair it at the fabricator or an anvil.
 
-## Rad Lining (radiation)
+## Coming from the old suits
 
-Mars dust storms, Nyxara's Dayside and Nightside and Europa's open surface are **irradiated**. Without protection, radiation makes your
-suit drain at 4× and, from radiation level 2 upwards, hurts you while you stand outside a sealed oxygen field: one
-point of damage every two seconds at level 2 (a dust storm, the Dayside), two at level 3 (the Nightside, or the
-Dayside during a flare). The Moon and the orbital station never need it.
+The sixteen old suit items still exist, so an old world loads. They still protect you. The first time you hold or wear one, it becomes the matching Pathfinder piece:
 
-The **Rad Lining** is an upgrade, not a new suit. Craft a Rad Lining from Regolith, Raw Hematite and a Titanium
-Ingot, then combine it at a **smithing table** with a Tier 2, Thermal or Cryo suit piece and one Titanium Ingot.
-The piece keeps its name, tier and hazard shield, and gains a gold *Rad-Lined* line. The shield engages when **all
-four** worn pieces are lined; the HUD then shows **RAD LINING**.
+| Old suit | Becomes |
+|---|---|
+| Tier 1 | Mk I, no weave |
+| Tier 2 | Mk II, no weave |
+| Thermal | Mk II with Thermal Weave |
+| Cryo | Mk II with Cryo Weave |
+| Any of those with a Rad Lining | the same, plus a Rad Lining |
 
-Where several hazards meet, you need every matching protection: the Nyxara Nightside is irradiated **and** cold
-(a Rad-Lined Cryo Suit, or Rad Lining beside a flaring Dawnband Stone), the Dayside irradiated **and** hot
-(a Rad-Lined Thermal Suit), and Mars in a dust storm is irradiated **and** cold (any Rad-Lined Tier 2 suit; a
-Rad-Lined Cryo Suit on the Polar Cap). Europa's open surface is irradiated **and** frigid (a Rad-Lined Cryo Suit;
-the rocket screen's planet card reads *Cryo+Rad*), while under its ice shell any Tier 2 class suit is enough and
-no lining is needed. See [Europa](Europa). The HUD warns about the hazard that would hurt you next.
+Enchantments, the custom name, the trim and the remaining durability come with it. The new chest starts empty of energy, which changes nothing the old suit could do. A suit left in a chest, on an armour stand or on a mob stays as it is until a player picks it up.
 
-## Progression note
-
-Cindrite (Thermal) is mined on Cindara itself, so the usual loop is: dash in a plain Tier 2 suit,
-mine your first cindrite, then craft the Thermal Suit for serious expeditions. The same applies to
-glacite and the Cryo Suit on Glacira.
-
-## Airlock refill
-
-Within **4 blocks** of a [Gas Tank](Gas-Tank) or [Oxygen Generator](Oxygen-Generator) **holding
-Oxygen**, a worn suit refills from that store. Every suit gets **90 air** per check (every 10 ticks).
-Each air unit costs **2 mB** of oxygen (scaled by `fuelCostMultiplier`). A Gas Tank at the base entrance
-therefore acts as an airlock: step inside, top up, head back out. The Creative Gas Tank works too.
-
-## Obtaining
-
-**Tier 1** (shaped, nerosteel): helmet `NNN / NGN` (G = Glass visor), chestplate `N N / NCN / NNN`
-(C = Rocket Fuel Canister life-support core), leggings and boots all-nerosteel.
-
-**Tier 2** (shaped): each Tier 1 piece surrounded by 4 **Cindrite** —
-
-```text
-. C .
-C P C
-. C .
-```
-
-`P` = the matching Tier 1 piece · `C` = Cindrite
-
-Cindrite only mines on **Cindara** (Tier 3 rocket, itself gated on
-[Station Wall](Station-Wall)), so the Tier 2 suit sits at the same progression depth as the Tier 3
-rocket.
-
-## Details
-
-- IDs: `nerospace:oxygen_suit_{helmet,chestplate,leggings,boots}`,
-
-  `nerospace:oxygen_suit_t2_{...}`, `nerospace:oxygen_suit_heat_{...}` (Thermal),
-  `nerospace:oxygen_suit_cold_{...}` (Cryo), `nerospace:rad_lining` (upgrade; a lined piece carries the
-  `nerospace:rad_lining` item component)
-
-- Config: `oxygenCapacityMultiplier` (air capacity) and `oxygenDrainMultiplier` (drain speed). See
-
-  [Configuration](Configuration).
+Servers can turn the conversion off with `suit.legacyConversion`. The old pieces still protect you either way.

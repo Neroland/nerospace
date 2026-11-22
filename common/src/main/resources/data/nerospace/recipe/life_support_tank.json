@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "G": "#c:glass_blocks/colorless"
+  },
+  "pattern": [
+    " N ",
+    "NGN",
+    " N "
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:life_support_tank"
+  }
+}

@@ -128,6 +128,48 @@ public final class NerospaceConfig {
     private static final ConfigValue<Boolean> SUIT_STATUS_MESSAGES = SCHEMA.bool("suit.statusMessages", true, true,
             "show a one-line action-bar cue when your breathing changes (breathable air, on the suit tank, holding "
             + "your breath, incomplete suit, low or empty tank). false = no cues");
+    private static final ConfigValue<Boolean> SUIT_LEGACY_CONVERSION = SCHEMA.bool("suit.legacyConversion", true, true,
+            "convert an old oxygen suit into the Pathfinder Suit the first time a player holds or wears it");
+    private static final ConfigValue<Double> SUIT_ENERGY_CAPACITY = SCHEMA.doubleRange("suit.energyCapacityMultiplier",
+            1.0D, 0.1D, 10.0D, true, "scales Pathfinder Suit battery sizes");
+    private static final ConfigValue<Double> SUIT_ENERGY_USE = SCHEMA.doubleRange("suit.energyUseMultiplier",
+            1.0D, 0.0D, 10.0D, true, "scales Pathfinder Suit module energy costs (0 = free)");
+    private static final ConfigValue<Boolean> SUIT_FLIGHT_ENABLED = SCHEMA.bool("suit.flight.enabled", true, true,
+            "master switch for the Jump-Jet and the Flight Harness");
+    private static final ConfigValue<String> SUIT_FLIGHT_DIMENSIONS = SCHEMA.string("suit.flight.dimensionMode",
+            "all", true, "where suit flight works: all, nerospace_only, or none");
+    private static final ConfigValue<String> SUIT_FLIGHT_DENYLIST = SCHEMA.string("suit.flight.dimensionDenylist",
+            "", true, "extra dimension ids where suit flight is refused, separated by commas");
+    private static final ConfigValue<Double> SUIT_FLIGHT_MAX_SPEED = SCHEMA.doubleRange("suit.flight.maxSpeed",
+            0.6D, 0.1D, 2.0D, true, "suit flight cruise speed in blocks per tick (boost is 1.6 times this)");
+    private static final ConfigValue<Integer> SUIT_FLIGHT_COMBAT_LOCK = SCHEMA.intRange("suit.flight.combatLockTicks",
+            60, 0, 1200, true, "ticks suit flight stays off after another player hurts you");
+    private static final ConfigValue<Integer> SUIT_FLIGHT_RESERVE = SCHEMA.intRange("suit.flight.failsafeReservePercent",
+            3, 0, 20, true, "percent of the battery kept for a controlled descent");
+    private static final ConfigValue<Integer> SUIT_HOVER_BURST = SCHEMA.intRange("suit.hover.maxBurstTicks",
+            60, 10, 400, true, "how long a Jump-Jet burst can climb");
+    private static final ConfigValue<Double> SUIT_SHIELD_CAP = SCHEMA.doubleRange("suit.kineticShield.maxAbsorbPerHit",
+            4.0D, 0.0D, 20.0D, true, "damage the Kinetic Shield can absorb from one hit");
+    private static final ConfigValue<Integer> SUIT_SCANNER_RADIUS = SCHEMA.intRange("suit.scanner.radius",
+            32, 8, 64, true, "Survey Scanner radius in blocks");
+    private static final ConfigValue<Integer> SUIT_SCANNER_COOLDOWN = SCHEMA.intRange("suit.scanner.cooldownTicks",
+            100, 20, 1200, true, "ticks between Survey Scanner pulses");
+    private static final ConfigValue<Integer> SUIT_SOLAR_RATE = SCHEMA.intRange("suit.solarSkinRate",
+            2, 0, 100, true, "FE per tick the Solar Skin adds at solar factor 1");
+    private static final ConfigValue<Integer> SUIT_FABRICATOR_RATE = SCHEMA.intRange("suit.fabricatorChargeRate",
+            2000, 0, 100000, true, "FE per tick the Suit Fabricator feeds into a worn suit");
+    private static final ConfigValue<Integer> SUIT_DOCK_RATE = SCHEMA.intRange("suit.dockChargeRate",
+            500, 0, 100000, true, "FE per tick the Suit Dock feeds into a worn or docked suit");
+    private static final ConfigValue<Boolean> SUIT_ENCHANTING = SCHEMA.bool("suit.allowEnchanting", true, true,
+            "Pathfinder Suit pieces can be enchanted");
+    private static final ConfigValue<Double> PARTICLES_JET = SCHEMA.doubleRange("particles.jet.perPlayerPerTick",
+            0.6D, 0.0D, 8.0D, false, "jet plume particles per player per tick");
+    private static final ConfigValue<Boolean> HUD_SUIT_ENERGY = SCHEMA.bool("hud.suitEnergyBar", true, false,
+            "draw the suit energy bar");
+    private static final ConfigValue<Boolean> HUD_SUIT_MODULES = SCHEMA.bool("hud.suitModuleIcons", true, false,
+            "draw the active suit module names");
+    private static final ConfigValue<Double> HUD_SUIT_SCALE = SCHEMA.doubleRange("hud.suitScale",
+            1.0D, 0.5D, 2.0D, false, "scale of the suit HUD block");
     private static final ConfigValue<Boolean> WEATHER_ENABLED = SCHEMA.bool("weather.enabled", true, true,
             "planet weather (dust storms, ash fall, diamond dust, spore blooms, flares). false = clear skies everywhere");
     private static final ConfigValue<Double> WEATHER_FREQUENCY = SCHEMA.doubleRange("weather.frequencyMultiplier",
@@ -456,6 +498,94 @@ public final class NerospaceConfig {
     /** Whether breathing-state changes show an action-bar cue. */
     public static boolean suitStatusMessages() {
         return SUIT_STATUS_MESSAGES.get();
+    }
+
+    public static boolean suitLegacyConversion() {
+        return SUIT_LEGACY_CONVERSION.get();
+    }
+
+    public static double suitEnergyCapacityMultiplier() {
+        return SUIT_ENERGY_CAPACITY.get();
+    }
+
+    public static double suitEnergyUseMultiplier() {
+        return SUIT_ENERGY_USE.get();
+    }
+
+    public static boolean suitFlightEnabled() {
+        return SUIT_FLIGHT_ENABLED.get();
+    }
+
+    public static String suitFlightDimensionMode() {
+        String mode = SUIT_FLIGHT_DIMENSIONS.get();
+        if ("none".equals(mode) || "nerospace_only".equals(mode) || "all".equals(mode)) {
+            return mode;
+        }
+        return "all";
+    }
+
+    public static String suitFlightDimensionDenylist() {
+        return SUIT_FLIGHT_DENYLIST.get();
+    }
+
+    public static double suitFlightMaxSpeed() {
+        return SUIT_FLIGHT_MAX_SPEED.get();
+    }
+
+    public static int suitFlightCombatLockTicks() {
+        return SUIT_FLIGHT_COMBAT_LOCK.get();
+    }
+
+    public static int suitFlightReservePercent() {
+        return SUIT_FLIGHT_RESERVE.get();
+    }
+
+    public static int suitHoverMaxBurstTicks() {
+        return SUIT_HOVER_BURST.get();
+    }
+
+    public static double suitKineticShieldCap() {
+        return SUIT_SHIELD_CAP.get();
+    }
+
+    public static int suitScannerRadius() {
+        return SUIT_SCANNER_RADIUS.get();
+    }
+
+    public static int suitScannerCooldownTicks() {
+        return SUIT_SCANNER_COOLDOWN.get();
+    }
+
+    public static int suitSolarSkinRate() {
+        return SUIT_SOLAR_RATE.get();
+    }
+
+    public static int suitFabricatorChargeRate() {
+        return SUIT_FABRICATOR_RATE.get();
+    }
+
+    public static int suitDockChargeRate() {
+        return SUIT_DOCK_RATE.get();
+    }
+
+    public static boolean suitAllowEnchanting() {
+        return SUIT_ENCHANTING.get();
+    }
+
+    public static double particlesJetPerPlayerPerTick() {
+        return PARTICLES_JET.get();
+    }
+
+    public static boolean hudSuitEnergyBar() {
+        return HUD_SUIT_ENERGY.get();
+    }
+
+    public static boolean hudSuitModuleIcons() {
+        return HUD_SUIT_MODULES.get();
+    }
+
+    public static double hudSuitScale() {
+        return HUD_SUIT_SCALE.get();
     }
 
     /** Client-side: whether the HUD weather line shows. */

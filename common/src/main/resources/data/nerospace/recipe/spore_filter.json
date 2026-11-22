@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": "nerospace:xertz_fibre",
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    " F ",
+    " N "
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:spore_filter"
+  }
+}

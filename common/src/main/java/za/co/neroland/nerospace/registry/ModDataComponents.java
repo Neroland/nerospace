@@ -56,6 +56,18 @@ public final class ModDataComponents {
                     .networkSynchronized(Unit.STREAM_CODEC)
                     .build());
 
+    /** Pathfinder Suit loadout (frame, weave, linings, modules, toggles, livery). Absent means Mk I and empty. */
+    public static final RegistryEntry<DataComponentType<za.co.neroland.nerospace.suit.SuitLoadout>> SUIT_LOADOUT =
+            COMPONENTS.register("suit_loadout", key -> DataComponentType.<za.co.neroland.nerospace.suit.SuitLoadout>builder()
+                    .persistent(za.co.neroland.nerospace.suit.SuitLoadout.CODEC)
+                    .build());
+
+    /** Chest power, RCS and jet heat. Absent means empty. */
+    public static final RegistryEntry<DataComponentType<za.co.neroland.nerospace.suit.SuitCoreState>> SUIT_CORE =
+            COMPONENTS.register("suit_core", key -> DataComponentType.<za.co.neroland.nerospace.suit.SuitCoreState>builder()
+                    .persistent(za.co.neroland.nerospace.suit.SuitCoreState.CODEC)
+                    .build());
+
     /** 2.1: the charge (FE) a packed-up Mars rover keeps on its {@code rover} item, restored when it is placed again. */
     public static final RegistryEntry<DataComponentType<Integer>> ROVER_ENERGY =
             COMPONENTS.register("rover_energy", key -> DataComponentType.<Integer>builder()

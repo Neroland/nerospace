@@ -19,19 +19,32 @@
         ]
       },
       "trigger": "minecraft:inventory_changed"
+    },
+    "has_thermal_weave": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:thermal_weave"
+          }
+        ]
+      }
     }
   },
   "display": {
-    "description": "Assemble a full Thermal Suit — Cindara's heat stops draining your air",
+    "description": "Weave thermal cloth into the Pathfinder Suit",
     "frame": "goal",
     "icon": {
-      "id": "nerospace:oxygen_suit_heat_helmet"
+      "id": "nerospace:thermal_weave"
     },
     "title": "Forged for the Fire"
   },
   "requirements": [
     [
       "has_thermal_suit"
+    ],
+    [
+      "has_thermal_weave"
     ]
   ],
   "sends_telemetry_event": true

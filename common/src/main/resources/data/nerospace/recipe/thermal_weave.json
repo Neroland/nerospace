@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "#c:gems/cindrite",
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    "C C",
+    " N ",
+    "C C"
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:thermal_weave"
+  }
+}

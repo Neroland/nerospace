@@ -31,9 +31,9 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 
    Station; progress to **Nerosteel** and **Xertz Quartz** on Greenxertz.
 
-4. Pack an **[Oxygen Suit](Oxygen-Suit)** and set up **Oxygen Generators** — every world out there
+4. Pack a **[Pathfinder Suit](Oxygen-Suit)** and set up **Oxygen Generators** — every world out there
 
-   is airless. Bring the **Thermal**/**Cryo** variants for Cindara and Glacira.
+   is airless. Fit a **Thermal Weave** for Cindara and a **Cryo Weave** for Glacira at the **[Suit Fabricator](Suit-Fabricator)**.
 
    - Automate the digging with a **[Quarry Controller](Quarry-Controller)**: mark an area with
 
@@ -70,7 +70,7 @@ land centred on a pad, or on an automatic Landing Pod: see **[Landing Pads](Land
 
   building blocks, launch infrastructure).
 
-- **[Items](Items)** — materials, tools, the Oxygen Suit family, rockets & fuel, charters, and
+- **[Items](Items)** — materials, tools, the [Pathfinder Suit](Oxygen-Suit), rockets & fuel, charters, and
 
   the Star Guide.
 

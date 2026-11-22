@@ -126,6 +126,10 @@ replaces unknown blocks with air and logs a warning for each, and the three new 
 unreachable. The same goes for everything Nerospace saves: stations, pads, rockets and the rest are written in a
 form 1.x was never made to read. The only safe way back is the backup you took before updating. Take the backup.
 
+## 2.6 — the Pathfinder Suit
+
+Your old suit turns into the new one the first time you hold or wear it. It keeps its enchantments, name, trim and remaining durability, and it protects you the same way before and after. A suit sitting in a chest stays as it is until you take it out. See [Pathfinder Suit](Oxygen-Suit#coming-from-the-old-suits).
+
 ## If something is wrong
 Open an issue on the mod's repository with your log and, if you can, the version you updated from.
 Do not delete Nerospace's files in your world's `data` folders: Nerospace keeps a last-known-good copy of

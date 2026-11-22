@@ -154,10 +154,13 @@ public final class StarGuide {
             new Chapter("vacuum", List.of(
                     step("oxygen_generator", () -> ModBlocks.OXYGEN_GENERATOR.get(), "guide/oxygen_generator"),
                     step("gas_tank", () -> za.co.neroland.nerolandcore.registry.ModBlocks.GAS_TANK.get(), "guide/gas_tank"),
-                    step("oxygen_suit", () -> ModItems.OXYGEN_SUIT_HELMET.get(), "guide/oxygen_suit"),
-                    step("oxygen_suit_t2", () -> ModItems.OXYGEN_SUIT_T2_HELMET.get(), "guide/oxygen_suit_t2"),
-                    step("thermal_suit", () -> ModItems.OXYGEN_SUIT_HEAT_HELMET.get(), "guide/thermal_suit"),
-                    step("cryo_suit", () -> ModItems.OXYGEN_SUIT_COLD_HELMET.get(), "guide/cryo_suit"))),
+                    step("oxygen_suit", () -> za.co.neroland.nerospace.suit.SuitItems.HELMET.get(), "guide/oxygen_suit"),
+                    step("oxygen_suit_t2", () -> za.co.neroland.nerospace.suit.SuitItems.HELMET.get(), "guide/oxygen_suit_t2"),
+                    step("thermal_suit", () -> za.co.neroland.nerospace.suit.SuitItems.THERMAL_WEAVE.get(), "guide/thermal_suit"),
+                    step("cryo_suit", () -> za.co.neroland.nerospace.suit.SuitItems.CRYO_WEAVE.get(), "guide/cryo_suit"),
+                    step("suit_fabricator", () -> za.co.neroland.nerospace.suit.SuitItems.FABRICATOR.get(), "guide/suit_fabricator"),
+                    step("rad_lining_module", () -> ModItems.RAD_LINING.get(), "guide/rad_lining"),
+                    step("first_flight", () -> za.co.neroland.nerospace.suit.SuitItems.FLIGHT_HARNESS.get(), "guide/first_flight"))),
             new Chapter("terraforming", List.of(
                     step("terraformer", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformer"),
                     step("terraformed_ground", () -> ModBlocks.TERRAFORMER.get(), "guide/terraformed_ground"),
