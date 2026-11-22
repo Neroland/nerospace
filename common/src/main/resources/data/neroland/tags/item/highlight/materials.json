@@ -83,6 +83,11 @@
     "nerospace:deuterium_shard",
     "nerospace:oxidant_crystal",
     "nerospace:brine_salt",
-    "nerospace:raw_vent_sulfide"
+    "nerospace:raw_vent_sulfide",
+    "nerospace:deuterium_cell",
+    "nerospace:vent_sulfide_ore",
+    "nerospace:deuterium_ice",
+    "nerospace:oxidant_ice",
+    "nerospace:brine_salt_ore"
   ]
 }

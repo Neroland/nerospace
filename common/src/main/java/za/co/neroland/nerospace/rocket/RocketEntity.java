@@ -1273,6 +1273,8 @@ public class RocketEntity extends Entity implements MenuProvider {
             this.launchCrew = java.util.List.copyOf(seatIds);
             // Anonymous Core channel: a crewed launch, by head count only (never an identity).
             za.co.neroland.nerospace.progression.WorldsProgress.crewLaunch(crew.size());
+            // Player-scope record gates for the pilot (first launch) and, when crewed, every seated player.
+            za.co.neroland.nerospace.progression.WorldsProgress.launched(crew);
         }
         // Remember the pad we're lifting off from so the return rocket can fly straight back to it.
         this.launchOriginDim = level().dimension();

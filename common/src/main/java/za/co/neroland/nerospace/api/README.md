@@ -116,6 +116,18 @@ Privacy: pads, routes and flights carry an owner that this surface never exposes
 booleans, and `padsVisibleTo` is scoped to the asking player (never a server-wide roster). Erasure through
 Core's `PlayerDataErasure` removes the player's routes, anonymises pads/flights and purges access lists.
 
+## Suits — `NerospaceSuits`
+
+Item tag `nerospace:suits/radiation_capable` lists the suit pieces that can take a Radiation Lining.
+`NerospaceSuits.isRadLined(stack)` checks for the `nerospace:rad_lining` component,
+`radLinedPieces(player)` counts lined armour pieces and `isFullyRadLined(player)` applies Nerospace's
+own four-piece rule. Pure reads; no player data.
+
+Other shared tags: `nerospace:radioactive` (items and blocks: the crystals and meteor core that carry
+radioactive material), `nerospace:planet_crystals`, `nerospace:planet_ices` (items and blocks),
+`nerospace:gas_canisters` with `/helium3`, `/deuterium` and `/rocket_fuel`, and the fluid tag
+`c:rocket_fuel`. Brine stays a block and bucket, not a registered fluid.
+
 ## Design notes
 
 - Thin facade: no duplicated state; wraps the single internal `StationRegistry` and the gravity/oxygen

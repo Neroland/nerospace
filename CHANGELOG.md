@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.1] - 2026-11-26
+
+### Added
+
+- New shared tags so other mods can use Nerospace materials without naming each item: `c:ores/titanium` and `c:raw_materials/titanium` (ilmenite), `c:dusts/nerosium`, `c:raw_materials/europium`, `c:gems/frost`, `c:gems/methane`, `c:gems/void`, `c:gems/gravity`, `c:gems/amber`, `c:ores/helium3`, `c:dusts/rust`, `c:dusts/perchlorate`, the fluid tag `c:rocket_fuel`, and `nerospace:planet_crystals`, `nerospace:planet_ices`, `nerospace:gas_canisters` (with `/helium3`, `/deuterium` and `/rocket_fuel`), `nerospace:radioactive` and `nerospace:suits/radiation_capable`.
+- `NerospaceSuits` in the API: whether a suit piece can be lined against radiation, whether it is lined, and how many lined pieces a player wears.
+- Deuterium Cells, Vent Sulfide Ore, Deuterium Ice, Oxidant Ice and Brine Salt Ore now show the material highlight border.
+- Five new player milestones other mods (trophies, quests) can react to: your first launch as pilot, a crewed launch, driving a rover, building a station module, and weathering the trial on every world.
+
 ## [2.4.0] - 2026-11-21
 
 ### Changed

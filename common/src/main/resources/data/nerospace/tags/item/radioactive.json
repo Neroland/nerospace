@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:void_crystal",
+    "nerospace:smoke_crystal",
+    "nerospace:crazed_crystal",
+    "nerospace:meteor_core"
+  ]
+}

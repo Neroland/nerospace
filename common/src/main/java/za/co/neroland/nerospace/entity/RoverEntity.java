@@ -341,6 +341,9 @@ public class RoverEntity extends Entity {
         }
         if (throttle) {
             setEnergy(RoverRules.drain(getEnergy(), true, drain));
+            if (this.tickCount % 20 == 0 && getFirstPassenger() instanceof ServerPlayer driver) {
+                za.co.neroland.nerospace.progression.WorldsProgress.roverDriven(driver); // record gate, no-op once open
+            }
         }
         if (this.tickCount % CHARGE_INTERVAL == 0 && Math.abs(this.speed) < PARKED_SPEED) {
             charge(level);

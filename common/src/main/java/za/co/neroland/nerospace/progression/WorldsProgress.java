@@ -58,6 +58,22 @@ public final class WorldsProgress {
     /** Mod hook: a quest reward that briefs the player on the next Worlds step (a hint; awards nothing). */
     public static final Identifier WORLDS_BRIEFING = ns("hook/worlds_briefing");
 
+    /*
+     * Player-scope record gates (Core's PLAYER gate store: UUID + gate id only, erased with the player through
+     * Core's PlayerDataErasure; nothing new is persisted by Nerospace). Each names the player who did the thing, so
+     * NeroTrophies and NeroQuests can credit them; the anonymous ThresholdEvents channels above stay as they are.
+     */
+    /** The pilot of a launch that passed every launch check (no {@code requires}, unlike Core's reached_orbit). */
+    public static final Identifier FIRST_LAUNCH_GATE = ns("first_launch");
+    /** Every seated player on a launch with two or more crew. */
+    public static final Identifier CREW_LAUNCH_GATE = ns("crew_launch");
+    /** A player who drives a rover under power. */
+    public static final Identifier ROVER_DRIVEN_GATE = ns("rover_driven");
+    /** The player who paid for (or creatively built) a fresh station module. */
+    public static final Identifier STATION_MODULE_GATE = ns("station_module");
+    /** A player who has weathered the trial on every world in {@link #WORLDS}. */
+    public static final Identifier WEATHERED_ALL_GATE = ns("worlds/weathered_all");
+
     /**
      * The planets with a Worlds chapter, in Star Guide order (the roster: luna, mars, cindara, glacira, greenxertz,
      * nyxara, europa). Europa's weather trial is the generic rule: either of its two events (plume fall or radiation
@@ -103,6 +119,37 @@ public final class WorldsProgress {
         }
     }
 
+    /**
+     * A launch passed every check (called from the rocket with the seated crew, pilot first): opens
+     * {@link #FIRST_LAUNCH_GATE} for the pilot and, with two or more aboard, {@link #CREW_LAUNCH_GATE} for everyone
+     * seated. Re-opening a record gate is a no-op.
+     */
+    public static void launched(List<ServerPlayer> crew) {
+        if (crew == null || crew.isEmpty()) {
+            return;
+        }
+        ProgressionGates.open(crew.get(0), FIRST_LAUNCH_GATE);
+        if (crew.size() >= 2) {
+            for (ServerPlayer seated : crew) {
+                ProgressionGates.open(seated, CREW_LAUNCH_GATE);
+            }
+        }
+    }
+
+    /** A player drove a rover under power (the rover calls this at most once a second while throttling). */
+    public static void roverDriven(ServerPlayer driver) {
+        if (driver != null) {
+            ProgressionGates.open(driver, ROVER_DRIVEN_GATE);
+        }
+    }
+
+    /** A fresh station module was built; {@code builder} is the paying player, or null for a non-player build. */
+    public static void stationModuleBuiltBy(@Nullable ServerPlayer builder) {
+        if (builder != null) {
+            ProgressionGates.open(builder, STATION_MODULE_GATE);
+        }
+    }
+
     /** Station modules (4B's builder calls this after a fresh module is appended). */
     public static void stationModuleBuilt(String kindId, int moduleCount) {
         fire(STATION_MODULE_BUILT, "module/" + kindId, moduleCount, 1L);
@@ -130,6 +177,10 @@ public final class WorldsProgress {
             ProgressionGates.open(player, gate(p, "terraform")); // record gate; re-opening is a no-op
         }
         tickWeather(player, level, p);
+        // Also catches players who finished every trial before this gate existed (throttled tick, cheap reads).
+        if (!ProgressionGates.isOpen(player, WEATHERED_ALL_GATE) && weatheredAll(player)) {
+            ProgressionGates.open(player, WEATHERED_ALL_GATE);
+        }
     }
 
     private static void tickWeather(ServerPlayer player, ServerLevel level, String planet) {
@@ -155,7 +206,18 @@ public final class WorldsProgress {
             StarGuideGrants.grant(player, path);
             ProgressionGates.open(player, gate(planet, "weather"));
             fire(WEATHER_SURVIVED, Planets.get(level.dimension()).id().asString(), 1L, 1L);
+
         }
+    }
+
+    /** Whether {@code player} has completed the weather trial on every world in {@link #WORLDS}. */
+    private static boolean weatheredAll(ServerPlayer player) {
+        for (String world : WORLDS) {
+            if (!StarGuideGrants.isDone(player, "worlds/" + world + "/weather")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** The {@link #WORLDS_BRIEFING} hook: names the next incomplete Worlds step, preferring the current planet. */

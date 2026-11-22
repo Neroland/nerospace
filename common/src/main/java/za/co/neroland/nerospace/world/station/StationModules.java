@@ -190,6 +190,7 @@ public final class StationModules {
             registry.addModule(entry.slot(), new ModuleEntry(kind, index, ModuleTemplates.anchor(kind, index, centre)));
             za.co.neroland.nerospace.progression.WorldsProgress.stationModuleBuilt(
                     kind.name().toLowerCase(java.util.Locale.ROOT), entry.modules().size() + 1);
+            za.co.neroland.nerospace.progression.WorldsProgress.stationModuleBuiltBy(payer);
         }
         return new BuildOutcome(ModuleBuildRules.RESULT_OK, plan.verdict(), null);
     }

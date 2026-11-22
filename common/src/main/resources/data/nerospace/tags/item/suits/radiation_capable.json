@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:oxygen_suit_t2_helmet",
+    "nerospace:oxygen_suit_t2_chestplate",
+    "nerospace:oxygen_suit_t2_leggings",
+    "nerospace:oxygen_suit_t2_boots",
+    "nerospace:oxygen_suit_heat_helmet",
+    "nerospace:oxygen_suit_heat_chestplate",
+    "nerospace:oxygen_suit_heat_leggings",
+    "nerospace:oxygen_suit_heat_boots",
+    "nerospace:oxygen_suit_cold_helmet",
+    "nerospace:oxygen_suit_cold_chestplate",
+    "nerospace:oxygen_suit_cold_leggings",
+    "nerospace:oxygen_suit_cold_boots"
+  ]
+}

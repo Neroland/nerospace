@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:packed_cryo_ice",
+    "nerospace:dry_ice",
+    "nerospace:methane_ice",
+    "nerospace:deuterium_ice",
+    "nerospace:oxidant_ice",
+    "nerospace:europa_ice",
+    "nerospace:shell_ice"
+  ]
+}

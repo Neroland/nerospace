@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#nerospace:gas_canisters/helium3",
+    "#nerospace:gas_canisters/deuterium",
+    "#nerospace:gas_canisters/rocket_fuel"
+  ]
+}

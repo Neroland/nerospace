@@ -3,6 +3,8 @@
     "nerospace:nerosium_dust",
     "nerospace:ash_dust",
     "nerospace:sulfur",
-    "nerospace:brine_salt"
+    "nerospace:brine_salt",
+    "nerospace:rust_pigment",
+    "nerospace:perchlorate_oxidiser"
   ]
 }
