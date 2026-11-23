@@ -31,6 +31,7 @@ public final class ModCreativeTab {
                     .icon(() -> new ItemStack(ModItems.NEROSIUM_INGOT.get()))
                     .displayItems((params, output) -> {
                         ModItems.creativeContents().forEach(output::accept);
+                        za.co.neroland.nerospace.suit.SuitItems.creative().forEach(output::accept);
                         output.accept(za.co.neroland.nerospace.rocket.DockingContent.DOCKING_RING_ITEM.get());
                     })
                     .build());

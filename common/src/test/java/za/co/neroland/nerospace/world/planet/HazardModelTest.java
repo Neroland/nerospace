@@ -263,14 +263,14 @@ class HazardModelTest {
         assertTrue(lining.contains("\"id\":\"nerospace:rad_lining\""));
         for (String variant : List.of("t2", "heat", "cold")) {
             for (String slot : List.of("helmet", "chestplate", "leggings", "boots")) {
-                String id = "nerospace:oxygen_suit_" + variant + "_" + slot;
+                String id = "nerospace:suit_" + slot;
                 JsonObject r = load("/data/nerospace/recipe/oxygen_suit_" + variant + "_" + slot + "_rad_lining.json")
                         .getAsJsonObject();
                 assertEquals("minecraft:smithing_transform", r.get("type").getAsString());
                 assertEquals("nerospace:rad_lining", r.get("template").getAsString());
                 assertEquals(id, r.get("base").getAsString());
                 JsonObject result = r.getAsJsonObject("result");
-                assertEquals(id, result.get("id").getAsString(), "the upgraded piece keeps its id");
+                assertEquals(id, result.get("id").getAsString(), "the lining stays on the Pathfinder piece");
                 assertTrue(result.getAsJsonObject("components").has("nerospace:rad_lining"));
             }
         }

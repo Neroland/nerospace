@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": "#c:gems/glacite",
+    "N": "#c:ingots/nerosteel"
+  },
+  "pattern": [
+    "G G",
+    " N ",
+    "G G"
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:cryo_weave"
+  }
+}

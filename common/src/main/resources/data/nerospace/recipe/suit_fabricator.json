@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "N": "#c:ingots/nerosteel",
+    "C": "#c:glass_blocks/colorless"
+  },
+  "pattern": [
+    "NNN",
+    "NCN",
+    "NNN"
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:suit_fabricator"
+  }
+}

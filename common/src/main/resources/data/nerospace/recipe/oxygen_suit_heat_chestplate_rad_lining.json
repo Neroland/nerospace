@@ -1,7 +1,7 @@
 {
   "type": "minecraft:smithing_transform",
   "addition": "nerospace:titanium_ingot",
-  "base": "nerospace:oxygen_suit_heat_chestplate",
+  "base": "nerospace:suit_chestplate",
   "result": {
     "components": {
       "minecraft:lore": [
@@ -13,7 +13,7 @@
       ],
       "nerospace:rad_lining": {}
     },
-    "id": "nerospace:oxygen_suit_heat_chestplate"
+    "id": "nerospace:suit_chestplate"
   },
   "template": "nerospace:rad_lining"
 }

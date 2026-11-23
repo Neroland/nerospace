@@ -98,6 +98,10 @@ public final class ModMenuTypes {
                     key -> new MenuType<>(StationCharterMenu::new, FeatureFlags.VANILLA_SET));
 
     /** The Station Console, opened from a bound Station Core. */
+    public static final RegistryEntry<MenuType<za.co.neroland.nerospace.suit.SuitFabricatorMenu>> SUIT_FABRICATOR =
+            MENUS.register("suit_fabricator",
+                    key -> new MenuType<>(za.co.neroland.nerospace.suit.SuitFabricatorMenu::new, FeatureFlags.VANILLA_SET));
+
     public static final RegistryEntry<MenuType<za.co.neroland.nerospace.menu.StationConsoleMenu>> STATION_CONSOLE =
             MENUS.register("station_console",
                     key -> new MenuType<>(za.co.neroland.nerospace.menu.StationConsoleMenu::new, FeatureFlags.VANILLA_SET));

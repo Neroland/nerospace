@@ -69,13 +69,13 @@ public final class AlienTrades {
             .buy(EMERALD, 3, "nerospace:magma_glass", 4, 12, 5)
             .buy("nerospace:alien_fragment", 4, EMERALD, 1, 12, 2)
             .tier(3)
-            .buy(EMERALD, 10, "nerospace:oxygen_suit_heat_helmet", 1, 4, 10)
+            .buy(EMERALD, 10, "nerospace:suit_helmet", 1, 4, 10)
             .tier(4)
             .buy(EMERALD, 18, DIAMOND, 3, 4, 20)
             .tier(5)
-            .buy(EMERALD, 9, "nerospace:oxygen_suit_heat_boots", 1, 4, 10)
-            .buy(EMERALD, 16, "nerospace:oxygen_suit_heat_chestplate", 1, 2, 15)
-            .buy(EMERALD, 14, "nerospace:oxygen_suit_heat_leggings", 1, 2, 15)
+            .buy(EMERALD, 9, "nerospace:suit_boots", 1, 4, 10)
+            .buy(EMERALD, 16, "nerospace:suit_chestplate", 1, 2, 15)
+            .buy(EMERALD, 14, "nerospace:suit_leggings", 1, 2, 15)
             .buy2("nerospace:alien_core", 1, EMERALD, 20, "nerospace:alien_tech_scrap", 4, 2, 20)
             .build();
 
@@ -90,13 +90,13 @@ public final class AlienTrades {
             .buy(EMERALD, 3, "nerospace:packed_cryo_ice", 4, 12, 5)
             .buy("nerospace:alien_fragment", 4, EMERALD, 1, 12, 2)
             .tier(3)
-            .buy(EMERALD, 10, "nerospace:oxygen_suit_cold_helmet", 1, 4, 10)
+            .buy(EMERALD, 10, "nerospace:suit_helmet", 1, 4, 10)
             .tier(4)
             .buy(EMERALD, 18, DIAMOND, 3, 4, 20)
             .tier(5)
-            .buy(EMERALD, 9, "nerospace:oxygen_suit_cold_boots", 1, 4, 10)
-            .buy(EMERALD, 16, "nerospace:oxygen_suit_cold_chestplate", 1, 2, 15)
-            .buy(EMERALD, 14, "nerospace:oxygen_suit_cold_leggings", 1, 2, 15)
+            .buy(EMERALD, 9, "nerospace:suit_boots", 1, 4, 10)
+            .buy(EMERALD, 16, "nerospace:suit_chestplate", 1, 2, 15)
+            .buy(EMERALD, 14, "nerospace:suit_leggings", 1, 2, 15)
             .buy2("nerospace:alien_core", 1, EMERALD, 20, "nerospace:helium3_canister", 4, 2, 20)
             .build();
 
@@ -111,13 +111,13 @@ public final class AlienTrades {
             .buy(EMERALD, 6, "nerospace:voidglass_lens", 1, 12, 5)
             .buy("nerospace:alien_fragment", 4, EMERALD, 1, 12, 2)
             .tier(3)
-            .buy(EMERALD, 12, "nerospace:oxygen_suit_t2_helmet", 1, 4, 10)
+            .buy(EMERALD, 12, "nerospace:suit_helmet", 1, 4, 10)
             .tier(4)
             .buy(EMERALD, 20, "nerospace:gravity_shard", 4, 4, 20)
             .tier(5)
-            .buy(EMERALD, 11, "nerospace:oxygen_suit_t2_boots", 1, 4, 10)
-            .buy(EMERALD, 18, "nerospace:oxygen_suit_t2_chestplate", 1, 2, 15)
-            .buy(EMERALD, 16, "nerospace:oxygen_suit_t2_leggings", 1, 2, 15)
+            .buy(EMERALD, 11, "nerospace:suit_boots", 1, 4, 10)
+            .buy(EMERALD, 18, "nerospace:suit_chestplate", 1, 2, 15)
+            .buy(EMERALD, 16, "nerospace:suit_leggings", 1, 2, 15)
             .buy2("nerospace:alien_core", 1, EMERALD, 24, "nerospace:void_shard", 2, 2, 20)
             .build();
 
@@ -135,7 +135,7 @@ public final class AlienTrades {
             .buy(EMERALD, 3, "nerospace:polished_vent_basalt", 4, 12, 5)
             .buy("nerospace:alien_fragment", 4, EMERALD, 1, 12, 2)
             .tier(3)
-            .buy(EMERALD, 10, "nerospace:oxygen_suit_cold_helmet", 1, 4, 10)
+            .buy(EMERALD, 10, "nerospace:suit_helmet", 1, 4, 10)
             .buy(EMERALD, 4, "nerospace:oxidant_crystal", 4, 8, 8)
             .tier(4)
             .buy(EMERALD, 6, "nerospace:tube_mat", 4, 6, 12)
@@ -185,11 +185,15 @@ public final class AlienTrades {
     }
 
     public static MerchantOffers forCulture(String cultureId, int tier) {
-        return resolve(table(cultureId), tier);
+        return resolve(table(cultureId), tier, cultureId);
     }
 
     /** Resolves a table into offers. A row naming an item that is not registered is skipped, never a crash. */
     public static MerchantOffers resolve(TradeTable table, int tier) {
+        return resolve(table, tier, null);
+    }
+
+    public static MerchantOffers resolve(TradeTable table, int tier, String cultureId) {
         MerchantOffers offers = new MerchantOffers();
         for (TradeTable.Row row : table.rowsUpTo(tier)) {
             Optional<Item> a = item(row.costA());
@@ -205,8 +209,10 @@ public final class AlienTrades {
                 }
                 b = Optional.of(new ItemCost(bi.get(), row.countB()));
             }
+            ItemStack result = new ItemStack(r.get(), row.resultCount());
+            za.co.neroland.nerospace.suit.SuitTrades.decorate(cultureId, result);
             offers.add(new MerchantOffer(new ItemCost(a.get(), row.countA()), b,
-                    new ItemStack(r.get(), row.resultCount()), row.maxUses(), row.xp(), PRICE_MULT));
+                    result, row.maxUses(), row.xp(), PRICE_MULT));
         }
         return offers;
     }

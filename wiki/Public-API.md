@@ -132,5 +132,16 @@ Two API surfaces touch player data, and both are covered by Neroland Core's shar
   player's routes, anonymises their pads and flights and drops them from access lists — cargo already in
   the air is still delivered or crated.
 
+## Suits
+
+`NerospaceSuits` still answers `isRadiationCapable`, `isRadLined`, `radLinedPieces` and `isFullyRadLined` for both the old pieces and the Pathfinder Suit. Added, and only added:
+
+- `isSuitPiece(stack)`
+- `frame(stack)` — Mk I is 0
+- `hasModule(stack, id)`
+- `wornEnergy(player)` — FE on the worn chest, or 0
+
+`Hazard` is unchanged. `HazardOrderRules.SuitClass` appends `ADAPTIVE`. A mod may refuse flight with `NerospaceSuitPolicy.registerFlightVeto`. The callback gets a level, a position and an entity type, never a player id.
+
 Oxygen contributions and terraforming overlays store **no player at all**. Their source and region ids
 are yours to choose, are persisted verbatim, and **must never encode a player UUID or name**.

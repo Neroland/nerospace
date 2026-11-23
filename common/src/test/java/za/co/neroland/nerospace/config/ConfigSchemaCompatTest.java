@@ -78,6 +78,23 @@ class ConfigSchemaCompatTest {
         m.put("nyxara.twilightBandWidth", "2048");
         m.put("suit.underwaterRebreather", "true");
         m.put("suit.statusMessages", "true");
+        m.put("suit.legacyConversion", "true");
+        m.put("suit.energyCapacityMultiplier", "1.0");
+        m.put("suit.energyUseMultiplier", "1.0");
+        m.put("suit.flight.enabled", "true");
+        m.put("suit.flight.dimensionMode", "all");
+        m.put("suit.flight.dimensionDenylist", "");
+        m.put("suit.flight.maxSpeed", "0.6");
+        m.put("suit.flight.combatLockTicks", "60");
+        m.put("suit.flight.failsafeReservePercent", "3");
+        m.put("suit.hover.maxBurstTicks", "60");
+        m.put("suit.kineticShield.maxAbsorbPerHit", "4.0");
+        m.put("suit.scanner.radius", "32");
+        m.put("suit.scanner.cooldownTicks", "100");
+        m.put("suit.solarSkinRate", "2");
+        m.put("suit.fabricatorChargeRate", "2000");
+        m.put("suit.dockChargeRate", "500");
+        m.put("suit.allowEnchanting", "true");
         m.put("rockets.ascentHeight", "96");
         return m;
     }
@@ -129,6 +146,10 @@ class ConfigSchemaCompatTest {
         m.put("sky.bodyStyle", "globe");
         m.put("shaders.dimensionCompat", "auto");
         m.put("shaders.drawPlanetSky", "true");
+        m.put("particles.jet.perPlayerPerTick", "0.6");
+        m.put("hud.suitEnergyBar", "true");
+        m.put("hud.suitModuleIcons", "true");
+        m.put("hud.suitScale", "1.0");
         for (Map.Entry<String, String> e : m.entrySet()) {
             ConfigValue<?> v = NerospaceConfig.schema().value(e.getKey());
             assertNotNull(v, "missing key " + e.getKey());

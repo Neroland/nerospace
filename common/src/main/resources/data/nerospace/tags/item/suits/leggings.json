@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "nerospace:suit_leggings",
+    "nerospace:oxygen_suit_leggings",
+    "nerospace:oxygen_suit_t2_leggings",
+    "nerospace:oxygen_suit_heat_leggings",
+    "nerospace:oxygen_suit_cold_leggings"
+  ]
+}

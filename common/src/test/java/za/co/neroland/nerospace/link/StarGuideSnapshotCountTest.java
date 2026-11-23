@@ -33,7 +33,7 @@ class StarGuideSnapshotCountTest {
     @Test
     void totalsIncludeEuropa() {
         assertEquals(17, StarGuide.CHAPTER_COUNT);
-        assertEquals(80, StarGuide.totalSteps());
+        assertEquals(83, StarGuide.totalSteps());
     }
 
     /**

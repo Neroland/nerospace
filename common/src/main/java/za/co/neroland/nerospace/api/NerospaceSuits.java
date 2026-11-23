@@ -56,4 +56,40 @@ public final class NerospaceSuits {
     public static boolean isFullyRadLined(Player player) {
         return player != null && OxygenManager.radLined(player);
     }
+
+    /** Whether {@code stack} is a Pathfinder piece or a legacy oxygen-suit piece. */
+    public static boolean isSuitPiece(ItemStack stack) {
+        return za.co.neroland.nerospace.suit.SuitView.isSuitStack(stack);
+    }
+
+    /**
+     * Frame ordinal. A legacy Tier 1 piece is 0 and every other legacy piece is 1. A stack that is not a suit
+     * reads as 0.
+     */
+    public static int frame(ItemStack stack) {
+        za.co.neroland.nerospace.suit.SuitProtection.Slot slot = za.co.neroland.nerospace.suit.SuitView.slot(stack);
+        if (!slot.suit()) {
+            return 0;
+        }
+        if (slot.loadout() != null && slot.legacyId() == null) {
+            return slot.loadout().frame();
+        }
+        za.co.neroland.nerospace.suit.LegacySuitConversion.Family family =
+                za.co.neroland.nerospace.suit.LegacySuitConversion.family(slot.legacyId());
+        return family == za.co.neroland.nerospace.suit.LegacySuitConversion.Family.T1 ? 0 : 1;
+    }
+
+    /** Whether a piece's module list contains {@code id}. */
+    public static boolean hasModule(ItemStack stack, Identifier id) {
+        return stack != null && id != null
+                && za.co.neroland.nerospace.suit.SuitStacks.loadout(stack).hasModule(id.toString());
+    }
+
+    /** FE stored on the worn chest piece, or 0. */
+    public static int wornEnergy(Player player) {
+        if (player == null) {
+            return 0;
+        }
+        return za.co.neroland.nerospace.suit.SuitStacks.core(player.getItemBySlot(EquipmentSlot.CHEST)).energy();
+    }
 }

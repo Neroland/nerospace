@@ -165,6 +165,7 @@ public final class NeoForgeClientSetup {
         event.register(ModMenuTypes.STATION_CHARTER.get(), za.co.neroland.nerospace.client.StationCharterScreen::new);
         event.register(ModMenuTypes.STATION_CONSOLE.get(), za.co.neroland.nerospace.client.StationConsoleScreen::new);
         event.register(ModMenuTypes.CARGO_PAD.get(), za.co.neroland.nerospace.client.CargoPadScreen::new);
+        event.register(ModMenuTypes.SUIT_FABRICATOR.get(), za.co.neroland.nerospace.client.SuitFabricatorScreen::new);
     }
 
     //? if >=26.1 {

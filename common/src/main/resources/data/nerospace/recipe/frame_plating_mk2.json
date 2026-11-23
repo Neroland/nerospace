@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "#c:gems/cindrite"
+  },
+  "pattern": [
+    " C ",
+    "C C",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "nerospace:frame_plating_mk2"
+  }
+}

@@ -121,6 +121,16 @@ public final class ModBlockEntities {
                     key -> BlockEntityTypeCompat.create(ReturnSiteBlockEntity::new, 
                             ModBlocks.LANDING_POD.get(), ModBlocks.DOCKING_PORT.get()));
 
+    public static final RegistryEntry<BlockEntityType<za.co.neroland.nerospace.suit.SuitFabricatorBlockEntity>> SUIT_FABRICATOR =
+            BLOCK_ENTITIES.register("suit_fabricator",
+                    key -> BlockEntityTypeCompat.create(za.co.neroland.nerospace.suit.SuitFabricatorBlockEntity::new,
+                            ModBlocks.SUIT_FABRICATOR.get()));
+
+    public static final RegistryEntry<BlockEntityType<za.co.neroland.nerospace.suit.SuitDockBlockEntity>> SUIT_DOCK =
+            BLOCK_ENTITIES.register("suit_dock",
+                    key -> BlockEntityTypeCompat.create(za.co.neroland.nerospace.suit.SuitDockBlockEntity::new,
+                            ModBlocks.SUIT_DOCK.get()));
+
     public static final RegistryEntry<BlockEntityType<VillageCoreBlockEntity>> VILLAGE_CORE =
             BLOCK_ENTITIES.register("village_core",
                     key -> BlockEntityTypeCompat.create(VillageCoreBlockEntity::new, ModBlocks.VILLAGE_CORE.get()));

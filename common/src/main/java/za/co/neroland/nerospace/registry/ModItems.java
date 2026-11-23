@@ -455,12 +455,7 @@ public final class ModItems {
                         za.co.neroland.nerospace.world.planet.europa.EuropaContent.VENT_RAY_SPAWN_EGG.get(),
                         za.co.neroland.nerospace.world.planet.europa.EuropaContent.SHELL_SKATER_SPAWN_EGG.get()),
                 CreativeModeTabs.COMBAT,
-                List.<ItemLike>of(
-                        OXYGEN_SUIT_HELMET.get(), OXYGEN_SUIT_CHESTPLATE.get(), OXYGEN_SUIT_LEGGINGS.get(), OXYGEN_SUIT_BOOTS.get(),
-                        OXYGEN_SUIT_T2_HELMET.get(), OXYGEN_SUIT_T2_CHESTPLATE.get(), OXYGEN_SUIT_T2_LEGGINGS.get(), OXYGEN_SUIT_T2_BOOTS.get(),
-                        OXYGEN_SUIT_HEAT_HELMET.get(), OXYGEN_SUIT_HEAT_CHESTPLATE.get(), OXYGEN_SUIT_HEAT_LEGGINGS.get(), OXYGEN_SUIT_HEAT_BOOTS.get(),
-                        OXYGEN_SUIT_COLD_HELMET.get(), OXYGEN_SUIT_COLD_CHESTPLATE.get(), OXYGEN_SUIT_COLD_LEGGINGS.get(), OXYGEN_SUIT_COLD_BOOTS.get(),
-                        RAD_LINING.get()),
+                List.<ItemLike>of(RAD_LINING.get()),
                 CreativeModeTabs.FUNCTIONAL_BLOCKS,
                 List.<ItemLike>of(COMBUSTION_GENERATOR_ITEM.get(), NEROSIUM_GRINDER_ITEM.get(), PASSIVE_GENERATOR_ITEM.get(), UNIVERSAL_PIPE_ITEM.get(), OXYGEN_GENERATOR_ITEM.get(), SOLAR_PANEL_ITEM.get(), SOLAR_PANEL_T2_ITEM.get(), SOLAR_PANEL_T3_ITEM.get(), ROCKET_LAUNCH_PAD_ITEM.get(), CARGO_PAD_ITEM.get(), LAUNCH_GANTRY_ITEM.get(), LAUNCH_CONTROLLER_ITEM.get(), FUEL_TANK_ITEM.get(), FUEL_REFINERY_ITEM.get(), QUARRY_CONTROLLER_ITEM.get(), QUARRY_LANDMARK_ITEM.get(), TERRAFORMER_ITEM.get(), HYDRATION_MODULE_ITEM.get(), TERRAFORM_MONITOR_ITEM.get(),
                         LANDING_POD_ITEM.get(), DOCKING_PORT_ITEM.get(),

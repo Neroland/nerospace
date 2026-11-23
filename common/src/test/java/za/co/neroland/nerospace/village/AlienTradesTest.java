@@ -61,8 +61,8 @@ class AlienTradesTest {
     void protectiveSuitIsOnePieceUntilTheTopTier() {
         for (TradeTable t : List.of(AlienTrades.EMBER_KIN_TABLE, AlienTrades.FROSTBOUND_TABLE,
                 AlienTrades.DUSKBORN_TABLE)) {
-            long below = t.rowsUpTo(4).stream().filter(r -> r.result().contains("oxygen_suit")).count();
-            long all = t.rowsUpTo(5).stream().filter(r -> r.result().contains("oxygen_suit")).count();
+            long below = t.rowsUpTo(4).stream().filter(r -> r.result().startsWith("nerospace:suit_")).count();
+            long all = t.rowsUpTo(5).stream().filter(r -> r.result().startsWith("nerospace:suit_")).count();
             assertEquals(1, below, "one suit piece (the helmet) below tier 5");
             assertTrue(t.rowsUpTo(4).stream().anyMatch(r -> r.result().endsWith("_helmet")), "the helmet comes first");
             assertEquals(4, all, "the full suit at tier 5");

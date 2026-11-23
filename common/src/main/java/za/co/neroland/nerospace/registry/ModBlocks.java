@@ -251,6 +251,16 @@ public final class ModBlocks {
                     .setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(3.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.METAL).noOcclusion()));
 
+    public static final RegistryEntry<za.co.neroland.nerospace.suit.SuitFabricatorBlock> SUIT_FABRICATOR =
+            BLOCKS.register("suit_fabricator", key -> new za.co.neroland.nerospace.suit.SuitFabricatorBlock(
+                    BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.METAL).strength(3.5F, 6.0F)
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+
+    public static final RegistryEntry<za.co.neroland.nerospace.suit.SuitDockBlock> SUIT_DOCK =
+            BLOCKS.register("suit_dock", key -> new za.co.neroland.nerospace.suit.SuitDockBlock(
+                    BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_CYAN).strength(3.0F, 6.0F)
+                            .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+
     public static final RegistryEntry<DockingPortBlock> DOCKING_PORT = BLOCKS.register("docking_port",
             key -> new DockingPortBlock(BlockBehaviour.Properties.of()
                     .setId(key).mapColor(MapColor.COLOR_CYAN).strength(3.5F, 8.0F)

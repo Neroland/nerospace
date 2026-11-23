@@ -1,0 +1,25 @@
+{
+  "parent": "nerospace:guide/rad_lining",
+  "criteria": {
+    "has_flight_harness": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nerospace:flight_harness"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Fit a Flight Harness. Flight opens once you have reached deep space",
+    "frame": "challenge",
+    "icon": {
+      "id": "nerospace:flight_harness"
+    },
+    "title": "Lift-Off"
+  },
+  "requirements": [["has_flight_harness"]],
+  "sends_telemetry_event": true
+}

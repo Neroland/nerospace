@@ -124,6 +124,8 @@
     "nerospace:brine_salt_ore",
     "nerospace:vent_sulfide_ore",
     "nerospace:europium_ore",
-    "nerospace:europium_lamp"
+    "nerospace:europium_lamp",
+    "nerospace:suit_fabricator",
+    "nerospace:suit_dock"
   ]
 }

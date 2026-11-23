@@ -12,6 +12,10 @@
     "nerospace:oxygen_suit_cold_helmet",
     "nerospace:oxygen_suit_cold_chestplate",
     "nerospace:oxygen_suit_cold_leggings",
-    "nerospace:oxygen_suit_cold_boots"
+    "nerospace:oxygen_suit_cold_boots",
+    "nerospace:suit_helmet",
+    "nerospace:suit_chestplate",
+    "nerospace:suit_leggings",
+    "nerospace:suit_boots"
   ]
 }
