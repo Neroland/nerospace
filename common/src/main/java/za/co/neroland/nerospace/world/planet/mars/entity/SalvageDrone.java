@@ -193,7 +193,13 @@ public class SalvageDrone extends PathfinderMob implements Merchant {
         super.addAdditionalSaveData(tag);
         ValueOutput output = ValueOutput.of(tag, this.registryAccess());
     *///?}
+        //? if >=1.20.5 {
         output.storeNullable("Offers", MerchantOffers.CODEC, this.offers);
+        //?} else {
+        /*if (this.offers != null) {
+            tag.put("Offers", this.offers.createTag());
+        }
+        *///?}
         output.putLong("LastRestock", this.lastRestock);
     }
 
@@ -207,7 +213,12 @@ public class SalvageDrone extends PathfinderMob implements Merchant {
         super.readAdditionalSaveData(tag);
         ValueInput input = ValueInput.of(tag, this.registryAccess());
     *///?}
+        //? if >=1.20.5 {
         this.offers = input.read("Offers", MerchantOffers.CODEC).orElse(null);
+        //?} else {
+        /*this.offers = tag.contains("Offers", net.minecraft.nbt.Tag.TAG_COMPOUND)
+                ? new MerchantOffers(tag.getCompound("Offers")) : null;
+        *///?}
         this.lastRestock = input.getLongOr("LastRestock", SalvageStock.NEVER);
     }
 

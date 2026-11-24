@@ -24,10 +24,10 @@ class OxygenContributionStateTest {
     private static OxygenContributionState roundTrip(OxygenContributionState state) {
         JsonElement encoded = OxygenContributionState.codec()
                 .encodeStart(JsonOps.INSTANCE, state)
-                .getOrThrow(error -> new AssertionError("encode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("encode failed"));
         return OxygenContributionState.codec()
                 .parse(JsonOps.INSTANCE, encoded)
-                .getOrThrow(error -> new AssertionError("decode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("decode failed"));
     }
 
     @Test
@@ -152,7 +152,7 @@ class OxygenContributionStateTest {
 
         OxygenContributionState reloaded = OxygenContributionState.codec()
                 .parse(JsonOps.INSTANCE, handEdited)
-                .getOrThrow(error -> new AssertionError("decode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("decode failed"));
 
         assertEquals(0, reloaded.size(0L), "both malformed rows should be dropped");
     }

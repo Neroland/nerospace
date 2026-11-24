@@ -7,7 +7,7 @@ import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
@@ -28,8 +28,8 @@ public class EmberStrutter extends TerraformLivestock {
     }
 
     @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(Items.WHEAT_SEEDS);
+    protected Item breedingFood() {
+        return Items.WHEAT_SEEDS;
     }
 
     @Nullable

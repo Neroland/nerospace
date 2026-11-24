@@ -16,7 +16,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+//? if >=1.20.5 {
 import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
+//?}
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
@@ -59,7 +61,12 @@ public final class ForgeClientSetup {
         //? if >=26.1 {
         ModelEvent.BakeFluidModels.BUS.addListener(ForgeClientSetup::onBakeFluidModels);
         //?}
+        //? if >=1.20.5 {
         AddGuiOverlayLayersEvent.BUS.addListener(ForgeClientSetup::onAddGuiLayers);
+        //?} else {
+        /*modBusGroup.addListener(ForgeClientSetup::onAddGuiLayers);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(ForgeClientSetup::onRenderGuiOverlay);
+        *///?}
         net.minecraftforge.client.event.RegisterParticleProvidersEvent.BUS.addListener(event ->
                 za.co.neroland.nerospace.client.particle.ClientParticles.registerAll((type, factory) ->
                         event.registerSpriteSet(type, factory::apply)));
@@ -67,7 +74,14 @@ public final class ForgeClientSetup {
         // profile drives the world fog (below).
         net.minecraftforge.client.event.RegisterClientReloadListenersEvent.BUS.addListener(event ->
                 event.registerReloadListener(za.co.neroland.nerospace.client.sky.SkyProfiles.INSTANCE));
+        //? if >=1.20.4 {
         TickEvent.ClientTickEvent.Post.BUS.addListener(event -> {
+        //?} else {
+        /*net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((TickEvent.ClientTickEvent event) -> {
+            if (event.phase != TickEvent.Phase.END) {
+                return;
+            }
+        *///?}
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
             GalleryCaptureHarness.tick();
@@ -100,11 +114,27 @@ public final class ForgeClientSetup {
         event.enqueueWork(ForgeClientSetup::registerScreens);
     }
 
+    //? if >=1.20.5 {
     private static void onAddGuiLayers(AddGuiOverlayLayersEvent event) {
         event.getLayeredDraw().add(
                 Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_hud"),
                 (g, delta) -> OxygenHud.render(g));
     }
+
+    //?} else {
+    /*private static void onAddGuiLayers(net.minecraftforge.client.event.RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("oxygen_hud", (gui, graphics, tick, width, height) -> OxygenHud.render(graphics));
+    }
+
+    private static void onRenderGuiOverlay(net.minecraftforge.client.event.RenderGuiOverlayEvent.Pre event) {
+        if (event.getOverlay().id().equals(net.minecraftforge.client.gui.overlay.VanillaGuiOverlay.AIR_LEVEL.id())) {
+            var mc = net.minecraft.client.Minecraft.getInstance();
+            if (mc.player != null && za.co.neroland.nerospace.world.OxygenFieldEvents.isFieldDimension(mc.player.level().dimension())) {
+                event.setCanceled(true);
+            }
+        }
+    }
+    *///?}
 
     private static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {

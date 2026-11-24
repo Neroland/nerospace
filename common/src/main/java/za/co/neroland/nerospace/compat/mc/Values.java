@@ -69,11 +69,19 @@ public final class Values {
     }
 
     public static void saveAllItems(ValueOutput output, NonNullList<ItemStack> items) {
+        //? if >=1.20.5 {
         ContainerHelper.saveAllItems(output.tag(), items, output.registries());
+        //?} else {
+        /^ContainerHelper.saveAllItems(output.tag(), items);
+        ^///?}
     }
 
     public static void loadAllItems(ValueInput input, NonNullList<ItemStack> items) {
+        //? if >=1.20.5 {
         ContainerHelper.loadAllItems(input.tag(), items, input.registries());
+        //?} else {
+        /^ContainerHelper.loadAllItems(input.tag(), items);
+        ^///?}
     }
 }
 *///?}

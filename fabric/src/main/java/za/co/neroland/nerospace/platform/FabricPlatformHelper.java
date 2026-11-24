@@ -6,7 +6,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import za.co.neroland.nerospace.NerospaceCommon;
+//? if >=1.20.4 || =1.20.1 {
 import za.co.neroland.nerospace.fabric.FabricAttachments;
+//?} else {
+/*import za.co.neroland.nerospace.fabric.LegacyAttachments;
+*///?}
 
 /**
  * Fabric implementation of {@link IPlatformHelper}. Registered via
@@ -54,6 +58,7 @@ public final class FabricPlatformHelper implements IPlatformHelper {
                 .toList();
     }
 
+    //? if >=1.20.4 || =1.20.1 {
     @Override
     public int getOxygen(Player player) {
         return player.getAttachedOrCreate(FabricAttachments.OXYGEN);
@@ -93,4 +98,57 @@ public final class FabricPlatformHelper implements IPlatformHelper {
     public void setStarGuideSeen(Player player, java.util.List<Integer> value) {
         player.setAttached(FabricAttachments.STAR_GUIDE_SEEN, value);
     }
+    //?} else {
+    /*@Override
+    public int getOxygen(Player player) {
+        var data = ((LegacyAttachments) player).nerospace$data();
+        return data.contains(LegacyAttachments.OXYGEN)
+                ? data.getInt(LegacyAttachments.OXYGEN)
+                : za.co.neroland.nerospace.world.OxygenManager.OXYGEN_MAX;
+    }
+
+    @Override
+    public void setOxygen(Player player, int value) {
+        ((LegacyAttachments) player).nerospace$data().putInt(LegacyAttachments.OXYGEN, value);
+    }
+
+    @Override
+    public boolean isTerraformed(LevelChunk chunk) {
+        return ((LegacyAttachments) chunk).nerospace$data().getBoolean(LegacyAttachments.TERRAFORMED);
+    }
+
+    @Override
+    public void setTerraformed(LevelChunk chunk, boolean value) {
+        ((LegacyAttachments) chunk).nerospace$data().putBoolean(LegacyAttachments.TERRAFORMED, value);
+        chunk.setUnsaved(true);
+    }
+
+    @Override
+    public int getTerraformStage(LevelChunk chunk) {
+        return ((LegacyAttachments) chunk).nerospace$data().getInt(LegacyAttachments.TERRAFORM_STAGE);
+    }
+
+    @Override
+    public void setTerraformStage(LevelChunk chunk, int value) {
+        ((LegacyAttachments) chunk).nerospace$data().putInt(LegacyAttachments.TERRAFORM_STAGE, value);
+        chunk.setUnsaved(true);
+    }
+
+    @Override
+    public java.util.List<Integer> getStarGuideSeen(Player player) {
+        var data = ((LegacyAttachments) player).nerospace$data();
+        var tag = data.get(LegacyAttachments.STAR_GUIDE_SEEN);
+        if (tag instanceof net.minecraft.nbt.CollectionTag<?> entries) {
+            return entries.stream().filter(net.minecraft.nbt.NumericTag.class::isInstance)
+                    .map(net.minecraft.nbt.NumericTag.class::cast)
+                    .map(net.minecraft.nbt.NumericTag::getAsInt).toList();
+        }
+        return java.util.List.of();
+    }
+
+    @Override
+    public void setStarGuideSeen(Player player, java.util.List<Integer> value) {
+        ((LegacyAttachments) player).nerospace$data().putIntArray(LegacyAttachments.STAR_GUIDE_SEEN, value);
+    }
+    *///?}
 }

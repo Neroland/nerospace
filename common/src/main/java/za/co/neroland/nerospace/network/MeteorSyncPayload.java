@@ -1,7 +1,6 @@
 package za.co.neroland.nerospace.network;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -21,13 +20,18 @@ import za.co.neroland.nerospace.NerospaceCommon;
 public record MeteorSyncPayload(boolean present, long pos, int state) implements CustomPacketPayload {
 
     public static final Type<MeteorSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "meteor_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "meteor_sync"), MeteorSyncPayload.class);
+            *///?}
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, MeteorSyncPayload> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.BOOL, MeteorSyncPayload::present,
-            ByteBufCodecs.VAR_LONG, MeteorSyncPayload::pos,
-            ByteBufCodecs.VAR_INT, MeteorSyncPayload::state,
-            MeteorSyncPayload::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, MeteorSyncPayload> STREAM_CODEC =
+            StreamCodec.of((buf, payload) -> {
+                buf.writeBoolean(payload.present());
+                buf.writeVarLong(payload.pos());
+                buf.writeVarInt(payload.state());
+            }, buf -> new MeteorSyncPayload(buf.readBoolean(), buf.readVarLong(), buf.readVarInt()));
 
     public static final MeteorSyncPayload ABSENT = new MeteorSyncPayload(false, 0L, 0);
 

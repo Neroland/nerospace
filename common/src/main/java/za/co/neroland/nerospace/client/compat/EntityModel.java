@@ -65,9 +65,22 @@ public abstract class EntityModel<S extends EntityRenderState> extends net.minec
     }
 
     @Override
+    //? if >=1.21 {
     public void renderToBuffer(PoseStack poseStack, VertexConsumer consumer, int light, int overlay, int color) {
         this.root.render(poseStack, consumer, light, overlay,
                 this.tint == -1 ? color : FastColor.ARGB32.multiply(color, this.tint));
     }
+    //?} else {
+    /^public void renderToBuffer(PoseStack poseStack, VertexConsumer consumer, int light, int overlay,
+            float red, float green, float blue, float alpha) {
+        if (this.tint != -1) {
+            red *= FastColor.ARGB32.red(this.tint) / 255.0F;
+            green *= FastColor.ARGB32.green(this.tint) / 255.0F;
+            blue *= FastColor.ARGB32.blue(this.tint) / 255.0F;
+            alpha *= FastColor.ARGB32.alpha(this.tint) / 255.0F;
+        }
+        this.root.render(poseStack, consumer, light, overlay, red, green, blue, alpha);
+    }
+    ^///?}
 }
 *///?}

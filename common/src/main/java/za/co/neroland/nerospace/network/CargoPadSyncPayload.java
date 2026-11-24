@@ -23,7 +23,11 @@ public record CargoPadSyncPayload(int containerId, int[] ids, String[] names, St
         implements CustomPacketPayload {
 
     public static final Type<CargoPadSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "cargo_pad_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "cargo_pad_sync"), CargoPadSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CargoPadSyncPayload> STREAM_CODEC =
             StreamCodec.of(CargoPadSyncPayload::write, CargoPadSyncPayload::read);

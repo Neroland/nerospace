@@ -19,7 +19,11 @@ import za.co.neroland.nerospace.NerospaceCommon;
 public record OxygenFieldSyncPayload(long[] positions, byte[] values) implements CustomPacketPayload {
 
     public static final Type<OxygenFieldSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_field_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_field_sync"), OxygenFieldSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, OxygenFieldSyncPayload> STREAM_CODEC =
             StreamCodec.of(OxygenFieldSyncPayload::write, OxygenFieldSyncPayload::read);

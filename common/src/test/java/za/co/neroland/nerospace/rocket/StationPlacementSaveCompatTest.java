@@ -55,11 +55,11 @@ class StationPlacementSaveCompatTest {
     }
 
     static Tag encode(StationRegistry r) {
-        return StationRegistry.codec().encodeStart(NbtOps.INSTANCE, r).getOrThrow();
+        return StationRegistry.codec().encodeStart(NbtOps.INSTANCE, r).result().orElseThrow();
     }
 
     static StationRegistry decode(Tag tag) {
-        return StationRegistry.codec().parse(new Dynamic<>(NbtOps.INSTANCE, tag)).getOrThrow();
+        return StationRegistry.codec().parse(new Dynamic<>(NbtOps.INSTANCE, tag)).result().orElseThrow();
     }
 
     @Test

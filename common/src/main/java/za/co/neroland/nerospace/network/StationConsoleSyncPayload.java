@@ -38,7 +38,11 @@ public record StationConsoleSyncPayload(int containerId, int slot, String name, 
     }
 
     public static final Type<StationConsoleSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "station_console_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "station_console_sync"), StationConsoleSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, StationConsoleSyncPayload> STREAM_CODEC =
             StreamCodec.of(StationConsoleSyncPayload::write, StationConsoleSyncPayload::read);

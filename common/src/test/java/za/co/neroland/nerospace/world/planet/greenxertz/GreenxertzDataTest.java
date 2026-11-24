@@ -41,11 +41,11 @@ class GreenxertzDataTest {
             "nerospace:mega_city_placed");
 
     private static boolean exists(String path) {
-        return GreenxertzDataTest.class.getResource(path) != null;
+        return GreenxertzDataTest.class.getResource(za.co.neroland.nerospace.TestResourcePaths.datapack(path)) != null;
     }
 
     private static JsonObject load(String path) throws IOException {
-        try (InputStream in = GreenxertzDataTest.class.getResourceAsStream(path)) {
+        try (InputStream in = GreenxertzDataTest.class.getResourceAsStream(za.co.neroland.nerospace.TestResourcePaths.datapack(path))) {
             assertNotNull(in, "missing " + path);
             JsonElement e = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             return e.getAsJsonObject();

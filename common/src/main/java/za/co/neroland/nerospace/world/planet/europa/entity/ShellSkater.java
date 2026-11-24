@@ -13,7 +13,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
@@ -92,8 +92,8 @@ public class ShellSkater extends TerraformLivestock {
     }
 
     @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(EuropaContent.BRINE_SALT.get());
+    protected Item breedingFood() {
+        return EuropaContent.BRINE_SALT.get();
     }
 
     @Nullable

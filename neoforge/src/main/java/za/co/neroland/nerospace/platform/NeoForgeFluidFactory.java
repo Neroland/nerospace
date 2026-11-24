@@ -30,7 +30,27 @@ public final class NeoForgeFluidFactory implements FluidFactory {
             "rocket_fuel", () -> new FluidType(FluidType.Properties.create()
                     .density(1200)
                     .viscosity(1500)
-                    .canConvertToSource(false)));
+                    .canConvertToSource(false))
+                    //? if <1.21 {
+                    /*{
+                        @Override
+                        public void initializeClient(java.util.function.Consumer<
+                                net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions> consumer) {
+                            consumer.accept(new net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions() {
+                                @Override
+                                public net.minecraft.resources.ResourceLocation getStillTexture() {
+                                    return new net.minecraft.resources.ResourceLocation(NerospaceCommon.MOD_ID, "block/rocket_fuel_still");
+                                }
+
+                                @Override
+                                public net.minecraft.resources.ResourceLocation getFlowingTexture() {
+                                    return new net.minecraft.resources.ResourceLocation(NerospaceCommon.MOD_ID, "block/rocket_fuel_flow");
+                                }
+                            });
+                        }
+                    }
+                    *///?}
+            );
 
     private static final BaseFlowingFluid.Properties PROPERTIES = new BaseFlowingFluid.Properties(
             ROCKET_FUEL_TYPE, ModFluids.ROCKET_FUEL, ModFluids.ROCKET_FUEL_FLOWING)

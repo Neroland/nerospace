@@ -30,7 +30,11 @@ public record FreeDockSyncPayload(List<Row> rows) implements CustomPacketPayload
     }
 
     public static final Type<FreeDockSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "free_dock_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "free_dock_sync"), FreeDockSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, FreeDockSyncPayload> STREAM_CODEC =
             StreamCodec.of(FreeDockSyncPayload::write, FreeDockSyncPayload::read);

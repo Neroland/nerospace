@@ -56,7 +56,13 @@ public final class SubmitNodeCollector {
         if (model instanceof EntityModel<?> entityModel) {
             setup(entityModel, state);
         }
+        //? if >=1.21 {
         model.renderToBuffer(poseStack, this.buffers.getBuffer(renderType), light, overlay, color);
+        //?} else {
+        /^model.renderToBuffer(poseStack, this.buffers.getBuffer(renderType), light, overlay,
+                ((color >> 16) & 255) / 255.0F, ((color >> 8) & 255) / 255.0F,
+                (color & 255) / 255.0F, (color >>> 24) / 255.0F);
+        ^///?}
     }
 
     // 1.21.1: the client.compat EntityModel look-alike poses itself from the client.compat render state.

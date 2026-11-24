@@ -55,7 +55,7 @@ class StationRegistryMigrationTest {
     }
 
     static StationRegistry decode(Tag tag) {
-        return StationRegistry.codec().parse(new Dynamic<>(NbtOps.INSTANCE, tag)).getOrThrow();
+        return StationRegistry.codec().parse(new Dynamic<>(NbtOps.INSTANCE, tag)).result().orElseThrow();
     }
 
     @Test
@@ -88,15 +88,15 @@ class StationRegistryMigrationTest {
     @Test
     void roundTripIsAFixedPoint() {
         StationRegistry r = decode(legacyStore());
-        Tag once = StationRegistry.codec().encodeStart(NbtOps.INSTANCE, r).getOrThrow();
-        Tag twice = StationRegistry.codec().encodeStart(NbtOps.INSTANCE, decode(once)).getOrThrow();
+        Tag once = StationRegistry.codec().encodeStart(NbtOps.INSTANCE, r).result().orElseThrow();
+        Tag twice = StationRegistry.codec().encodeStart(NbtOps.INSTANCE, decode(once)).result().orElseThrow();
         assertEquals(once, twice);
         // 2.0 fields survive a round trip too.
         StationRegistry.StationEntry e = r.get(0).withClass(StationClass.TRADE, 1234L)
                 .withMembers(List.of("00000000-0000-0000-0000-000000000002")).withDocking(DockingPolicy.MEMBERS)
                 .withFoundedAt(20_000L);
         r.put(e);
-        StationRegistry back = decode(StationRegistry.codec().encodeStart(NbtOps.INSTANCE, r).getOrThrow());
+        StationRegistry back = decode(StationRegistry.codec().encodeStart(NbtOps.INSTANCE, r).result().orElseThrow());
         assertEquals(e, back.get(0));
     }
 

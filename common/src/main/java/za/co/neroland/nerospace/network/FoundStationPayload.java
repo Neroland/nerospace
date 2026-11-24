@@ -24,7 +24,11 @@ import za.co.neroland.nerospace.NerospaceCommon;
 public record FoundStationPayload(String name, boolean claimHere, boolean buildStarter) implements CustomPacketPayload {
 
     public static final Type<FoundStationPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "found_station"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "found_station"), FoundStationPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, FoundStationPayload> STREAM_CODEC =
             StreamCodec.of(FoundStationPayload::write, FoundStationPayload::read);

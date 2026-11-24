@@ -48,7 +48,12 @@ import za.co.neroland.nerospace.world.planet.Planets;
 public final class GravityManager {
 
     /** Stable id for the gravity attribute modifier (26.x uses {@link Identifier}, not ResourceLocation). */
+    //? if >=1.21 {
     private static final Identifier MODIFIER_ID = Identifier.fromNamespaceAndPath("nerospace", "dimension_gravity");
+    //?} else {
+    /*private static final java.util.UUID MODIFIER_ID =
+            java.util.UUID.fromString("8d30acc3-4777-4c3c-9fb4-154ce04a5b50");
+    *///?}
 
     /** Flat per-dimension gravity default: the planet's {@code defaultGravity} trait, 1.0 off-planet. */
     private static double dimensionDefault(ResourceKey<Level> dimension) {
@@ -150,6 +155,7 @@ public final class GravityManager {
             if (level.players().isEmpty()) {
                 continue;
             }
+            //? if >=1.20.5 {
             if (level.getGameTime() % CHECK_INTERVAL_TICKS == 0) {
                 for (LivingEntity living : level.getEntities(EntityTypeTest.forClass(LivingEntity.class), e -> true)) {
                     BlockPos pos = living.blockPosition();
@@ -160,6 +166,13 @@ public final class GravityManager {
                     applyToLiving(living, factorAt(level, pos));
                 }
             }
+            //?} else {
+            /*if (Planets.isPlanet(level.dimension())) {
+                for (LivingEntity living : level.getEntities(EntityTypeTest.forClass(LivingEntity.class), e -> true)) {
+                    applyMotionCorrection(level, living);
+                }
+            }
+            *///?}
             if (Planets.isPlanet(level.dimension())) {
                 for (Entity entity : level.getEntities(EntityTypeTest.forClass(Entity.class),
                         e -> !(e instanceof LivingEntity))) {
@@ -174,6 +187,7 @@ public final class GravityManager {
      * No-op when the entity has no {@code GRAVITY} attribute or the modifier is already at the right value,
      * so it never re-syncs needlessly.
      */
+    //? if >=1.20.5 {
     private static void applyToLiving(LivingEntity entity, double factor) {
         if (factor < 0.0) {
             // Gravity Shard: weightless + a slow upward drift capped at levitation I, re-asserted every check
@@ -198,9 +212,18 @@ public final class GravityManager {
         if (existing != null && existing.amount() == amount) {
             return;
         }
+        //? if >=1.21 {
         instance.addOrUpdateTransientModifier(
                 new AttributeModifier(MODIFIER_ID, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        //?} else {
+        /*if (existing != null) {
+            instance.removeModifier(MODIFIER_ID);
+        }
+        instance.addTransientModifier(new AttributeModifier(MODIFIER_ID, "nerospace:dimension_gravity",
+                amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        *///?}
     }
+    //?}
 
     /**
      * Non-living gravity (GRAVITY_DESIGN.md §5c). These entities don't read the {@code GRAVITY} attribute —
@@ -220,7 +243,11 @@ public final class GravityManager {
         if (factor == 1.0) {
             return;
         }
+        //? if >=1.20.5 {
         double gravity = entity.getGravity();
+        //?} else {
+        /*double gravity = legacyGravity(entity);
+        *///?}
         if (gravity == 0.0) {
             return;
         }
@@ -232,4 +259,24 @@ public final class GravityManager {
         }
         entity.setDeltaMovement(dm.x, dm.y + gravity * (1.0 - factor), dm.z);
     }
+
+    //? if <1.20.5 {
+    /*private static double legacyGravity(Entity entity) {
+        if (entity instanceof LivingEntity) {
+            return 0.08;
+        }
+        if (entity instanceof net.minecraft.world.entity.projectile.AbstractArrow) {
+            return 0.05;
+        }
+        if (entity instanceof net.minecraft.world.entity.item.ItemEntity
+                || entity instanceof net.minecraft.world.entity.item.FallingBlockEntity) {
+            return 0.04;
+        }
+        if (entity instanceof net.minecraft.world.entity.projectile.ThrowableProjectile
+                || entity instanceof net.minecraft.world.entity.ExperienceOrb) {
+            return 0.03;
+        }
+        return 0.0;
+    }
+    *///?}
 }

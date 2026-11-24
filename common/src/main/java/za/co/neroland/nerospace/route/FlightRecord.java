@@ -43,11 +43,31 @@ public final class FlightRecord {
                 Codec.INT.optionalFieldOf("fuel", 0).forGetter(Path::fuel),
                 // Lazy: resolving ItemStack's codec initialises the item registries, which only a flight that carries
                 // items needs (and which plain-JVM tests on the 1.21.x lines cannot bootstrap).
-                Codec.lazyInitialized(() -> ItemStack.OPTIONAL_CODEC).listOf()
+                cargoStackCodec().listOf()
                         .optionalFieldOf("items", List.of()).forGetter(Path::items),
                 Codec.LONG.fieldOf("departed_at").forGetter(Path::departedAt),
                 Codec.LONG.fieldOf("arrives_at").forGetter(Path::arrivesAt)
         ).apply(inst, Path::new));
+
+        private static Codec<ItemStack> cargoStackCodec() {
+            //? if >=1.20.5 {
+            return Codec.lazyInitialized(() -> ItemStack.OPTIONAL_CODEC);
+            //?} else {
+            /*return new Codec<>() {
+                @Override
+                public <T> com.mojang.serialization.DataResult<com.mojang.datafixers.util.Pair<ItemStack, T>> decode(
+                        com.mojang.serialization.DynamicOps<T> ops, T input) {
+                    return ItemStack.CODEC.decode(ops, input);
+                }
+
+                @Override
+                public <T> com.mojang.serialization.DataResult<T> encode(ItemStack stack,
+                        com.mojang.serialization.DynamicOps<T> ops, T prefix) {
+                    return ItemStack.CODEC.encode(stack, ops, prefix);
+                }
+            };
+            *///?}
+        }
     }
 
     private record Progress(String state, int holdAttempts, long holdSince, long nextRetryAt, long completedAt,

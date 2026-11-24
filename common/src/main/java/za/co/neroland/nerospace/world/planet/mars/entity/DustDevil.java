@@ -65,7 +65,12 @@ public class DustDevil extends Entity {
     }
 
     @Override
+    //? if >=1.20.5 {
     protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+    //?} else {
+    /*protected void defineSynchedData() {
+        net.minecraft.network.syncher.SynchedEntityData builder = this.entityData;
+    *///?}
         // No synced data: the client draws particles from the tracked position.
     }
 

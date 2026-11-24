@@ -33,7 +33,11 @@ public record PadSyncPayload(List<String> dims, List<String> names, List<Integer
         implements CustomPacketPayload {
 
     public static final Type<PadSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "pad_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "pad_sync"), PadSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PadSyncPayload> STREAM_CODEC =
             StreamCodec.of(PadSyncPayload::write, PadSyncPayload::read);

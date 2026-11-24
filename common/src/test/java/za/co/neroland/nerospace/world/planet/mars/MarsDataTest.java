@@ -45,7 +45,7 @@ class MarsDataTest {
     }
 
     private static JsonElement load(String path) throws IOException {
-        try (InputStream in = MarsDataTest.class.getResourceAsStream(path)) {
+        try (InputStream in = MarsDataTest.class.getResourceAsStream(za.co.neroland.nerospace.TestResourcePaths.datapack(path))) {
             assertNotNull(in, "missing " + path);
             // The 1.21.1 build rewrites short-form ingredients ("id" / "#tag") into {"item": ..} / {"tag": ..}
             // objects; fold them back so the checks read one format on every version.
@@ -77,7 +77,10 @@ class MarsDataTest {
             JsonObject r = load("/data/nerospace/recipe/" + id + ".json").getAsJsonObject();
             assertEquals("minecraft:stonecutting", r.get("type").getAsString());
             assertEquals("nerospace:martian_sandstone", r.get("ingredient").getAsString());
-            assertEquals("nerospace:" + id, r.getAsJsonObject("result").get("id").getAsString());
+            JsonElement result = r.get("result");
+            String resultId = result.isJsonPrimitive() ? result.getAsString()
+                    : result.getAsJsonObject().get("id").getAsString();
+            assertEquals("nerospace:" + id, resultId);
             assertTrue(exists("/assets/nerospace/textures/block/" + id + ".png"), "texture " + id);
         }
     }

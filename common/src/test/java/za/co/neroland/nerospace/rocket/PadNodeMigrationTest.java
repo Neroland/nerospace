@@ -41,7 +41,7 @@ class PadNodeMigrationTest {
     }
 
     static PadRegistry decode(Tag tag) {
-        return PadRegistry.codec().parse(new Dynamic<>(NbtOps.INSTANCE, tag)).getOrThrow();
+        return PadRegistry.codec().parse(new Dynamic<>(NbtOps.INSTANCE, tag)).result().orElseThrow();
     }
 
     @Test
@@ -61,8 +61,8 @@ class PadNodeMigrationTest {
     @Test
     void roundTripIsStable() {
         PadRegistry r = decode(legacyStore());
-        Tag once = PadRegistry.codec().encodeStart(NbtOps.INSTANCE, r).getOrThrow();
-        Tag twice = PadRegistry.codec().encodeStart(NbtOps.INSTANCE, decode(once)).getOrThrow();
+        Tag once = PadRegistry.codec().encodeStart(NbtOps.INSTANCE, r).result().orElseThrow();
+        Tag twice = PadRegistry.codec().encodeStart(NbtOps.INSTANCE, decode(once)).result().orElseThrow();
         assertEquals(once, twice);
     }
 
@@ -77,7 +77,7 @@ class PadNodeMigrationTest {
         assertTrue(!r.fill(0, new BlockPos(99, 70, 99), Direction.NORTH));
         assertEquals(Direction.EAST, r.byId(0).facing().orElseThrow());
         // And the filled fields survive a round trip.
-        Tag tag = PadRegistry.codec().encodeStart(NbtOps.INSTANCE, r).getOrThrow();
+        Tag tag = PadRegistry.codec().encodeStart(NbtOps.INSTANCE, r).result().orElseThrow();
         assertEquals(Direction.EAST, decode(tag).byId(0).facing().orElseThrow());
     }
 

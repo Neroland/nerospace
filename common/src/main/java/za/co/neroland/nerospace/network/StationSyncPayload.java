@@ -34,7 +34,11 @@ import za.co.neroland.nerospace.rocket.StationRegistry;
 public record StationSyncPayload(int[] slots, String[] names, byte[] relations) implements CustomPacketPayload {
 
     public static final Type<StationSyncPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "station_sync"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "station_sync"), StationSyncPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, StationSyncPayload> STREAM_CODEC =
             StreamCodec.of(StationSyncPayload::write, StationSyncPayload::read);

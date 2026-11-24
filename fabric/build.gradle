@@ -81,7 +81,6 @@ dependencies {
             modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
         }
         modImplementation "za.co.neroland.nerolandcore:nerolandcore-fabric-${mc}:${nerolandcoreVersion}"
-        modCompileOnly "za.co.neroland.neroeconomy:neroeconomy-fabric-${mc}:${project.findProperty('neroeconomy_version')}"
     } else {
     // NOTE: no `mappings` — de-obfuscated 26.x needs none (Fabric Loom 1.17+).
     implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
@@ -166,6 +165,7 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
         fabric_loader_version: rootProject.fabric_loader_version,
         minecraft_version    : mcFloor,
         minecraft_version_ceiling: mcCeiling,
+        java_version         : stonecutter.eval(mc, '<1.20.5') ? 17 : 21,
         // Floor the required Core version at what we compile against so the loader refuses to
         // run Nerospace against a Core too old to have the APIs it references (e.g. the
         // sideconfig package added in Core 1.3.0) instead of crashing at registration.
@@ -225,7 +225,18 @@ eclipse.synchronizationTasks generateWikiResources
 // The access widener's namespace differs by era: 26.x is `official` (de-obfuscated), 1.21.x is `named`
 // (Mojang mappings, remapped to intermediary in remapJar). Each 1.21.x line has its own file under
 // src/main/accesswidener/, swapped into the jar under the name fabric.mod.json declares.
-def awFile = obfuscated ? file("${branchDir}/src/main/accesswidener/${mc}.accesswidener")
+def awVersion = mc.startsWith('1.20.') ? '1.20' : mc
+if (mc in ['1.20', '1.20.2', '1.20.3']) {
+    tasks.named('processResources') {
+        filesMatching('nerospace.mixins.json') {
+            filter { line ->
+                line.replace('"mixins": []',
+                        '"mixins": ["LegacyPlayerAttachmentsMixin", "LegacyChunkAttachmentsMixin", "LegacyChunkSerializationMixin"]')
+            }
+        }
+    }
+}
+def awFile = obfuscated ? file("${branchDir}/src/main/accesswidener/${awVersion}.accesswidener")
         : file("${branchDir}/src/main/resources/nerospace.accesswidener")
 if (obfuscated) {
     tasks.named('processResources', ProcessResources) {

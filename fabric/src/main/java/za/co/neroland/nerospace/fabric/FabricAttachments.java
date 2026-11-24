@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.fabric;
 
+//? if >=1.20.4 || =1.20.1 {
 import java.util.List;
 
 import com.mojang.serialization.Codec;
@@ -50,3 +51,4 @@ public final class FabricAttachments {
     public static void init() {
     }
 }
+//?}

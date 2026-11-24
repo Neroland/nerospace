@@ -40,9 +40,18 @@ public class DuskMoth extends PathfinderMob {
                 .add(Attributes.MAX_HEALTH, FaunaStats.MOTH_HEALTH)
                 .add(Attributes.MOVEMENT_SPEED, FaunaStats.MOTH_SPEED)
                 .add(Attributes.FLYING_SPEED, FaunaStats.MOTH_FLYING_SPEED)
-                .add(Attributes.FALL_DAMAGE_MULTIPLIER, 0.0D);
+                //? if >=1.20.5 {
+                .add(Attributes.FALL_DAMAGE_MULTIPLIER, 0.0D)
+                //?}
+                ;
     }
 
+    //? if <1.20.5 {
+    /*@Override
+    public boolean causeFallDamage(float distance, float multiplier, net.minecraft.world.damagesource.DamageSource source) {
+        return false;
+    }
+    *///?}
     @Override
     protected PathNavigation createNavigation(Level level) {
         FlyingPathNavigation navigation = new FlyingPathNavigation(this, level);

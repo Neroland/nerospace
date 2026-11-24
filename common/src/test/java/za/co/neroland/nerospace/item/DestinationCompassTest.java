@@ -34,7 +34,7 @@ class DestinationCompassTest {
     private static final String[] LANGS = { "en_us", "it_it", "zh_cn" };
 
     private static JsonObject json(String path) throws IOException {
-        try (InputStream in = DestinationCompassTest.class.getResourceAsStream(path)) {
+        try (InputStream in = DestinationCompassTest.class.getResourceAsStream(za.co.neroland.nerospace.TestResourcePaths.datapack(path))) {
             assertNotNull(in, "missing " + path);
             return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
         }
@@ -74,10 +74,10 @@ class DestinationCompassTest {
     @DisplayName("the compasses stay creative-only: no recipe and no recipe advancement")
     void creativeOnly() {
         for (String id : COMPASSES) {
-            assertNull(getClass().getResource("/data/nerospace/recipe/" + id + ".json"), id + " recipe");
-            assertNull(getClass().getResource("/data/nerospace/advancement/recipes/tools/" + id + ".json"),
+            assertNull(getClass().getResource(za.co.neroland.nerospace.TestResourcePaths.datapack("/data/nerospace/recipe/" + id + ".json")), id + " recipe");
+            assertNull(getClass().getResource(za.co.neroland.nerospace.TestResourcePaths.datapack("/data/nerospace/advancement/recipes/tools/" + id + ".json")),
                     id + " recipe advancement");
-            assertNull(getClass().getResource("/data/nerospace/advancement/recipes/misc/" + id + ".json"),
+            assertNull(getClass().getResource(za.co.neroland.nerospace.TestResourcePaths.datapack("/data/nerospace/advancement/recipes/misc/" + id + ".json")),
                     id + " recipe advancement");
         }
     }

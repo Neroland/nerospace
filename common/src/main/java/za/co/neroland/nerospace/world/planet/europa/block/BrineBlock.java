@@ -69,13 +69,23 @@ public class BrineBlock extends HalfTransparentBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
-    //?} else {
+    //?} else if >=1.20.5 {
     /*// Before 1.21.2 useItemOn returns an ItemInteractionResult; the 26.x body below runs as a helper.
     @Override
     protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level,
             BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         return za.co.neroland.nerospace.compat.mc.UseCompat.toItem(
                 useItemOnResult(stack, state, level, pos, player, hand, hit));
+    }
+
+    private InteractionResult useItemOnResult(ItemStack stack, BlockState state, Level level, BlockPos pos,
+            Player player, InteractionHand hand, BlockHitResult hit) {
+    *///?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos,
+            Player player, InteractionHand hand, BlockHitResult hit) {
+        InteractionResult result = useItemOnResult(player.getItemInHand(hand), state, level, pos, player, hand, hit);
+        return result == null ? InteractionResult.PASS : result;
     }
 
     private InteractionResult useItemOnResult(ItemStack stack, BlockState state, Level level, BlockPos pos,

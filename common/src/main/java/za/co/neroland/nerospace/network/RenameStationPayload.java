@@ -17,7 +17,11 @@ import za.co.neroland.nerospace.NerospaceCommon;
 public record RenameStationPayload(int slot, String name) implements CustomPacketPayload {
 
     public static final Type<RenameStationPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "rename_station"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "rename_station"), RenameStationPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, RenameStationPayload> STREAM_CODEC =
             StreamCodec.of((buf, p) -> {

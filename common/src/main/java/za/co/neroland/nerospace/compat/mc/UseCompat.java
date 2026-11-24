@@ -17,6 +17,9 @@ public final class UseCompat {
     /*// "Try the empty-hand interaction" (PASS_TO_DEFAULT_BLOCK_INTERACTION) inside the 1.21.1 useItemOn helpers.
     public static final net.minecraft.world.InteractionResult TRY_WITH_EMPTY_HAND = null;
 
+    *///?}
+    //? if >=1.20.5 && <1.21.2 {
+    /*
     // A 26.x-style useItemOn result as the 1.21.1 ItemInteractionResult.
     public static net.minecraft.world.ItemInteractionResult toItem(net.minecraft.world.InteractionResult result) {
         if (result == null) {

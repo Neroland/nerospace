@@ -101,7 +101,7 @@ class ModuleBuildRulesTest {
         assertEquals(1, ModuleBuildRules.nextIndex(one, ModuleKind.SOLAR_WING));
         assertEquals(-1, ModuleBuildRules.nextIndex(List.of(entry(ModuleKind.SOLAR_WING, 0),
                 entry(ModuleKind.SOLAR_WING, 1)), ModuleKind.SOLAR_WING));
-        var tag = ModuleEntry.LIST_CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, one).getOrThrow();
-        assertEquals(one, ModuleEntry.LIST_CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag).getOrThrow());
+        var tag = ModuleEntry.LIST_CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, one).result().orElseThrow();
+        assertEquals(one, ModuleEntry.LIST_CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag).result().orElseThrow());
     }
 }

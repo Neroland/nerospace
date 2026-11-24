@@ -132,8 +132,17 @@ public class AlienVillager extends PathfinderMob implements Merchant {
     }
 
     @Override
+    //? if >=1.20.5 {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    //?} else {
+    /*protected void defineSynchedData() {
+        net.minecraft.network.syncher.SynchedEntityData builder = this.entityData;
+    *///?}
+        //? if >=1.20.5 {
         super.defineSynchedData(builder);
+        //?} else {
+        /*super.defineSynchedData();
+        *///?}
         builder.define(DATA_PLANET, Planet.GREENXERTZ.ordinal());
         builder.define(DATA_BIOME, "");
         builder.define(DATA_COLOR_SEED, 0);

@@ -39,9 +39,9 @@ class RouteRegistryTest {
 
     private static RouteRegistry roundTrip(RouteRegistry registry) {
         JsonElement encoded = RouteRegistry.codec().encodeStart(JsonOps.INSTANCE, registry)
-                .getOrThrow(error -> new AssertionError("encode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("encode failed"));
         return RouteRegistry.codec().parse(JsonOps.INSTANCE, encoded)
-                .getOrThrow(error -> new AssertionError("decode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("decode failed"));
     }
 
     private static RouteRegistry.Endpoint at(ResourceKey<Level> dim, BlockPos pos) {

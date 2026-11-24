@@ -230,14 +230,9 @@ class HazardModelTest {
     // --- data -------------------------------------------------------------------------------------------------------
 
     private static JsonElement load(String path) throws IOException {
-        try (InputStream in = HazardModelTest.class.getResourceAsStream(path)) {
+        try (InputStream in = HazardModelTest.class.getResourceAsStream(za.co.neroland.nerospace.TestResourcePaths.datapack(path))) {
             assertNotNull(in, "missing " + path);
-            // The 1.21.1 build rewrites short-form ingredients ("id" / "#tag") into {"item": ..} / {"tag": ..}
-            // objects; fold them back so the checks read one format on every version.
-            String json = new String(in.readAllBytes(), StandardCharsets.UTF_8)
-                    .replaceAll("\\{\\s*\"item\"\\s*:\\s*(\"[^\"]+\")\\s*}", "$1")
-                    .replaceAll("\\{\\s*\"tag\"\\s*:\\s*\"([^\"]+)\"\\s*}", "\"#$1\"");
-            return JsonParser.parseString(json);
+            return JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8));
         }
     }
 
@@ -260,21 +255,32 @@ class HazardModelTest {
         assertTrue(lining.contains("nerospace:titanium_ingot"), "Luna titanium");
         assertTrue(lining.contains("nerospace:regolith"), "Luna regolith");
         assertTrue(lining.contains("nerospace:raw_hematite"), "Mars hematite");
-        assertTrue(lining.contains("\"id\":\"nerospace:rad_lining\""));
+        boolean nbtItems = Boolean.getBoolean("nerospace.nbtItems");
+        String resultItemKey = nbtItems ? "item" : "id";
+        assertTrue(lining.contains("\"" + resultItemKey + "\":\"nerospace:rad_lining\""));
         for (String variant : List.of("t2", "heat", "cold")) {
             for (String slot : List.of("helmet", "chestplate", "leggings", "boots")) {
                 String id = "nerospace:oxygen_suit_" + variant + "_" + slot;
                 JsonObject r = load("/data/nerospace/recipe/oxygen_suit_" + variant + "_" + slot + "_rad_lining.json")
                         .getAsJsonObject();
                 assertEquals("minecraft:smithing_transform", r.get("type").getAsString());
-                assertEquals("nerospace:rad_lining", r.get("template").getAsString());
-                assertEquals(id, r.get("base").getAsString());
+                assertEquals("nerospace:rad_lining", itemIngredient(r.get("template")));
+                assertEquals(id, itemIngredient(r.get("base")));
                 JsonObject result = r.getAsJsonObject("result");
-                assertEquals(id, result.get("id").getAsString(), "the upgraded piece keeps its id");
-                assertTrue(result.getAsJsonObject("components").has("nerospace:rad_lining"));
+                assertEquals(id, result.get(resultItemKey).getAsString(), "the upgraded piece keeps its id");
+                if (nbtItems) {
+                    assertFalse(result.has("components"));
+                } else {
+                    assertTrue(result.getAsJsonObject("components").has("nerospace:rad_lining"));
+                }
             }
         }
         // The T1 suit is not upgradable (the lining is a T2 upgrade).
-        assertTrue(HazardModelTest.class.getResource("/data/nerospace/recipe/oxygen_suit_helmet_rad_lining.json") == null);
+        assertTrue(HazardModelTest.class.getResource(za.co.neroland.nerospace.TestResourcePaths.datapack("/data/nerospace/recipe/oxygen_suit_helmet_rad_lining.json")) == null);
+    }
+
+    private static String itemIngredient(JsonElement ingredient) {
+        return ingredient.isJsonObject() ? ingredient.getAsJsonObject().get("item").getAsString()
+                : ingredient.getAsString();
     }
 }

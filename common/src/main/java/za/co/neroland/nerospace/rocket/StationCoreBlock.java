@@ -49,9 +49,15 @@ public class StationCoreBlock extends BaseEntityBlock {
         return new StationCoreBlockEntity(pos, state);
     }
 
+    //? if >=1.20.5 {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+            net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+    *///?}
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StationCoreBlockEntity core
                 && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             StationRegistry.StationEntry entry = core.isBound()

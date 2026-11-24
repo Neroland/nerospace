@@ -4,12 +4,17 @@
 plugins {
     id 'net.minecraftforge.gradle'
     id 'net.minecraftforge.jarjar'
+    id 'net.minecraftforge.renamer' apply false
     id 'eclipse'
     id 'maven-publish'
 }
 
 // MC version comes from the Stonecutter node (e.g. :forge:26.1.2), not a global property.
 def mc = stonecutter.current.version
+def legacyForge = stonecutter.eval(mc, '<1.20.5')
+if (legacyForge) {
+    apply plugin: 'net.minecraftforge.renamer'
+}
 // Upper bound of this cell's Minecraft range: the next minor line (26.1.2 -> 26.2, 26.2 -> 26.3); 1.21.x
 // lines are spelled out in gradle.properties (mc_ceiling_<v>). Without it a jar built for one line loads on
 // the next and dies on a changed signature at runtime
@@ -123,6 +128,9 @@ repositories {
 
 dependencies {
     implementation minecraft.dependency("net.minecraftforge:forge:${forgeVersion}")
+    if (legacyForge) {
+        annotationProcessor 'org.spongepowered:mixin:0.8.7:processor'
+    }
     // EventBus 7's compile-time validator; Forge before 1.21.6 ships EventBus 6, which it cannot validate.
     if (stonecutter.eval(mc, '>=1.21.6')) {
         annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.6'
@@ -135,7 +143,9 @@ dependencies {
 
     // NeroEconomy — OPTIONAL. Its public API on the compile classpath only: never bundled, never required.
     // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
-    compileOnly "za.co.neroland.neroeconomy:neroeconomy-forge-${mc}:${project.findProperty('neroeconomy_version')}"
+    if (stonecutter.eval(mc, '>=26.1')) {
+        compileOnly "za.co.neroland.neroeconomy:neroeconomy-forge-${mc}:${project.findProperty('neroeconomy_version')}"
+    }
 
     // Sentry: compile + dev runtime from this one library. Core's plain Maven jar carries no nested copy or
     // JarJar request (see the jar task above), so the dev run sees exactly one Sentry module.
@@ -165,6 +175,25 @@ if (!emiFile && !emiVersion) {
 }
 
 // Expand mods.toml from src/main/templates into generated resources.
+if (legacyForge) {
+    renamer.mappings.from minecraft.dependency.toSrgFile
+    renamer.enableMixinRefmaps {
+        config 'nerospace-common.mixins.json'
+        refMap = 'nerospace.refmap.json'
+    }
+    tasks.named('jar', Jar) {
+        manifest.attributes('MixinConfigs': 'nerospace-common.mixins.json')
+    }
+    def bundled = tasks.named('jarJar', Jar) {
+        archiveClassifier = 'dev-all'
+    }
+    renamer.classes('renameReleaseJar', bundled) {
+        mappings renamer.mixin.generatedMappings
+        archiveClassifier = 'all'
+    }
+    tasks.named('assemble') { dependsOn 'renameReleaseJar' }
+}
+
 def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
     def props = [
         mod_id                    : rootProject.mod_id,

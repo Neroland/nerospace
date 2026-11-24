@@ -29,6 +29,39 @@ ext.legacyRenames = [
     // 1.21.11 renamed ResourceLocation -> Identifier and ResourceKey.location() -> identifier().
     [below: '1.21.11', from: /\bIdentifier\b/, to: 'ResourceLocation'],
     [below: '1.21.11', from: /\.identifier\(\)/, to: '.location()'],
+    [below: '1.21', from: /\b((?:net\.minecraft\.resources\.)?ResourceLocation)\s*\.(?:fromNamespaceAndPath|parse|withDefaultNamespace)\(/, to: 'new $1('],
+    [below: '1.20.5', from: /\bSpawnPlacementType\b/, to: 'SpawnPlacements.Type'],
+    [below: '1.20.5', from: /import net\.minecraft\.world\.entity\.SpawnPlacements\.Type;/, to: ''],
+    [below: '1.20.5', from: /import net\.minecraft\.world\.entity\.SpawnPlacementTypes;/, to: ''],
+    [below: '1.20.5', from: /\bSpawnPlacementTypes\./, to: 'SpawnPlacements.Type.'],
+    [below: '1.20.2', from: /\bAdvancementHolder\b/, to: 'Advancement'],
+    [below: '1.20.2', from: /\b(Advancement holder = (?:manager|advancements))\.get\(/, to: '$1.getAdvancement('],
+    [below: '1.20.5', from: /\.saturationModifier\(/, to: '.saturationMod('],
+    [below: '1.20.5', from: /import net\.minecraft\.network\.RegistryFriendlyByteBuf;/, to: 'import net.minecraft.network.FriendlyByteBuf;'],
+    [below: '1.20.5', from: /\bRegistryFriendlyByteBuf\b/, to: 'FriendlyByteBuf'],
+    [below: '1.20.5', from: /import net\.minecraft\.network\.codec\.StreamCodec;/, to: 'import za.co.neroland.nerolandcore.network.legacy.LegacyStreamCodec;'],
+    [below: '1.20.5', from: /\bStreamCodec\b/, to: 'LegacyStreamCodec'],
+    [below: '1.20.5', from: /import net\.minecraft\.network\.protocol\.common\.custom\.CustomPacketPayload;/, to: 'import za.co.neroland.nerolandcore.network.legacy.LegacyPayload;'],
+    [below: '1.20.5', from: /(?<![.\w])CustomPacketPayload\b/, to: 'LegacyPayload'],
+    [below: '1.20.5', from: /!(\w+)\.isComponentsPatchEmpty\(\)/, to: '$1.hasTag()'],
+    [below: '1.20.5', from: /FluidStack\.isSameFluidSameComponents\((\w+), (\w+)\)/, to: '$1.isFluidEqual($2)'],
+    [below: '1.20.5', from: /\bResourceLocation\.STREAM_CODEC\.encode\(buf, ([^;]+)\);/, to: 'buf.writeResourceLocation($1);'],
+    [below: '1.20.5', from: /\bResourceLocation\.STREAM_CODEC\.decode\(buf\)/, to: 'buf.readResourceLocation()'],
+    [below: '1.20.5', from: /\bTransparentBlock\b/, to: 'HalfTransparentBlock'],
+    [below: '1.20.5', from: /\bMath\.clamp\(/, to: 'net.minecraft.util.Mth.clamp('],
+    [below: '1.20.5', from: /\bMath\.ceilDiv\(/, to: 'net.minecraft.util.Mth.positiveCeilDiv('],
+    [below: '1.20.5', from: /\bItemStack\.OPTIONAL_CODEC\b/, to: 'ItemStack.CODEC'],
+    [below: '1.20.5', from: /\bItemStack\.isSameItemSameComponents\(/, to: 'ItemStack.isSameItemSameTags('],
+    [below: '1.20.5', from: /\b(\w+)\.(getOrDefault|set)\(((?:za\.co\.neroland\.nerospace\.registry\.)?ModDataComponents\.[A-Z_]+)\.get\(\),/, to: '$3.$2($1,'],
+    [below: '1.20.5', from: /\b(\w+)\.(has|remove)\(((?:za\.co\.neroland\.nerospace\.registry\.)?ModDataComponents\.[A-Z_]+)\.get\(\)\)/, to: '$3.$2($1)'],
+    [below: '1.20.5', from: /import net\.minecraft\.core\.component\.DataComponents;/, to: ''],
+    [below: '1.20.5', from: /\b(\w+)\.get\((?:net\.minecraft\.core\.component\.)?DataComponents\.CUSTOM_NAME\)/,
+            to: '($1.hasCustomHoverName() ? $1.getHoverName() : null)'],
+    [below: '1.20.5', from: /\b(\w+)\.set\(DataComponents\.CUSTOM_NAME, /, to: '$1.setHoverName('],
+    [below: '1.20.5', from: /\bitem\.components\(\)\.has\(net\.minecraft\.core\.component\.DataComponents\.FOOD\)/, to: 'item.isEdible()'],
+    [below: '1.20.5', from: /\bthis\.registryAccess\(\)/, to: 'this.level().registryAccess()'],
+    [below: '1.20.5', from: /\bprotected ((?:[\w.<>]+) (?:getRenderShape|getShape|getCollisionShape|canSurvive|randomTick|tick|entityInside|onPlace|onRemove|updateShape|neighborChanged|useShapeForLightOcclusion|spawnAfterBreak|getDestroyProgress|isRandomlyTicking|attack|renderWidget|getDrops|getFluidState|onProjectileHit|getAnalogOutputSignal|hasAnalogOutputSignal|canBeReplaced|rotate)\()/,
+            to: 'public $1'],
     // 26.1 renamed GuiGraphics -> GuiGraphicsExtractor and its drawString(..) -> text(..). The text()
     // rename is keyed on the receiver names this codebase uses for the graphics object (g / graphics).
     [below: '26.1', from: /\bGuiGraphicsExtractor\b/, to: 'GuiGraphics'],
@@ -176,6 +209,37 @@ ext.legacyRenames = [
     [below: '1.21.5', from: /TooltipDisplay display,(\s*)Consumer<Component> tooltip, TooltipFlag flag\) \{/,
             to: 'java.util.List<Component> tooltipLines,$1TooltipFlag flag) { Consumer<Component> tooltip = tooltipLines::add;'],
     [below: '1.21.5', from: /super\.appendHoverText\(stack, context, display, tooltip, flag\)/, to: 'super.appendHoverText(stack, context, tooltipLines, flag)'],
+    [below: '1.20.5', from: /Item\.TooltipContext context/, to: 'net.minecraft.world.level.Level context'],
+    [below: '1.20.5', from: /\.eyeHeight\([\d.]+F\)/, to: ''],
+    [below: '1.20.5', from: /\.alwaysEdible\(/, to: '.alwaysEat('],
+    [below: '1.20.5', from: /\bheld\.consume\(1, player\);/, to: 'if (!player.getAbilities().instabuild) { held.shrink(1); }'],
+    [below: '1.20.5', from: /stack\.hurtAndBreak\(1, player, net\.minecraft\.world\.entity\.LivingEntity\.getSlotForHand\(hand\)\)/,
+            to: 'stack.hurtAndBreak(1, player, damaged -> damaged.broadcastBreakEvent(hand))'],
+    [below: '1.20.5', from: /\bEnchantments\.FORTUNE\b/, to: 'Enchantments.BLOCK_FORTUNE'],
+    [below: '1.20.5', from: /\bstack\.limitSize\(getMaxStackSize\(\)\)/, to: 'stack.setCount(Math.min(stack.getCount(), getMaxStackSize()))'],
+    [below: '1.20.3', from: /\bBlocks\.SHORT_GRASS\b/, to: 'Blocks.GRASS'],
+    [below: '1.20.5', from: /\bSoundType\.COPPER_GRATE\b/, to: 'SoundType.METAL'],
+    [below: '1.20.3', from: /\.copy\(\)\.withColor\(BAD\)/, to: '.copy().withStyle(style -> style.withColor(BAD))'],
+    [below: '1.20.3', from: /getCloneItemStack\(LevelReader level, BlockPos pos, BlockState state, boolean includeData\)/,
+            to: 'getCloneItemStack(net.minecraft.world.level.BlockGetter level, BlockPos pos, BlockState state)'],
+    [below: '1.20.2', from: /(isValidBonemealTarget\(LevelReader level, BlockPos pos, BlockState state)\)/, to: '$1, boolean isClient)'],
+    [below: '1.20.3', from: /BlockState (playerWillDestroy\()/, to: 'void $1'],
+    [below: '1.20.3', from: /return (super\.playerWillDestroy\()/, to: '$1'],
+    [below: '1.20.2', from: /, double scrollX, double scrollY\)/, to: ', double scrollY)'],
+    [below: '1.20.2', from: /, scrollX, scrollY\)/, to: ', scrollY)'],
+    [below: '1.20.2', from: /(lerpTo\(double x, double y, double z, float yRot, float xRot, int steps)\)/,
+            to: '$1, boolean teleport)'],
+    [below: '1.21', from: /\b\w+\.registryAccess\(\)\.lookupOrThrow\(Registries\.ENCHANTMENT\)\.getOrThrow\((Enchantments\.\w+)\)/, to: '$1'],
+    [below: '1.21', from: /params\.getLevel\(\)\s*\.registryAccess\(\)\.lookupOrThrow\(Registries\.ENCHANTMENT\)\.getOrThrow\((Enchantments\.\w+)\)/, to: '$1'],
+    [below: '1.21', from: /enchantments\.getOrThrow\((Enchantments\.\w+)\)/, to: '$1'],
+    [below: '1.21', from: /\.addVertex\(pose,/, to: '.vertex(pose.pose(),'],
+    [below: '1.21', from: /(\.vertex\(pose\.pose\(\),[^;]+)\.setColor\(/, to: '$1.color('],
+    [below: '1.21', from: /\.setUv\(/, to: '.uv('],
+    [below: '1.21', from: /\.setOverlay\(/, to: '.overlayCoords('],
+    [below: '1.21', from: /\.setLight\(/, to: '.uv2('],
+    [below: '1.21', from: /\.setNormal\(pose,([^;]+)\);/, to: '.normal(pose,$1).endVertex();'],
+    [below: '1.20.5', from: /\.normal\(pose,/, to: '.normal(pose.normal(),'],
+    [below: '1.21', from: /(\.vertex\(pose\.pose\(\),[^;]+\.color\(r, g, b, a\));/, to: '$1.endVertex();'],
     [below: '1.21.5', from: /\.updateForTopItem\((\s*[\w.]+,\s*[\w.()]+,\s*ItemDisplayContext\.\w+,)/, to: '.updateForTopItem($1 false,'],
     [below: '1.21.5', from: /(fallOn\(Level \w+, BlockState \w+, BlockPos \w+, Entity \w+, )double (\w+)\)/, to: '$1float $2)'],
     // 1.21.5 split block removal into BlockEntity.preRemoveSideEffects + Block.affectNeighborsAfterRemoval; before it
@@ -217,6 +281,8 @@ ext.legacyRenames = [
     // 1.21.2 folded ItemInteractionResult into InteractionResult: before it the blocks' useItemOn bodies run as helpers
     // (//? blocks) whose TRY_WITH_EMPTY_HAND / super.useItemOn(..) go through compat.mc.UseCompat.
     [below: '1.21.2', from: /\bInteractionResult\.TRY_WITH_EMPTY_HAND\b/, to: 'za.co.neroland.nerospace.compat.mc.UseCompat.TRY_WITH_EMPTY_HAND'],
+    [below: '1.20.5', from: /\breturn super\.useItemOn\((\w+), (\w+), (\w+), (\w+), (\w+), (\w+), (\w+)\);/,
+            to: 'return za.co.neroland.nerospace.compat.mc.UseCompat.TRY_WITH_EMPTY_HAND;'],
     [below: '1.21.2', from: /\breturn super\.useItemOn\((\w+), (\w+), (\w+), (\w+), (\w+), (\w+), (\w+)\);/,
             to: 'return za.co.neroland.nerospace.compat.mc.UseCompat.fromItem(super.useItemOn($1, $2, $3, $4, $5, $6, $7));'],
     // 1.21.2 reordered Block.updateShape's arguments and added the tick scheduler + random (the overrides are //? blocks).
@@ -281,8 +347,11 @@ subprojects {
 
     // Minecraft 1.21.x runs on Java 21, so its cells must emit Java 21 bytecode (and may not use
     // Java 22+ language features). 26.x cells stay on Java 25. A node's project name IS its MC version.
-    def javaRelease = project.name.startsWith('1.') ? 21 : 25
+    def javaRelease = (project.name == '1.20' || project.name ==~ /1\.20\.[1-4]/) ? 17 : (project.name.startsWith('1.') ? 21 : 25)
     ext.javaRelease = javaRelease
+    if (project.name == '1.20' || project.name.startsWith('1.20.')) {
+        sourceSets.main.java.exclude '**/compat/jei/**', '**/compat/emi/**'
+    }
 
     java {
         toolchain.languageVersion = JavaLanguageVersion.of(javaRelease)
@@ -456,6 +525,106 @@ subprojects {
         }
     }
 
+    if (isNode && (project.name == '1.20' || project.name.startsWith('1.20.'))) {
+        def packFormats = [
+                '1.20': [15, 15], '1.20.1': [15, 15], '1.20.2': [18, 18],
+                '1.20.3': [22, 26], '1.20.4': [22, 26], '1.20.5': [32, 41], '1.20.6': [32, 41]
+        ][project.name]
+        def common = new File(rootProject.ext.commonResources)
+        def legacyItemModels = tasks.register('legacyItemModels') {
+            def assets = new File(common, 'assets/nerospace')
+            def out = layout.buildDirectory.dir('generated/legacy-item-models')
+            inputs.dir(assets)
+            outputs.dir(out)
+            doLast {
+                def destination = out.get().asFile
+                project.delete(destination)
+                def models = new File(destination, 'assets/nerospace/models/item')
+                models.mkdirs()
+                new File(assets, 'items').eachFileMatch(~/.*\.json/) { definition ->
+                    if (!new File(assets, "models/item/${definition.name}").isFile()) {
+                        def model = new groovy.json.JsonSlurper().parse(definition).model
+                        if (model.type != 'minecraft:model' || !model.model) {
+                            throw new GradleException("Unsupported 1.20 item model: ${definition.name}")
+                        }
+                        new File(models, definition.name).text = groovy.json.JsonOutput.toJson([parent: model.model])
+                    }
+                }
+            }
+        }
+        sourceSets.main.resources.srcDir(files(layout.buildDirectory.dir('generated/legacy-item-models'))
+                .builtBy(legacyItemModels))
+        if (project.javaRelease == 17) {
+            tasks.named('processResources', ProcessResources) {
+                doLast {
+                    def convert
+                    convert = { value ->
+                        if (value instanceof Map) {
+                            if (value.condition == 'minecraft:match_tool' && value.predicate instanceof Map) {
+                                def tools = value.predicate
+                                if (tools.items instanceof String) {
+                                    def ids = tools.items
+                                    if (ids.startsWith('#')) {
+                                        tools.remove('items')
+                                        tools.tag = ids.substring(1)
+                                    } else {
+                                        tools.items = [ids]
+                                    }
+                                }
+                                def enchantments = tools.remove('predicates')?.get('minecraft:enchantments')
+                                if (enchantments != null) {
+                                    tools.enchantments = enchantments.collect { predicate ->
+                                        if (predicate.enchantments instanceof String) {
+                                            predicate.enchantment = predicate.remove('enchantments')
+                                        }
+                                        predicate
+                                    }
+                                }
+                            }
+                            value.values().each { convert(it) }
+                        } else if (value instanceof List) {
+                            value.each { convert(it) }
+                        }
+                    }
+                    project.fileTree(destinationDir).matching {
+                        include 'data/*/loot_tables/**/*.json'
+                    }.each { file ->
+                        def loot = new groovy.json.JsonSlurper().parse(file)
+                        convert(loot)
+                        file.setText(groovy.json.JsonOutput.toJson(loot), 'UTF-8')
+                    }
+                }
+            }
+        }
+        tasks.named('processResources') {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            filesMatching('pack.mcmeta') {
+                filter { line ->
+                    line.replace('"pack_format": 84,', "\"pack_format\": ${packFormats[0]},")
+                            .replace('"min_format": 84,', '')
+                            .replace('"max_format": 121', "\"supported_formats\": [${packFormats[0]}, ${packFormats[1]}]")
+                }
+            }
+            if (project.javaRelease == 17) {
+                filesMatching('**/*.mixins.json') {
+                    filter { line -> line.replace('JAVA_21', 'JAVA_17') }
+                }
+                filesMatching('nerospace-common.mixins.json') {
+                    filter { line -> line.replace('"MappedRegistryStorageAliasMixin"', '"MappedRegistryStorageAliasMixin",\n    "LegacyRadLiningMixin"') }
+                }
+            }
+            if (project.parent.name == 'forge' && project.javaRelease == 17) {
+                filesMatching('nerospace-common.mixins.json') {
+                    filter { line -> line.replace('"minVersion": "0.8",', '"minVersion": "0.8",\n  "refmap": "nerospace.refmap.json",') }
+                }
+            }
+            eachFile { file ->
+                file.path = file.path.replaceFirst(/^(data\/[^\/]+\/)(advancement|loot_table|recipe)\//, '$1$2s/')
+                        .replaceFirst(/^(data\/[^\/]+\/tags\/)(block|entity_type|fluid|item)\//, '$1$2s/')
+            }
+            includeEmptyDirs = false
+        }
+    }
     // Version-specific resource overlays: common/src/main/resources-<mc> is merged OVER the shared
     // common/src/main/resources for every node whose Minecraft version is >= <mc> (later overlays win).
     // Needed where a datapack file's format differs between versions (e.g. 26.3's worldgen/feature).
@@ -546,10 +715,12 @@ subprojects {
             def base = new File(rootProject.ext.commonResources).canonicalFile
             def outDir = node.file('build/generated/legacy-recipes')
             def legacyIngredients = sc.eval(sc.current.version, '<1.21.2')
+            def legacyResult = sc.eval(sc.current.version, '<1.20.5')
             def legacyRecipes = node.tasks.register('legacyRecipes') {
                 group = 'stonecutter'
                 description = 'Rewrites short-form recipe ingredients to the pre-1.21.2 object form.'
                 inputs.dir(base)
+                inputs.property('legacyResult', legacyResult)
                 outputs.dir(outDir)
                 doLast {
                     node.delete(outDir)
@@ -588,6 +759,17 @@ subprojects {
                                 json[k] = conv(json[k])
                             }
                         }
+                        if (legacyResult && json.result instanceof Map && json.result.id instanceof String) {
+                            if (json.type in ['minecraft:smelting', 'minecraft:blasting', 'minecraft:stonecutting']) {
+                                if (json.type == 'minecraft:stonecutting') {
+                                    json.count = json.result.count ?: 1
+                                }
+                                json.result = json.result.id
+                            } else {
+                                json.result.item = json.result.remove('id')
+                                json.result.remove('components')
+                            }
+                        }
                         def dst = new File(outDir, rel)
                         dst.parentFile.mkdirs()
                         dst.setText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)), 'UTF-8')
@@ -612,10 +794,12 @@ subprojects {
             }
             def base = new File(rootProject.ext.commonResources).canonicalFile
             def outDir = node.file('build/generated/legacy-advancements')
+            def legacyIcon = sc.eval(sc.current.version, '<1.20.5')
             def legacyAdvancements = node.tasks.register('legacyAdvancements') {
                 group = 'stonecutter'
                 description = 'Rewrites advancement background asset ids to the pre-1.21.5 full texture path.'
                 inputs.dir(base)
+                inputs.property('legacyIcon', legacyIcon)
                 outputs.dir(outDir)
                 doLast {
                     node.delete(outDir)
@@ -626,13 +810,35 @@ subprojects {
                             return
                         }
                         def json = slurper.parse(f)
+                        if (legacyIcon) {
+                            if (json.display?.icon?.id instanceof String) {
+                                json.display.icon.item = json.display.icon.remove('id')
+                            }
+                            json.criteria?.values()?.each { criterion ->
+                                if (criterion.trigger == 'minecraft:inventory_changed') {
+                                    criterion.conditions?.items?.each { predicate ->
+                                        if (predicate.items instanceof String) {
+                                            def ids = predicate.items
+                                            if (ids.startsWith('#')) {
+                                                predicate.remove('items')
+                                                predicate.tag = ids.substring(1)
+                                            } else {
+                                                predicate.items = [ids]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         def bg = json.display instanceof Map ? json.display.background : null
-                        if (!(bg instanceof String) || bg.endsWith('.png')) {
+                        if (!legacyIcon && (!(bg instanceof String) || bg.endsWith('.png'))) {
                             return
                         }
-                        def ns = bg.contains(':') ? bg.substring(0, bg.indexOf(':')) : 'minecraft'
-                        def path = bg.contains(':') ? bg.substring(bg.indexOf(':') + 1) : bg
-                        json.display.background = "${ns}:textures/${path}.png".toString()
+                        if (bg instanceof String && !bg.endsWith('.png')) {
+                            def ns = bg.contains(':') ? bg.substring(0, bg.indexOf(':')) : 'minecraft'
+                            def path = bg.contains(':') ? bg.substring(bg.indexOf(':') + 1) : bg
+                            json.display.background = "${ns}:textures/${path}.png".toString()
+                        }
                         def dst = new File(outDir, rel)
                         dst.parentFile.mkdirs()
                         dst.setText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)), 'UTF-8')
@@ -673,7 +879,7 @@ subprojects {
                     def files = [:] // "data/<ns>/<kind>/<path>.json" -> parsed json, for the kinds rewritten below
                     base.eachFileRecurse(groovy.io.FileType.FILES) { f ->
                         def rel = base.toPath().relativize(f.toPath()).toString().replace('\\', '/')
-                        if (rel ==~ /data\/[^\/]+\/(dimension_type|dimension|worldgen\/(biome|noise_settings|configured_feature))\/.+\.json/) {
+                        if (rel ==~ /data\/[^\/]+\/(dimension_type|dimension|worldgen\/(biome|noise_settings|configured_feature|placed_feature))\/.+\.json/) {
                             files[rel] = slurper.parse(f)
                         }
                     }
@@ -805,6 +1011,27 @@ subprojects {
                                             'can_replace_with_air_or_fluid', 'can_replace_with_barrier']) }]
                                 }
                                 break
+                        }
+                    }
+                    if (below('1.20.5')) {
+                        def nestIntProviders
+                        nestIntProviders = { value ->
+                            if (value instanceof Map) {
+                                if (value.type == 'minecraft:uniform' && value.min_inclusive instanceof Number
+                                        && value.max_inclusive instanceof Number) {
+                                    value.value = [min_inclusive: value.remove('min_inclusive'),
+                                                   max_inclusive: value.remove('max_inclusive')]
+                                    return true
+                                }
+                                return value.values().collect { nestIntProviders(it) }.any()
+                            }
+                            return value instanceof List && value.collect { nestIntProviders(it) }.any()
+                        }
+                        files.each { rel, source ->
+                            def result = out[rel] ?: source
+                            if (nestIntProviders(result)) {
+                                out[rel] = result
+                            }
                         }
                     }
                     out.each { rel, j ->

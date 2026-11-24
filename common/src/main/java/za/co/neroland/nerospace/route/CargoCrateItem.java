@@ -11,7 +11,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+//? if >=1.20.5 {
 import net.minecraft.world.item.component.ItemContainerContents;
+//?}
 import net.minecraft.world.level.Level;
 
 /**
@@ -38,7 +40,13 @@ public class CargoCrateItem extends Item {
             return ItemStack.EMPTY;
         }
         ItemStack crate = new ItemStack(crateItem);
+        //? if >=1.20.5 {
         crate.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(copies));
+        //?} else {
+        /*var contents = new net.minecraft.nbt.ListTag();
+        copies.forEach(stack -> contents.add(stack.save(new net.minecraft.nbt.CompoundTag())));
+        crate.getOrCreateTag().put("nerospace:cargo", contents);
+        *///?}
         return crate;
     }
 
@@ -60,11 +68,11 @@ public class CargoCrateItem extends Item {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
-        ItemContainerContents contents = crate.get(DataComponents.CONTAINER);
+        List<ItemStack> contents = unpack(crate);
         if (contents == null) {
             return InteractionResult.PASS;
         }
-        for (ItemStack stack : contents.nonEmptyItemCopyStream().toList()) {
+        for (ItemStack stack : contents) {
             if (!player.getInventory().add(stack) && !stack.isEmpty()) {
                 //? if >=26.3 {
                 /*player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
@@ -77,5 +85,26 @@ public class CargoCrateItem extends Item {
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BUNDLE_DROP_CONTENTS,
                 SoundSource.PLAYERS, 0.8F, 1.0F);
         return InteractionResult.SUCCESS;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    private static List<ItemStack> unpack(ItemStack crate) {
+        //? if >=1.20.5 {
+        ItemContainerContents contents = crate.get(DataComponents.CONTAINER);
+        return contents == null ? null : contents.nonEmptyItemCopyStream().toList();
+        //?} else {
+        /*if (crate.getTag() == null || !crate.getTag().contains("nerospace:cargo", net.minecraft.nbt.Tag.TAG_LIST)) {
+            return null;
+        }
+        var tags = crate.getTag().getList("nerospace:cargo", net.minecraft.nbt.Tag.TAG_COMPOUND);
+        List<ItemStack> contents = new ArrayList<>(tags.size());
+        for (int slot = 0; slot < tags.size(); slot++) {
+            ItemStack item = ItemStack.of(tags.getCompound(slot));
+            if (!item.isEmpty()) {
+                contents.add(item);
+            }
+        }
+        return contents;
+        *///?}
     }
 }
