@@ -25,7 +25,12 @@ public abstract class EyesLayer<S extends LivingEntityRenderState, M extends Ent
     public void render(PoseStack poseStack, MultiBufferSource buffers, int lightCoords, S state, float yRot,
             float xRot) {
         M model = this.parent.stateModel();
+        //? if >=1.21 {
         model.renderToBuffer(poseStack, buffers.getBuffer(renderType()), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1);
+        //?} else {
+        /^model.renderToBuffer(poseStack, buffers.getBuffer(renderType()), FULL_BRIGHT,
+                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        ^///?}
     }
 }
 *///?}

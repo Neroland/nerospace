@@ -34,7 +34,7 @@ class HushRulesTest {
     void vibrationTags() throws IOException {
         for (String tag : HushRules.VIBRATION_TAGS) {
             String path = "/data/minecraft/tags/block/" + tag.substring("minecraft:".length()) + ".json";
-            try (InputStream in = HushRulesTest.class.getResourceAsStream(path)) {
+            try (InputStream in = HushRulesTest.class.getResourceAsStream(za.co.neroland.nerospace.TestResourcePaths.datapack(path))) {
                 assertNotNull(in, "missing " + path);
                 boolean found = false;
                 for (JsonElement e : JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8))

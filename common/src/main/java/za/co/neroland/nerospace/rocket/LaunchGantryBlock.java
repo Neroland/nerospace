@@ -60,8 +60,14 @@ public class LaunchGantryBlock extends BaseEntityBlock {
         LaunchPadFeedback.onPartPlaced(level, pos, placer);
     }
 
+    //? if >=1.20.5 {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, net.minecraft.world.phys.BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+            net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+    *///?}
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }

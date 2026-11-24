@@ -16,7 +16,11 @@ public record PlanetWeatherPayload(Identifier dimension, byte event, byte state,
         implements CustomPacketPayload {
 
     public static final Type<PlanetWeatherPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "planet_weather"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "planet_weather"), PlanetWeatherPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PlanetWeatherPayload> STREAM_CODEC =
             StreamCodec.of(PlanetWeatherPayload::write, PlanetWeatherPayload::read);

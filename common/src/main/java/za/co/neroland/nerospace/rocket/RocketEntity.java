@@ -346,8 +346,28 @@ public class RocketEntity extends Entity implements MenuProvider {
      * takes {@link RocketTier#seatOffsets()} seat {@code i} (the pilot seat 0), turned with the hull, so a crew of
      * four sits side by side inside the hull instead of stacked on the axis.
      */
+    //? if >=1.20.5 {
     @Override
     protected Vec3 getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float scale) {
+        return passengerSeat(entity);
+    }
+    //?} else if >=1.20.2 {
+    /*@Override
+    protected org.joml.Vector3f getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float scale) {
+        return passengerSeat(entity).toVector3f();
+    }
+    *///?} else {
+    /*@Override
+    protected void positionRider(Entity passenger, Entity.MoveFunction moveFunction) {
+        if (hasPassenger(passenger)) {
+            Vec3 seat = passengerSeat(passenger);
+            moveFunction.accept(passenger, getX() + seat.x, getY() + seat.y + passenger.getMyRidingOffset(),
+                    getZ() + seat.z);
+        }
+    }
+    *///?}
+
+    private Vec3 passengerSeat(Entity entity) {
         double s = visualScale();
         double eye = RIDER_EYE_PX[getTier().ordinal()] * s / 16.0D;
         double y = Math.max(0.4D, eye - RIDER_EYE_ABOVE_SEAT);
@@ -433,7 +453,12 @@ public class RocketEntity extends Entity implements MenuProvider {
     // --- Synced data --------------------------------------------------------
 
     @Override
+    //? if >=1.20.5 {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    //?} else {
+    /*protected void defineSynchedData() {
+        net.minecraft.network.syncher.SynchedEntityData builder = this.entityData;
+    *///?}
         builder.define(DATA_FUEL, 0);
         builder.define(DATA_TIER, RocketTier.TIER_1.ordinal());
         builder.define(DATA_LAUNCHING, false);

@@ -479,11 +479,16 @@ public class VillageCoreBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         ValueOutput output = ValueOutput.of(tag, registries);
+    *///?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag) {
+        super.saveAdditional(tag);
+        ValueOutput output = ValueOutput.of(tag, level == null ? net.minecraft.core.RegistryAccess.EMPTY : level.registryAccess());
     *///?}
         // Owner UUID only. The 1.6.0 "OwnerName" key is never written, so it drops out at the next chunk save.
         this.ownership.write(output::putString);
@@ -503,11 +508,16 @@ public class VillageCoreBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         ValueInput input = ValueInput.of(tag, registries);
+    *///?} else {
+    /*@Override
+    public void load(net.minecraft.nbt.CompoundTag tag) {
+        super.load(tag);
+        ValueInput input = ValueInput.of(tag, level == null ? net.minecraft.core.RegistryAccess.EMPTY : level.registryAccess());
     *///?}
         // "OwnerName" (1.6.0) is ignored. An owner erased earlier this session is dropped on load (POPIA/GDPR).
         this.ownership.read(key -> input.getStringOr(key, ""),

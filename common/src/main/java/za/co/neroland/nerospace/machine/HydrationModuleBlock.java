@@ -75,8 +75,14 @@ public class HydrationModuleBlock extends BaseEntityBlock {
                 (lvl, pos, st, be) -> be.tick(lvl, pos, st));
     }
 
+    //? if >=1.20.5 {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+            net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+    *///?}
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof HydrationModuleBlockEntity be) {
             return MenuOpener.openOrConsume(serverPlayer, be);

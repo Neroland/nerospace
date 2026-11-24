@@ -36,7 +36,7 @@ class GlaciraDataTest {
     }
 
     private static JsonObject load(String path) throws IOException {
-        try (InputStream in = GlaciraDataTest.class.getResourceAsStream(path)) {
+        try (InputStream in = GlaciraDataTest.class.getResourceAsStream(za.co.neroland.nerospace.TestResourcePaths.datapack(path))) {
             assertNotNull(in, "missing " + path);
             JsonElement e = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             return e.getAsJsonObject();

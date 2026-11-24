@@ -37,6 +37,10 @@ public final class FixedXBiomeSource extends BiomeSource {
                     .optionalFieldOf("edge_noise", FixedXBands.DEFAULT_EDGE_NOISE).forGetter(s -> s.edgeNoise)
     ).apply(i, FixedXBiomeSource::new));
 
+    //? if <1.20.5 {
+    /*public static final Codec<FixedXBiomeSource> LEGACY_CODEC = CODEC.codec();
+    *///?}
+
     private final Holder<Biome> west;
     private final Holder<Biome> band;
     private final Holder<Biome> east;
@@ -58,9 +62,16 @@ public final class FixedXBiomeSource extends BiomeSource {
         this.edgeNoise = edgeNoise;
     }
 
+    @Override
+    //? if >=1.20.5 {
     protected MapCodec<? extends BiomeSource> codec() {
         return CODEC;
     }
+    //?} else {
+    /*protected Codec<? extends BiomeSource> codec() {
+        return LEGACY_CODEC;
+    }
+    *///?}
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {

@@ -153,7 +153,12 @@ public class RoverEntity extends Entity {
     //?}
 
     @Override
+    //? if >=1.20.5 {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    //?} else {
+    /*protected void defineSynchedData() {
+        net.minecraft.network.syncher.SynchedEntityData builder = this.entityData;
+    *///?}
         builder.define(DATA_ENERGY, 0);
     }
 
@@ -417,8 +422,19 @@ public class RoverEntity extends Entity {
     }
 
     /** Seat 0 (the driver) on the left cushion, seat 1 on the right, turned with the rover (model spec). */
+    //? if >=1.20.5 {
     @Override
     protected Vec3 getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float scale) {
+        return passengerSeat(entity);
+    }
+    //?} else if >=1.20.2 {
+    /*@Override
+    protected org.joml.Vector3f getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float scale) {
+        return passengerSeat(entity).toVector3f();
+    }
+    *///?}
+
+    private Vec3 passengerSeat(Entity entity) {
         int index = getPassengers().indexOf(entity);
         Vec3 seat = index == 1 ? PASSENGER_SEAT : DRIVER_SEAT;
         return seat.yRot(-getYRot() * Mth.DEG_TO_RAD);
@@ -427,7 +443,15 @@ public class RoverEntity extends Entity {
     /** The local rider turns with the rover, as in a boat. */
     @Override
     protected void positionRider(Entity passenger, Entity.MoveFunction moveFunction) {
+        //? if >=1.20.2 {
         super.positionRider(passenger, moveFunction);
+        //?} else {
+        /*if (hasPassenger(passenger)) {
+            Vec3 seat = passengerSeat(passenger);
+            moveFunction.accept(passenger, getX() + seat.x, getY() + seat.y + passenger.getMyRidingOffset(),
+                    getZ() + seat.z);
+        }
+        *///?}
         //? if >=1.21.5 {
         boolean local = passenger.isLocalInstanceAuthoritative();
         //?} else {

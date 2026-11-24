@@ -99,10 +99,12 @@ public abstract class EntityRenderer<T extends Entity, S extends EntityRenderSta
         return this.shadowRadius;
     }
 
+    //? if >=1.20.5 {
     @Override
     protected float getShadowRadius(T entity) {
         return this.state != null ? getShadowRadius(this.state) : this.shadowRadius;
     }
+    //?}
 
     protected AABB getBoundingBoxForCulling(T entity) {
         return entity.getBoundingBoxForCulling();

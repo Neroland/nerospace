@@ -63,13 +63,23 @@ public class RocketLaunchPadBlock extends Block {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
-    //?} else {
+    //?} else if >=1.20.5 {
     /*// Before 1.21.2 useItemOn returns an ItemInteractionResult; the 26.x body below runs as a helper.
     @Override
     protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level,
             BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         return za.co.neroland.nerospace.compat.mc.UseCompat.toItem(
                 useItemOnResult(stack, state, level, pos, player, hand, hit));
+    }
+
+    private InteractionResult useItemOnResult(ItemStack stack, BlockState state, Level level, BlockPos pos,
+            Player player, InteractionHand hand, BlockHitResult hit) {
+    *///?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos,
+            Player player, InteractionHand hand, BlockHitResult hit) {
+        InteractionResult result = useItemOnResult(player.getItemInHand(hand), state, level, pos, player, hand, hit);
+        return result == null ? useWithoutItem(state, level, pos, player, hit) : result;
     }
 
     private InteractionResult useItemOnResult(ItemStack stack, BlockState state, Level level, BlockPos pos,
@@ -106,7 +116,9 @@ public class RocketLaunchPadBlock extends Block {
         return super.useItemOn(stack, state, level, pos, player, hand, hit);
     }
 
+    //? if >=1.20.5 {
     @Override
+    //?}
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         // Only act on a truly empty hand: this path also runs while HOLDING items (the 26.1 interaction
         // order tries it before Item#useOn), and consuming the click here would swallow rocket-item deploy.

@@ -22,8 +22,8 @@ class VillageCoreLedgerTest {
     }
 
     private static VillageCoreLedger roundTrip(VillageCoreLedger l) {
-        JsonElement json = VillageCoreLedger.storeCodec().encodeStart(JsonOps.INSTANCE, l).getOrThrow();
-        return VillageCoreLedger.storeCodec().parse(JsonOps.INSTANCE, json).getOrThrow();
+        JsonElement json = VillageCoreLedger.storeCodec().encodeStart(JsonOps.INSTANCE, l).result().orElseThrow();
+        return VillageCoreLedger.storeCodec().parse(JsonOps.INSTANCE, json).result().orElseThrow();
     }
 
     @Test
@@ -32,7 +32,7 @@ class VillageCoreLedgerTest {
         VillageCoreLedger l = new VillageCoreLedger();
         l.record(at(1), owner);
         l.forgetOwner(UUID.randomUUID(), x -> false, TODAY, true);
-        String json = VillageCoreLedger.storeCodec().encodeStart(JsonOps.INSTANCE, l).getOrThrow().toString();
+        String json = VillageCoreLedger.storeCodec().encodeStart(JsonOps.INSTANCE, l).result().orElseThrow().toString();
         assertFalse(json.contains(owner.toString()));
         assertFalse(json.contains(owner.toString().replace("-", "")));
     }
@@ -137,10 +137,10 @@ class VillageCoreLedgerTest {
         l.record(at(1), owner);
         l.record(at(2), UUID.randomUUID());
         l.forgetOwner(owner, x -> false, TODAY, true);
-        com.google.gson.JsonObject json = VillageCoreLedger.storeCodec().encodeStart(JsonOps.INSTANCE, l).getOrThrow()
+        com.google.gson.JsonObject json = VillageCoreLedger.storeCodec().encodeStart(JsonOps.INSTANCE, l).result().orElseThrow()
                 .getAsJsonObject();
         json.addProperty("salt", 0L);
-        VillageCoreLedger back = VillageCoreLedger.storeCodec().parse(JsonOps.INSTANCE, json).getOrThrow();
+        VillageCoreLedger back = VillageCoreLedger.storeCodec().parse(JsonOps.INSTANCE, json).result().orElseThrow();
         assertEquals(0, back.legacyCount(), "legacy keys made with the lost salt are dropped");
         assertEquals(0, back.indexedCount(), "index rows made with the lost salt are dropped");
         assertTrue(back.isPending(at(1)), "position-only pending clears survive");

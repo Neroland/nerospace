@@ -21,7 +21,7 @@ class EuropaEclipseTest {
 
     private static SkyProfile profile() throws IOException {
         JsonObject json = EuropaFiles.json(EuropaFiles.assets("sky/europa.json"));
-        return SkyProfile.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+        return SkyProfile.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
     }
 
     private static SkyProfile.Body jupiter(SkyProfile p) {

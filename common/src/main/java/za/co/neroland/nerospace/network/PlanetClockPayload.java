@@ -1,7 +1,6 @@
 package za.co.neroland.nerospace.network;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -21,7 +20,11 @@ public record PlanetClockPayload(Identifier dimension, long dayLength, long epoc
         implements CustomPacketPayload {
 
     public static final Type<PlanetClockPayload> TYPE =
+            //? if >=1.20.5 {
             new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "planet_clock"));
+            //?} else {
+            /*new Type<>(Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "planet_clock"), PlanetClockPayload.class);
+            *///?}
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PlanetClockPayload> STREAM_CODEC =
             StreamCodec.of(PlanetClockPayload::write, PlanetClockPayload::read);
@@ -44,8 +47,8 @@ public record PlanetClockPayload(Identifier dimension, long dayLength, long epoc
         buf.writeBoolean(p.mirrorVanilla);
         buf.writeBoolean(p.frozen);
         buf.writeLong(p.frozenAt);
-        ByteBufCodecs.VAR_LONG.encode(buf, p.dayNumber);
-        ByteBufCodecs.VAR_INT.encode(buf, Math.max(0, p.bandWidth));
+        buf.writeVarLong(p.dayNumber);
+        buf.writeVarInt(Math.max(0, p.bandWidth));
     }
 
     private static PlanetClockPayload read(RegistryFriendlyByteBuf buf) {
@@ -57,8 +60,8 @@ public record PlanetClockPayload(Identifier dimension, long dayLength, long epoc
         boolean mirror = buf.readBoolean();
         boolean frozen = buf.readBoolean();
         long frozenAt = buf.readLong();
-        long day = ByteBufCodecs.VAR_LONG.decode(buf);
-        int band = ByteBufCodecs.VAR_INT.decode(buf);
+        long day = buf.readVarLong();
+        int band = buf.readVarInt();
         return new PlanetClockPayload(dim, dayLength, epoch, offset, pinned, mirror, frozen, frozenAt, day, band);
     }
 

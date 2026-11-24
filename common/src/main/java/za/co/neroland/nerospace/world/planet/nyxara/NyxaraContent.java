@@ -66,11 +66,19 @@ import za.co.neroland.nerospace.world.planet.nyxara.worldgen.FixedXBiomeSource;
 public final class NyxaraContent {
 
     // --- Biome source codec (7.3) -------------------------------------------------------------------------
+    //? if >=1.20.5 {
     public static final RegistrationProvider<MapCodec<? extends BiomeSource>> BIOME_SOURCES =
             RegistrationProvider.get(Registries.BIOME_SOURCE, NerospaceCommon.MOD_ID);
 
     public static final RegistryEntry<MapCodec<FixedXBiomeSource>> FIXED_X = BIOME_SOURCES.register("fixed_x",
             key -> FixedXBiomeSource.CODEC);
+    //?} else {
+    /*public static final RegistrationProvider<com.mojang.serialization.Codec<? extends BiomeSource>> BIOME_SOURCES =
+            RegistrationProvider.get(Registries.BIOME_SOURCE, NerospaceCommon.MOD_ID);
+
+    public static final RegistryEntry<com.mojang.serialization.Codec<FixedXBiomeSource>> FIXED_X =
+            BIOME_SOURCES.register("fixed_x", key -> FixedXBiomeSource.LEGACY_CODEC);
+    *///?}
 
     /** A piston breaks the block instead of moving it (renamed DESTROY to POPPED in 26.3). */
     //? if >=26.3 {

@@ -127,11 +127,16 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         ValueOutput output = ValueOutput.of(tag, registries);
+    *///?} else {
+    /*@Override
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag tag) {
+        super.saveAdditional(tag);
+        ValueOutput output = ValueOutput.of(tag, level == null ? net.minecraft.core.RegistryAccess.EMPTY : level.registryAccess());
     *///?}
         output.store("Book", ItemStack.OPTIONAL_CODEC, this.book);
         output.store("Hologram", ItemStack.OPTIONAL_CODEC, this.hologram);
@@ -141,11 +146,16 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-    //?} else {
+    //?} else if >=1.20.5 {
     /*@Override
     protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         ValueInput input = ValueInput.of(tag, registries);
+    *///?} else {
+    /*@Override
+    public void load(net.minecraft.nbt.CompoundTag tag) {
+        super.load(tag);
+        ValueInput input = ValueInput.of(tag, level == null ? net.minecraft.core.RegistryAccess.EMPTY : level.registryAccess());
     *///?}
         this.book = input.read("Book", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         this.hologram = input.read("Hologram", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
@@ -156,10 +166,17 @@ public class StarGuideBlockEntity extends BlockEntity implements MenuProvider {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
+    //? if >=1.20.5 {
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         return saveCustomOnly(registries);
     }
+    //?} else {
+    /*@Override
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
+    }
+    *///?}
 
     // --- MenuProvider --------------------------------------------------------------------------
 

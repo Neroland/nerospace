@@ -57,9 +57,15 @@ public abstract class ReturnSiteBlock extends BaseEntityBlock {
         return new ReturnSiteBlockEntity(pos, state);
     }
 
+    //? if >=1.20.5 {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+            net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+    *///?}
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ReturnSiteBlockEntity site
                 && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             if (this.landingPod && state.getValue(INFLATED)) {

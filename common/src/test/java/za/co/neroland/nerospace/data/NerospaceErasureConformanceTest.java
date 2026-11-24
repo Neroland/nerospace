@@ -73,7 +73,7 @@ class NerospaceErasureConformanceTest {
     void everyPlayerKeyedStorePassesConformanceOnTheMigratedShape() {
         UUID owner = UUID.fromString(OWNER);
         StationRegistry stations = StationRegistry.codec()
-                .parse(new Dynamic<>(NbtOps.INSTANCE, legacyStations())).getOrThrow();
+                .parse(new Dynamic<>(NbtOps.INSTANCE, legacyStations())).result().orElseThrow();
         int foreign = stations.found("Erasure Seed", OTHER).slot();
         assertTrue(stations.addMember(foreign, OWNER));
         // 2.1: a station claimed where the player stood (D6) is the same entry shape with a chosen centre.
@@ -166,9 +166,9 @@ class NerospaceErasureConformanceTest {
         ledger.keepErasureKey(owner, TODAY);
 
         // "Restart": save and decode the ledger; the in-memory latch is not involved.
-        net.minecraft.nbt.Tag saved = VillageCoreLedger.storeCodec().encodeStart(NbtOps.INSTANCE, ledger).getOrThrow();
+        net.minecraft.nbt.Tag saved = VillageCoreLedger.storeCodec().encodeStart(NbtOps.INSTANCE, ledger).result().orElseThrow();
         VillageCoreLedger reloaded = VillageCoreLedger.storeCodec()
-                .parse(new Dynamic<>(NbtOps.INSTANCE, saved)).getOrThrow();
+                .parse(new Dynamic<>(NbtOps.INSTANCE, saved)).result().orElseThrow();
         assertFalse(saved.toString().contains(OWNER), "the ledger never holds the raw UUID");
         assertTrue(reloaded.isErased(owner, TODAY + 1));
         assertFalse(reloaded.isErased(stranger, TODAY + 1));

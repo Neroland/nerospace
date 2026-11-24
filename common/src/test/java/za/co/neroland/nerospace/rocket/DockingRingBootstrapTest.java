@@ -32,8 +32,8 @@ class DockingRingBootstrapTest {
         assertTrue(start >= 0 && end > start);
         assertTrue(s.substring(start, end).contains(".randomTicks()"));
         String block = Files.readString(source("DockingRingBlock.java"));
-        assertTrue(block.contains("protected void randomTick("));
-        assertTrue(block.contains("protected void onPlace("));
+        assertTrue(block.contains("void randomTick("));
+        assertTrue(block.contains("void onPlace("));
     }
 
     @Test

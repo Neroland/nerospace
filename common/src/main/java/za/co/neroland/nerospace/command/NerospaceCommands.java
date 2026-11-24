@@ -164,11 +164,15 @@ public final class NerospaceCommands {
         double factor = GravityManager.factorAt(level, pos);
         double mult = NerospaceConfig.gravityMultiplier();
         Identifier biomeId = biome.unwrapKey().map(k -> k.identifier()).orElse(null);
+        //? if >=1.20.5 {
         AttributeInstance gravityAttr = player.getAttribute(Attributes.GRAVITY);
         Component attrText = gravityAttr != null
                 ? Component.translatable("command.nerospace.gravity.attribute",
                         String.format(java.util.Locale.ROOT, "%.4f", gravityAttr.getValue()))
                 : Component.translatable("command.nerospace.gravity.attribute_absent");
+        //?} else {
+        /*Component attrText = Component.translatable("command.nerospace.gravity.attribute_absent");
+        *///?}
 
         Component message = Component.translatable("command.nerospace.gravity.report",
                 String.format(java.util.Locale.ROOT, "%.3f", factor), Component.translatable(src),

@@ -60,7 +60,7 @@ class SkyRotationTest {
     }
 
     private static SkyProfile decode(JsonElement json) {
-        return SkyProfile.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+        return SkyProfile.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
     }
 
     /** The profile JSON with every body's {@code rotation} object removed (the pre-2.4.0 shape). */
@@ -114,7 +114,7 @@ class SkyRotationTest {
                         b.glowTexture(), b.limbGlow(), b.horizonGlow(), b.nightShade(), b.earthshine()), sky);
             }
             // Re-encoding writes no rotation key, and the scene draws no frame texture at any time.
-            JsonObject encoded = SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, stripped).getOrThrow()
+            JsonObject encoded = SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, stripped).result().orElseThrow()
                     .getAsJsonObject();
             assertFalse(encoded.toString().contains("\"rotation\""), sky);
             for (double t : new double[] {0.0, 1234.5, 23_999.0, 100_000.0}) {
@@ -156,7 +156,7 @@ class SkyRotationTest {
         assertEquals(24_000, r.periodTicks());
         assertFalse(SkyScene.rotates(minimal, false), "one frame is the still");
         // Round trip keeps the rotation.
-        JsonElement json = SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, europa).getOrThrow();
+        JsonElement json = SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, europa).result().orElseThrow();
         assertEquals(europa, decode(json));
     }
 

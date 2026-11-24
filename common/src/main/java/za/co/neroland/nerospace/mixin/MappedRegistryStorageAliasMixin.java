@@ -87,6 +87,7 @@ public abstract class MappedRegistryStorageAliasMixin<T> implements Registry<T> 
         }
     }
 
+    //? if >=1.20.5 {
     @Inject(method = "getHolder(Lnet/minecraft/resources/Identifier;)Ljava/util/Optional;",
             at = @At("HEAD"), cancellable = true, require = 0)
     private void nerospace$aliasHolderById(Identifier id, CallbackInfoReturnable<Optional<Holder.Reference<T>>> cir) {
@@ -95,6 +96,7 @@ public abstract class MappedRegistryStorageAliasMixin<T> implements Registry<T> 
             cir.setReturnValue(this.getHolder(ResourceKey.create(this.key(), coreId)));
         }
     }
+    //?}
 
     @Inject(method = "get(Lnet/minecraft/resources/Identifier;)Ljava/lang/Object;",
             at = @At("HEAD"), cancellable = true, require = 0)

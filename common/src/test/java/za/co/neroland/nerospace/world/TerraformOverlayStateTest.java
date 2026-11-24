@@ -32,10 +32,10 @@ class TerraformOverlayStateTest {
     private static TerraformOverlayState roundTrip(TerraformOverlayState state) {
         JsonElement encoded = TerraformOverlayState.codec()
                 .encodeStart(JsonOps.INSTANCE, state)
-                .getOrThrow(error -> new AssertionError("encode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("encode failed"));
         return TerraformOverlayState.codec()
                 .parse(JsonOps.INSTANCE, encoded)
-                .getOrThrow(error -> new AssertionError("decode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("decode failed"));
     }
 
     @Test
@@ -144,7 +144,7 @@ class TerraformOverlayStateTest {
 
         TerraformOverlayState reloaded = TerraformOverlayState.codec()
                 .parse(JsonOps.INSTANCE, handEdited)
-                .getOrThrow(error -> new AssertionError("decode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("decode failed"));
 
         // The good row still resolves, and reading the store no longer throws on the bad one. The
         // hand-edited rows encode center 0, i.e. the origin — not CENTER.

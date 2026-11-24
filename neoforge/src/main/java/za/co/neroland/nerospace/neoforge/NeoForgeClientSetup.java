@@ -16,19 +16,27 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
+//? if >=1.20.5 {
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+//?}
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 //? if >=26.1 {
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 //?}
+//? if >=1.20.5 {
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+//?}
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+//? if >=1.20.5 {
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+//?}
 //? if >=26.1 {
 import net.neoforged.neoforge.client.fluid.FluidTintSources;
 //?}
+//? if >=1.20.5 {
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+//?}
 import net.neoforged.neoforge.common.NeoForge;
 
 import za.co.neroland.nerospace.NerospaceCommon;
@@ -65,7 +73,7 @@ public final class NeoForgeClientSetup {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterScreens);
         //? if >=26.1 {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterFluidModels);
-        //?} else {
+        //?} else if >=1.21 {
         /*modEventBus.addListener(NeoForgeClientSetup::onRegisterClientExtensions);
         *///?}
         modEventBus.addListener(NeoForgeClientSetup::onRegisterEntityRenderers);
@@ -79,7 +87,14 @@ public final class NeoForgeClientSetup {
         NeoForge.EVENT_BUS.addListener(NeoForgeClientSetup::onRenderGuiLayer);
         // Meteor Tracker readout + oxygen-field visuals + the screenshot harness — game-bus client tick
         // (counterpart to Fabric's END_CLIENT_TICK).
+        //? if >=1.20.5 {
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> {
+        //?} else {
+        /*NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.TickEvent.ClientTickEvent event) -> {
+            if (event.phase != net.neoforged.neoforge.event.TickEvent.Phase.END) {
+                return;
+            }
+        *///?}
             MeteorTrackerHud.tick();
             ClientOxygenVisuals.tick();
             GalleryCaptureHarness.tick();
@@ -103,6 +118,7 @@ public final class NeoForgeClientSetup {
     }
 
     /** Register the bespoke oxygen/hazard HUD gauge on top of the vanilla HUD (shared draw in {@code common}). */
+    //? if >=1.20.5 {
     private static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(
                 Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, "oxygen_hud"),
@@ -124,6 +140,21 @@ public final class NeoForgeClientSetup {
             event.setCanceled(true);
         }
     }
+
+    //?} else {
+    /*private static void onRegisterGuiLayers(net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("oxygen_hud", (gui, graphics, tick, width, height) -> OxygenHud.render(graphics));
+    }
+
+    private static void onRenderGuiLayer(net.neoforged.neoforge.client.event.RenderGuiOverlayEvent.Pre event) {
+        if (event.getOverlay().id().equals(net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay.AIR_LEVEL.id())) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null && OxygenFieldEvents.isFieldDimension(mc.player.level().dimension())) {
+                event.setCanceled(true);
+            }
+        }
+    }
+    *///?}
 
     private static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         ClientEntityRenderers.registerAll(new ClientEntityRenderers.Sink() {
@@ -176,7 +207,7 @@ public final class NeoForgeClientSetup {
                 new FluidModel.Unbaked(still, flow, still, FluidTintSources.constant(0xFFFFFFFF)),
                 ModFluids.ROCKET_FUEL, ModFluids.ROCKET_FUEL_FLOWING);
     }
-    //?} else {
+    //?} else if >=1.21 {
     /*// Before 26.1: the same still/flow sprites through the fluid type's client extension.
     private static void onRegisterClientExtensions(
             net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent event) {

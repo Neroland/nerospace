@@ -42,7 +42,12 @@ import za.co.neroland.nerospace.world.gravity.GravityManager;
 @Mod(NerospaceCommon.MOD_ID)
 public final class NerospaceForge {
 
+    //? if >=1.20.5 {
     public NerospaceForge(FMLJavaModLoadingContext context) {
+    //?} else {
+    /*public NerospaceForge() {
+        FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
+    *///?}
         NerospaceCommon.LOGGER.info("[Nerospace] Forge bootstrap");
         BusGroup modBusGroup = context.getModBusGroup();
 
@@ -58,14 +63,28 @@ public final class NerospaceForge {
             ForgeClientSetup.init(modBusGroup);
         }
 
+        //? if >=1.20.4 {
         TickEvent.PlayerTickEvent.Post.BUS.addListener(event -> {
+        //?} else {
+        /*net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((TickEvent.PlayerTickEvent event) -> {
+            if (event.phase != TickEvent.Phase.END) {
+                return;
+            }
+        *///?}
             if (event.player() instanceof ServerPlayer serverPlayer) {
                 OxygenManager.tick(serverPlayer);
                 StarGuideGrants.tick(serverPlayer);
                 za.co.neroland.nerospace.network.StationListSync.tick(serverPlayer);
             }
         });
+        //? if >=1.20.4 {
         TickEvent.ServerTickEvent.Post.BUS.addListener(event -> {
+        //?} else {
+        /*net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
+            if (event.phase != TickEvent.Phase.END) {
+                return;
+            }
+        *///?}
             MeteorEvents.tick(event.server());
             OxygenFieldEvents.tick(event.server());
             TerraformDrift.tick(event.server());
@@ -90,8 +109,16 @@ public final class NerospaceForge {
                 *///?}
             }
         });
+        //? if >=1.20.4 {
         TickEvent.ServerTickEvent.Pre.BUS.addListener(event ->
                 za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.server()));
+        //?} else {
+        /*net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
+            if (event.phase == TickEvent.Phase.START) {
+                za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.getServer());
+            }
+        });
+        *///?}
         LivingFallEvent.BUS.addListener(event -> {
             if (AlienGearAbilities.negatesFall(event.getEntity())) {
                 event.setDamageMultiplier(0.0F);

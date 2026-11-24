@@ -7,7 +7,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+//? if >=1.20.5 {
 import net.minecraft.world.item.trading.ItemCost;
+//?}
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 
@@ -197,16 +199,22 @@ public final class AlienTrades {
             if (a.isEmpty() || r.isEmpty()) {
                 continue;
             }
-            Optional<ItemCost> b = Optional.empty();
+            Optional<Item> b = Optional.empty();
             if (row.costB() != null) {
-                Optional<Item> bi = item(row.costB());
-                if (bi.isEmpty()) {
+                b = item(row.costB());
+                if (b.isEmpty()) {
                     continue;
                 }
-                b = Optional.of(new ItemCost(bi.get(), row.countB()));
             }
-            offers.add(new MerchantOffer(new ItemCost(a.get(), row.countA()), b,
+            //? if >=1.20.5 {
+            offers.add(new MerchantOffer(new ItemCost(a.get(), row.countA()),
+                    b.map(item -> new ItemCost(item, row.countB())),
                     new ItemStack(r.get(), row.resultCount()), row.maxUses(), row.xp(), PRICE_MULT));
+            //?} else {
+            /*offers.add(new MerchantOffer(new ItemStack(a.get(), row.countA()),
+                    b.map(item -> new ItemStack(item, row.countB())).orElse(ItemStack.EMPTY),
+                    new ItemStack(r.get(), row.resultCount()), row.maxUses(), row.xp(), PRICE_MULT));
+            *///?}
         }
         return offers;
     }

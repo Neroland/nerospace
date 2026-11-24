@@ -13,6 +13,8 @@ import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
@@ -33,12 +35,24 @@ public abstract class TerraformLivestock extends Animal {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new PanicGoal(this, 1.8D));
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0D));
+        //? if >=1.21 {
         this.goalSelector.addGoal(3, new TemptGoal(this, 1.2D, this::isFood, false));
+        //?} else {
+        /*this.goalSelector.addGoal(3, new TemptGoal(this, 1.2D,
+                net.minecraft.world.item.crafting.Ingredient.of(breedingFood()), false));
+        *///?}
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.2D));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
     }
+
+    @Override
+    public boolean isFood(ItemStack stack) {
+        return stack.is(breedingFood());
+    }
+
+    protected abstract Item breedingFood();
 
     /** Shared attribute base; species pass their health/speed. */
     public static AttributeSupplier.Builder createLivestockAttributes(double health, double speed) {

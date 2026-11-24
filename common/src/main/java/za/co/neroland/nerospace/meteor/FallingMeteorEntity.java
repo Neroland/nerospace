@@ -94,7 +94,12 @@ public class FallingMeteorEntity extends Entity {
     }
 
     @Override
+    //? if >=1.20.5 {
     protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+    //?} else {
+    /*protected void defineSynchedData() {
+        net.minecraft.network.syncher.SynchedEntityData builder = this.entityData;
+    *///?}
         // No synced data: the client renders from the tracked position + spins on tickCount.
     }
 
@@ -223,7 +228,11 @@ public class FallingMeteorEntity extends Entity {
         level.sendParticles(ParticleTypes.LARGE_SMOKE, center.getX() + 0.5D, center.getY() + 1.0D,
                 center.getZ() + 0.5D, 40, radius, 1.0D, radius, 0.02D);
         level.playSound(null, center.getX() + 0.5D, center.getY() + 0.5D, center.getZ() + 0.5D,
+                //? if >=1.20.5 <1.21 {
+                /*SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 6.0F, 0.7F);
+                *///?} else {
                 SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 6.0F, 0.7F);
+                //?}
 
         // Flip the matching scheduled site to LANDED (or add a transient one for a creative-called meteor).
         MeteorEventManager.get(level).onImpact(center);

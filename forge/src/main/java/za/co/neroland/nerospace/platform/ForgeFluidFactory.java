@@ -16,8 +16,13 @@ import za.co.neroland.nerospace.registry.ModItems;
 /** Forge {@link FluidFactory}: rocket fuel backed by ForgeFlowingFluid + FluidType. */
 public final class ForgeFluidFactory implements FluidFactory {
 
+    //? if >=1.20.2 {
     private static final DeferredRegister<FluidType> FLUID_TYPES =
             DeferredRegister.create(ForgeRegistries.FLUID_TYPES, NerospaceCommon.MOD_ID);
+    //?} else {
+    /*private static final DeferredRegister<FluidType> FLUID_TYPES =
+            DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, NerospaceCommon.MOD_ID);
+    *///?}
 
     public static final RegistryObject<FluidType> ROCKET_FUEL_TYPE = FLUID_TYPES.register(
             "rocket_fuel", () -> new FluidType(FluidType.Properties.create()

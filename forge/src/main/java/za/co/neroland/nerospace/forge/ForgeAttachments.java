@@ -169,12 +169,20 @@ public final class ForgeAttachments {
         }
 
         @Override
+        //? if >=1.20.5 {
         public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        //?} else {
+        /*public CompoundTag serializeNBT() {
+        *///?}
             return data.save();
         }
 
         @Override
+        //? if >=1.20.5 {
         public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        //?} else {
+        /*public void deserializeNBT(CompoundTag nbt) {
+        *///?}
             data.load(nbt);
         }
 
@@ -193,12 +201,20 @@ public final class ForgeAttachments {
         }
 
         @Override
+        //? if >=1.20.5 {
         public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        //?} else {
+        /*public CompoundTag serializeNBT() {
+        *///?}
             return data.save();
         }
 
         @Override
+        //? if >=1.20.5 {
         public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        //?} else {
+        /*public void deserializeNBT(CompoundTag nbt) {
+        *///?}
             data.load(nbt);
         }
 

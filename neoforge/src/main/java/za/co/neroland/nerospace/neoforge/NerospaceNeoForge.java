@@ -7,13 +7,21 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+//? if >=1.21 {
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+//?} else {
+/*import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
+*///?}
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+//? if >=1.20.5 {
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+//?} else {
+/*import net.neoforged.neoforge.event.TickEvent;
+*///?}
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -63,15 +71,33 @@ public final class NerospaceNeoForge {
         }
 
         // Oxygen survival: tick each player on the game bus (airless-planet drain / suffocation).
+        //? if >=1.20.5 {
         NeoForge.EVENT_BUS.addListener((PlayerTickEvent.Post event) -> {
+        //?} else {
+        /*NeoForge.EVENT_BUS.addListener((TickEvent.PlayerTickEvent event) -> {
+            if (event.phase != TickEvent.Phase.END) {
+                return;
+            }
+        *///?}
+            //? if >=1.20.5 {
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            //?} else {
+            /*if (event.player instanceof ServerPlayer serverPlayer) {
+            *///?}
                 OxygenManager.tick(serverPlayer);
                 StarGuideGrants.tick(serverPlayer);
                 za.co.neroland.nerospace.network.StationListSync.tick(serverPlayer);
             }
         });
         // Natural meteor showers + oxygen-field diffusion + terraform drift: tick the per-level drivers once per server tick.
+        //? if >=1.20.5 {
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
+        //?} else {
+        /*NeoForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
+            if (event.phase != TickEvent.Phase.END) {
+                return;
+            }
+        *///?}
             MeteorEvents.tick(event.getServer());
             OxygenFieldEvents.tick(event.getServer());
             TerraformDrift.tick(event.getServer());
@@ -84,6 +110,7 @@ public final class NerospaceNeoForge {
         });
         // Planet sleeping (see docs/MULTILOADER.md): the bed gate runs after vanilla's own checks (so a refused bed
         // still sets spawn); the end-of-night skip runs at the start of the server tick, before any level ticks.
+        //? if >=1.20.5 {
         NeoForge.EVENT_BUS.addListener(
                 (net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent event) -> {
                     net.minecraft.world.entity.player.Player.BedSleepingProblem vanilla = event.getProblem();
@@ -99,6 +126,22 @@ public final class NerospaceNeoForge {
                 });
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Pre event) ->
                 za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.getServer()));
+        //?} else {
+        /*NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player
+                    && event.getOptionalPos().isPresent() && event.getResultStatus() == null) {
+                var refusal = za.co.neroland.nerospace.world.planet.PlanetSleep.refusal(player, event.getPos());
+                if (refusal != null) {
+                    event.setResult(refusal);
+                }
+            }
+        });
+        NeoForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
+            if (event.phase == TickEvent.Phase.START) {
+                za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.getServer());
+            }
+        });
+        *///?}
         // Artificer gear: Grav Striders cushion the wearer — negate fall damage while carried.
         NeoForge.EVENT_BUS.addListener((LivingFallEvent event) -> {
             if (AlienGearAbilities.negatesFall(event.getEntity())) {
@@ -131,13 +174,21 @@ public final class NerospaceNeoForge {
         ModEntityAttributes.forEach((type, builder) -> event.put(type, builder.build()));
     }
 
+    //? if >=1.21 {
     private void onRegisterSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+    //?} else {
+    /*private void onRegisterSpawnPlacements(SpawnPlacementRegisterEvent event) {
+    *///?}
         ModSpawnPlacements.registerAll(new ModSpawnPlacements.Sink() {
             @Override
             public <T extends Mob> void register(EntityType<T> type, SpawnPlacementType placementType,
                     Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate) {
                 event.register(type, placementType, heightmap, predicate,
+                        //? if >=1.21 {
                         RegisterSpawnPlacementsEvent.Operation.REPLACE);
+                        //?} else {
+                        /*SpawnPlacementRegisterEvent.Operation.REPLACE);
+                        *///?}
             }
         });
     }

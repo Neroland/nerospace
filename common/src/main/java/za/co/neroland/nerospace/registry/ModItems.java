@@ -265,10 +265,17 @@ public final class ModItems {
             return 2.5F;
         }
 
+        //? if >=1.20.5 {
         @Override
         public TagKey<Block> getIncorrectBlocksForDrops() {
             return BlockTags.INCORRECT_FOR_IRON_TOOL;
         }
+        //?} else {
+        /^@Override
+        public int getLevel() {
+            return net.minecraft.world.item.Tiers.IRON.getLevel();
+        }
+        ^///?}
 
         @Override
         public int getEnchantmentValue() {
@@ -281,8 +288,10 @@ public final class ModItems {
         }
     };
 
+    //? if >=1.20.5 {
     public static final RegistrationProvider<net.minecraft.world.item.ArmorMaterial> ARMOR_MATERIALS =
             RegistrationProvider.get(Registries.ARMOR_MATERIAL, NerospaceCommon.MOD_ID);
+    //?}
 
     private static final Map<net.minecraft.world.item.ArmorItem.Type, Integer> T1_DEFENSE = Map.of(
             net.minecraft.world.item.ArmorItem.Type.HELMET, 3, net.minecraft.world.item.ArmorItem.Type.CHESTPLATE, 7,
@@ -291,9 +300,61 @@ public final class ModItems {
             net.minecraft.world.item.ArmorItem.Type.HELMET, 4, net.minecraft.world.item.ArmorItem.Type.CHESTPLATE, 8,
             net.minecraft.world.item.ArmorItem.Type.LEGGINGS, 6, net.minecraft.world.item.ArmorItem.Type.BOOTS, 4);
 
+    //? if >=1.20.5 {
     // An armour material entry plus the durability multiplier its pieces use.
     public record LegacyArmorMaterial(RegistryEntry<net.minecraft.world.item.ArmorMaterial> entry, int durability) {
     }
+    //?} else {
+    /^public record LegacyArmorMaterial(String name, int multiplier,
+            Map<net.minecraft.world.item.ArmorItem.Type, Integer> defense, int enchantability,
+            net.minecraft.sounds.SoundEvent sound, float toughness, String repairTag)
+            implements net.minecraft.world.item.ArmorMaterial {
+        @Override
+        public int getDurabilityForType(net.minecraft.world.item.ArmorItem.Type type) {
+            return switch (type) {
+                case BOOTS -> 13 * multiplier;
+                case LEGGINGS -> 15 * multiplier;
+                case CHESTPLATE -> 16 * multiplier;
+                case HELMET -> 11 * multiplier;
+            };
+        }
+
+        @Override
+        public int getDefenseForType(net.minecraft.world.item.ArmorItem.Type type) {
+            return defense.getOrDefault(type, 0);
+        }
+
+        @Override
+        public int getEnchantmentValue() {
+            return enchantability;
+        }
+
+        @Override
+        public net.minecraft.sounds.SoundEvent getEquipSound() {
+            return sound;
+        }
+
+        @Override
+        public net.minecraft.world.item.crafting.Ingredient getRepairIngredient() {
+            return net.minecraft.world.item.crafting.Ingredient.of(cTag(repairTag));
+        }
+
+        @Override
+        public String getName() {
+            return NerospaceCommon.MOD_ID + ":" + name;
+        }
+
+        @Override
+        public float getToughness() {
+            return toughness;
+        }
+
+        @Override
+        public float getKnockbackResistance() {
+            return 0.0F;
+        }
+    }
+    ^///?}
 
     public static final LegacyArmorMaterial OXYGEN_SUIT_MATERIAL = armorMaterial("oxygen_suit", 28, T1_DEFENSE, 12,
             SoundEvents.ARMOR_EQUIP_IRON, 1.5F, "ingots/nerosteel");
@@ -304,6 +365,7 @@ public final class ModItems {
     public static final LegacyArmorMaterial OXYGEN_SUIT_COLD_MATERIAL = armorMaterial("oxygen_suit_cold", 36, T2_DEFENSE,
             14, SoundEvents.ARMOR_EQUIP_NETHERITE, 2.0F, "gems/glacite");
 
+    //? if >=1.20.5 {
     private static LegacyArmorMaterial armorMaterial(String name, int durability,
             Map<net.minecraft.world.item.ArmorItem.Type, Integer> defense, int enchantability,
             net.minecraft.core.Holder<net.minecraft.sounds.SoundEvent> sound, float toughness, String repairTag) {
@@ -315,6 +377,13 @@ public final class ModItems {
                         toughness, 0.0F));
         return new LegacyArmorMaterial(entry, durability);
     }
+    //?} else {
+    /^private static LegacyArmorMaterial armorMaterial(String name, int durability,
+            Map<net.minecraft.world.item.ArmorItem.Type, Integer> defense, int enchantability,
+            net.minecraft.sounds.SoundEvent sound, float toughness, String repairTag) {
+        return new LegacyArmorMaterial(name, durability, defense, enchantability, sound, toughness, repairTag);
+    }
+    ^///?}
     *///?}
 
     // --- Tools + armor items -----------------------------------------------
@@ -324,10 +393,13 @@ public final class ModItems {
             //?} else if >=1.21.2 {
             /*ITEMS.register("nerosium_pickaxe", key -> new net.minecraft.world.item.PickaxeItem(
                     NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F, new Item.Properties().setId(key)));
-            *///?} else {
+            *///?} else if >=1.20.5 {
             /*ITEMS.register("nerosium_pickaxe", key -> new net.minecraft.world.item.PickaxeItem(
                     NEROSIUM_TOOL_MATERIAL, new Item.Properties().attributes(
                             net.minecraft.world.item.PickaxeItem.createAttributes(NEROSIUM_TOOL_MATERIAL, 1.0F, -2.8F))));
+            *///?} else {
+            /*ITEMS.register("nerosium_pickaxe", key -> new net.minecraft.world.item.PickaxeItem(
+                    NEROSIUM_TOOL_MATERIAL, 1, -2.8F, new Item.Properties()));
             *///?}
 
     public static final RegistryEntry<Item> OXYGEN_SUIT_HELMET = armor("oxygen_suit_helmet", OXYGEN_SUIT_MATERIAL, ArmorType.HELMET);
@@ -370,7 +442,7 @@ public final class ModItems {
         return ITEMS.register(name, key -> new net.minecraft.world.item.ArmorItem(material, type,
                 new Item.Properties().setId(key)));
     }
-    *///?} else {
+    *///?} else if >=1.20.5 {
     /*private static RegistryEntry<Item> armor(String name, LegacyArmorMaterial material,
             net.minecraft.world.item.ArmorItem.Type type) {
         // The material registers in its own (ARMOR_MATERIAL) registry event, which a loader may fire after the item
@@ -382,6 +454,11 @@ public final class ModItems {
                         net.minecraft.core.registries.BuiltInRegistries.ARMOR_MATERIAL)
                         .createRegistrationLookup().getOrThrow(materialKey),
                 type, new Item.Properties().durability(type.getDurability(material.durability()))));
+    }
+    *///?} else {
+    /*private static RegistryEntry<Item> armor(String name, LegacyArmorMaterial material,
+            net.minecraft.world.item.ArmorItem.Type type) {
+        return ITEMS.register(name, key -> new net.minecraft.world.item.ArmorItem(material, type, new Item.Properties()));
     }
     *///?}
 

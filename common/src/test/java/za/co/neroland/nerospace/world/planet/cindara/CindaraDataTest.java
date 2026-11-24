@@ -38,7 +38,7 @@ class CindaraDataTest {
     }
 
     private static JsonElement load(String path) throws IOException {
-        try (InputStream in = CindaraDataTest.class.getResourceAsStream(path)) {
+        try (InputStream in = CindaraDataTest.class.getResourceAsStream(za.co.neroland.nerospace.TestResourcePaths.datapack(path))) {
             assertNotNull(in, "missing " + path);
             return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         }

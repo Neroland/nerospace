@@ -29,10 +29,10 @@ class PlanetVisitStateTest {
     private static PlanetVisitState roundTrip(PlanetVisitState state) {
         JsonElement encoded = PlanetVisitState.codec()
                 .encodeStart(JsonOps.INSTANCE, state)
-                .getOrThrow(error -> new AssertionError("encode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("encode failed"));
         return PlanetVisitState.codec()
                 .parse(JsonOps.INSTANCE, encoded)
-                .getOrThrow(error -> new AssertionError("decode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("decode failed"));
     }
 
     @Test
@@ -115,7 +115,7 @@ class PlanetVisitStateTest {
 
         PlanetVisitState reloaded = PlanetVisitState.codec()
                 .parse(JsonOps.INSTANCE, handEdited)
-                .getOrThrow(error -> new AssertionError("decode failed: " + error));
+                .result().orElseThrow(() -> new AssertionError("decode failed"));
 
         assertTrue(reloaded.hasVisited(good, CINDARA), "the good row must still load");
     }

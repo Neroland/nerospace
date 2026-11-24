@@ -48,9 +48,15 @@ public class EuropiumLampBlock extends Block {
         builder.add(LIT);
     }
 
+    //? if >=1.20.5 {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
             BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+            net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+    *///?}
         if (!level.isClientSide()) {
             boolean lit = PhosphorRules.toggle(state.getValue(LIT));
             level.setBlock(pos, state.setValue(LIT, lit), Block.UPDATE_ALL);

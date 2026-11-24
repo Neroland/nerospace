@@ -50,7 +50,7 @@ class SkyHooksTest {
     }
 
     private static SkyProfile decode(JsonElement json) {
-        return SkyProfile.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+        return SkyProfile.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
     }
 
     private static SkyProfile profile(String sky) throws IOException {
@@ -145,7 +145,7 @@ class SkyHooksTest {
         assertEquals("end", present.shaderDimension());
         // The field is the only difference, and it survives a round trip.
         assertEquals(absent.stars(), present.stars());
-        assertEquals(present, decode(SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, present).getOrThrow()));
+        assertEquals(present, decode(SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, present).result().orElseThrow()));
         // Every world but Greenxertz asks the pack for its End look (Cindara and Glacira since 2026-11-21).
         Set<String> endLook = Set.of("station", "luna", "mars", "nyxara", "cindara", "glacira");
         for (String s : SKIES) {

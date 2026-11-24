@@ -90,7 +90,7 @@ class SkyAssetsTest {
     }
 
     private static SkyProfile decode(JsonElement json) {
-        return SkyProfile.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
+        return SkyProfile.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
     }
 
     @Test
@@ -561,7 +561,7 @@ class SkyAssetsTest {
         // Encode then decode gives the same profile (the paired map codec writes one flat object).
         for (String sky : SKIES) {
             SkyProfile p = profile(sky);
-            JsonElement json = SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, p).getOrThrow();
+            JsonElement json = SkyProfile.CODEC.encodeStart(JsonOps.INSTANCE, p).result().orElseThrow();
             assertTrue(json.isJsonObject() && json.getAsJsonObject().has("background"), sky);
             assertEquals(p, decode(json), sky + " round trip");
         }

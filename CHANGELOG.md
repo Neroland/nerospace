@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Fabric builds for every Minecraft release from 1.20 through 1.20.6.
+- Forge builds for Minecraft 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4 and 1.20.6.
+- NeoForge builds for Minecraft 1.20.4 and 1.20.6.
+- The Forge 1.20.1 jar passed dedicated-server testing on the legacy NeoForge fork (47.1.106).
+
+### Changed
+
+- Requires Neroland Core 1.23.0 or a newer 1.x release.
+
 ## [2.4.2] - 2026-11-26
 
 ### Added

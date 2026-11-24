@@ -129,9 +129,11 @@ public final class FabricFluidLookup implements FluidLookup {
             FluidVariant variant = FluidVariant.of(fluid);
             long requestedDroplets = amount * FabricFluidStorageAdapter.DROPLETS_PER_MILLIBUCKET;
             try (Transaction transaction = openTransaction()) {
-                // simulateInsert runs in its own nested, aborted transaction — nothing here is visible yet.
-                long acceptedMb = StorageUtil.simulateInsert(this.storage, variant, requestedDroplets, transaction)
-                        / FabricFluidStorageAdapter.DROPLETS_PER_MILLIBUCKET;
+                long acceptedMb;
+                try (Transaction probe = Transaction.openNested(transaction)) {
+                    acceptedMb = this.storage.insert(variant, requestedDroplets, probe)
+                            / FabricFluidStorageAdapter.DROPLETS_PER_MILLIBUCKET;
+                }
                 if (acceptedMb <= 0 || simulate) {
                     return Math.max(acceptedMb, 0);   // closing without commit aborts
                 }
@@ -163,7 +165,7 @@ public final class FabricFluidLookup implements FluidLookup {
             try (Transaction transaction = openTransaction()) {
                 long availableMb;
                 // There is no simulateExtract in the API, so do the extraction in a nested transaction and
-                // let it abort on close — the same trick StorageUtil.simulateInsert uses internally.
+                // let it abort on close.
                 try (Transaction probe = Transaction.openNested(transaction)) {
                     availableMb = this.storage.extract(stored, requestedDroplets, probe)
                             / FabricFluidStorageAdapter.DROPLETS_PER_MILLIBUCKET;
