@@ -76,7 +76,7 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 | Minecraft | 1.20–1.20.6 (loader coverage below), 1.21.1, 1.21.4, 1.21.5, 1.21.7–1.21.8, 1.21.9–1.21.10, 1.21.11, 26.1.2, 26.2 or 26.3 |
 | Mod loader | NeoForge, MinecraftForge/Forge, or Fabric |
 | Java | Java 17 for Minecraft 1.20–1.20.4, Java 21 for 1.20.5 and 1.20.6 and for 1.21.x, Java 25 for 26.x (64-bit) |
-| Required mod | Neroland Core 1.23.0 or newer in the 1.x series, for the same Minecraft version and loader |
+| Required mod | Neroland Core 1.24.0 or newer in the 1.x series, for the same Minecraft version and loader |
 
 | Loader | Minecraft 1.20-series builds |
 | --- | --- |
@@ -84,7 +84,7 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 | Forge | 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, 1.20.6 |
 | NeoForge | 1.20.4, 1.20.5, 1.20.6 |
 
-Minecraft 1.20.5 on NeoForge requires loader 20.5.21-beta and Neroland Core 1.24.0 or newer.
+Minecraft 1.20.5 on NeoForge requires loader 20.5.21-beta.
 
 The Forge 1.20.1 jars for Nerospace and Neroland Core also work on dedicated servers running the legacy NeoForge fork 47.1.106.
 
