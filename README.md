@@ -24,6 +24,7 @@
 
 ---
 
+
 ## About
 
 Nerospace is a complete, standalone space-progression mod for Minecraft (Java Edition). One ore in the overworld starts a chain that ends with you breeding alien livestock on a moon you personally made breathable: machines, an all-in-one pipe network, four rocket tiers, six planets and an orbital station to fly to, player-founded space stations you grow module by module, oxygen survival with hazard suits, and a staged terraforming endgame — all guided in-game by the **Star Guide**.
@@ -81,7 +82,9 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 | --- | --- |
 | Fabric | 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, 1.20.5, 1.20.6 |
 | Forge | 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, 1.20.6 |
-| NeoForge | 1.20.4, 1.20.6 |
+| NeoForge | 1.20.4, 1.20.5, 1.20.6 |
+
+Minecraft 1.20.5 on NeoForge requires loader 20.5.21-beta and Neroland Core 1.24.0 or newer.
 
 The Forge 1.20.1 jars for Nerospace and Neroland Core also work on dedicated servers running the legacy NeoForge fork 47.1.106.
 

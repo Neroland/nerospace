@@ -22,6 +22,7 @@ import net.minecraft.world.level.material.Fluids;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.energy.EnergyRate;
 import za.co.neroland.nerospace.energy.EnergyBuffer;
 import za.co.neroland.nerospace.telemetry.NerospaceTelemetry;
 import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
@@ -56,6 +57,11 @@ public final class PipeNetwork {
 
     private final List<BlockPos> members;
     private final Set<Long> memberSet;
+    private EnergyRate deliveredEnergy;
+
+    long deliveredEnergyRate(long tick) {
+        return this.deliveredEnergy == null ? 0 : Math.round(this.deliveredEnergy.perTick(tick));
+    }
     private boolean valid = true;
     private long lastTick = -1L;
     /** Rotates over sinks so deliveries spread round-robin across destinations. */
@@ -161,7 +167,13 @@ public final class PipeNetwork {
                     moveEnergy(neighbour, buf, io);
                 }
                 if (mode.canPush()) {
-                    moveEnergy(buf, neighbour, io);
+                    long delivered = moveEnergy(buf, neighbour, io);
+                    if (delivered > 0) {
+                        if (this.deliveredEnergy == null) {
+                            this.deliveredEnergy = new EnergyRate();
+                        }
+                        this.deliveredEnergy.record(level.getGameTime(), delivered);
+                    }
                 }
             }
         }
@@ -178,17 +190,18 @@ public final class PipeNetwork {
         }
     }
 
-    private static void moveEnergy(NeroEnergyStorage from, NeroEnergyStorage to, long max) {
+    private static long moveEnergy(NeroEnergyStorage from, NeroEnergyStorage to, long max) {
         long avail = from.extract(max, true);
         if (avail <= 0) {
-            return;
+            return 0;
         }
         long room = to.insert(avail, true);
         long move = Math.min(avail, room);
         if (move > 0) {
             from.extract(move, false);
-            to.insert(move, false);
+            return to.insert(move, false);
         }
+        return 0;
     }
 
     // --- Fluid ----------------------------------------------------------------

@@ -42,3 +42,7 @@ output to **In**; faces feeding machines and chests are happiest on **Out** or A
 ## Details
 
 - ID: `nerospace:configurator` · Stack size: 1
+
+The NeroLogistics and NeroTech Configurators also open the Universal Pipe panel with sneak-use.
+For a quick face edit, they use the pipe layer last selected in that panel. The Nerospace
+Configurator can configure NeroLogistics conduits and the basic machine faces in NeroTech.

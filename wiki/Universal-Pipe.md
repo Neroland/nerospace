@@ -102,3 +102,8 @@ a single line serves both a source and a sink (set the source-side face to In so
 - Config: the pipe has no own config keys. Speeds follow the global multipliers — see
 
   [Configuration](Configuration).
+
+With NeroLogistics installed, adjacent ducts and cables can transfer items, fluids and energy
+through the Universal Pipe's buffer. Use **Out** on the pipe and **In** on the NeroLogistics face to
+send into NeroLogistics. Use **In** on the pipe and **Out** on the duct or cable to send the other way.
+Right-click a pipe with an empty hand to see its stored energy and recent pipe-network delivery.

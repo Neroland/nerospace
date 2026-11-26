@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.1]
+
+### Added
+
+- Minecraft 1.20.5 on NeoForge 20.5.21-beta, with Neroland Core 1.24.0 or newer.
+
+- Universal Pipes connect to adjacent NeroLogistics ducts for items and fluids and to Energy
+  Cables for energy. Set the two sides for the direction you want resources to flow.
+- Right-click a Universal Pipe with an empty hand to see recent pipe-network delivery in NE/t.
+  Sneak-use a Configurator on a Combustion Generator, Passive Generator or Solar Panel to see its
+  recent energy production.
+
+### Changed
+
+- Configurators from NeroLogistics and NeroTech can open the Universal Pipe configuration panel
+  and cycle a face's mode on the selected resource layer. The Nerospace Configurator can also
+  configure NeroLogistics conduits and basic NeroTech machine faces.
+- Requires Neroland Core 1.24.0 or a newer 1.x release.
+
 ## [2.5.0] - 2026-11-26
 
 ### Added

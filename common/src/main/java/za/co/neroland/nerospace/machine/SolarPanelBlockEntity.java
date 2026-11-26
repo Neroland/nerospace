@@ -1,6 +1,8 @@
 package za.co.neroland.nerospace.machine;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -12,6 +14,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.energy.EnergyRate;
+import za.co.neroland.nerolandcore.sideconfig.ConfiguratorTool;
 import za.co.neroland.nerolandcore.sideconfig.Channel;
 import za.co.neroland.nerolandcore.sideconfig.SideConfig;
 import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
@@ -43,7 +47,25 @@ import za.co.neroland.nerospace.world.planet.SolarMath;
  * {@link #solarFactor}. Every panel is a 1×1 self-anchor here; the N×N multiblock + sun-tracking
  * renderer are a deferred enhancement.</p>
  */
-public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured {
+public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured, ConfiguratorTool.PowerReadout {
+
+    private final EnergyRate production = new EnergyRate();
+
+    @Override
+    public void showPower(ServerPlayer player, long tick) {
+        player.sendSystemMessage(Component.translatable("block.nerolandcore.power.production",
+                Math.round(this.production.perTick(tick))), true);
+    }
+
+    private void generateMeasured(int amount) {
+        var buffer = this.energy;
+        long before = buffer.getAmount();
+        buffer.generate(amount);
+        if (this.level != null) {
+            this.production.record(this.level.getGameTime(), buffer.getAmount() - before);
+        }
+    }
+
 
     private final SolarTier tier;
     private final EnergyBuffer energy;
@@ -147,7 +169,7 @@ public class SolarPanelBlockEntity extends BlockEntity implements SideConfigured
 
     /** Raise the buffer (generation path; bypasses the zero external-receive limit). */
     void generate(int amount) {
-        this.energy.generate(amount);
+        generateMeasured(amount);
     }
 
     public int comparatorSignal() {

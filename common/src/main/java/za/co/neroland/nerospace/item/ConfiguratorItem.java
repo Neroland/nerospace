@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
+import za.co.neroland.nerolandcore.sideconfig.ConfiguratorTool;
 import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerospace.pipe.PipeIoMode;
 import za.co.neroland.nerospace.pipe.PipeResourceType;
@@ -31,7 +32,7 @@ import za.co.neroland.nerospace.registry.ModDataComponents;
  * <p>Cross-loader port: already loader-agnostic in the standalone mod (vanilla item + data component);
  * copied verbatim. The full per-face × per-type config GUI is the deferred client slice.</p>
  */
-public class ConfiguratorItem extends Item {
+public class ConfiguratorItem extends Item implements ConfiguratorTool {
 
     public ConfiguratorItem(Properties properties) {
         super(properties);
@@ -51,6 +52,16 @@ public class ConfiguratorItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
+        if (!(context.getLevel().getBlockEntity(context.getClickedPos()) instanceof UniversalPipeBlockEntity)) {
+            InteractionResult result = ConfiguratorTool.useTarget(context);
+            if (result != InteractionResult.PASS) {
+                return result;
+            }
+            result = ConfiguratorTool.useMachine(context);
+            if (result != InteractionResult.PASS) {
+                return result;
+            }
+        }
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();

@@ -4,6 +4,9 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -30,6 +33,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.sideconfig.ConfiguratorTool;
 import za.co.neroland.nerolandcore.gas.NeroGasStorage;
 import za.co.neroland.nerolandcore.gas.NeroGases;
 import za.co.neroland.nerolandcore.registry.BlockCodecs;
@@ -135,11 +139,18 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     /** True when the neighbour on {@code dir} is another pipe, a vanilla item container, or exposes an
      *  energy/fluid/gas/item storage through the cross-loader lookup seams — including the
      *  platform-standard handlers OTHER mods use, so a pipe connects to a foreign tank or machine. */
+    private static final TagKey<Block> EXTERNAL_CONDUITS =
+            TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("nerospace", "external_conduits"));
+
     public static boolean canConnect(Level level, BlockPos pos, Direction dir) {
         BlockPos np = pos.relative(dir);
         BlockEntity be = level.getBlockEntity(np);
         if (be instanceof UniversalPipeBlockEntity) {
             return true;
+        }
+        if (level.getBlockState(np).is(EXTERNAL_CONDUITS)) {
+            return level.getBlockState(np).getOptionalValue(CONNECTIONS[dir.getOpposite().get3DDataValue()])
+                    .orElse(false);
         }
         if (be instanceof Container) {
             return true;
@@ -175,6 +186,9 @@ public class UniversalPipeBlock extends BaseEntityBlock {
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
             net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
     *///?}
+        if (player.getMainHandItem().getItem() instanceof ConfiguratorTool) {
+            return InteractionResult.PASS;
+        }
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof UniversalPipeBlockEntity pipe) {
             if (player.isShiftKeyDown()) {
@@ -183,7 +197,11 @@ public class UniversalPipeBlock extends BaseEntityBlock {
             }
             // Read out what is flowing through this segment (energy / fluid / gas / items).
             serverPlayer.sendSystemMessage(Component.translatable("block.nerospace.universal_pipe.readout.energy",
-                    pipe.getEnergy().getAmount()).withStyle(net.minecraft.ChatFormatting.YELLOW));
+                    pipe.getEnergy().getAmount())
+                    .append(" | ")
+                    .append(Component.translatable("block.nerospace.universal_pipe.readout.delivery",
+                            pipe.deliveredEnergyRate(level.getGameTime())))
+                    .withStyle(net.minecraft.ChatFormatting.YELLOW));
             if (pipe.getFluidTank().getFluid() != Fluids.EMPTY) {
                 serverPlayer.sendSystemMessage(Component.translatable("block.nerospace.universal_pipe.readout.fluid",
                         pipe.getFluidTank().getAmount()).withStyle(net.minecraft.ChatFormatting.AQUA));

@@ -17,6 +17,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -36,6 +38,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.sideconfig.ConfiguratorTool;
+import za.co.neroland.nerospace.menu.MenuOpener;
 import za.co.neroland.nerolandcore.gas.GasBuffer;
 import za.co.neroland.nerolandcore.gas.NeroGasStorage;
 
@@ -76,7 +80,7 @@ import za.co.neroland.nerospace.storage.CoreTankBridge;
  * {@code nerospace:gas} via {@link #getGas} (an oxygen-only {@link CoreTankBridge} view). Neighbours are
  * resolved with {@link PipeGas#find}.</p>
  */
-public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
+public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider, ConfiguratorTool.Target {
 
     public static final int CAPACITY = 8_000;
     public static final int MAX_IO = 1_000;
@@ -220,6 +224,25 @@ public class UniversalPipeBlockEntity extends BlockEntity implements WorldlyCont
     }
 
     // --- Per-face I/O modes (Configurator) -----------------------------------
+
+    @Override
+    public InteractionResult configure(UseOnContext context) {
+        if (context.getPlayer() instanceof net.minecraft.server.level.ServerPlayer player) {
+            if (context.isSecondaryUseActive()) {
+                return MenuOpener.openOrConsume(player, this);
+            }
+            Direction face = context.getClickedFace();
+            PipeResourceType type = PipeResourceType.VALUES[this.configType];
+            PipeIoMode mode = cycleMode(face, type);
+            player.sendSystemMessage(Component.translatable("item.nerospace.configurator.face", type.label(),
+                    face.getName(), Component.translatable("pipe.nerospace.mode." + mode.getSerializedName())), true);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    public long deliveredEnergyRate(long tick) {
+        return this.network == null ? 0 : this.network.deliveredEnergyRate(tick);
+    }
 
     public PipeIoMode mode(Direction dir, PipeResourceType type) {
         return this.faceModes[dir.get3DDataValue()][type.ordinal()];

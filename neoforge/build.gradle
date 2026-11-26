@@ -96,7 +96,7 @@ dependencies {
     // NeroEconomy — OPTIONAL. Its public API on the compile classpath only: never bundled, never required.
     // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
     if (stonecutter.eval(mc, '>=26.1')) {
-        compileOnly "za.co.neroland.neroeconomy:neroeconomy-neoforge-${mc}:${project.findProperty('neroeconomy_version')}"
+        compileOnly "za.co.neroland.neroeconomy:neroeconomy-neoforge-${mc}:${project.findProperty(mc == '1.20.5' ? 'neroeconomy_version_neoforge_1.20.5' : 'neroeconomy_version')}"
     }
 
     // Sentry SDK embedded via NeoForge JarJar so players need no extra download (JarJar dedupes if
@@ -205,6 +205,31 @@ def generateWikiResources = tasks.register('generateWikiResources', Copy) {
     }
 }
 sourceSets.main.resources.srcDir generateWikiResources
+
+// NeoForge 20.5's POM predates the ModDevGradle variants. The original userdev jar supplies the
+// game patches and the original POM supplies dependencies for the compile and test classpaths.
+if (mc == '1.20.5') {
+    dependencies.components.withModule('net.neoforged:neoforge') { details ->
+        if (details.id.version == neoVersion) {
+            details.withVariant('sources') {
+                withDependencies { clear() }
+            }
+            details.addVariant('legacyModDevBundle') {
+                withCapabilities { addCapability('net.neoforged', 'neoforge-moddev-bundle', neoVersion) }
+                withFiles { addFile("neoforge-${neoVersion}-userdev.jar") }
+            }
+            ['compile', 'runtime'].each { pomVariant ->
+                details.addVariant("legacyModDev-${pomVariant}", pomVariant) {
+                    withCapabilities {
+                        removeCapability('net.neoforged', 'neoforge')
+                        addCapability('net.neoforged', 'neoforge-dependencies', neoVersion)
+                    }
+                    withFiles { removeAllFiles() }
+                }
+            }
+        }
+    }
+}
 
 neoForge {
     version = neoVersion

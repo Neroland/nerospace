@@ -55,3 +55,7 @@ A machine that gets less power than it uses still works — it just runs slower,
   [Configurator](Configurator); a face set to *off* will not take power.
 - **Generator stops burning** — its own storage is full. That is normal: it waits until something uses
   the power.
+
+Sneak-use a Configurator on a Combustion Generator, Passive Generator or Solar Panel to see its
+actual energy production in NE/t over the last 20 ticks. Production drops when the generator has
+no fuel or its buffer fills.

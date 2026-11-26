@@ -110,7 +110,7 @@ public final class NerospaceNeoForge {
         });
         // Planet sleeping (see docs/MULTILOADER.md): the bed gate runs after vanilla's own checks (so a refused bed
         // still sets spawn); the end-of-night skip runs at the start of the server tick, before any level ticks.
-        //? if >=1.20.5 {
+        //? if >=1.20.6 {
         NeoForge.EVENT_BUS.addListener(
                 (net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent event) -> {
                     net.minecraft.world.entity.player.Player.BedSleepingProblem vanilla = event.getProblem();
@@ -124,8 +124,6 @@ public final class NerospaceNeoForge {
                         }
                     }
                 });
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Pre event) ->
-                za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.getServer()));
         //?} else {
         /*NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerSleepInBedEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player
@@ -136,7 +134,12 @@ public final class NerospaceNeoForge {
                 }
             }
         });
-        NeoForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
+        *///?}
+        //? if >=1.20.5 {
+        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Pre event) ->
+                za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.getServer()));
+        //?} else {
+        /*NeoForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
             if (event.phase == TickEvent.Phase.START) {
                 za.co.neroland.nerospace.world.planet.PlanetSleep.serverTickStart(event.getServer());
             }

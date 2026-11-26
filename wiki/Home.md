@@ -14,6 +14,8 @@ eventually **terraform** a dead planet into livable, rained-on ground.
 > 💬 Questions, builds, feedback? Join the [Discord](https://discord.gg/ArPXvYUzJG) or open a
 > [GitHub issue](https://github.com/Neroland/nerospace/issues).
 
+Minecraft 1.20.5 on NeoForge requires loader 20.5.21-beta and Neroland Core 1.24.0 or newer.
+
 ## Getting started
 
 > 🚀 **New player? Start with the step-by-step [Getting Started](Getting-Started) guide.** Machine stuck

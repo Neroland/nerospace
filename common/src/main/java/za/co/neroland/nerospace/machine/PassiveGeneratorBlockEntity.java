@@ -1,6 +1,7 @@
 package za.co.neroland.nerospace.machine;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -20,6 +21,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import org.jetbrains.annotations.Nullable;
 
+import za.co.neroland.nerolandcore.energy.EnergyRate;
+import za.co.neroland.nerolandcore.sideconfig.ConfiguratorTool;
 import za.co.neroland.nerolandcore.sideconfig.Channel;
 import za.co.neroland.nerolandcore.sideconfig.SideConfig;
 import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
@@ -40,7 +43,25 @@ import za.co.neroland.nerospace.registry.ModItems;
  * a small steady energy trickle. Item + energy seams + ticker + GUI; hands-off but weak.
  */
 public class PassiveGeneratorBlockEntity extends BlockEntity
-        implements WorldlyContainer, MenuProvider, SideConfigured {
+        implements WorldlyContainer, MenuProvider, SideConfigured, ConfiguratorTool.PowerReadout {
+
+    private final EnergyRate production = new EnergyRate();
+
+    @Override
+    public void showPower(ServerPlayer player, long tick) {
+        player.sendSystemMessage(Component.translatable("block.nerolandcore.power.production",
+                Math.round(this.production.perTick(tick))), true);
+    }
+
+    private void generateMeasured(int amount) {
+        var buffer = this.energy;
+        long before = buffer.getAmount();
+        buffer.generate(amount);
+        if (this.level != null) {
+            this.production.record(this.level.getGameTime(), buffer.getAmount() - before);
+        }
+    }
+
 
     public static final int CORE_SLOT = 0;
     public static final int SIZE = 1;
@@ -140,7 +161,7 @@ public class PassiveGeneratorBlockEntity extends BlockEntity
         }
         if (this.coreTicks > 0 && this.energy.getAmount() < this.energy.getCapacity()) {
             this.coreTicks--;
-            this.energy.generate(NerospaceConfig.scale(FE_PER_TICK, NerospaceConfig.energyRateMultiplier()));
+            generateMeasured(NerospaceConfig.scale(FE_PER_TICK, NerospaceConfig.energyRateMultiplier()));
         }
     }
 

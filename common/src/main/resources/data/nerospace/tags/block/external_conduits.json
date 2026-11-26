@@ -1,0 +1,20 @@
+{
+  "values": [
+    {
+      "id": "nerologistics:item_duct",
+      "required": false
+    },
+    {
+      "id": "nerologistics:fluid_duct",
+      "required": false
+    },
+    {
+      "id": "nerologistics:universal_duct",
+      "required": false
+    },
+    {
+      "id": "nerologistics:energy_cable",
+      "required": false
+    }
+  ]
+}
