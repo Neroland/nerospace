@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "nerospace:raw_nerosium"
+            "items": "nerolandcore:raw_nerosium"
           }
         ]
       },
@@ -15,7 +15,7 @@
   "display": {
     "description": "Mine raw nerosium from nerosium ore",
     "icon": {
-      "id": "nerospace:raw_nerosium"
+      "id": "nerolandcore:raw_nerosium"
     },
     "title": "Strange Red Rock"
   },

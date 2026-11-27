@@ -1,5 +1,10 @@
 # Nerosium Ore
 
+> **Moved to Neroland Core.** Since Neroland Core 1.25.0 this ore and the material it drops are Core
+> blocks and items (`nerolandcore:` ids). Nerospace still generates them exactly where it did, and blocks
+> and items from older worlds are remapped automatically. Without Nerospace, an **Ore Reclaimer** (Neroland
+> Core) slowly turns them into vanilla materials. See the Neroland Core wiki.
+
 <!-- nerospace:render -->
 <p align="right"><img src="images/nerosium_ore.png" alt="Nerosium Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
@@ -30,5 +35,5 @@ stone-height variant; the [Deepslate Nerosium Ore](Deepslate-Nerosium-Ore) varia
 
 ## Details
 
-- ID: `nerospace:nerosium_ore`
+- ID: `nerolandcore:nerosium_ore`
 - Tool: pickaxe, iron tier · Drops: Raw Nerosium

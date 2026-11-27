@@ -18,7 +18,7 @@ class BrinekinTradesTest {
 
     /** tier, costA, n, costB, b, result, rc, maxUses, xp. */
     private static final List<TradeTable.Row> BRINEKIN = List.of(
-            new TradeTable.Row(1, "nerospace:brine_salt", 12, null, 0, E, 1, 16, 1),
+            new TradeTable.Row(1, "nerolandcore:brine_salt", 12, null, 0, E, 1, 16, 1),
             new TradeTable.Row(1, E, 1, null, 0, "nerospace:europa_ice_bricks", 4, 16, 1),
             new TradeTable.Row(1, E, 2, null, 0, "nerospace:brine_bucket", 1, 8, 1),
             new TradeTable.Row(2, E, 3, null, 0, "nerospace:deuterium_shard", 2, 12, 5),
@@ -49,7 +49,7 @@ class BrinekinTradesTest {
         assertEquals(4, AlienVillager.Planet.EUROPA.ordinal());
         assertFalse(c.megaCity());
         assertFalse(c.bandOnly());
-        assertEquals("nerospace:brine_salt", c.giftItem());
+        assertEquals("nerolandcore:brine_salt", c.giftItem());
         assertSame(c, VillagerCultures.byId("nerospace:brinekin").orElseThrow());
         assertSame(c, VillagerCultures.byLegacy(AlienVillager.Planet.EUROPA));
         assertEquals(VillagerCultures.ALL.size() - 1, VillagerCultures.ALL.indexOf(c), "appended last");

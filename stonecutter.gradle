@@ -294,16 +294,16 @@ ext.legacyRenames = [
             to: 'neighborChanged(BlockState $1, Level $2, BlockPos $3, Block $4, BlockPos $5,'],
     // 1.21.2 added AbstractContainerMenu.addStandardInventorySlots; compat.mc.MenuCompat lays the same slots out before it.
     [below: '1.21.2', from: /\bthis\.addStandardInventorySlots\(/, to: 'za.co.neroland.nerospace.compat.mc.MenuCompat.addStandardInventorySlots(this::addSlot, '],
-    // 1.21.2 split the spreading half of MultifaceBlock into MultifaceSpreadeableBlock (MultifaceBlock was it before).
-    [below: '1.21.2', from: /\bMultifaceSpreadeableBlock\b/, to: 'MultifaceBlock'],
+    // 1.21.4 split the spreading half of MultifaceBlock into MultifaceSpreadeableBlock (MultifaceBlock was it before).
+    [below: '1.21.4', from: /\bMultifaceSpreadeableBlock\b/, to: 'MultifaceBlock'],
     // Other 1.21.2 renames: EntityType.create(level, reason) was create(level), SPAWN_ITEM_USE was SPAWN_EGG,
-    // Animal.createAnimalAttributes was Mob.createMobAttributes, Merchant.stillValid was not part of the interface,
-    // Block.getCloneItemStack had no includeData flag, LevelHeightAccessor had only isOutsideBuildHeight.
+    // Animal.createAnimalAttributes was Mob.createMobAttributes, LevelHeightAccessor had only isOutsideBuildHeight.
+    // Before 1.21.4 Merchant.stillValid was not part of the interface and Block.getCloneItemStack had no includeData flag.
     [below: '1.21.2', from: /\.create\(([\w.]+(?:\(\))?), (?:EntitySpawnReason|MobSpawnType)\.\w+\)/, to: '.create($1)'],
     [below: '1.21.2', from: /\bMobSpawnType\.SPAWN_ITEM_USE\b/, to: 'MobSpawnType.SPAWN_EGG'],
     [below: '1.21.2', from: /\bAnimal\.createAnimalAttributes\(\)/, to: 'net.minecraft.world.entity.Mob.createMobAttributes()'],
-    [below: '1.21.2', from: /@Override(\s+)public boolean stillValid\(Player /, to: 'public boolean stillValid(Player '],
-    [below: '1.21.2', from: /\bgetCloneItemStack\(LevelReader (\w+), BlockPos (\w+), BlockState (\w+), boolean \w+\)/,
+    [below: '1.21.4', from: /@Override(\s+)public boolean stillValid\(Player /, to: 'public boolean stillValid(Player '],
+    [below: '1.21.4', from: /\bgetCloneItemStack\(LevelReader (\w+), BlockPos (\w+), BlockState (\w+), boolean \w+\)/,
             to: 'getCloneItemStack(LevelReader $1, BlockPos $2, BlockState $3)'],
     [below: '1.21.2', from: /!(\w+)\.isInsideBuildHeight\(/, to: '$1.isOutsideBuildHeight('],
     // 1.21.2 added Entity.teleportTo's trailing setCamera flag (always true here; 1.21.1 always resets the camera).
@@ -329,9 +329,9 @@ ext.legacyRenames = [
     [below: '1.21.2', from: /\.getInitialPose\(\)\.([xyz]Rot|[xyz])\(\)/, to: '.getInitialPose().$1'],
     // 1.21.4 item render states (client.compat look-alikes before it), the GUI blit render-type argument and
     // AbstractWidget.playButtonClickSound(..) arrived after 1.21.1.
-    [below: '1.21.2', from: /import net\.minecraft\.client\.renderer\.item\.ItemStackRenderState;/,
+    [below: '1.21.4', from: /import net\.minecraft\.client\.renderer\.item\.ItemStackRenderState;/,
             to: 'import za.co.neroland.nerospace.client.compat.ItemStackRenderState;'],
-    [below: '1.21.2', from: /\bMinecraft\.getInstance\(\)\.getItemModelResolver\(\)/, to: 'za.co.neroland.nerospace.client.compat.ItemModelResolver.INSTANCE'],
+    [below: '1.21.4', from: /\bMinecraft\.getInstance\(\)\.getItemModelResolver\(\)/, to: 'za.co.neroland.nerospace.client.compat.ItemModelResolver.INSTANCE'],
     [below: '1.21.2', from: /\.blit\(net\.minecraft\.client\.renderer\.RenderType::guiTextured,\s*((?:[^,;]+,){8}[^,;]+)\);/, to: '.blit($1);'],
     [below: '1.21.2', from: /(?:\bnet\.minecraft\.client\.gui\.components\.)?\bAbstractWidget\.playButtonClickSound\(([^;]*)\);/,
             to: '$1.play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));'],
@@ -351,6 +351,10 @@ subprojects {
     ext.javaRelease = javaRelease
     if (project.name == '1.20' || project.name.startsWith('1.20.')) {
         sourceSets.main.java.exclude '**/compat/jei/**', '**/compat/emi/**'
+    }
+    // JEI publishes nothing for Minecraft 1.21.3, so that cell has no JEI API to compile compat/jei against.
+    if (project.name == '1.21.3') {
+        sourceSets.main.java.exclude '**/compat/jei/**'
     }
 
     java {
@@ -697,6 +701,22 @@ subprojects {
                 from(new File(equipment, 'humanoid_leggings')) {
                     into 'assets/nerospace/textures/models/armor'
                     rename(/(.+)\.png/, '$1_layer_2.png')
+                }
+            }
+        }
+    }
+    // Equipment models: 1.21.2 and 1.21.3 read an armour material's model from models/equipment/<id>.json; 1.21.4 moved
+    // the same file to equipment/<id>.json. Copy the 1.21.4+ files to the old path for those two lines.
+    if (isNode) {
+        afterEvaluate { node ->
+            def sc = node.extensions.findByName('stonecutter')
+            if (sc == null || !(sc.eval(sc.current.version, '>=1.21.2') && sc.eval(sc.current.version, '<1.21.4'))) {
+                return
+            }
+            def equipmentModels = new File(rootProject.ext.commonResources, 'assets/nerospace/equipment')
+            node.tasks.named('processResources') {
+                from(equipmentModels) {
+                    into 'assets/nerospace/models/equipment'
                 }
             }
         }

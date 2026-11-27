@@ -1,5 +1,6 @@
 package za.co.neroland.nerospace.neoforge;
 
+//? if >=1.20.3 {
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
@@ -366,3 +367,254 @@ public final class NeoForgeCapabilities {
         // piping into a Nerospace Fuel Tank that feeds the pad.
     }
 }
+//?} else {
+/*import java.util.EnumMap;
+import java.util.function.Supplier;
+
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.CapabilityManager;
+import net.neoforged.neoforge.common.capabilities.CapabilityToken;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+
+import za.co.neroland.nerolandcore.energy.NeroEnergyStorage;
+import za.co.neroland.nerolandcore.gas.NeroGasStorage;
+import za.co.neroland.nerolandcore.platform.NeoForgeEnergyLookup;
+import za.co.neroland.nerolandcore.platform.NeoForgeGasLookup;
+import za.co.neroland.nerolandcore.sideconfig.Channel;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigComponent;
+import za.co.neroland.nerolandcore.sideconfig.SideConfigured;
+
+import za.co.neroland.nerospace.energy.NerospaceEnergyStorage;
+import za.co.neroland.nerospace.fluid.NerospaceFluidStorage;
+import za.co.neroland.nerospace.gas.NerospaceGasStorage;
+import za.co.neroland.nerospace.machine.CombustionGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.FuelRefineryBlockEntity;
+import za.co.neroland.nerospace.machine.FuelTankBlockEntity;
+import za.co.neroland.nerospace.machine.NerosiumGrinderBlockEntity;
+import za.co.neroland.nerospace.machine.OxygenGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.PassiveGeneratorBlockEntity;
+import za.co.neroland.nerospace.machine.SolarPanelBlockEntity;
+import za.co.neroland.nerospace.machine.TerraformerBlockEntity;
+import za.co.neroland.nerospace.machine.quarry.QuarryControllerBlockEntity;
+import za.co.neroland.nerospace.pipe.UniversalPipeBlockEntity;
+import za.co.neroland.nerospace.platform.NeoForgeFluidResourceHandler;
+import za.co.neroland.nerospace.storage.CoreTankBridge;
+
+// NeoForge 20.2 still has Forge's capability system (no BlockCapability, no RegisterCapabilitiesEvent providers):
+// every Nerospace block entity gets one attached provider, the same set and face gating as the Forge cells.
+// The Rocket Launch Pad has no block entity, so the fluid / gas lookups reach its proxies directly instead.
+public final class NeoForgeCapabilities {
+
+    public static final Capability<NerospaceEnergyStorage> ENERGY = CapabilityManager.get(new CapabilityToken<>() { });
+    public static final Capability<NerospaceFluidStorage> FLUID = CapabilityManager.get(new CapabilityToken<>() { });
+    public static final Capability<NerospaceGasStorage> GAS = CapabilityManager.get(new CapabilityToken<>() { });
+
+    private static final ResourceLocation MACHINE_CAPS = new ResourceLocation("nerospace", "machine_caps");
+
+    private NeoForgeCapabilities() {
+    }
+
+    public static void register(IEventBus modEventBus) {
+        modEventBus.addListener((RegisterCapabilitiesEvent event) -> {
+            event.register(NerospaceEnergyStorage.class);
+            event.register(NerospaceFluidStorage.class);
+            event.register(NerospaceGasStorage.class);
+        });
+        NeoForge.EVENT_BUS.addGenericListener(BlockEntity.class, NeoForgeCapabilities::onAttachBlockEntity);
+    }
+
+    // One capability of one block entity, or null.
+    @Nullable
+    public static <T> T find(Level level, BlockPos pos, Capability<T> capability, @Nullable Direction side) {
+        BlockEntity be = level.getBlockEntity(pos);
+        return be == null ? null : be.getCapability(capability, side).orElse(null);
+    }
+
+    private static void onAttachBlockEntity(AttachCapabilitiesEvent<BlockEntity> event) {
+        MachineCaps caps = createCaps(event.getObject());
+        if (caps != null) {
+            event.addCapability(MACHINE_CAPS, caps);
+            event.addListener(caps::invalidate);
+        }
+    }
+
+    @Nullable
+    private static MachineCaps createCaps(BlockEntity be) {
+        Supplier<NerospaceEnergyStorage> energy = null;
+        Supplier<NerospaceFluidStorage> fluid = null;
+        Supplier<NerospaceGasStorage> gas = null;
+        Supplier<NeroGasStorage> coreGas = null;
+        SideConfigComponent sideConfig = be instanceof SideConfigured sc ? sc.sideConfig() : null;
+
+        if (be instanceof za.co.neroland.nerolandcore.storage.FluidTankBlockEntity t) {
+            fluid = () -> CoreTankBridge.fluid(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.CreativeFluidTankBlockEntity t) {
+            fluid = () -> CoreTankBridge.fluid(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.GasTankBlockEntity t) {
+            gas = () -> CoreTankBridge.gas(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.CreativeGasTankBlockEntity t) {
+            gas = () -> CoreTankBridge.gas(t.getTank());
+        } else if (be instanceof za.co.neroland.nerolandcore.storage.TrashCanBlockEntity trash) {
+            fluid = () -> CoreTankBridge.fluid(trash.getFluid());
+            gas = () -> CoreTankBridge.gas(trash.getGas());
+        } else if (be instanceof CombustionGeneratorBlockEntity machine) {
+            energy = machine::getEnergy;
+        } else if (be instanceof NerosiumGrinderBlockEntity machine) {
+            energy = machine::getEnergy;
+        } else if (be instanceof PassiveGeneratorBlockEntity machine) {
+            energy = machine::getEnergy;
+        } else if (be instanceof UniversalPipeBlockEntity pipe) {
+            energy = pipe::getEnergy;
+            fluid = pipe::getFluidTank;
+            gas = pipe::getGas;
+            coreGas = pipe::getCoreGas;
+        } else if (be instanceof OxygenGeneratorBlockEntity machine) {
+            energy = machine::getEnergy;
+            gas = machine::getGas;
+        } else if (be instanceof SolarPanelBlockEntity panel) {
+            energy = panel::getEnergy;
+        } else if (be instanceof TerraformerBlockEntity machine) {
+            energy = machine::getEnergy;
+        } else if (be instanceof za.co.neroland.nerospace.route.CargoPadBlockEntity cargoPad) {
+            fluid = cargoPad::getTank;
+        } else if (be instanceof FuelTankBlockEntity tank) {
+            fluid = tank::getTank;
+        } else if (be instanceof FuelRefineryBlockEntity machine) {
+            energy = machine::getEnergy;
+            fluid = machine::getTank;
+        } else if (be instanceof QuarryControllerBlockEntity machine) {
+            energy = machine::getEnergy;
+            fluid = machine::getTank;
+        } else if (be instanceof za.co.neroland.nerospace.rocket.LaunchControllerBlockEntity controller) {
+            energy = controller::getEnergy;
+            fluid = controller::getTank;
+            gas = controller::getGas;
+        }
+
+        // Item handlers only for Nerospace's own containers: vanilla and other mods expose their own.
+        Container container = be instanceof Container c && be.getClass().getName().startsWith("za.co.neroland.nerospace.")
+                ? c : null;
+        if (energy == null && fluid == null && gas == null && container == null) {
+            return null;
+        }
+        return new MachineCaps(energy, fluid, gas, coreGas, container, sideConfig);
+    }
+
+    private static IItemHandler itemHandler(Container container, @Nullable Direction side) {
+        if (container instanceof WorldlyContainer worldly && side != null) {
+            return new SidedInvWrapper(worldly, side);
+        }
+        return new InvWrapper(container);
+    }
+
+    private static final class MachineCaps implements ICapabilityProvider {
+
+        private final LazyOptional<NerospaceEnergyStorage> energy;
+        private final LazyOptional<NeroEnergyStorage> coreEnergy;
+        private final LazyOptional<NerospaceFluidStorage> fluid;
+        private final LazyOptional<IFluidHandler> standardFluid;
+        private final LazyOptional<NerospaceGasStorage> gas;
+        private final LazyOptional<NeroGasStorage> coreGas;
+        @Nullable
+        private final Container container;
+        @Nullable
+        private final LazyOptional<IItemHandler> itemUnsided;
+        private final EnumMap<Direction, LazyOptional<IItemHandler>> itemBySide = new EnumMap<>(Direction.class);
+        @Nullable
+        private final SideConfigComponent sideConfig;
+
+        MachineCaps(@Nullable Supplier<NerospaceEnergyStorage> energy, @Nullable Supplier<NerospaceFluidStorage> fluid,
+                @Nullable Supplier<NerospaceGasStorage> gas, @Nullable Supplier<NeroGasStorage> coreGas,
+                @Nullable Container container, @Nullable SideConfigComponent sideConfig) {
+            this.energy = energy == null ? LazyOptional.empty() : LazyOptional.<NerospaceEnergyStorage>of(energy::get);
+            this.coreEnergy = energy == null ? LazyOptional.empty() : LazyOptional.<NeroEnergyStorage>of(energy::get);
+            this.fluid = fluid == null ? LazyOptional.empty() : LazyOptional.<NerospaceFluidStorage>of(fluid::get);
+            this.standardFluid = fluid == null ? LazyOptional.empty()
+                    : LazyOptional.<IFluidHandler>of(() -> NeoForgeFluidResourceHandler.of(fluid.get()));
+            this.gas = gas == null ? LazyOptional.empty() : LazyOptional.<NerospaceGasStorage>of(gas::get);
+            this.coreGas = coreGas == null ? LazyOptional.empty() : LazyOptional.<NeroGasStorage>of(coreGas::get);
+            this.container = container;
+            this.sideConfig = sideConfig;
+            this.itemUnsided = container == null ? null : LazyOptional.of(() -> itemHandler(container, null));
+        }
+
+        // Whether the side config (if any) gates this channel to DISABLED on this face.
+        private boolean gatedOff(Channel channel, @Nullable Direction side) {
+            if (sideConfig == null || side == null) {
+                return false;
+            }
+            return switch (channel) {
+                case ENERGY -> sideConfig.energyView(side) == null;
+                case FLUID -> sideConfig.fluidView(side) == null;
+                case GAS -> sideConfig.gasView(side) == null;
+                case ITEM -> false;
+            };
+        }
+
+        @Override
+        public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+            if (cap == ENERGY) {
+                return gatedOff(Channel.ENERGY, side) ? LazyOptional.empty() : energy.cast();
+            }
+            if (cap == NeoForgeEnergyLookup.ENERGY) {
+                return gatedOff(Channel.ENERGY, side) ? LazyOptional.empty() : coreEnergy.cast();
+            }
+            if (cap == FLUID) {
+                return gatedOff(Channel.FLUID, side) ? LazyOptional.empty() : fluid.cast();
+            }
+            if (cap == Capabilities.FLUID_HANDLER) {
+                return gatedOff(Channel.FLUID, side) ? LazyOptional.empty() : standardFluid.cast();
+            }
+            if (cap == GAS) {
+                return gatedOff(Channel.GAS, side) ? LazyOptional.empty() : gas.cast();
+            }
+            if (cap == NeoForgeGasLookup.GAS) {
+                return gatedOff(Channel.GAS, side) ? LazyOptional.empty() : coreGas.cast();
+            }
+            if (cap == Capabilities.ITEM_HANDLER && container != null) {
+                return item(side).cast();
+            }
+            return LazyOptional.empty();
+        }
+
+        private LazyOptional<IItemHandler> item(@Nullable Direction side) {
+            if (side == null) {
+                return itemUnsided == null ? LazyOptional.empty() : itemUnsided;
+            }
+            return itemBySide.computeIfAbsent(side, d -> LazyOptional.of(() -> itemHandler(container, d)));
+        }
+
+        void invalidate() {
+            energy.invalidate();
+            coreEnergy.invalidate();
+            fluid.invalidate();
+            standardFluid.invalidate();
+            gas.invalidate();
+            coreGas.invalidate();
+            if (itemUnsided != null) {
+                itemUnsided.invalidate();
+            }
+            itemBySide.values().forEach(LazyOptional::invalidate);
+        }
+    }
+}
+*///?}

@@ -24,7 +24,7 @@ import za.co.neroland.nerospace.world.planet.Planets;
 public final class VillagerCultures {
 
     public static final VillagerCulture XERTZ = new VillagerCulture(AlienTrades.XERTZ,
-            AlienVillager.Planet.GREENXERTZ, true, false, "nerospace:xertz_quartz");
+            AlienVillager.Planet.GREENXERTZ, true, false, "nerolandcore:xertz_quartz");
     public static final VillagerCulture EMBER_KIN = new VillagerCulture(AlienTrades.EMBER_KIN,
             AlienVillager.Planet.CINDARA, false, false, "nerospace:ash_dust");
     public static final VillagerCulture FROSTBOUND = new VillagerCulture(AlienTrades.FROSTBOUND,
@@ -33,7 +33,7 @@ public final class VillagerCultures {
             AlienVillager.Planet.NYXARA, true, true, "nerospace:shadow_lichen");
     /** Europa (2.4.0): under-ice habitats, no Mega City, no band rule. */
     public static final VillagerCulture BRINEKIN = new VillagerCulture(AlienTrades.BRINEKIN,
-            AlienVillager.Planet.EUROPA, false, false, "nerospace:brine_salt");
+            AlienVillager.Planet.EUROPA, false, false, "nerolandcore:brine_salt");
 
     /** In {@link AlienVillager.Planet} ordinal order. */
     public static final List<VillagerCulture> ALL = List.of(XERTZ, EMBER_KIN, FROSTBOUND, DUSKBORN, BRINEKIN);

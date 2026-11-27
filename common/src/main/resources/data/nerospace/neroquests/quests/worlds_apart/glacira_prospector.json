@@ -1,14 +1,14 @@
 {
   "title": "quest.nerospace.worlds_apart.glacira_prospector.title",
   "description": "quest.nerospace.worlds_apart.glacira_prospector.desc",
-  "icon": "nerospace:glacite",
+  "icon": "nerolandcore:glacite",
   "prerequisites": [
     "nerospace:worlds_apart/glacira_landfall"
   ],
   "objectives": [
     {
       "type": "neroquests:collect_item",
-      "item": "nerospace:glacite",
+      "item": "nerolandcore:glacite",
       "count": 8
     }
   ],

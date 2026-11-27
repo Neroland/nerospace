@@ -113,7 +113,8 @@ class TerraformFaunaRegistrationTest {
                 assertTrue(pools.size() == 1, f[0] + " " + tree + " one pool");
                 String item = pools.get(0).getAsJsonObject().getAsJsonArray("entries").get(0).getAsJsonObject()
                         .get("name").getAsString();
-                assertTrue(item.startsWith("nerospace:") || item.equals("minecraft:glow_ink_sac"),
+                assertTrue(item.startsWith("nerospace:") || item.startsWith("nerolandcore:")
+                        || item.equals("minecraft:glow_ink_sac"),
                         f[0] + " drops an existing Nerospace item (or the drifter's glow ink sac)");
             }
             for (String lang : ENGLISH_ONLY.contains(f[0]) ? List.of("en_us") : List.of("en_us", "it_it", "zh_cn")) {

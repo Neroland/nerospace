@@ -3,8 +3,8 @@
   "category": "misc",
   "cookingtime": 200,
   "experience": 1.0,
-  "ingredient": "nerospace:voidglass_ore",
+  "ingredient": "nerolandcore:voidglass_ore",
   "result": {
-    "id": "nerospace:voidglass"
+    "id": "nerolandcore:voidglass"
   }
 }

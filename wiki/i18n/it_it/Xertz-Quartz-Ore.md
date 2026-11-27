@@ -32,5 +32,5 @@ Il quarzo Xertz si comporta come il quarzo del Nether: il minerale lascia cadere
 
 ## Dettagli
 
-- ID: `nerospace:xertz_quartz_ore` · Dimensione: Greenxertz
+- ID: `nerolandcore:xertz_quartz_ore` · Dimensione: Greenxertz
 - Attrezzo: qualsiasi piccone · Drop: quarzo Xertz (gemma)

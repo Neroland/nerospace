@@ -1,14 +1,14 @@
 {
   "title": "quest.nerospace.worlds_apart.cindara_prospector.title",
   "description": "quest.nerospace.worlds_apart.cindara_prospector.desc",
-  "icon": "nerospace:cindrite",
+  "icon": "nerolandcore:cindrite",
   "prerequisites": [
     "nerospace:worlds_apart/cindara_landfall"
   ],
   "objectives": [
     {
       "type": "neroquests:collect_item",
-      "item": "nerospace:cindrite",
+      "item": "nerolandcore:cindrite",
       "count": 8
     }
   ],

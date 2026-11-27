@@ -1,7 +1,7 @@
 {
   "title": "quest.nerospace.starfarers_log.cindara.title",
   "description": "quest.nerospace.starfarers_log.cindara.desc",
-  "icon": "nerospace:cindrite",
+  "icon": "nerolandcore:cindrite",
   "prerequisites": [
     "nerospace:starfarers_log/greenxertz"
   ],
@@ -12,7 +12,7 @@
     },
     {
       "type": "neroquests:collect_item",
-      "item": "nerospace:cindrite",
+      "item": "nerolandcore:cindrite",
       "count": 1
     }
   ],

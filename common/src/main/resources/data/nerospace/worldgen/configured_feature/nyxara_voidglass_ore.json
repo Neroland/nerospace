@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "nerospace:voidglass_ore"
+          "Name": "nerolandcore:voidglass_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",
@@ -15,7 +15,7 @@
       },
       {
         "state": {
-          "Name": "nerospace:voidglass_ore"
+          "Name": "nerolandcore:voidglass_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",
@@ -24,7 +24,7 @@
       },
       {
         "state": {
-          "Name": "nerospace:voidglass_ore"
+          "Name": "nerolandcore:voidglass_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",
@@ -33,7 +33,7 @@
       },
       {
         "state": {
-          "Name": "nerospace:voidglass_ore"
+          "Name": "nerolandcore:voidglass_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",

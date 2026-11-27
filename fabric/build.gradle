@@ -31,6 +31,8 @@ def jeiVersion = project.findProperty("jei_version_${mc}")
 def jeiMinVersion = project.findProperty("jei_min_version_${mc}") ?: jeiVersion ?: '0'
 def emiFile = project.findProperty("emi_file_fabric_${mc}")
 def nerolandcoreVersion = project.findProperty('nerolandcore_version')
+// NeroEconomy line this cell compiles against: itself, or the nearest line it publishes (neroeconomy_mc_<v>).
+def neroeconomyMc = (project.findProperty("neroeconomy_mc_${mc}") ?: mc).toString()
 
 // This node's projectDir is <loader>/versions/<v>; the authoritative loader source +
 // resources live in the BRANCH root (fabric/). Resolve branch-root paths via the parent.
@@ -98,7 +100,7 @@ dependencies {
 
     // NeroEconomy — OPTIONAL. Its public API on the compile classpath only: never bundled, never required.
     // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
-    compileOnly "za.co.neroland.neroeconomy:neroeconomy-fabric-${mc}:${project.findProperty('neroeconomy_version')}"
+    compileOnly "za.co.neroland.neroeconomy:neroeconomy-fabric-${neroeconomyMc}:${project.findProperty('neroeconomy_version')}"
     }
 
     // Sentry SDK (telemetry/NerospaceTelemetry): compile against it + embed it as a jar-in-jar so the

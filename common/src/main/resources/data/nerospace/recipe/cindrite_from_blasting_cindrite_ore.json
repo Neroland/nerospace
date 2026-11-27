@@ -3,8 +3,8 @@
   "category": "misc",
   "cookingtime": 100,
   "experience": 1.0,
-  "ingredient": "nerospace:cindrite_ore",
+  "ingredient": "nerolandcore:cindrite_ore",
   "result": {
-    "id": "nerospace:cindrite"
+    "id": "nerolandcore:cindrite"
   }
 }

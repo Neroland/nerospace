@@ -19,7 +19,6 @@ import net.minecraft.world.level.material.MapColor;
 import za.co.neroland.nerospace.block.ContactHazardBlock;
 import za.co.neroland.nerospace.block.DriftingBlock;
 import za.co.neroland.nerospace.block.DryIceBlock;
-import za.co.neroland.nerospace.block.MagneticOreBlock;
 import za.co.neroland.nerospace.block.PillarGrowthBlock;
 import za.co.neroland.nerospace.block.rules.StrataRules;
 import za.co.neroland.nerospace.registry.ModBlocks;
@@ -35,7 +34,7 @@ import za.co.neroland.nerospace.world.planet.mars.entity.SalvageDrone;
 /**
  * Every Mars block, item and entity, registered through the shared providers. Blocks reuse the shared behaviour bases:
  * Red Regolith drifts in dust storms ({@link DriftingBlock}), Hematite Ore pulls its drops to an iron-tool breaker
- * ({@link MagneticOreBlock}), Perchlorate Crust poisons bare boots ({@link ContactHazardBlock}), Dry Ice freezes
+ * ({@link za.co.neroland.nerospace.block.MagneticOre}), Perchlorate Crust poisons bare boots ({@link ContactHazardBlock}), Dry Ice freezes
  * adjacent water and sublimates in bright light ({@link DryIceBlock}), Basalt Column grows to four segments
  * ({@link PillarGrowthBlock}). Martian Sandstone is cut into four horizontal-axis strata variants on the stonecutter.
  * Class loading registers everything; {@link #init()} only forces the load.
@@ -66,9 +65,9 @@ public final class MarsContent {
             key -> new DryIceBlock(props(key).mapColor(MapColor.ICE).strength(0.5F, 0.5F).randomTicks()
                     .sound(SoundType.GLASS).noOcclusion()));
 
-    public static final RegistryEntry<MagneticOreBlock> HEMATITE_ORE = ModBlocks.BLOCKS.register("hematite_ore",
-            key -> new MagneticOreBlock(props(key).mapColor(MapColor.TERRACOTTA_RED).strength(3.0F, 3.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.STONE)));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:hematite_ore}). */
+    public static final RegistryEntry<Block> HEMATITE_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.HEMATITE_ORE);
 
     public static final RegistryEntry<ContactHazardBlock> PERCHLORATE_CRUST = ModBlocks.BLOCKS.register("perchlorate_crust",
             key -> new ContactHazardBlock(props(key).mapColor(MapColor.TERRACOTTA_WHITE).strength(0.7F, 0.7F)
@@ -81,11 +80,15 @@ public final class MarsContent {
     public static final RegistryEntry<BlockItem> BASALT_COLUMN_ITEM = blockItem("basalt_column", BASALT_COLUMN);
     public static final RegistryEntry<BlockItem> DUST_DEVIL_PIT_ITEM = blockItem("dust_devil_pit", DUST_DEVIL_PIT);
     public static final RegistryEntry<BlockItem> DRY_ICE_ITEM = blockItem("dry_ice", DRY_ICE);
-    public static final RegistryEntry<BlockItem> HEMATITE_ORE_ITEM = blockItem("hematite_ore", HEMATITE_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:hematite_ore}). */
+    public static final RegistryEntry<BlockItem> HEMATITE_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.HEMATITE_ORE_ITEM);
     public static final RegistryEntry<BlockItem> PERCHLORATE_CRUST_ITEM = blockItem("perchlorate_crust", PERCHLORATE_CRUST);
 
     // --- Items ---------------------------------------------------------------------------------------------
-    public static final RegistryEntry<Item> RAW_HEMATITE = item("raw_hematite");
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:raw_hematite}). */
+    public static final RegistryEntry<Item> RAW_HEMATITE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.RAW_HEMATITE);
     public static final RegistryEntry<Item> RUST_PIGMENT = item("rust_pigment");
     /** Fuel Refinery oxidiser (+15 % output, one per four buckets). */
     public static final RegistryEntry<Item> PERCHLORATE_OXIDISER = item("perchlorate_oxidiser");

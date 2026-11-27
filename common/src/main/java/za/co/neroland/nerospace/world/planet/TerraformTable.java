@@ -128,6 +128,11 @@ public record TerraformTable(
         return Identifier.fromNamespaceAndPath("minecraft", path);
     }
 
+    /** A Neroland Core id: every Nero ore moved to Core in its 1.25.0. */
+    public static Identifier core(String path) {
+        return Identifier.fromNamespaceAndPath("nerolandcore", path);
+    }
+
     public static Identifier ns(String path) {
         return Identifier.fromNamespaceAndPath("nerospace", path);
     }
@@ -148,6 +153,6 @@ public record TerraformTable(
 
     /** The 1.x tier-3 ore seed list. */
     public static List<Identifier> legacyOres() {
-        return List.of(ns("nerosteel_ore"), ns("xertz_quartz_ore"), ns("nerosium_ore"));
+        return List.of(core("nerosteel_ore"), core("xertz_quartz_ore"), core("nerosium_ore"));
     }
 }

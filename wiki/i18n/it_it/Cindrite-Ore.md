@@ -31,5 +31,5 @@ La Cindrite è una gemma luminosa color brace che si trova solo su Cindara. È p
 
 ## Dettagli
 
-- ID: `nerospace:cindrite_ore` · Dimensione: Cindara
+- ID: `nerolandcore:cindrite_ore` · Dimensione: Cindara
 - Attrezzo: piccone, livello ferro · Drop: Cindrite (gemma)

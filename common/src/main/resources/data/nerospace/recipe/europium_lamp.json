@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": "nerospace:raw_europium"
+    "#": "nerolandcore:raw_europium"
   },
   "pattern": [
     "##",

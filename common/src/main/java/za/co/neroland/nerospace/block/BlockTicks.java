@@ -14,7 +14,7 @@ public final class BlockTicks {
     }
 
     public static void serverTick(MinecraftServer server) {
-        MagneticOreBlock.tickMagnets();
+        MagneticOre.tickMagnets();
         GeyserBlock.tickGrace();
         SporeBurstBlock.tickBursts();
         WeatherScan.tick(server);

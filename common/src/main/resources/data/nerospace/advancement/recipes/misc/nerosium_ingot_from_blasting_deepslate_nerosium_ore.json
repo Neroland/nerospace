@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "nerospace:deepslate_nerosium_ore"
+            "items": "nerolandcore:deepslate_nerosium_ore"
           }
         ]
       },

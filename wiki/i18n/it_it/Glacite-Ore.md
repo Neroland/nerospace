@@ -35,5 +35,5 @@ La Glacite è una gemma azzurro ghiaccio pallido che si trova solo su Glacira, l
 
 ## Dettagli
 
-- ID: `nerospace:glacite_ore` · Dimensione: Glacira
+- ID: `nerolandcore:glacite_ore` · Dimensione: Glacira
 - Attrezzo: piccone, livello ferro · Drop: Glacite (gemma)

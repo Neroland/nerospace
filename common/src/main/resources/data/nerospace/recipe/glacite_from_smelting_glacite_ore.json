@@ -3,8 +3,8 @@
   "category": "misc",
   "cookingtime": 200,
   "experience": 1.0,
-  "ingredient": "nerospace:glacite_ore",
+  "ingredient": "nerolandcore:glacite_ore",
   "result": {
-    "id": "nerospace:glacite"
+    "id": "nerolandcore:glacite"
   }
 }

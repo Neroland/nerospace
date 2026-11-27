@@ -1,14 +1,14 @@
 {
   "title": "quest.nerospace.worlds_apart.greenxertz_prospector.title",
   "description": "quest.nerospace.worlds_apart.greenxertz_prospector.desc",
-  "icon": "nerospace:amber_sap",
+  "icon": "nerolandcore:amber_sap",
   "prerequisites": [
     "nerospace:worlds_apart/greenxertz_landfall"
   ],
   "objectives": [
     {
       "type": "neroquests:collect_item",
-      "item": "nerospace:amber_sap",
+      "item": "nerolandcore:amber_sap",
       "count": 8
     }
   ],

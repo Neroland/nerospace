@@ -29,5 +29,5 @@ Il Nerosium è il primo materiale di Nerospace e la porta d'accesso al suo alber
 
 ## Dettagli
 
-- ID: `nerospace:nerosium_ore`
+- ID: `nerolandcore:nerosium_ore`
 - Attrezzo: piccone, livello ferro · Drop: Nerosium grezzo

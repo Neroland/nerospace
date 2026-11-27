@@ -27,6 +27,8 @@ def jeiVersion = project.findProperty("jei_version_${mc}")
 def jeiMinVersion = project.findProperty("jei_min_version_${mc}") ?: jeiVersion ?: '0'
 def emiFile = project.findProperty("emi_file_neoforge_${mc}")
 def nerolandcoreVersion = project.findProperty('nerolandcore_version')
+// NeroEconomy line this cell compiles against: itself, or the nearest line it publishes (neroeconomy_mc_<v>).
+def neroeconomyMc = (project.findProperty("neroeconomy_mc_${mc}") ?: mc).toString()
 
 // This node's projectDir is <loader>/versions/<v>; the authoritative loader source +
 // templates live in the BRANCH root (neoforge/). Resolve branch-root paths via the parent.
@@ -81,10 +83,57 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// Minecraft 1.20.2's registries refuse to be created before the game bootstrap, which these plain-JVM tests never
+// run (1.20.3 and later allow it). The suites below build registry keys through the planet, dimension and tier tables;
+// they run on every other NeoForge cell, which compiles the same source. The rest of the suite runs here too.
+def legacyRegistrySuites = [
+        'za.co.neroland.nerospace.api.PlanetTraitsCompatTest',
+        'za.co.neroland.nerospace.client.sky.SkyAssetsTest',
+        'za.co.neroland.nerospace.client.ui.ClockDialTest',
+        'za.co.neroland.nerospace.client.ui.DestinationListTest',
+        'za.co.neroland.nerospace.client.ui.PlanetAccentsTest',
+        'za.co.neroland.nerospace.client.ui.PlanetCardStateTest',
+        'za.co.neroland.nerospace.command.GallerySkyStatesTest',
+        'za.co.neroland.nerospace.config.ConfigSchemaCompatTest',
+        'za.co.neroland.nerospace.data.Compliance21Test',
+        'za.co.neroland.nerospace.data.NerospaceErasureConformanceTest',
+        'za.co.neroland.nerospace.data.NerospacePrivacyExportTest',
+        'za.co.neroland.nerospace.entity.AlienVillagerPlanetOrdinalTest',
+        'za.co.neroland.nerospace.map.NerospaceMapLayersTest',
+        'za.co.neroland.nerospace.rocket.CrewRocketTest',
+        'za.co.neroland.nerospace.rocket.DestinationGateSyncTest',
+        'za.co.neroland.nerospace.rocket.DestinationSelectionTest',
+        'za.co.neroland.nerospace.rocket.PadNodeMigrationTest',
+        'za.co.neroland.nerospace.rocket.RocketTierDefaultsTest',
+        'za.co.neroland.nerospace.rocket.StationPadRegistrationTest',
+        'za.co.neroland.nerospace.route.RouteRegistryTest',
+        'za.co.neroland.nerospace.village.AlienTradesTest',
+        'za.co.neroland.nerospace.village.BrinekinTradesTest',
+        'za.co.neroland.nerospace.world.planet.AtmosphereRulesTest',
+        'za.co.neroland.nerospace.world.planet.ColdShelterRulesTest',
+        'za.co.neroland.nerospace.world.planet.HazardModelTest',
+        'za.co.neroland.nerospace.world.planet.OpenOceanRulesTest',
+        'za.co.neroland.nerospace.world.planet.PlanetClockTest',
+        'za.co.neroland.nerospace.world.planet.PlanetSleepRulesTest',
+        'za.co.neroland.nerospace.world.planet.PlanetWeatherTest',
+        'za.co.neroland.nerospace.world.planet.RadiationRulesTest',
+        'za.co.neroland.nerospace.world.planet.SolarAverageTest',
+        'za.co.neroland.nerospace.world.planet.TerraformFaunaTableTest',
+        'za.co.neroland.nerospace.world.planet.TerraformTablesTest',
+        'za.co.neroland.nerospace.world.planet.WeatherPickRulesTest',
+        'za.co.neroland.nerospace.world.planet.europa.EuropaEclipseTest',
+        'za.co.neroland.nerospace.world.planet.europa.EuropaTerraformTest',
+        'za.co.neroland.nerospace.world.planet.glacira.GlaciraTerraformContinuationTest',
+        'za.co.neroland.nerospace.world.planet.greenxertz.GreenxertzDimensionTypeTest'
+]
+
 tasks.named('test', Test) {
     systemProperty 'nerospace.pluralDatapackDirectories', stonecutter.eval(mc, '<1.21')
     systemProperty 'nerospace.nbtItems', stonecutter.eval(mc, '<1.20.5')
     useJUnitPlatform()
+    if (mc == '1.20.2') {
+        filter { legacyRegistrySuites.each { excludeTestsMatching it } }
+    }
 }
 
 dependencies {
@@ -96,7 +145,7 @@ dependencies {
     // NeroEconomy — OPTIONAL. Its public API on the compile classpath only: never bundled, never required.
     // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
     if (stonecutter.eval(mc, '>=26.1')) {
-        compileOnly "za.co.neroland.neroeconomy:neroeconomy-neoforge-${mc}:${rootProject.property('neroeconomy_version')}"
+        compileOnly "za.co.neroland.neroeconomy:neroeconomy-neoforge-${neroeconomyMc}:${rootProject.property('neroeconomy_version')}"
     }
 
     // Sentry SDK embedded via NeoForge JarJar so players need no extra download (JarJar dedupes if
@@ -160,7 +209,16 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     expand(props)
     from "${branchDir}/src/main/templates"
     if (stonecutter.eval(mc, '<1.20.5')) {
-        filesMatching('META-INF/neoforge.mods.toml') { name = 'mods.toml' }
+        filesMatching('META-INF/neoforge.mods.toml') {
+            name = 'mods.toml'
+            // NeoForge before 20.4 reads `mandatory` rather than `type`, and no [[mixins]] tables: those cells
+            // name the mixin configs in the jar manifest instead (below).
+            if (stonecutter.eval(mc, '<1.20.4')) {
+                filter { line -> line.replace('type = "required"', 'mandatory = true')
+                                     .replace('type = "optional"', 'mandatory = false') }
+                filter { line -> line ==~ /\s*\[\[mixins]]\s*/ || line ==~ /\s*config\s*=\s*"nerospace-.*\.mixins\.json"\s*/ ? '' : line }
+            }
+        }
     }
     into layout.buildDirectory.dir('generated/sources/modMetadata')
 }
@@ -206,9 +264,15 @@ def generateWikiResources = tasks.register('generateWikiResources', Copy) {
 }
 sourceSets.main.resources.srcDir generateWikiResources
 
-// NeoForge 20.5's POM predates the ModDevGradle variants. The original userdev jar supplies the
-// game patches and the original POM supplies dependencies for the compile and test classpaths.
-if (mc == '1.20.5') {
+if (stonecutter.eval(mc, '<1.20.4')) {
+    tasks.named('jar', Jar) {
+        manifest.attributes('MixinConfigs': 'nerospace-common.mixins.json,nerospace-sky.mixins.json,nerospace-shaders.mixins.json')
+    }
+}
+
+// These NeoForge POMs (20.2, 20.3, 20.5) predate the ModDevGradle variants. The original userdev jar supplies
+// the game patches and the original POM supplies dependencies for the compile and test classpaths.
+if (mc in ['1.20.2', '1.20.3', '1.20.5']) {
     dependencies.components.withModule('net.neoforged:neoforge') { details ->
         if (details.id.version == neoVersion) {
             details.withVariant('sources') {

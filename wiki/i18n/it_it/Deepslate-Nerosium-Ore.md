@@ -25,5 +25,5 @@ Come il [Minerale di Nerosium](Nerosium-Ore.md): fondi il Nerosium grezzo (forna
 
 ## Dettagli
 
-- ID: `nerospace:deepslate_nerosium_ore`
+- ID: `nerolandcore:deepslate_nerosium_ore`
 - Attrezzo: piccone, livello ferro · Drop: Nerosium grezzo

@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "nerospace:xertz_quartz_ore"
+          "Name": "nerolandcore:xertz_quartz_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",
@@ -15,7 +15,7 @@
       },
       {
         "state": {
-          "Name": "nerospace:xertz_quartz_ore"
+          "Name": "nerolandcore:xertz_quartz_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",

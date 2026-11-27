@@ -3,7 +3,9 @@ package za.co.neroland.nerospace.platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+//? if >=1.20.3 {
 import net.neoforged.neoforge.capabilities.Capabilities;
+//?}
 //? if >=1.21.9 {
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -31,9 +33,12 @@ public final class NeoForgeItemLookup implements ItemLookup {
         //? if >=1.21.9 {
         ResourceHandler<ItemResource> handler =
                 Capabilities.Item.BLOCK.getCapability(level, pos, null, null, side);
-        //?} else {
+        //?} else if >=1.20.3 {
         /*net.neoforged.neoforge.items.IItemHandler handler =
                 Capabilities.ItemHandler.BLOCK.getCapability(level, pos, null, null, side);
+        *///?} else {
+        /*net.neoforged.neoforge.items.IItemHandler handler = za.co.neroland.nerospace.neoforge.NeoForgeCapabilities
+                .find(level, pos, net.neoforged.neoforge.common.capabilities.Capabilities.ITEM_HANDLER, side);
         *///?}
         return NeoForgeItemStoreAdapter.of(handler);
     }

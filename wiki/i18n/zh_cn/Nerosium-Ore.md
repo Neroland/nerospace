@@ -29,5 +29,5 @@ Nerosium 是 Nerospace 的第一种材料，也是通往其科技树的入口。
 
 ## 详细信息
 
-- ID：`nerospace:nerosium_ore`
+- ID：`nerolandcore:nerosium_ore`
 - 工具：镐，铁级 · 掉落：粗Nerosium

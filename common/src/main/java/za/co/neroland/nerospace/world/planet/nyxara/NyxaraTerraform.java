@@ -29,7 +29,7 @@ public final class NyxaraTerraform {
                     w(mc("lily_of_the_valley"), 10)),
             List.of(),
             List.of(ns("dusk_moth")),
-            List.of(ns("voidglass_ore"), ns("nerosium_ore")),
+            List.of(za.co.neroland.nerospace.world.planet.TerraformTable.core("voidglass_ore"), za.co.neroland.nerospace.world.planet.TerraformTable.core("nerosium_ore")),
             Optional.of(mc("dark_oak")), 1.0,
             mc("glow"),
             List.of(Rule.BAND_ONLY));

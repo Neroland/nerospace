@@ -29,7 +29,7 @@ public final class MarsTerraform {
             List.of(w(mc("short_grass"), 55), w(mc("short_dry_grass"), 30), w(mc("dead_bush"), 15)),
             List.of(),
             List.of(ns("dust_strider")),
-            List.of(ns("hematite_ore"), ns("nerosteel_ore")),
+            List.of(za.co.neroland.nerospace.world.planet.TerraformTable.core("hematite_ore"), za.co.neroland.nerospace.world.planet.TerraformTable.core("nerosteel_ore")),
             Optional.empty(), 0.0,
             mc("white_ash"),
             List.of(Rule.OPEN_WATER_SPRING));

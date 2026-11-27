@@ -1,9 +1,9 @@
 package za.co.neroland.nerospace.client.compat;
 
-// Minecraft 1.21.1 only (empty on every other line): the Minecraft.getItemModelResolver() look-alike that fills a
+// Minecraft 1.21.1 - 1.21.3 only (empty on every other line): the Minecraft.getItemModelResolver() look-alike that fills a
 // client.compat ItemStackRenderState (the build rewrites the getter to INSTANCE on that line; see stonecutter.gradle).
 
-//? if <1.21.2 {
+//? if <1.21.4 {
 /*import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;

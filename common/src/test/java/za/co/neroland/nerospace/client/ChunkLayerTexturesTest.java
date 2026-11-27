@@ -35,6 +35,7 @@ class ChunkLayerTexturesTest {
 
     private static final Map<String, Layer> EXPECTED = new LinkedHashMap<>();
 
+    // Amber Sap Ore and Voidglass Ore moved to Neroland Core 1.25.0 with their textures; Core owns their layers.
     static {
         EXPECTED.put("crater_glass", Layer.TRANSLUCENT);
         EXPECTED.put("dry_ice", Layer.TRANSLUCENT);
@@ -53,7 +54,6 @@ class ChunkLayerTexturesTest {
         EXPECTED.put("glowcap_block", Layer.SOLID);
         EXPECTED.put("bio_bark_log", Layer.SOLID);
         EXPECTED.put("stripped_bio_bark_log", Layer.SOLID);
-        EXPECTED.put("amber_sap_ore", Layer.SOLID);
         EXPECTED.put("glowcap_fungus", Layer.CUTOUT);
         EXPECTED.put("spore_pod", Layer.CUTOUT);
         EXPECTED.put("xertz_vine", Layer.CUTOUT);
@@ -62,7 +62,6 @@ class ChunkLayerTexturesTest {
         EXPECTED.put("nyx_stone", Layer.SOLID);
         EXPECTED.put("dawnband_stone", Layer.SOLID);
         EXPECTED.put("void_crystal", Layer.TRANSLUCENT);
-        EXPECTED.put("voidglass_ore", Layer.SOLID);
         EXPECTED.put("gravity_shard_block", Layer.TRANSLUCENT);
         EXPECTED.put("sunglass_crystal", Layer.TRANSLUCENT);
         EXPECTED.put("crazed_crystal", Layer.TRANSLUCENT);

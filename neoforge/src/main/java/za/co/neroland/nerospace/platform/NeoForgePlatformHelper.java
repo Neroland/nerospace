@@ -60,41 +60,41 @@ public final class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public int getOxygen(Player player) {
-        return player.getData(NeoForgeAttachments.OXYGEN.get());
+        return NeoForgeAttachments.getOxygen(player);
     }
 
     @Override
     public void setOxygen(Player player, int value) {
-        player.setData(NeoForgeAttachments.OXYGEN.get(), value);
+        NeoForgeAttachments.setOxygen(player, value);
     }
 
     @Override
     public boolean isTerraformed(LevelChunk chunk) {
-        return chunk.getData(NeoForgeAttachments.TERRAFORMED.get());
+        return NeoForgeAttachments.isTerraformed(chunk);
     }
 
     @Override
     public void setTerraformed(LevelChunk chunk, boolean value) {
-        chunk.setData(NeoForgeAttachments.TERRAFORMED.get(), value);
+        NeoForgeAttachments.setTerraformed(chunk, value);
     }
 
     @Override
     public int getTerraformStage(LevelChunk chunk) {
-        return chunk.getData(NeoForgeAttachments.TERRAFORM_STAGE.get());
+        return NeoForgeAttachments.getTerraformStage(chunk);
     }
 
     @Override
     public void setTerraformStage(LevelChunk chunk, int value) {
-        chunk.setData(NeoForgeAttachments.TERRAFORM_STAGE.get(), value);
+        NeoForgeAttachments.setTerraformStage(chunk, value);
     }
 
     @Override
     public java.util.List<Integer> getStarGuideSeen(Player player) {
-        return player.getData(NeoForgeAttachments.STAR_GUIDE_SEEN.get());
+        return NeoForgeAttachments.getStarGuideSeen(player);
     }
 
     @Override
     public void setStarGuideSeen(Player player, java.util.List<Integer> value) {
-        player.setData(NeoForgeAttachments.STAR_GUIDE_SEEN.get(), value);
+        NeoForgeAttachments.setStarGuideSeen(player, value);
     }
 }

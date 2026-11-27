@@ -35,5 +35,5 @@ Il Nerosteel è un metallo di classe ferro e la spina dorsale della fabbricazion
 
 ## Dettagli
 
-- ID: `nerospace:nerosteel_ore` · Dimensioni: Overworld (raro, profondo) + Greenxertz (comune)
+- ID: `nerolandcore:nerosteel_ore` · Dimensioni: Overworld (raro, profondo) + Greenxertz (comune)
 - Attrezzo: piccone, livello ferro · Drop: Nerosteel grezzo

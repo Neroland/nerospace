@@ -17,11 +17,11 @@ class AlienTradesTest {
 
     /** The 1.6.0 {@code AlienTrades.forTier} body, transcribed: tier, costA, n, costB, b, result, rc, maxUses, xp. */
     private static final List<TradeTable.Row> XERTZ_1_6_0 = List.of(
-            new TradeTable.Row(1, "nerospace:xertz_quartz", 12, null, 0, "minecraft:emerald", 1, 16, 1),
+            new TradeTable.Row(1, "nerolandcore:xertz_quartz", 12, null, 0, "minecraft:emerald", 1, 16, 1),
             new TradeTable.Row(1, "minecraft:emerald", 1, null, 0, "minecraft:iron_ingot", 3, 16, 1),
             new TradeTable.Row(1, "minecraft:emerald", 2, null, 0, "minecraft:bread", 6, 16, 1),
             new TradeTable.Row(2, "minecraft:emerald", 4, null, 0, "nerospace:nerosium_ingot", 1, 12, 5),
-            new TradeTable.Row(2, "minecraft:emerald", 1, "nerospace:raw_nerosteel", 8, "nerospace:nerosteel_ingot", 4, 12, 5),
+            new TradeTable.Row(2, "minecraft:emerald", 1, "nerolandcore:raw_nerosteel", 8, "nerospace:nerosteel_ingot", 4, 12, 5),
             new TradeTable.Row(2, "nerospace:alien_fragment", 4, null, 0, "minecraft:emerald", 1, 12, 2),
             new TradeTable.Row(3, "minecraft:emerald", 8, null, 0, "minecraft:diamond", 1, 6, 10),
             new TradeTable.Row(3, "minecraft:emerald", 5, null, 0, "nerospace:rocket_fuel_canister", 1, 8, 8),
@@ -74,7 +74,7 @@ class AlienTradesTest {
         assertBuys(AlienTrades.EMBER_KIN_TABLE, "nerospace:ash_dust");
         assertBuys(AlienTrades.FROSTBOUND_TABLE, "nerospace:frost_shard");
         assertBuys(AlienTrades.DUSKBORN_TABLE, "nerospace:shadow_lichen");
-        assertBuys(AlienTrades.BRINEKIN_TABLE, "nerospace:brine_salt");
+        assertBuys(AlienTrades.BRINEKIN_TABLE, "nerolandcore:brine_salt");
         for (VillagerCulture c : VillagerCultures.ALL) {
             assertBuys(c.trades(), c.giftItem());
         }
@@ -92,7 +92,7 @@ class AlienTradesTest {
         assertFalse(t.rows().isEmpty());
         for (TradeTable.Row row : t.rows()) {
             assertEquals(1, row.tier());
-            assertEquals("nerospace:raw_hematite", row.costA());
+            assertEquals("nerolandcore:raw_hematite", row.costA());
             assertEquals(null, row.costB());
         }
         assertTrue(VillagerCultures.byId(AlienTrades.SALVAGE).isEmpty(), "the drone is not a culture");

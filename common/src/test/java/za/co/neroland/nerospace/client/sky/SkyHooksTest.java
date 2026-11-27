@@ -254,10 +254,10 @@ class SkyHooksTest {
     }
 
     @Test
-    @DisplayName("the sky mixin is listed from 26.1.2 only, client-side and optional, and every loader declares it")
+    @DisplayName("the sky mixin is listed from 26.1 only, client-side and optional, and every loader declares it")
     void mixinConfigs() throws IOException {
         JsonObject base = json("common/src/main/resources/nerospace-sky.mixins.json");
-        JsonObject from261 = json("common/src/main/resources-26.1.2/nerospace-sky.mixins.json");
+        JsonObject from261 = json("common/src/main/resources-26.1/nerospace-sky.mixins.json");
         for (JsonObject config : List.of(base, from261)) {
             assertFalse(config.get("required").getAsBoolean());
             assertEquals("za.co.neroland.nerospace.mixin.sky", config.get("package").getAsString());

@@ -31,8 +31,7 @@ class EuropaDataTest {
     private static final Pattern BANNED = Pattern.compile("(?<!cave_|sloped_)che" + "ese");
 
     /** Blocks whose normal drop is not the block: a silk-touch alternative first, then the drop. */
-    private static final List<String> ORE_STYLE = List.of("deuterium_ice", "brine_salt_ore", "vent_sulfide_ore",
-            "oxidant_ice");
+    private static final List<String> ORE_STYLE = List.of("deuterium_ice", "oxidant_ice");
 
     private static boolean file(Path p) {
         return Files.isRegularFile(p);
@@ -51,11 +50,17 @@ class EuropaDataTest {
     }
 
     @Test
-    @DisplayName("the roster matches registration: 21 blocks in order, brine last and item-less, 7 items")
+    @DisplayName("the roster matches registration: 18 blocks in order, brine last and item-less, 4 items")
     void roster() throws IOException {
         Assumptions.assumeTrue(EuropaFiles.commonMain() != null, "common sources not found");
-        assertEquals(21, EuropaFiles.BLOCKS.size());
-        assertEquals(7, EuropaFiles.ITEMS.size());
+        assertEquals(18, EuropaFiles.BLOCKS.size());
+        assertEquals(4, EuropaFiles.ITEMS.size());
+        // The ores and their raw materials alias Neroland Core's entries instead of registering their own.
+        String content = Files.readString(EuropaFiles.commonMain().resolve(
+                "java/za/co/neroland/nerospace/world/planet/europa/EuropaContent.java"), StandardCharsets.UTF_8);
+        for (String id : EuropaFiles.CORE_ORES) {
+            assertTrue(content.contains("CoreOres." + id.toUpperCase(java.util.Locale.ROOT) + ")"), id + " aliases Core");
+        }
         String src = Files.readString(EuropaFiles.commonMain().resolve(
                 "java/za/co/neroland/nerospace/world/planet/europa/EuropaContent.java"), StandardCharsets.UTF_8);
         int at = 0;
@@ -169,11 +174,9 @@ class EuropaDataTest {
             assertEquals(expected, pickaxe.contains("nerospace:" + id), "pickaxe " + id);
         }
         assertTrue(values(tag("minecraft", "block/mineable/shovel")).contains("nerospace:lineae_salt"));
-        assertTrue(values(tag("minecraft", "block/needs_stone_tool")).containsAll(
-                List.of("nerospace:shell_ice", "nerospace:brine_salt_ore")));
+        assertTrue(values(tag("minecraft", "block/needs_stone_tool")).contains("nerospace:shell_ice"));
         assertTrue(values(tag("minecraft", "block/needs_iron_tool")).containsAll(List.of("nerospace:cryovent",
-                "nerospace:deuterium_ice", "nerospace:oxidant_ice", "nerospace:vent_sulfide_ore",
-                "nerospace:europium_ore")));
+                "nerospace:deuterium_ice", "nerospace:oxidant_ice")));
         assertEquals(List.of("nerospace:hydrothermal_vent"), values(tag("minecraft", "block/needs_diamond_tool")));
 
         List<String> shade = values(tag("nerospace", "block/radiation_shade"));
@@ -192,7 +195,7 @@ class EuropaDataTest {
         }
         assertEquals(List.of("nerospace:europa_ice", "nerospace:chaos_ice", "nerospace:lineae_salt",
                 "nerospace:shell_ice", "nerospace:penitente_blade", "nerospace:brine", "nerospace:deuterium_ice",
-                "nerospace:brine_salt_ore", "nerospace:oxidant_ice"),
+                "nerolandcore:brine_salt_ore", "nerospace:oxidant_ice"),
                 values(tag("nerospace", "block/europa_fracture_replaceable")));
         assertEquals(List.of("nerospace:hydrothermal_vent", "minecraft:lava", "minecraft:magma_block",
                 "minecraft:campfire", "minecraft:soul_campfire"), values(tag("nerospace", "block/europa_heat_sources")));
@@ -200,9 +203,9 @@ class EuropaDataTest {
             assertFalse(EuropaFiles.BLOCKS.contains(v.replace("nerospace:", "")), "no Europa ice feeds hydration: " + v);
         }
 
-        List<String> ores = List.of("deuterium_ice", "oxidant_ice", "brine_salt_ore", "vent_sulfide_ore",
-                "europium_ore");
-        List<String> kinds = List.of("deuterium", "oxidant", "salt", "sulfide", "europium");
+        // Brine salt, vent sulfide and europium ore tags moved to Neroland Core with the ores (Core 1.25.0).
+        List<String> ores = List.of("deuterium_ice", "oxidant_ice");
+        List<String> kinds = List.of("deuterium", "oxidant");
         for (String kind : List.of("block", "item")) {
             List<String> all = values(tag("c", kind + "/ores"));
             for (int i = 0; i < ores.size(); i++) {
@@ -212,12 +215,8 @@ class EuropaDataTest {
         }
         assertTrue(values(tag("c", "item/gems")).containsAll(
                 List.of("nerospace:deuterium_shard", "nerospace:oxidant_crystal")));
-        assertTrue(values(tag("c", "item/dusts")).contains("nerospace:brine_salt"));
-        assertTrue(values(tag("c", "item/raw_materials")).contains("nerospace:raw_vent_sulfide"));
         List<String> highlight = values(tag("neroland", "item/highlight/materials"));
-        assertTrue(highlight.containsAll(List.of("nerospace:deuterium_shard", "nerospace:oxidant_crystal",
-                "nerospace:brine_salt", "nerospace:raw_vent_sulfide")));
-        assertFalse(highlight.contains("nerospace:raw_europium"), "europium stays out of the highlight set");
+        assertTrue(highlight.containsAll(List.of("nerospace:deuterium_shard", "nerospace:oxidant_crystal")));
     }
 
     /** The 27 recipe files of 2.4.0. */
@@ -262,6 +261,10 @@ class EuropaDataTest {
     }
 
     private static void resolves(String id, String where) {
+        if (id.startsWith("nerolandcore:") && (EuropaFiles.CORE_ORES.contains(id.substring(13))
+                || EuropaFiles.CORE_ITEMS.contains(id.substring(13)))) {
+            return; // a Europa ore or raw material owned by Neroland Core since 1.25.0
+        }
         if (id.startsWith("nerospace:")) {
             assertTrue(file(EuropaFiles.assets("items/" + id.substring("nerospace:".length()) + ".json")),
                     where + " names an unknown item " + id);
@@ -312,8 +315,11 @@ class EuropaDataTest {
             String form = id.equals("brine") ? "brine_bucket" : id;
             assertTrue(used.contains("nerospace:" + form), id + " has no recipe use");
         }
-        for (String id : List.of("deuterium_shard", "brine_salt", "raw_vent_sulfide", "raw_europium", "deuterium_cell")) {
+        for (String id : List.of("deuterium_shard", "deuterium_cell")) {
             assertTrue(used.contains("nerospace:" + id), id + " has no recipe use");
+        }
+        for (String id : EuropaFiles.CORE_ITEMS) {
+            assertTrue(used.contains("nerolandcore:" + id), id + " has no recipe use");
         }
         // The decorative gem enters nothing but the lamp, and no grinder row touches it.
         for (String name : RECIPES) {
@@ -340,7 +346,7 @@ class EuropaDataTest {
         }
         JsonObject lang = EuropaFiles.json(EuropaFiles.assets("lang/en_us.json"));
         assertTrue(lang.has(ShellIceBlock.WARNING_KEY));
-        assertTrue(lang.has(RawEuropiumItem.TOOLTIP_KEY));
+        // Raw Europium (and its tooltip key) moved to Neroland Core 1.25.0.
     }
 
     private static List<String> variantKeys(String id) throws IOException {

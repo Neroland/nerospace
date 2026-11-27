@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "S": "nerospace:crystal_shard",
-    "V": "nerospace:voidglass"
+    "V": "nerolandcore:voidglass"
   },
   "pattern": [
     "SSS",

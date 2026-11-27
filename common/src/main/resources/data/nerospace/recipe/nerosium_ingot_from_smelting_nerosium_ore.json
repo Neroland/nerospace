@@ -3,7 +3,7 @@
   "category": "misc",
   "cookingtime": 200,
   "experience": 0.7,
-  "ingredient": "nerospace:nerosium_ore",
+  "ingredient": "nerolandcore:nerosium_ore",
   "result": {
     "id": "nerospace:nerosium_ingot"
   }

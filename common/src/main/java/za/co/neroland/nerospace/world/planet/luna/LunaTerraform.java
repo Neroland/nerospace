@@ -27,7 +27,7 @@ public final class LunaTerraform {
             List.of(w(mc("short_grass"), 60), w(mc("moss_carpet"), 30), w(mc("azure_bluet"), 10)),
             List.of(),
             List.of(ns("moon_hopper")),
-            List.of(ns("ilmenite_ore"), ns("nerosium_ore")),
+            List.of(za.co.neroland.nerospace.world.planet.TerraformTable.core("ilmenite_ore"), za.co.neroland.nerospace.world.planet.TerraformTable.core("nerosium_ore")),
             Optional.empty(), 0.3,
             mc("end_rod"),
             List.of(Rule.SHIMMER_DOME));

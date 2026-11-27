@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "nerospace:ilmenite_ore"
+          "Name": "nerolandcore:ilmenite_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",
@@ -15,7 +15,7 @@
       },
       {
         "state": {
-          "Name": "nerospace:ilmenite_ore"
+          "Name": "nerolandcore:ilmenite_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",
@@ -24,7 +24,7 @@
       },
       {
         "state": {
-          "Name": "nerospace:ilmenite_ore"
+          "Name": "nerolandcore:ilmenite_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",

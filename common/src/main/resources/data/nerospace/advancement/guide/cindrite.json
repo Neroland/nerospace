@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "nerospace:cindrite"
+            "items": "nerolandcore:cindrite"
           }
         ]
       },
@@ -15,7 +15,7 @@
   "display": {
     "description": "Mine cindrite on Cindara",
     "icon": {
-      "id": "nerospace:cindrite"
+      "id": "nerolandcore:cindrite"
     },
     "title": "Heart of the Volcano"
   },

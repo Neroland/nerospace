@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "nerospace:cheese_ore"
+          "Name": "nerolandcore:cheese_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",
@@ -15,7 +15,7 @@
       },
       {
         "state": {
-          "Name": "nerospace:cheese_ore"
+          "Name": "nerolandcore:cheese_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",

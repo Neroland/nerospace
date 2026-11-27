@@ -13,7 +13,7 @@ import java.util.List;
  */
 public final class EuropaDropRules {
 
-    public static final String BRINE_SALT = "nerospace:brine_salt";
+    public static final String BRINE_SALT = "nerolandcore:brine_salt";
     public static final String OXIDANT_CRYSTAL = "nerospace:oxidant_crystal";
     public static final String SULFUR = "nerospace:sulfur";
 

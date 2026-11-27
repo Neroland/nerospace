@@ -603,17 +603,17 @@ public final class GalleryCaptureHarness {
         // Greenxertz (overworld-type → has a clock): green steel platform + xertz quartz / nerosteel
         // accents, with the Greenxertz fauna frozen on deck.
         shots.add(planetScene("greenxertz_vista", "nerospace:greenxertz", true, time,
-                0, 110, 0, "nerospace:nerosteel_block", "nerospace:xertz_quartz_ore", "nerospace:alien_lamp",
+                0, 110, 0, "nerospace:nerosteel_block", "nerolandcore:xertz_quartz_ore", "nerospace:alien_lamp",
                 List.of("nerospace:xertz_stalker", "nerospace:quartz_crawler", "nerospace:greenling")));
 
         // Cindara (space-type → no clock, volcanic dark): cindrite platform + cindrite ore + meteor rock.
         shots.add(planetScene("cindara_basin", "nerospace:cindara", false, time,
-                0, 110, 0, "nerospace:cindrite_block", "nerospace:cindrite_ore", "nerospace:meteor_rock",
+                0, 110, 0, "nerospace:cindrite_block", "nerolandcore:cindrite_ore", "nerospace:meteor_rock",
                 List.of("nerospace:cinder_stalker", "nerospace:ember_strutter")));
 
         // Glacira (space-type → no clock, frozen): glacite platform + glacite ore + blue ice.
         shots.add(planetScene("glacira_frost", "nerospace:glacira", false, time,
-                0, 110, 0, "nerospace:glacite_block", "nerospace:glacite_ore", "minecraft:blue_ice",
+                0, 110, 0, "nerospace:glacite_block", "nerolandcore:glacite_ore", "minecraft:blue_ice",
                 List.of("nerospace:frost_strider", "nerospace:woolly_drift")));
 
         // Europa (2.4.0, fixed clock, frozen): a cut-ice deck above the highest surface (Y 212), deuterium ice ore,

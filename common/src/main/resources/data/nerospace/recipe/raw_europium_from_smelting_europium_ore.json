@@ -3,8 +3,8 @@
   "category": "misc",
   "cookingtime": 200,
   "experience": 0.2,
-  "ingredient": "nerospace:europium_ore",
+  "ingredient": "nerolandcore:europium_ore",
   "result": {
-    "id": "nerospace:raw_europium"
+    "id": "nerolandcore:raw_europium"
   }
 }

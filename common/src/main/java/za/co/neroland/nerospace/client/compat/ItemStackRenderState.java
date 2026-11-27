@@ -1,11 +1,11 @@
 package za.co.neroland.nerospace.client.compat;
 
-// Minecraft 1.21.1 only (empty on every other line). 1.21.4 resolves an item's model into an ItemStackRenderState
+// Minecraft 1.21.1 - 1.21.3 only (empty on every other line). 1.21.4 resolves an item's model into an ItemStackRenderState
 // during extraction and draws it later. Before it items were drawn straight from the stack; this look-alike (same
 // simple name, swapped in by an import rewrite in stonecutter.gradle) remembers what client.compat.ItemModelResolver
 // was given and draws it with the 1.21.1 ItemRenderer.
 
-//? if <1.21.2 {
+//? if <1.21.4 {
 /*import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;

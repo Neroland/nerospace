@@ -64,15 +64,15 @@ class GreenxertzDataTest {
     @Test
     void everyIdHasAssetsAndLoot() throws IOException {
         for (String id : BLOCKS) {
-            assertTrue(exists("/assets/nerospace/blockstates/" + id + ".json"), "blockstate " + id);
-            assertTrue(exists("/assets/nerospace/items/" + id + ".json"), "item model " + id);
-            assertTrue(exists("/assets/nerospace/textures/block/" + id + ".png"), "texture " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/blockstates/" + id + ".json"), "blockstate " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/items/" + id + ".json"), "item model " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/textures/block/" + id + ".png"), "texture " + id);
             assertEquals("minecraft:block",
-                    load("/data/nerospace/loot_table/blocks/" + id + ".json").get("type").getAsString(), id);
+                    load("/data/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/loot_table/blocks/" + id + ".json").get("type").getAsString(), id);
         }
         for (String id : ITEMS) {
-            assertTrue(exists("/assets/nerospace/items/" + id + ".json"), "item model " + id);
-            assertTrue(exists("/assets/nerospace/textures/item/" + id + ".png"), "texture " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/items/" + id + ".json"), "item model " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/textures/item/" + id + ".png"), "texture " + id);
         }
         assertTrue(exists("/data/nerospace/recipe/spore_bomb.json"));
     }
@@ -83,8 +83,11 @@ class GreenxertzDataTest {
         Assumptions.assumeTrue(main != null, "common/src/main not found");
         List<String> missing = new ArrayList<>();
         for (String id : BLOCKS) {
+            if (za.co.neroland.nerospace.MovedOres.moved(id)) {
+                continue; // Core ships this ore's loot (checked on the classpath above)
+            }
             for (String tree : List.of("resources", "resources-26.3")) {
-                if (!Files.exists(main.resolve(tree + "/data/nerospace/loot_table/blocks/" + id + ".json"))) {
+                if (!Files.exists(main.resolve(tree + "/data/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/loot_table/blocks/" + id + ".json"))) {
                     missing.add(tree + " loot " + id);
                 }
             }

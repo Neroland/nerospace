@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "nerospace:raw_europium"
+            "items": "nerolandcore:raw_europium"
           }
         ]
       },
@@ -20,7 +20,7 @@
     "frame": "challenge",
     "hidden": true,
     "icon": {
-      "id": "nerospace:raw_europium"
+      "id": "nerolandcore:raw_europium"
     },
     "show_toast": true,
     "title": {

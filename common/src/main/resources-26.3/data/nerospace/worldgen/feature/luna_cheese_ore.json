@@ -4,14 +4,14 @@
   "size": 4,
   "targets": [
     {
-      "state": "nerospace:cheese_ore",
+      "state": "nerolandcore:cheese_ore",
       "target": {
         "predicate_type": "minecraft:block_match",
         "block": "nerospace:regolith"
       }
     },
     {
-      "state": "nerospace:cheese_ore",
+      "state": "nerolandcore:cheese_ore",
       "target": {
         "predicate_type": "minecraft:block_match",
         "block": "nerospace:anorthosite"

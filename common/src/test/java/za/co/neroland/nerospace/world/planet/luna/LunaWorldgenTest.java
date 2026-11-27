@@ -118,6 +118,17 @@ class LunaWorldgenTest {
             "ilmenite_ore", "helium3_pocket", "cheese_ore", "cheese_wheel"})
     @DisplayName("every Luna block has a loot table in both resource trees")
     void loot(String id) throws IOException {
+        if (za.co.neroland.nerospace.MovedOres.moved(id)) {
+            // Moved to Neroland Core 1.25.0: its loot table ships in Core's jar for this cell.
+            String path = za.co.neroland.nerospace.TestResourcePaths.datapack("/data/nerolandcore/loot_table/blocks/" + id + ".json");
+            try (java.io.InputStream in = LunaWorldgenTest.class.getResourceAsStream(path)) {
+                org.junit.jupiter.api.Assertions.assertNotNull(in, "Core loot " + id);
+                JsonObject t = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(in, StandardCharsets.UTF_8))
+                        .getAsJsonObject();
+                assertEquals("minecraft:block", t.get("type").getAsString(), "Core " + id);
+            }
+            return;
+        }
         for (String tree : List.of("resources", "resources-26.3")) {
             JsonObject t = LunaFiles.json(LunaFiles.data(tree, "loot_table/blocks/" + id + ".json"));
             assertEquals("minecraft:block", t.get("type").getAsString(), tree + " " + id);

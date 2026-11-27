@@ -13,7 +13,9 @@
   progression. Author: **Neroland** (Dario). Repo: github.com/Neroland/nerospace.
 - Mod id: **`nerospace`** (matches the registry namespace + every loader manifest). Package root:
   `za.co.neroland.nerospace`.
-- Targets **MC 26.1.2, 26.2 AND 26.3** on **NeoForge, MinecraftForge/Forge, and Fabric** → the **"9 cells"**. **Java 25.**
+- Targets **MC 1.20 – 26.3** (`mc_versions` in `gradle.properties`: 1.20–1.20.6, 1.21.1, 1.21.3, 1.21.4, 1.21.5, 1.21.8, 1.21.10, 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, 26.3)
+  on **NeoForge, MinecraftForge/Forge, and Fabric** → **54 cells** (Fabric 19, NeoForge 17 from 1.20.2, Forge 18 without 1.20.5).
+  **Java 17** for 1.20–1.20.4, **Java 21** for 1.20.5–1.21.11, **Java 25** for 26.x.
   Mappings = official Mojang names (26.x ships de-obfuscated; no Parchment).
 
 ## Working with Dario (the developer)
@@ -37,7 +39,7 @@
 - **Version/loader axis = Stonecutter.** Each loader×MC is a real node `:<loader>:<mc>`
   (`:fabric:26.1.2 :fabric:26.2 :fabric:26.3 :neoforge:26.1.2 :neoforge:26.2 :neoforge:26.3 :forge:26.1.2 :forge:26.2 :forge:26.3`). `common` is NOT a node — its source is
   spliced via `rootProject.ext.commonJava` / `commonResources`. Dep pins live in `gradle.properties` as
-  `*_version_<mc>` keys; `mc_versions=26.1.2,26.2,26.3`.
+  `*_version_<mc>` keys; `mc_versions` lists every Minecraft line (the per-loader filters are in `settings.gradle`).
 - **Version-specific code in `common/`.** Non-active nodes run `common/` through Stonecutter (`stonecutterProcessCommon`), so shared code uses the same `//? if >=26.3 {` blocks as the loader `src/` trees. Keep the files in the vcsVersion state, and never put a `*/` inside a disabled block. Datapack files whose format differs by version go in `common/src/main/resources-<mc>/`, which is merged over `common/src/main/resources` for every node at or above `<mc>` (`mergeCommonResources`).
 - `legacy/` = the retired **standalone single-loader** project (kept until the port is 120% confirmed;
   NOT built or shipped). The cutover runbook is `post_port.md`.

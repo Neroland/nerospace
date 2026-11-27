@@ -36,7 +36,7 @@ public final class SubmitNodeCollector {
         renderer.render(poseStack.last(), this.buffers.getBuffer(renderType));
     }
 
-    //? if >=1.21.4 {
+    //? if >=1.21.2 {
     public <S> void submitModel(Model model, S state, PoseStack poseStack, RenderType renderType, int light,
             int overlay, int color, @Nullable Object sprite, int outlineColor, @Nullable Object crumbling) {
         if (model instanceof net.minecraft.client.model.EntityModel<?> entityModel) {

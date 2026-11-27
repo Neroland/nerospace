@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "V": "nerospace:voidglass",
+    "V": "nerolandcore:voidglass",
     "G": "minecraft:glass_pane"
   },
   "pattern": [

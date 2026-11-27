@@ -51,26 +51,33 @@ public final class ModBlocks {
             RegistrationProvider.get(Registries.BLOCK, NerospaceCommon.MOD_ID);
 
     // --- Ores / materials ---------------------------------------------------
-    public static final RegistryEntry<Block> NEROSIUM_ORE = block("nerosium_ore",
-            p -> p.mapColor(MapColor.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
-    public static final RegistryEntry<Block> DEEPSLATE_NEROSIUM_ORE = block("deepslate_nerosium_ore",
-            p -> p.mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:nerosium_ore}). */
+    public static final RegistryEntry<Block> NEROSIUM_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.NEROSIUM_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:deepslate_nerosium_ore}). */
+    public static final RegistryEntry<Block> DEEPSLATE_NEROSIUM_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.DEEPSLATE_NEROSIUM_ORE);
     public static final RegistryEntry<Block> NEROSIUM_BLOCK = block("nerosium_block",
             p -> p.mapColor(MapColor.COLOR_LIGHT_BLUE).strength(5.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
-    public static final RegistryEntry<Block> RAW_NEROSIUM_BLOCK = block("raw_nerosium_block",
-            p -> p.mapColor(MapColor.COLOR_LIGHT_BLUE).strength(5.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
-    public static final RegistryEntry<Block> NEROSTEEL_ORE = block("nerosteel_ore",
-            p -> p.mapColor(MapColor.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
-    public static final RegistryEntry<Block> XERTZ_QUARTZ_ORE = block("xertz_quartz_ore",
-            p -> p.mapColor(MapColor.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.NETHER_ORE));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:raw_nerosium_block}). */
+    public static final RegistryEntry<Block> RAW_NEROSIUM_BLOCK =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.RAW_NEROSIUM_BLOCK);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:nerosteel_ore}). */
+    public static final RegistryEntry<Block> NEROSTEEL_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.NEROSTEEL_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:xertz_quartz_ore}). */
+    public static final RegistryEntry<Block> XERTZ_QUARTZ_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.XERTZ_QUARTZ_ORE);
     public static final RegistryEntry<Block> NEROSTEEL_BLOCK = block("nerosteel_block",
             p -> p.mapColor(MapColor.COLOR_GRAY).strength(5.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
-    public static final RegistryEntry<Block> CINDRITE_ORE = block("cindrite_ore",
-            p -> p.mapColor(MapColor.COLOR_BLACK).strength(3.5F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:cindrite_ore}). */
+    public static final RegistryEntry<Block> CINDRITE_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.CINDRITE_ORE);
     public static final RegistryEntry<Block> CINDRITE_BLOCK = block("cindrite_block",
             p -> p.mapColor(MapColor.COLOR_RED).strength(5.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
-    public static final RegistryEntry<Block> GLACITE_ORE = block("glacite_ore",
-            p -> p.mapColor(MapColor.ICE).strength(3.5F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:glacite_ore}). */
+    public static final RegistryEntry<Block> GLACITE_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.GLACITE_ORE);
     public static final RegistryEntry<Block> GLACITE_BLOCK = block("glacite_block",
             p -> p.mapColor(MapColor.COLOR_LIGHT_BLUE).strength(5.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
 

@@ -98,6 +98,8 @@ class HeightmapTagCoverageTest {
                 }
             }
         }
+        // Ores that moved to Neroland Core 1.25.0 are Core's to tag (their old asset files may linger here).
+        ids.removeIf(id -> za.co.neroland.nerolandcore.registry.LegacyIds.blockOrItem("nerospace", id) != null);
         return ids;
     }
 

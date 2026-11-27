@@ -254,7 +254,7 @@ class HazardModelTest {
         String lining = load("/data/nerospace/recipe/rad_lining.json").toString();
         assertTrue(lining.contains("nerospace:titanium_ingot"), "Luna titanium");
         assertTrue(lining.contains("nerospace:regolith"), "Luna regolith");
-        assertTrue(lining.contains("nerospace:raw_hematite"), "Mars hematite");
+        assertTrue(lining.contains("nerolandcore:raw_hematite"), "Mars hematite");
         boolean nbtItems = Boolean.getBoolean("nerospace.nbtItems");
         String resultItemKey = nbtItems ? "item" : "id";
         assertTrue(lining.contains("\"" + resultItemKey + "\":\"nerospace:rad_lining\""));

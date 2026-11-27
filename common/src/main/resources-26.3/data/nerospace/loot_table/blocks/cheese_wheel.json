@@ -8,7 +8,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "nerospace:moon_cheese",
+          "name": "nerolandcore:moon_cheese",
           "modifier": [
             {
               "type": "minecraft:set_count",

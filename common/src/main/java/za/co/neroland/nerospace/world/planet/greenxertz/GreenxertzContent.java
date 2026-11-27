@@ -24,7 +24,6 @@ import za.co.neroland.nerospace.registry.ModBlocks;
 import za.co.neroland.nerospace.registry.ModFeatures;
 import za.co.neroland.nerospace.registry.ModItems;
 import za.co.neroland.nerospace.registry.RegistrationProvider.RegistryEntry;
-import za.co.neroland.nerospace.world.planet.greenxertz.block.AmberSapOreBlock;
 import za.co.neroland.nerospace.world.planet.greenxertz.block.BioBarkLogBlock;
 import za.co.neroland.nerospace.world.planet.greenxertz.block.GlowcapFungusBlock;
 import za.co.neroland.nerospace.world.planet.greenxertz.block.SporePodBlock;
@@ -76,9 +75,9 @@ public final class GreenxertzContent {
             key -> new SporePodBlock(props(key).mapColor(MapColor.COLOR_PINK).strength(0.3F, 0.3F)
                     .noCollision().noOcclusion().sound(SoundType.FUNGUS)));
 
-    public static final RegistryEntry<AmberSapOreBlock> AMBER_SAP_ORE = ModBlocks.BLOCKS.register("amber_sap_ore",
-            key -> new AmberSapOreBlock(props(key).mapColor(MapColor.COLOR_ORANGE).strength(2.5F, 2.5F)
-                    .requiresCorrectToolForDrops().sound(SoundType.WOOD)));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:amber_sap_ore}). */
+    public static final RegistryEntry<Block> AMBER_SAP_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.AMBER_SAP_ORE);
 
     // --- Block items ---------------------------------------------------------------------------------------
     public static final RegistryEntry<BlockItem> XERTZ_SOIL_ITEM = blockItem("xertz_soil", XERTZ_SOIL);
@@ -90,11 +89,15 @@ public final class GreenxertzContent {
     public static final RegistryEntry<BlockItem> GLOWCAP_FUNGUS_ITEM = blockItem("glowcap_fungus", GLOWCAP_FUNGUS);
     public static final RegistryEntry<BlockItem> GLOWCAP_BLOCK_ITEM = blockItem("glowcap_block", GLOWCAP_BLOCK);
     public static final RegistryEntry<BlockItem> SPORE_POD_ITEM = blockItem("spore_pod", SPORE_POD);
-    public static final RegistryEntry<BlockItem> AMBER_SAP_ORE_ITEM = blockItem("amber_sap_ore", AMBER_SAP_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:amber_sap_ore}). */
+    public static final RegistryEntry<BlockItem> AMBER_SAP_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.AMBER_SAP_ORE_ITEM);
 
     // --- Items ---------------------------------------------------------------------------------------------
     /** Amber, the biotech/seed ingredient. */
-    public static final RegistryEntry<Item> AMBER_SAP = item("amber_sap");
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:amber_sap}). */
+    public static final RegistryEntry<Item> AMBER_SAP =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.AMBER_SAP);
     public static final RegistryEntry<Item> XERTZ_FIBRE = item("xertz_fibre");
     public static final RegistryEntry<SporeBombItem> SPORE_BOMB = ModItems.ITEMS.register("spore_bomb",
             key -> new SporeBombItem(new Item.Properties().setId(key).stacksTo(16)));

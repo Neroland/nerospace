@@ -1,7 +1,7 @@
 # Nerospace Wiki
 
 **Nerospace** is a space-exploration / tech-progression mod for Minecraft (Java Edition), for
-**NeoForge, Fabric and Forge** on **Minecraft 26.1.2, 26.2 and 26.3**. Mine alien materials, build machines, craft rockets, travel to other
+**NeoForge, Fabric and Forge** on **Minecraft 1.20 to 26.3**. Mine alien materials, build machines, craft rockets, travel to other
 worlds, survive their airless atmospheres with oxygen gear, found your own orbital stations, and
 eventually **terraform** a dead planet into livable, rained-on ground.
 
@@ -128,7 +128,7 @@ land centred on a pad, or on an automatic Landing Pod: see **[Landing Pads](Land
 | **[Nyxara](Nyxara)** | Tier 4 rocket (Deep Space progress) | fixed sun in the west, galaxy in the east, flares | `~0.9×` | Tidally locked; Dayside, Twilight Band and Nightside by longitude; Voidglass, Void Crystal, Gravity Shards. **Radiation** everywhere ([Rad Lining](Oxygen-Suit#rad-lining-radiation)). |
 | **[Europa](Europa)** | Tier 4 rocket | black, a fixed Jupiter with drifting bands, a daily eclipse | `~0.13×` | Ice shell over a hidden ocean; Deuterium, Brine Salt, Oxidant Ice, hydrothermal vents. **Cold** (Cryo Suit on the surface, any Tier 2 suit under the ice) + **radiation** on the open surface (Rad Lining). |
 
-Full skies are drawn on Minecraft 26.1.2, 26.2 and 26.3 (NeoForge, Fabric and Forge); the 1.21 versions show each world's sky colours.
+Full skies are drawn on Minecraft 26.1, 26.1.1, 26.1.2, 26.2 and 26.3 (NeoForge, Fabric and Forge); the 1.21 versions show each world's sky colours.
 
 All Nerospace dimensions are **airless** — without a breathable zone (an Oxygen Generator, a Launch
 Pad, terraformed ground (except on Europa), or a full Oxygen Suit) you will run out of oxygen and suffocate. They also

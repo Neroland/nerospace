@@ -105,9 +105,9 @@ public final class NyxaraContent {
             key -> new VoidCrystalBlock(props(key).mapColor(MapColor.COLOR_PURPLE).noOcclusion().strength(1.5F, 1.5F)
                     .requiresCorrectToolForDrops().sound(SoundType.AMETHYST).lightLevel(s -> VoidCrystalBlock.LIGHT)));
 
-    public static final RegistryEntry<Block> VOIDGLASS_ORE = ModBlocks.BLOCKS.register("voidglass_ore",
-            key -> new Block(props(key).mapColor(MapColor.COLOR_PURPLE).strength(3.5F, 3.5F)
-                    .requiresCorrectToolForDrops().sound(SoundType.STONE).lightLevel(s -> 1)));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:voidglass_ore}). */
+    public static final RegistryEntry<Block> VOIDGLASS_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.VOIDGLASS_ORE);
 
     public static final RegistryEntry<GravityOverrideBlock> GRAVITY_SHARD_BLOCK = ModBlocks.BLOCKS.register(
             "gravity_shard_block",
@@ -179,7 +179,9 @@ public final class NyxaraContent {
     public static final RegistryEntry<BlockItem> DAWNBAND_STONE_ITEM = blockItem("dawnband_stone", DAWNBAND_STONE);
     public static final RegistryEntry<BlockItem> SHADOW_LICHEN_ITEM = blockItem("shadow_lichen", SHADOW_LICHEN);
     public static final RegistryEntry<BlockItem> VOID_CRYSTAL_ITEM = blockItem("void_crystal", VOID_CRYSTAL);
-    public static final RegistryEntry<BlockItem> VOIDGLASS_ORE_ITEM = blockItem("voidglass_ore", VOIDGLASS_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:voidglass_ore}). */
+    public static final RegistryEntry<BlockItem> VOIDGLASS_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.VOIDGLASS_ORE_ITEM);
     public static final RegistryEntry<BlockItem> GRAVITY_SHARD_BLOCK_ITEM = blockItem("gravity_shard_block",
             GRAVITY_SHARD_BLOCK);
     public static final RegistryEntry<BlockItem> SUNGLASS_CRYSTAL_ITEM = blockItem("sunglass_crystal", SUNGLASS_CRYSTAL);
@@ -198,7 +200,9 @@ public final class NyxaraContent {
 
     // --- Items ---------------------------------------------------------------------------------------------
     /** Voidglass, the Nyxara ore drop; ground into the Voidglass Lens. */
-    public static final RegistryEntry<Item> VOIDGLASS = item("voidglass");
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:voidglass}). */
+    public static final RegistryEntry<Item> VOIDGLASS =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.VOIDGLASS);
     /** Optics part (telescope / beam work). */
     public static final RegistryEntry<Item> VOIDGLASS_LENS = item("voidglass_lens");
     /** Nine make a Gravity Shard Block; a block breaks back into nine. */

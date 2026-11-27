@@ -32,14 +32,14 @@ class WetSeamRulesTest {
     @Test
     @DisplayName("drops: wet and not silk doubles each salt stack; dry or silk keeps the table's drops")
     void drops() {
-        List<EuropaDropRules.Stack> salt = List.of(new EuropaDropRules.Stack("nerospace:brine_salt", 3));
-        assertEquals(List.of(new EuropaDropRules.Stack("nerospace:brine_salt", 6)),
+        List<EuropaDropRules.Stack> salt = List.of(new EuropaDropRules.Stack("nerolandcore:brine_salt", 3));
+        assertEquals(List.of(new EuropaDropRules.Stack("nerolandcore:brine_salt", 6)),
                 EuropaDropRules.apply(EuropaDropRules.Kind.BRINE_SALT_ORE, salt, false, true, 0));
         assertEquals(salt, EuropaDropRules.apply(EuropaDropRules.Kind.BRINE_SALT_ORE, salt, false, false, 0));
-        List<EuropaDropRules.Stack> fortune = List.of(new EuropaDropRules.Stack("nerospace:brine_salt", 7));
-        assertEquals(List.of(new EuropaDropRules.Stack("nerospace:brine_salt", 8)),
+        List<EuropaDropRules.Stack> fortune = List.of(new EuropaDropRules.Stack("nerolandcore:brine_salt", 7));
+        assertEquals(List.of(new EuropaDropRules.Stack("nerolandcore:brine_salt", 8)),
                 EuropaDropRules.apply(EuropaDropRules.Kind.BRINE_SALT_ORE, fortune, false, true, 0));
-        List<EuropaDropRules.Stack> block = List.of(new EuropaDropRules.Stack("nerospace:brine_salt_ore", 1));
+        List<EuropaDropRules.Stack> block = List.of(new EuropaDropRules.Stack("nerolandcore:brine_salt_ore", 1));
         assertEquals(block, EuropaDropRules.apply(EuropaDropRules.Kind.BRINE_SALT_ORE, block, true, true, 0));
         assertFalse(EuropaDropRules.apply(EuropaDropRules.Kind.BRINE_SALT_ORE, salt, false, true, 0).isEmpty());
     }

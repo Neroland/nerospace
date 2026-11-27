@@ -34,5 +34,5 @@ Nerosteel 是一种铁级金属，也是中期合成的支柱——火箭、氧�
 
 ## 详细信息
 
-- ID：`nerospace:nerosteel_ore` · 维度：主世界（稀有、深埋）+ Greenxertz（常见）
+- ID：`nerolandcore:nerosteel_ore` · 维度：主世界（稀有、深埋）+ Greenxertz（常见）
 - 工具：镐，铁级 · 掉落：粗Nerosteel

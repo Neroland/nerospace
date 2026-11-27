@@ -12,7 +12,7 @@
     "description": "Travel to the frozen moon Glacira",
     "frame": "goal",
     "icon": {
-      "id": "nerospace:glacite"
+      "id": "nerolandcore:glacite"
     },
     "title": "Into the Cold"
   },

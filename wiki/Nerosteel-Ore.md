@@ -1,5 +1,10 @@
 # Nerosteel Ore
 
+> **Moved to Neroland Core.** Since Neroland Core 1.25.0 this ore and the material it drops are Core
+> blocks and items (`nerolandcore:` ids). Nerospace still generates them exactly where it did, and blocks
+> and items from older worlds are remapped automatically. Without Nerospace, an **Ore Reclaimer** (Neroland
+> Core) slowly turns them into vanilla materials. See the Neroland Core wiki.
+
 <!-- nerospace:render -->
 <p align="right"><img src="images/nerosteel_ore.png" alt="Nerosteel Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
@@ -36,5 +41,5 @@ your first rocket is reachable before you ever leave home.
 
 ## Details
 
-- ID: `nerospace:nerosteel_ore` · Dimensions: Overworld (rare, deep) + Greenxertz (common)
+- ID: `nerolandcore:nerosteel_ore` · Dimensions: Overworld (rare, deep) + Greenxertz (common)
 - Tool: pickaxe, iron tier · Drops: Raw Nerosteel

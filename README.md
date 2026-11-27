@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.20%E2%80%931.20.6%20%7C%201.21.1%20%7C%201.21.4%E2%80%931.21.11%20%7C%2026.1.2%20%7C%2026.2%20%7C%2026.3-62B47A">
+  <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.20%E2%80%931.20.6%20%7C%201.21.1%20%7C%201.21.3%E2%80%931.21.11%20%7C%2026.1%E2%80%9326.3-62B47A">
   <img alt="Loader" src="https://img.shields.io/badge/Loader-NeoForge%20%7C%20Forge%20%7C%20Fabric-F16436">
   <img alt="Java" src="https://img.shields.io/badge/Java-25-007396">
   <img alt="Version" src="https://img.shields.io/badge/version-2.0.0--alpha.1-orange">
@@ -73,16 +73,16 @@ In-game, the **Star Guide** (pedestal + guidebook) opens a live progression tree
 
 | | |
 | --- | --- |
-| Minecraft | 1.20–1.20.6 (loader coverage below), 1.21.1, 1.21.4, 1.21.5, 1.21.7–1.21.8, 1.21.9–1.21.10, 1.21.11, 26.1.2, 26.2 or 26.3 |
+| Minecraft | 1.20–1.20.6 (loader coverage below), 1.21.1, 1.21.3, 1.21.4, 1.21.5, 1.21.7–1.21.8, 1.21.9–1.21.10, 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2 or 26.3 |
 | Mod loader | NeoForge, MinecraftForge/Forge, or Fabric |
 | Java | Java 17 for Minecraft 1.20–1.20.4, Java 21 for 1.20.5 and 1.20.6 and for 1.21.x, Java 25 for 26.x (64-bit) |
-| Required mod | Neroland Core 1.24.0 or newer in the 1.x series, for the same Minecraft version and loader |
+| Required mod | Neroland Core 1.25.0 or newer in the 1.x series, for the same Minecraft version and loader |
 
 | Loader | Minecraft 1.20-series builds |
 | --- | --- |
 | Fabric | 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, 1.20.5, 1.20.6 |
 | Forge | 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, 1.20.6 |
-| NeoForge | 1.20.4, 1.20.5, 1.20.6 |
+| NeoForge | 1.20.2, 1.20.3, 1.20.4, 1.20.5, 1.20.6 |
 
 Minecraft 1.20.5 on NeoForge requires loader 20.5.21-beta.
 

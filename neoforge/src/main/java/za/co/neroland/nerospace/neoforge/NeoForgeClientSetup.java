@@ -27,7 +27,9 @@ import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 //? if >=1.20.5 {
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 //?}
+//? if >=1.20.4 {
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+//?}
 //? if >=1.20.5 {
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 //?}
@@ -70,7 +72,12 @@ public final class NeoForgeClientSetup {
     }
 
     public static void init(IEventBus modEventBus) {
+        //? if >=1.20.4 {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterScreens);
+        //?} else {
+        /*modEventBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) ->
+                event.enqueueWork(() -> onRegisterScreens(new LegacyScreens())));
+        *///?}
         //? if >=26.1 {
         modEventBus.addListener(NeoForgeClientSetup::onRegisterFluidModels);
         //?} else if >=1.21 {
@@ -177,7 +184,21 @@ public final class NeoForgeClientSetup {
         });
     }
 
+    //? if <1.20.4 {
+    /*// NeoForge 20.2 / 20.3 have no RegisterMenuScreensEvent: screens go straight to MenuScreens during client setup.
+    private static final class LegacyScreens {
+        <M extends net.minecraft.world.inventory.AbstractContainerMenu,
+                U extends net.minecraft.client.gui.screens.Screen & net.minecraft.client.gui.screens.inventory.MenuAccess<M>>
+                void register(net.minecraft.world.inventory.MenuType<? extends M> type,
+                        net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor<M, U> factory) {
+            net.minecraft.client.gui.screens.MenuScreens.register(type, factory);
+        }
+    }
+
+    private static void onRegisterScreens(LegacyScreens event) {
+    *///?} else {
     private static void onRegisterScreens(RegisterMenuScreensEvent event) {
+    //?}
         event.register(ModMenuTypes.COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
         event.register(ModMenuTypes.OXYGEN_GENERATOR.get(), OxygenGeneratorScreen::new);
         event.register(ModMenuTypes.NEROSIUM_GRINDER.get(), NerosiumGrinderScreen::new);

@@ -1,5 +1,10 @@
 # Cindrite Ore
 
+> **Moved to Neroland Core.** Since Neroland Core 1.25.0 this ore and the material it drops are Core
+> blocks and items (`nerolandcore:` ids). Nerospace still generates them exactly where it did, and blocks
+> and items from older worlds are remapped automatically. Without Nerospace, an **Ore Reclaimer** (Neroland
+> Core) slowly turns them into vanilla materials. See the Neroland Core wiki.
+
 <!-- nerospace:render -->
 <p align="right"><img src="images/cindrite_ore.png" alt="Cindrite Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
@@ -30,5 +35,5 @@ and sits deeper, rewarding a trip to the most hostile world in the mod.
 
 ## Details
 
-- ID: `nerospace:cindrite_ore` · Dimension: Cindara
+- ID: `nerolandcore:cindrite_ore` · Dimension: Cindara
 - Tool: pickaxe, iron tier · Drops: Cindrite (gem)

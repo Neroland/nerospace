@@ -26,10 +26,12 @@ final class EuropaFiles {
     static final List<String> BLOCKS = List.of("europa_ice", "chaos_ice", "cut_europa_ice", "europa_ice_bricks",
             "lineae_salt", "penitente_blade", "shell_ice", "cryovent", "hydrothermal_vent", "vent_basalt",
             "polished_vent_basalt", "vent_basalt_bricks", "tube_mat", "smoker_chimney", "deuterium_ice", "oxidant_ice",
-            "brine_salt_ore", "vent_sulfide_ore", "europium_ore", "europium_lamp", "brine");
+            "europium_lamp", "brine");
+    /** Europa's ores and their raw materials: Neroland Core blocks and items since Core 1.25.0. */
+    static final List<String> CORE_ORES = List.of("brine_salt_ore", "vent_sulfide_ore", "europium_ore");
+    static final List<String> CORE_ITEMS = List.of("brine_salt", "raw_vent_sulfide", "raw_europium");
     /** Every Europa item that is not a block item. */
-    static final List<String> ITEMS = List.of("deuterium_shard", "deuterium_cell", "oxidant_crystal", "brine_salt",
-            "raw_vent_sulfide", "raw_europium", "brine_bucket");
+    static final List<String> ITEMS = List.of("deuterium_shard", "deuterium_cell", "oxidant_crystal", "brine_bucket");
 
     private EuropaFiles() {
     }

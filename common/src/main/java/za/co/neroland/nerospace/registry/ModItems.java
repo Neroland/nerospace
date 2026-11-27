@@ -24,6 +24,8 @@ import net.minecraft.world.entity.Mob;
 //? if >=1.21.2 {
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
+//?}
+//? if >=1.21.4 {
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
 //?}
@@ -60,16 +62,30 @@ public final class ModItems {
             RegistrationProvider.get(Registries.ITEM, NerospaceCommon.MOD_ID);
 
     // --- Block items --------------------------------------------------------
-    public static final RegistryEntry<BlockItem> NEROSIUM_ORE_ITEM = blockItem("nerosium_ore", ModBlocks.NEROSIUM_ORE);
-    public static final RegistryEntry<BlockItem> DEEPSLATE_NEROSIUM_ORE_ITEM = blockItem("deepslate_nerosium_ore", ModBlocks.DEEPSLATE_NEROSIUM_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:nerosium_ore}). */
+    public static final RegistryEntry<BlockItem> NEROSIUM_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.NEROSIUM_ORE_ITEM);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:deepslate_nerosium_ore}). */
+    public static final RegistryEntry<BlockItem> DEEPSLATE_NEROSIUM_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.DEEPSLATE_NEROSIUM_ORE_ITEM);
     public static final RegistryEntry<BlockItem> NEROSIUM_BLOCK_ITEM = blockItem("nerosium_block", ModBlocks.NEROSIUM_BLOCK);
-    public static final RegistryEntry<BlockItem> RAW_NEROSIUM_BLOCK_ITEM = blockItem("raw_nerosium_block", ModBlocks.RAW_NEROSIUM_BLOCK);
-    public static final RegistryEntry<BlockItem> NEROSTEEL_ORE_ITEM = blockItem("nerosteel_ore", ModBlocks.NEROSTEEL_ORE);
-    public static final RegistryEntry<BlockItem> XERTZ_QUARTZ_ORE_ITEM = blockItem("xertz_quartz_ore", ModBlocks.XERTZ_QUARTZ_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:raw_nerosium_block}). */
+    public static final RegistryEntry<BlockItem> RAW_NEROSIUM_BLOCK_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.RAW_NEROSIUM_BLOCK_ITEM);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:nerosteel_ore}). */
+    public static final RegistryEntry<BlockItem> NEROSTEEL_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.NEROSTEEL_ORE_ITEM);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:xertz_quartz_ore}). */
+    public static final RegistryEntry<BlockItem> XERTZ_QUARTZ_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.XERTZ_QUARTZ_ORE_ITEM);
     public static final RegistryEntry<BlockItem> NEROSTEEL_BLOCK_ITEM = blockItem("nerosteel_block", ModBlocks.NEROSTEEL_BLOCK);
-    public static final RegistryEntry<BlockItem> CINDRITE_ORE_ITEM = blockItem("cindrite_ore", ModBlocks.CINDRITE_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:cindrite_ore}). */
+    public static final RegistryEntry<BlockItem> CINDRITE_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.CINDRITE_ORE_ITEM);
     public static final RegistryEntry<BlockItem> CINDRITE_BLOCK_ITEM = blockItem("cindrite_block", ModBlocks.CINDRITE_BLOCK);
-    public static final RegistryEntry<BlockItem> GLACITE_ORE_ITEM = blockItem("glacite_ore", ModBlocks.GLACITE_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:glacite_ore}). */
+    public static final RegistryEntry<BlockItem> GLACITE_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.GLACITE_ORE_ITEM);
     public static final RegistryEntry<BlockItem> GLACITE_BLOCK_ITEM = blockItem("glacite_block", ModBlocks.GLACITE_BLOCK);
     public static final RegistryEntry<BlockItem> STATION_FLOOR_ITEM = blockItem("station_floor", ModBlocks.STATION_FLOOR);
     public static final RegistryEntry<BlockItem> STATION_WALL_ITEM = blockItem("station_wall", ModBlocks.STATION_WALL);
@@ -107,13 +123,23 @@ public final class ModItems {
     public static final RegistryEntry<BlockItem> QUARRY_LANDMARK_ITEM = blockItem("quarry_landmark", ModBlocks.QUARRY_LANDMARK);
 
     // --- Materials ----------------------------------------------------------
-    public static final RegistryEntry<Item> RAW_NEROSIUM = item("raw_nerosium");
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:raw_nerosium}). */
+    public static final RegistryEntry<Item> RAW_NEROSIUM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.RAW_NEROSIUM);
     public static final RegistryEntry<Item> NEROSIUM_INGOT = item("nerosium_ingot");
-    public static final RegistryEntry<Item> RAW_NEROSTEEL = item("raw_nerosteel");
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:raw_nerosteel}). */
+    public static final RegistryEntry<Item> RAW_NEROSTEEL =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.RAW_NEROSTEEL);
     public static final RegistryEntry<Item> NEROSTEEL_INGOT = item("nerosteel_ingot");
-    public static final RegistryEntry<Item> XERTZ_QUARTZ = item("xertz_quartz");
-    public static final RegistryEntry<Item> CINDRITE = item("cindrite");
-    public static final RegistryEntry<Item> GLACITE = item("glacite");
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:xertz_quartz}). */
+    public static final RegistryEntry<Item> XERTZ_QUARTZ =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.XERTZ_QUARTZ);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:cindrite}). */
+    public static final RegistryEntry<Item> CINDRITE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.CINDRITE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:glacite}). */
+    public static final RegistryEntry<Item> GLACITE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.GLACITE);
     public static final RegistryEntry<Item> NEROSIUM_DUST = item("nerosium_dust");
     public static final RegistryEntry<Item> ALIEN_FRAGMENT = item("alien_fragment");
     public static final RegistryEntry<Item> ALIEN_TECH_SCRAP = item("alien_tech_scrap");
@@ -227,10 +253,18 @@ public final class ModItems {
     public static final ToolMaterial NEROSIUM_TOOL_MATERIAL = new ToolMaterial(
             BlockTags.INCORRECT_FOR_IRON_TOOL, 350, 7.0F, 2.5F, 15, cTag("ingots/nerosium"));
 
+    //? if >=1.21.4 {
     public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_ASSET = equipAsset("oxygen_suit");
     public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_T2_ASSET = equipAsset("oxygen_suit_t2");
     public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_HEAT_ASSET = equipAsset("oxygen_suit_heat");
     public static final ResourceKey<EquipmentAsset> OXYGEN_SUIT_COLD_ASSET = equipAsset("oxygen_suit_cold");
+    //?} else {
+    /*// 1.21.2 - 1.21.3: an armour material names its equipment model by id (models/equipment/<id>.json).
+    public static final Identifier OXYGEN_SUIT_ASSET = equipAsset("oxygen_suit");
+    public static final Identifier OXYGEN_SUIT_T2_ASSET = equipAsset("oxygen_suit_t2");
+    public static final Identifier OXYGEN_SUIT_HEAT_ASSET = equipAsset("oxygen_suit_heat");
+    public static final Identifier OXYGEN_SUIT_COLD_ASSET = equipAsset("oxygen_suit_cold");
+    *///?}
 
     private static final Map<ArmorType, Integer> T1_DEFENSE =
             Map.of(ArmorType.HELMET, 3, ArmorType.CHESTPLATE, 7, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 3);
@@ -481,11 +515,15 @@ public final class ModItems {
         return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", path));
     }
 
-    //? if >=1.21.2 {
+    //? if >=1.21.4 {
     private static ResourceKey<EquipmentAsset> equipAsset(String name) {
         return ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, name));
     }
-    //?}
+    //?} else if >=1.21.2 {
+    /*private static Identifier equipAsset(String name) {
+        return Identifier.fromNamespaceAndPath(NerospaceCommon.MOD_ID, name);
+    }
+    *///?}
 
     /** Items grouped by the vanilla creative tab they should appear in. */
     public static Map<ResourceKey<CreativeModeTab>, List<ItemLike>> creativeTabItems() {

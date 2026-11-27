@@ -12,7 +12,7 @@
     "description": "Travel to the volcanic moon Cindara",
     "frame": "goal",
     "icon": {
-      "id": "nerospace:cindrite"
+      "id": "nerolandcore:cindrite"
     },
     "title": "Into the Fire"
   },

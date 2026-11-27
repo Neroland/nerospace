@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "nerospace:europium_ore"
+          "Name": "nerolandcore:europium_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",

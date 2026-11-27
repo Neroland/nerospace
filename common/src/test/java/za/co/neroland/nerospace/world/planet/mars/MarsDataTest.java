@@ -59,14 +59,14 @@ class MarsDataTest {
     @Test
     void everyBlockHasStateModelItemAndLoot() throws IOException {
         for (String id : BLOCKS) {
-            assertTrue(exists("/assets/nerospace/blockstates/" + id + ".json"), "blockstate " + id);
-            assertTrue(exists("/assets/nerospace/items/" + id + ".json"), "item model " + id);
-            JsonObject loot = load("/data/nerospace/loot_table/blocks/" + id + ".json").getAsJsonObject();
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/blockstates/" + id + ".json"), "blockstate " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/items/" + id + ".json"), "item model " + id);
+            JsonObject loot = load("/data/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/loot_table/blocks/" + id + ".json").getAsJsonObject();
             assertEquals("minecraft:block", loot.get("type").getAsString(), id);
         }
         for (String id : ITEMS) {
-            assertTrue(exists("/assets/nerospace/items/" + id + ".json"), "item model " + id);
-            assertTrue(exists("/assets/nerospace/textures/item/" + id + ".png"), "texture " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/items/" + id + ".json"), "item model " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/textures/item/" + id + ".png"), "texture " + id);
         }
     }
 
@@ -81,7 +81,7 @@ class MarsDataTest {
             String resultId = result.isJsonPrimitive() ? result.getAsString()
                     : result.getAsJsonObject().get("id").getAsString();
             assertEquals("nerospace:" + id, resultId);
-            assertTrue(exists("/assets/nerospace/textures/block/" + id + ".png"), "texture " + id);
+            assertTrue(exists("/assets/" + za.co.neroland.nerospace.MovedOres.ns(id) + "/textures/block/" + id + ".png"), "texture " + id);
         }
     }
 

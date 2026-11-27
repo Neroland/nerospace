@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "nerospace:moon_cheese"
+            "items": "nerolandcore:moon_cheese"
           }
         ]
       },
@@ -20,7 +20,7 @@
     "frame": "challenge",
     "hidden": true,
     "icon": {
-      "id": "nerospace:moon_cheese"
+      "id": "nerolandcore:moon_cheese"
     },
     "show_toast": true,
     "title": {

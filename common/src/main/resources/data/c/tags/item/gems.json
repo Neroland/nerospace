@@ -1,16 +1,11 @@
 {
   "values": [
-    "nerospace:xertz_quartz",
-    "nerospace:cindrite",
-    "nerospace:glacite",
-    "nerospace:voidglass",
     "nerospace:crystal_shard",
     "nerospace:deuterium_shard",
     "nerospace:oxidant_crystal",
     "nerospace:frost_shard",
     "nerospace:methane_crystal",
     "nerospace:void_shard",
-    "nerospace:gravity_shard",
-    "nerospace:amber_sap"
+    "nerospace:gravity_shard"
   ]
 }

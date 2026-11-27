@@ -19,5 +19,5 @@
 
 ## 详细信息
 
-- ID：`nerospace:raw_nerosium_block`
+- ID：`nerolandcore:raw_nerosium_block`
 - 工具：镐，铁级 · 掉落：自身

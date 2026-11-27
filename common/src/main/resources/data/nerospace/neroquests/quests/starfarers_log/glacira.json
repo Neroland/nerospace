@@ -1,7 +1,7 @@
 {
   "title": "quest.nerospace.starfarers_log.glacira.title",
   "description": "quest.nerospace.starfarers_log.glacira.desc",
-  "icon": "nerospace:glacite",
+  "icon": "nerolandcore:glacite",
   "prerequisites": [
     "nerospace:starfarers_log/cindara"
   ],
@@ -12,7 +12,7 @@
     },
     {
       "type": "neroquests:collect_item",
-      "item": "nerospace:glacite",
+      "item": "nerolandcore:glacite",
       "count": 1
     }
   ],

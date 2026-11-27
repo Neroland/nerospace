@@ -91,7 +91,10 @@ public final class StarGuide {
 
     /** An item icon by Nerospace id, looked up lazily (the table is built before registries are populated). */
     private static Supplier<ItemLike> item(String path) {
-        return () -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(adv(path));
+        // Ores and their raw materials live in Neroland Core since its 1.25.0.
+        net.minecraft.resources.Identifier id = za.co.neroland.nerolandcore.registry.LegacyIds.blockOrItem(NerospaceCommon.MOD_ID, path) != null
+                ? net.minecraft.resources.Identifier.fromNamespaceAndPath("nerolandcore", path) : adv(path);
+        return () -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(id);
     }
 
     /**

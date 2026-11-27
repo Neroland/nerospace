@@ -4,7 +4,7 @@
   "size": 3,
   "targets": [
     {
-      "state": "nerospace:europium_ore",
+      "state": "nerolandcore:europium_ore",
       "target": {
         "predicate_type": "minecraft:block_match",
         "block": "nerospace:vent_basalt"

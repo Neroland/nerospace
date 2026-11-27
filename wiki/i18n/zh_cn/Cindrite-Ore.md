@@ -31,5 +31,5 @@ Cindrite 是一种发光的余烬色宝石，只在 Cindara 上出现。它比 G
 
 ## 详细信息
 
-- ID：`nerospace:cindrite_ore` · 维度：Cindara
+- ID：`nerolandcore:cindrite_ore` · 维度：Cindara
 - 工具：镐，铁级 · 掉落：Cindrite（宝石）

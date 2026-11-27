@@ -19,5 +19,5 @@ Conserva il **Nerosium grezzo** non lavorato in forma di blocco: comodo per tras
 
 ## Dettagli
 
-- ID: `nerospace:raw_nerosium_block`
+- ID: `nerolandcore:raw_nerosium_block`
 - Attrezzo: piccone, livello ferro · Drop: se stesso

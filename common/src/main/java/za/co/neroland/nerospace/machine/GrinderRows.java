@@ -15,12 +15,12 @@ public final class GrinderRows {
 
     /** Appended in 2.4.0; order is the display order. */
     public static final List<Row> EUROPA = List.of(
-            new Row("nerospace:raw_vent_sulfide", "nerospace:sulfur", 2),
-            new Row("nerospace:smoker_chimney", "nerospace:raw_vent_sulfide", 1),
+            new Row("nerolandcore:raw_vent_sulfide", "nerospace:sulfur", 2),
+            new Row("nerospace:smoker_chimney", "nerolandcore:raw_vent_sulfide", 1),
             new Row("nerospace:deuterium_ice", "nerospace:deuterium_shard", 1),
             new Row("nerospace:oxidant_ice", "nerospace:oxidant_crystal", 1),
-            new Row("nerospace:brine_salt_ore", "nerospace:brine_salt", 2),
-            new Row("nerospace:vent_sulfide_ore", "nerospace:raw_vent_sulfide", 1));
+            new Row("nerolandcore:brine_salt_ore", "nerolandcore:brine_salt", 2),
+            new Row("nerolandcore:vent_sulfide_ore", "nerolandcore:raw_vent_sulfide", 1));
 
     private GrinderRows() {
     }

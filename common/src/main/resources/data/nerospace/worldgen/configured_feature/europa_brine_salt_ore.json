@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "nerospace:brine_salt_ore"
+          "Name": "nerolandcore:brine_salt_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",

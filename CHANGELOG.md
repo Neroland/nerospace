@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-11-27
+
+### Added
+
+- Minecraft 1.21.3, 26.1 and 26.1.1 on NeoForge, Forge and Fabric, and Minecraft 1.20.2 and 1.20.3 on NeoForge,
+  with Neroland Core 1.25.0 or newer. Nerospace now ships 54 jars, the same versions as Neroland Core.
+- Minecraft 1.21.3 has no JEI release, so that version has no JEI recipe pages. On 1.21.3 the oxygen suits use the
+  1.21.3 equipment model location.
+- On NeoForge 1.20.2, Nerospace keeps oxygen, Star Guide progress and terraformed chunks in capabilities, as the Forge
+  builds do, because that NeoForge version has no data attachments. Pipes still reach Rocket Launch Pads there.
+
+### Changed
+
+- Every Nerospace ore, and the raw material it drops, moved to Neroland Core 1.25.0 under `nerolandcore:`
+  ids: Nerosium, Deepslate Nerosium, Nerosteel, Xertz Quartz, Amber Sap, Ilmenite, Cheese, Hematite,
+  Cindrite, Glacite, Voidglass, Brine Salt, Vent Sulfide and Europium Ore, the Block of Raw Nerosium,
+  and Raw Nerosium, Raw Nerosteel, Xertz Quartz, Amber Sap, Raw Ilmenite, Moon Cheese, Raw Hematite,
+  Cindrite, Glacite, Voidglass, Brine Salt, Raw Vent Sulfide and Raw Europium. Nerospace still generates
+  them on the same planets, and its recipes, loot, trades, quests, advancements and machines use the Core
+  ids. Old worlds load the old `nerospace:` ids as the Core ones.
+- Hematite's drop magnet and the Europa ores' wet-seam drops now attach to Core's ore blocks, so they apply
+  only while Nerospace is installed.
+- Requires Neroland Core 1.25.0 or newer.
+
 ## [2.5.1]
 
 ### Added

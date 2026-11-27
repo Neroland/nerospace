@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "H": "nerospace:raw_hematite",
+    "H": "nerolandcore:raw_hematite",
     "I": "#c:ingots/iron",
     "R": "#c:dusts/redstone"
   },

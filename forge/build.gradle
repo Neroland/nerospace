@@ -30,6 +30,8 @@ def jeiVersion = project.findProperty("jei_version_${mc}")
 def jeiMinVersion = project.findProperty("jei_min_version_${mc}") ?: jeiVersion ?: '0'
 def emiFile = project.findProperty("emi_file_neoforge_${mc}")
 def nerolandcoreVersion = project.findProperty('nerolandcore_version')
+// NeroEconomy line this cell compiles against: itself, or the nearest line it publishes (neroeconomy_mc_<v>).
+def neroeconomyMc = (project.findProperty("neroeconomy_mc_${mc}") ?: mc).toString()
 
 if (!forgeVersion) {
     throw new GradleException("Missing forge_version_${mc} in gradle.properties")
@@ -144,7 +146,7 @@ dependencies {
     // NeroEconomy — OPTIONAL. Its public API on the compile classpath only: never bundled, never required.
     // Every reference lives in compat/neroeconomy, touched only after isModLoaded("neroeconomy").
     if (stonecutter.eval(mc, '>=26.1')) {
-        compileOnly "za.co.neroland.neroeconomy:neroeconomy-forge-${mc}:${project.findProperty('neroeconomy_version')}"
+        compileOnly "za.co.neroland.neroeconomy:neroeconomy-forge-${neroeconomyMc}:${project.findProperty('neroeconomy_version')}"
     }
 
     // Sentry: compile + dev runtime from this one library. Core's plain Maven jar carries no nested copy or

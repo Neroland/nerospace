@@ -25,5 +25,5 @@
 
 ## 详细信息
 
-- ID：`nerospace:deepslate_nerosium_ore`
+- ID：`nerolandcore:deepslate_nerosium_ore`
 - 工具：镐，铁级 · 掉落：粗Nerosium

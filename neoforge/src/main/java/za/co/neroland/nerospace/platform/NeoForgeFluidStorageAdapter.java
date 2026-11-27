@@ -226,7 +226,7 @@ public final class NeoForgeFluidStorageAdapter implements NerospaceFluidStorage 
         }
         FluidStack held = held();
         FluidStack offered = !held.isEmpty() && held.getFluid() == fluid
-                ? held.copyWithAmount(clamp(amount)) : new FluidStack(fluid, clamp(amount));
+                ? withAmount(held, clamp(amount)) : new FluidStack(fluid, clamp(amount));
         return this.handler.fill(offered, simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
     }
 
@@ -236,8 +236,17 @@ public final class NeoForgeFluidStorageAdapter implements NerospaceFluidStorage 
         if (held.isEmpty() || amount <= 0) {
             return 0L;
         }
-        return this.handler.drain(held.copyWithAmount(clamp(amount)),
+        return this.handler.drain(withAmount(held, clamp(amount)),
                 simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE).getAmount();
+    }
+
+    private static FluidStack withAmount(FluidStack stack, int amount) {
+        // NeoForge 20.2 / 20.3 FluidStack has no copyWithAmount; its copy constructor keeps the tag.
+        //? if >=1.20.4 {
+        return stack.copyWithAmount(amount);
+        //?} else {
+        /^return new FluidStack(stack, amount);
+        ^///?}
     }
 
     private static int clamp(long amount) {

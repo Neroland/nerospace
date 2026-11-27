@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "nerospace:raw_hematite"
+    "nerolandcore:raw_hematite"
   ],
   "result": {
     "count": 2,

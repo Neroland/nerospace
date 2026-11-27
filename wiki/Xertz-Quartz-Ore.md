@@ -1,5 +1,10 @@
 # Xertz Quartz Ore
 
+> **Moved to Neroland Core.** Since Neroland Core 1.25.0 this ore and the material it drops are Core
+> blocks and items (`nerolandcore:` ids). Nerospace still generates them exactly where it did, and blocks
+> and items from older worlds are remapped automatically. Without Nerospace, an **Ore Reclaimer** (Neroland
+> Core) slowly turns them into vanilla materials. See the Neroland Core wiki.
+
 <!-- nerospace:render -->
 <p align="right"><img src="images/xertz_quartz_ore.png" alt="Xertz Quartz Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
@@ -35,5 +40,5 @@ is plentiful. It is a crafting gem for solar panels, pipe filters and upgrades.
 
 ## Details
 
-- ID: `nerospace:xertz_quartz_ore` · Dimension: Greenxertz
+- ID: `nerolandcore:xertz_quartz_ore` · Dimension: Greenxertz
 - Tool: any pickaxe · Drops: Xertz Quartz (gem)

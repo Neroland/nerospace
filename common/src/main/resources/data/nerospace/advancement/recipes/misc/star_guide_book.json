@@ -6,9 +6,9 @@
         "items": [
           {
             "items": [
-              "nerospace:raw_nerosium",
-              "nerospace:nerosium_ore",
-              "nerospace:deepslate_nerosium_ore"
+              "nerolandcore:raw_nerosium",
+              "nerolandcore:nerosium_ore",
+              "nerolandcore:deepslate_nerosium_ore"
             ]
           }
         ]

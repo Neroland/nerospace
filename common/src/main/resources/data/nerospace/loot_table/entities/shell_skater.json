@@ -17,7 +17,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "nerospace:brine_salt"
+          "name": "nerolandcore:brine_salt"
         }
       ],
       "rolls": 1.0

@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "nerospace:nerosium_ore"
+          "Name": "nerolandcore:nerosium_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",
@@ -15,7 +15,7 @@
       },
       {
         "state": {
-          "Name": "nerospace:deepslate_nerosium_ore"
+          "Name": "nerolandcore:deepslate_nerosium_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",

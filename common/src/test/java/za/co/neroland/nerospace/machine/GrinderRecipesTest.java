@@ -52,20 +52,20 @@ class GrinderRecipesTest {
     @DisplayName("the six Europa rows return the stated stacks")
     void europaRows() {
         assertEquals(List.of(
-                new GrinderRows.Row("nerospace:raw_vent_sulfide", "nerospace:sulfur", 2),
-                new GrinderRows.Row("nerospace:smoker_chimney", "nerospace:raw_vent_sulfide", 1),
+                new GrinderRows.Row("nerolandcore:raw_vent_sulfide", "nerospace:sulfur", 2),
+                new GrinderRows.Row("nerospace:smoker_chimney", "nerolandcore:raw_vent_sulfide", 1),
                 new GrinderRows.Row("nerospace:deuterium_ice", "nerospace:deuterium_shard", 1),
                 new GrinderRows.Row("nerospace:oxidant_ice", "nerospace:oxidant_crystal", 1),
-                new GrinderRows.Row("nerospace:brine_salt_ore", "nerospace:brine_salt", 2),
-                new GrinderRows.Row("nerospace:vent_sulfide_ore", "nerospace:raw_vent_sulfide", 1)), GrinderRows.EUROPA);
+                new GrinderRows.Row("nerolandcore:brine_salt_ore", "nerolandcore:brine_salt", 2),
+                new GrinderRows.Row("nerolandcore:vent_sulfide_ore", "nerolandcore:raw_vent_sulfide", 1)), GrinderRows.EUROPA);
         Set<String> inputs = new HashSet<>();
         for (GrinderRows.Row row : GrinderRows.EUROPA) {
             assertTrue(inputs.add(row.input()), "one row per input: " + row.input());
             assertEquals(row, GrinderRows.find(row.input()));
             assertTrue(row.count() >= 1 && row.count() <= 2, row.input());
         }
-        assertNull(GrinderRows.find("nerospace:europium_ore"));
-        assertNull(GrinderRows.find("nerospace:raw_europium"));
+        assertNull(GrinderRows.find("nerolandcore:europium_ore"));
+        assertNull(GrinderRows.find("nerolandcore:raw_europium"));
         assertNull(GrinderRows.find("nerospace:europium_lamp"));
         assertNull(GrinderRows.find("minecraft:stone"));
     }

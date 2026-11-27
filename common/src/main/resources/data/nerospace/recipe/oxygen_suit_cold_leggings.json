@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "G": "nerospace:glacite",
+    "G": "nerolandcore:glacite",
     "H": "nerospace:oxygen_suit_t2_leggings"
   },
   "pattern": [

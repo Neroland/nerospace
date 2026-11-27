@@ -69,16 +69,18 @@ public final class LunaContent {
                     .lightLevel(s -> s.getValue(LightLensBlock.LENS))
                     .isRedstoneConductor((s, l, pos) -> false));
 
-    public static final RegistryEntry<Block> ILMENITE_ORE = block("ilmenite_ore", Block::new,
-            p -> p.mapColor(MapColor.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:ilmenite_ore}). */
+    public static final RegistryEntry<Block> ILMENITE_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.ILMENITE_ORE);
 
     public static final RegistryEntry<Helium3PocketBlock> HELIUM3_POCKET = block("helium3_pocket",
             Helium3PocketBlock::new,
             p -> p.mapColor(MapColor.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops()
                     .sound(SoundType.NETHER_ORE).lightLevel(s -> 2));
 
-    public static final RegistryEntry<Block> CHEESE_ORE = block("cheese_ore", Block::new,
-            p -> p.mapColor(MapColor.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:cheese_ore}). */
+    public static final RegistryEntry<Block> CHEESE_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.CHEESE_ORE);
 
     public static final RegistryEntry<CheeseWheelBlock> CHEESE_WHEEL = block("cheese_wheel", CheeseWheelBlock::new,
             p -> p.mapColor(MapColor.GOLD).strength(0.5F, 0.5F).sound(SoundType.WOOL).forceSolidOn());
@@ -90,21 +92,24 @@ public final class LunaContent {
             blockItem("polished_lunar_basalt", POLISHED_LUNAR_BASALT);
     public static final RegistryEntry<BlockItem> ANORTHOSITE_ITEM = blockItem("anorthosite", ANORTHOSITE);
     public static final RegistryEntry<BlockItem> CRATER_GLASS_ITEM = blockItem("crater_glass", CRATER_GLASS);
-    public static final RegistryEntry<BlockItem> ILMENITE_ORE_ITEM = blockItem("ilmenite_ore", ILMENITE_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:ilmenite_ore}). */
+    public static final RegistryEntry<BlockItem> ILMENITE_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.ILMENITE_ORE_ITEM);
     public static final RegistryEntry<BlockItem> HELIUM3_POCKET_ITEM = blockItem("helium3_pocket", HELIUM3_POCKET);
-    public static final RegistryEntry<BlockItem> CHEESE_ORE_ITEM = blockItem("cheese_ore", CHEESE_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:cheese_ore}). */
+    public static final RegistryEntry<BlockItem> CHEESE_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.CHEESE_ORE_ITEM);
     public static final RegistryEntry<BlockItem> CHEESE_WHEEL_ITEM = blockItem("cheese_wheel", CHEESE_WHEEL);
 
     // --- items ----------------------------------------------------------------------------------
-    public static final RegistryEntry<Item> RAW_ILMENITE = item("raw_ilmenite", Item::new);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:raw_ilmenite}). */
+    public static final RegistryEntry<Item> RAW_ILMENITE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.RAW_ILMENITE);
     public static final RegistryEntry<Item> TITANIUM_INGOT = item("titanium_ingot", Item::new);
     public static final RegistryEntry<Item> HELIUM3_CANISTER = item("helium3_canister", Item::new);
-    public static final RegistryEntry<MoonCheeseItem> MOON_CHEESE = ModItems.ITEMS.register("moon_cheese",
-            //? if >=1.21.2 {
-            key -> new MoonCheeseItem(new Item.Properties().setId(key).food(cheeseFood(), cheeseConsumable())));
-            //?} else {
-            /*key -> new MoonCheeseItem(new Item.Properties().setId(key).food(cheeseFood())));
-            *///?}
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:moon_cheese}). */
+    public static final RegistryEntry<Item> MOON_CHEESE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.MOON_CHEESE);
 
     // --- entities (terraform fauna) -----------------------------------------------------
     /** The Living-meadow grazer; seeded by TerraformFauna and spawned by terraformed_luna_living. */

@@ -36,6 +36,9 @@ public final class NerospaceCommon {
         // attaches them to the mod bus); on Fabric it registers eagerly.
         ModRegistries.init();
         // Planet weather effects: idempotent, the registered hooks resolve blocks lazily.
+        // Planet ore behaviours on Core's ore blocks (the ores moved to Neroland Core in 1.25.0).
+        za.co.neroland.nerospace.block.MagneticOre.register();
+        za.co.neroland.nerospace.world.planet.europa.block.EuropaOreBehaviours.register();
         za.co.neroland.nerospace.world.planet.mars.MarsWeather.register();
         za.co.neroland.nerospace.world.planet.cindara.CindaraWeather.register();
         za.co.neroland.nerospace.world.planet.glacira.GlaciraWeather.register();

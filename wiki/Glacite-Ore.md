@@ -1,5 +1,10 @@
 # Glacite Ore
 
+> **Moved to Neroland Core.** Since Neroland Core 1.25.0 this ore and the material it drops are Core
+> blocks and items (`nerolandcore:` ids). Nerospace still generates them exactly where it did, and blocks
+> and items from older worlds are remapped automatically. Without Nerospace, an **Ore Reclaimer** (Neroland
+> Core) slowly turns them into vanilla materials. See the Neroland Core wiki.
+
 <!-- nerospace:render -->
 <p align="right"><img src="images/glacite_ore.png" alt="Glacite Ore" width="150" align="right"></p>
 <!-- /nerospace:render -->
@@ -35,5 +40,5 @@ deeper terraforming.
 
 ## Details
 
-- ID: `nerospace:glacite_ore` · Dimension: Glacira
+- ID: `nerolandcore:glacite_ore` · Dimension: Glacira
 - Tool: pickaxe, iron tier · Drops: Glacite (gem)

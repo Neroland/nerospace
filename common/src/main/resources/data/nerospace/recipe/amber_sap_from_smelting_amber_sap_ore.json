@@ -3,8 +3,8 @@
   "category": "misc",
   "cookingtime": 200,
   "experience": 0.7,
-  "ingredient": "nerospace:amber_sap_ore",
+  "ingredient": "nerolandcore:amber_sap_ore",
   "result": {
-    "id": "nerospace:amber_sap"
+    "id": "nerolandcore:amber_sap"
   }
 }

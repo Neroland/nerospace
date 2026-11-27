@@ -32,5 +32,5 @@ Xertz石英的表现与下界石英相同：矿石**直接**掉落宝石（无�
 
 ## 详细信息
 
-- ID：`nerospace:xertz_quartz_ore` · 维度：Greenxertz
+- ID：`nerolandcore:xertz_quartz_ore` · 维度：Greenxertz
 - 工具：任何镐 · 掉落：Xertz石英（宝石）

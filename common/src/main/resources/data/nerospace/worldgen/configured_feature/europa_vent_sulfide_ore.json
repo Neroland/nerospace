@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "nerospace:vent_sulfide_ore"
+          "Name": "nerolandcore:vent_sulfide_ore"
         },
         "target": {
           "predicate_type": "minecraft:block_match",

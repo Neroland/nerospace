@@ -37,10 +37,8 @@ import za.co.neroland.nerospace.world.planet.europa.block.RaftIceBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.SeepSaltBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.ShellIceBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.SmokerChimneyBlock;
-import za.co.neroland.nerospace.world.planet.europa.block.SulfideOreBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.TubeMatBlock;
 import za.co.neroland.nerospace.world.planet.europa.block.WarmBasaltBlock;
-import za.co.neroland.nerospace.world.planet.europa.block.WetSeamOreBlock;
 import za.co.neroland.nerospace.world.planet.europa.entity.LanternDrifter;
 import za.co.neroland.nerospace.world.planet.europa.entity.ShellSkater;
 import za.co.neroland.nerospace.world.planet.europa.entity.VentRay;
@@ -125,17 +123,17 @@ public final class EuropaContent {
             p -> p.mapColor(MapColor.SNOW).strength(3.0F, 3.0F).requiresCorrectToolForDrops()
                     .sound(SoundType.GLASS));
 
-    public static final RegistryEntry<WetSeamOreBlock> BRINE_SALT_ORE = block("brine_salt_ore", WetSeamOreBlock::new,
-            p -> p.mapColor(MapColor.LAPIS).strength(3.0F, 3.0F).requiresCorrectToolForDrops()
-                    .sound(SoundType.GLASS));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:brine_salt_ore}). */
+    public static final RegistryEntry<Block> BRINE_SALT_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.BRINE_SALT_ORE);
 
-    public static final RegistryEntry<SulfideOreBlock> VENT_SULFIDE_ORE = block("vent_sulfide_ore", SulfideOreBlock::new,
-            p -> p.mapColor(MapColor.COLOR_BLACK).strength(3.5F, 3.5F).requiresCorrectToolForDrops()
-                    .sound(SoundType.BASALT));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:vent_sulfide_ore}). */
+    public static final RegistryEntry<Block> VENT_SULFIDE_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.VENT_SULFIDE_ORE);
 
-    public static final RegistryEntry<Block> EUROPIUM_ORE = block("europium_ore", Block::new,
-            p -> p.mapColor(MapColor.COLOR_BLACK).strength(3.0F, 3.0F).requiresCorrectToolForDrops()
-                    .sound(SoundType.BASALT).lightLevel(s -> 2));
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:europium_ore}). */
+    public static final RegistryEntry<Block> EUROPIUM_ORE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.EUROPIUM_ORE);
 
     public static final RegistryEntry<EuropiumLampBlock> EUROPIUM_LAMP = block("europium_lamp", EuropiumLampBlock::new,
             p -> p.mapColor(MapColor.COLOR_RED).strength(0.6F, 0.6F)
@@ -163,18 +161,30 @@ public final class EuropaContent {
     public static final RegistryEntry<BlockItem> SMOKER_CHIMNEY_ITEM = blockItem("smoker_chimney", SMOKER_CHIMNEY);
     public static final RegistryEntry<BlockItem> DEUTERIUM_ICE_ITEM = blockItem("deuterium_ice", DEUTERIUM_ICE);
     public static final RegistryEntry<BlockItem> OXIDANT_ICE_ITEM = blockItem("oxidant_ice", OXIDANT_ICE);
-    public static final RegistryEntry<BlockItem> BRINE_SALT_ORE_ITEM = blockItem("brine_salt_ore", BRINE_SALT_ORE);
-    public static final RegistryEntry<BlockItem> VENT_SULFIDE_ORE_ITEM = blockItem("vent_sulfide_ore", VENT_SULFIDE_ORE);
-    public static final RegistryEntry<BlockItem> EUROPIUM_ORE_ITEM = blockItem("europium_ore", EUROPIUM_ORE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:brine_salt_ore}). */
+    public static final RegistryEntry<BlockItem> BRINE_SALT_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.BRINE_SALT_ORE_ITEM);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:vent_sulfide_ore}). */
+    public static final RegistryEntry<BlockItem> VENT_SULFIDE_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.VENT_SULFIDE_ORE_ITEM);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:europium_ore}). */
+    public static final RegistryEntry<BlockItem> EUROPIUM_ORE_ITEM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.EUROPIUM_ORE_ITEM);
     public static final RegistryEntry<BlockItem> EUROPIUM_LAMP_ITEM = blockItem("europium_lamp", EUROPIUM_LAMP);
 
     // --- items ----------------------------------------------------------------------------------
     public static final RegistryEntry<Item> DEUTERIUM_SHARD = item("deuterium_shard", Item::new);
     public static final RegistryEntry<Item> DEUTERIUM_CELL = item("deuterium_cell", Item::new);
     public static final RegistryEntry<Item> OXIDANT_CRYSTAL = item("oxidant_crystal", Item::new);
-    public static final RegistryEntry<Item> BRINE_SALT = item("brine_salt", Item::new);
-    public static final RegistryEntry<Item> RAW_VENT_SULFIDE = item("raw_vent_sulfide", Item::new);
-    public static final RegistryEntry<RawEuropiumItem> RAW_EUROPIUM = item("raw_europium", RawEuropiumItem::new);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:brine_salt}). */
+    public static final RegistryEntry<Item> BRINE_SALT =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.BRINE_SALT);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:raw_vent_sulfide}). */
+    public static final RegistryEntry<Item> RAW_VENT_SULFIDE =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.RAW_VENT_SULFIDE);
+    /** Moved to Neroland Core 1.25.0 ({@code nerolandcore:raw_europium}). */
+    public static final RegistryEntry<Item> RAW_EUROPIUM =
+            za.co.neroland.nerospace.registry.RegistrationProvider.alias(za.co.neroland.nerolandcore.ore.CoreOres.RAW_EUROPIUM);
     /** Places one Brine block; crafting with it returns the empty bucket. */
     public static final RegistryEntry<BrineBucketItem> BRINE_BUCKET = ModItems.ITEMS.register("brine_bucket",
             key -> new BrineBucketItem(new Item.Properties().setId(key).stacksTo(1).craftRemainder(Items.BUCKET)));

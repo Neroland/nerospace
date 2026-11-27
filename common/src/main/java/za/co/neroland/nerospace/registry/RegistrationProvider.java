@@ -50,6 +50,24 @@ public interface RegistrationProvider<T> {
         }
     }
 
+    /**
+     * A Nerospace-typed view of an entry another mod registered (the ores that moved to Neroland Core in 1.25.0), so
+     * existing callers keep compiling. Registers nothing.
+     */
+    static <R> RegistryEntry<R> alias(za.co.neroland.nerolandcore.registry.RegistrationProvider.RegistryEntry<? extends R> entry) {
+        return new RegistryEntry<R>() {
+            @Override
+            public R get() {
+                return entry.get();
+            }
+
+            @Override
+            public Identifier id() {
+                return entry.id();
+            }
+        };
+    }
+
     /** Loader-provided bridge to the platform registry. */
     interface Factory {
         Factory INSTANCE = Services.load(Factory.class);

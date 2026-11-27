@@ -68,7 +68,7 @@ public final class NeoForgeNetwork implements NetworkPlatform {
         *///?}
     }
 }
-//?} else {
+//?} else if >=1.20.4 {
 /*import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -170,6 +170,76 @@ public final class NeoForgeNetwork implements NetworkPlatform {
         @Override
         public void write(FriendlyByteBuf buffer) {
             codec.encode(buffer, message);
+        }
+    }
+}
+*///?} else {
+/*import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
+
+import za.co.neroland.nerospace.NerospaceCommon;
+import za.co.neroland.nerospace.network.ModNetwork;
+import za.co.neroland.nerolandcore.network.legacy.LegacyPayload;
+import za.co.neroland.nerospace.platform.NetworkPlatform;
+
+// NeoForge 20.2 / 20.3 still carry Forge's SimpleChannel: one indexed channel, missing on the other side allowed
+// (a vanilla peer), but a peer announcing a different protocol version is refused at login.
+public final class NeoForgeNetwork implements NetworkPlatform {
+    private static SimpleChannel channel;
+
+    public static void register(IEventBus modEventBus) {
+        String protocol = Integer.toString(ModNetwork.PROTOCOL_VERSION);
+        var accepts = NetworkRegistry.acceptMissingOr(protocol);
+        channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(NerospaceCommon.MOD_ID, "main"),
+                () -> protocol, accepts, accepts);
+        int index = 0;
+        for (ModNetwork.Clientbound<?> packet : ModNetwork.clientbound()) {
+            registerClientbound(packet, index++);
+        }
+        for (ModNetwork.Serverbound<?> packet : ModNetwork.serverbound()) {
+            registerServerbound(packet, index++);
+        }
+    }
+
+    private static <T extends LegacyPayload> void registerClientbound(ModNetwork.Clientbound<T> packet, int index) {
+        channel.messageBuilder(packet.type().payloadClass(), index, PlayNetworkDirection.PLAY_TO_CLIENT)
+                .encoder((payload, buffer) -> packet.codec().encode(buffer, payload))
+                .decoder(buffer -> packet.codec().decode(buffer))
+                .consumerMainThread((payload, context) -> packet.handler().accept(payload))
+                .add();
+    }
+
+    private static <T extends LegacyPayload> void registerServerbound(ModNetwork.Serverbound<T> packet, int index) {
+        channel.messageBuilder(packet.type().payloadClass(), index, PlayNetworkDirection.PLAY_TO_SERVER)
+                .encoder((payload, buffer) -> packet.codec().encode(buffer, payload))
+                .decoder(buffer -> packet.codec().decode(buffer))
+                .consumerMainThread((payload, context) -> {
+                    ServerPlayer player = context.getSender();
+                    if (player != null) {
+                        packet.handler().accept(payload, player);
+                    }
+                })
+                .add();
+    }
+
+    @Override
+    public void sendToPlayer(ServerPlayer player, LegacyPayload payload) {
+        if (channel != null && channel.isRemotePresent(player.connection.connection)) {
+            channel.send(PacketDistributor.PLAYER.with(() -> player), payload);
+        }
+    }
+
+    @Override
+    public void sendToServer(LegacyPayload payload) {
+        var connection = Minecraft.getInstance().getConnection();
+        if (channel != null && connection != null && channel.isRemotePresent(connection.getConnection())) {
+            channel.sendToServer(payload);
         }
     }
 }

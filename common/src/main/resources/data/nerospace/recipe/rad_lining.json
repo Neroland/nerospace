@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "R": "nerospace:regolith",
-    "H": "nerospace:raw_hematite",
+    "H": "nerolandcore:raw_hematite",
     "T": "nerospace:titanium_ingot"
   },
   "pattern": [

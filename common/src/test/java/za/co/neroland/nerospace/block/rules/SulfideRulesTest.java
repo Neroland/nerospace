@@ -25,11 +25,11 @@ class SulfideRulesTest {
     @Test
     @DisplayName("drops: dry and not silk gives one sulfur; wet or silk keeps the table's drops")
     void drops() {
-        List<EuropaDropRules.Stack> ore = List.of(new EuropaDropRules.Stack("nerospace:raw_vent_sulfide", 2));
+        List<EuropaDropRules.Stack> ore = List.of(new EuropaDropRules.Stack("nerolandcore:raw_vent_sulfide", 2));
         assertEquals(List.of(new EuropaDropRules.Stack("nerospace:sulfur", 1)),
                 EuropaDropRules.apply(EuropaDropRules.Kind.VENT_SULFIDE_ORE, ore, false, false, 0));
         assertEquals(ore, EuropaDropRules.apply(EuropaDropRules.Kind.VENT_SULFIDE_ORE, ore, false, true, 0));
-        List<EuropaDropRules.Stack> block = List.of(new EuropaDropRules.Stack("nerospace:vent_sulfide_ore", 1));
+        List<EuropaDropRules.Stack> block = List.of(new EuropaDropRules.Stack("nerolandcore:vent_sulfide_ore", 1));
         assertEquals(block, EuropaDropRules.apply(EuropaDropRules.Kind.VENT_SULFIDE_ORE, block, true, false, 0));
         assertEquals(List.of(), EuropaDropRules.apply(EuropaDropRules.Kind.VENT_SULFIDE_ORE, List.of(), false, false, 0));
     }

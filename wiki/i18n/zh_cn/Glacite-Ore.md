@@ -35,5 +35,5 @@ Glacite 是一种淡冰蓝色宝石，只在 Glacira——4 级目的地——�
 
 ## 详细信息
 
-- ID：`nerospace:glacite_ore` · 维度：Glacira
+- ID：`nerolandcore:glacite_ore` · 维度：Glacira
 - 工具：镐，铁级 · 掉落：Glacite（宝石）

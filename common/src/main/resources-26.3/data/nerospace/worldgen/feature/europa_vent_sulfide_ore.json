@@ -4,7 +4,7 @@
   "size": 7,
   "targets": [
     {
-      "state": "nerospace:vent_sulfide_ore",
+      "state": "nerolandcore:vent_sulfide_ore",
       "target": {
         "predicate_type": "minecraft:block_match",
         "block": "nerospace:vent_basalt"
